@@ -99,8 +99,13 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 					Date end = ICalDateFormatter.parse(endStr);
 					freebusy.addValue(start, end);
 				} catch (IllegalArgumentException e) {
-					Duration duration = Duration.parse(endStr);
-					freebusy.addValue(start, duration);
+					//must be a duration
+					try {
+						Duration duration = Duration.parse(endStr);
+						freebusy.addValue(start, duration);
+					} catch (IllegalArgumentException e2) {
+						throw new CannotParseException("Could not parse duration value.");
+					}
 				}
 			} else {
 				warnings.add("No end date or duration found.");

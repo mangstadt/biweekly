@@ -2,13 +2,13 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
+import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.Trigger;
 import biweekly.util.Duration;
 import biweekly.util.ICalDateFormatter;
 import biweekly.util.ISOFormat;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -68,7 +68,12 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 		try {
 			return new Trigger(ICalDateFormatter.parse(value));
 		} catch (IllegalArgumentException e) {
-			return new Trigger(Duration.parse(value), parameters.getRelated());
+			//must be a duration
+			try {
+				return new Trigger(Duration.parse(value), parameters.getRelated());
+			} catch (IllegalArgumentException e2) {
+				throw new CannotParseException("Could not parse value as a date or duration.");
+			}
 		}
 	}
 }

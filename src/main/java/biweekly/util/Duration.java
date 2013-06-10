@@ -56,8 +56,13 @@ public class Duration {
 	 * Parses a duration string.
 	 * @param value the duration string (e.g. "P30DT10H")
 	 * @return the parsed duration
+	 * @throws IllegalArgumentException if the duration string is invalid
 	 */
 	public static Duration parse(String value) {
+		if (!value.matches("-?P.*")) {
+			throw new IllegalArgumentException("Invalid duration string: " + value);
+		}
+
 		//@formatter:off
 		return new Duration.Builder()
 		.prior(value.startsWith("-"))

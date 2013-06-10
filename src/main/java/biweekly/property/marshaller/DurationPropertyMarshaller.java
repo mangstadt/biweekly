@@ -2,10 +2,10 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
+import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DurationProperty;
 import biweekly.util.Duration;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -51,7 +51,11 @@ public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationP
 	protected DurationProperty _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
-		Duration duration = Duration.parse(value);
-		return new DurationProperty(duration);
+		try {
+			Duration duration = Duration.parse(value);
+			return new DurationProperty(duration);
+		} catch (IllegalArgumentException e) {
+			throw new CannotParseException("Could not parse duration value.");
+		}
 	}
 }
