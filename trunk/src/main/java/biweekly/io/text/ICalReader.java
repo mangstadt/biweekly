@@ -19,6 +19,7 @@ import biweekly.component.marshaller.ComponentLibrary;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.component.marshaller.RawComponentMarshaller;
 import biweekly.io.CannotParseException;
+import biweekly.io.IParser;
 import biweekly.io.SkipMeException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
@@ -57,7 +58,7 @@ import biweekly.property.marshaller.RawPropertyMarshaller;
  * Parses {@link ICalendar} objects from an iCalendar data stream.
  * @author Michael Angstadt
  */
-public class ICalReader {
+public class ICalReader implements IParser {
 	private final List<String> warnings = new ArrayList<String>();
 	private final Map<String, ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new HashMap<String, ICalPropertyMarshaller<? extends ICalProperty>>(0);
 	private final Map<String, ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new HashMap<String, ICalComponentMarshaller<? extends ICalComponent>>(0);
@@ -176,27 +177,16 @@ public class ICalReader {
 		reader.setCaretDecodingEnabled(enable);
 	}
 
-	/**
-	 * Registers a marshaller for an experimental property.
-	 * @param marshaller the marshaller to register
-	 */
+	//@Override
 	public void registerMarshaller(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
 		propertyMarshallers.put(marshaller.getPropertyName().toUpperCase(), marshaller);
 	}
 
-	/**
-	 * Registers a marshaller for an experimental component.
-	 * @param marshaller the marshaller to register
-	 */
+	//@Override
 	public void registerMarshaller(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
 		componentMarshallers.put(marshaller.getComponentName().toUpperCase(), marshaller);
 	}
 
-	/**
-	 * Gets the warnings from the last iCal that was read. This list is reset
-	 * every time a new iCal is written.
-	 * @return the warnings or empty list if there were no warnings
-	 */
 	//@Override
 	public List<String> getWarnings() {
 		return new ArrayList<String>(warnings);
