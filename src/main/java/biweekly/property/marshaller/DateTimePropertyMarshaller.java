@@ -3,11 +3,11 @@ package biweekly.property.marshaller;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DateTimeProperty;
 import biweekly.util.ICalDateFormatter;
 import biweekly.util.ISOFormat;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -57,8 +57,7 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 		try {
 			date = ICalDateFormatter.parse(value);
 		} catch (IllegalArgumentException e) {
-			warnings.add("Could not parse date value: " + value);
-			//TODO make the reader marshal it to a RawProperty instead so the data isn't lost
+			throw new CannotParseException("Could not parse date/time value.");
 		}
 
 		return newInstance(date);

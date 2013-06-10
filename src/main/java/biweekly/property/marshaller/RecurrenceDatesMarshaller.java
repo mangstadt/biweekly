@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.RecurrenceDates;
@@ -11,7 +12,6 @@ import biweekly.util.Duration;
 import biweekly.util.ICalDateFormatter;
 import biweekly.util.ISOFormat;
 import biweekly.util.Period;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -116,7 +116,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 				try {
 					dates.add(ICalDateFormatter.parse(s));
 				} catch (IllegalArgumentException e) {
-					warnings.add("Could not parse date: " + s);
+					throw new CannotParseException("Could not parse date.");
 				}
 			}
 			return new RecurrenceDates(dates, hasTime);
@@ -127,11 +127,11 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 				String timePeriodStrSplit[] = s.split("/");
 
 				String startStr = timePeriodStrSplit[0];
-				Date start = null;
+				Date start;
 				try {
 					start = ICalDateFormatter.parse(startStr);
 				} catch (IllegalArgumentException e) {
-					warnings.add("Could not parse start date: " + startStr);
+					throw new CannotParseException("Could not parse start date.");
 				}
 
 				Period period = null;
@@ -146,14 +146,10 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 					}
 				} else {
 					warnings.add("No end date or duration found.");
-					if (start != null) {
-						period = new Period(start, (Date) null);
-					}
+					period = new Period(start, (Date) null);
 				}
 
-				if (period != null) {
-					periods.add(period);
-				}
+				periods.add(period);
 			}
 			return new RecurrenceDates(periods);
 		}

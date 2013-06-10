@@ -1,13 +1,8 @@
 package biweekly.property.marshaller;
 
 import java.util.Date;
-import java.util.List;
 
-import biweekly.parameter.ICalParameters;
 import biweekly.property.Created;
-import biweekly.util.ICalDateFormatter;
-import biweekly.util.ISOFormat;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -38,33 +33,13 @@ import biweekly.util.ISOFormat;
  * Marshals {@link Created} properties.
  * @author Michael Angstadt
  */
-public class CreatedMarshaller extends ICalPropertyMarshaller<Created> {
+public class CreatedMarshaller extends DateTimePropertyMarshaller<Created> {
 	public CreatedMarshaller() {
 		super(Created.class, "CREATED");
 	}
 
 	@Override
-	protected String _writeText(Created property, List<String> warnings) {
-		Date value = property.getValue();
-		if (value == null) {
-			return "";
-		}
-
-		return ICalDateFormatter.format(value, ISOFormat.UTC_TIME_BASIC);
-	}
-
-	@Override
-	protected Created _parseText(String value, ICalParameters parameters, List<String> warnings) {
-		value = unescape(value);
-
-		Date date = null;
-		try {
-			date = ICalDateFormatter.parse(value);
-		} catch (IllegalArgumentException e) {
-			//TODO marshal as RawProperty instead so data isn't lost
-			warnings.add("Could not parse date value: " + value);
-		}
-
+	protected Created newInstance(Date date) {
 		return new Created(date);
 	}
 }

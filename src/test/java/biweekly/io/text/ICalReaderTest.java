@@ -13,14 +13,13 @@ import biweekly.component.ICalComponent;
 import biweekly.component.VEvent;
 import biweekly.component.VTodo;
 import biweekly.component.marshaller.ICalComponentMarshaller;
+import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
-import biweekly.io.text.ICalReader;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.ProductId;
 import biweekly.property.Summary;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -587,7 +586,7 @@ public class ICalReaderTest {
 		"BEGIN:VCALENDAR\r\n" +
 			"PRODID:prodid\r\n" +
 			"VERSION:2.0\r\n" +
-			"X-TEST:flower\r\n" +
+			"X-TEST:one hundred\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
@@ -600,6 +599,35 @@ public class ICalReaderTest {
 		assertEquals("2.0", icalendar.getVersion().getMaxVersion());
 
 		assertEquals(0, icalendar.getProperties(TestProperty.class).size());
+		assertEquals(0, icalendar.getExperimentalProperties().size());
+
+		assertWarnings(1, reader.getWarnings());
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void cannotParseException() throws Exception {
+		//@formatter:off
+		String ical =
+		"BEGIN:VCALENDAR\r\n" +
+			"PRODID:prodid\r\n" +
+			"VERSION:2.0\r\n" +
+			"X-TEST:flower\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		ICalReader reader = new ICalReader(new StringReader(ical));
+		reader.registerMarshaller(new TestPropertyMarshaller());
+
+		ICalendar icalendar = reader.readNext();
+
+		assertEquals("prodid", icalendar.getProductId().getValue());
+		assertEquals("2.0", icalendar.getVersion().getMaxVersion());
+
+		//parsed as a RawProperty instead
+		assertEquals(0, icalendar.getProperties(TestProperty.class).size());
+		assertEquals(1, icalendar.getExperimentalProperties().size());
+		assertEquals("flower", icalendar.getExperimentalProperty("X-TEST").getValue());
 
 		assertWarnings(1, reader.getWarnings());
 		assertNull(reader.readNext());
@@ -628,8 +656,10 @@ public class ICalReaderTest {
 			} else if (value.equals("four")) {
 				number = 4;
 				warnings.add("too high");
+			} else if (value.equals("one hundred")) {
+				throw new SkipMeException("really too high");
 			} else {
-				throw new SkipMeException("skip me");
+				throw new CannotParseException("wat");
 			}
 			prop.setNumber(number);
 			return prop;
