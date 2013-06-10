@@ -3,10 +3,12 @@ package biweekly;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 
@@ -136,6 +138,133 @@ public class BiweeklyTest {
 		assertEquals("the ^'best^' app", ical.getProductId().getParameter("X-TEST"));
 	}
 
+	@Test
+	public void write_one() {
+		ICalendar ical = new ICalendar();
+
+		//@formatter:off
+		String expected =
+		"BEGIN:VCALENDAR\r\n" +
+		"VERSION:2\\.0\r\n" +
+		"PRODID:.*?\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		String actual = Biweekly.write(ical).go();
+
+		assertRegex(expected, actual);
+	}
+
+	@Test
+	public void write_one_with_warnings() {
+		ICalendar ical = new ICalendar();
+		ical.addProperty(new TestProperty()); //no marshaller registered
+
+		List<String> warnings = new ArrayList<String>();
+		Biweekly.write(ical).warnings(warnings).go();
+
+		assertFalse(warnings.isEmpty());
+	}
+
+	@Test
+	public void write_one_without_warnings() {
+		ICalendar ical = new ICalendar();
+
+		List<String> warnings = new ArrayList<String>();
+		Biweekly.write(ical).warnings(warnings).go();
+
+		assertTrue(warnings.isEmpty());
+	}
+
+	@Test
+	public void write_multiple() {
+		ICalendar ical1 = new ICalendar();
+
+		ICalendar ical2 = new ICalendar();
+		ical2.addExperimentalProperty("X-TEST1", "value1");
+
+		ICalendar ical3 = new ICalendar();
+		ical3.addExperimentalProperty("X-TEST2", "value2");
+
+		//@formatter:off
+		String expected =
+		"BEGIN:VCALENDAR\r\n" +
+		"VERSION:2\\.0\r\n" +
+		"PRODID:.*?\r\n" +
+		"END:VCALENDAR\r\n" +
+		"BEGIN:VCALENDAR\r\n" +
+		"VERSION:2\\.0\r\n" +
+		"PRODID:.*?\r\n" +
+		"X-TEST1:value1\r\n" +
+		"END:VCALENDAR\r\n" +
+		"BEGIN:VCALENDAR\r\n" +
+		"VERSION:2\\.0\r\n" +
+		"PRODID:.*?\r\n" +
+		"X-TEST2:value2\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		String actual = Biweekly.write(ical1, ical2, ical3).go();
+
+		assertRegex(expected, actual);
+	}
+
+	@Test
+	public void write_multiple_warnings() {
+		ICalendar ical1 = new ICalendar();
+
+		ICalendar ical2 = new ICalendar();
+		ical2.addProperty(new TestProperty());
+
+		ICalendar ical3 = new ICalendar();
+
+		List<List<String>> warnings = new ArrayList<List<String>>();
+		Biweekly.write(ical1, ical2, ical3).warnings(warnings).go();
+
+		assertEquals(3, warnings.size());
+		assertTrue(warnings.get(0).isEmpty());
+		assertFalse(warnings.get(1).isEmpty()); //no marshaller
+		assertTrue(warnings.get(2).isEmpty());
+	}
+
+	@Test
+	public void write_caretEncoding() throws Exception {
+		ICalendar ical = new ICalendar();
+		ical.setProductId("prodid");
+		ical.getProductId().addParameter("X-TEST", "the \"best\" app");
+
+		//default is "false"
+		//@formatter:off
+		String expected =
+		"BEGIN:VCALENDAR\r\n" +
+		"VERSION:2\\.0\r\n" +
+		"PRODID;X-TEST=the 'best' app:prodid\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+		String actual = Biweekly.write(ical).go();
+		assertRegex(expected, actual);
+
+		//@formatter:off
+		expected =
+		"BEGIN:VCALENDAR\r\n" +
+		"VERSION:2\\.0\r\n" +
+		"PRODID;X-TEST=the \\^'best\\^' app:prodid\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+		actual = Biweekly.write(ical).caretEncoding(true).go();
+		assertRegex(expected, actual);
+
+		//@formatter:off
+		expected =
+		"BEGIN:VCALENDAR\r\n" +
+		"VERSION:2\\.0\r\n" +
+		"PRODID;X-TEST=the 'best' app:prodid\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+		actual = Biweekly.write(ical).caretEncoding(false).go();
+		assertRegex(expected, actual);
+	}
+
 	class TestProperty extends ICalProperty {
 		Integer number;
 
@@ -186,5 +315,10 @@ public class BiweeklyTest {
 
 	class Party extends ICalComponent {
 		//empty
+	}
+
+	private static void assertRegex(String regex, String string) {
+		Pattern p = Pattern.compile(regex);
+		assertTrue(string, p.matcher(string).matches());
 	}
 }
