@@ -5,8 +5,6 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import biweekly.util.Duration;
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -58,15 +56,9 @@ public class DurationTest {
 		assertNull(duration.getSeconds());
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void parse_invalid() {
-		Duration duration = Duration.parse("not valid");
-		assertEquals(false, duration.isPrior());
-		assertNull(duration.getWeeks());
-		assertNull(duration.getDays());
-		assertNull(duration.getHours());
-		assertNull(duration.getMinutes());
-		assertNull(duration.getSeconds());
+		Duration.parse("not valid");
 	}
 
 	@Test

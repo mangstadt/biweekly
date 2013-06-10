@@ -141,8 +141,13 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 						Date end = ICalDateFormatter.parse(endStr);
 						period = new Period(start, end);
 					} catch (IllegalArgumentException e) {
-						Duration duration = Duration.parse(endStr);
-						period = new Period(start, duration);
+						//must be a duration
+						try {
+							Duration duration = Duration.parse(endStr);
+							period = new Period(start, duration);
+						} catch (IllegalArgumentException e2) {
+							throw new CannotParseException("Could not parse duration value.");
+						}
 					}
 				} else {
 					warnings.add("No end date or duration found.");
