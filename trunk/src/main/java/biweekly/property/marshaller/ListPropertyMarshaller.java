@@ -41,7 +41,7 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 	}
 
 	@Override
-	protected String _writeText(T property, List<String> warnings) {
+	protected String _writeText(T property) {
 		StringBuilder sb = new StringBuilder();
 
 		boolean first = true;

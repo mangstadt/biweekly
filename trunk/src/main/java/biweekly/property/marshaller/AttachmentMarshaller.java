@@ -9,7 +9,6 @@ import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.Attachment;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -53,7 +52,7 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	}
 
 	@Override
-	protected String _writeText(Attachment property, List<String> warnings) {
+	protected String _writeText(Attachment property) {
 		if (property.getUri() != null) {
 			return property.getUri();
 		}

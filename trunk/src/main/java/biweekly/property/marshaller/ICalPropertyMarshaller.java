@@ -88,10 +88,8 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @param property the property
 	 * @return the marshalled value
 	 */
-	public final Result<String> writeText(T property) {
-		List<String> warnings = new ArrayList<String>(0);
-		String value = _writeText(property, warnings);
-		return new Result<String>(value, warnings);
+	public final String writeText(T property) {
+		return _writeText(property);
 	}
 
 	/**
@@ -123,12 +121,9 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	/**
 	 * Marshals a property's value to a string.
 	 * @param property the property
-	 * @param warnings allows the programmer to alert the user to any
-	 * note-worthy (but non-critical) issues that occurred during the
-	 * marshalling process
 	 * @return the marshalled value
 	 */
-	protected abstract String _writeText(T property, List<String> warnings);
+	protected abstract String _writeText(T property);
 
 	/**
 	 * Unmarshals a property's value.

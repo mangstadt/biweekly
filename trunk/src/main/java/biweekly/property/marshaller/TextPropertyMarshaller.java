@@ -41,7 +41,7 @@ public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICa
 	}
 
 	@Override
-	protected String _writeText(T property, List<String> warnings) {
+	protected String _writeText(T property) {
 		String value = property.getValue();
 		if (value == null) {
 			value = "";

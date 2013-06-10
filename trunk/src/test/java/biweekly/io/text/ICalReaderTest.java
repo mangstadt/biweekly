@@ -639,7 +639,7 @@ public class ICalReaderTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property, List<String> warnings) {
+		protected String _writeText(TestProperty property) {
 			return property.getNumber().toString();
 		}
 
@@ -700,7 +700,7 @@ public class ICalReaderTest {
 		}
 
 		@Override
-		protected String _writeText(ProductId property, List<String> warnings) {
+		protected String _writeText(ProductId property) {
 			return property.getValue();
 		}
 

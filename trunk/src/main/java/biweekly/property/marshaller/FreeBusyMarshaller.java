@@ -46,7 +46,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 	}
 
 	@Override
-	protected String _writeText(FreeBusy property, List<String> warnings) {
+	protected String _writeText(FreeBusy property) {
 		List<Period> values = property.getValues();
 		if (values.isEmpty()) {
 			return "";

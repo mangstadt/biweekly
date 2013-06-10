@@ -119,10 +119,9 @@ public class ICalPropertyMarshallerTest {
 	public void writeText() {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
 		TestProperty property = new TestProperty();
-		ICalPropertyMarshaller.Result<String> result = m.writeText(property);
+		String value = m.writeText(property);
 
-		assertEquals(Arrays.asList("writeText"), result.getWarnings());
-		assertEquals("value", result.getValue());
+		assertEquals("value", value);
 	}
 
 	@Test
@@ -147,8 +146,7 @@ public class ICalPropertyMarshallerTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property, List<String> warnings) {
-			warnings.add("writeText");
+		protected String _writeText(TestProperty property) {
 			return "value";
 		}
 

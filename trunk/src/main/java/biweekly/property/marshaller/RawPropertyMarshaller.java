@@ -5,7 +5,6 @@ import java.util.List;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RawProperty;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -45,12 +44,9 @@ public class RawPropertyMarshaller extends ICalPropertyMarshaller<RawProperty> {
 	}
 
 	@Override
-	protected String _writeText(RawProperty property, List<String> warnings) {
+	protected String _writeText(RawProperty property) {
 		String value = property.getValue();
-		if (value == null) {
-			value = "";
-		}
-		return value;
+		return (value == null) ? "" : value;
 	}
 
 	@Override

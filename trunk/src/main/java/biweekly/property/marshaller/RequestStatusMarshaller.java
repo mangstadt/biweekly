@@ -5,7 +5,6 @@ import java.util.List;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RequestStatus;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -41,7 +40,7 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 	}
 
 	@Override
-	protected String _writeText(RequestStatus property, List<String> warnings) {
+	protected String _writeText(RequestStatus property) {
 		StringBuilder sb = new StringBuilder();
 
 		if (property.getStatusCode() != null) {

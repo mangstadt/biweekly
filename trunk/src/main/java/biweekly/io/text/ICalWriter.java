@@ -23,7 +23,6 @@ import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.property.marshaller.PropertyLibrary;
 import biweekly.property.marshaller.RawPropertyMarshaller;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -258,9 +257,7 @@ public class ICalWriter implements Closeable {
 			String value;
 			try {
 				parameters = pm.prepareParameters(property);
-				ICalPropertyMarshaller.Result<String> result = pm.writeText(property);
-				warnings.addAll(result.getWarnings());
-				value = result.getValue();
+				value = pm.writeText(property);
 			} catch (SkipMeException e) {
 				warnings.add(pm.getPropertyName() + " property has requested that it not be written: " + e.getMessage());
 				continue;

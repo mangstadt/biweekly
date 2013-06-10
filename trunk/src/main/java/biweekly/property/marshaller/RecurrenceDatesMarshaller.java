@@ -59,7 +59,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 	}
 
 	@Override
-	protected String _writeText(RecurrenceDates property, List<String> warnings) {
+	protected String _writeText(RecurrenceDates property) {
 		StringBuilder sb = new StringBuilder();
 
 		boolean first = true;

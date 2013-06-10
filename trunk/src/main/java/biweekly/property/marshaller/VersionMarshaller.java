@@ -5,7 +5,6 @@ import java.util.List;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Version;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -41,7 +40,7 @@ public class VersionMarshaller extends ICalPropertyMarshaller<Version> {
 	}
 
 	@Override
-	protected String _writeText(Version property, List<String> warnings) {
+	protected String _writeText(Version property) {
 		StringBuilder sb = new StringBuilder();
 
 		if (property.getMinVersion() != null) {

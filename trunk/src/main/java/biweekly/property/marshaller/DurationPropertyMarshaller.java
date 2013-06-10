@@ -42,7 +42,7 @@ public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationP
 	}
 
 	@Override
-	protected String _writeText(DurationProperty property, List<String> warnings) {
+	protected String _writeText(DurationProperty property) {
 		Duration duration = property.getValue();
 		return (duration == null) ? "" : duration.toString();
 	}
