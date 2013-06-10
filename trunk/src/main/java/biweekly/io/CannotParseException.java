@@ -1,14 +1,6 @@
-package biweekly.property.marshaller;
+package biweekly.io;
 
-import java.util.Date;
-import java.util.List;
-
-import biweekly.io.CannotParseException;
-import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
-import biweekly.property.ExceptionDates;
-import biweekly.util.ICalDateFormatter;
-import biweekly.util.ISOFormat;
+import biweekly.ICalException;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -36,42 +28,24 @@ import biweekly.util.ISOFormat;
  */
 
 /**
- * Marshals {@link ExceptionDates} properties.
+ * Thrown during the unmarshalling of an iCalendar property to signal that the
+ * property's value could not be parsed.
  * @author Michael Angstadt
  */
-public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDates, Date> {
-	public ExceptionDatesMarshaller() {
-		super(ExceptionDates.class, "EXDATE");
+@SuppressWarnings("serial")
+public class CannotParseException extends ICalException {
+	/**
+	 * Creates a new "cannot parse" exception.
+	 */
+	public CannotParseException() {
+		super();
 	}
 
-	@Override
-	protected void _prepareParameters(ExceptionDates property, ICalParameters copy) {
-		if (!property.hasTime()) {
-			copy.setValue(Value.DATE);
-		}
-	}
-
-	@Override
-	protected ExceptionDates newInstance() {
-		return new ExceptionDates();
-	}
-
-	@Override
-	protected String writeValue(ExceptionDates property, Date value) {
-		if (value == null) {
-			return "";
-		}
-
-		ISOFormat format = property.hasTime() ? ISOFormat.UTC_TIME_BASIC : ISOFormat.DATE_BASIC;
-		return ICalDateFormatter.format(value, format);
-	}
-
-	@Override
-	protected Date readValue(String value, List<String> warnings) {
-		try {
-			return ICalDateFormatter.parse(value);
-		} catch (IllegalArgumentException e) {
-			throw new CannotParseException("Could not parse date value.");
-		}
+	/**
+	 * Creates a new "cannot parse" exception.
+	 * @param reason the reason why the property value cannot be parsed
+	 */
+	public CannotParseException(String reason) {
+		super(reason);
 	}
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RecurrenceRule;
 import biweekly.property.RecurrenceRule.DayOfWeek;
@@ -16,7 +17,6 @@ import biweekly.property.RecurrenceRule.Frequency;
 import biweekly.util.ICalDateFormatter;
 import biweekly.util.ISOFormat;
 import biweekly.util.ListMultimap;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -180,7 +180,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 				boolean hasTime = first.contains("T");
 				property.setUntil(ICalDateFormatter.parse(first), hasTime);
 			} catch (IllegalArgumentException e) {
-				warnings.add("Could not parse UNTIL date: " + first);
+				throw new CannotParseException("Could not parse UNTIL date.");
 			}
 		}
 

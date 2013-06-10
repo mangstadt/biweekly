@@ -18,14 +18,15 @@ import biweekly.component.ICalComponent;
 import biweekly.component.marshaller.ComponentLibrary;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.component.marshaller.RawComponentMarshaller;
+import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.RawProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
+import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 import biweekly.property.marshaller.PropertyLibrary;
 import biweekly.property.marshaller.RawPropertyMarshaller;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -310,24 +311,34 @@ public class ICalReader {
 			dataWasRead = true;
 
 			ICalPropertyMarshaller<? extends ICalProperty> m = findPropertyMarshaller(name);
+			ICalProperty property = null;
 			try {
-				//TODO have it throw an exception that signals that the value is unparsable--in that case, add it as a RawProperty
 				Result<? extends ICalProperty> result = m.parseText(value, parameters);
 
 				for (String warning : result.getWarnings()) {
 					//TODO include line numbers?
-					warnings.add(m.getPropertyName() + " property: " + warning);
+					warnings.add(name + " property: " + warning);
 				}
 
-				ICalProperty property = result.getValue();
+				property = result.getValue();
+			} catch (SkipMeException e) {
+				warnings.add(name + " property has requested that it be skipped: " + e.getMessage());
+			} catch (CannotParseException e) {
+				if (e.getMessage() == null) {
+					warnings.add(name + " property value could not be parsed: " + value);
+				} else {
+					warnings.add(name + " property value could not be parsed.\n  Value: " + value + "\n  Reason: " + e.getMessage());
+				}
+				property = new RawProperty(name, value);
+			}
+
+			if (property != null) {
 				ICalComponent parentComponent = getCurrentComponent();
 				if (parentComponent == null) {
 					orphanedProperties.add(property);
 				} else {
 					parentComponent.addProperty(property);
 				}
-			} catch (SkipMeException e) {
-				warnings.add(name + " property has requested that it be skipped: " + e.getMessage());
 			}
 		}
 

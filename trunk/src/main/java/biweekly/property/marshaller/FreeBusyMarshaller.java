@@ -3,13 +3,13 @@ package biweekly.property.marshaller;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.FreeBusy;
 import biweekly.util.Duration;
 import biweekly.util.ICalDateFormatter;
 import biweekly.util.ISOFormat;
 import biweekly.util.Period;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -90,7 +90,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 			try {
 				start = ICalDateFormatter.parse(startStr);
 			} catch (IllegalArgumentException e) {
-				warnings.add("Could not parse start date: " + startStr);
+				throw new CannotParseException("Could not parse start date.");
 			}
 
 			if (timePeriodStrSplit.length > 1) {

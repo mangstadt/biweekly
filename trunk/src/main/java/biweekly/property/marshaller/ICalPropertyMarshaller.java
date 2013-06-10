@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import biweekly.io.CannotParseException;
 import biweekly.io.text.ICalWriter;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -99,6 +99,8 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @param value the value
 	 * @param parameters the property's parameters
 	 * @return the unmarshalled property object
+	 * @throws CannotParseException if the marshaller could not parse the
+	 * property's value
 	 */
 	public final Result<T> parseText(String value, ICalParameters parameters) {
 		List<String> warnings = new ArrayList<String>(0);
@@ -136,6 +138,8 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * note-worthy (but non-critical) issues that occurred during the
 	 * unmarshalling process
 	 * @return the unmarshalled property object
+	 * @throws CannotParseException if the marshaller could not parse the
+	 * property's value
 	 */
 	protected abstract T _parseText(String value, ICalParameters parameters, List<String> warnings);
 
