@@ -42,7 +42,7 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 	}
 
 	@Override
-	protected String _writeText(T property, List<String> warnings) {
+	protected String _writeText(T property) {
 		Integer hour = property.getHourOffset();
 		if (hour == null) {
 			hour = 0;

@@ -154,7 +154,7 @@ public class BiweeklyTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property, List<String> warnings) {
+		protected String _writeText(TestProperty property) {
 			return property.getNumber().toString();
 		}
 

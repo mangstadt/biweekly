@@ -44,7 +44,7 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 	}
 
 	@Override
-	protected String _writeText(T property, List<String> warnings) {
+	protected String _writeText(T property) {
 		Date value = property.getValue();
 		return (value == null) ? "" : ICalDateFormatter.format(value, ISOFormat.UTC_TIME_BASIC);
 	}

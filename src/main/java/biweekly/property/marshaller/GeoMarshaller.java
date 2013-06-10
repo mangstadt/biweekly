@@ -6,7 +6,6 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.Geo;
 import biweekly.util.ICalFloatFormatter;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -41,11 +40,8 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 		super(Geo.class, "GEO");
 	}
 
-	//TODO lazy-load the marshallers--only instantiate them if the user reads/writes an iCal that has those properties
-	//TODO allow the user to override marshallers: writer.register(Geo.class, new MyGeoMarshaller()); -- the extended property marshaller list is checked first
-
 	@Override
-	protected String _writeText(Geo property, List<String> warnings) {
+	protected String _writeText(Geo property) {
 		ICalFloatFormatter formatter = new ICalFloatFormatter();
 		StringBuilder sb = new StringBuilder();
 

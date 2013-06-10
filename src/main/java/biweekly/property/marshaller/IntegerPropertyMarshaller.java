@@ -42,7 +42,7 @@ public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> exten
 	}
 
 	@Override
-	protected String _writeText(T property, List<String> warnings) {
+	protected String _writeText(T property) {
 		Integer value = property.getValue();
 		return (value == null) ? "" : value.toString();
 	}

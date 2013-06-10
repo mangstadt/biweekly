@@ -75,7 +75,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 	}
 
 	@Override
-	protected String _writeText(RecurrenceRule property, List<String> warnings) {
+	protected String _writeText(RecurrenceRule property) {
 		ListMultimap<String, String> components = new ListMultimap<String, String>();
 
 		if (property.getFrequency() != null) {

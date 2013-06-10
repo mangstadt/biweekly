@@ -14,12 +14,10 @@ import biweekly.component.ICalComponent;
 import biweekly.component.VEvent;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.SkipMeException;
-import biweekly.io.text.ICalWriter;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.Version;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -432,7 +430,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property, List<String> warnings) {
+		protected String _writeText(TestProperty property) {
 			return property.getValue();
 		}
 
@@ -448,7 +446,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property, List<String> warnings) {
+		protected String _writeText(TestProperty property) {
 			return property.getValue();
 		}
 
@@ -464,7 +462,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property, List<String> warnings) {
+		protected String _writeText(TestProperty property) {
 			throw new SkipMeException("Skipped");
 		}
 
@@ -480,7 +478,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(Version property, List<String> warnings) {
+		protected String _writeText(Version property) {
 			return property.getMaxVersion() + " (beta)";
 		}
 

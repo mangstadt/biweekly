@@ -52,7 +52,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	}
 
 	@Override
-	protected String _writeText(Trigger property, List<String> warnings) {
+	protected String _writeText(Trigger property) {
 		if (property.getDate() != null) {
 			return ICalDateFormatter.format(property.getDate(), ISOFormat.UTC_TIME_BASIC);
 		}
