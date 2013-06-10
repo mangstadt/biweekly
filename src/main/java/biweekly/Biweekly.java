@@ -3,11 +3,18 @@ package biweekly;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
@@ -119,6 +126,33 @@ public class Biweekly {
 	 */
 	public static ParserChainTextReader parse(Reader reader) {
 		return new ParserChainTextReader(reader);
+	}
+
+	/**
+	 * Writes an iCalendar object to a data stream.
+	 * @param ical the iCalendar object to write
+	 * @return chainer object for completing the write operation
+	 */
+	public static WriterChainTextSingle write(ICalendar ical) {
+		return new WriterChainTextSingle(ical);
+	}
+
+	/**
+	 * Writes multiple iCalendar objects to a data stream.
+	 * @param icals the iCalendar objects to write
+	 * @return chainer object for completing the write operation
+	 */
+	public static WriterChainTextMulti write(ICalendar... icals) {
+		return write(Arrays.asList(icals));
+	}
+
+	/**
+	 * Writes multiple iCalendar objects to a data stream.
+	 * @param icals the iCalendar objects to write
+	 * @return chainer object for completing the write operation
+	 */
+	public static WriterChainTextMulti write(Collection<ICalendar> icals) {
+		return new WriterChainTextMulti(icals);
 	}
 
 	static abstract class ParserChain<T, U extends IParser> {
@@ -347,6 +381,164 @@ public class Biweekly {
 				//reading from string
 			}
 			return null;
+		}
+	}
+
+	static abstract class WriterChain {
+		final Collection<ICalendar> icals;
+
+		WriterChain(Collection<ICalendar> icals) {
+			this.icals = icals;
+		}
+	}
+
+	static abstract class WriterChainText<T> extends WriterChain {
+		boolean caretEncoding = false;
+
+		WriterChainText(Collection<ICalendar> icals) {
+			super(icals);
+		}
+
+		/**
+		 * Sets whether the writer will use circumflex accent encoding for
+		 * parameter values (disabled by default).
+		 * @param enable true to use circumflex accent encoding, false not to
+		 * @see ICalWriter#setCaretEncodingEnabled(boolean)
+		 * @see <a href="http://tools.ietf.org/html/rfc6868">RFC 6868</a>
+		 */
+		@SuppressWarnings("unchecked")
+		public T caretEncoding(boolean enable) {
+			this.caretEncoding = enable;
+			return (T) this;
+		}
+
+		/**
+		 * Writes the iCalendar objects to a string.
+		 * @return the iCalendar string
+		 */
+		public String go() {
+			StringWriter sw = new StringWriter();
+			try {
+				go(sw);
+			} catch (IOException e) {
+				//writing to a string
+			}
+			return sw.toString();
+		}
+
+		/**
+		 * Writes the iCalendar objects to a data stream.
+		 * @param out the output stream to write to
+		 * @throws IOException if there's a problem writing to the output stream
+		 */
+		public void go(OutputStream out) throws IOException {
+			go(new OutputStreamWriter(out));
+		}
+
+		/**
+		 * Writes the iCalendar objects to a file.
+		 * @param file the file to write to
+		 * @throws IOException if there's a problem writing to the file
+		 */
+		public void go(File file) throws IOException {
+			FileWriter writer = null;
+			try {
+				writer = new FileWriter(file);
+				go(writer);
+			} finally {
+				IOUtils.closeQuietly(writer);
+			}
+		}
+
+		/**
+		 * Writes the iCalendar objects to a data stream.
+		 * @param writer the writer to write to
+		 * @throws IOException if there's a problem writing to the writer
+		 */
+		public void go(Writer writer) throws IOException {
+			ICalWriter icalWriter = new ICalWriter(writer);
+			icalWriter.setCaretEncodingEnabled(caretEncoding);
+
+			for (ICalendar ical : icals) {
+				icalWriter.write(ical);
+				addWarnings(icalWriter.getWarnings());
+			}
+		}
+
+		abstract void addWarnings(List<String> warnings);
+	}
+
+	/**
+	 * Convenience chainer class for writing to plain text iCalendar data
+	 * streams.
+	 */
+	public static class WriterChainTextMulti extends WriterChainText<WriterChainTextMulti> {
+		private List<List<String>> warnings;
+
+		private WriterChainTextMulti(Collection<ICalendar> icals) {
+			super(icals);
+		}
+
+		@Override
+		public WriterChainTextMulti caretEncoding(boolean enable) {
+			return super.caretEncoding(enable);
+		}
+
+		/**
+		 * Provides a list object that any marshal warnings will be put into.
+		 * @param warnings the list object that will be populated with the
+		 * warnings of each marshalled iCalendar object. Each element of the
+		 * list is the list of warnings for one of the marshalled iCalendar
+		 * objects. Therefore, the size of this list will be equal to the number
+		 * of written iCalendar objects. If an iCalendar object does not have
+		 * any warnings, then its warning list will be empty.
+		 * @return this
+		 */
+		public WriterChainTextMulti warnings(List<List<String>> warnings) {
+			this.warnings = warnings;
+			return this;
+		}
+
+		@Override
+		void addWarnings(List<String> warnings) {
+			if (this.warnings != null) {
+				this.warnings.add(warnings);
+			}
+		}
+	}
+
+	/**
+	 * Convenience chainer class for writing to plain text iCalendar data
+	 * streams.
+	 */
+	public static class WriterChainTextSingle extends WriterChainText<WriterChainTextSingle> {
+		private List<String> warnings;
+
+		private WriterChainTextSingle(ICalendar ical) {
+			super(Arrays.asList(ical));
+		}
+
+		@Override
+		public WriterChainTextSingle caretEncoding(boolean enable) {
+			return super.caretEncoding(enable);
+		}
+
+		/**
+		 * Provides a list object that any marshal warnings will be put into.
+		 * @param warnings the list object that will be populated with the
+		 * warnings of the marshalled iCalendar object.
+		 * @return this
+		 */
+		public WriterChainTextSingle warnings(List<String> warnings) {
+			this.warnings = warnings;
+			return this;
+		}
+
+		@Override
+		void addWarnings(List<String> warnings) {
+			if (this.warnings != null) {
+				this.warnings.addAll(warnings);
+			}
 		}
 	}
 }
