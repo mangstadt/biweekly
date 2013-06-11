@@ -1,5 +1,9 @@
 package biweekly;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -266,4 +270,38 @@ public class ICalendar extends ICalComponent {
 		}
 	}
 
+	/**
+	 * Marshals this iCalendar object to its plain text representation.
+	 * @return the plain text representation
+	 */
+	public String write() {
+		return Biweekly.write(this).go();
+	}
+
+	/**
+	 * Marshals this iCalendar object to its plain text representation.
+	 * @param file the file to write to
+	 * @throws IOException if there's an I/O problem
+	 */
+	public void write(File file) throws IOException {
+		Biweekly.write(this).go(file);
+	}
+
+	/**
+	 * Marshals this iCalendar object to its plain text representation.
+	 * @param out the data stream to write to
+	 * @throws IOException if there's an I/O problem
+	 */
+	public void write(OutputStream out) throws IOException {
+		Biweekly.write(this).go(out);
+	}
+
+	/**
+	 * Marshals this iCalendar object to its plain text representation.
+	 * @param writer the data stream to write to
+	 * @throws IOException if there's an I/O problem
+	 */
+	public void write(Writer writer) throws IOException {
+		Biweekly.write(this).go(writer);
+	}
 }
