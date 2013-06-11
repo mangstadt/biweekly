@@ -138,6 +138,58 @@ public class Duration {
 		return hours != null || minutes != null || seconds != null;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((days == null) ? 0 : days.hashCode());
+		result = prime * result + ((hours == null) ? 0 : hours.hashCode());
+		result = prime * result + ((minutes == null) ? 0 : minutes.hashCode());
+		result = prime * result + (prior ? 1231 : 1237);
+		result = prime * result + ((seconds == null) ? 0 : seconds.hashCode());
+		result = prime * result + ((weeks == null) ? 0 : weeks.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Duration other = (Duration) obj;
+		if (days == null) {
+			if (other.days != null)
+				return false;
+		} else if (!days.equals(other.days))
+			return false;
+		if (hours == null) {
+			if (other.hours != null)
+				return false;
+		} else if (!hours.equals(other.hours))
+			return false;
+		if (minutes == null) {
+			if (other.minutes != null)
+				return false;
+		} else if (!minutes.equals(other.minutes))
+			return false;
+		if (prior != other.prior)
+			return false;
+		if (seconds == null) {
+			if (other.seconds != null)
+				return false;
+		} else if (!seconds.equals(other.seconds))
+			return false;
+		if (weeks == null) {
+			if (other.weeks != null)
+				return false;
+		} else if (!weeks.equals(other.weeks))
+			return false;
+		return true;
+	}
+
 	/**
 	 * Converts the duration to its string representation.
 	 * @return the string representation (e.g. "P4DT1H" for "4 days and 1 hour")

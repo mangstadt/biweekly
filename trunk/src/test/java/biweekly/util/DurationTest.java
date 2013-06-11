@@ -1,7 +1,9 @@
 package biweekly.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -113,7 +115,21 @@ public class DurationTest {
 		assertEquals("PT3H", duration.toString());
 	}
 
-	static void assertIntEquals(int expected, Integer actual) {
+	@Test
+	public void equals_hashCode() {
+		Duration duration1 = new Duration.Builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
+		Duration duration2 = new Duration.Builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
+		assertTrue(duration1.equals(duration2));
+		assertTrue(duration2.equals(duration1));
+		assertTrue(duration1.hashCode() == duration1.hashCode());
+
+		duration1 = new Duration.Builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
+		duration2 = new Duration.Builder().weeks(2).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
+		assertFalse(duration1.equals(duration2));
+		assertFalse(duration2.equals(duration1));
+	}
+
+	private static void assertIntEquals(int expected, Integer actual) {
 		assertEquals(Integer.valueOf(expected), actual);
 	}
 }
