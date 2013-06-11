@@ -306,18 +306,17 @@ public class ICalReader implements IParser {
 				Result<? extends ICalProperty> result = m.parseText(value, parameters);
 
 				for (String warning : result.getWarnings()) {
-					//TODO include line numbers?
-					warnings.add(name + " property: " + warning);
+					warnings.add("Line " + reader.getLineNum() + " (" + name + " property): " + warning);
 				}
 
 				property = result.getValue();
 			} catch (SkipMeException e) {
-				warnings.add(name + " property has requested that it be skipped: " + e.getMessage());
+				warnings.add("Line " + reader.getLineNum() + ": " + name + " property has requested that it be skipped: " + e.getMessage());
 			} catch (CannotParseException e) {
 				if (e.getMessage() == null) {
-					warnings.add(name + " property value could not be parsed: " + value);
+					warnings.add("Line " + reader.getLineNum() + ": " + name + " property value could not be parsed: " + value);
 				} else {
-					warnings.add(name + " property value could not be parsed.\n  Value: " + value + "\n  Reason: " + e.getMessage());
+					warnings.add("Line " + reader.getLineNum() + ": " + name + " property value could not be parsed.\n  Value: " + value + "\n  Reason: " + e.getMessage());
 				}
 				property = new RawProperty(name, value);
 			}
@@ -349,7 +348,7 @@ public class ICalReader implements IParser {
 			}
 			if (popIndex == -1) {
 				//END property does not match up with any BEGIN properties, so ignore
-				warnings.add("Ignoring END property that does not match up with any BEGIN properties: " + name);
+				warnings.add("Line " + reader.getLineNum() + ": Ignoring END property that does not match up with any BEGIN properties: " + name);
 				return;
 			}
 
@@ -358,7 +357,7 @@ public class ICalReader implements IParser {
 		}
 
 		public void invalidLine(String line) {
-			warnings.add("Skipping malformed line: \"" + line + "\"");
+			warnings.add("Line " + reader.getLineNum() + ": Skipping malformed line: \"" + line + "\"");
 		}
 
 		private ICalComponent getCurrentComponent() {

@@ -92,4 +92,28 @@ public class FoldedLineReaderTest {
 		assertEquals("COMMENT:one two three four", reader.readLine());
 		assertNull(reader.readLine());
 	}
+
+	@Test
+	public void getLineNum() throws Exception {
+		//@formatter:off
+		String ical =
+		"COMMENT:one\n" +
+		" two\n" +
+		"\n" +
+		"COMMENT:three\n" +
+		" four\n";
+		//@formatter:on
+
+		FoldedLineReader reader = new FoldedLineReader(ical);
+
+		assertEquals(0, reader.getLineNum());
+
+		reader.readLine();
+		assertEquals(1, reader.getLineNum());
+
+		reader.readLine();
+		assertEquals(4, reader.getLineNum());
+
+		assertNull(reader.readLine());
+	}
 }
