@@ -1,10 +1,9 @@
 package biweekly.property.marshaller;
 
+import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-
-import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
@@ -137,9 +136,5 @@ public class AttachmentMarshallerTest {
 		assertEquals(Base64.encodeBase64String("data".getBytes()), result.getValue().getUri());
 		assertNull(result.getValue().getData());
 		assertWarnings(0, result.getWarnings());
-	}
-
-	private static void assertWarnings(int expectedSize, List<String> warnings) {
-		assertEquals(warnings.toString(), expectedSize, warnings.size());
 	}
 }

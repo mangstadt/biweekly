@@ -1,7 +1,7 @@
 package biweekly.io.text;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static biweekly.util.TestUtils.assertRegex;
+import static biweekly.util.TestUtils.assertWarnings;
 
 import java.io.StringWriter;
 import java.util.List;
@@ -501,14 +501,5 @@ public class ICalWriterTest {
 
 	private class Party extends ICalComponent {
 		//empty
-	}
-
-	private static void assertRegex(String regex, String string) {
-		Pattern p = Pattern.compile(regex);
-		assertTrue(string, p.matcher(string).matches());
-	}
-
-	private static void assertWarnings(int expectedSize, List<String> warnings) {
-		assertEquals(warnings.toString(), expectedSize, warnings.size());
 	}
 }

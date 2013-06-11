@@ -1,5 +1,6 @@
 package biweekly;
 
+import static biweekly.util.TestUtils.assertRegex;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -8,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.junit.Test;
 
@@ -315,10 +315,5 @@ public class BiweeklyTest {
 
 	class Party extends ICalComponent {
 		//empty
-	}
-
-	private static void assertRegex(String regex, String string) {
-		Pattern p = Pattern.compile(regex);
-		assertTrue(string, p.matcher(string).matches());
 	}
 }

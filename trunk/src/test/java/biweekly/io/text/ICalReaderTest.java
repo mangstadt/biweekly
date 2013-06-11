@@ -1,5 +1,6 @@
 package biweekly.io.text;
 
+import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -723,9 +724,5 @@ public class ICalReaderTest {
 		public MyVEvent newInstance() {
 			return new MyVEvent();
 		}
-	}
-
-	private static void assertWarnings(int expectedSize, List<String> warnings) {
-		assertEquals(warnings.toString(), expectedSize, warnings.size());
 	}
 }
