@@ -37,6 +37,14 @@ public class DateStart extends DateOrDateTimeProperty {
 	/**
 	 * Creates a start date property.
 	 * @param startDate the start date
+	 */
+	public DateStart(Date startDate) {
+		this(startDate, true);
+	}
+
+	/**
+	 * Creates a start date property.
+	 * @param startDate the start date
 	 * @param hasTime true to include the time component of the date, false not
 	 * to
 	 */

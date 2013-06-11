@@ -36,6 +36,14 @@ public class DateEnd extends DateOrDateTimeProperty {
 	/**
 	 * Creates a date end property.
 	 * @param endDate the end date
+	 */
+	public DateEnd(Date endDate) {
+		this(endDate, true);
+	}
+
+	/**
+	 * Creates a date end property.
+	 * @param endDate the end date
 	 * @param hasTime true to include the time component of the date, false not
 	 * to
 	 */

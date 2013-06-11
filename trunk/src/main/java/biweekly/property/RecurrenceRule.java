@@ -6,7 +6,6 @@ import java.util.List;
 
 import biweekly.component.ICalComponent;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -54,6 +53,14 @@ public class RecurrenceRule extends ICalProperty {
 	private List<DayOfWeek> byDay = new ArrayList<DayOfWeek>();
 	private List<Integer> byDayPrefixes = new ArrayList<Integer>();
 	private DayOfWeek workweekStarts;
+
+	/**
+	 * Creates a new recurrence rule property.
+	 * @param frequency the frequency of the recurrence rule
+	 */
+	public RecurrenceRule(Frequency frequency) {
+		setFrequency(frequency);
+	}
 
 	public Frequency getFrequency() {
 		return frequency;

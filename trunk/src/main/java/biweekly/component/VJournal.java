@@ -242,6 +242,18 @@ public class VJournal extends ICalComponent {
 	}
 
 	/**
+	 * Sets the date that the journal entry starts.
+	 * @param dateStart the start date or null to remove
+	 * @return the property that was created
+	 * @see "RFC 5545 p.97-8"
+	 */
+	public DateStart setDateStart(Date dateStart) {
+		DateStart prop = (dateStart == null) ? null : new DateStart(dateStart);
+		setDateStart(prop);
+		return prop;
+	}
+
+	/**
 	 * Gets the date/time that the journal entry was last changed.
 	 * @return the last modified date or null if not set
 	 * @see "RFC 5545 p.138"
@@ -324,6 +336,20 @@ public class VJournal extends ICalComponent {
 	 */
 	public void setRecurrenceId(RecurrenceId recurrenceId) {
 		setProperty(RecurrenceId.class, recurrenceId);
+	}
+
+	/**
+	 * Sets the original value of the {@link DateStart} property if the journal
+	 * entry is recurring and has been modified. Used in conjunction with the
+	 * {@link Uid} and {@link Sequence} properties to uniquely identify a
+	 * recurrence instance.
+	 * @param originalStartDate the original start date or null to remove
+	 * @see "RFC 5545 p.112-4"
+	 */
+	public RecurrenceId setRecurrenceId(Date originalStartDate) {
+		RecurrenceId prop = (originalStartDate == null) ? null : new RecurrenceId(originalStartDate);
+		setRecurrenceId(prop);
+		return prop;
 	}
 
 	/**
