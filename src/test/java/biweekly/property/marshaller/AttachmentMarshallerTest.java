@@ -43,12 +43,13 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  * @author Michael Angstadt
  */
 public class AttachmentMarshallerTest {
+	private final AttachmentMarshaller marshaller = new AttachmentMarshaller();
+
 	@Test
 	public void prepareParameters_uri() {
 		Attachment prop = new Attachment("image/png", "http://example.com/image.png");
-		AttachmentMarshaller m = new AttachmentMarshaller();
 
-		ICalParameters params = m.prepareParameters(prop);
+		ICalParameters params = marshaller.prepareParameters(prop);
 
 		assertEquals("image/png", params.getFormatType());
 		assertNull(params.getValue());
@@ -58,9 +59,8 @@ public class AttachmentMarshallerTest {
 	@Test
 	public void prepareParameters_data() {
 		Attachment prop = new Attachment("image/png", "data".getBytes());
-		AttachmentMarshaller m = new AttachmentMarshaller();
 
-		ICalParameters params = m.prepareParameters(prop);
+		ICalParameters params = marshaller.prepareParameters(prop);
 
 		assertEquals("image/png", params.getFormatType());
 		assertEquals(Value.BINARY, params.getValue());
@@ -70,9 +70,8 @@ public class AttachmentMarshallerTest {
 	@Test
 	public void writeText_uri() {
 		Attachment prop = new Attachment("image/png", "http://example.com/image.png");
-		AttachmentMarshaller m = new AttachmentMarshaller();
 
-		String actual = m.writeText(prop);
+		String actual = marshaller.writeText(prop);
 
 		String expected = "http://example.com/image.png";
 		assertEquals(expected, actual);
@@ -81,9 +80,8 @@ public class AttachmentMarshallerTest {
 	@Test
 	public void writeText_data() {
 		Attachment prop = new Attachment("image/png", "data".getBytes());
-		AttachmentMarshaller m = new AttachmentMarshaller();
 
-		String actual = m.writeText(prop);
+		String actual = marshaller.writeText(prop);
 
 		String expected = Base64.encodeBase64String("data".getBytes());
 		assertEquals(expected, actual);
@@ -93,9 +91,8 @@ public class AttachmentMarshallerTest {
 	public void parseText_uri() {
 		String value = "http://example.com/image.png";
 		ICalParameters params = new ICalParameters();
-		AttachmentMarshaller m = new AttachmentMarshaller();
 
-		Result<Attachment> result = m.parseText(value, params);
+		Result<Attachment> result = marshaller.parseText(value, params);
 
 		assertEquals("http://example.com/image.png", result.getValue().getUri());
 		assertNull(result.getValue().getData());
@@ -106,25 +103,24 @@ public class AttachmentMarshallerTest {
 	public void parseText_data() {
 		String value = Base64.encodeBase64String("data".getBytes());
 		ICalParameters params = new ICalParameters();
-		AttachmentMarshaller m = new AttachmentMarshaller();
 
 		params.setValue(Value.BINARY);
 		params.setEncoding(null);
-		Result<Attachment> result = m.parseText(value, params);
+		Result<Attachment> result = marshaller.parseText(value, params);
 		assertNull(result.getValue().getUri());
 		assertArrayEquals("data".getBytes(), result.getValue().getData());
 		assertWarnings(0, result.getWarnings());
 
 		params.setValue(null);
 		params.setEncoding(Encoding.BASE64);
-		result = m.parseText(value, params);
+		result = marshaller.parseText(value, params);
 		assertNull(result.getValue().getUri());
 		assertArrayEquals("data".getBytes(), result.getValue().getData());
 		assertWarnings(0, result.getWarnings());
 
 		params.setValue(Value.BINARY);
 		params.setEncoding(Encoding.BASE64);
-		result = m.parseText(value, params);
+		result = marshaller.parseText(value, params);
 		assertNull(result.getValue().getUri());
 		assertArrayEquals("data".getBytes(), result.getValue().getData());
 		assertWarnings(0, result.getWarnings());
@@ -132,7 +128,7 @@ public class AttachmentMarshallerTest {
 		//treats base64 as a URI if no parameters are set
 		params.setValue(null);
 		params.setEncoding(null);
-		result = m.parseText(value, params);
+		result = marshaller.parseText(value, params);
 		assertEquals(Base64.encodeBase64String("data".getBytes()), result.getValue().getUri());
 		assertNull(result.getValue().getData());
 		assertWarnings(0, result.getWarnings());
