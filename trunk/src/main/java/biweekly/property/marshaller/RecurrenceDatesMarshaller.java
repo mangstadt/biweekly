@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.RecurrenceDates;
@@ -84,6 +83,12 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 					continue;
 				}
 
+				if (first) {
+					first = false;
+				} else {
+					sb.append(',');
+				}
+
 				if (period.getStartDate() != null) {
 					sb.append(ICalDateFormatter.format(period.getStartDate(), ISOFormat.UTC_TIME_BASIC));
 				}
@@ -95,8 +100,6 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 				} else if (period.getDuration() != null) {
 					sb.append(period.getDuration());
 				}
-
-				sb.append(period);
 			}
 		}
 
@@ -108,7 +111,43 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 		String split[] = parseList(value);
 
 		Value valueParam = parameters.getValue();
-		if (valueParam == null || valueParam == Value.DATE || valueParam == Value.DATE_TIME) {
+		if (valueParam == Value.PERIOD) {
+			//parse as periods
+			List<Period> periods = new ArrayList<Period>(split.length);
+			for (String timePeriodStr : split) {
+				String timePeriodStrSplit[] = timePeriodStr.split("/");
+
+				if (timePeriodStrSplit.length < 2) {
+					warnings.add("No end date or duration found, skipping time period: " + timePeriodStr);
+					continue;
+				}
+
+				String startStr = timePeriodStrSplit[0];
+				Date start;
+				try {
+					start = ICalDateFormatter.parse(startStr);
+				} catch (IllegalArgumentException e) {
+					warnings.add("Could not parse start date, skipping time period: " + timePeriodStr);
+					continue;
+				}
+
+				String endStr = timePeriodStrSplit[1];
+				try {
+					Date end = ICalDateFormatter.parse(endStr);
+					periods.add(new Period(start, end));
+				} catch (IllegalArgumentException e) {
+					//must be a duration
+					try {
+						Duration duration = Duration.parse(endStr);
+						periods.add(new Period(start, duration));
+					} catch (IllegalArgumentException e2) {
+						warnings.add("Could not parse end date or duration value, skipping time period: " + timePeriodStr);
+						continue;
+					}
+				}
+			}
+			return new RecurrenceDates(periods);
+		} else {
 			//parse as dates
 			boolean hasTime = (valueParam == null || valueParam == Value.DATE_TIME);
 			List<Date> dates = new ArrayList<Date>(split.length);
@@ -116,47 +155,10 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 				try {
 					dates.add(ICalDateFormatter.parse(s));
 				} catch (IllegalArgumentException e) {
-					throw new CannotParseException("Could not parse date.");
+					warnings.add("Skipping unparsable date: " + s);
 				}
 			}
 			return new RecurrenceDates(dates, hasTime);
-		} else {
-			//parse as periods
-			List<Period> periods = new ArrayList<Period>(split.length);
-			for (String s : split) {
-				String timePeriodStrSplit[] = s.split("/");
-
-				String startStr = timePeriodStrSplit[0];
-				Date start;
-				try {
-					start = ICalDateFormatter.parse(startStr);
-				} catch (IllegalArgumentException e) {
-					throw new CannotParseException("Could not parse start date.");
-				}
-
-				Period period = null;
-				if (timePeriodStrSplit.length > 1) {
-					String endStr = timePeriodStrSplit[1];
-					try {
-						Date end = ICalDateFormatter.parse(endStr);
-						period = new Period(start, end);
-					} catch (IllegalArgumentException e) {
-						//must be a duration
-						try {
-							Duration duration = Duration.parse(endStr);
-							period = new Period(start, duration);
-						} catch (IllegalArgumentException e2) {
-							throw new CannotParseException("Could not parse duration value.");
-						}
-					}
-				} else {
-					warnings.add("No end date or duration found.");
-					period = new Period(start, (Date) null);
-				}
-
-				periods.add(period);
-			}
-			return new RecurrenceDates(periods);
 		}
 	}
 }
