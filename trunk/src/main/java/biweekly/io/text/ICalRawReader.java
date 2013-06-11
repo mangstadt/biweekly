@@ -6,7 +6,6 @@ import java.io.Reader;
 import biweekly.ICalException;
 import biweekly.parameter.ICalParameters;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -48,6 +47,14 @@ public class ICalRawReader {
 	 */
 	public ICalRawReader(Reader reader) {
 		this.reader = new FoldedLineReader(reader);
+	}
+
+	/**
+	 * Gets the line number of the last line that was read.
+	 * @return the line number
+	 */
+	public int getLineNum() {
+		return reader.getLineNum();
 	}
 
 	/**

@@ -37,6 +37,7 @@ import java.io.StringReader;
 public class FoldedLineReader extends BufferedReader {
 	private String lastLine;
 	private boolean singleSpaceFolding = true;
+	private int lastLineNum = 0, lineCount = 0;
 
 	/**
 	 * Creates a new folded line reader.
@@ -75,6 +76,14 @@ public class FoldedLineReader extends BufferedReader {
 	}
 
 	/**
+	 * Gets the starting line number of the last unfolded line that was read.
+	 * @return the line number
+	 */
+	public int getLineNum() {
+		return lastLineNum;
+	}
+
+	/**
 	 * Reads the next non-empty line.
 	 * @return the next non-empty line or null of EOF
 	 * @throws IOException
@@ -83,6 +92,9 @@ public class FoldedLineReader extends BufferedReader {
 		String line;
 		do {
 			line = super.readLine();
+			if (line != null) {
+				lineCount++;
+			}
 		} while (line != null && line.length() == 0);
 		return line;
 	}
@@ -101,6 +113,7 @@ public class FoldedLineReader extends BufferedReader {
 		}
 
 		//long lines are folded
+		lastLineNum = lineCount;
 		StringBuilder wholeLineSb = new StringBuilder(wholeLine);
 		while (true) {
 			String line = readNonEmptyLine();
