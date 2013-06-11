@@ -2,8 +2,6 @@ package biweekly.property.marshaller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -47,28 +45,6 @@ import biweekly.util.ListMultimap;
  * @author Michael Angstadt
  */
 public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceRule> {
-	private static final Map<DayOfWeek, String> dayOfWeekStrings;
-	static {
-		Map<DayOfWeek, String> m = new HashMap<DayOfWeek, String>();
-		m.put(DayOfWeek.MONDAY, "MO");
-		m.put(DayOfWeek.TUESDAY, "TU");
-		m.put(DayOfWeek.WEDNESDAY, "WE");
-		m.put(DayOfWeek.THURSDAY, "TH");
-		m.put(DayOfWeek.FRIDAY, "FR");
-		m.put(DayOfWeek.SATURDAY, "SA");
-		m.put(DayOfWeek.SUNDAY, "SU");
-		dayOfWeekStrings = Collections.unmodifiableMap(m);
-	}
-
-	private static final Map<String, DayOfWeek> dayOfWeekEnums;
-	static {
-		Map<String, DayOfWeek> m = new HashMap<String, DayOfWeek>();
-		for (Map.Entry<DayOfWeek, String> entry : dayOfWeekStrings.entrySet()) {
-			m.put(entry.getValue(), entry.getKey());
-		}
-		dayOfWeekEnums = Collections.unmodifiableMap(m);
-	}
-
 	public RecurrenceRuleMarshaller() {
 		super(RecurrenceRule.class, "RRULE");
 	}
@@ -103,7 +79,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 			DayOfWeek day = property.getByDay().get(i);
 			Integer prefix = property.getByDayPrefixes().get(i);
 
-			String value = dayOfWeekStrings.get(day);
+			String value = day.getAbbr();
 			if (prefix != null) {
 				value = prefix + value;
 			}
@@ -117,7 +93,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 		addIntegerListComponent(components, "BYSETPOS", property.getBySetPos());
 
 		if (property.getWorkweekStarts() != null) {
-			components.put("WKST", dayOfWeekStrings.get(property.getWorkweekStarts()));
+			components.put("WKST", property.getWorkweekStarts().getAbbr());
 		}
 
 		StringBuilder sb = new StringBuilder();
@@ -225,11 +201,13 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 					String prefixStr = m.group(1);
 					String dayStr = m.group(2);
 
-					Integer prefix = (prefixStr == null) ? null : Integer.valueOf(prefixStr);
-					DayOfWeek day = dayOfWeekEnums.get(dayStr.toUpperCase());
+					DayOfWeek day = DayOfWeek.valueOfAbbr(dayStr);
 					if (day == null) {
-						warnings.add("Invalid day string: " + dayStr);
+						warnings.add("Ignoring invalid day string: " + dayStr);
+						continue;
 					}
+
+					Integer prefix = (prefixStr == null) ? null : Integer.valueOf(prefixStr);
 					property.addByDay(prefix, day);
 				} else {
 					//should never reach here due to nature of regular expression
@@ -265,7 +243,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 
 		first = components.first("WKST");
 		if (first != null) {
-			DayOfWeek day = dayOfWeekEnums.get(first.toUpperCase());
+			DayOfWeek day = DayOfWeek.valueOfAbbr(first);
 			if (day == null) {
 				warnings.add("Invalid day string: " + first);
 			} else {

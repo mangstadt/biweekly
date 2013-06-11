@@ -215,6 +215,34 @@ public class RecurrenceRule extends ICalProperty {
 	 * @author Michael Angstadt
 	 */
 	public static enum DayOfWeek {
-		MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
+		MONDAY("MO"), TUESDAY("TU"), WEDNESDAY("WE"), THURSDAY("TH"), FRIDAY("FR"), SATURDAY("SA"), SUNDAY("SU");
+
+		private final String abbr;
+
+		private DayOfWeek(String abbr) {
+			this.abbr = abbr;
+		}
+
+		/**
+		 * Gets the day's abbreviation.
+		 * @return the abbreviation (e.g. "MO" for Monday)
+		 */
+		public String getAbbr() {
+			return abbr;
+		}
+
+		/**
+		 * Gets a day by its abbreviation.
+		 * @param abbr the abbreviation (case-insensitive, e.g. "MO" for Monday)
+		 * @return the day or null if not found
+		 */
+		public static DayOfWeek valueOfAbbr(String abbr) {
+			for (DayOfWeek day : values()) {
+				if (day.abbr.equalsIgnoreCase(abbr)) {
+					return day;
+				}
+			}
+			return null;
+		}
 	}
 }
