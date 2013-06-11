@@ -9,7 +9,6 @@ import biweekly.parameter.FreeBusyType;
 import biweekly.util.Duration;
 import biweekly.util.Period;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -38,7 +37,8 @@ import biweekly.util.Period;
 /**
  * Defines a person's availability over certain time periods (for example,
  * "free" between 1pm-3pm and 4pm-5pm). Note that this property can contain
- * multiple time periods, but only one availability type (e.g. "busy").
+ * multiple time periods, but only one availability type may be defined (e.g.
+ * "busy" or "free").
  * @author Michael Angstadt
  * @see "RFC 5545 p.100-1"
  */
@@ -73,7 +73,7 @@ public class FreeBusy extends ICalProperty {
 
 	/**
 	 * Gets the person's status over these time periods. If not set, the user
-	 * should be considered "BUSY" during these time periods.
+	 * should be considered "busy" during these time periods.
 	 * @return the type or null if not set
 	 */
 	public FreeBusyType getType() {
@@ -82,7 +82,7 @@ public class FreeBusy extends ICalProperty {
 
 	/**
 	 * Sets the person's status over these time periods. If not set, the user
-	 * should be considered "BUSY" during these time periods.
+	 * should be considered "busy" during these time periods.
 	 * @param fbType the type or null to remove
 	 */
 	public void setType(FreeBusyType fbType) {
