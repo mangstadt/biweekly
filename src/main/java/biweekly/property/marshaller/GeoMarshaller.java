@@ -2,6 +2,7 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
+import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Geo;
 import biweekly.util.ICalFloatFormatter;
@@ -62,27 +63,27 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 	protected Geo _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		String split[] = value.split(";");
 
-		Geo geo = new Geo();
-
-		if (split.length != 2) {
-			warnings.add("Cannot parse value: " + value);
+		if (split.length < 2) {
+			throw new CannotParseException("Could not parse value.");
 		}
 
 		String latitudeStr = split[0];
 		String longitudeStr = split[1];
 
+		Double latitude;
 		try {
-			geo.setLatitude(Double.valueOf(latitudeStr));
+			latitude = Double.valueOf(latitudeStr);
 		} catch (NumberFormatException e) {
-			warnings.add("Could not parse latitude: " + latitudeStr);
+			throw new CannotParseException("Could not parse latitude: " + latitudeStr);
 		}
 
+		Double longitude;
 		try {
-			geo.setLongitude(Double.valueOf(longitudeStr));
+			longitude = Double.valueOf(longitudeStr);
 		} catch (NumberFormatException e) {
-			warnings.add("Could not parse longtude: " + longitudeStr);
+			throw new CannotParseException("Could not parse longtude: " + longitudeStr);
 		}
 
-		return geo;
+		return new Geo(latitude, longitude);
 	}
 }

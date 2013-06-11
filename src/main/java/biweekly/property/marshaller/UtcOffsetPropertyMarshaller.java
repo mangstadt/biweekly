@@ -2,10 +2,10 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
+import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.UtcOffsetProperty;
 import biweekly.util.ICalDateFormatter;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -60,15 +60,14 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
-		Integer hourOffset = null, minuteOffset = null;
 		try {
 			int[] offset = ICalDateFormatter.parseTimeZone(value);
-			hourOffset = offset[0];
-			minuteOffset = offset[1];
+			Integer hourOffset = offset[0];
+			Integer minuteOffset = offset[1];
+			return newInstance(hourOffset, minuteOffset);
 		} catch (IllegalArgumentException e) {
-			warnings.add("Could not parse offset string: " + value);
+			throw new CannotParseException("Could not parse offset string.");
 		}
-		return newInstance(hourOffset, minuteOffset);
 	}
 
 	protected abstract T newInstance(Integer hourOffset, Integer minuteOffset);

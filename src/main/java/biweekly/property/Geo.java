@@ -4,7 +4,6 @@ import java.util.List;
 
 import biweekly.component.ICalComponent;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -38,14 +37,6 @@ import biweekly.component.ICalComponent;
 public class Geo extends ICalProperty {
 	private Double latitude;
 	private Double longitude;
-
-	/**
-	 * Creates a new geo property. Use of this constructor is discouraged and
-	 * may put the property in an inconsistent state.
-	 */
-	public Geo() {
-		//empty
-	}
 
 	/**
 	 * Creates a new geo property.
