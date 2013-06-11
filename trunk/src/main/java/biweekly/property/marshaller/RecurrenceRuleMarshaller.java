@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RecurrenceRule;
 import biweekly.property.RecurrenceRule.DayOfWeek;
@@ -169,7 +168,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 		if (first != null) {
 			try {
 				property.setFrequency(Frequency.valueOf(first.toUpperCase()));
-			} catch (Exception e) {
+			} catch (IllegalArgumentException e) {
 				warnings.add("Invalid frequency value: " + first);
 			}
 		}
@@ -180,7 +179,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 				boolean hasTime = first.contains("T");
 				property.setUntil(ICalDateFormatter.parse(first), hasTime);
 			} catch (IllegalArgumentException e) {
-				throw new CannotParseException("Could not parse UNTIL date.");
+				warnings.add("Could not parse UNTIL date: " + first);
 			}
 		}
 
@@ -189,7 +188,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 			try {
 				property.setCount(Integer.valueOf(first));
 			} catch (NumberFormatException e) {
-				warnings.add("Could not parse integer: " + first);
+				warnings.add("Could not parse COUNT integer: " + first);
 			}
 		}
 
@@ -198,23 +197,23 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 			try {
 				property.setInterval(Integer.valueOf(first));
 			} catch (NumberFormatException e) {
-				warnings.add("Could not parse integer: " + first);
+				warnings.add("Could not parse INTERVAL integer: " + first);
 			}
 		}
 
 		values = components.get("BYSECOND");
 		if (!values.isEmpty()) {
-			property.setBySecond(toIntegerList(values, warnings));
+			property.setBySecond(toIntegerList("BYSECOND", values, warnings));
 		}
 
 		values = components.get("BYMINUTE");
 		if (!values.isEmpty()) {
-			property.setByMinute(toIntegerList(values, warnings));
+			property.setByMinute(toIntegerList("BYMINUTE", values, warnings));
 		}
 
 		values = components.get("BYHOUR");
 		if (!values.isEmpty()) {
-			property.setByHour(toIntegerList(values, warnings));
+			property.setByHour(toIntegerList("BYHOUR", values, warnings));
 		}
 
 		values = components.get("BYDAY");
@@ -241,27 +240,27 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 
 		values = components.get("BYMONTHDAY");
 		if (!values.isEmpty()) {
-			property.setByMonthDay(toIntegerList(values, warnings));
+			property.setByMonthDay(toIntegerList("BYMONTHDAY", values, warnings));
 		}
 
 		values = components.get("BYYEARDAY");
 		if (!values.isEmpty()) {
-			property.setByYearDay(toIntegerList(values, warnings));
+			property.setByYearDay(toIntegerList("BYYEARDAY", values, warnings));
 		}
 
 		values = components.get("BYWEEKNO");
 		if (!values.isEmpty()) {
-			property.setByWeekNo(toIntegerList(values, warnings));
+			property.setByWeekNo(toIntegerList("BYWEEKNO", values, warnings));
 		}
 
 		values = components.get("BYMONTH");
 		if (!values.isEmpty()) {
-			property.setByMonth(toIntegerList(values, warnings));
+			property.setByMonth(toIntegerList("BYMONTH", values, warnings));
 		}
 
 		values = components.get("BYSETPOS");
 		if (!values.isEmpty()) {
-			property.setBySetPos(toIntegerList(values, warnings));
+			property.setBySetPos(toIntegerList("BYSETPOS", values, warnings));
 		}
 
 		first = components.first("WKST");
@@ -277,15 +276,17 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 		return property;
 	}
 
-	private List<Integer> toIntegerList(List<String> values, List<String> warnings) {
+	private List<Integer> toIntegerList(String name, List<String> values, List<String> warnings) {
 		List<Integer> list = new ArrayList<Integer>(values.size());
-		try {
-			for (String value : values) {
+
+		for (String value : values) {
+			try {
 				list.add(Integer.valueOf(value));
+			} catch (NumberFormatException e) {
+				warnings.add("Ignoring non-numeric value found in " + name + ": " + value);
 			}
-		} catch (NumberFormatException e) {
-			warnings.add("Non-numeric value found in list: " + values);
 		}
+
 		return list;
 	}
 

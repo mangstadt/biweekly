@@ -2,10 +2,9 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
-import biweekly.io.SkipMeException;
+import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.IntegerProperty;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -54,7 +53,7 @@ public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> exten
 			Integer intValue = Integer.valueOf(value);
 			return newInstance(intValue);
 		} catch (NumberFormatException e) {
-			throw new SkipMeException("Could not parse integer value: " + value);
+			throw new CannotParseException("Could not parse integer value.");
 		}
 	}
 
