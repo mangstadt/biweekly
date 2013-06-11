@@ -5,7 +5,6 @@ import java.util.List;
 
 import biweekly.component.ICalComponent;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -58,7 +57,7 @@ public class DateOrDateTimeProperty extends ICalProperty {
 	}
 
 	/**
-	 * Sets the dat.
+	 * Sets the date.
 	 * @param value the date
 	 * @param hasTime true if the date has a time component, false if it is
 	 * strictly a date
