@@ -4,7 +4,6 @@ import java.util.Date;
 
 import biweekly.parameter.Range;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -39,13 +38,21 @@ import biweekly.parameter.Range;
  */
 public class RecurrenceId extends DateOrDateTimeProperty {
 	/**
-	 * Creates a date end property.
-	 * @param endDate the end date
+	 * Creates a recurrence ID property.
+	 * @param originalStartDate the original start date
+	 */
+	public RecurrenceId(Date originalStartDate) {
+		this(originalStartDate, true);
+	}
+
+	/**
+	 * Creates a recurrence ID property.
+	 * @param originalStartDate the original start date
 	 * @param hasTime true to include the time component of the date, false not
 	 * to
 	 */
-	public RecurrenceId(Date endDate, boolean hasTime) {
-		super(endDate, hasTime);
+	public RecurrenceId(Date originalStartDate, boolean hasTime) {
+		super(originalStartDate, hasTime);
 	}
 
 	@Override

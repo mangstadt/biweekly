@@ -172,8 +172,8 @@ public class VEvent extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date that the event starts (required if no METHOD property is
-	 * defined).
+	 * Sets the date that the event starts (required if no {@link Method}
+	 * property is defined).
 	 * @param dateStart the start date or null to remove
 	 * @see "RFC 5545 p.97-8"
 	 */
@@ -181,21 +181,18 @@ public class VEvent extends ICalComponent {
 		setProperty(DateStart.class, dateStart);
 	}
 
-	//optional
-	//	private Classification classification;
-	//	private Created created;
-	//	private Description description;
-	//	private Geo geo;
-	//	private LastModified lastModified;
-	//	private Location location;
-	//	private Organizer organizer;
-	//	private Priority priority;
-	//	private Sequence sequence;
-	//	private Status status;
-	//  private Summary summary;
-	//	private Transparency transparency;
-	//	private Url url;
-	//	private RecurrenceId recurrenceId;
+	/**
+	 * Sets the date that the event starts (required if no {@link Method}
+	 * property is defined).
+	 * @param dateStart the start date or null to remove
+	 * @return the property that was created
+	 * @see "RFC 5545 p.97-8"
+	 */
+	public DateStart setDateStart(Date dateStart) {
+		DateStart prop = (dateStart == null) ? null : new DateStart(dateStart);
+		setDateStart(prop);
+		return prop;
+	}
 
 	/**
 	 * Gets the level of sensitivity of the event data. If not specified, the
@@ -490,6 +487,20 @@ public class VEvent extends ICalComponent {
 	}
 
 	/**
+	 * Sets the original value of the {@link DateStart} property if the event is
+	 * recurring and has been modified. Used in conjunction with the {@link Uid}
+	 * and {@link Sequence} properties to uniquely identify a recurrence
+	 * instance.
+	 * @param originalStartDate the original start date or null to remove
+	 * @see "RFC 5545 p.112-4"
+	 */
+	public RecurrenceId setRecurrenceId(Date originalStartDate) {
+		RecurrenceId prop = (originalStartDate == null) ? null : new RecurrenceId(originalStartDate);
+		setRecurrenceId(prop);
+		return prop;
+	}
+
+	/**
 	 * Gets a URL to a resource that contains additional information about the
 	 * event.
 	 * @return the URL or null if not set
@@ -554,11 +565,24 @@ public class VEvent extends ICalComponent {
 	/**
 	 * Sets the date that the event ends. This must NOT be set if a
 	 * {@link DurationProperty} is defined.
-	 * @param dateEnd the end date or null if not set
+	 * @param dateEnd the end date or null to remove
 	 * @see "RFC 5545 95-6"
 	 */
 	public void setDateEnd(DateEnd dateEnd) {
 		setProperty(DateEnd.class, dateEnd);
+	}
+
+	/**
+	 * Sets the date that the event ends. This must NOT be set if a
+	 * {@link DurationProperty} is defined.
+	 * @param dateEnd the end date or null to remove
+	 * @return the property that was created
+	 * @see "RFC 5545 95-6"
+	 */
+	public DateEnd setDateEnd(Date dateEnd) {
+		DateEnd prop = (dateEnd == null) ? null : new DateEnd(dateEnd);
+		setDateEnd(prop);
+		return prop;
 	}
 
 	/**

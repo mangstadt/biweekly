@@ -1,5 +1,6 @@
 package biweekly.component;
 
+import java.util.Date;
 import java.util.List;
 
 import biweekly.property.Comment;
@@ -10,7 +11,6 @@ import biweekly.property.RecurrenceRule;
 import biweekly.property.TimezoneName;
 import biweekly.property.TimezoneOffsetFrom;
 import biweekly.property.TimezoneOffsetTo;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -61,6 +61,18 @@ public abstract class Observance extends ICalComponent {
 	 */
 	public void setDateStart(DateStart dateStart) {
 		setProperty(DateStart.class, dateStart);
+	}
+
+	/**
+	 * Sets the date that the timezone starts.
+	 * @param dateStart the start date or null to remove
+	 * @return the property that was created
+	 * @see "RFC 5545 p.97-8"
+	 */
+	public DateStart setDateStart(Date dateStart) {
+		DateStart prop = (dateStart == null) ? null : new DateStart(dateStart);
+		setDateStart(prop);
+		return prop;
 	}
 
 	/**

@@ -310,6 +310,18 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
+	 * Sets the date that the todo starts.
+	 * @param dateStart the start date or null to remove
+	 * @return the property that was created
+	 * @see "RFC 5545 p.97-8"
+	 */
+	public DateStart setDateStart(Date dateStart) {
+		DateStart prop = (dateStart == null) ? null : new DateStart(dateStart);
+		setDateStart(prop);
+		return prop;
+	}
+
+	/**
 	 * Gets a set of geographical coordinates.
 	 * @return the geographical coordinates or null if not set
 	 * @see "RFC 5545 p.85-7"
@@ -480,7 +492,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the original value of the {@link DateStart} property if the event is
+	 * Gets the original value of the {@link DateStart} property if the todo is
 	 * recurring and has been modified. Used in conjunction with the {@link Uid}
 	 * and {@link Sequence} properties to uniquely identify a recurrence
 	 * instance.
@@ -492,7 +504,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the original value of the {@link DateStart} property if the event is
+	 * Sets the original value of the {@link DateStart} property if the todo is
 	 * recurring and has been modified. Used in conjunction with the {@link Uid}
 	 * and {@link Sequence} properties to uniquely identify a recurrence
 	 * instance.
@@ -501,6 +513,20 @@ public class VTodo extends ICalComponent {
 	 */
 	public void setRecurrenceId(RecurrenceId recurrenceId) {
 		setProperty(RecurrenceId.class, recurrenceId);
+	}
+
+	/**
+	 * Sets the original value of the {@link DateStart} property if the todo is
+	 * recurring and has been modified. Used in conjunction with the {@link Uid}
+	 * and {@link Sequence} properties to uniquely identify a recurrence
+	 * instance.
+	 * @param originalStartDate the original start date or null to remove
+	 * @see "RFC 5545 p.112-4"
+	 */
+	public RecurrenceId setRecurrenceId(Date originalStartDate) {
+		RecurrenceId prop = (originalStartDate == null) ? null : new RecurrenceId(originalStartDate);
+		setRecurrenceId(prop);
+		return prop;
 	}
 
 	/**
@@ -676,6 +702,19 @@ public class VTodo extends ICalComponent {
 	 */
 	public void setDateDue(DateDue dateDue) {
 		setProperty(DateDue.class, dateDue);
+	}
+
+	/**
+	 * Sets the date that a todo is due by. This must NOT be set if a
+	 * {@link DurationProperty} is defined.
+	 * @param dateDue the due date or null to remove
+	 * @return the property that was created
+	 * @see "RFC 5545 96-7"
+	 */
+	public DateDue setDateDue(Date dateDue) {
+		DateDue prop = (dateDue == null) ? null : new DateDue(dateDue);
+		setDateDue(prop);
+		return prop;
 	}
 
 	/**

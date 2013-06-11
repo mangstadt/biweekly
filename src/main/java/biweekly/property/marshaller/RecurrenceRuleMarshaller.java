@@ -160,7 +160,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 			components.putAll(name.toUpperCase(), Arrays.asList(values));
 		}
 
-		RecurrenceRule property = new RecurrenceRule();
+		RecurrenceRule property = new RecurrenceRule(null);
 		String first;
 		List<String> values;
 

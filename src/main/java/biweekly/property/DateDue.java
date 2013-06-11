@@ -36,6 +36,14 @@ public class DateDue extends DateOrDateTimeProperty {
 	/**
 	 * Creates a due date property.
 	 * @param dueDate the due date
+	 */
+	public DateDue(Date dueDate) {
+		this(dueDate, true);
+	}
+
+	/**
+	 * Creates a due date property.
+	 * @param dueDate the due date
 	 * @param hasTime true to include the time component of the date, false not
 	 * to
 	 */
