@@ -73,6 +73,7 @@ public class RecurrenceRuleMarshallerTest {
 		prop.setByMinute(Arrays.asList(3, 4));
 		prop.setBySecond(Arrays.asList(58, 59));
 		prop.setBySetPos(Arrays.asList(7, 8, 9));
+		prop.setByWeekNo(Arrays.asList(1, 2));
 		prop.setCount(5);
 		prop.setInterval(10);
 		for (DayOfWeek day : DayOfWeek.values()) {
@@ -84,7 +85,7 @@ public class RecurrenceRuleMarshallerTest {
 		String actual = marshaller.writeText(prop);
 		List<String> split = Arrays.asList(actual.split(";"));
 
-		assertEquals(12, split.size());
+		assertEquals(13, split.size());
 		assertEquals("FREQ=WEEKLY", split.get(0));
 		assertTrue(actual, split.contains("BYYEARDAY=100,101"));
 		assertTrue(actual, split.contains("BYMONTHDAY=1,2"));
@@ -93,6 +94,7 @@ public class RecurrenceRuleMarshallerTest {
 		assertTrue(actual, split.contains("BYMINUTE=3,4"));
 		assertTrue(actual, split.contains("BYSECOND=58,59"));
 		assertTrue(actual, split.contains("BYSETPOS=7,8,9"));
+		assertTrue(actual, split.contains("BYWEEKNO=1,2"));
 		assertTrue(actual, split.contains("COUNT=5"));
 		assertTrue(actual, split.contains("INTERVAL=10"));
 		assertTrue(actual, split.contains("BYDAY=MO,TU,WE,TH,FR,SA,SU,5FR"));
@@ -109,6 +111,7 @@ public class RecurrenceRuleMarshallerTest {
 		prop.setByMinute(Arrays.asList(3));
 		prop.setBySecond(Arrays.asList(58));
 		prop.setBySetPos(Arrays.asList(7));
+		prop.setByWeekNo(Arrays.asList(1));
 		prop.setCount(5);
 		prop.setInterval(10);
 		prop.addByDay(DayOfWeek.FRIDAY);
@@ -117,7 +120,7 @@ public class RecurrenceRuleMarshallerTest {
 		String actual = marshaller.writeText(prop);
 		List<String> split = Arrays.asList(actual.split(";"));
 
-		assertEquals(12, split.size());
+		assertEquals(13, split.size());
 		assertEquals("FREQ=WEEKLY", split.get(0));
 		assertTrue(actual, split.contains("BYYEARDAY=100"));
 		assertTrue(actual, split.contains("BYMONTHDAY=1"));
@@ -126,6 +129,7 @@ public class RecurrenceRuleMarshallerTest {
 		assertTrue(actual, split.contains("BYMINUTE=3"));
 		assertTrue(actual, split.contains("BYSECOND=58"));
 		assertTrue(actual, split.contains("BYSETPOS=7"));
+		assertTrue(actual, split.contains("BYWEEKNO=1"));
 		assertTrue(actual, split.contains("COUNT=5"));
 		assertTrue(actual, split.contains("INTERVAL=10"));
 		assertTrue(actual, split.contains("BYDAY=FR"));
@@ -154,7 +158,7 @@ public class RecurrenceRuleMarshallerTest {
 
 	@Test
 	public void parseText() {
-		String value = "FREQ=WEEKLY;COUNT=5;INTERVAL=10;UNTIL=20130611T134302Z;BYSECOND=58,59;BYMINUTE=3,4;BYHOUR=1,2;BYDAY=MO,TU,WE,TH,FR,SA,SU,5FR;BYMONTHDAY=1,2;BYYEARDAY=100,101;BYMONTH=5,6;BYSETPOS=7,8,9;WKST=TU";
+		String value = "FREQ=WEEKLY;COUNT=5;INTERVAL=10;UNTIL=20130611T134302Z;BYSECOND=58,59;BYMINUTE=3,4;BYHOUR=1,2;BYDAY=MO,TU,WE,TH,FR,SA,SU,5FR;BYMONTHDAY=1,2;BYYEARDAY=100,101;BYWEEKNO=1,2;BYMONTH=5,6;BYSETPOS=7,8,9;WKST=TU";
 		ICalParameters params = new ICalParameters();
 
 		Result<RecurrenceRule> result = marshaller.parseText(value, params);
@@ -172,13 +176,14 @@ public class RecurrenceRuleMarshallerTest {
 		assertEquals(Arrays.asList(100, 101), prop.getByYearDay());
 		assertEquals(Arrays.asList(5, 6), prop.getByMonth());
 		assertEquals(Arrays.asList(7, 8, 9), prop.getBySetPos());
+		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
 		assertEquals(DayOfWeek.TUESDAY, prop.getWorkweekStarts());
 		assertWarnings(0, result.getWarnings());
 	}
 
 	@Test
 	public void parseText_invalid() {
-		String value = "FREQ=W;COUNT=a;INTERVAL=b;UNTIL=invalid;BYSECOND=58,c,59;BYMINUTE=3,d,4;BYHOUR=1,e,2;BYDAY=f,MO,TU,WE,TH,FR,SA,SU,5FR,fFR;BYMONTHDAY=1,g,2;BYYEARDAY=100,h,101;BYMONTH=5,i,6;BYSETPOS=7,8,j,9;WKST=k";
+		String value = "FREQ=W;COUNT=a;INTERVAL=b;UNTIL=invalid;BYSECOND=58,c,59;BYMINUTE=3,d,4;BYHOUR=1,e,2;BYDAY=f,MO,TU,WE,TH,FR,SA,SU,5FR,fFR;BYMONTHDAY=1,g,2;BYYEARDAY=100,h,101;BYWEEKNO=1,w,2;BYMONTH=5,i,6;BYSETPOS=7,8,j,9;WKST=k";
 		ICalParameters params = new ICalParameters();
 
 		Result<RecurrenceRule> result = marshaller.parseText(value, params);
@@ -196,8 +201,9 @@ public class RecurrenceRuleMarshallerTest {
 		assertEquals(Arrays.asList(100, 101), prop.getByYearDay());
 		assertEquals(Arrays.asList(5, 6), prop.getByMonth());
 		assertEquals(Arrays.asList(7, 8, 9), prop.getBySetPos());
+		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
 		assertNull(prop.getWorkweekStarts());
-		assertWarnings(14, result.getWarnings());
+		assertWarnings(15, result.getWarnings());
 	}
 
 	@Test
@@ -220,6 +226,7 @@ public class RecurrenceRuleMarshallerTest {
 		assertEquals(Arrays.asList(), prop.getByYearDay());
 		assertEquals(Arrays.asList(), prop.getByMonth());
 		assertEquals(Arrays.asList(), prop.getBySetPos());
+		assertEquals(Arrays.asList(), prop.getByWeekNo());
 		assertNull(prop.getWorkweekStarts());
 		assertWarnings(1, result.getWarnings());
 	}
