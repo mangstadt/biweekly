@@ -5,8 +5,6 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import biweekly.io.text.FoldedLineReader;
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -37,29 +35,61 @@ import biweekly.io.text.FoldedLineReader;
  */
 public class FoldedLineReaderTest {
 	@Test
-	public void readLine() throws Exception {
+	public void readLine_single_spaced_folding_enabled() throws Exception {
 		//@formatter:off
 		String ical =
 
 		//unfolded line
-		"FN: Michael Angstadt\n" +
+		"ATTENDEE:mailto:johndoe@example.com\n" +
 
 		//empty lines should be ignored
 		"\n" +
 
 		//this line is folded
-		"NOTE:folded \n line\n" +
+		"COMMENT:folded \n" +
+		" line\n" +
 
-		//this line is folded with multiple whitespace characters
-		"NOTE:one \n two \n  three \n \t four";
+		//this line is folded with multiple whitespace characters used for folding
+		"COMMENT:one \n" +
+		"\ttwo \n" +
+		"\t  three\n" +
+		"\t four";
 		//@formatter:on
 
 		FoldedLineReader reader = new FoldedLineReader(ical);
-		assertEquals("FN: Michael Angstadt", reader.readLine());
-		//assertEquals("", reader.readLine()); //empty lines should be ignored
+		assertEquals("ATTENDEE:mailto:johndoe@example.com", reader.readLine());
+		assertEquals("COMMENT:folded line", reader.readLine());
+		assertEquals("COMMENT:one two   three four", reader.readLine());
+		assertNull(reader.readLine());
+	}
 
-		assertEquals("NOTE:folded line", reader.readLine());
-		assertEquals("NOTE:one two three four", reader.readLine());
+	@Test
+	public void readLine_single_spaced_folding_disabled() throws Exception {
+		//@formatter:off
+		String ical =
+
+		//unfolded line
+		"ATTENDEE:mailto:johndoe@example.com\n" +
+
+		//empty lines should be ignored
+		"\n" +
+
+		//this line is folded
+		"COMMENT:folded \n" +
+		" line\n" +
+
+		//this line is folded with multiple whitespace characters
+		"COMMENT:one \n" +
+		" two \n" +
+		"  three \n" +
+		" \t four";
+		//@formatter:on
+
+		FoldedLineReader reader = new FoldedLineReader(ical);
+		reader.setSingleSpaceFoldingEnabled(false);
+		assertEquals("ATTENDEE:mailto:johndoe@example.com", reader.readLine());
+		assertEquals("COMMENT:folded line", reader.readLine());
+		assertEquals("COMMENT:one two three four", reader.readLine());
 		assertNull(reader.readLine());
 	}
 }
