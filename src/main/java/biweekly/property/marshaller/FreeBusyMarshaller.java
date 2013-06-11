@@ -84,32 +84,33 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 		for (String timePeriodStr : timePeriodStrs) {
 			String timePeriodStrSplit[] = timePeriodStr.split("/");
 
+			if (timePeriodStrSplit.length < 2) {
+				warnings.add("No end date or duration found, skipping time period: " + timePeriodStr);
+				continue;
+			}
+
 			String startStr = timePeriodStrSplit[0];
 			Date start = null;
 			try {
 				start = ICalDateFormatter.parse(startStr);
 			} catch (IllegalArgumentException e) {
-				warnings.add("Could not parse start date, skipping time period: " + startStr);
+				warnings.add("Could not parse start date, skipping time period: " + timePeriodStr);
 				continue;
 			}
 
-			if (timePeriodStrSplit.length > 1) {
-				String endStr = timePeriodStrSplit[1];
+			String endStr = timePeriodStrSplit[1];
+			try {
+				Date end = ICalDateFormatter.parse(endStr);
+				freebusy.addValue(start, end);
+			} catch (IllegalArgumentException e) {
+				//must be a duration
 				try {
-					Date end = ICalDateFormatter.parse(endStr);
-					freebusy.addValue(start, end);
-				} catch (IllegalArgumentException e) {
-					//must be a duration
-					try {
-						Duration duration = Duration.parse(endStr);
-						freebusy.addValue(start, duration);
-					} catch (IllegalArgumentException e2) {
-						warnings.add("Could not parse end date or duration value, skipping time period: " + endStr);
-						continue;
-					}
+					Duration duration = Duration.parse(endStr);
+					freebusy.addValue(start, duration);
+				} catch (IllegalArgumentException e2) {
+					warnings.add("Could not parse end date or duration value, skipping time period: " + timePeriodStr);
+					continue;
 				}
-			} else {
-				warnings.add("No end date or duration found, skipping time period: " + timePeriodStr);
 			}
 		}
 
