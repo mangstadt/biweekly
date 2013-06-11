@@ -3,7 +3,6 @@ package biweekly.property.marshaller;
 import java.util.Date;
 import java.util.List;
 
-import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.FreeBusy;
 import biweekly.util.Duration;
@@ -90,7 +89,8 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 			try {
 				start = ICalDateFormatter.parse(startStr);
 			} catch (IllegalArgumentException e) {
-				throw new CannotParseException("Could not parse start date.");
+				warnings.add("Could not parse start date, skipping time period: " + startStr);
+				continue;
 			}
 
 			if (timePeriodStrSplit.length > 1) {
@@ -104,14 +104,12 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 						Duration duration = Duration.parse(endStr);
 						freebusy.addValue(start, duration);
 					} catch (IllegalArgumentException e2) {
-						throw new CannotParseException("Could not parse duration value.");
+						warnings.add("Could not parse end date or duration value, skipping time period: " + endStr);
+						continue;
 					}
 				}
 			} else {
-				warnings.add("No end date or duration found.");
-				if (start != null) {
-					freebusy.addValue(start, (Date) null);
-				}
+				warnings.add("No end date or duration found, skipping time period: " + timePeriodStr);
 			}
 		}
 
