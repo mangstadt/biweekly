@@ -11,6 +11,8 @@ import biweekly.util.Duration;
 import biweekly.util.ICalDateFormatter;
 import biweekly.util.ISOFormat;
 import biweekly.util.Period;
+import biweekly.util.StringUtils;
+import biweekly.util.StringUtils.JoinCallback;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -59,51 +61,31 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 
 	@Override
 	protected String _writeText(RecurrenceDates property) {
-		StringBuilder sb = new StringBuilder();
-
-		boolean first = true;
 		if (property.getDates() != null) {
-			ISOFormat format = property.hasTime() ? ISOFormat.UTC_TIME_BASIC : ISOFormat.DATE_BASIC;
-			for (Date date : property.getDates()) {
-				if (date == null) {
-					continue;
+			final ISOFormat format = property.hasTime() ? ISOFormat.UTC_TIME_BASIC : ISOFormat.DATE_BASIC;
+			return StringUtils.join(property.getDates(), ',', new JoinCallback<Date>() {
+				public void handle(StringBuilder sb, Date date) {
+					sb.append(ICalDateFormatter.format(date, format));
 				}
-
-				if (first) {
-					first = false;
-				} else {
-					sb.append(',');
-				}
-
-				sb.append(ICalDateFormatter.format(date, format));
-			}
+			});
 		} else if (property.getPeriods() != null) {
-			for (Period period : property.getPeriods()) {
-				if (period == null) {
-					continue;
-				}
+			return StringUtils.join(property.getPeriods(), ',', new JoinCallback<Period>() {
+				public void handle(StringBuilder sb, Period period) {
+					if (period.getStartDate() != null) {
+						sb.append(ICalDateFormatter.format(period.getStartDate(), ISOFormat.UTC_TIME_BASIC));
+					}
 
-				if (first) {
-					first = false;
-				} else {
-					sb.append(',');
-				}
+					sb.append('/');
 
-				if (period.getStartDate() != null) {
-					sb.append(ICalDateFormatter.format(period.getStartDate(), ISOFormat.UTC_TIME_BASIC));
+					if (period.getEndDate() != null) {
+						sb.append(ICalDateFormatter.format(period.getEndDate(), ISOFormat.UTC_TIME_BASIC));
+					} else if (period.getDuration() != null) {
+						sb.append(period.getDuration());
+					}
 				}
-
-				sb.append('/');
-
-				if (period.getEndDate() != null) {
-					sb.append(ICalDateFormatter.format(period.getEndDate(), ISOFormat.UTC_TIME_BASIC));
-				} else if (period.getDuration() != null) {
-					sb.append(period.getDuration());
-				}
-			}
+			});
 		}
-
-		return sb.toString();
+		return "";
 	}
 
 	@Override

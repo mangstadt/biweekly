@@ -6,6 +6,8 @@ import java.util.List;
 
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RequestStatus;
+import biweekly.util.StringUtils;
+import biweekly.util.StringUtils.JoinCallback;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -49,18 +51,11 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 		addComponent(property.getStatusCode(), components);
 		Collections.reverse(components);
 
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (String component : components) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(';');
+		return StringUtils.join(components, ';', new JoinCallback<String>() {
+			public void handle(StringBuilder sb, String component) {
+				sb.append(escape(component));
 			}
-			sb.append(escape(component));
-		}
-
-		return sb.toString();
+		});
 	}
 
 	private void addComponent(String component, List<String> components) {

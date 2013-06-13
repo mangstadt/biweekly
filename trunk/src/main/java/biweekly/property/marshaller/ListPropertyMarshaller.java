@@ -4,7 +4,8 @@ import java.util.List;
 
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ListProperty;
-
+import biweekly.util.StringUtils;
+import biweekly.util.StringUtils.JoinCallback;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -41,19 +42,12 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 	}
 
 	@Override
-	protected String _writeText(T property) {
-		StringBuilder sb = new StringBuilder();
-
-		boolean first = true;
-		for (V value : property.getValues()) {
-			if (!first) {
-				sb.append(',');
+	protected String _writeText(final T property) {
+		return StringUtils.join(property.getValues(), ',', new JoinCallback<V>() {
+			public void handle(StringBuilder sb, V value) {
+				sb.append(escape(writeValue(property, value)));
 			}
-			sb.append(escape(writeValue(property, value)));
-			first = false;
-		}
-
-		return sb.toString();
+		});
 	}
 
 	@Override
