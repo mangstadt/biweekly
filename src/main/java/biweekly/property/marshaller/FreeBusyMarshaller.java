@@ -9,6 +9,8 @@ import biweekly.util.Duration;
 import biweekly.util.ICalDateFormatter;
 import biweekly.util.ISOFormat;
 import biweekly.util.Period;
+import biweekly.util.StringUtils;
+import biweekly.util.StringUtils.JoinCallback;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -51,29 +53,21 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 			return "";
 		}
 
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (Period timePeriod : values) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(',');
+		return StringUtils.join(values, ',', new JoinCallback<Period>() {
+			public void handle(StringBuilder sb, Period timePeriod) {
+				if (timePeriod.getStartDate() != null) {
+					sb.append(ICalDateFormatter.format(timePeriod.getStartDate(), ISOFormat.UTC_TIME_BASIC));
+				}
+
+				sb.append('/');
+
+				if (timePeriod.getEndDate() != null) {
+					sb.append(ICalDateFormatter.format(timePeriod.getEndDate(), ISOFormat.UTC_TIME_BASIC));
+				} else if (timePeriod.getDuration() != null) {
+					sb.append(timePeriod.getDuration());
+				}
 			}
-
-			if (timePeriod.getStartDate() != null) {
-				sb.append(ICalDateFormatter.format(timePeriod.getStartDate(), ISOFormat.UTC_TIME_BASIC));
-			}
-
-			sb.append('/');
-
-			if (timePeriod.getEndDate() != null) {
-				sb.append(ICalDateFormatter.format(timePeriod.getEndDate(), ISOFormat.UTC_TIME_BASIC));
-			} else if (timePeriod.getDuration() != null) {
-				sb.append(timePeriod.getDuration());
-			}
-		}
-
-		return sb.toString();
+		});
 	}
 
 	@Override

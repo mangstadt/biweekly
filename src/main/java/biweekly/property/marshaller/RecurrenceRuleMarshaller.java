@@ -3,7 +3,6 @@ package biweekly.property.marshaller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,6 +13,8 @@ import biweekly.property.RecurrenceRule.Frequency;
 import biweekly.util.ICalDateFormatter;
 import biweekly.util.ISOFormat;
 import biweekly.util.ListMultimap;
+import biweekly.util.StringUtils;
+import biweekly.util.StringUtils.JoinMapCallback;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -96,30 +97,11 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 			components.put("WKST", property.getWorkweekStarts().getAbbr());
 		}
 
-		StringBuilder sb = new StringBuilder();
-		boolean first = true;
-		for (Map.Entry<String, List<String>> entry : components) {
-			String key = entry.getKey();
-			List<String> values = entry.getValue();
-
-			if (first) {
-				first = false;
-			} else {
-				sb.append(';');
+		return StringUtils.join(components.getMap(), ';', new JoinMapCallback<String, List<String>>() {
+			public void handle(StringBuilder sb, String key, List<String> values) {
+				sb.append(key).append('=').append(StringUtils.join(values, ','));
 			}
-			sb.append(key).append('=');
-
-			boolean firstInner = true;
-			for (String value : values) {
-				if (firstInner) {
-					firstInner = false;
-				} else {
-					sb.append(',');
-				}
-				sb.append(value);
-			}
-		}
-		return sb.toString();
+		});
 	}
 
 	@Override
