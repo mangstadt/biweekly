@@ -39,6 +39,14 @@ public class RequestStatus extends ICalProperty {
 	private String statusCode, description, exceptionText;
 
 	/**
+	 * Creates a request status property.
+	 * @param statusCode the status code (e.g. "1.1.3")
+	 */
+	public RequestStatus(String statusCode) {
+		setStatusCode(statusCode);
+	}
+
+	/**
 	 * Gets the status code. The following status code families are defined:
 	 * <ul>
 	 * <li><b>1.x</b> - The request has been received, but is still being

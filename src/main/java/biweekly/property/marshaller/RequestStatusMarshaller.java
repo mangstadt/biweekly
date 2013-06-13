@@ -1,5 +1,7 @@
 package biweekly.property.marshaller;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import biweekly.parameter.ICalParameters;
@@ -41,31 +43,39 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 
 	@Override
 	protected String _writeText(RequestStatus property) {
+		List<String> components = new ArrayList<String>();
+		addComponent(property.getExceptionText(), components);
+		addComponent(property.getDescription(), components);
+		addComponent(property.getStatusCode(), components);
+		Collections.reverse(components);
+
 		StringBuilder sb = new StringBuilder();
-
-		if (property.getStatusCode() != null) {
-			sb.append(escape(property.getStatusCode()));
-		}
-
-		if (property.getDescription() != null) {
-			sb.append(';');
-			sb.append(escape(property.getDescription()));
-		}
-
-		if (property.getExceptionText() != null) {
-			sb.append(';');
-			sb.append(escape(property.getExceptionText()));
+		boolean first = true;
+		for (String component : components) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(';');
+			}
+			sb.append(escape(component));
 		}
 
 		return sb.toString();
 	}
 
+	private void addComponent(String component, List<String> components) {
+		if (component != null) {
+			components.add(component);
+		} else if (!components.isEmpty()) {
+			components.add("");
+		}
+	}
+
 	@Override
 	protected RequestStatus _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		String split[] = splitBy(value, ';', false, true);
-		RequestStatus requestStatus = new RequestStatus();
+		RequestStatus requestStatus = new RequestStatus(split[0]);
 
-		requestStatus.setStatusCode(split[0]);
 		if (split.length > 1) {
 			requestStatus.setDescription(split[1]);
 		}
