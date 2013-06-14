@@ -5,20 +5,32 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.io.StringReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
 
 import biweekly.ICalendar;
+import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
+import biweekly.component.StandardTime;
 import biweekly.component.VEvent;
+import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Role;
+import biweekly.property.Attendee;
 import biweekly.property.ICalProperty;
 import biweekly.property.ProductId;
+import biweekly.property.RecurrenceRule;
+import biweekly.property.RecurrenceRule.DayOfWeek;
+import biweekly.property.RecurrenceRule.Frequency;
 import biweekly.property.Summary;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 
@@ -634,6 +646,142 @@ public class ICalReaderTest {
 		assertNull(reader.readNext());
 	}
 
+	@Test
+	public void outlook2010() throws Exception {
+		ICalReader reader = new ICalReader(getClass().getResourceAsStream("outlook-2010.ics"));
+		ICalendar ical = reader.readNext();
+
+		assertEquals(4, ical.getProperties().size());
+		assertEquals("-//Microsoft Corporation//Outlook 14.0 MIMEDIR//EN", ical.getProductId().getValue());
+
+		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertEquals(null, ical.getVersion().getMinVersion());
+
+		assertEquals("REQUEST", ical.getMethod().getValue());
+		assertEquals("TRUE", ical.getExperimentalProperty("X-MS-OLK-FORCEINSPECTOROPEN").getValue());
+
+		assertEquals(2, ical.getComponents().size());
+		VTimezone timezone = ical.getTimezones().get(0);
+		{
+			assertEquals(1, timezone.getProperties().size());
+			assertEquals("Eastern Standard Time", timezone.getTimezoneIdentifier().getValue());
+
+			assertEquals(2, timezone.getComponents().size());
+
+			StandardTime standard = timezone.getStandardTimes().get(0);
+			{
+				assertEquals(4, standard.getProperties().size());
+				assertDateEquals("16011104T020000", standard.getDateStart().getValue());
+
+				RecurrenceRule rrule = standard.getRecurrenceRule();
+				assertEquals(Frequency.YEARLY, rrule.getFrequency());
+				assertEquals(Arrays.asList(1), rrule.getByDayPrefixes());
+				assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());
+				assertEquals(Arrays.asList(11), rrule.getByMonth());
+
+				assertEquals(Integer.valueOf(-4), standard.getTimezoneOffsetFrom().getHourOffset());
+				assertEquals(Integer.valueOf(0), standard.getTimezoneOffsetFrom().getMinuteOffset());
+
+				assertEquals(Integer.valueOf(-5), standard.getTimezoneOffsetTo().getHourOffset());
+				assertEquals(Integer.valueOf(0), standard.getTimezoneOffsetTo().getMinuteOffset());
+
+				assertEquals(0, standard.getComponents().size());
+			}
+
+			DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
+			{
+				assertEquals(4, daylight.getProperties().size());
+				assertDateEquals("16010311T020000", daylight.getDateStart().getValue());
+
+				RecurrenceRule rrule = daylight.getRecurrenceRule();
+				assertEquals(Frequency.YEARLY, rrule.getFrequency());
+				assertEquals(Arrays.asList(2), rrule.getByDayPrefixes());
+				assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());
+				assertEquals(Arrays.asList(3), rrule.getByMonth());
+
+				assertEquals(Integer.valueOf(-5), daylight.getTimezoneOffsetFrom().getHourOffset());
+				assertEquals(Integer.valueOf(0), daylight.getTimezoneOffsetFrom().getMinuteOffset());
+
+				assertEquals(Integer.valueOf(-4), daylight.getTimezoneOffsetTo().getHourOffset());
+				assertEquals(Integer.valueOf(0), daylight.getTimezoneOffsetTo().getMinuteOffset());
+
+				assertEquals(0, daylight.getComponents().size());
+			}
+		}
+
+		VEvent event = ical.getEvents().get(0);
+		{
+			assertEquals(24, event.getProperties().size());
+
+			Attendee attendee = event.getAttendees().get(0);
+			assertEquals("Doe, John", attendee.getCommonName());
+			assertEquals(Role.OPT_PARTICIPANT, attendee.getRole());
+			assertEquals(Boolean.FALSE, attendee.getRsvp());
+			assertEquals("mailto:johndoe@example.com", attendee.getValue());
+
+			attendee = event.getAttendees().get(1);
+			assertEquals("Doe, Jane", attendee.getCommonName());
+			assertEquals(Role.CHAIR, attendee.getRole());
+			assertEquals(Boolean.TRUE, attendee.getRsvp());
+			assertEquals("mailto:janedoe@example.com", attendee.getValue());
+
+			assertEquals("PUBLIC", event.getClassification().getValue());
+			assertDateEquals("20130608T200410Z", event.getCreated().getValue());
+			assertEquals("Meeting will discuss objectives for next project." + NEWLINE + "Will include a presentation and food.", event.getDescription().getValue());
+
+			assertDateEquals("20130610T130000", event.getDateEnd().getValue());
+			assertEquals("Eastern Standard Time", event.getDateEnd().getTimezoneId());
+
+			assertDateEquals("20130425T155807Z", event.getDateTimeStamp().getValue());
+
+			assertDateEquals("20130610T120000", event.getDateStart().getValue());
+			assertEquals("Eastern Standard Time", event.getDateStart().getTimezoneId());
+
+			assertDateEquals("20130608T200410Z", event.getLastModified().getValue());
+
+			assertEquals("Auditorium 16", event.getLocation().getValue());
+
+			assertEquals("mailto:bobsmith@example.com", event.getOrganizer().getValue());
+			assertEquals("Smith, Bob", event.getOrganizer().getCommonName());
+
+			assertIntEquals(5, event.getPriority().getValue());
+			assertIntEquals(1, event.getSequence().getValue());
+
+			assertEquals("Team Meeting", event.getSummary().getValue());
+			assertEquals("en-us", event.getSummary().getLanguage());
+
+			assertEquals(true, event.getTransparency().isOpaque());
+			assertEquals("040000009200E00074C5B7101A82E00800000000C0383BE68041CE0100000000000000001000000070D00A2F625AC34BB6542DE0D19E67E1", event.getUid().getValue());
+			//@formatter:off
+			assertEquals(
+			"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2//EN\">\\n" +
+			"<HTML>\\n" +
+			"<HEAD>\\n" +
+			"<META NAME=\"Generator\" CONTENT=\"MS Exchange Server version 14.02.5004.000\">\\n" +
+			"<TITLE></TITLE>\\n" +
+			"</HEAD>\\n" +
+			"<BODY>\\n" +
+			"<!-- Converted from text/rtf format -->\\n" +
+			"\\n" +
+			"<P DIR=LTR><SPAN LANG=\"en-us\"><B><FONT COLOR=\"#0000FF\" FACE=\"Arial\">Meeting will discuss objectives for next project.\\n" +
+			"Will include a presentation and food.</FONT></B></SPAN></P></BODY>\\n" +
+			"</HTML>",
+			event.getExperimentalProperty("X-ALT-DESC").getValue());
+			//@formatter:on
+			assertEquals("text/html", event.getExperimentalProperty("X-ALT-DESC").getParameter("FMTTYPE"));
+
+			assertEquals("TENTATIVE", event.getExperimentalProperty("X-MICROSOFT-CDO-BUSYSTATUS").getValue());
+			assertEquals("1", event.getExperimentalProperty("X-MICROSOFT-CDO-IMPORTANCE").getValue());
+			assertEquals("BUSY", event.getExperimentalProperty("X-MICROSOFT-CDO-INTENDEDSTATUS").getValue());
+			assertEquals("TRUE", event.getExperimentalProperty("X-MICROSOFT-DISALLOW-COUNTER").getValue());
+			assertEquals("1", event.getExperimentalProperty("X-MS-OLK-APPTLASTSEQUENCE").getValue());
+			assertEquals("20130425T124303Z", event.getExperimentalProperty("X-MS-OLK-APPTSEQTIME").getValue());
+			assertEquals("0", event.getExperimentalProperty("X-MS-OLK-CONFTYPE").getValue());
+		}
+
+		assertNull(reader.readNext());
+	}
+
 	private class TestPropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
 		public TestPropertyMarshaller() {
 			super(TestProperty.class, "X-TEST");
@@ -724,5 +872,31 @@ public class ICalReaderTest {
 		public MyVEvent newInstance() {
 			return new MyVEvent();
 		}
+	}
+
+	private static void assertDateEquals(String expected, Date actual) throws ParseException {
+		//TODO move to TestUtils
+
+		if (expected.contains("Z")) {
+			expected = expected.replace("Z", "+0000");
+		}
+
+		SimpleDateFormat df;
+		if (expected.contains("T")) {
+			if (expected.contains("-") || expected.contains("+")) {
+				df = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
+			} else {
+				df = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+			}
+		} else {
+			df = new SimpleDateFormat("yyyyMMdd");
+		}
+
+		assertEquals(df.parse(expected), actual);
+	}
+
+	private static void assertIntEquals(int expected, Integer actual) {
+		//TODO move to TestUtils
+		assertEquals(Integer.valueOf(expected), actual);
 	}
 }
