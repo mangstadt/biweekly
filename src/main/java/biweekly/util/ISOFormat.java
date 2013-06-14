@@ -52,9 +52,19 @@ public enum ISOFormat {
 	TIME_BASIC("\\d{8}T\\d{6}[-\\+]\\d{4}", "yyyyMMdd'T'HHmmssZ"),
 	
 	/**
+	 * Example: 20120701T142110
+	 */
+	TIME_BASIC_WITHOUT_TZ("\\d{8}T\\d{6}", "yyyyMMdd'T'HHmmss"),
+	
+	/**
 	 * Example: 2012-07-01T14:21:10-05:00
 	 */
 	TIME_EXTENDED("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-\\+]\\d{2}:\\d{2}", "yyyy-MM-dd'T'HH:mm:ssZ"),
+	
+	/**
+	 * Example: 2012-07-01T14:21:10
+	 */
+	TIME_EXTENDED_WITHOUT_TZ("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd'T'HH:mm:ss"),
 	
 	/**
 	 * Example: 20120701T192110Z

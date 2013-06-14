@@ -5,12 +5,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
-
-import biweekly.util.ICalDateFormatter;
-import biweekly.util.ISOFormat;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -41,6 +41,19 @@ import biweekly.util.ISOFormat;
  * @author Michael Angstadt
  */
 public class ICalDateFormatterTest {
+	private static final TimeZone defaultTz = TimeZone.getDefault();
+
+	@BeforeClass
+	public static void beforeClass() {
+		TimeZone tz = new SimpleTimeZone(1000 * 60 * 60, "");
+		TimeZone.setDefault(tz);
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		TimeZone.setDefault(defaultTz);
+	}
+
 	@Test
 	public void format() {
 		TimeZone tz = TimeZone.getTimeZone("Asia/Beirut");
@@ -123,7 +136,7 @@ public class ICalDateFormatterTest {
 	}
 
 	@Test
-	public void parse() throws Exception {
+	public void parse() {
 		Calendar c;
 		Date expected, actual;
 
@@ -161,214 +174,81 @@ public class ICalDateFormatterTest {
 
 		actual = ICalDateFormatter.parse("2012-07-01T11:01:30+0300");
 		assertEquals(expected, actual);
+
+		//basic, no timezone
+		//should use the system's timezone
+		actual = ICalDateFormatter.parse("20120701T090130");
+		assertEquals(expected, actual);
+
+		//extended, no timezone
+		//should use the system's timezone
+		actual = ICalDateFormatter.parse("2012-07-01T09:01:30");
+		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void parseTimeZone() {
-		int[] expected, actual;
+		//@formatter:off
+		Object[][] tests = new Object[][]{	
+			new Object[]{"5", 5, 0},
+			new Object[]{"10", 10, 0},
+			new Object[]{"+5", 5, 0},
+			new Object[]{"+10", 10, 0},
+			new Object[]{"-5", -5, 0},
+			new Object[]{"-10", -10, 0},
+			new Object[]{"05", 5, 0},
+			new Object[]{"+05", 5, 0},
+			new Object[]{"-05", -5, 0},
+			new Object[]{"500", 5, 0},
+			new Object[]{"+500", 5, 0},
+			new Object[]{"-500", -5, 0},
+			new Object[]{"530", 5, 30},
+			new Object[]{"+530", 5, 30},
+			new Object[]{"-530", -5, 30},
+			new Object[]{"5:00", 5, 0},
+			new Object[]{"10:00", 10, 0},
+			new Object[]{"+5:00", 5, 0},
+			new Object[]{"+10:00", 10, 0},
+			new Object[]{"-5:00", -5, 0},
+			new Object[]{"-10:00", -10, 0},
+			new Object[]{"5:30", 5, 30},
+			new Object[]{"10:30", 10, 30},
+			new Object[]{"+5:30", 5, 30},
+			new Object[]{"+10:30", 10, 30},
+			new Object[]{"-5:30", -5, 30},
+			new Object[]{"-10:30", -10, 30},
+			new Object[]{"0500", 5, 0},
+			new Object[]{"1000", 10, 0},
+			new Object[]{"+0500", 5, 0},
+			new Object[]{"+1000", 10, 0},
+			new Object[]{"-0500", -5, 0},
+			new Object[]{"-1000", -10, 0},
+			new Object[]{"0530", 5, 30},
+			new Object[]{"1030", 10, 30},
+			new Object[]{"+0530", 5, 30},
+			new Object[]{"+1030", 10, 30},
+			new Object[]{"-0530", -5, 30},
+			new Object[]{"-1030", -10, 30},
+			new Object[]{"05:00", 5, 0},
+			new Object[]{"10:00", 10, 0},
+			new Object[]{"+05:00", 5, 0},
+			new Object[]{"+10:00", 10, 0},
+			new Object[]{"-05:00", -5, 0},
+			new Object[]{"-10:00", -10, 0},
+			new Object[]{"05:30", 5, 30},
+			new Object[]{"10:30", 10, 30},
+			new Object[]{"+05:30", 5, 30},
+			new Object[]{"+10:30", 10, 30},
+			new Object[]{"-05:30", -5, 30},
+			new Object[]{"-10:30", -10, 30},
+		};
+		//@formatter:on
 
-		expected = ICalDateFormatter.parseTimeZone("5");
-		actual = new int[] { 5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("10");
-		actual = new int[] { 10, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+5");
-		actual = new int[] { 5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+10");
-		actual = new int[] { 10, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-5");
-		actual = new int[] { -5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-10");
-		actual = new int[] { -10, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("05");
-		actual = new int[] { 5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+05");
-		actual = new int[] { 5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-05");
-		actual = new int[] { -5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("500");
-		actual = new int[] { 5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+500");
-		actual = new int[] { 5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-500");
-		actual = new int[] { -5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("530");
-		actual = new int[] { 5, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+530");
-		actual = new int[] { 5, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-530");
-		actual = new int[] { -5, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("5:00");
-		actual = new int[] { 5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("10:00");
-		actual = new int[] { 10, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+5:00");
-		actual = new int[] { 5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+10:00");
-		actual = new int[] { 10, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-5:00");
-		actual = new int[] { -5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-10:00");
-		actual = new int[] { -10, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("5:30");
-		actual = new int[] { 5, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("10:30");
-		actual = new int[] { 10, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+5:30");
-		actual = new int[] { 5, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+10:30");
-		actual = new int[] { 10, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-5:30");
-		actual = new int[] { -5, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-10:30");
-		actual = new int[] { -10, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("0500");
-		actual = new int[] { 5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("1000");
-		actual = new int[] { 10, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+0500");
-		actual = new int[] { 5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+1000");
-		actual = new int[] { 10, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-0500");
-		actual = new int[] { -5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-1000");
-		actual = new int[] { -10, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("0530");
-		actual = new int[] { 5, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("1030");
-		actual = new int[] { 10, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+0530");
-		actual = new int[] { 5, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+1030");
-		actual = new int[] { 10, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-0530");
-		actual = new int[] { -5, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-1030");
-		actual = new int[] { -10, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("05:00");
-		actual = new int[] { 5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("10:00");
-		actual = new int[] { 10, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+05:00");
-		actual = new int[] { 5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+10:00");
-		actual = new int[] { 10, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-05:00");
-		actual = new int[] { -5, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-10:00");
-		actual = new int[] { -10, 0 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("05:30");
-		actual = new int[] { 5, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("10:30");
-		actual = new int[] { 10, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+05:30");
-		actual = new int[] { 5, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("+10:30");
-		actual = new int[] { 10, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-05:30");
-		actual = new int[] { -5, 30 };
-		assertArrayEquals(expected, actual);
-
-		expected = ICalDateFormatter.parseTimeZone("-10:30");
-		actual = new int[] { -10, 30 };
-		assertArrayEquals(expected, actual);
+		for (Object test[] : tests) {
+			String input = (String) test[0];
+			int[] expected = new int[] { (Integer) test[1], (Integer) test[2] };
+			int[] actual = ICalDateFormatter.parseTimeZone(input);
+			assertArrayEquals(expected, actual);
+		}
 	}
 }
