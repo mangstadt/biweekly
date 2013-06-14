@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import static biweekly.util.TestUtils.assertIntEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -8,8 +9,6 @@ import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import biweekly.util.CaseClasses;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -61,7 +60,7 @@ public class CaseClassesTest {
 		assertTrue(PrimeNumber.THREE == found);
 
 		PrimeNumber eleven1 = cc.get(11);
-		assertEquals(Integer.valueOf(11), eleven1.value);
+		assertIntEquals(11, eleven1.value);
 
 		PrimeNumber eleven2 = cc.get(11);
 		assertTrue(eleven1 == eleven2);

@@ -1,5 +1,6 @@
 package biweekly.property.marshaller;
 
+import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -165,8 +166,8 @@ public class RecurrenceRuleMarshallerTest {
 
 		RecurrenceRule prop = result.getValue();
 		assertEquals(Frequency.WEEKLY, prop.getFrequency());
-		assertEquals(Integer.valueOf(5), prop.getCount());
-		assertEquals(Integer.valueOf(10), prop.getInterval());
+		assertIntEquals(5, prop.getCount());
+		assertIntEquals(10, prop.getInterval());
 		assertEquals(datetime, prop.getUntil());
 		assertEquals(Arrays.asList(3, 4), prop.getByMinute());
 		assertEquals(Arrays.asList(1, 2), prop.getByHour());
@@ -215,7 +216,7 @@ public class RecurrenceRuleMarshallerTest {
 
 		RecurrenceRule prop = result.getValue();
 		assertEquals(Frequency.WEEKLY, prop.getFrequency());
-		assertEquals(Integer.valueOf(5), prop.getCount());
+		assertIntEquals(5, prop.getCount());
 		assertNull(prop.getInterval());
 		assertNull(prop.getUntil());
 		assertEquals(Arrays.asList(), prop.getByMinute());

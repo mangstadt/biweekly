@@ -1,5 +1,6 @@
 package biweekly;
 
+import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertRegex;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -111,7 +112,7 @@ public class BiweeklyTest {
 
 		ICalendar ical = Biweekly.parse(icalStr).register(new TestPropertyMarshaller()).register(new PartyMarshaller()).first();
 
-		assertEquals(Integer.valueOf(1), ical.getProperty(TestProperty.class).getNumber());
+		assertIntEquals(1, ical.getProperty(TestProperty.class).getNumber());
 		assertEquals(0, ical.getExperimentalProperties().size());
 		assertNotNull(ical.getComponent(Party.class));
 		assertEquals(0, ical.getExperimentalComponents().size());

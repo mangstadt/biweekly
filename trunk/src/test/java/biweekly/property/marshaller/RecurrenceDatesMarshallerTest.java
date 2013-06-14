@@ -1,11 +1,11 @@
 package biweekly.property.marshaller;
 
+import static biweekly.util.TestUtils.assertDateEquals;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -325,10 +325,10 @@ public class RecurrenceDatesMarshallerTest {
 		Iterator<Date> it = result.getValue().getDates().iterator();
 
 		Date date = it.next();
-		assertEquals(new SimpleDateFormat("yyyyMMdd").parse("20130611"), date);
+		assertDateEquals("20130611", date);
 
 		date = it.next();
-		assertEquals(new SimpleDateFormat("yyyyMMdd").parse("20130612"), date);
+		assertDateEquals("20130612", date);
 
 		assertFalse(it.hasNext());
 
@@ -347,10 +347,10 @@ public class RecurrenceDatesMarshallerTest {
 		Iterator<Date> it = result.getValue().getDates().iterator();
 
 		Date date = it.next();
-		assertEquals(new SimpleDateFormat("yyyyMMdd").parse("20130611"), date);
+		assertDateEquals("20130611", date);
 
 		date = it.next();
-		assertEquals(new SimpleDateFormat("yyyyMMdd").parse("20130612"), date);
+		assertDateEquals("20130612", date);
 
 		assertFalse(it.hasNext());
 

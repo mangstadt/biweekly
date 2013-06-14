@@ -1,5 +1,6 @@
 package biweekly.property.marshaller;
 
+import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
 
@@ -68,7 +69,7 @@ public class IntegerPropertyMarshallerTest {
 
 		Result<IntegerProperty> result = marshaller.parseText(value, params);
 
-		assertEquals(Integer.valueOf(5), result.getValue().getValue());
+		assertIntEquals(5, result.getValue().getValue());
 		assertWarnings(0, result.getWarnings());
 	}
 
