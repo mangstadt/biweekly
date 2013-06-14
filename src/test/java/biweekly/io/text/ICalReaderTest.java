@@ -1,14 +1,13 @@
 package biweekly.io.text;
 
+import static biweekly.util.TestUtils.assertDateEquals;
+import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.io.StringReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -378,15 +377,15 @@ public class ICalReaderTest {
 		assertEquals("2.0", icalendar.getVersion().getMaxVersion());
 
 		assertEquals(2, icalendar.getProperties(TestProperty.class).size());
-		assertEquals(Integer.valueOf(1), icalendar.getProperties(TestProperty.class).get(0).getNumber());
-		assertEquals(Integer.valueOf(2), icalendar.getProperties(TestProperty.class).get(1).getNumber());
+		assertIntEquals(1, icalendar.getProperties(TestProperty.class).get(0).getNumber());
+		assertIntEquals(2, icalendar.getProperties(TestProperty.class).get(1).getNumber());
 
 		assertEquals(1, icalendar.getEvents().size());
 		VEvent event = icalendar.getEvents().get(0);
 		assertEquals("summary", event.getSummary().getValue());
 
 		assertEquals(1, event.getProperties(TestProperty.class).size());
-		assertEquals(Integer.valueOf(3), event.getProperties(TestProperty.class).get(0).getNumber());
+		assertIntEquals(3, event.getProperties(TestProperty.class).get(0).getNumber());
 
 		assertWarnings(0, reader.getWarnings());
 		assertNull(reader.readNext());
@@ -540,7 +539,7 @@ public class ICalReaderTest {
 		assertEquals("2.0", icalendar.getVersion().getMaxVersion());
 
 		assertEquals(1, icalendar.getProperties(TestProperty.class).size());
-		assertEquals(Integer.valueOf(4), icalendar.getProperties(TestProperty.class).get(0).getNumber());
+		assertIntEquals(4, icalendar.getProperties(TestProperty.class).get(0).getNumber());
 
 		assertWarnings(1, reader.getWarnings());
 		assertNull(reader.readNext());
@@ -572,7 +571,7 @@ public class ICalReaderTest {
 			assertEquals("2.0", icalendar.getVersion().getMaxVersion());
 
 			assertEquals(1, icalendar.getProperties(TestProperty.class).size());
-			assertEquals(Integer.valueOf(4), icalendar.getProperties(TestProperty.class).get(0).getNumber());
+			assertIntEquals(4, icalendar.getProperties(TestProperty.class).get(0).getNumber());
 
 			assertWarnings(1, reader.getWarnings());
 		}
@@ -584,7 +583,7 @@ public class ICalReaderTest {
 			assertEquals("2.0", icalendar.getVersion().getMaxVersion());
 
 			assertEquals(1, icalendar.getProperties(TestProperty.class).size());
-			assertEquals(Integer.valueOf(4), icalendar.getProperties(TestProperty.class).get(0).getNumber());
+			assertIntEquals(4, icalendar.getProperties(TestProperty.class).get(0).getNumber());
 
 			assertWarnings(1, reader.getWarnings());
 		}
@@ -679,11 +678,11 @@ public class ICalReaderTest {
 				assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());
 				assertEquals(Arrays.asList(11), rrule.getByMonth());
 
-				assertEquals(Integer.valueOf(-4), standard.getTimezoneOffsetFrom().getHourOffset());
-				assertEquals(Integer.valueOf(0), standard.getTimezoneOffsetFrom().getMinuteOffset());
+				assertIntEquals(-4, standard.getTimezoneOffsetFrom().getHourOffset());
+				assertIntEquals(0, standard.getTimezoneOffsetFrom().getMinuteOffset());
 
-				assertEquals(Integer.valueOf(-5), standard.getTimezoneOffsetTo().getHourOffset());
-				assertEquals(Integer.valueOf(0), standard.getTimezoneOffsetTo().getMinuteOffset());
+				assertIntEquals(-5, standard.getTimezoneOffsetTo().getHourOffset());
+				assertIntEquals(0, standard.getTimezoneOffsetTo().getMinuteOffset());
 
 				assertEquals(0, standard.getComponents().size());
 			}
@@ -699,11 +698,11 @@ public class ICalReaderTest {
 				assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());
 				assertEquals(Arrays.asList(3), rrule.getByMonth());
 
-				assertEquals(Integer.valueOf(-5), daylight.getTimezoneOffsetFrom().getHourOffset());
-				assertEquals(Integer.valueOf(0), daylight.getTimezoneOffsetFrom().getMinuteOffset());
+				assertIntEquals(-5, daylight.getTimezoneOffsetFrom().getHourOffset());
+				assertIntEquals(0, daylight.getTimezoneOffsetFrom().getMinuteOffset());
 
-				assertEquals(Integer.valueOf(-4), daylight.getTimezoneOffsetTo().getHourOffset());
-				assertEquals(Integer.valueOf(0), daylight.getTimezoneOffsetTo().getMinuteOffset());
+				assertIntEquals(-4, daylight.getTimezoneOffsetTo().getHourOffset());
+				assertIntEquals(0, daylight.getTimezoneOffsetTo().getMinuteOffset());
 
 				assertEquals(0, daylight.getComponents().size());
 			}
@@ -872,31 +871,5 @@ public class ICalReaderTest {
 		public MyVEvent newInstance() {
 			return new MyVEvent();
 		}
-	}
-
-	private static void assertDateEquals(String expected, Date actual) throws ParseException {
-		//TODO move to TestUtils
-
-		if (expected.contains("Z")) {
-			expected = expected.replace("Z", "+0000");
-		}
-
-		SimpleDateFormat df;
-		if (expected.contains("T")) {
-			if (expected.contains("-") || expected.contains("+")) {
-				df = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
-			} else {
-				df = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
-			}
-		} else {
-			df = new SimpleDateFormat("yyyyMMdd");
-		}
-
-		assertEquals(df.parse(expected), actual);
-	}
-
-	private static void assertIntEquals(int expected, Integer actual) {
-		//TODO move to TestUtils
-		assertEquals(Integer.valueOf(expected), actual);
 	}
 }
