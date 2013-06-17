@@ -29,7 +29,8 @@ import biweekly.ICalException;
 
 /**
  * Thrown during the unmarshalling of an iCalendar property to signal that the
- * property's value could not be parsed.
+ * property's value could not be parsed (for example, being unable to parse a
+ * value as a date).
  * @author Michael Angstadt
  */
 @SuppressWarnings("serial")
