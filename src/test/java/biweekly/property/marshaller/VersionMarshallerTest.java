@@ -2,14 +2,12 @@ package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
-import java.util.List;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
 import biweekly.parameter.ICalParameters;
-import biweekly.property.ListProperty;
+import biweekly.property.Version;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
 /*
@@ -40,36 +38,32 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 /**
  * @author Michael Angstadt
  */
-public class ListPropertyMarshallerTest {
-	private final ListPropertyMarshallerImpl marshaller = new ListPropertyMarshallerImpl();
+public class VersionMarshallerTest {
+	private final VersionMarshaller marshaller = new VersionMarshaller();
 
 	@Test
-	public void writeText_multiple() {
-		ListPropertyImpl prop = new ListPropertyImpl();
-		prop.addValue("one");
-		prop.addValue("two");
-		prop.addValue("three,four");
+	public void writeText_min_max() {
+		Version prop = new Version("1.0", "2.0");
 
 		String actual = marshaller.writeText(prop);
 
-		String expected = "one,two,three\\,four";
+		String expected = "1.0;2.0";
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void writeText_single() {
-		ListPropertyImpl prop = new ListPropertyImpl();
-		prop.addValue("one");
+	public void writeText_max() {
+		Version prop = new Version("2.0");
 
 		String actual = marshaller.writeText(prop);
 
-		String expected = "one";
+		String expected = "2.0";
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void writeText_empty() {
-		ListPropertyImpl prop = new ListPropertyImpl();
+	public void writeText_null() {
+		Version prop = new Version(null);
 
 		String actual = marshaller.writeText(prop);
 
@@ -78,49 +72,28 @@ public class ListPropertyMarshallerTest {
 	}
 
 	@Test
-	public void parseText() {
-		String value = "one,two,three\\,four";
+	public void parseText_min_max() {
+		String value = "1.0;2.0";
 		ICalParameters params = new ICalParameters();
 
-		Result<ListPropertyImpl> result = marshaller.parseText(value, params);
+		Result<Version> result = marshaller.parseText(value, params);
 
-		assertEquals(Arrays.asList("one", "two", "three,four"), result.getValue().getValues());
+		Version prop = result.getValue();
+		assertEquals("1.0", prop.getMinVersion());
+		assertEquals("2.0", prop.getMaxVersion());
 		assertWarnings(0, result.getWarnings());
 	}
 
 	@Test
-	public void parseText_empty() {
-		String value = "";
+	public void parseText_max() {
+		String value = "2.0";
 		ICalParameters params = new ICalParameters();
 
-		Result<ListPropertyImpl> result = marshaller.parseText(value, params);
+		Result<Version> result = marshaller.parseText(value, params);
 
-		assertEquals(0, result.getValue().getValues().size());
+		Version prop = result.getValue();
+		assertNull(prop.getMinVersion());
+		assertEquals("2.0", prop.getMaxVersion());
 		assertWarnings(0, result.getWarnings());
-	}
-
-	private class ListPropertyMarshallerImpl extends ListPropertyMarshaller<ListPropertyImpl, String> {
-		public ListPropertyMarshallerImpl() {
-			super(ListPropertyImpl.class, "LIST");
-		}
-
-		@Override
-		protected ListPropertyImpl newInstance(ICalParameters parameters) {
-			return new ListPropertyImpl();
-		}
-
-		@Override
-		protected String writeValue(ListPropertyImpl property, String value) {
-			return value;
-		}
-
-		@Override
-		protected String readValue(String value, List<String> warnings) {
-			return value;
-		}
-	}
-
-	private class ListPropertyImpl extends ListProperty<String> {
-		//empty
 	}
 }

@@ -52,8 +52,9 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 	}
 
 	@Override
-	protected ExceptionDates newInstance() {
-		return new ExceptionDates();
+	protected ExceptionDates newInstance(ICalParameters parameters) {
+		Value value = parameters.getValue();
+		return new ExceptionDates(value != Value.DATE);
 	}
 
 	@Override

@@ -36,6 +36,15 @@ public class ExceptionDates extends ListProperty<Date> {
 	private boolean hasTime = true;
 
 	/**
+	 * Creates an exception dates property.
+	 * @param hasTime true if the dates have a time component, false if they are
+	 * strictly dates
+	 */
+	public ExceptionDates(boolean hasTime) {
+		setHasTime(hasTime);
+	}
+
+	/**
 	 * Gets whether the dates have time components.
 	 * @return true if the dates have time components, false if they are
 	 * strictly dates

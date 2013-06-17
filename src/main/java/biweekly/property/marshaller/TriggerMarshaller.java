@@ -65,15 +65,19 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	@Override
 	protected Trigger _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
+
 		try {
 			return new Trigger(ICalDateFormatter.parse(value));
 		} catch (IllegalArgumentException e) {
-			//must be a duration
-			try {
-				return new Trigger(Duration.parse(value), parameters.getRelated());
-			} catch (IllegalArgumentException e2) {
-				throw new CannotParseException("Could not parse value as a date or duration.");
-			}
+			//unable to parse value as date, must be a duration
 		}
+
+		try {
+			return new Trigger(Duration.parse(value), parameters.getRelated());
+		} catch (IllegalArgumentException e) {
+			//unable to parse duration
+		}
+
+		throw new CannotParseException("Could not parse value as a date or duration.");
 	}
 }

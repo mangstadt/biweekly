@@ -3,13 +3,10 @@ package biweekly.property.marshaller;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Test;
 
 import biweekly.parameter.ICalParameters;
-import biweekly.property.ListProperty;
+import biweekly.property.TextProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
 /*
@@ -40,36 +37,22 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 /**
  * @author Michael Angstadt
  */
-public class ListPropertyMarshallerTest {
-	private final ListPropertyMarshallerImpl marshaller = new ListPropertyMarshallerImpl();
+public class TextPropertyMarshallerTest {
+	private final TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl();
 
 	@Test
-	public void writeText_multiple() {
-		ListPropertyImpl prop = new ListPropertyImpl();
-		prop.addValue("one");
-		prop.addValue("two");
-		prop.addValue("three,four");
+	public void writeText() {
+		TextPropertyImpl prop = new TextPropertyImpl("the;text");
 
 		String actual = marshaller.writeText(prop);
 
-		String expected = "one,two,three\\,four";
+		String expected = "the\\;text";
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void writeText_single() {
-		ListPropertyImpl prop = new ListPropertyImpl();
-		prop.addValue("one");
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "one";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_empty() {
-		ListPropertyImpl prop = new ListPropertyImpl();
+	public void writeText_null() {
+		TextPropertyImpl prop = new TextPropertyImpl(null);
 
 		String actual = marshaller.writeText(prop);
 
@@ -79,48 +62,30 @@ public class ListPropertyMarshallerTest {
 
 	@Test
 	public void parseText() {
-		String value = "one,two,three\\,four";
+		String value = "the\\;text";
 		ICalParameters params = new ICalParameters();
 
-		Result<ListPropertyImpl> result = marshaller.parseText(value, params);
+		Result<TextPropertyImpl> result = marshaller.parseText(value, params);
 
-		assertEquals(Arrays.asList("one", "two", "three,four"), result.getValue().getValues());
+		TextPropertyImpl prop = result.getValue();
+		assertEquals("the;text", prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}
 
-	@Test
-	public void parseText_empty() {
-		String value = "";
-		ICalParameters params = new ICalParameters();
-
-		Result<ListPropertyImpl> result = marshaller.parseText(value, params);
-
-		assertEquals(0, result.getValue().getValues().size());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	private class ListPropertyMarshallerImpl extends ListPropertyMarshaller<ListPropertyImpl, String> {
-		public ListPropertyMarshallerImpl() {
-			super(ListPropertyImpl.class, "LIST");
+	private class TextPropertyMarshallerImpl extends TextPropertyMarshaller<TextPropertyImpl> {
+		public TextPropertyMarshallerImpl() {
+			super(TextPropertyImpl.class, "TEXT");
 		}
 
 		@Override
-		protected ListPropertyImpl newInstance(ICalParameters parameters) {
-			return new ListPropertyImpl();
-		}
-
-		@Override
-		protected String writeValue(ListPropertyImpl property, String value) {
-			return value;
-		}
-
-		@Override
-		protected String readValue(String value, List<String> warnings) {
-			return value;
+		protected TextPropertyImpl newInstance(String value) {
+			return new TextPropertyImpl(value);
 		}
 	}
 
-	private class ListPropertyImpl extends ListProperty<String> {
-		//empty
+	private class TextPropertyImpl extends TextProperty {
+		public TextPropertyImpl(String value) {
+			super(value);
+		}
 	}
 }
