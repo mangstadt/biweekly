@@ -4,7 +4,6 @@ import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -40,8 +39,8 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 /**
  * @author Michael Angstadt
  */
-public class ListPropertyMarshallerTest {
-	private final ListPropertyMarshallerImpl marshaller = new ListPropertyMarshallerImpl();
+public class TextListPropertyMarshallerTest {
+	private final TextListPropertyMarshallerImpl marshaller = new TextListPropertyMarshallerImpl();
 
 	@Test
 	public void writeText_multiple() {
@@ -99,24 +98,14 @@ public class ListPropertyMarshallerTest {
 		assertWarnings(0, result.getWarnings());
 	}
 
-	private class ListPropertyMarshallerImpl extends ListPropertyMarshaller<ListPropertyImpl, String> {
-		public ListPropertyMarshallerImpl() {
+	private class TextListPropertyMarshallerImpl extends TextListPropertyMarshaller<ListPropertyImpl> {
+		public TextListPropertyMarshallerImpl() {
 			super(ListPropertyImpl.class, "LIST");
 		}
 
 		@Override
 		protected ListPropertyImpl newInstance(ICalParameters parameters) {
 			return new ListPropertyImpl();
-		}
-
-		@Override
-		protected String writeValue(ListPropertyImpl property, String value) {
-			return value;
-		}
-
-		@Override
-		protected String readValue(String value, List<String> warnings) {
-			return value;
 		}
 	}
 

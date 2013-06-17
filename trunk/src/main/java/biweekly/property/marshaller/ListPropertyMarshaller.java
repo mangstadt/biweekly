@@ -52,7 +52,7 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 
 	@Override
 	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
-		T property = newInstance();
+		T property = newInstance(parameters);
 
 		String split[] = parseList(value);
 		for (String s : split) {
@@ -62,7 +62,7 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 		return property;
 	}
 
-	protected abstract T newInstance();
+	protected abstract T newInstance(ICalParameters parameters);
 
 	protected abstract String writeValue(T property, V value);
 
