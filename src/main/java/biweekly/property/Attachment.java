@@ -45,14 +45,6 @@ public class Attachment extends ICalProperty {
 	private String uri;
 
 	/**
-	 * Creates a new attachment property. Use of this constructor is discouraged
-	 * and may put the property in an inconsistent state.
-	 */
-	public Attachment() {
-		//empty
-	}
-
-	/**
 	 * Creates a new attachment.
 	 * @param formatType the content-type of the data (e.g. "image/png")
 	 * @param data the binary data
