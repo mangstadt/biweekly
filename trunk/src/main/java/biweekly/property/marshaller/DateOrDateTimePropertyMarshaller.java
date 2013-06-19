@@ -7,8 +7,6 @@ import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.DateOrDateTimeProperty;
-import biweekly.util.ICalDateFormatter;
-import biweekly.util.ISOFormat;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -40,7 +38,6 @@ import biweekly.util.ISOFormat;
  * @author Michael Angstadt
  */
 public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeProperty> extends ICalPropertyMarshaller<T> {
-	//TODO allow a date to be written using a timezone instead of "Z"
 	public DateOrDateTimePropertyMarshaller(Class<T> clazz, String propertyName) {
 		super(clazz, propertyName);
 	}
@@ -59,24 +56,20 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 			return "";
 		}
 
-		ISOFormat format = property.hasTime() ? ISOFormat.UTC_TIME_BASIC : ISOFormat.DATE_BASIC;
-		return ICalDateFormatter.format(value, format);
+		return writeDate(value, property.hasTime(), property.getParameters().getTimezoneId());
 	}
 
 	@Override
 	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
-		Date date = null;
-		boolean hasTime = false;
 		try {
-			date = ICalDateFormatter.parse(value);
-			hasTime = value.contains("T");
+			Date date = parseDate(value, parameters.getTimezoneId(), warnings);
+			boolean hasTime = value.contains("T");
+			return newInstance(date, hasTime);
 		} catch (IllegalArgumentException e) {
 			throw new CannotParseException("Could not parse date value.");
 		}
-
-		return newInstance(date, hasTime);
 	}
 
 	protected abstract T newInstance(Date date, boolean hasTime);

@@ -1,13 +1,17 @@
 package biweekly.property.marshaller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import biweekly.io.CannotParseException;
 import biweekly.io.text.ICalWriter;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.util.ICalDateFormatter;
+import biweekly.util.ISOFormat;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -251,6 +255,73 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 			ret[i++] = split2;
 		}
 		return ret;
+	}
+
+	/**
+	 * Parses a date or date-time string.
+	 * @param value the date string
+	 * @param timezoneId the TZID parameter value (or null if not set)
+	 * @param warnings the warnings list
+	 * @return the parsed date
+	 * @throws IllegalArgumentException if the date string is invalid
+	 */
+	protected static Date parseDate(String value, String timezoneId, List<String> warnings) {
+		TimeZone timezone = null;
+		if (timezoneId != null) {
+			if (timezoneId.contains("/")) {
+				timezone = parseTimezoneId(timezoneId);
+				if (timezone == null) {
+					warnings.add("Ignoring unrecognized timezone ID: " + timezoneId);
+				}
+			} else {
+				//TODO parse the date-time according to the referenced VTIMEZONE component
+			}
+		}
+
+		return ICalDateFormatter.parse(value, timezone);
+	}
+
+	/**
+	 * Writes a {@link Date} object as a string
+	 * @param value the date
+	 * @param hasTime whether the time component should be included
+	 * @param timezoneId the TZID parameter value (or null if not set)
+	 * @return the date string
+	 */
+	protected static String writeDate(Date value, boolean hasTime, String timezoneId) {
+		ISOFormat format;
+		TimeZone timezone = null;
+
+		if (hasTime) {
+			if (timezoneId == null) {
+				format = ISOFormat.UTC_TIME_BASIC;
+			} else if (timezoneId.contains("/")) {
+				timezone = parseTimezoneId(timezoneId);
+				if (timezone == null) {
+					//unknown timezone
+					format = ISOFormat.UTC_TIME_BASIC;
+				} else {
+					format = ISOFormat.TIME_BASIC_WITHOUT_TZ;
+				}
+			} else {
+				//TODO format the date-time according to the referenced VTIMEZONE component
+				format = ISOFormat.TIME_BASIC_WITHOUT_TZ;
+			}
+		} else {
+			format = ISOFormat.DATE_BASIC;
+		}
+
+		return ICalDateFormatter.format(value, format, timezone);
+	}
+
+	/**
+	 * Gets the {@link TimeZone} object that corresponds to the given ID.
+	 * @param timezoneId the timezone ID (e.g. "America/New_York")
+	 * @return the timezone object or null if not found
+	 */
+	protected static TimeZone parseTimezoneId(String timezoneId) {
+		TimeZone timezone = TimeZone.getTimeZone(timezoneId);
+		return "GMT".equals(timezone.getID()) ? null : timezone;
 	}
 
 	/**

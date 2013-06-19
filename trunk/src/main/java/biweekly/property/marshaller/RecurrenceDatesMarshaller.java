@@ -8,8 +8,6 @@ import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.RecurrenceDates;
 import biweekly.util.Duration;
-import biweekly.util.ICalDateFormatter;
-import biweekly.util.ISOFormat;
 import biweekly.util.Period;
 import biweekly.util.StringUtils;
 import biweekly.util.StringUtils.JoinCallback;
@@ -60,25 +58,24 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 	}
 
 	@Override
-	protected String _writeText(RecurrenceDates property) {
+	protected String _writeText(final RecurrenceDates property) {
 		if (property.getDates() != null) {
-			final ISOFormat format = property.hasTime() ? ISOFormat.UTC_TIME_BASIC : ISOFormat.DATE_BASIC;
 			return StringUtils.join(property.getDates(), ',', new JoinCallback<Date>() {
 				public void handle(StringBuilder sb, Date date) {
-					sb.append(ICalDateFormatter.format(date, format));
+					sb.append(writeDate(date, property.hasTime(), null));
 				}
 			});
 		} else if (property.getPeriods() != null) {
 			return StringUtils.join(property.getPeriods(), ',', new JoinCallback<Period>() {
 				public void handle(StringBuilder sb, Period period) {
 					if (period.getStartDate() != null) {
-						sb.append(ICalDateFormatter.format(period.getStartDate(), ISOFormat.UTC_TIME_BASIC));
+						sb.append(writeDate(period.getStartDate(), true, null));
 					}
 
 					sb.append('/');
 
 					if (period.getEndDate() != null) {
-						sb.append(ICalDateFormatter.format(period.getEndDate(), ISOFormat.UTC_TIME_BASIC));
+						sb.append(writeDate(period.getEndDate(), true, null));
 					} else if (period.getDuration() != null) {
 						sb.append(period.getDuration());
 					}
@@ -107,7 +104,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 				String startStr = timePeriodStrSplit[0];
 				Date start;
 				try {
-					start = ICalDateFormatter.parse(startStr);
+					start = parseDate(startStr, parameters.getTimezoneId(), warnings);
 				} catch (IllegalArgumentException e) {
 					warnings.add("Could not parse start date, skipping time period: " + timePeriodStr);
 					continue;
@@ -115,7 +112,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 
 				String endStr = timePeriodStrSplit[1];
 				try {
-					Date end = ICalDateFormatter.parse(endStr);
+					Date end = parseDate(endStr, parameters.getTimezoneId(), warnings);
 					periods.add(new Period(start, end));
 				} catch (IllegalArgumentException e) {
 					//must be a duration
@@ -135,7 +132,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 			List<Date> dates = new ArrayList<Date>(split.length);
 			for (String s : split) {
 				try {
-					dates.add(ICalDateFormatter.parse(s));
+					dates.add(parseDate(s, parameters.getTimezoneId(), warnings));
 				} catch (IllegalArgumentException e) {
 					warnings.add("Skipping unparsable date: " + s);
 				}

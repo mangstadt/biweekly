@@ -56,7 +56,7 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 
 		String split[] = parseList(value);
 		for (String s : split) {
-			property.addValue(readValue(s, warnings));
+			property.addValue(readValue(s, parameters, warnings));
 		}
 
 		return property;
@@ -66,5 +66,5 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 
 	protected abstract String writeValue(T property, V value);
 
-	protected abstract V readValue(String value, List<String> warnings);
+	protected abstract V readValue(String value, ICalParameters parameters, List<String> warnings);
 }

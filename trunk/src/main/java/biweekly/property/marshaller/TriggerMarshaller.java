@@ -7,8 +7,6 @@ import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.Trigger;
 import biweekly.util.Duration;
-import biweekly.util.ICalDateFormatter;
-import biweekly.util.ISOFormat;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -54,7 +52,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	@Override
 	protected String _writeText(Trigger property) {
 		if (property.getDate() != null) {
-			return ICalDateFormatter.format(property.getDate(), ISOFormat.UTC_TIME_BASIC);
+			return writeDate(property.getDate(), true, null);
 		}
 		if (property.getDuration() != null) {
 			return property.getDuration().toString();
@@ -67,7 +65,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 		value = unescape(value);
 
 		try {
-			return new Trigger(ICalDateFormatter.parse(value));
+			return new Trigger(parseDate(value, parameters.getTimezoneId(), warnings));
 		} catch (IllegalArgumentException e) {
 			//unable to parse value as date, must be a duration
 		}

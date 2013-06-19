@@ -7,6 +7,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 /*
@@ -91,5 +93,22 @@ public class TestUtils {
 	 */
 	public static void assertIntEquals(int expected, Integer actual) {
 		assertEquals(Integer.valueOf(expected), actual);
+	}
+
+	/**
+	 * Builds a timezone object with the given offset.
+	 * @param hours the hour offset
+	 * @param minutes the minute offset
+	 * @return the timezone object
+	 */
+	public static TimeZone buildTimezone(int hours, int minutes) {
+		int hourMillis = 1000 * 60 * 60 * hours;
+
+		int minuteMillis = 1000 * 60 * minutes;
+		if (hours < 0) {
+			minuteMillis *= -1;
+		}
+
+		return new SimpleTimeZone(hourMillis + minuteMillis, "");
 	}
 }

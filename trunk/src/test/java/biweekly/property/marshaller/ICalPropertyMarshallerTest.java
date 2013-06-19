@@ -1,13 +1,21 @@
 package biweekly.property.marshaller;
 
+import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.buildTimezone;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import biweekly.parameter.ICalParameters;
@@ -42,7 +50,33 @@ import biweekly.property.ICalProperty;
  * @author Michael Angstadt
  */
 public class ICalPropertyMarshallerTest {
-	final String NEWLINE = System.getProperty("line.separator");
+	private final String NEWLINE = System.getProperty("line.separator");
+
+	private static TimeZone defaultTz;
+
+	private final Date datetime;
+	{
+		Calendar c = Calendar.getInstance();
+		c.clear();
+		c.set(Calendar.YEAR, 2013);
+		c.set(Calendar.MONTH, Calendar.JUNE);
+		c.set(Calendar.DATE, 11);
+		c.set(Calendar.HOUR_OF_DAY, 14);
+		c.set(Calendar.MINUTE, 43);
+		c.set(Calendar.SECOND, 2);
+		datetime = c.getTime();
+	}
+
+	@BeforeClass
+	public static void beforeClass() {
+		defaultTz = TimeZone.getDefault();
+		TimeZone.setDefault(buildTimezone(1, 0));
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		TimeZone.setDefault(defaultTz);
+	}
 
 	@Test
 	public void unescape() {
@@ -81,6 +115,101 @@ public class ICalPropertyMarshallerTest {
 		actual = ICalPropertyMarshaller.splitBy("Doe;John;Joh\\,\\;nny;;Sr.,III", ';', true, true);
 		expected = new String[] { "Doe", "John", "Joh,;nny", "Sr.,III" };
 		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void parseDate_timezone() {
+		String value = "20130611T134302Z";
+		List<String> warnings = new ArrayList<String>();
+
+		Date actual = ICalPropertyMarshaller.parseDate(value, null, warnings);
+
+		assertEquals(datetime, actual);
+		assertWarnings(0, warnings);
+	}
+
+	@Test
+	public void parseDate_local() {
+		String value = "20130611T144302";
+		List<String> warnings = new ArrayList<String>();
+
+		Date actual = ICalPropertyMarshaller.parseDate(value, null, warnings);
+
+		assertEquals(datetime, actual);
+		assertWarnings(0, warnings);
+	}
+
+	@Test
+	public void parseDate_tzid() {
+		String value = "20130611T144302";
+		List<String> warnings = new ArrayList<String>();
+
+		Date actual = ICalPropertyMarshaller.parseDate(value, "some ID", warnings);
+
+		assertEquals(datetime, actual);
+		assertWarnings(0, warnings);
+	}
+
+	@Test
+	public void parseDate_global_tzid() {
+		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
+		int hour = 13 + (timezone.getOffset(System.currentTimeMillis()) / (1000 * 60 * 60)); //it might be daylight savings today
+		String value = "20130611T" + hour + "4302";
+		List<String> warnings = new ArrayList<String>();
+
+		Date actual = ICalPropertyMarshaller.parseDate(value, timezone.getID(), warnings);
+
+		assertEquals(datetime, actual);
+		assertWarnings(0, warnings);
+	}
+
+	@Test
+	public void parseDate_invalid_tzid() {
+		String value = "20130611T144302";
+		List<String> warnings = new ArrayList<String>();
+
+		Date actual = ICalPropertyMarshaller.parseDate(value, "invalid/timezone", warnings);
+
+		//parse as local time and add warning
+		assertEquals(datetime, actual);
+		assertWarnings(1, warnings);
+	}
+
+	@Test
+	public void writeDate_datetime() {
+		String expected = "20130611T134302Z";
+		String actual = ICalPropertyMarshaller.writeDate(datetime, true, null);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeDate_date() {
+		String expected = "20130611";
+		String actual = ICalPropertyMarshaller.writeDate(datetime, false, null);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeDate_datetime_global_tzid() {
+		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
+		int hour = 13 + (timezone.getOffset(System.currentTimeMillis()) / (1000 * 60 * 60)); //it might be daylight savings today
+		String expected = "20130611T" + hour + "4302";
+		String actual = ICalPropertyMarshaller.writeDate(datetime, true, timezone.getID());
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeDate_datetime_invalid_global_tzid() {
+		String expected = "20130611T134302Z";
+		String actual = ICalPropertyMarshaller.writeDate(datetime, true, "invalid/timezone");
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeDate_datetime_tzid() {
+		String expected = "20130611T144302";
+		String actual = ICalPropertyMarshaller.writeDate(datetime, true, "some ID");
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -135,7 +264,7 @@ public class ICalPropertyMarshallerTest {
 		assertTrue(params == result.getValue().getParameters());
 	}
 
-	class ICalPropertyMarshallerImpl extends ICalPropertyMarshaller<TestProperty> {
+	private class ICalPropertyMarshallerImpl extends ICalPropertyMarshaller<TestProperty> {
 		ICalPropertyMarshallerImpl() {
 			super(TestProperty.class, "TEST");
 		}
@@ -157,7 +286,7 @@ public class ICalPropertyMarshallerTest {
 		}
 	}
 
-	class TestProperty extends ICalProperty {
+	private class TestProperty extends ICalProperty {
 		//empty
 	}
 }

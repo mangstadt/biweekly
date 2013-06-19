@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import static biweekly.util.TestUtils.buildTimezone;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
@@ -41,12 +42,12 @@ import org.junit.Test;
  * @author Michael Angstadt
  */
 public class ICalDateFormatterTest {
-	private static final TimeZone defaultTz = TimeZone.getDefault();
+	private static TimeZone defaultTz;
 
 	@BeforeClass
 	public static void beforeClass() {
-		TimeZone tz = new SimpleTimeZone(1000 * 60 * 60, "");
-		TimeZone.setDefault(tz);
+		defaultTz = TimeZone.getDefault();
+		TimeZone.setDefault(buildTimezone(1, 0));
 	}
 
 	@AfterClass
@@ -56,134 +57,188 @@ public class ICalDateFormatterTest {
 
 	@Test
 	public void format() {
-		TimeZone tz = TimeZone.getTimeZone("Asia/Beirut");
-		Calendar cal = Calendar.getInstance(tz);
-		cal.clear();
-		cal.set(Calendar.YEAR, 2006);
-		cal.set(Calendar.MONTH, Calendar.JANUARY);
-		cal.set(Calendar.DAY_OF_MONTH, 2);
-		cal.set(Calendar.HOUR_OF_DAY, 10);
-		cal.set(Calendar.MINUTE, 20);
-		cal.set(Calendar.SECOND, 30);
-		Date date = cal.getTime();
+		Date datetime;
+		{
+			Calendar cal = Calendar.getInstance();
+			cal.clear();
+			cal.set(Calendar.YEAR, 2006);
+			cal.set(Calendar.MONTH, Calendar.JANUARY);
+			cal.set(Calendar.DAY_OF_MONTH, 2);
+			cal.set(Calendar.HOUR_OF_DAY, 10);
+			cal.set(Calendar.MINUTE, 20);
+			cal.set(Calendar.SECOND, 30);
+			datetime = cal.getTime();
+		}
 
-		assertEquals("20060102", ICalDateFormatter.format(date, ISOFormat.DATE_BASIC, tz));
-		assertEquals("2006-01-02", ICalDateFormatter.format(date, ISOFormat.DATE_EXTENDED, tz));
-		assertEquals("20060102T102030+0200", ICalDateFormatter.format(date, ISOFormat.TIME_BASIC, tz));
-		assertEquals("2006-01-02T10:20:30+02:00", ICalDateFormatter.format(date, ISOFormat.TIME_EXTENDED, tz));
-		assertEquals("2006-01-02T10:20:30+0200", ICalDateFormatter.format(date, ISOFormat.HCARD_TIME_TAG, tz));
-		assertEquals("20060102T082030Z", ICalDateFormatter.format(date, ISOFormat.UTC_TIME_BASIC, tz));
-		assertEquals("2006-01-02T08:20:30Z", ICalDateFormatter.format(date, ISOFormat.UTC_TIME_EXTENDED, tz));
+		//@formatter:off
+		Object[][] tests = new Object[][]{
+			new Object[]{"20060102", ISOFormat.DATE_BASIC},
+			new Object[]{"2006-01-02", ISOFormat.DATE_EXTENDED},
+			new Object[]{"20060102T102030+0100", ISOFormat.TIME_BASIC},
+			new Object[]{"2006-01-02T10:20:30+01:00", ISOFormat.TIME_EXTENDED},
+			new Object[]{"20060102T102030", ISOFormat.TIME_BASIC_WITHOUT_TZ},
+			new Object[]{"2006-01-02T10:20:30", ISOFormat.TIME_EXTENDED_WITHOUT_TZ},
+			new Object[]{"2006-01-02T10:20:30+0100", ISOFormat.HCARD_TIME_TAG},
+			new Object[]{"20060102T092030Z", ISOFormat.UTC_TIME_BASIC},
+			new Object[]{"2006-01-02T09:20:30Z", ISOFormat.UTC_TIME_EXTENDED},
+		};
+		//@formatter:off
+		
+		for (Object[] test : tests){
+			String expected = (String)test[0];
+			ISOFormat format = (ISOFormat)test[1];
+			
+			String actual = ICalDateFormatter.format(datetime, format);
+			assertEquals(expected, actual);
+		}
+	}
+	
+	@Test
+	public void format_timezone(){
+		TimeZone timezone = buildTimezone(-2, 0);
+		
+		Date datetime;
+		{
+			Calendar cal = Calendar.getInstance();
+			cal.clear();
+			cal.set(Calendar.YEAR, 2006);
+			cal.set(Calendar.MONTH, Calendar.JANUARY);
+			cal.set(Calendar.DAY_OF_MONTH, 2);
+			cal.set(Calendar.HOUR_OF_DAY, 10);
+			cal.set(Calendar.MINUTE, 20);
+			cal.set(Calendar.SECOND, 30);
+			datetime = cal.getTime();
+		}
+		
+		String actual = ICalDateFormatter.format(datetime, ISOFormat.TIME_BASIC, timezone);
+		assertEquals("20060102T072030-0200", actual);
 	}
 
 	@Test
 	public void formatTimeZone() {
-		//positive
-		TimeZone tz = TimeZone.getTimeZone("Asia/Beirut");
-
-		String expected = "+0200";
-		String actual = ICalDateFormatter.formatTimeZone(tz, false);
-		assertEquals(expected, actual);
-
-		expected = "+02:00";
-		actual = ICalDateFormatter.formatTimeZone(tz, true);
-		assertEquals(expected, actual);
-
-		//negative
-		tz = TimeZone.getTimeZone("America/New_York");
-
-		expected = "-0500";
-		actual = ICalDateFormatter.formatTimeZone(tz, false);
-		assertEquals(expected, actual);
-
-		expected = "-05:00";
-		actual = ICalDateFormatter.formatTimeZone(tz, true);
-		assertEquals(expected, actual);
-
-		//with minutes
-		tz = TimeZone.getTimeZone("America/New_York");
-		tz.setRawOffset(tz.getRawOffset() - 30 * 60 * 1000);
-
-		expected = "-0530";
-		actual = ICalDateFormatter.formatTimeZone(tz, false);
-		assertEquals(expected, actual);
-
-		expected = "-05:30";
-		actual = ICalDateFormatter.formatTimeZone(tz, true);
-		assertEquals(expected, actual);
-
-		//>= 10
-		tz = TimeZone.getTimeZone("Australia/Sydney");
-
-		expected = "+1000";
-		actual = ICalDateFormatter.formatTimeZone(tz, false);
-		assertEquals(expected, actual);
-
-		expected = "+10:00";
-		actual = ICalDateFormatter.formatTimeZone(tz, true);
-		assertEquals(expected, actual);
-
-		//zero
-		tz = TimeZone.getTimeZone("UTC");
-
-		expected = "+0000";
-		actual = ICalDateFormatter.formatTimeZone(tz, false);
-		assertEquals(expected, actual);
-
-		expected = "+00:00";
-		actual = ICalDateFormatter.formatTimeZone(tz, true);
-		assertEquals(expected, actual);
+		//@formatter:off
+		Object[][] tests = new Object[][]{
+			//positive
+			new Object[]{"+0200", "+02:00", buildTimezone(2, 0)},
+			
+			//negative
+			new Object[]{"-0500", "-05:00", buildTimezone(-5, 0)},
+			
+			//with minutes
+			new Object[]{"-0530", "-05:30", buildTimezone(-5, 30)},
+			
+			//hour >= 10
+			new Object[]{"+1000", "+10:00", buildTimezone(10, 0)},
+			
+			//zero hour
+			new Object[]{"+0000", "+00:00", buildTimezone(0, 0)},
+		};
+		//@formatter:off
+		
+		for (Object[] test : tests){
+			String expectedBasic = (String)test[0];
+			String expectedExtended = (String)test[1];
+			TimeZone timezone = (TimeZone)test[2];
+			
+			String actualBasic = ICalDateFormatter.formatTimeZone(timezone, false);
+			assertEquals(expectedBasic, actualBasic);
+			
+			String actualExtended = ICalDateFormatter.formatTimeZone(timezone, true);
+			assertEquals(expectedExtended, actualExtended);
+		}
 	}
 
 	@Test
 	public void parse() {
-		Calendar c;
-		Date expected, actual;
+		Date date;
+		{
+			Calendar c = Calendar.getInstance();
+			c.clear();
+			c.set(Calendar.YEAR, 2012);
+			c.set(Calendar.MONTH, Calendar.JULY);
+			c.set(Calendar.DAY_OF_MONTH, 1);
+			date = c.getTime();
+		}
 
-		//test date
-		c = Calendar.getInstance();
-		c.clear();
-		c.set(Calendar.YEAR, 2012);
-		c.set(Calendar.MONTH, Calendar.JULY);
-		c.set(Calendar.DAY_OF_MONTH, 1);
-		expected = c.getTime();
-		actual = ICalDateFormatter.parse("20120701");
-		assertEquals(expected, actual);
+		Date datetime;
+		{
+			Calendar c = Calendar.getInstance();
+			c.clear();
+			c.set(Calendar.YEAR, 2012);
+			c.set(Calendar.MONTH, Calendar.JULY);
+			c.set(Calendar.DAY_OF_MONTH, 1);
+			c.set(Calendar.HOUR_OF_DAY, 8);
+			c.set(Calendar.MINUTE, 1);
+			c.set(Calendar.SECOND, 30);
+			datetime = c.getTime();
+		}
 
-		actual = ICalDateFormatter.parse("2012-07-01");
-		assertEquals(expected, actual);
+		//@formatter:off
+		Object[][] tests = new Object[][]{
+			//basic, date
+			new Object[]{"20120701", date},
+			
+			//extended, date
+			new Object[]{"2012-07-01", date},
+			
+			//basic, datetime, GMT
+			new Object[]{"20120701T070130Z", datetime},
+			
+			//extended, datetime, GMT
+			new Object[]{"2012-07-01T07:01:30Z", datetime},
+			
+			//basic, datetime, timezone
+			new Object[]{"2012-07-01T10:01:30+0300", datetime},
+			
+			//extended, datetime, timezone
+			new Object[]{"2012-07-01T10:01:30+03:00", datetime},
+			
+			//basic, datetime (should use local timezone)
+			new Object[]{"20120701T080130", datetime},
+			
+			//extended, datetime (should use local timezone)
+			new Object[]{"2012-07-01T08:01:30", datetime},
+		};
+		//@formatter:on
 
-		//test date-time
-		c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-		c.clear();
-		c.set(Calendar.YEAR, 2012);
-		c.set(Calendar.MONTH, Calendar.JULY);
-		c.set(Calendar.DAY_OF_MONTH, 1);
-		c.set(Calendar.HOUR_OF_DAY, 8);
-		c.set(Calendar.MINUTE, 1);
-		c.set(Calendar.SECOND, 30);
-		expected = c.getTime();
-		actual = ICalDateFormatter.parse("20120701T080130Z");
-		assertEquals(expected, actual);
+		for (Object[] test : tests) {
+			String input = (String) test[0];
+			Date expected = (Date) test[1];
 
-		actual = ICalDateFormatter.parse("2012-07-01T08:01:30Z");
-		assertEquals(expected, actual);
+			Date actual = ICalDateFormatter.parse(input);
 
-		actual = ICalDateFormatter.parse("2012-07-01T11:01:30+03:00");
-		assertEquals(expected, actual);
+			assertEquals(expected, actual);
+		}
+	}
 
-		actual = ICalDateFormatter.parse("2012-07-01T11:01:30+0300");
-		assertEquals(expected, actual);
+	@Test
+	public void parse_timezone() {
+		TimeZone timezone = new SimpleTimeZone(-1000 * 60 * 60 * 2, "");
 
-		//basic, no timezone
-		//should use the system's timezone
-		actual = ICalDateFormatter.parse("20120701T090130");
-		assertEquals(expected, actual);
+		Date expected;
+		{
+			Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+			c.clear();
+			c.set(Calendar.YEAR, 2012);
+			c.set(Calendar.MONTH, Calendar.JULY);
+			c.set(Calendar.DAY_OF_MONTH, 1);
+			c.set(Calendar.HOUR_OF_DAY, 8);
+			c.set(Calendar.MINUTE, 1);
+			c.set(Calendar.SECOND, 30);
+			expected = c.getTime();
+		}
 
-		//extended, no timezone
-		//should use the system's timezone
-		actual = ICalDateFormatter.parse("2012-07-01T09:01:30");
-		assertEquals(expected, actual);
+		Date actual = ICalDateFormatter.parse("20120701T060130", timezone);
+		assertEquals(actual, expected);
+
+		//timezone in date string takes presidence
+		actual = ICalDateFormatter.parse("20120701T080130Z", timezone);
+		assertEquals(actual, expected);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void parse_invalid() {
+		ICalDateFormatter.parse("invalid");
 	}
 
 	@Test
@@ -250,5 +305,10 @@ public class ICalDateFormatterTest {
 			int[] actual = ICalDateFormatter.parseTimeZone(input);
 			assertArrayEquals(expected, actual);
 		}
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void parseTimeZone_invalid() {
+		ICalDateFormatter.parseTimeZone("invalid");
 	}
 }
