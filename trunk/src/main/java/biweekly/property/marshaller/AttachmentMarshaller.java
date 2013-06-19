@@ -66,7 +66,7 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	protected Attachment _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
-		Attachment attachment = new Attachment();
+		Attachment attachment = new Attachment(null, (String) null);
 		if (parameters.getValue() == Value.BINARY || parameters.getEncoding() == Encoding.BASE64) {
 			attachment.setData(Base64.decodeBase64(value));
 		} else {
