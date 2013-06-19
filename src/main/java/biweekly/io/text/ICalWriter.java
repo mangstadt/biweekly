@@ -259,7 +259,7 @@ public class ICalWriter implements Closeable {
 				parameters = pm.prepareParameters(property);
 				value = pm.writeText(property);
 			} catch (SkipMeException e) {
-				warnings.add(pm.getPropertyName() + " property has requested that it not be written: " + e.getMessage());
+				addWarning("Property has requested that it be skipped: " + e.getMessage(), pm.getPropertyName());
 				continue;
 			}
 
@@ -267,7 +267,7 @@ public class ICalWriter implements Closeable {
 			try {
 				writer.writeProperty(pm.getPropertyName(), parameters, value);
 			} catch (IllegalArgumentException e) {
-				warnings.add(pm.getPropertyName() + " property cannot be written: " + e.getMessage());
+				addWarning("Property could not be written: " + e.getMessage(), pm.getPropertyName());
 				continue;
 			}
 		}
@@ -323,5 +323,9 @@ public class ICalWriter implements Closeable {
 	 */
 	public void close() throws IOException {
 		writer.close();
+	}
+
+	private void addWarning(String message, String propertyName) {
+		warnings.add(propertyName + " property: " + message);
 	}
 }
