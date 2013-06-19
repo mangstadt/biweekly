@@ -306,17 +306,17 @@ public class ICalReader implements IParser {
 				Result<? extends ICalProperty> result = m.parseText(value, parameters);
 
 				for (String warning : result.getWarnings()) {
-					warnings.add("Line " + reader.getLineNum() + " (" + name + " property): " + warning);
+					addWarning(warning, name);
 				}
 
 				property = result.getValue();
 			} catch (SkipMeException e) {
-				warnings.add("Line " + reader.getLineNum() + ": " + name + " property has requested that it be skipped: " + e.getMessage());
+				addWarning("Property has requested that it be skipped: " + e.getMessage(), name);
 			} catch (CannotParseException e) {
 				if (e.getMessage() == null) {
-					warnings.add("Line " + reader.getLineNum() + ": " + name + " property value could not be parsed: " + value);
+					addWarning("Property value could not be unmarshalled: " + value, name);
 				} else {
-					warnings.add("Line " + reader.getLineNum() + ": " + name + " property value could not be parsed.\n  Value: " + value + "\n  Reason: " + e.getMessage());
+					addWarning("Property value could not be unmarshalled.\n  Value: " + value + "\n  Reason: " + e.getMessage(), name);
 				}
 				property = new RawProperty(name, value);
 			}
@@ -348,7 +348,7 @@ public class ICalReader implements IParser {
 			}
 			if (popIndex == -1) {
 				//END property does not match up with any BEGIN properties, so ignore
-				warnings.add("Line " + reader.getLineNum() + ": Ignoring END property that does not match up with any BEGIN properties: " + name);
+				addWarning("Ignoring END property that does not match up with any BEGIN properties: " + name, "END");
 				return;
 			}
 
@@ -357,7 +357,7 @@ public class ICalReader implements IParser {
 		}
 
 		public void invalidLine(String line) {
-			warnings.add("Line " + reader.getLineNum() + ": Skipping malformed line: \"" + line + "\"");
+			addWarning("Skipping malformed line: \"" + line + "\"");
 		}
 
 		private ICalComponent getCurrentComponent() {
@@ -366,5 +366,24 @@ public class ICalReader implements IParser {
 			}
 			return componentStack.get(componentStack.size() - 1);
 		}
+	}
+
+	private void addWarning(String message) {
+		addWarning(message, null);
+	}
+
+	private void addWarning(String message, String propertyName) {
+		addWarning(message, propertyName, reader.getLineNum());
+	}
+
+	private void addWarning(String message, String propertyName, int lineNum) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Line ").append(lineNum);
+		if (propertyName != null) {
+			sb.append(" (").append(propertyName).append(" property)");
+		}
+		sb.append(": ").append(message);
+
+		warnings.add(sb.toString());
 	}
 }
