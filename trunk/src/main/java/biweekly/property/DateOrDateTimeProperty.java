@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.component.ICalComponent;
+import biweekly.component.VTimezone;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -74,6 +75,21 @@ public class DateOrDateTimeProperty extends ICalProperty {
 	 */
 	public boolean hasTime() {
 		return hasTime;
+	}
+
+	@Override
+	public String getTimezoneId() {
+		return super.getTimezoneId();
+	}
+
+	@Override
+	public void setTimezoneId(String timezoneId) {
+		super.setTimezoneId(timezoneId);
+	}
+
+	@Override
+	public void setTimezone(VTimezone timezone) {
+		super.setTimezone(timezone);
 	}
 
 	@Override

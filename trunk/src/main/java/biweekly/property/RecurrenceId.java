@@ -55,16 +55,6 @@ public class RecurrenceId extends DateOrDateTimeProperty {
 		super(originalStartDate, hasTime);
 	}
 
-	@Override
-	public String getTimezoneId() {
-		return super.getTimezoneId();
-	}
-
-	@Override
-	public void setTimezoneId(String timezoneId) {
-		super.setTimezoneId(timezoneId);
-	}
-
 	/**
 	 * Gets the effective range of recurrence instances from the instance
 	 * specified by this property.

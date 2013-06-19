@@ -1,5 +1,7 @@
 package biweekly.property;
 
+import biweekly.component.VTimezone;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -26,18 +28,22 @@ package biweekly.property;
  */
 
 /**
- * Defines the timezone of a VTIMEZONE component (for example,
- * "America/New_York"). For a list of valid timezone identifiers, see the <a
- * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
+ * Defines a unique identifier for a {@link VTimezone} component. The identifier
+ * must be unique within the scope of the iCalendar object. Properties that
+ * support the usage of timezones can use this ID to reference the timezone
+ * defined in a {@link VTimezone} component. Properties that support timezones
+ * will contain <code>getTimezoneId</code>, <code>setTimezoneId</code>, and
+ * <code>setTimezone</code> methods (for instance: {@link DateStart},
+ * {@link DateEnd}, and {@link DateDue}).
  * @author Michael Angstadt
  * @see "RFC 5545 p.102-3"
  */
-public class TimezoneIdentifier extends TextProperty {
+public class TimezoneId extends TextProperty {
 	/**
 	 * Creates a timezone identifier property.
-	 * @param timezone the timezone identifier (e.g. "America/New_York")
+	 * @param timezone the timezone identifier
 	 */
-	public TimezoneIdentifier(String timezone) {
+	public TimezoneId(String timezone) {
 		super(timezone);
 	}
 }

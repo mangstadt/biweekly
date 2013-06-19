@@ -1,6 +1,6 @@
 package biweekly.property.marshaller;
 
-import biweekly.property.TimezoneIdentifier;
+import biweekly.property.TimezoneId;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -28,16 +28,16 @@ import biweekly.property.TimezoneIdentifier;
  */
 
 /**
- * Marshals {@link TimezoneIdentifier} properties.
+ * Marshals {@link TimezoneId} properties.
  * @author Michael Angstadt
  */
-public class TimezoneIdentifierMarshaller extends TextPropertyMarshaller<TimezoneIdentifier> {
-	public TimezoneIdentifierMarshaller() {
-		super(TimezoneIdentifier.class, "TZID");
+public class TimezoneIdMarshaller extends TextPropertyMarshaller<TimezoneId> {
+	public TimezoneIdMarshaller() {
+		super(TimezoneId.class, "TZID");
 	}
 
 	@Override
-	protected TimezoneIdentifier newInstance(String value) {
-		return new TimezoneIdentifier(value);
+	protected TimezoneId newInstance(String value) {
+		return new TimezoneId(value);
 	}
 }

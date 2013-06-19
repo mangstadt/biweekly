@@ -75,7 +75,7 @@ public class PropertyLibrary {
 		addMarshaller(new SequenceMarshaller());
 		addMarshaller(new StatusMarshaller());
 		addMarshaller(new SummaryMarshaller());
-		addMarshaller(new TimezoneIdentifierMarshaller());
+		addMarshaller(new TimezoneIdMarshaller());
 		addMarshaller(new TimezoneNameMarshaller());
 		addMarshaller(new TimezoneOffsetFromMarshaller());
 		addMarshaller(new TimezoneOffsetToMarshaller());

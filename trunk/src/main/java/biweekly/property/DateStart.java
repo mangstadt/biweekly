@@ -51,14 +51,4 @@ public class DateStart extends DateOrDateTimeProperty {
 	public DateStart(Date startDate, boolean hasTime) {
 		super(startDate, hasTime);
 	}
-
-	@Override
-	public String getTimezoneId() {
-		return super.getTimezoneId();
-	}
-
-	@Override
-	public void setTimezoneId(String timezoneId) {
-		super.setTimezoneId(timezoneId);
-	}
 }

@@ -3,8 +3,8 @@ package biweekly.property;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.component.VTimezone;
 import biweekly.util.Period;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -95,5 +95,10 @@ public class RecurrenceDates extends ICalProperty {
 	@Override
 	public void setTimezoneId(String timezoneId) {
 		super.setTimezoneId(timezoneId);
+	}
+
+	@Override
+	public void setTimezone(VTimezone timezone) {
+		super.setTimezone(timezone);
 	}
 }

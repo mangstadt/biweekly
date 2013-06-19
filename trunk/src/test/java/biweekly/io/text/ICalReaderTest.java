@@ -663,7 +663,7 @@ public class ICalReaderTest {
 		VTimezone timezone = ical.getTimezones().get(0);
 		{
 			assertEquals(1, timezone.getProperties().size());
-			assertEquals("Eastern Standard Time", timezone.getTimezoneIdentifier().getValue());
+			assertEquals("Eastern Standard Time", timezone.getTimezoneId().getValue());
 
 			assertEquals(2, timezone.getComponents().size());
 

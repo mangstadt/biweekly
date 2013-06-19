@@ -2,6 +2,8 @@ package biweekly.property;
 
 import java.util.Date;
 
+import biweekly.component.VTimezone;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -70,5 +72,10 @@ public class ExceptionDates extends ListProperty<Date> {
 	@Override
 	public void setTimezoneId(String timezoneId) {
 		super.setTimezoneId(timezoneId);
+	}
+
+	@Override
+	public void setTimezone(VTimezone timezone) {
+		super.setTimezone(timezone);
 	}
 }
