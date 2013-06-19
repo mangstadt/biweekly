@@ -115,7 +115,7 @@ public class ListPropertyMarshallerTest {
 		}
 
 		@Override
-		protected String readValue(String value, List<String> warnings) {
+		protected String readValue(String value, ICalParameters parameters, List<String> warnings) {
 			return value;
 		}
 	}

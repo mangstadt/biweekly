@@ -7,8 +7,6 @@ import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.ExceptionDates;
-import biweekly.util.ICalDateFormatter;
-import biweekly.util.ISOFormat;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -62,15 +60,13 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 		if (value == null) {
 			return "";
 		}
-
-		ISOFormat format = property.hasTime() ? ISOFormat.UTC_TIME_BASIC : ISOFormat.DATE_BASIC;
-		return ICalDateFormatter.format(value, format);
+		return writeDate(value, property.hasTime(), property.getParameters().getTimezoneId());
 	}
 
 	@Override
-	protected Date readValue(String value, List<String> warnings) {
+	protected Date readValue(String value, ICalParameters parameters, List<String> warnings) {
 		try {
-			return ICalDateFormatter.parse(value);
+			return parseDate(value, parameters.getTimezoneId(), warnings);
 		} catch (IllegalArgumentException e) {
 			throw new CannotParseException("Could not parse date value.");
 		}

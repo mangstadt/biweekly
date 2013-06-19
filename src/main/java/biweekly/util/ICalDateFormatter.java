@@ -50,11 +50,11 @@ public class ICalDateFormatter {
 	 * @return the formatted date
 	 */
 	public static String format(Date date, ISOFormat format) {
-		return format(date, format, TimeZone.getDefault());
+		return format(date, format, null);
 	}
 
 	/**
-	 * Formats a date for inclusion in a iCalendar object.
+	 * Formats a date for inclusion in an iCalendar object.
 	 * @param date the date to format
 	 * @param format the format to use
 	 * @param timeZone the time zone to format the date in. This will be ignored
@@ -70,7 +70,9 @@ public class ICalDateFormatter {
 		}
 
 		DateFormat df = format.getFormatDateFormat();
-		df.setTimeZone(timeZone);
+		if (timeZone != null) {
+			df.setTimeZone(timeZone);
+		}
 		String str = df.format(date);
 
 		switch (format) {
@@ -92,6 +94,19 @@ public class ICalDateFormatter {
 	 * accepted ISO8601 formats
 	 */
 	public static Date parse(String dateStr) {
+		return parse(dateStr, null);
+	}
+
+	/**
+	 * Parses an iCalendar date.
+	 * @param dateStr the date string to parse (e.g. "20130609T181023Z")
+	 * @param timezone the timezone that the date is in (if the date string
+	 * contains its own timezone, then that timezone will be used instead)
+	 * @return the parsed date
+	 * @throws IllegalArgumentException if the date string isn't in one of the
+	 * accepted ISO8601 formats
+	 */
+	public static Date parse(String dateStr, TimeZone timezone) {
 		//find out what ISOFormat the date is in
 		ISOFormat format = null;
 		for (ISOFormat f : ISOFormat.values()) {
@@ -121,11 +136,14 @@ public class ICalDateFormatter {
 
 		//parse the date
 		DateFormat df = format.getParseDateFormat();
+		if (timezone != null) {
+			df.setTimeZone(timezone);
+		}
 		try {
 			return df.parse(dateStr);
 		} catch (ParseException e) {
 			//should never be thrown because the string is checked against a regex
-			return null;
+			throw new IllegalArgumentException("Date string is not in a valid ISO-8601 format.");
 		}
 	}
 

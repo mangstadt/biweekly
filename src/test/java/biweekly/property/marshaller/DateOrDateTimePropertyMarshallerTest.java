@@ -72,7 +72,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 	}
 
 	@Test
-	public void prepareParameters_with_time() {
+	public void prepareParameters_datetime() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(datetime, true);
 
 		ICalParameters params = marshaller.prepareParameters(prop);
@@ -81,7 +81,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 	}
 
 	@Test
-	public void prepareParameters_without_time() {
+	public void prepareParameters_date() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(datetime, false);
 
 		ICalParameters params = marshaller.prepareParameters(prop);
@@ -99,7 +99,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 	}
 
 	@Test
-	public void writeText_with_time() {
+	public void writeText_datetime() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(datetime, true);
 
 		String actual = marshaller.writeText(prop);
@@ -109,7 +109,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 	}
 
 	@Test
-	public void writeText_without_time() {
+	public void writeText_date() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(datetime, false);
 
 		String actual = marshaller.writeText(prop);
@@ -129,7 +129,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 	}
 
 	@Test
-	public void parseText_with_time() {
+	public void parseText_datetime() {
 		String value = "20130611T134302Z";
 		ICalParameters params = new ICalParameters();
 
@@ -141,7 +141,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 	}
 
 	@Test
-	public void parseText_without_time() {
+	public void parseText_date() {
 		String value = "20130611";
 		ICalParameters params = new ICalParameters();
 

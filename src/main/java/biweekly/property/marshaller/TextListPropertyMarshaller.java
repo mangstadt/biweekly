@@ -2,6 +2,7 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
+import biweekly.parameter.ICalParameters;
 import biweekly.property.ListProperty;
 
 
@@ -45,7 +46,7 @@ public abstract class TextListPropertyMarshaller<T extends ListProperty<String>>
 	}
 
 	@Override
-	protected String readValue(String value, List<String> warnings) {
+	protected String readValue(String value, ICalParameters parameters, List<String> warnings) {
 		return value;
 	}
 }

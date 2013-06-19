@@ -6,8 +6,6 @@ import java.util.List;
 import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DateTimeProperty;
-import biweekly.util.ICalDateFormatter;
-import biweekly.util.ISOFormat;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -46,21 +44,22 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 	@Override
 	protected String _writeText(T property) {
 		Date value = property.getValue();
-		return (value == null) ? "" : ICalDateFormatter.format(value, ISOFormat.UTC_TIME_BASIC);
+		if (value == null) {
+			return "";
+		}
+		return writeDate(value, true, null);
 	}
 
 	@Override
 	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
-		Date date = null;
 		try {
-			date = ICalDateFormatter.parse(value);
+			Date date = parseDate(value, parameters.getTimezoneId(), warnings);
+			return newInstance(date);
 		} catch (IllegalArgumentException e) {
 			throw new CannotParseException("Could not parse date/time value.");
 		}
-
-		return newInstance(date);
 	}
 
 	protected abstract T newInstance(Date date);

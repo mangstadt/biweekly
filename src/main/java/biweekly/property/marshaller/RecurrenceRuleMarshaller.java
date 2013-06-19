@@ -2,6 +2,7 @@ package biweekly.property.marshaller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,8 +11,6 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.RecurrenceRule;
 import biweekly.property.RecurrenceRule.DayOfWeek;
 import biweekly.property.RecurrenceRule.Frequency;
-import biweekly.util.ICalDateFormatter;
-import biweekly.util.ISOFormat;
 import biweekly.util.ListMultimap;
 import biweekly.util.StringUtils;
 import biweekly.util.StringUtils.JoinMapCallback;
@@ -59,8 +58,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 		}
 
 		if (property.getUntil() != null) {
-			ISOFormat format = property.hasTimeUntilDate() ? ISOFormat.UTC_TIME_BASIC : ISOFormat.DATE_BASIC;
-			String s = ICalDateFormatter.format(property.getUntil(), format);
+			String s = writeDate(property.getUntil(), property.hasTimeUntilDate(), null);
 			components.put("UNTIL", s);
 		}
 
@@ -134,8 +132,9 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 		first = components.first("UNTIL");
 		if (first != null) {
 			try {
+				Date date = parseDate(first, parameters.getTimezoneId(), warnings);
 				boolean hasTime = first.contains("T");
-				property.setUntil(ICalDateFormatter.parse(first), hasTime);
+				property.setUntil(date, hasTime);
 			} catch (IllegalArgumentException e) {
 				warnings.add("Could not parse UNTIL date: " + first);
 			}

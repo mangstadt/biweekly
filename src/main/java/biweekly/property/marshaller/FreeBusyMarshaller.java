@@ -6,8 +6,6 @@ import java.util.List;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.FreeBusy;
 import biweekly.util.Duration;
-import biweekly.util.ICalDateFormatter;
-import biweekly.util.ISOFormat;
 import biweekly.util.Period;
 import biweekly.util.StringUtils;
 import biweekly.util.StringUtils.JoinCallback;
@@ -56,13 +54,13 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 		return StringUtils.join(values, ',', new JoinCallback<Period>() {
 			public void handle(StringBuilder sb, Period timePeriod) {
 				if (timePeriod.getStartDate() != null) {
-					sb.append(ICalDateFormatter.format(timePeriod.getStartDate(), ISOFormat.UTC_TIME_BASIC));
+					sb.append(writeDate(timePeriod.getStartDate(), true, null));
 				}
 
 				sb.append('/');
 
 				if (timePeriod.getEndDate() != null) {
-					sb.append(ICalDateFormatter.format(timePeriod.getEndDate(), ISOFormat.UTC_TIME_BASIC));
+					sb.append(writeDate(timePeriod.getEndDate(), true, null));
 				} else if (timePeriod.getDuration() != null) {
 					sb.append(timePeriod.getDuration());
 				}
@@ -86,7 +84,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 			String startStr = timePeriodStrSplit[0];
 			Date start = null;
 			try {
-				start = ICalDateFormatter.parse(startStr);
+				start = parseDate(startStr, parameters.getTimezoneId(), warnings);
 			} catch (IllegalArgumentException e) {
 				warnings.add("Could not parse start date, skipping time period: " + timePeriodStr);
 				continue;
@@ -94,7 +92,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 
 			String endStr = timePeriodStrSplit[1];
 			try {
-				Date end = ICalDateFormatter.parse(endStr);
+				Date end = parseDate(endStr, parameters.getTimezoneId(), warnings);
 				freebusy.addValue(start, end);
 			} catch (IllegalArgumentException e) {
 				//must be a duration
