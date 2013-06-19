@@ -50,14 +50,4 @@ public class DateDue extends DateOrDateTimeProperty {
 	public DateDue(Date dueDate, boolean hasTime) {
 		super(dueDate, hasTime);
 	}
-
-	@Override
-	public String getTimezoneId() {
-		return super.getTimezoneId();
-	}
-
-	@Override
-	public void setTimezoneId(String timezoneId) {
-		super.setTimezoneId(timezoneId);
-	}
 }

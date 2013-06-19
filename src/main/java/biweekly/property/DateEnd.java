@@ -50,14 +50,4 @@ public class DateEnd extends DateOrDateTimeProperty {
 	public DateEnd(Date endDate, boolean hasTime) {
 		super(endDate, hasTime);
 	}
-
-	@Override
-	public String getTimezoneId() {
-		return super.getTimezoneId();
-	}
-
-	@Override
-	public void setTimezoneId(String timezoneId) {
-		super.setTimezoneId(timezoneId);
-	}
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
+import biweekly.component.VTimezone;
 import biweekly.parameter.ICalParameters;
 
 /*
@@ -171,10 +172,12 @@ public abstract class ICalProperty {
 	}
 
 	/**
-	 * Gets the timezone identifier. For a list of valid timezone identifiers,
-	 * see the <a href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
-	 * @return the timezone identifier (e.g. "America/New_York") or null if not
-	 * set
+	 * Gets the timezone identifier. This either (a) references the
+	 * {@link TimezoneId} property of a {@link VTimezone} component, or (b)
+	 * specifies a globally-defined timezone (e.g. "America/New_York"). For a
+	 * list of globally-defined timezones, see the <a
+	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
+	 * @return the timezone identifier or null if not set
 	 * @see "RFC 5545 p.27-8"
 	 */
 	protected String getTimezoneId() {
@@ -182,14 +185,37 @@ public abstract class ICalProperty {
 	}
 
 	/**
-	 * Sets the timezone identifier. For a list of valid timezone identifiers,
-	 * see the <a href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
+	 * Sets the timezone in the form of a globally-defined timezone (e.g.
+	 * "America/New_York"). For a list of globally-defined timezones, see the <a
+	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>. Use
+	 * {@link #setTimezone(VTimezone)} to use a timezone that's defined in the
+	 * iCalendar object.
 	 * @param timezoneId the timezone identifier (e.g. "America/New_York") or
 	 * null to remove
 	 * @see "RFC 5545 p.27-8"
 	 */
 	protected void setTimezoneId(String timezoneId) {
 		parameters.setTimezoneId(timezoneId);
+	}
+
+	/**
+	 * Sets the timezone that this property uses. Use
+	 * {@link #setTimezoneId(String)} to set a globally-defined timezone (e.g.
+	 * "America/New_York").
+	 * @param timezone the timezone component that defines the timezone or null
+	 * to remove
+	 * @see "RFC 5545 p.27-8"
+	 */
+	protected void setTimezone(VTimezone timezone) {
+		if (timezone == null) {
+			setTimezoneId(null);
+			return;
+		}
+
+		TimezoneId tzid = timezone.getTimezoneId();
+		if (tzid != null) {
+			setTimezoneId(tzid.getValue());
+		}
 	}
 
 	/**

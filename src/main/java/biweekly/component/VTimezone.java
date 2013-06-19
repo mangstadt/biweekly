@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.property.LastModified;
-import biweekly.property.TimezoneIdentifier;
+import biweekly.property.TimezoneId;
 import biweekly.property.TimezoneUrl;
 
 /*
@@ -39,25 +39,41 @@ import biweekly.property.TimezoneUrl;
  */
 public class VTimezone extends ICalComponent {
 	/**
-	 * Gets the timezone ID. This is a <b>required</b> property. For a list of
-	 * valid timezone identifiers, see the <a
-	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
-	 * @return the timezone ID or null if not set
-	 * @see "RFC 5545 p.102-3"
+	 * Creates a new timezone component.
+	 * @param identifier a unique identifier for this timezone (allows it to be
+	 * referenced by certain date-time properties).
 	 */
-	public TimezoneIdentifier getTimezoneIdentifier() {
-		return getProperty(TimezoneIdentifier.class);
+	public VTimezone(String identifier) {
+		setTimezoneId(identifier);
 	}
 
 	/**
-	 * Sets the timezone ID. This is a <b>required</b> property. For a list of
-	 * valid timezone identifiers, see the <a
-	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
-	 * @param timezoneIdentifier the timezone ID or null to remove
+	 * Gets the ID for this timezone. This is a <b>required</b> property.
+	 * @return the timezone ID or null if not set
 	 * @see "RFC 5545 p.102-3"
 	 */
-	public void setTimezoneIdentifier(TimezoneIdentifier timezoneIdentifier) {
-		setProperty(TimezoneIdentifier.class, timezoneIdentifier);
+	public TimezoneId getTimezoneId() {
+		return getProperty(TimezoneId.class);
+	}
+
+	/**
+	 * Sets an ID for this timezone. This is a <b>required</b> property.
+	 * @param timezoneId the timezone ID or null to remove
+	 * @see "RFC 5545 p.102-3"
+	 */
+	public void setTimezoneId(TimezoneId timezoneId) {
+		setProperty(TimezoneId.class, timezoneId);
+	}
+
+	/**
+	 * Sets an ID for this timezone. This is a <b>required</b> property.
+	 * @param timezoneId the timezone ID or null to remove
+	 * @see "RFC 5545 p.102-3"
+	 */
+	public TimezoneId setTimezoneId(String timezoneId) {
+		TimezoneId prop = (timezoneId == null) ? null : new TimezoneId(timezoneId);
+		setTimezoneId(prop);
+		return prop;
 	}
 
 	/**
@@ -150,8 +166,8 @@ public class VTimezone extends ICalComponent {
 
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
-		if (getTimezoneIdentifier() == null) {
-			warnings.add(TimezoneIdentifier.class.getSimpleName() + " is not set (it is required).");
+		if (getTimezoneId() == null) {
+			warnings.add(TimezoneId.class.getSimpleName() + " is not set (it is required).");
 		}
 	}
 }
