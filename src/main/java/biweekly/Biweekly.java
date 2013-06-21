@@ -55,9 +55,93 @@ import biweekly.util.IOUtils;
  */
 
 /**
+ * <p>
  * Contains static, chaining factory methods for reading/writing iCalendar
  * objects. The methods make use of the core {@link ICalReader} and
  * {@link ICalWriter} classes.
+ * </p>
+ * 
+ * <p>
+ * <b>Writing an iCalendar object</b>
+ * 
+ * <pre>
+ * ICalendar ical = new ICalendar();
+ * 
+ * //string
+ * String icalString = Biweekly.write(ical).go();
+ * 
+ * //file
+ * File file = new File("meeting.ics");
+ * Biweekly.write(ical).go(file);
+ * 
+ * //writer
+ * Writer writer = ...
+ * Biweekly.write(ical).go(writer);
+ * writer.close();
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <p>
+ * <b>Writing multiple iCalendar objects</b>
+ * 
+ * <pre>
+ * ICalendar ical1 = new ICalendar();
+ * ICalendar ical2 = new ICalendar();
+ * 
+ * String icalString = Biweekly.write(ical1, ical2).go();
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <p>
+ * <b>Reading an iCalendar object</b>
+ * 
+ * <pre>
+ * ICalendar ical;
+ * 
+ * //string
+ * String icalStr = ...
+ * ical = Biweekly.parse(icalStr).first();
+ * 
+ * //file
+ * File file = new File("meeting.ics");
+ * ical = Biweekly.parse(file).first();
+ * 
+ * //reader
+ * Reader reader = ...
+ * ical = Biweekly.parse(reader).first();
+ * reader.close();
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <p>
+ * <b>Reading multiple iCalendar objects</b>
+ * 
+ * <pre>
+ * String icalStr = ...
+ * List&lt;ICalendar&gt; icals = Biweekly.parse(icalStr).all();
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <p>
+ * <b>Retrieving parser warnings</b>
+ * 
+ * <pre>
+ * String icalStr = ...
+ * List&lt;List&lt;String&gt;&gt; warnings = new ArrayList&lt;List&lt;String&gt;&gt;();
+ * ICalendar ical = Biweekly.parse(icalStr).warnings(warnings).first();
+ * for (List&lt;String&gt; warningsList : warnings){
+ *   System.out.println("iCal warnings:");
+ *   for (String warning : warningsList){
+ *     System.out.println(warning);
+ *   }
+ * }
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  */
 public class Biweekly {
