@@ -2,8 +2,13 @@ package biweekly.parameter;
 
 import java.util.List;
 
+import biweekly.component.VTimezone;
+import biweekly.property.FreeBusy;
+import biweekly.property.RecurrenceId;
+import biweekly.property.RelatedTo;
+import biweekly.property.TimezoneId;
+import biweekly.property.Trigger;
 import biweekly.util.ListMultimap;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -56,204 +61,481 @@ public class ICalParameters extends ListMultimap<String, String> {
 	private static final String TZID = "TZID";
 	private static final String VALUE = "VALUE";
 
+	/**
+	 * Creates a parameters list.
+	 */
 	public ICalParameters() {
 		super(0); //initialize map size to 0 because most properties don't use any parameters
 	}
 
+	/**
+	 * Copies an existing parameters list.
+	 * @param parameters the list to copy
+	 */
 	public ICalParameters(ICalParameters parameters) {
 		super(parameters);
 	}
 
+	/**
+	 * Gets a URI pointing to additional information about the entity
+	 * represented by the property.
+	 * @return the URI or null if not set
+	 * @see "RFC 5545 p.14-5"
+	 */
 	public String getAltRepresentation() {
 		return first(ALTREP);
 	}
 
+	/**
+	 * Sets a URI pointing to additional information about the entity
+	 * represented by the property.
+	 * @param uri the URI or null to remove
+	 * @see "RFC 5545 p.14-5"
+	 */
 	public void setAltRepresentation(String uri) {
 		replace(ALTREP, uri);
 	}
 
+	/**
+	 * Gets the display name of a person.
+	 * @return the display name (e.g. "John Doe") or null if not set
+	 * @see "RFC 5545 p.15-6"
+	 */
 	public String getCommonName() {
 		return first(CN);
 	}
 
+	/**
+	 * Sets the display name of a person.
+	 * @param cn the display name (e.g. "John Doe") or null to remove
+	 * @see "RFC 5545 p.15-6"
+	 */
 	public void setCommonName(String cn) {
 		replace(CN, cn);
 	}
 
+	/**
+	 * Gets the type of user an attendee is (for example, an "individual" or a
+	 * "room").
+	 * @return the calendar user type or null if not set
+	 * @see "RFC 5545 p.16"
+	 */
 	public CalendarUserType getCalendarUserType() {
 		String value = first(CUTYPE);
 		return (value == null) ? null : CalendarUserType.get(value);
 	}
 
+	/**
+	 * Sets the type of user an attendee is (for example, an "individual" or a
+	 * "room").
+	 * @param cutype the calendar user type or null to remove
+	 * @see "RFC 5545 p.16"
+	 */
 	public void setCalendarUserType(CalendarUserType cutype) {
 		replace(CUTYPE, (cutype == null) ? null : cutype.getValue());
 	}
 
+	/**
+	 * Gets the people who have delegated their responsibility to an attendee.
+	 * @return the delegators (typically email URIs, e.g.
+	 * "mailto:janedoe@example.com")
+	 * @see "RFC 5545 p.17"
+	 */
 	public List<String> getDelegatedFrom() {
 		return get(DELEGATED_FROM);
 	}
 
-	public void addDelegatedFrom(String delegatedFrom) {
-		put(DELEGATED_FROM, delegatedFrom);
+	/**
+	 * Adds a person who has delegated his or her responsibility to an attendee.
+	 * @param uri the delegator (typically an email URI, e.g.
+	 * "mailto:janedoe@example.com")
+	 * @see "RFC 5545 p.17"
+	 */
+	public void addDelegatedFrom(String uri) {
+		put(DELEGATED_FROM, uri);
 	}
 
-	public void removeDelegatedFrom(String delegatedFrom) {
-		remove(DELEGATED_FROM, delegatedFrom);
+	/**
+	 * Removes a person who has delegated his or her responsibility to an
+	 * attendee.
+	 * @param uri the delegator to remove (typically an email URI, e.g.
+	 * "mailto:janedoe@example.com")
+	 * @see "RFC 5545 p.17"
+	 */
+	public void removeDelegatedFrom(String uri) {
+		remove(DELEGATED_FROM, uri);
 	}
 
-	public void removeAllDelegatedFrom() {
+	/**
+	 * Removes everyone who has delegated his or her responsibility to an
+	 * attendee.
+	 * @see "RFC 5545 p.17"
+	 */
+	public void removeDelegatedFrom() {
 		removeAll(DELEGATED_FROM);
 	}
 
+	/**
+	 * Gets the people to which an attendee has delegated his or her
+	 * responsibility.
+	 * @return the delegatees (typically email URIs, e.g.
+	 * "mailto:janedoe@example.com")
+	 * @see "RFC 5545 p.17-8"
+	 */
 	public List<String> getDelegatedTo() {
 		return get(DELEGATED_TO);
 	}
 
-	public void addDelegatedTo(String delegatedTo) {
-		put(DELEGATED_TO, delegatedTo);
+	/**
+	 * Adds a person to which an attendee has delegated his or her
+	 * responsibility.
+	 * @param uri the delegatee (typically an email URI, e.g.
+	 * "mailto:janedoe@example.com")
+	 * @see "RFC 5545 p.17-8"
+	 */
+	public void addDelegatedTo(String uri) {
+		put(DELEGATED_TO, uri);
 	}
 
-	public void removeDelegatedTo(String delegatedTo) {
-		remove(DELEGATED_TO, delegatedTo);
+	/**
+	 * Removes a person to which an attendee has delegated his or her
+	 * responsibility.
+	 * @param uri the delegatee to remove (typically an email URI, e.g.
+	 * "mailto:janedoe@example.com")
+	 * @see "RFC 5545 p.17-8"
+	 */
+	public void removeDelegatedTo(String uri) {
+		remove(DELEGATED_TO, uri);
 	}
 
-	public void removeAllDelegatedTo() {
+	/**
+	 * Removes everyone to which an attendee has delegated his or her
+	 * responsibility.
+	 * @see "RFC 5545 p.17-8"
+	 */
+	public void removeDelegatedTo() {
 		removeAll(DELEGATED_TO);
 	}
 
+	/**
+	 * Gets a URI that contains additional information about the person.
+	 * @return the URI (e.g. an LDAP URI) or null if not set
+	 * @see "RFC 5545 p.18"
+	 */
 	public String getDirectoryEntry() {
 		return first(DIR);
 	}
 
-	public void setDirectoryEntry(String dir) {
-		replace(DIR, dir);
+	/**
+	 * Sets a URI that contains additional information about the person.
+	 * @param uri the URI (e.g. an LDAP URI) or null to remove
+	 * @see "RFC 5545 p.18"
+	 */
+	public void setDirectoryEntry(String uri) {
+		replace(DIR, uri);
 	}
 
+	/**
+	 * Gets the encoding of the property value (for example, "base64").
+	 * @return the encoding or null if not set
+	 * @see "RFC 5545 p.18-9"
+	 */
 	public Encoding getEncoding() {
 		String value = first(ENCODING);
 		return (value == null) ? null : Encoding.get(value);
 	}
 
+	/**
+	 * Sets the encoding of the property value (for example, "base64").
+	 * @param encoding the encoding or null to remove
+	 * @see "RFC 5545 p.18-9"
+	 */
 	public void setEncoding(Encoding encoding) {
 		replace(ENCODING, (encoding == null) ? null : encoding.getValue());
 	}
 
+	/**
+	 * Gets the content-type of the property's value.
+	 * @return the content type (e.g. "image/png") or null if not set
+	 * @see "RFC 5545 p.19-20"
+	 */
 	public String getFormatType() {
 		return first(FMTTYPE);
 	}
 
+	/**
+	 * Sets the content-type of the property's value.
+	 * @param formatType the content type (e.g. "image/png") or null to remove
+	 * @see "RFC 5545 p.19-20"
+	 */
 	public void setFormatType(String formatType) {
 		replace(FMTTYPE, formatType);
 	}
 
+	/**
+	 * Gets the person's status over the time periods that are specified in a
+	 * {@link FreeBusy} property (for example, "free" or "busy"). If not set,
+	 * the user should be considered "busy".
+	 * @return the type or null if not set
+	 * @see "RFC 5545 p.20"
+	 */
 	public FreeBusyType getFreeBusyType() {
 		String value = first(FBTYPE);
 		return (value == null) ? null : FreeBusyType.get(value);
 	}
 
+	/**
+	 * Sets the person's status over the time periods that are specified in a
+	 * {@link FreeBusy} property (for example, "free" or "busy"). If not set,
+	 * the user should be considered "busy".
+	 * @param fbType the type or null to remove
+	 * @see "RFC 5545 p.20"
+	 */
 	public void setFreeBusyType(FreeBusyType fbType) {
 		replace(FBTYPE, (fbType == null) ? null : fbType.getValue());
 	}
 
+	/**
+	 * Gets the language that the property value is written in.
+	 * @return the language (e.g. "en" for English) or null if not set
+	 * @see "RFC 5545 p.21"
+	 */
 	public String getLanguage() {
 		return first(LANGUAGE);
 	}
 
+	/**
+	 * Sets the language that the property value is written in.
+	 * @param language the language (e.g. "en" for English) or null to remove
+	 * @see "RFC 5545 p.21"
+	 */
 	public void setLanguage(String language) {
 		replace(LANGUAGE, language);
 	}
 
-	public void addMember(String member) {
-		put(MEMBER, member);
+	/**
+	 * Adds a group that an attendee is a member of.
+	 * @param uri the group URI (typically, an email address URI, e.g.
+	 * "mailto:mailinglist@example.com")
+	 * @see "RFC 5545 p.21-2"
+	 */
+	public void addMember(String uri) {
+		put(MEMBER, uri);
 	}
 
+	/**
+	 * Gets the groups that an attendee is a member of.
+	 * @return the group URIs (typically, these are email address URIs, e.g.
+	 * "mailto:mailinglist@example.com")
+	 * @see "RFC 5545 p.21-2"
+	 */
 	public List<String> getMembers() {
 		return get(MEMBER);
 	}
 
-	public void removeMember(String member) {
-		remove(MEMBER, member);
+	/**
+	 * Removes a group that an attendee is a member of.
+	 * @param uri the group URI to remove (typically, an email address URI, e.g.
+	 * "mailto:mailinglist@example.com")
+	 * @see "RFC 5545 p.21-2"
+	 */
+	public void removeMember(String uri) {
+		remove(MEMBER, uri);
 	}
 
-	public void removeAllMembers() {
+	/**
+	 * Removes all groups that an attendee is a member of.
+	 * @see "RFC 5545 p.21-2"
+	 */
+	public void removeMembers() {
 		removeAll(MEMBER);
 	}
 
+	/**
+	 * Gets an attendee's level of participation.
+	 * @return the participation status or null if not set
+	 * @see "RFC 5545 p.22-3"
+	 */
 	public ParticipationStatus getParticipationStatus() {
 		String value = first(PARTSTAT);
 		return (value == null) ? null : ParticipationStatus.get(value);
 	}
 
-	public void setParticipationStatus(ParticipationStatus partstat) {
-		replace(PARTSTAT, (partstat == null) ? null : partstat.getValue());
+	/**
+	 * Sets an attendee's level of participation.
+	 * @param status the participation status or null to remove
+	 * @see "RFC 5545 p.22-3"
+	 */
+	public void setParticipationStatus(ParticipationStatus status) {
+		replace(PARTSTAT, (status == null) ? null : status.getValue());
 	}
 
+	/**
+	 * Gets the effective range of recurrence instances from the instance
+	 * specified by a {@link RecurrenceId} property.
+	 * @return the range or null if not set
+	 * @see "RFC 5545 p.23-4"
+	 */
 	public Range getRange() {
 		String value = first(RANGE);
 		return (value == null) ? null : Range.get(value);
 	}
 
+	/**
+	 * Sets the effective range of recurrence instances from the instance
+	 * specified by a {@link RecurrenceId} property.
+	 * @param range the range or null to remove
+	 * @see "RFC 5545 p.23-4"
+	 */
 	public void setRange(Range range) {
 		replace(RANGE, (range == null) ? null : range.getValue());
 	}
 
+	/**
+	 * Gets the date-time field that the duration in a {@link Trigger} property
+	 * is relative to.
+	 * @return the field or null if not set
+	 * @see "RFC 5545 p.24"
+	 */
 	public Related getRelated() {
 		String value = first(RELATED);
 		return (value == null) ? null : Related.get(value);
 	}
 
+	/**
+	 * Sets the date-time field that the duration in a {@link Trigger} property
+	 * is relative to.
+	 * @param related the field or null to remove
+	 * @see "RFC 5545 p.24"
+	 */
 	public void setRelated(Related related) {
 		replace(RELATED, (related == null) ? null : related.getValue());
 	}
 
+	/**
+	 * Gets the relationship type of a {@link RelatedTo} property.
+	 * @return the relationship type (e.g. "child") or null if not set
+	 * @see "RFC 5545 p.25"
+	 */
 	public RelationshipType getRelationshipType() {
 		String value = first(RELTYPE);
 		return (value == null) ? null : RelationshipType.get(value);
 	}
 
+	/**
+	 * Sets the relationship type of a {@link RelatedTo} property.
+	 * @param relationshipType the relationship type (e.g. "child") or null to
+	 * remove
+	 * @see "RFC 5545 p.25"
+	 */
 	public void setRelationshipType(RelationshipType relationshipType) {
 		replace(RELTYPE, (relationshipType == null) ? null : relationshipType.getValue());
 	}
 
+	/**
+	 * Gets an attendee's role (for example, "chair" or "required participant").
+	 * @return the role or null if not set
+	 * @see "RFC 5545 p.25-6"
+	 */
 	public Role getRole() {
 		String value = first(ROLE);
 		return (value == null) ? null : Role.get(value);
 	}
 
+	/**
+	 * Sets an attendee's role (for example, "chair" or "required participant").
+	 * @param role the role or null to remove
+	 * @see "RFC 5545 p.25-6"
+	 */
 	public void setRole(Role role) {
 		replace(ROLE, (role == null) ? null : role.getValue());
 	}
 
+	/**
+	 * Gets whether the organizer requests a response from an attendee.
+	 * @return true if an RSVP is requested, false if not, null if not set
+	 * @see "RFC 5545 p.26-7"
+	 */
 	public Boolean getRsvp() {
 		String value = first(RSVP);
 		return (value == null) ? null : Boolean.valueOf(value);
 	}
 
+	/**
+	 * Sets whether the organizer requests a response from an attendee.
+	 * @param rsvp true if an RSVP has been requested, false if not, null to
+	 * remove
+	 * @see "RFC 5545 p.26-7"
+	 */
 	public void setRsvp(Boolean rsvp) {
 		replace(RSVP, (rsvp == null) ? null : rsvp.toString().toUpperCase());
 	}
 
+	/**
+	 * Gets a person that is acting on behalf of the person defined in the
+	 * property.
+	 * @return a URI representing the person (typically, an email URI, e.g.
+	 * "mailto:janedoe@example.com") or null if not set
+	 * @see "RFC 5545 p.27"
+	 */
 	public String getSentBy() {
 		return first(SENT_BY);
 	}
 
-	public void setSentBy(String sentBy) {
-		replace(SENT_BY, sentBy);
+	/**
+	 * Sets a person that is acting on behalf of the person defined in the
+	 * property.
+	 * @param uri a URI representing the person (typically, an email URI, e.g.
+	 * "mailto:janedoe@example.com") or null to remove
+	 * @see "RFC 5545 p.27"
+	 */
+	public void setSentBy(String uri) {
+		replace(SENT_BY, uri);
 	}
 
+	/**
+	 * Gets the timezone identifier. This either (a) references the
+	 * {@link TimezoneId} property of a {@link VTimezone} component, or (b)
+	 * specifies a globally-defined timezone (e.g. "America/New_York"). For a
+	 * list of globally-defined timezones, see the <a
+	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
+	 * @return the timezone identifier or null if not set
+	 * @see "RFC 5545 p.27-8"
+	 */
 	public String getTimezoneId() {
 		return first(TZID);
 	}
 
+	/**
+	 * Sets the timezone identifier. This either (a) references the
+	 * {@link TimezoneId} property of a {@link VTimezone} component, or (b)
+	 * specifies a globally-defined timezone (e.g. "America/New_York"). For a
+	 * list of globally-defined timezones, see the <a
+	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
+	 * @param timezoneId the timezone identifier or null to remove
+	 * @see "RFC 5545 p.27-8"
+	 */
 	public void setTimezoneId(String timezoneId) {
 		replace(TZID, timezoneId);
 	}
 
+	/**
+	 * Gets the data type of the property's value (for example, "text" or
+	 * "datetime").
+	 * @return the data type or null if not set
+	 * @see "RFC 5545 p.29-50"
+	 */
 	public Value getValue() {
 		String value = first(VALUE);
 		return (value == null) ? null : Value.get(value);
 	}
 
+	/**
+	 * Sets the data type of the property's value (for example, "text" or
+	 * "datetime").
+	 * @param value the data type or null to remove
+	 * @see "RFC 5545 p.29-50"
+	 */
 	public void setValue(Value value) {
 		replace(VALUE, (value == null) ? null : value.getValue());
 	}

@@ -5,7 +5,6 @@ import java.util.Date;
 import biweekly.parameter.Related;
 import biweekly.util.Duration;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -95,17 +94,18 @@ public class Trigger extends ICalProperty {
 	}
 
 	/**
-	 * Gets the date/time field that the duration is relative to.
-	 * @return the field that the duration is relative it or null if not set
+	 * Gets the date-time field that the duration is relative to.
+	 * @return the field or null if not set
+	 * @see "RFC 5545 p.24"
 	 */
 	public Related getRelated() {
 		return parameters.getRelated();
 	}
 
 	/**
-	 * Sets the date/time field that the duration is relative to.
-	 * @param related the field that the duration is relative it or null to
-	 * remove
+	 * Sets the date-time field that the duration is relative to.
+	 * @param related the field or null to remove
+	 * @see "RFC 5545 p.24"
 	 */
 	public void setRelated(Related related) {
 		parameters.setRelated(related);

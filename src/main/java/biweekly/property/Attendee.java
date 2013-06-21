@@ -6,7 +6,6 @@ import biweekly.parameter.CalendarUserType;
 import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -62,16 +61,20 @@ public class Attendee extends TextProperty {
 	}
 
 	/**
-	 * Gets what type of calendar user the attendee is.
+	 * Gets the type of user the attendee is (for example, an "individual" or a
+	 * "room").
 	 * @return the calendar user type or null if not set
+	 * @see "RFC 5545 p.16"
 	 */
 	public CalendarUserType getCalendarUserType() {
 		return parameters.getCalendarUserType();
 	}
 
 	/**
-	 * Sets what type of calendar user the attendee is.
+	 * Sets the type of user the attendee is (for example, an "individual" or a
+	 * "room").
 	 * @param cutype the calendar user type or null to remove
+	 * @see "RFC 5545 p.16"
 	 */
 	public void setCalendarUserType(CalendarUserType cutype) {
 		parameters.setCalendarUserType(cutype);
@@ -79,7 +82,9 @@ public class Attendee extends TextProperty {
 
 	/**
 	 * Gets the groups that the attendee is a member of.
-	 * @return the group URIs
+	 * @return the group URIs (typically, these are email address URIs, e.g.
+	 * "mailto:mailinglist@example.com")
+	 * @see "RFC 5545 p.21-2"
 	 */
 	public List<String> getMembers() {
 		return parameters.getMembers();
@@ -89,22 +94,27 @@ public class Attendee extends TextProperty {
 	 * Adds a group that the attendee is a member of.
 	 * @param uri the group URI (typically, an email address URI, e.g.
 	 * "mailto:mailinglist@example.com")
+	 * @see "RFC 5545 p.21-2"
 	 */
 	public void addMember(String uri) {
 		parameters.addMember(uri);
 	}
 
 	/**
-	 * Gets the attendee's role.
+	 * Gets the attendee's role (for example, "chair" or
+	 * "required participant").
 	 * @return the role or null if not set
+	 * @see "RFC 5545 p.25-6"
 	 */
 	public Role getRole() {
 		return parameters.getRole();
 	}
 
 	/**
-	 * Sets the attendee's role.
+	 * Sets the attendee's role (for example, "chair" or
+	 * "required participant").
 	 * @param role the role or null to remove
+	 * @see "RFC 5545 p.25-6"
 	 */
 	public void setRole(Role role) {
 		parameters.setRole(role);
@@ -113,6 +123,7 @@ public class Attendee extends TextProperty {
 	/**
 	 * Gets the attendee's level of participation.
 	 * @return the participation status or null if not set
+	 * @see "RFC 5545 p.22-3"
 	 */
 	public ParticipationStatus getParticipationStatus() {
 		return parameters.getParticipationStatus();
@@ -121,6 +132,7 @@ public class Attendee extends TextProperty {
 	/**
 	 * Sets the attendee's level of participation.
 	 * @param status the participation status or null to remove
+	 * @see "RFC 5545 p.22-3"
 	 */
 	public void setParticipationStatus(ParticipationStatus status) {
 		parameters.setParticipationStatus(status);
@@ -129,6 +141,7 @@ public class Attendee extends TextProperty {
 	/**
 	 * Gets whether the organizer requests a response from the attendee.
 	 * @return true if an RSVP is requested, false if not, null if not set
+	 * @see "RFC 5545 p.26-7"
 	 */
 	public Boolean getRsvp() {
 		return parameters.getRsvp();
@@ -138,6 +151,7 @@ public class Attendee extends TextProperty {
 	 * Sets whether the organizer requests a response from the attendee.
 	 * @param rsvp true if an RSVP has been requested, false if not, null to
 	 * remove
+	 * @see "RFC 5545 p.26-7"
 	 */
 	public void setRsvp(Boolean rsvp) {
 		parameters.setRsvp(rsvp);
@@ -147,6 +161,7 @@ public class Attendee extends TextProperty {
 	 * Gets the people who have delegated their responsibility to the attendee.
 	 * @return the delegators (typically email URIs, e.g.
 	 * "mailto:janedoe@example.com")
+	 * @see "RFC 5545 p.17"
 	 */
 	public List<String> getDelegatedFrom() {
 		return parameters.getDelegatedFrom();
@@ -157,6 +172,7 @@ public class Attendee extends TextProperty {
 	 * attendee.
 	 * @param uri the delegator (typically an email URI, e.g.
 	 * "mailto:janedoe@example.com")
+	 * @see "RFC 5545 p.17"
 	 */
 	public void addDelegatedFrom(String uri) {
 		parameters.addDelegatedFrom(uri);
@@ -167,6 +183,7 @@ public class Attendee extends TextProperty {
 	 * responsibility.
 	 * @return the delegatees (typically email URIs, e.g.
 	 * "mailto:janedoe@example.com")
+	 * @see "RFC 5545 p.17-8"
 	 */
 	public List<String> getDelegatedTo() {
 		return parameters.getDelegatedTo();
@@ -177,6 +194,7 @@ public class Attendee extends TextProperty {
 	 * responsibility.
 	 * @param uri the delegatee (typically an email URI, e.g.
 	 * "mailto:janedoe@example.com")
+	 * @see "RFC 5545 p.17-8"
 	 */
 	public void addDelegatedTo(String uri) {
 		parameters.addDelegatedTo(uri);
