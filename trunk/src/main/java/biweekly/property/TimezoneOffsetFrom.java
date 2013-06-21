@@ -28,7 +28,8 @@ package biweekly.property;
 /**
  * Defines the timezone offset that was in use before a timezone observance.
  * @author Michael Angstadt
- * @see "RFC 5545 p.104-5"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-104">RFC 5545
+ * p.104-5</a>
  */
 public class TimezoneOffsetFrom extends UtcOffsetProperty {
 	/**

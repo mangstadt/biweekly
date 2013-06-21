@@ -29,7 +29,7 @@ package biweekly.property;
  * Defines the level of sensitivity of the iCalendar data. If not specified, the
  * data within the iCalendar object should be considered "public".
  * @author Michael Angstadt
- * @see "RFC 5545 p.82-3"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-82">RFC 5545 p.82-3</a>
  */
 public class Classification extends TextProperty {
 	private static final String PUBLIC = "PUBLIC";

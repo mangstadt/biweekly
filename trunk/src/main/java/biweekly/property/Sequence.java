@@ -30,7 +30,8 @@ package biweekly.property;
  * etc can increment this number every time he or she makes a significant change
  * to the component.
  * @author Michael Angstadt
- * @see "RFC 5545 p.138-9"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
+ * p.138-9</a>
  */
 public class Sequence extends IntegerProperty {
 	/**

@@ -28,7 +28,8 @@ package biweekly.property;
 /**
  * Points to a resource that contains additional information about a component.
  * @author Michael Angstadt
- * @see "RFC 5545 p.116-7"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
+ * p.116-7</a>
  */
 public class Url extends TextProperty {
 	/**

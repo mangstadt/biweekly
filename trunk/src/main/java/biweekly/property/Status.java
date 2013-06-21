@@ -28,7 +28,7 @@ package biweekly.property;
 /**
  * Defines the status of the component that this property belongs to.
  * @author Michael Angstadt
- * @see "RFC 5545 p.92-3"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-92">RFC 5545 p.92-3</a>
  */
 public class Status extends TextProperty {
 	//TODO create separate classes for each component?

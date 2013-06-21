@@ -4,7 +4,6 @@ import java.lang.reflect.Constructor;
 
 import biweekly.util.CaseClasses;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.

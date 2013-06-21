@@ -44,7 +44,8 @@ import java.util.Date;
  * It is a <b>required</b> property.
  * </p>
  * @author Michael Angstadt
- * @see "RFC 5545 p.137-8"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-137">RFC 5545
+ * p.137-8</a>
  */
 public class DateTimeStamp extends DateTimeProperty {
 	/**

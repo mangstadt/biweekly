@@ -28,7 +28,7 @@ package biweekly.parameter;
 /**
  * Defines the data type of a property's value.
  * @author Michael Angstadt
- * @see "RFC 5545 p.29"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-29">RFC 5545 p.29-50</a>
  */
 public class Value extends EnumParameterValue {
 	private static final ICalParameterCaseClasses<Value> enums = new ICalParameterCaseClasses<Value>(Value.class);

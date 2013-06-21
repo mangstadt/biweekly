@@ -30,7 +30,7 @@ import java.util.Date;
 /**
  * Defines the date and time that a todo was completed.
  * @author Michael Angstadt
- * @see "RFC 5545 p.94-5"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-94">RFC 5545 p.94-5</a>
  */
 public class Completed extends DateTimeProperty {
 	/**

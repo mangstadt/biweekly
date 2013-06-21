@@ -28,7 +28,7 @@ package biweekly.parameter;
 /**
  * Defines the type of user an entity is.
  * @author Michael Angstadt
- * @see "RFC 5545 p.16"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-16">RFC 5545 p.16</a>
  */
 public class CalendarUserType extends EnumParameterValue {
 	private static final ICalParameterCaseClasses<CalendarUserType> enums = new ICalParameterCaseClasses<CalendarUserType>(CalendarUserType.class);

@@ -36,7 +36,8 @@ import biweekly.component.VTimezone;
  * <code>setTimezone</code> methods (for instance: {@link DateStart},
  * {@link DateEnd}, and {@link DateDue}).
  * @author Michael Angstadt
- * @see "RFC 5545 p.102-3"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-102">RFC 5545
+ * p.102-3</a>
  */
 public class TimezoneId extends TextProperty {
 	/**

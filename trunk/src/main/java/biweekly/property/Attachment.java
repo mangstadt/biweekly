@@ -38,7 +38,7 @@ import biweekly.component.VTodo;
  * {@link VTodo VTODO}, {@link VJournal VJOURNAL}, or {@link VAlarm VALARM}
  * component.
  * @author Michael Angstadt
- * @see "RFC 5545 p.80-1"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-80">RFC 5545 p.80-1</a>
  */
 public class Attachment extends ICalProperty {
 	private byte[] data;

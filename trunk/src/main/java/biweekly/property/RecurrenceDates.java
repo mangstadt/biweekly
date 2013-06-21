@@ -36,7 +36,8 @@ import biweekly.util.Period;
  * property must contain either dates or time periods. It cannot contain a
  * combination of both.
  * @author Michael Angstadt
- * @see "RFC 5545 p.120-2"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-120">RFC 5545
+ * p.120-2</a>
  */
 public class RecurrenceDates extends ICalProperty {
 	private List<Date> dates;

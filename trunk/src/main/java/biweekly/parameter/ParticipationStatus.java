@@ -28,7 +28,7 @@ package biweekly.parameter;
 /**
  * Defines a calendar user's level of participation.
  * @author Michael Angstadt
- * @see "RFC 5545 p.22-3"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-22">RFC 5545 p.22-3</a>
  */
 public class ParticipationStatus extends EnumParameterValue {
 	private static final ICalParameterCaseClasses<ParticipationStatus> enums = new ICalParameterCaseClasses<ParticipationStatus>(ParticipationStatus.class);

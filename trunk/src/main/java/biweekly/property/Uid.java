@@ -30,7 +30,8 @@ import java.util.UUID;
 /**
  * Defines a unique identifier for a component.
  * @author Michael Angstadt
- * @see "RFC 5545 p.117-8"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-117">RFC 5545
+ * p.117-8</a>
  */
 public class Uid extends TextProperty {
 	/**

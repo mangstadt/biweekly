@@ -74,7 +74,8 @@ public class ICalendar extends ICalComponent {
 	 * are initialized with a version of "2.0" (the default version). It is a
 	 * <b>required</b> property.
 	 * @return the version
-	 * @see "RFC 5545 p.79-80"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-79">RFC 5545
+	 * p.79-80</a>
 	 */
 	public Version getVersion() {
 		return getProperty(Version.class);
@@ -86,7 +87,8 @@ public class ICalendar extends ICalComponent {
 	 * are initialized with a version of "2.0" (the default version). It is a
 	 * <b>required</b> property.
 	 * @param version the version
-	 * @see "RFC 5545 p.79-80"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-79">RFC 5545
+	 * p.79-80</a>
 	 */
 	public void setVersion(Version version) {
 		setProperty(Version.class, version);
@@ -97,7 +99,8 @@ public class ICalendar extends ICalComponent {
 	 * {@link ICalendar} objects are initialized with a product ID representing
 	 * this library. It is a <b>required</b> property.
 	 * @return the property instance or null if not set
-	 * @see "RFC 5545 p.78-9"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545
+	 * p.78-9</a>
 	 */
 	public ProductId getProductId() {
 		return getProperty(ProductId.class);
@@ -108,7 +111,8 @@ public class ICalendar extends ICalComponent {
 	 * {@link ICalendar} objects are initialized with a product ID representing
 	 * this library. It is a <b>required</b> property.
 	 * @param prodId the property instance or null to remove
-	 * @see "RFC 5545 p.78-9"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545
+	 * p.78-9</a>
 	 */
 	public void setProductId(ProductId prodId) {
 		setProperty(ProductId.class, prodId);
@@ -121,7 +125,8 @@ public class ICalendar extends ICalComponent {
 	 * @param prodId a unique string representing the application (e.g.
 	 * "-//Company//Application//EN") or null to remove
 	 * @return the property that was created
-	 * @see "RFC 5545 p.78-9"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545
+	 * p.78-9</a>
 	 */
 	public ProductId setProductId(String prodId) {
 		ProductId prop = (prodId == null) ? null : new ProductId(prodId);
@@ -133,7 +138,8 @@ public class ICalendar extends ICalComponent {
 	 * Gets the calendar system that this iCalendar object uses. If none is
 	 * specified, then the calendar is assumed to be in Gregorian format.
 	 * @return the calendar system or null if not set
-	 * @see "RFC 5545 p.76-7"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-76">RFC 5545
+	 * p.76-7</a>
 	 */
 	public CalendarScale getCalendarScale() {
 		return getProperty(CalendarScale.class);
@@ -143,7 +149,8 @@ public class ICalendar extends ICalComponent {
 	 * Sets the calendar system that this iCalendar object uses. If none is
 	 * specified, then the calendar is assumed to be in Gregorian format.
 	 * @param calendarScale the calendar system or null to remove
-	 * @see "RFC 5545 p.76-7"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-76">RFC 5545
+	 * p.76-7</a>
 	 */
 	public void setCalendarScale(CalendarScale calendarScale) {
 		setProperty(calendarScale);
@@ -153,7 +160,8 @@ public class ICalendar extends ICalComponent {
 	 * Gets the value of the Content-Type "method" parameter if the iCalendar
 	 * object is defined as a MIME message entity.
 	 * @return the property or null if not set
-	 * @see "RFC 5545 p.77-8"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545
+	 * p.77-8</a>
 	 */
 	public Method getMethod() {
 		return getProperty(Method.class);
@@ -163,7 +171,8 @@ public class ICalendar extends ICalComponent {
 	 * Sets the value of the Content-Type "method" parameter if the iCalendar
 	 * object is defined as a MIME message entity.
 	 * @param method the property or null to remove
-	 * @see "RFC 5545 p.77-8"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545
+	 * p.77-8</a>
 	 */
 	public void setMethod(Method method) {
 		setProperty(method);

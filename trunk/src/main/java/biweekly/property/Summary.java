@@ -29,7 +29,7 @@ package biweekly.property;
  * Defines a short, one line summary of the component that this property belongs
  * to. For email alarms, this is the subject line of the email.
  * @author Michael Angstadt
- * @see "RFC 5545 p.93-4"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545 p.93-4</a>
  */
 public class Summary extends TextProperty {
 	/**

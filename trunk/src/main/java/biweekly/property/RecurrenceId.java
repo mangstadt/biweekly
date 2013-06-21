@@ -34,7 +34,8 @@ import biweekly.parameter.Range;
  * instance has been modified. Used in conjunction with the {@link Uid} and
  * {@link Sequence} properties to uniquely identify a recurrence instance.
  * @author Michael Angstadt
- * @see "RFC 5545 p.112-4"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-112">RFC 5545
+ * p.112-4</a>
  */
 public class RecurrenceId extends DateOrDateTimeProperty {
 	/**
@@ -59,7 +60,8 @@ public class RecurrenceId extends DateOrDateTimeProperty {
 	 * Gets the effective range of recurrence instances from the instance
 	 * specified by this property.
 	 * @return the range or null if not set
-	 * @see "RFC 5545 p.23-4"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-23">RFC 5545
+	 * p.23-4</a>
 	 */
 	public Range getRange() {
 		return parameters.getRange();
@@ -69,7 +71,8 @@ public class RecurrenceId extends DateOrDateTimeProperty {
 	 * Sets the effective range of recurrence instances from the instance
 	 * specified by this property.
 	 * @param range the range or null to remove
-	 * @see "RFC 5545 p.23-4"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-23">RFC 5545
+	 * p.23-4</a>
 	 */
 	public void setRange(Range range) {
 		parameters.setRange(range);

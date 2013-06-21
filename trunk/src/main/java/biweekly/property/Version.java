@@ -4,7 +4,6 @@ import java.util.List;
 
 import biweekly.component.ICalComponent;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -34,7 +33,8 @@ import biweekly.component.ICalComponent;
  * Specifies the min/max versions a consumer must support in order to
  * successfully parse the iCalendar object. It is a <b>required</b> property.
  * @author Michael Angstadt
- * @see "RFC 5545 p.79-80"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-79">RFC 5545
+ * p.79-80</a>
  */
 public class Version extends ICalProperty {
 	private static final String DEFAULT = "2.0";

@@ -30,7 +30,8 @@ package biweekly.property;
  * does not have this property, the event should be considered visible
  * ("opaque").
  * @author Michael Angstadt
- * @see "RFC 5545 p.101-2"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-101">RFC 5545
+ * p.101-2</a>
  */
 public class Transparency extends TextProperty {
 	private static final String OPAQUE = "OPAQUE";

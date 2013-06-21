@@ -31,7 +31,7 @@ import java.util.List;
  * Defines a list of "tags" or "keywords" that describe the component that the
  * property belongs to.
  * @author Michael Angstadt
- * @see "RFC 5545 p.81-2"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545 p.81-2</a>
  */
 public class Categories extends ListProperty<String> {
 	/**

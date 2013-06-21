@@ -33,7 +33,8 @@ import biweekly.component.ICalComponent;
  * Represents a response to a scheduling request, describing whether the request
  * was successfully processed or not.
  * @author Michael Angstadt
- * @see "RFC 5545 p.141-3"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-141">RFC 5545
+ * p.141-3</a>
  */
 public class RequestStatus extends ICalProperty {
 	private String statusCode, description, exceptionText;
