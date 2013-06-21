@@ -30,7 +30,7 @@ package biweekly.property;
  * trigger. Used in conjunction with {@link DurationProperty}, which defines the
  * length of the pause between repeats.
  * @author Michael Angstadt
- * @see "RFC 5545 p.133"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-133">RFC 5545 p.133</a>
  */
 public class Repeat extends IntegerProperty {
 	/**

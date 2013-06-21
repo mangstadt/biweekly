@@ -29,7 +29,7 @@ package biweekly.parameter;
  * Defines the hierarchical relationship that a component has with another
  * component.
  * @author Michael Angstadt
- * @see "RFC 5545 p.25"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545 p.25</a>
  */
 public class RelationshipType extends EnumParameterValue {
 	private static final ICalParameterCaseClasses<RelationshipType> enums = new ICalParameterCaseClasses<RelationshipType>(RelationshipType.class);

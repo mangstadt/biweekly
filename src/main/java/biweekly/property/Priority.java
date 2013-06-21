@@ -28,7 +28,8 @@ package biweekly.property;
 /**
  * Defines the priority of an event or todo.
  * @author Michael Angstadt
- * @see "RFC 5545 p.89-90"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-89">RFC 5545
+ * p.89-90</a>
  */
 public class Priority extends IntegerProperty {
 	/**

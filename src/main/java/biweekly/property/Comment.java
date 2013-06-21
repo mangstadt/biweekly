@@ -28,7 +28,7 @@ package biweekly.property;
 /**
  * Defines a free-text comment to be read by the user.
  * @author Michael Angstadt
- * @see "RFC 5545 p.83-4"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545 p.83-4</a>
  */
 public class Comment extends TextProperty {
 	/**

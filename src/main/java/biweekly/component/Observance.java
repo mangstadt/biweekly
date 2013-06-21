@@ -42,13 +42,15 @@ import biweekly.property.TimezoneOffsetTo;
  * @author Michael Angstadt
  * @see DaylightSavingsTime
  * @see StandardTime
- * @see "RFC 5545 p.62-71"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
+ * p.62-71</a>
  */
 public abstract class Observance extends ICalComponent {
 	/**
 	 * Gets the date that the timezone starts.
 	 * @return the start date or null if not set
-	 * @see "RFC 5545 p.97-8"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
+	 * p.97-8</a>
 	 */
 	public DateStart getDateStart() {
 		return getProperty(DateStart.class);
@@ -57,7 +59,8 @@ public abstract class Observance extends ICalComponent {
 	/**
 	 * Sets the date that the timezone starts.
 	 * @param dateStart the start date or null to remove
-	 * @see "RFC 5545 p.97-8"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
+	 * p.97-8</a>
 	 */
 	public void setDateStart(DateStart dateStart) {
 		setProperty(DateStart.class, dateStart);
@@ -67,7 +70,8 @@ public abstract class Observance extends ICalComponent {
 	 * Sets the date that the timezone starts.
 	 * @param dateStart the start date or null to remove
 	 * @return the property that was created
-	 * @see "RFC 5545 p.97-8"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
+	 * p.97-8</a>
 	 */
 	public DateStart setDateStart(Date dateStart) {
 		DateStart prop = (dateStart == null) ? null : new DateStart(dateStart);
@@ -79,7 +83,8 @@ public abstract class Observance extends ICalComponent {
 	 * Gets the timezone offset that is currently in use in the timezone
 	 * observance.
 	 * @return the timezone offset or null if not set
-	 * @see "RFC 5545 p.105-6"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-105">RFC 5545
+	 * p.105-6</a>
 	 */
 	public TimezoneOffsetTo getTimezoneOffsetTo() {
 		return getProperty(TimezoneOffsetTo.class);
@@ -89,7 +94,8 @@ public abstract class Observance extends ICalComponent {
 	 * Sets the timezone offset that is currently in use in the timezone
 	 * observance.
 	 * @param timezoneOffsetTo the timezone offset or null to remove
-	 * @see "RFC 5545 p.105-6"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-105">RFC 5545
+	 * p.105-6</a>
 	 */
 	public void setTimezoneOffsetTo(TimezoneOffsetTo timezoneOffsetTo) {
 		setProperty(TimezoneOffsetTo.class, timezoneOffsetTo);
@@ -101,7 +107,8 @@ public abstract class Observance extends ICalComponent {
 	 * @param hour the hour offset (e.g. "-5")
 	 * @param minute the minute offset (e.g. "0")
 	 * @return the property that was created
-	 * @see "RFC 5545 p.105-6"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-105">RFC 5545
+	 * p.105-6</a>
 	 */
 	public TimezoneOffsetTo setTimezoneOffsetTo(Integer hour, Integer minute) {
 		TimezoneOffsetTo prop = new TimezoneOffsetTo(hour, minute);
@@ -112,7 +119,8 @@ public abstract class Observance extends ICalComponent {
 	/**
 	 * Gets the timezone offset that was in use before the timezone observance.
 	 * @return the timezone offset or null if not set
-	 * @see "RFC 5545 p.104-5"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-104">RFC 5545
+	 * p.104-5</a>
 	 */
 	public TimezoneOffsetFrom getTimezoneOffsetFrom() {
 		return getProperty(TimezoneOffsetFrom.class);
@@ -121,7 +129,8 @@ public abstract class Observance extends ICalComponent {
 	/**
 	 * Sets the timezone offset that was in use before the timezone observance.
 	 * @param timezoneOffsetFrom the timezone offset or null to remove
-	 * @see "RFC 5545 p.104-5"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-104">RFC 5545
+	 * p.104-5</a>
 	 */
 	public void setTimezoneOffsetFrom(TimezoneOffsetFrom timezoneOffsetFrom) {
 		setProperty(TimezoneOffsetFrom.class, timezoneOffsetFrom);
@@ -132,7 +141,8 @@ public abstract class Observance extends ICalComponent {
 	 * @param hour the hour offset (e.g. "-5")
 	 * @param minute the minute offset (e.g. "0")
 	 * @return the property that was created
-	 * @see "RFC 5545 p.104-5"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-104">RFC 5545
+	 * p.104-5</a>
 	 */
 	public TimezoneOffsetFrom setTimezoneOffsetFrom(Integer hour, Integer minute) {
 		TimezoneOffsetFrom prop = new TimezoneOffsetFrom(hour, minute);
@@ -143,7 +153,8 @@ public abstract class Observance extends ICalComponent {
 	/**
 	 * Gets how often the observance repeats.
 	 * @return the recurrence rule or null if not set
-	 * @see "RFC 5545 p.122-32"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
+	 * p.122-32</a>
 	 */
 	public RecurrenceRule getRecurrenceRule() {
 		return getProperty(RecurrenceRule.class);
@@ -152,7 +163,8 @@ public abstract class Observance extends ICalComponent {
 	/**
 	 * Sets how often the observance repeats.
 	 * @param recurrenceRule the recurrence rule or null to remove
-	 * @see "RFC 5545 p.122-32"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
+	 * p.122-32</a>
 	 */
 	public void setRecurrenceRule(RecurrenceRule recurrenceRule) {
 		setProperty(RecurrenceRule.class, recurrenceRule);
@@ -167,7 +179,8 @@ public abstract class Observance extends ICalComponent {
 	/**
 	 * Gets the comments attached to the timezone.
 	 * @return the comments
-	 * @see "RFC 5545 p.83-4"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
+	 * p.83-4</a>
 	 */
 	public List<Comment> getComments() {
 		return getProperties(Comment.class);
@@ -176,7 +189,8 @@ public abstract class Observance extends ICalComponent {
 	/**
 	 * Adds a comment to the timezone.
 	 * @param comment the comment to add
-	 * @see "RFC 5545 p.83-4"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
+	 * p.83-4</a>
 	 */
 	public void addComment(Comment comment) {
 		addProperty(comment);
@@ -186,7 +200,8 @@ public abstract class Observance extends ICalComponent {
 	 * Adds a comment to the timezone.
 	 * @param comment the comment to add
 	 * @return the property that was created
-	 * @see "RFC 5545 p.83-4"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
+	 * p.83-4</a>
 	 */
 	public Comment addComment(String comment) {
 		Comment prop = new Comment(comment);
@@ -198,7 +213,8 @@ public abstract class Observance extends ICalComponent {
 	 * Gets the list of dates/periods that help define the recurrence rule of
 	 * this observance (if one is defined).
 	 * @return the recurrence dates
-	 * @see "RFC 5545 p.120-2"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-120">RFC 5545
+	 * p.120-2</a>
 	 */
 	public List<RecurrenceDates> getRecurrenceDates() {
 		return getProperties(RecurrenceDates.class);
@@ -208,7 +224,8 @@ public abstract class Observance extends ICalComponent {
 	 * Adds a list of dates/periods that help define the recurrence rule of this
 	 * observance (if one is defined).
 	 * @param recurrenceDates the recurrence dates
-	 * @see "RFC 5545 p.120-2"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-120">RFC 5545
+	 * p.120-2</a>
 	 */
 	public void addRecurrenceDates(RecurrenceDates recurrenceDates) {
 		addProperty(recurrenceDates);
@@ -217,7 +234,8 @@ public abstract class Observance extends ICalComponent {
 	/**
 	 * Gets the traditional, non-standard names for the timezone.
 	 * @return the timezone names
-	 * @see "RFC 5545 p.103-4"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-103">RFC 5545
+	 * p.103-4</a>
 	 */
 	public List<TimezoneName> getTimezoneNames() {
 		return getProperties(TimezoneName.class);
@@ -226,7 +244,8 @@ public abstract class Observance extends ICalComponent {
 	/**
 	 * Adds a traditional, non-standard name for the timezone.
 	 * @param timezoneName the timezone name
-	 * @see "RFC 5545 p.103-4"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-103">RFC 5545
+	 * p.103-4</a>
 	 */
 	public void addTimezoneName(TimezoneName timezoneName) {
 		addProperty(timezoneName);
@@ -236,7 +255,8 @@ public abstract class Observance extends ICalComponent {
 	 * Adds a traditional, non-standard name for the timezone.
 	 * @param timezoneName the timezone name (e.g. "EST")
 	 * @return the property that was created
-	 * @see "RFC 5545 p.103-4"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-103">RFC 5545
+	 * p.103-4</a>
 	 */
 	public TimezoneName addTimezoneName(String timezoneName) {
 		TimezoneName prop = new TimezoneName(timezoneName);
@@ -247,7 +267,8 @@ public abstract class Observance extends ICalComponent {
 	/**
 	 * Gets the list of exceptions to the observance.
 	 * @return the list of exceptions
-	 * @see "RFC 5545 p.118-20"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-118">RFC 5545
+	 * p.118-20</a>
 	 */
 	public List<ExceptionDates> getExceptionDates() {
 		return getProperties(ExceptionDates.class);
@@ -257,7 +278,8 @@ public abstract class Observance extends ICalComponent {
 	 * Adds a list of exceptions to the observance. Note that this property can
 	 * contain multiple dates.
 	 * @param exceptionDates the list of exceptions
-	 * @see "RFC 5545 p.118-20"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-118">RFC 5545
+	 * p.118-20</a>
 	 */
 	public void addExceptionDates(ExceptionDates exceptionDates) {
 		addProperty(exceptionDates);

@@ -28,7 +28,8 @@ package biweekly.component;
 /**
  * Defines a time range in which a timezone is in "daylight savings" time.
  * @author Michael Angstadt
- * @see "RFC 5545 p.62-71"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
+ * p.62-71</a>
  */
 public class DaylightSavingsTime extends Observance {
 	//empty

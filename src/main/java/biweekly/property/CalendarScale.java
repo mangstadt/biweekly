@@ -29,7 +29,7 @@ package biweekly.property;
  * Specifies the calendar system that this iCalendar object uses. If none is
  * specified, then the calendar is assumed to be in Gregorian format.
  * @author Michael Angstadt
- * @see "RFC 5545 p.76-7"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-76">RFC 5545 p.76-7</a>
  */
 public class CalendarScale extends TextProperty {
 	private static final String GREGORIAN = "GREGORIAN";

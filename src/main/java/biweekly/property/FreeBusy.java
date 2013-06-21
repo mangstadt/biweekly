@@ -40,7 +40,8 @@ import biweekly.util.Period;
  * multiple time periods, but only one availability type may be defined (e.g.
  * "busy" or "free").
  * @author Michael Angstadt
- * @see "RFC 5545 p.100-1"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-100">RFC 5545
+ * p.100-1</a>
  */
 public class FreeBusy extends ICalProperty {
 	private final List<Period> values = new ArrayList<Period>();
@@ -76,7 +77,8 @@ public class FreeBusy extends ICalProperty {
 	 * property (for example, "free" or "busy"). If not set, the user should be
 	 * considered "busy".
 	 * @return the type or null if not set
-	 * @see "RFC 5545 p.20"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-20">RFC 5545
+	 * p.20</a>
 	 */
 	public FreeBusyType getType() {
 		return parameters.getFreeBusyType();
@@ -87,7 +89,8 @@ public class FreeBusy extends ICalProperty {
 	 * property (for example, "free" or "busy"). If not set, the user should be
 	 * considered "busy".
 	 * @param fbType the type or null to remove
-	 * @see "RFC 5545 p.20"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-20">RFC 5545
+	 * p.20</a>
 	 */
 	public void setType(FreeBusyType fbType) {
 		parameters.setFreeBusyType(fbType);

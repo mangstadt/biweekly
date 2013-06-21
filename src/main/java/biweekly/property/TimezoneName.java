@@ -29,7 +29,8 @@ package biweekly.property;
  * Defines the traditional, non-standard name for a timezone (for example, "EST"
  * for the US east coast).
  * @author Michael Angstadt
- * @see "RFC 5545 p.103-4"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-103">RFC 5545
+ * p.103-4</a>
  */
 public class TimezoneName extends TextProperty {
 	/**

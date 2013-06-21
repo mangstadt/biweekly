@@ -33,7 +33,8 @@ package biweekly.property;
  * <li>VFREEBUSY - the person requesting the free busy time</li>
  * </ul>
  * @author Michael Angstadt
- * @see "RFC 5545 p.111-2"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
+ * p.111-2</a>
  */
 public class Organizer extends TextProperty {
 	/**

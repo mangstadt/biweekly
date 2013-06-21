@@ -4,7 +4,6 @@ import java.util.List;
 
 import biweekly.component.ICalComponent;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -33,7 +32,7 @@ import biweekly.component.ICalComponent;
 /**
  * Defines the amount that a todo task has been completed.
  * @author Michael Angstadt
- * @see "RFC 5545 p.88-9"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-88">RFC 5545 p.88-9</a>
  */
 public class PercentComplete extends IntegerProperty {
 	/**

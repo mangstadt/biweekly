@@ -30,7 +30,7 @@ package biweekly.property;
  * description should be a more detailed version of the one provided by the
  * {@link Summary} property.
  * @author Michael Angstadt
- * @see "RFC 5545 p.84-5"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545 p.84-5</a>
  */
 public class Description extends TextProperty {
 	/**

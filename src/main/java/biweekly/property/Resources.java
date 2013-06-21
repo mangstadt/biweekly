@@ -31,7 +31,7 @@ import java.util.List;
  * Defines a list of resources that are needed for an event or todo (for
  * example, an easel, a projector or a DVD player).
  * @author Michael Angstadt
- * @see "RFC 5545 p.91"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-91">RFC 5545 p.91</a>
  */
 public class Resources extends ListProperty<String> {
 	/**

@@ -29,7 +29,7 @@ package biweekly.property;
  * Defines a URL that points to an iCalendar object that contains further
  * information on a timezone.
  * @author Michael Angstadt
- * @see "RFC 5545 p.106"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-106">RFC 5545 p.106</a>
  */
 public class TimezoneUrl extends TextProperty {
 	/**

@@ -34,7 +34,8 @@ import biweekly.component.ICalComponent;
 /**
  * Defines how often a component repeats.
  * @author Michael Angstadt
- * @see "RFC 5545 p.122-32"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
+ * p.122-32</a>
  */
 public class RecurrenceRule extends ICalProperty {
 	private Frequency frequency;
