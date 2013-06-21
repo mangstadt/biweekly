@@ -46,6 +46,7 @@ public class RelatedTo extends TextProperty {
 	/**
 	 * Gets the relationship type.
 	 * @return the relationship type (e.g. "child") or null if not set
+	 * @see "RFC 5545 p.25"
 	 */
 	public RelationshipType getRelationshipType() {
 		return parameters.getRelationshipType();
@@ -53,9 +54,11 @@ public class RelatedTo extends TextProperty {
 
 	/**
 	 * Sets the relationship type.
-	 * @param related the relationship type (e.g. "child") or null to remove
+	 * @param relationshipType the relationship type (e.g. "child") or null to
+	 * remove
+	 * @see "RFC 5545 p.25"
 	 */
-	public void setRelationshipType(RelationshipType related) {
-		parameters.setRelationshipType(related);
+	public void setRelationshipType(RelationshipType relationshipType) {
+		parameters.setRelationshipType(relationshipType);
 	}
 }

@@ -72,18 +72,22 @@ public class FreeBusy extends ICalProperty {
 	}
 
 	/**
-	 * Gets the person's status over these time periods. If not set, the user
-	 * should be considered "busy" during these time periods.
+	 * Gets the person's status over the time periods that are specified in this
+	 * property (for example, "free" or "busy"). If not set, the user should be
+	 * considered "busy".
 	 * @return the type or null if not set
+	 * @see "RFC 5545 p.20"
 	 */
 	public FreeBusyType getType() {
 		return parameters.getFreeBusyType();
 	}
 
 	/**
-	 * Sets the person's status over these time periods. If not set, the user
-	 * should be considered "busy" during these time periods.
+	 * Sets the person's status over the time periods that are specified in this
+	 * property (for example, "free" or "busy"). If not set, the user should be
+	 * considered "busy".
 	 * @param fbType the type or null to remove
+	 * @see "RFC 5545 p.20"
 	 */
 	public void setType(FreeBusyType fbType) {
 		parameters.setFreeBusyType(fbType);

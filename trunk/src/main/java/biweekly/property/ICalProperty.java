@@ -35,22 +35,14 @@ import biweekly.parameter.ICalParameters;
  */
 
 /**
- * Represents an iCalendar property (such as "VERSION").
+ * Base class for all iCalendar properties.
  * @author Michael Angstadt
  */
 public abstract class ICalProperty {
 	/**
 	 * The property parameters.
 	 */
-	protected ICalParameters parameters;
-
-	public ICalProperty() {
-		this(new ICalParameters());
-	}
-
-	public ICalProperty(ICalParameters parameters) {
-		this.parameters = parameters;
-	}
+	protected ICalParameters parameters = new ICalParameters();
 
 	/**
 	 * Gets the property's parameters.
@@ -114,6 +106,14 @@ public abstract class ICalProperty {
 	}
 
 	/**
+	 * Removes a parameter from the property.
+	 * @param name the parameter name (case insensitive, e.g. "LANGUAGE")
+	 */
+	public void removeParameter(String name) {
+		parameters.removeAll(name);
+	}
+
+	/**
 	 * Gets a URI pointing to additional information about the entity
 	 * represented by the property.
 	 * @return the URI or null if not set
@@ -134,9 +134,8 @@ public abstract class ICalProperty {
 	}
 
 	/**
-	 * Gets the content type of the property's value.
-	 * @return the content type of the property's value (e.g. "image/png") or
-	 * null if not set
+	 * Gets the content-type of the property's value.
+	 * @return the content type (e.g. "image/png") or null if not set
 	 * @see "RFC 5545 p.19-20"
 	 */
 	protected String getFormatType() {
@@ -144,9 +143,8 @@ public abstract class ICalProperty {
 	}
 
 	/**
-	 * Sets the content type of the property's value.
-	 * @param formatType the content type of the property's value (e.g.
-	 * "image/png") or null to remove
+	 * Sets the content-type of the property's value.
+	 * @param formatType the content type (e.g. "image/png") or null to remove
 	 * @see "RFC 5545 p.19-20"
 	 */
 	protected void setFormatType(String formatType) {
@@ -185,11 +183,11 @@ public abstract class ICalProperty {
 	}
 
 	/**
-	 * Sets the timezone in the form of a globally-defined timezone (e.g.
-	 * "America/New_York"). For a list of globally-defined timezones, see the <a
-	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>. Use
-	 * {@link #setTimezone(VTimezone)} to use a timezone that's defined in the
-	 * iCalendar object.
+	 * Sets the property's timezone in the form of a globally-defined timezone
+	 * (e.g. "America/New_York"). For a list of globally-defined timezones, see
+	 * the <a href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>. Use
+	 * {@link #setTimezone(VTimezone)} to use a timezone that's defined within
+	 * the iCalendar object.
 	 * @param timezoneId the timezone identifier (e.g. "America/New_York") or
 	 * null to remove
 	 * @see "RFC 5545 p.27-8"
@@ -199,11 +197,10 @@ public abstract class ICalProperty {
 	}
 
 	/**
-	 * Sets the timezone that this property uses. Use
-	 * {@link #setTimezoneId(String)} to set a globally-defined timezone (e.g.
-	 * "America/New_York").
-	 * @param timezone the timezone component that defines the timezone or null
-	 * to remove
+	 * Sets the property's timezone to a timezone that is defined within the
+	 * iCalendar object. Use {@link #setTimezoneId(String)} to use a
+	 * globally-defined timezone (e.g. "America/New_York").
+	 * @param timezone the timezone component or null to remove
 	 * @see "RFC 5545 p.27-8"
 	 */
 	protected void setTimezone(VTimezone timezone) {

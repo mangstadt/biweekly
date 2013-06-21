@@ -59,6 +59,7 @@ public class RecurrenceId extends DateOrDateTimeProperty {
 	 * Gets the effective range of recurrence instances from the instance
 	 * specified by this property.
 	 * @return the range or null if not set
+	 * @see "RFC 5545 p.23-4"
 	 */
 	public Range getRange() {
 		return parameters.getRange();
@@ -68,6 +69,7 @@ public class RecurrenceId extends DateOrDateTimeProperty {
 	 * Sets the effective range of recurrence instances from the instance
 	 * specified by this property.
 	 * @param range the range or null to remove
+	 * @see "RFC 5545 p.23-4"
 	 */
 	public void setRange(Range range) {
 		parameters.setRange(range);
