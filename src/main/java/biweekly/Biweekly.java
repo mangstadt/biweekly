@@ -56,8 +56,8 @@ import biweekly.util.IOUtils;
 
 /**
  * <p>
- * Contains static, chaining factory methods for reading/writing iCalendar
- * objects. The methods make use of the core {@link ICalReader} and
+ * Contains static chaining factory methods for reading/writing iCalendar
+ * objects. For data streaming, use the {@link ICalReader} and
  * {@link ICalWriter} classes.
  * </p>
  * 
@@ -172,8 +172,7 @@ public class Biweekly {
 	}
 
 	/**
-	 * Parses an iCalendar object string. Use {@link ICalReader} to stream the
-	 * data.
+	 * Parses an iCalendar object string.
 	 * @param ical the iCalendar data
 	 * @return chainer object for completing the parse operation
 	 */
@@ -182,19 +181,17 @@ public class Biweekly {
 	}
 
 	/**
-	 * Parses an iCalendar file. Use {@link ICalReader} to stream the data.
-	 * @param file the file
+	 * Parses an iCalendar file.
 	 * @return chainer object for completing the parse operation
 	 * @throws FileNotFoundException if the file does not exist or cannot be
 	 * accessed
 	 */
 	public static ParserChainTextReader parse(File file) throws FileNotFoundException {
-		return parse(new FileReader(file));
+		return new ParserChainTextReader(new FileReader(file), true); //close the FileReader, since we created it
 	}
 
 	/**
-	 * Parses an iCalendar data stream. Use {@link ICalReader} to stream the
-	 * data.
+	 * Parses an iCalendar data stream.
 	 * @param in the input stream
 	 * @return chainer object for completing the parse operation
 	 */
@@ -203,13 +200,12 @@ public class Biweekly {
 	}
 
 	/**
-	 * Parses an iCalendar data stream. Use {@link ICalReader} to stream the
-	 * data.
+	 * Parses an iCalendar data stream.
 	 * @param reader the reader
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ParserChainTextReader parse(Reader reader) {
-		return new ParserChainTextReader(reader);
+		return new ParserChainTextReader(reader, false); //do not close the Reader, since we didn't create it
 	}
 
 	/**
@@ -242,7 +238,12 @@ public class Biweekly {
 	static abstract class ParserChain<T, U extends IParser> {
 		final List<ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new ArrayList<ICalPropertyMarshaller<? extends ICalProperty>>(0);
 		final List<ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new ArrayList<ICalComponentMarshaller<? extends ICalComponent>>(0);
+		final boolean closeWhenDone;
 		List<List<String>> warnings;
+
+		ParserChain(boolean closeWhenDone) {
+			this.closeWhenDone = closeWhenDone;
+		}
 
 		/**
 		 * Registers a property marshaller.
@@ -308,11 +309,17 @@ public class Biweekly {
 		 */
 		public ICalendar first() throws IOException, SAXException {
 			IParser parser = ready();
-			ICalendar ical = parser.readNext();
-			if (warnings != null) {
-				warnings.add(parser.getWarnings());
+			try {
+				ICalendar ical = parser.readNext();
+				if (warnings != null) {
+					warnings.add(parser.getWarnings());
+				}
+				return ical;
+			} finally {
+				if (closeWhenDone) {
+					IOUtils.closeQuietly(parser);
+				}
 			}
-			return ical;
 		}
 
 		/**
@@ -323,21 +330,31 @@ public class Biweekly {
 		 */
 		public List<ICalendar> all() throws IOException, SAXException {
 			IParser parser = ready();
-			List<ICalendar> icals = new ArrayList<ICalendar>();
-			ICalendar ical;
-			while ((ical = parser.readNext()) != null) {
-				if (warnings != null) {
-					warnings.add(parser.getWarnings());
+			try {
+				List<ICalendar> icals = new ArrayList<ICalendar>();
+				ICalendar ical;
+				while ((ical = parser.readNext()) != null) {
+					if (warnings != null) {
+						warnings.add(parser.getWarnings());
+					}
+					icals.add(ical);
 				}
-				icals.add(ical);
+				return icals;
+			} finally {
+				if (closeWhenDone) {
+					IOUtils.closeQuietly(parser);
+				}
 			}
-			return icals;
 		}
 
 	}
 
 	static abstract class ParserChainText<T> extends ParserChain<T, ICalReader> {
 		boolean caretDecoding = true;
+
+		ParserChainText(boolean closeWhenDone) {
+			super(closeWhenDone);
+		}
 
 		/**
 		 * Sets whether the reader will decode characters in parameter values
@@ -383,11 +400,15 @@ public class Biweekly {
 
 	/**
 	 * Convenience chainer class for parsing plain text iCalendar data streams.
+	 * @see Biweekly#parse(InputStream)
+	 * @see Biweekly#parse(File)
+	 * @see Biweekly#parse(Reader)
 	 */
 	public static class ParserChainTextReader extends ParserChainText<ParserChainTextReader> {
 		private Reader reader;
 
-		private ParserChainTextReader(Reader reader) {
+		private ParserChainTextReader(Reader reader, boolean closeWhenDone) {
+			super(closeWhenDone);
 			this.reader = reader;
 		}
 
@@ -418,12 +439,14 @@ public class Biweekly {
 	}
 
 	/**
-	 * Convenience chainer class for parsing plain text iCalendar data streams.
+	 * Convenience chainer class for parsing plain text iCalendar strings.
+	 * @see Biweekly#parse(String)
 	 */
 	public static class ParserChainTextString extends ParserChainText<ParserChainTextString> {
 		private String text;
 
 		private ParserChainTextString(String text) {
+			super(false);
 			this.text = text;
 		}
 
@@ -555,6 +578,8 @@ public class Biweekly {
 	/**
 	 * Convenience chainer class for writing to plain text iCalendar data
 	 * streams.
+	 * @see Biweekly#write(Collection)
+	 * @see Biweekly#write(ICalendar...)
 	 */
 	public static class WriterChainTextMulti extends WriterChainText<WriterChainTextMulti> {
 		private List<List<String>> warnings;
@@ -594,6 +619,7 @@ public class Biweekly {
 	/**
 	 * Convenience chainer class for writing to plain text iCalendar data
 	 * streams.
+	 * @see Biweekly#write(ICalendar)
 	 */
 	public static class WriterChainTextSingle extends WriterChainText<WriterChainTextSingle> {
 		private List<String> warnings;
