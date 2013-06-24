@@ -34,4 +34,9 @@ public class VAlarmMarshaller extends ICalComponentMarshaller<VAlarm> {
 	public VAlarmMarshaller() {
 		super(VAlarm.class, "VALARM");
 	}
+
+	@Override
+	public VAlarm newInstance() {
+		return new VAlarm(null, null);
+	}
 }

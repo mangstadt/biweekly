@@ -48,12 +48,14 @@ import biweekly.util.Duration;
  */
 public class VAlarm extends ICalComponent {
 	/**
-	 * Creates a new alarm. Use of this constructor is discouraged and may put
-	 * the component in an inconsistent state. Use one of the static factory
-	 * methods instead.
+	 * Creates a new alarm. Consider using one of the static factory methods
+	 * instead.
+	 * @param action the alarm action (e.g. "email")
+	 * @param trigger the trigger
 	 */
-	public VAlarm() {
-		//empty
+	public VAlarm(Action action, Trigger trigger) {
+		setAction(action);
+		setTrigger(trigger);
 	}
 
 	/**
@@ -72,9 +74,7 @@ public class VAlarm extends ICalComponent {
 	 * @return the alarm
 	 */
 	public static VAlarm audio(Trigger trigger, Attachment sound) {
-		VAlarm alarm = new VAlarm();
-		alarm.setAction(Action.audio());
-		alarm.setTrigger(trigger);
+		VAlarm alarm = new VAlarm(Action.audio(), trigger);
 		if (sound != null) {
 			alarm.addAttachment(sound);
 		}
@@ -88,9 +88,7 @@ public class VAlarm extends ICalComponent {
 	 * @return the alarm
 	 */
 	public static VAlarm display(Trigger trigger, String displayText) {
-		VAlarm alarm = new VAlarm();
-		alarm.setAction(Action.display());
-		alarm.setTrigger(trigger);
+		VAlarm alarm = new VAlarm(Action.display(), trigger);
 		alarm.setDescription(displayText);
 		return alarm;
 	}
@@ -104,9 +102,7 @@ public class VAlarm extends ICalComponent {
 	 * @return the alarm
 	 */
 	public static VAlarm email(Trigger trigger, String subject, String body, String... recipients) {
-		VAlarm alarm = new VAlarm();
-		alarm.setAction(Action.email());
-		alarm.setTrigger(trigger);
+		VAlarm alarm = new VAlarm(Action.email(), trigger);
 		alarm.setSummary(subject);
 		alarm.setDescription(body);
 		for (String recipient : recipients) {
