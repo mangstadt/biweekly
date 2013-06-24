@@ -8,7 +8,6 @@ import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.util.ListMultimap;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -172,7 +171,7 @@ public class ICalComponent {
 	 * @return the property object that was created
 	 */
 	public RawProperty setExperimentalProperty(String name, String value) {
-		removeExperimentalProperties(name);
+		removeExperimentalProperty(name);
 		RawProperty raw = new RawProperty(name, value);
 		addProperty(raw);
 		return raw;
@@ -182,7 +181,7 @@ public class ICalComponent {
 	 * Removes all experimental properties that have the given name.
 	 * @param name the component name (e.g. "X-ALT-DESC")
 	 */
-	public void removeExperimentalProperties(String name) {
+	public void removeExperimentalProperty(String name) {
 		List<RawProperty> xproperties = getExperimentalProperties(name);
 		for (RawProperty xproperty : xproperties) {
 			properties.remove(xproperty.getClass(), xproperty);
@@ -294,7 +293,7 @@ public class ICalComponent {
 	 * @param name the component name (e.g. "X-PARTY")
 	 * @return the component object that was created
 	 */
-	public RawComponent addExperimentalComponents(String name) {
+	public RawComponent addExperimentalComponent(String name) {
 		RawComponent raw = new RawComponent(name); //TODO rename to XComponent
 		addComponent(raw);
 		return raw;

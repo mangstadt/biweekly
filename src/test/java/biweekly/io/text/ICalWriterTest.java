@@ -364,7 +364,7 @@ public class ICalWriterTest {
 	@Test
 	public void experimental_component() throws Exception {
 		ICalendar ical = new ICalendar();
-		ical.addExperimentalComponents("X-VPARTY");
+		ical.addExperimentalComponent("X-VPARTY");
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw);
