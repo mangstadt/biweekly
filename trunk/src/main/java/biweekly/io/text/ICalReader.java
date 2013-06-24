@@ -55,7 +55,19 @@ import biweekly.property.marshaller.RawPropertyMarshaller;
  */
 
 /**
+ * <p>
  * Parses {@link ICalendar} objects from an iCalendar data stream.
+ * </p>
+ * 
+ * <pre>
+ * Reader reader = ...
+ * ICalReader icalReader = new ICalReader(reader);
+ * ICalendar ical;
+ * while ((ical = icalReader.readNext()) != null){
+ *   ...
+ * }
+ * icalReader.close();
+ * </pre>
  * @author Michael Angstadt
  */
 public class ICalReader implements IParser {
@@ -323,5 +335,12 @@ public class ICalReader implements IParser {
 		sb.append(": ").append(message);
 
 		warnings.add(sb.toString());
+	}
+
+	/**
+	 * Closes the underlying {@link Reader} object.
+	 */
+	public void close() throws IOException {
+		reader.close();
 	}
 }

@@ -1,5 +1,6 @@
 package biweekly.io;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 
@@ -38,7 +39,7 @@ import biweekly.property.marshaller.ICalPropertyMarshaller;
  * Defines the common methods that all iCalendar reader classes must have.
  * @author Michael Angstadt
  */
-public interface IParser {
+public interface IParser extends Closeable {
 	/**
 	 * Registers a marshaller for an experimental property.
 	 * @param marshaller the marshaller to register

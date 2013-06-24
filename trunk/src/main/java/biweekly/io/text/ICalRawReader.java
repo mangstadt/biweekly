@@ -1,5 +1,6 @@
 package biweekly.io.text;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 
@@ -35,7 +36,7 @@ import biweekly.parameter.ICalParameters;
  * Parses an iCalendar data stream.
  * @author Michael Angstadt
  */
-public class ICalRawReader {
+public class ICalRawReader implements Closeable {
 	private static final String NEWLINE = System.getProperty("line.separator");
 	private final FoldedLineReader reader;
 	private boolean caretDecodingEnabled = true;
@@ -310,5 +311,12 @@ public class ICalRawReader {
 	@SuppressWarnings("serial")
 	public static class StopReadingException extends ICalException {
 		//empty
+	}
+
+	/**
+	 * Closes the underlying {@link Reader} object.
+	 */
+	public void close() throws IOException {
+		reader.close();
 	}
 }
