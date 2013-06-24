@@ -34,4 +34,9 @@ public class VTodoMarshaller extends ICalComponentMarshaller<VTodo> {
 	public VTodoMarshaller() {
 		super(VTodo.class, "VTODO");
 	}
+
+	@Override
+	public VTodo newInstance() {
+		return new VTodo();
+	}
 }

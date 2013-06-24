@@ -5,7 +5,6 @@ import java.util.Collection;
 import biweekly.component.ICalComponent;
 import biweekly.property.ICalProperty;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -58,18 +57,10 @@ public abstract class ICalComponentMarshaller<T extends ICalComponent> {
 	}
 
 	/**
-	 * Creates a new instance of the component class by calling its default
-	 * constructor. Child classes can override this if the component class does
-	 * not have a default constructor.
+	 * Creates a new instance of the component class.
 	 * @return the new instance
 	 */
-	public T newInstance() {
-		try {
-			return clazz.newInstance();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+	public abstract T newInstance();
 
 	/**
 	 * Gets the sub-components to marshal. Child classes can override this in

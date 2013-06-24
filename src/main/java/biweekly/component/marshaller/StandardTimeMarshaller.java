@@ -34,4 +34,9 @@ public class StandardTimeMarshaller extends ICalComponentMarshaller<StandardTime
 	public StandardTimeMarshaller() {
 		super(StandardTime.class, "STANDARD");
 	}
+
+	@Override
+	public StandardTime newInstance() {
+		return new StandardTime();
+	}
 }

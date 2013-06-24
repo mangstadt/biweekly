@@ -34,4 +34,9 @@ public class VEventMarshaller extends ICalComponentMarshaller<VEvent> {
 	public VEventMarshaller() {
 		super(VEvent.class, "VEVENT");
 	}
+
+	@Override
+	public VEvent newInstance() {
+		return new VEvent();
+	}
 }

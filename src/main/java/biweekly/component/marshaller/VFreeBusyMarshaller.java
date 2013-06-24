@@ -12,7 +12,6 @@ import biweekly.property.FreeBusy;
 import biweekly.property.ICalProperty;
 import biweekly.util.Period;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -90,5 +89,10 @@ public class VFreeBusyMarshaller extends ICalComponentMarshaller<VFreeBusy> {
 		}
 
 		return all;
+	}
+
+	@Override
+	public VFreeBusy newInstance() {
+		return new VFreeBusy();
 	}
 }
