@@ -98,37 +98,11 @@ public class ICalWriter implements Closeable {
 	 * </p>
 	 * 
 	 * <p>
-	 * This setting is <b>disabled</b> by default. When disabled, the writer
-	 * will replace newlines with spaces and double quotes with single quotes.
+	 * This setting is disabled by default. When disabled, the writer will
+	 * replace newlines with spaces and double quotes with single quotes.
 	 * </p>
-	 * 
-	 * <table border="1">
-	 * <tr>
-	 * <th>Character</th>
-	 * <th>Replacement<br>
-	 * (when disabled)</th>
-	 * <th>Replacement<br>
-	 * (when enabled)</th>
-	 * </tr>
-	 * <tr>
-	 * <td><code>"</code></td>
-	 * <td><code>'</code></td>
-	 * <td><code>^'</code></td>
-	 * </tr>
-	 * <tr>
-	 * <td><i>newline</i></td>
-	 * <td><code><i>space</i></code></td>
-	 * <td><code>^n</code></td>
-	 * </tr>
-	 * <tr>
-	 * <td><code>^</code></td>
-	 * <td><code>^</code></td>
-	 * <td><code>^^</code></td>
-	 * </tr>
-	 * </table>
-	 * 
 	 * @return true if circumflex accent encoding is enabled, false if not
-	 * @see <a href="http://tools.ietf.org/html/rfc6868">RFC 6868</a>
+	 * @see ICalRawWriter#isCaretEncodingEnabled()
 	 */
 	public boolean isCaretEncodingEnabled() {
 		return writer.isCaretEncodingEnabled();
@@ -142,37 +116,11 @@ public class ICalWriter implements Closeable {
 	 * </p>
 	 * 
 	 * <p>
-	 * This setting is <b>disabled</b> by default. When disabled, the writer
-	 * will replace newlines with spaces and double quotes with single quotes.
+	 * This setting is disabled by default. When disabled, the writer will
+	 * replace newlines with spaces and double quotes with single quotes.
 	 * </p>
-	 * 
-	 * <table border="1">
-	 * <tr>
-	 * <th>Character</th>
-	 * <th>Replacement<br>
-	 * (when disabled)</th>
-	 * <th>Replacement<br>
-	 * (when enabled)</th>
-	 * </tr>
-	 * <tr>
-	 * <td><code>"</code></td>
-	 * <td><code>'</code></td>
-	 * <td><code>^'</code></td>
-	 * </tr>
-	 * <tr>
-	 * <td><i>newline</i></td>
-	 * <td><code><i>space</i></code></td>
-	 * <td><code>^n</code></td>
-	 * </tr>
-	 * <tr>
-	 * <td><code>^</code></td>
-	 * <td><code>^</code></td>
-	 * <td><code>^^</code></td>
-	 * </tr>
-	 * </table>
-	 * 
 	 * @param enable true to use circumflex accent encoding, false not to
-	 * @see <a href="http://tools.ietf.org/html/rfc6868">RFC 6868</a>
+	 * @see ICalRawWriter#setCaretEncodingEnabled(boolean)
 	 */
 	public void setCaretEncodingEnabled(boolean enable) {
 		writer.setCaretEncodingEnabled(enable);
