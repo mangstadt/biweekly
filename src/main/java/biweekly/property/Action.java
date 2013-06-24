@@ -26,7 +26,22 @@ package biweekly.property;
  */
 
 /**
+ * <p>
  * Defines the type of action to invoke when an alarm is triggered.
+ * </p>
+ * 
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Action action = Action.audio();
+ * 
+ * if (action.isAudio()) {
+ *   ...
+ * }
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-132">RFC 5545
  * p.132-3</a>

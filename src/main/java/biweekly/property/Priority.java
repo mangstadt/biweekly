@@ -26,7 +26,7 @@ package biweekly.property;
  */
 
 /**
- * Defines the priority of an event or todo.
+ * Defines the priority of an event or to-do.
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-89">RFC 5545
  * p.89-90</a>

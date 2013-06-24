@@ -69,7 +69,7 @@ public class VJournal extends ICalComponent {
 	 * valid:
 	 * <ul>
 	 * <li>{@link Uid} - Set to a UUID.</li>
-	 * <li>{@link DateTimeStamp} - Set to the current date/time.</li>
+	 * <li>{@link DateTimeStamp} - Set to the current date-time.</li>
 	 * </ul>
 	 * </p>
 	 */
@@ -203,8 +203,8 @@ public class VJournal extends ICalComponent {
 	}
 
 	/**
-	 * Gets the date/time that the journal entry was initially created.
-	 * @return the creation date/time or null if not set
+	 * Gets the date-time that the journal entry was initially created.
+	 * @return the creation date-time or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545
 	 * p.136</a>
 	 */
@@ -213,8 +213,8 @@ public class VJournal extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date/time that the journal entry was initially created.
-	 * @param created the creation date/time or null to remove
+	 * Sets the date-time that the journal entry was initially created.
+	 * @param created the creation date-time or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545
 	 * p.136</a>
 	 */
@@ -223,8 +223,8 @@ public class VJournal extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date/time that the journal entry was initially created.
-	 * @param created the creation date/time or null to remove
+	 * Sets the date-time that the journal entry was initially created.
+	 * @param created the creation date-time or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545
 	 * p.136</a>
@@ -269,7 +269,7 @@ public class VJournal extends ICalComponent {
 	}
 
 	/**
-	 * Gets the date/time that the journal entry was last changed.
+	 * Gets the date-time that the journal entry was last changed.
 	 * @return the last modified date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
@@ -279,7 +279,7 @@ public class VJournal extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date/time that the journal entry was last changed.
+	 * Sets the date-time that the journal entry was last changed.
 	 * @param lastModified the last modified date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
@@ -289,7 +289,7 @@ public class VJournal extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date/time that the journal entry was last changed.
+	 * Sets the date-time that the journal entry was last changed.
 	 * @param lastModified the last modified date or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
@@ -860,6 +860,13 @@ public class VJournal extends ICalComponent {
 
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
+		if (getUid() == null) {
+			warnings.add(Uid.class.getSimpleName() + " is not set (it is a required property).");
+		}
+		if (getDateTimeStamp() == null) {
+			warnings.add(DateTimeStamp.class.getSimpleName() + " is not set (it is a required property).");
+		}
+
 		Status status = getStatus();
 		if (status != null && (status.isTentative() || status.isConfirmed() || status.isNeedsAction() || status.isCompleted() || status.isInProgress())) {
 			warnings.add("Invalid status value (\"" + status.getValue() + "\").  Valid status values are \"draft\", \"final\", and \"cancelled\".");
@@ -869,13 +876,6 @@ public class VJournal extends ICalComponent {
 		DateStart dateStart = getDateStart();
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
 			warnings.add("Both " + DateStart.class.getSimpleName() + " and " + RecurrenceId.class.getSimpleName() + " must have the same data type (they must either both be dates or both be datetimes).");
-		}
-
-		if (getUid() == null) {
-			warnings.add(Uid.class.getSimpleName() + " is not set (it is a required property).");
-		}
-		if (getDateTimeStamp() == null) {
-			warnings.add(DateTimeStamp.class.getSimpleName() + " is not set (it is a required property).");
 		}
 	}
 }

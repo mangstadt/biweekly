@@ -26,8 +26,7 @@ package biweekly.property;
  */
 
 /**
- * Identifies the application that created the iCalendar object. It is a
- * <b>required</b> property.
+ * Identifies the application that created the iCalendar object.
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545 p.78-9</a>
  */

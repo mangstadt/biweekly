@@ -38,7 +38,7 @@ import biweekly.property.TimezoneOffsetTo;
  */
 
 /**
- * Defines a "daylight" or "standard" timezone observance.
+ * Parent class for the "daylight" and "standard" timezone observances.
  * @author Michael Angstadt
  * @see DaylightSavingsTime
  * @see StandardTime

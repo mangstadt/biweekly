@@ -30,8 +30,23 @@ import biweekly.component.ICalComponent;
  */
 
 /**
+ * <p>
  * Specifies the min/max versions a consumer must support in order to
- * successfully parse the iCalendar object. It is a <b>required</b> property.
+ * successfully parse the iCalendar object.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * //gets the default iCal version
+ * Version version = Version.v2_0();
+ * 
+ * if (verison.isV2_0()) {
+ *   ...
+ * }
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-79">RFC 5545
  * p.79-80</a>

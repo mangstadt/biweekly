@@ -44,9 +44,28 @@ import biweekly.property.Version;
  */
 
 /**
+ * <p>
  * Represents an iCalendar object.
+ * </p>
+ * 
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * ICalendar ical = new ICalendar();
+ * 
+ * VEvent event = new VEvent();
+ * event.setSummary("Team Meeting");
+ * Date start = ...;
+ * event.setDateStart(start);
+ * Date end = ...;
+ * event.setDateEnd(end);
+ * ical.addEvent(event);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
- * @see "RFC 5545"
+ * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalendar extends ICalComponent {
 	/**
@@ -195,16 +214,16 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Gets the todos.
-	 * @return the todos
+	 * Gets the to-dos.
+	 * @return the to-dos
 	 */
 	public List<VTodo> getTodos() {
 		return getComponents(VTodo.class);
 	}
 
 	/**
-	 * Adds a todo.
-	 * @param todo the todo
+	 * Adds a to-do.
+	 * @param to-do the to-do
 	 */
 	public void addVTodo(VTodo todo) {
 		addComponent(todo);

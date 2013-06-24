@@ -34,10 +34,10 @@ import biweekly.util.ListMultimap;
  */
 
 /**
- * The base class for iCalendar components (such as VEVENT).
+ * The base class for iCalendar components.
  * @author Michael Angstadt
  */
-public class ICalComponent {
+public abstract class ICalComponent {
 	protected final ListMultimap<Class<? extends ICalComponent>, ICalComponent> components = new ListMultimap<Class<? extends ICalComponent>, ICalComponent>();
 	protected final ListMultimap<Class<? extends ICalProperty>, ICalProperty> properties = new ListMultimap<Class<? extends ICalProperty>, ICalProperty>();
 

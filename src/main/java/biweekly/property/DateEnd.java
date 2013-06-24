@@ -28,7 +28,7 @@ import java.util.Date;
  */
 
 /**
- * Defines the date that an event or free busy component ends.
+ * Defines the date that an event or free/busy component ends.
  * @author Michael Angstadt
  * @see "RFC 5545 95-6"
  */

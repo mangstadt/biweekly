@@ -1,12 +1,12 @@
 package biweekly.property;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 
 import biweekly.component.ICalComponent;
-import biweekly.component.VAlarm;
-import biweekly.component.VEvent;
-import biweekly.component.VJournal;
-import biweekly.component.VTodo;
+import biweekly.util.IOUtils;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -34,15 +34,37 @@ import biweekly.component.VTodo;
  */
 
 /**
- * Represents a binary resource that is associated with a {@link VEvent VEVENT},
- * {@link VTodo VTODO}, {@link VJournal VJOURNAL}, or {@link VAlarm VALARM}
- * component.
+ * <p>
+ * Represents a binary resource that is associated with an event, to-do, journal
+ * entry, or alarm.
+ * </p>
+ * 
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Attachment attach = new Attachment(&quot;image/png&quot;, new File(&quot;image.png&quot;));
+ * Attachment attach = new Attachment(&quot;image/png&quot;, &quot;http://example.com/image.png&quot;);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-80">RFC 5545 p.80-1</a>
  */
 public class Attachment extends ICalProperty {
 	private byte[] data;
 	private String uri;
+
+	/**
+	 * Creates a new attachment.
+	 * @param formatType the content-type of the data (e.g. "image/png")
+	 * @param file the file to attach
+	 * @throws IOException if there's a problem reading from the file
+	 */
+	public Attachment(String formatType, File file) throws IOException {
+		this.data = IOUtils.toByteArray(new FileInputStream(file), true);
+		setFormatType(formatType);
+	}
 
 	/**
 	 * Creates a new attachment.

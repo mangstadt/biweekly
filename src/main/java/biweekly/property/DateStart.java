@@ -28,7 +28,7 @@ import java.util.Date;
  */
 
 /**
- * Defines the date that an event, free busy component, or timezone component
+ * Defines the date that an event, free/busy component, or timezone component
  * starts.
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545 p.97-8</a>

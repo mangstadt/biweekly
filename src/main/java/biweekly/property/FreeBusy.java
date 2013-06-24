@@ -35,10 +35,30 @@ import biweekly.util.Period;
  */
 
 /**
+ * <p>
  * Defines a person's availability over certain time periods (for example,
- * "free" between 1pm-3pm and 4pm-5pm). Note that this property can contain
+ * "busy" between 1pm-3pm and 4pm-5pm). Note that this property can contain
  * multiple time periods, but only one availability type may be defined (e.g.
  * "busy" or "free").
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * FreeBusy freebusy = new FreeBusy();
+ * freebusy.setType(FreeBusyType.BUSY);
+ * 
+ * Date onePM = ...
+ * Date threePM = ...
+ * freebusy.addValue(onePM, threePM);
+ * 
+ * Date fourPM = ...
+ * Duration oneHour = new Duration.Builder().hours(1).build();
+ * freeBusy.addValue(fourPM, oneHour);
+ * 
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-100">RFC 5545
  * p.100-1</a>

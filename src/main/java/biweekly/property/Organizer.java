@@ -1,5 +1,10 @@
 package biweekly.property;
 
+import biweekly.component.VEvent;
+import biweekly.component.VFreeBusy;
+import biweekly.component.VJournal;
+import biweekly.component.VTodo;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -26,12 +31,19 @@ package biweekly.property;
  */
 
 /**
- * Defines the organizer. This property has different meanings depending on the
+ * <p>
+ * Defines an organizer. This property has different meanings depending on the
  * component it belongs to:
  * <ul>
- * <li>VEVENT, VTODO, VJOURNAL - the organizer of the event</li>
- * <li>VFREEBUSY - the person requesting the free busy time</li>
+ * <li>{@link VEvent}, {@link VTodo}, {@link VJournal} - the organizer of the
+ * event/to-do/journal</li>
+ * <li>{@link VFreeBusy} - the person requesting the free/busy time</li>
  * </ul>
+ * </p>
+ * 
+ * <pre>
+ * Organizer organizer = Organizer.email("johndoe@example.com")
+ * </pre>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
  * p.111-2</a>

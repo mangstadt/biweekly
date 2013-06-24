@@ -34,7 +34,7 @@ import biweekly.property.DateOrDateTimeProperty;
  */
 
 /**
- * Marshals properties that have either "date" or "date/time" values.
+ * Marshals properties that have either "date" or "date-time" values.
  * @author Michael Angstadt
  */
 public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeProperty> extends ICalPropertyMarshaller<T> {

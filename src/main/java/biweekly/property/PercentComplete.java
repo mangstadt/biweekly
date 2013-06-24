@@ -30,7 +30,7 @@ import biweekly.component.ICalComponent;
  */
 
 /**
- * Defines the amount that a todo task has been completed.
+ * Defines the amount that a to-do task has been completed.
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-88">RFC 5545 p.88-9</a>
  */

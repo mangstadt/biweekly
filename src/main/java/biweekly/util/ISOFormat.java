@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  */
 
 /**
- * Represents the various ISO8601 date/time formats that iCalendar dates can be
+ * Represents the various ISO8601 date-time formats that iCalendar dates can be
  * represented as.
  * @author Michael Angstadt
  */

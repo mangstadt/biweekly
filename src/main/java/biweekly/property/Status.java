@@ -84,7 +84,7 @@ public class Status extends TextProperty {
 	}
 
 	/**
-	 * Creates a "cancelled" status property (only valid for event, todo, and
+	 * Creates a "cancelled" status property (only valid for event, to-do, and
 	 * journal components).
 	 * @return the property
 	 */
@@ -101,7 +101,7 @@ public class Status extends TextProperty {
 	}
 
 	/**
-	 * Creates a "needs-action" status property (only valid for todo
+	 * Creates a "needs-action" status property (only valid for to-do
 	 * components).
 	 * @return the property
 	 */
@@ -118,7 +118,7 @@ public class Status extends TextProperty {
 	}
 
 	/**
-	 * Creates a "completed" status property (only valid for todo components).
+	 * Creates a "completed" status property (only valid for to-do components).
 	 * @return the property
 	 */
 	public static Status completed() {
@@ -134,7 +134,7 @@ public class Status extends TextProperty {
 	}
 
 	/**
-	 * Creates a "in-progress" status property (only valid for todo components).
+	 * Creates a "in-progress" status property (only valid for to-do components).
 	 * @return the property
 	 */
 	public static Status inProgress() {

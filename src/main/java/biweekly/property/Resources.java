@@ -28,7 +28,7 @@ import java.util.List;
  */
 
 /**
- * Defines a list of resources that are needed for an event or todo (for
+ * Defines a list of resources that are needed for an event or to-do (for
  * example, an easel, a projector or a DVD player).
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-91">RFC 5545 p.91</a>

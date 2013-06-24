@@ -31,7 +31,19 @@ import biweekly.util.Duration;
  */
 
 /**
+ * <p>
  * Defines when an alarm will be triggered.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * //15 minutes before the start time
+ * Duration duration = new Duration.Builder().prior(true).minutes(15).build();
+ * Trigger trigger = new Trigger(duration, Related.START);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-133">RFC 5545
  * p.133-6</a>
@@ -43,7 +55,7 @@ public class Trigger extends ICalProperty {
 	/**
 	 * Creates a trigger property.
 	 * @param duration the relative time
-	 * @param related the date/time field that the duration is relative to
+	 * @param related the date-time field that the duration is relative to
 	 */
 	public Trigger(Duration duration, Related related) {
 		setDuration(duration, related);
@@ -51,7 +63,7 @@ public class Trigger extends ICalProperty {
 
 	/**
 	 * Creates a trigger property.
-	 * @param date the date/time the alarm will trigger.
+	 * @param date the date-time the alarm will trigger.
 	 */
 	public Trigger(Date date) {
 		setDate(date);
@@ -68,7 +80,7 @@ public class Trigger extends ICalProperty {
 	/**
 	 * Sets a relative time at which the alarm will trigger.
 	 * @param duration the relative time
-	 * @param related the date/time field that the duration is relative to
+	 * @param related the date-time field that the duration is relative to
 	 */
 	public void setDuration(Duration duration, Related related) {
 		this.date = null;
@@ -77,16 +89,16 @@ public class Trigger extends ICalProperty {
 	}
 
 	/**
-	 * Gets the date/time that the alarm will trigger.
-	 * @return the date/time or null if a relative duration is set
+	 * Gets the date-time that the alarm will trigger.
+	 * @return the date-time or null if a relative duration is set
 	 */
 	public Date getDate() {
 		return date;
 	}
 
 	/**
-	 * Sets the date/time that the alarm will trigger.
-	 * @param date the date/time the alarm will trigger.
+	 * Sets the date-time that the alarm will trigger.
+	 * @param date the date-time the alarm will trigger.
 	 */
 	public void setDate(Date date) {
 		this.date = date;

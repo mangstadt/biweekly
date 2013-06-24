@@ -1,5 +1,8 @@
 package biweekly.property;
 
+import biweekly.component.VAlarm;
+import biweekly.component.VEvent;
+import biweekly.component.VTodo;
 import biweekly.util.Duration;
 
 /*
@@ -28,20 +31,34 @@ import biweekly.util.Duration;
  */
 
 /**
- * Defines a duration of time (for example, "4 days and 1 hour"). It has
+ * <p>
+ * Defines a duration of time (for example, "2 hours and 30 minutes"). It has
  * different meanings depending on the component it belongs to:
  * <ul>
- * <li>VEVENT - the duration of the event (used in place of an end date)</li>
- * <li>VTODO - the duration of the todo (used in place of an end date)</li>
- * <li>VALARM - the pause between alarm repetitions</li>
+ * <li>{@link VEvent} - the duration of the event (used in place of a
+ * {@link DateEnd} property)</li>
+ * <li>{@link VTodo} - the duration of the to-do (used in place of a
+ * {@link DateEnd} property)</li>
+ * <li>{@link VAlarm} - the pause between alarm repetitions</li>
  * </ul>
+ * </p>
+ * 
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Duration duration = new Duration.Builder().hours(2).minutes(30).build();
+ * DurationProperty prop = new DurationProperty(duration);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-99">RFC 5545 p.99</a>
  */
 public class DurationProperty extends ValuedProperty<Duration> {
 	/**
 	 * Creates a duration property.
-	 * @param duration the duration value (e.g. "4 hours and 1 hour")
+	 * @param duration the duration value (e.g. "2 hours nad 30 minutes")
 	 */
 	public DurationProperty(Duration duration) {
 		super(duration);
