@@ -48,6 +48,8 @@ public class AttachmentMarshallerTest {
 	@Test
 	public void prepareParameters_uri() {
 		Attachment prop = new Attachment("image/png", "http://example.com/image.png");
+		prop.getParameters().setEncoding(Encoding.BASE64); //should be cleared
+		prop.getParameters().setValue(Value.BINARY); //should be cleared
 
 		ICalParameters params = marshaller.prepareParameters(prop);
 
