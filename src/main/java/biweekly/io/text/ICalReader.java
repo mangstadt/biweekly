@@ -94,84 +94,22 @@ public class ICalReader implements IParser {
 	}
 
 	/**
-	 * <p>
 	 * Gets whether the reader will decode parameter values that use circumflex
 	 * accent encoding. This escaping mechanism allows newlines and double
 	 * quotes to be included in parameter values. It is enabled by default.
-	 * </p>
-	 * 
-	 * <table border="1">
-	 * <tr>
-	 * <th>Raw Character</th>
-	 * <th>Encoded Character</th>
-	 * </tr>
-	 * <tr>
-	 * <td><code>"</code></td>
-	 * <td><code>^'</code></td>
-	 * </tr>
-	 * <tr>
-	 * <td><i>newline</i></td>
-	 * <td><code>^n</code></td>
-	 * </tr>
-	 * <tr>
-	 * <td><code>^</code></td>
-	 * <td><code>^^</code></td>
-	 * </tr>
-	 * </table>
-	 * 
-	 * <p>
-	 * Example:
-	 * </p>
-	 * 
-	 * <pre>
-	 * GEO;X-ADDRESS="Pittsburgh Pirates^n115 Federal St^nPitt
-	 *  sburgh, PA 15212":40.446816;80.00566
-	 * </pre>
-	 * 
 	 * @return true if circumflex accent decoding is enabled, false if not
-	 * @see <a href="http://tools.ietf.org/html/rfc6868">RFC 6868</a>
+	 * @see ICalRawReader#isCaretDecodingEnabled()
 	 */
 	public boolean isCaretDecodingEnabled() {
 		return reader.isCaretDecodingEnabled();
 	}
 
 	/**
-	 * <p>
 	 * Sets whether the reader will decode parameter values that use circumflex
 	 * accent encoding. This escaping mechanism allows newlines and double
 	 * quotes to be included in parameter values. It is enabled by default.
-	 * </p>
-	 * 
-	 * <table border="1">
-	 * <tr>
-	 * <th>Raw Character</th>
-	 * <th>Encoded Character</th>
-	 * </tr>
-	 * <tr>
-	 * <td><code>"</code></td>
-	 * <td><code>^'</code></td>
-	 * </tr>
-	 * <tr>
-	 * <td><i>newline</i></td>
-	 * <td><code>^n</code></td>
-	 * </tr>
-	 * <tr>
-	 * <td><code>^</code></td>
-	 * <td><code>^^</code></td>
-	 * </tr>
-	 * </table>
-	 * 
-	 * <p>
-	 * Example:
-	 * </p>
-	 * 
-	 * <pre>
-	 * GEO;X-ADDRESS="Pittsburgh Pirates^n115 Federal St^nPitt
-	 *  sburgh, PA 15212":geo:40.446816,-80.00566
-	 * </pre>
-	 * 
 	 * @param enable true to use circumflex accent decoding, false not to
-	 * @see <a href="http://tools.ietf.org/html/rfc6868">RFC 6868</a>
+	 * @see ICalRawReader#setCaretDecodingEnabled(boolean)
 	 */
 	public void setCaretDecodingEnabled(boolean enable) {
 		reader.setCaretDecodingEnabled(enable);
