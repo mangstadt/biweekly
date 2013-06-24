@@ -1,7 +1,11 @@
 package biweekly.io.text;
 
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +53,19 @@ import biweekly.property.marshaller.RawPropertyMarshaller;
  */
 
 /**
+ * <p>
  * Writes {@link ICalendar} objects to an iCalendar data stream.
+ * </p>
+ * 
+ * <pre>
+ * List&lt;ICalendar&gt; icals = ... 
+ * Writer writer = ...
+ * ICalWriter icalWriter = new ICalWriter(writer);
+ * for (ICalendar ical : icals){
+ *   icalWriter.write(ical);
+ * }
+ * icalWriter.close();
+ * </pre>
  * @author Michael Angstadt
  */
 public class ICalWriter implements Closeable {
@@ -57,6 +73,65 @@ public class ICalWriter implements Closeable {
 	private final Map<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new HashMap<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>>(0);
 	private final Map<Class<? extends ICalComponent>, ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new HashMap<Class<? extends ICalComponent>, ICalComponentMarshaller<? extends ICalComponent>>(0);
 	private final ICalRawWriter writer;
+
+	/**
+	 * Creates an iCalendar writer using the standard folding scheme and newline
+	 * sequence.
+	 * @param outputStream the output stream to write to
+	 */
+	public ICalWriter(OutputStream outputStream) {
+		this(new OutputStreamWriter(outputStream));
+	}
+
+	/**
+	 * Creates an iCalendar writer using the standard newline sequence.
+	 * @param outputStream the output stream to write to
+	 * @param foldingScheme the folding scheme to use or null not to fold at all
+	 */
+	public ICalWriter(OutputStream outputStream, FoldingScheme foldingScheme) throws IOException {
+		this(new OutputStreamWriter(outputStream), foldingScheme);
+	}
+
+	/**
+	 * Creates an iCalendar writer.
+	 * @param outputStream the output stream to write to
+	 * @param foldingScheme the folding scheme to use or null not to fold at all
+	 * @param newline the newline sequence to use
+	 */
+	public ICalWriter(OutputStream outputStream, FoldingScheme foldingScheme, String newline) throws IOException {
+		this(new OutputStreamWriter(outputStream), foldingScheme, newline);
+	}
+
+	/**
+	 * Creates an iCalendar writer using the standard folding scheme and newline
+	 * sequence.
+	 * @param file the file to write to
+	 * @throws IOException if the file cannot be written to
+	 */
+	public ICalWriter(File file) throws IOException {
+		this(new FileWriter(file));
+	}
+
+	/**
+	 * Creates an iCalendar writer using the standard newline sequence.
+	 * @param file the file to write to
+	 * @param foldingScheme the folding scheme to use or null not to fold at all
+	 * @throws IOException if the file cannot be written to
+	 */
+	public ICalWriter(File file, FoldingScheme foldingScheme) throws IOException {
+		this(new FileWriter(file), foldingScheme);
+	}
+
+	/**
+	 * Creates an iCalendar writer.
+	 * @param file the file to write to
+	 * @param foldingScheme the folding scheme to use or null not to fold at all
+	 * @param newline the newline sequence to use
+	 * @throws IOException if the file cannot be written to
+	 */
+	public ICalWriter(File file, FoldingScheme foldingScheme, String newline) throws IOException {
+		this(new FileWriter(file), foldingScheme, newline);
+	}
 
 	/**
 	 * Creates an iCalendar writer using the standard folding scheme and newline
@@ -69,6 +144,7 @@ public class ICalWriter implements Closeable {
 
 	/**
 	 * Creates an iCalendar writer using the standard newline sequence.
+	 * @param writer the writer to the data stream
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 */
 	public ICalWriter(Writer writer, FoldingScheme foldingScheme) {
