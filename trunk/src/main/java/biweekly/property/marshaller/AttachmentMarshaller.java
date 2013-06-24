@@ -45,7 +45,10 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 
 	@Override
 	protected void _prepareParameters(Attachment property, ICalParameters copy) {
-		if (property.getData() != null) {
+		if (property.getUri() != null) {
+			copy.setEncoding(null);
+			copy.setValue(null);
+		} else if (property.getData() != null) {
 			copy.setEncoding(Encoding.BASE64);
 			copy.setValue(Value.BINARY);
 		}
