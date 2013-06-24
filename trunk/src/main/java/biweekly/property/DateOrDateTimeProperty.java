@@ -32,7 +32,7 @@ import biweekly.component.VTimezone;
  */
 
 /**
- * Represents a property whose value is a date or a date/time.
+ * Represents a property whose value is a date or a date-time.
  * @author Michael Angstadt
  */
 public class DateOrDateTimeProperty extends ICalProperty {

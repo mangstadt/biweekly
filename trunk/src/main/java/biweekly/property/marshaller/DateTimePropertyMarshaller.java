@@ -33,7 +33,7 @@ import biweekly.property.DateTimeProperty;
  */
 
 /**
- * Marshals properties that have "date/time" values.
+ * Marshals properties that have "date-time" values.
  * @author Michael Angstadt
  */
 public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> extends ICalPropertyMarshaller<T> {
@@ -58,7 +58,7 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 			Date date = parseDate(value, parameters.getTimezoneId(), warnings);
 			return newInstance(date);
 		} catch (IllegalArgumentException e) {
-			throw new CannotParseException("Could not parse date/time value.");
+			throw new CannotParseException("Could not parse date-time value.");
 		}
 	}
 

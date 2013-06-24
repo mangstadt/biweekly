@@ -26,9 +26,23 @@ package biweekly.property;
  */
 
 /**
+ * <p>
  * Defines whether an event is visible to free/busy time searches. If an event
  * does not have this property, the event should be considered visible
  * ("opaque").
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Transparency transp = Transparency.opaque();
+ * 
+ * if (transp.isOpaque()) {
+ *   ...
+ * }
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-101">RFC 5545
  * p.101-2</a>

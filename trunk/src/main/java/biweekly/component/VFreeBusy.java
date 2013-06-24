@@ -61,7 +61,7 @@ public class VFreeBusy extends ICalComponent {
 	 * be valid:
 	 * <ul>
 	 * <li>{@link Uid} - Set to a UUID.</li>
-	 * <li>{@link DateTimeStamp} - Set to the current date/time.</li>
+	 * <li>{@link DateTimeStamp} - Set to the current date-time.</li>
 	 * </ul>
 	 * </p>
 	 */
@@ -71,7 +71,7 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
-	 * Gets the unique identifier for this free busy entry. This component
+	 * Gets the unique identifier for this free/busy entry. This component
 	 * object comes populated with a UID on creation. This is a <b>required</b>
 	 * property.
 	 * @return the UID or null if not set
@@ -83,7 +83,7 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
-	 * Sets the unique identifier for this free busy entry. This component
+	 * Sets the unique identifier for this free/busy entry. This component
 	 * object comes populated with a UID on creation. This is a <b>required</b>
 	 * property.
 	 * @param uid the UID or null to remove
@@ -95,7 +95,7 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
-	 * Sets the unique identifier for this free busy entry. This component
+	 * Sets the unique identifier for this free/busy entry. This component
 	 * object comes populated with a UID on creation. This is a <b>required</b>
 	 * property.
 	 * @param uid the UID or null to remove
@@ -111,9 +111,9 @@ public class VFreeBusy extends ICalComponent {
 
 	/**
 	 * Gets either (a) the creation date of the iCalendar object (if the
-	 * {@link Method} property is defined) or (b) the date that the free busy
+	 * {@link Method} property is defined) or (b) the date that the free/busy
 	 * entry was last modified (the {@link LastModified} property also holds
-	 * this information). This free busy object comes populated with a
+	 * this information). This free/busy object comes populated with a
 	 * {@link DateTimeStamp} property that is set to the current time. This is a
 	 * <b>required</b> property.
 	 * @return the date time stamp or null if not set
@@ -126,9 +126,9 @@ public class VFreeBusy extends ICalComponent {
 
 	/**
 	 * Sets either (a) the creation date of the iCalendar object (if the
-	 * {@link Method} property is defined) or (b) the date that the free busy
+	 * {@link Method} property is defined) or (b) the date that the free/busy
 	 * entry was last modified (the {@link LastModified} property also holds
-	 * this information). This free busy object comes populated with a
+	 * this information). This free/busy object comes populated with a
 	 * {@link DateTimeStamp} property that is set to the current time. This is a
 	 * <b>required</b> property.
 	 * @param dateTimeStamp the date time stamp or null to remove
@@ -141,9 +141,9 @@ public class VFreeBusy extends ICalComponent {
 
 	/**
 	 * Sets either (a) the creation date of the iCalendar object (if the
-	 * {@link Method} property is defined) or (b) the date that the free busy
+	 * {@link Method} property is defined) or (b) the date that the free/busy
 	 * entry was last modified (the {@link LastModified} property also holds
-	 * this information). This free busy object comes populated with a
+	 * this information). This free/busy object comes populated with a
 	 * {@link DateTimeStamp} property that is set to the current time. This is a
 	 * <b>required</b> property.
 	 * @param dateTimeStamp the date time stamp or null to remove
@@ -157,16 +157,8 @@ public class VFreeBusy extends ICalComponent {
 		return prop;
 	}
 
-	//
-	//optional
-	//	private Contact contact;
-	//	private DateStart dateStart;
-	//	private DateEnd dateEnd;
-	//	private Organizer organizer;
-	//	private Url url;
-
 	/**
-	 * Gets the contact associated with the free busy entry.
+	 * Gets the contact associated with the free/busy entry.
 	 * @return the contact or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
 	 * p.109-11</a>
@@ -176,7 +168,7 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
-	 * Sets the contact for the free busy entry.
+	 * Sets the contact for the free/busy entry.
 	 * @param contact the contact or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
 	 * p.109-11</a>
@@ -186,7 +178,7 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
-	 * Sets the contact for the free busy entry.
+	 * Sets the contact for the free/busy entry.
 	 * @param contact the contact (e.g. "ACME Co - (123) 555-1234")
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
@@ -199,7 +191,7 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
-	 * Gets the date that the free busy entry starts.
+	 * Gets the date that the free/busy entry starts.
 	 * @return the start date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
@@ -209,7 +201,7 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date that the free busy entry starts.
+	 * Sets the date that the free/busy entry starts.
 	 * @param dateStart the start date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
@@ -219,7 +211,7 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date that the free busy entry starts.
+	 * Sets the date that the free/busy entry starts.
 	 * @param dateStart the start date or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
@@ -232,7 +224,7 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
-	 * Gets the date that the free busy entry ends.
+	 * Gets the date that the free/busy entry ends.
 	 * @return the end date or null if not set
 	 * @see "RFC 5545 95-6"
 	 */
@@ -241,7 +233,7 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date that the free busy entry ends.
+	 * Sets the date that the free/busy entry ends.
 	 * @param dateEnd the end date or null to remove
 	 * @see "RFC 5545 95-6"
 	 */
@@ -250,7 +242,7 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date that the free busy entry ends.
+	 * Sets the date that the free/busy entry ends.
 	 * @param dateEnd the end date or null to remove
 	 * @return the property that was created
 	 * @see "RFC 5545 95-6"
@@ -262,8 +254,8 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
-	 * Gets the person requesting the free busy time.
-	 * @return the person requesting the free busy time or null if not set
+	 * Gets the person requesting the free/busy time.
+	 * @return the person requesting the free/busy time or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
 	 * p.111-2</a>
 	 */
@@ -272,8 +264,8 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
-	 * Sets the person requesting the free busy time.
-	 * @param organizer the person requesting the free busy time or null to
+	 * Sets the person requesting the free/busy time.
+	 * @param organizer the person requesting the free/busy time or null to
 	 * remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
 	 * p.111-2</a>
@@ -283,8 +275,8 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
-	 * Sets the person requesting the free busy time.
-	 * @param email the email address of the person requesting the free busy
+	 * Sets the person requesting the free/busy time.
+	 * @param email the email address of the person requesting the free/busy
 	 * time (e.g. "johndoe@example.com") or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
@@ -298,7 +290,7 @@ public class VFreeBusy extends ICalComponent {
 
 	/**
 	 * Gets a URL to a resource that contains additional information about the
-	 * free busy entry.
+	 * free/busy entry.
 	 * @return the URL or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
 	 * p.116-7</a>
@@ -309,7 +301,7 @@ public class VFreeBusy extends ICalComponent {
 
 	/**
 	 * Sets a URL to a resource that contains additional information about the
-	 * free busy entry.
+	 * free/busy entry.
 	 * @param url the URL or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
 	 * p.116-7</a>
@@ -320,7 +312,7 @@ public class VFreeBusy extends ICalComponent {
 
 	/**
 	 * Sets a URL to a resource that contains additional information about the
-	 * free busy entry.
+	 * free/busy entry.
 	 * @param url the URL (e.g. "http://example.com/resource.ics") or null to
 	 * remove
 	 * @return the property that was created
@@ -341,7 +333,7 @@ public class VFreeBusy extends ICalComponent {
 	//	private List<Rstatus> rstatus;
 
 	/**
-	 * Gets the people who are involved in the free busy entry.
+	 * Gets the people who are involved in the free/busy entry.
 	 * @return the attendees
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
@@ -351,7 +343,7 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
-	 * Adds a person who is involved in the free busy entry.
+	 * Adds a person who is involved in the free/busy entry.
 	 * @param attendee the attendee
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
@@ -423,8 +415,8 @@ public class VFreeBusy extends ICalComponent {
 	 * property that has the given {@link FreeBusyType} and add the time period
 	 * to it, or create a new property is one cannot be found.
 	 * @param type the availability type (e.g. "free" or "busy")
-	 * @param start the start date/time
-	 * @param end the end date/time
+	 * @param start the start date-time
+	 * @param end the end date-time
 	 * @return the property that was created/modified
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-100">RFC 5545
 	 * p.100-1</a>
@@ -441,7 +433,7 @@ public class VFreeBusy extends ICalComponent {
 	 * existing property that has the given {@link FreeBusyType} and add the
 	 * time period to it, or create a new property is one cannot be found.
 	 * @param type the availability type (e.g. "free" or "busy")
-	 * @param start the start date/time
+	 * @param start the start date-time
 	 * @param duration the length of time
 	 * @return the property that was created/modified
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-100">RFC 5545
@@ -508,11 +500,11 @@ public class VFreeBusy extends ICalComponent {
 		}
 
 		if (dateStart != null && dateStart.getValue() != null && !dateStart.hasTime()) {
-			warnings.add(DateStart.class.getSimpleName() + " properties in free busy components must always have a time component.");
+			warnings.add(DateStart.class.getSimpleName() + " properties in free/busy components must always have a time component.");
 		}
 
 		if (dateEnd != null && dateEnd.getValue() != null && !dateEnd.hasTime()) {
-			warnings.add(DateEnd.class.getSimpleName() + " properties in free busy components must always have a time component.");
+			warnings.add(DateEnd.class.getSimpleName() + " properties in free/busy components must always have a time component.");
 		}
 
 		if (dateStart != null && dateEnd != null) {
@@ -520,7 +512,6 @@ public class VFreeBusy extends ICalComponent {
 			Date end = dateEnd.getValue();
 			if (start != null && end != null && start.compareTo(end) >= 0) {
 				warnings.add(DateStart.class.getSimpleName() + " must come before " + DateEnd.class.getSimpleName() + ".");
-
 			}
 		}
 	}

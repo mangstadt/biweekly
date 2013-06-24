@@ -28,7 +28,7 @@ import java.util.Date;
  */
 
 /**
- * Defines the date and time that a todo was completed.
+ * Defines the date and time that a to-do was completed.
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-94">RFC 5545 p.94-5</a>
  */

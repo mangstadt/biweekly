@@ -75,7 +75,7 @@ public class VEvent extends ICalComponent {
 	 * properties <b>must</b> be present in order for the event to be valid:
 	 * <ul>
 	 * <li>{@link Uid} - Set to a UUID.</li>
-	 * <li>{@link DateTimeStamp} - Set to the current date/time.</li>
+	 * <li>{@link DateTimeStamp} - Set to the current date-time.</li>
 	 * </ul>
 	 * </p>
 	 */
@@ -649,8 +649,8 @@ public class VEvent extends ICalComponent {
 	}
 
 	/**
-	 * Gets the date/time that the event was initially created.
-	 * @return the creation date/time or null if not set
+	 * Gets the date-time that the event was initially created.
+	 * @return the creation date-time or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545
 	 * p.136</a>
 	 */
@@ -659,8 +659,8 @@ public class VEvent extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date/time that the event was initially created.
-	 * @param created the creation date/time or null to remove
+	 * Sets the date-time that the event was initially created.
+	 * @param created the creation date-time or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545
 	 * p.136</a>
 	 */
@@ -669,8 +669,8 @@ public class VEvent extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date/time that the event was initially created.
-	 * @param created the creation date/time or null to remove
+	 * Sets the date-time that the event was initially created.
+	 * @param created the creation date-time or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545
 	 * p.136</a>
@@ -682,7 +682,7 @@ public class VEvent extends ICalComponent {
 	}
 
 	/**
-	 * Gets the date/time that the event was last changed.
+	 * Gets the date-time that the event was last changed.
 	 * @return the last modified date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
@@ -692,7 +692,7 @@ public class VEvent extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date/time that event was last changed.
+	 * Sets the date-time that event was last changed.
 	 * @param lastModified the last modified date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
@@ -702,7 +702,7 @@ public class VEvent extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date/time that the event was last changed.
+	 * Sets the date-time that the event was last changed.
 	 * @param lastModified the last modified date or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
@@ -1132,7 +1132,7 @@ public class VEvent extends ICalComponent {
 			}
 
 			if (dateStart.hasTime() != dateEnd.hasTime()) {
-				warnings.add("Both " + DateStart.class.getSimpleName() + " and " + DateEnd.class.getSimpleName() + " must have the same data type (they must either both be dates or both be date/times).");
+				warnings.add("Both " + DateStart.class.getSimpleName() + " and " + DateEnd.class.getSimpleName() + " must have the same data type (they must either both be dates or both be date-times).");
 			}
 		}
 
@@ -1142,7 +1142,7 @@ public class VEvent extends ICalComponent {
 
 		RecurrenceId recurrenceId = getRecurrenceId();
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
-			warnings.add("Both " + DateStart.class.getSimpleName() + " and " + RecurrenceId.class.getSimpleName() + " must have the same data type (they must either both be dates or both be date/times).");
+			warnings.add("Both " + DateStart.class.getSimpleName() + " and " + RecurrenceId.class.getSimpleName() + " must have the same data type (they must either both be dates or both be date-times).");
 		}
 
 		//TODO check for properties which shouldn't be added to VEVENTs

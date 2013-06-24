@@ -66,18 +66,17 @@ import biweekly.property.Url;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545 p.55-7</a>
  */
-//TODO use "to-do" in Javadocs, not "todo"
 public class VTodo extends ICalComponent {
 	/**
 	 * <p>
-	 * Creates a new todo entry.
+	 * Creates a new to-do entry.
 	 * </p>
 	 * <p>
 	 * The following properties are auto-generated on object creation. These
-	 * properties <b>must</b> be present in order for the todo to be valid:
+	 * properties <b>must</b> be present in order for the to-do to be valid:
 	 * <ul>
 	 * <li>{@link Uid} - Set to a UUID.</li>
-	 * <li>{@link DateTimeStamp} - Set to the current date/time.</li>
+	 * <li>{@link DateTimeStamp} - Set to the current date-time.</li>
 	 * </ul>
 	 * </p>
 	 */
@@ -87,7 +86,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the unique identifier for this todo. This component object comes
+	 * Gets the unique identifier for this to-do. This component object comes
 	 * populated with a UID on creation. This is a <b>required</b> property.
 	 * @return the UID or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-117">RFC 5545
@@ -98,7 +97,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the unique identifier for this todo. This component object comes
+	 * Sets the unique identifier for this to-do. This component object comes
 	 * populated with a UID on creation. This is a <b>required</b> property.
 	 * @param uid the UID or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-117">RFC 5545
@@ -109,7 +108,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the unique identifier for this todo. This component object comes
+	 * Sets the unique identifier for this to-do. This component object comes
 	 * populated with a UID on creation. This is a <b>required</b> property.
 	 * @param uid the UID or null to remove
 	 * @return the property that was created
@@ -124,9 +123,9 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Gets either (a) the creation date of the iCalendar object (if the
-	 * {@link Method} property is defined) or (b) the date that the todo was
+	 * {@link Method} property is defined) or (b) the date that the to-do was
 	 * last modified (the {@link LastModified} property also holds this
-	 * information). This todo object comes populated with a
+	 * information). This to-do object comes populated with a
 	 * {@link DateTimeStamp} property that is set to the current time. This is a
 	 * <b>required</b> property.
 	 * @return the date time stamp or null if not set
@@ -139,9 +138,9 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Sets either (a) the creation date of the iCalendar object (if the
-	 * {@link Method} property is defined) or (b) the date that the todo was
+	 * {@link Method} property is defined) or (b) the date that the to-do was
 	 * last modified (the {@link LastModified} property also holds this
-	 * information). This todo object comes populated with a
+	 * information). This to-do object comes populated with a
 	 * {@link DateTimeStamp} property that is set to the current time. This is a
 	 * <b>required</b> property.
 	 * @param dateTimeStamp the date time stamp or null to remove
@@ -154,9 +153,9 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Sets either (a) the creation date of the iCalendar object (if the
-	 * {@link Method} property is defined) or (b) the date that the todo was
+	 * {@link Method} property is defined) or (b) the date that the to-do was
 	 * last modified (the {@link LastModified} property also holds this
-	 * information). This todo object comes populated with a
+	 * information). This to-do object comes populated with a
 	 * {@link DateTimeStamp} property that is set to the current time. This is a
 	 * <b>required</b> property.
 	 * @param dateTimeStamp the date time stamp or null to remove
@@ -171,8 +170,8 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the level of sensitivity of the todo data. If not specified, the
-	 * data within the todo should be considered "public".
+	 * Gets the level of sensitivity of the to-do data. If not specified, the
+	 * data within the to-do should be considered "public".
 	 * @return the classification level or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-82">RFC 5545
 	 * p.82-3</a>
@@ -182,8 +181,8 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the level of sensitivity of the todo data. If not specified, the
-	 * data within the todo should be considered "public".
+	 * Sets the level of sensitivity of the to-do data. If not specified, the
+	 * data within the to-do should be considered "public".
 	 * @param classification the classification level or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-82">RFC 5545
 	 * p.82-3</a>
@@ -193,8 +192,8 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the level of sensitivity of the todo data. If not specified, the
-	 * data within the todo should be considered "public".
+	 * Sets the level of sensitivity of the to-do data. If not specified, the
+	 * data within the to-do should be considered "public".
 	 * @param classification the classification level (e.g. "CONFIDENTIAL") or
 	 * null to remove
 	 * @return the property that was created
@@ -208,7 +207,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the date and time that the todo was completed.
+	 * Gets the date and time that the to-do was completed.
 	 * @return the completion date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-94">RFC 5545
 	 * p.94-5</a>
@@ -218,7 +217,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date and time that the todo was completed.
+	 * Sets the date and time that the to-do was completed.
 	 * @param completed the completion date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-94">RFC 5545
 	 * p.94-5</a>
@@ -228,7 +227,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date and time that the todo was completed.
+	 * Sets the date and time that the to-do was completed.
 	 * @param completed the completion date or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-94">RFC 5545
@@ -241,8 +240,8 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the date/time that the todo was initially created.
-	 * @return the creation date/time or null if not set
+	 * Gets the date-time that the to-do was initially created.
+	 * @return the creation date-time or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545
 	 * p.136</a>
 	 */
@@ -251,8 +250,8 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date/time that the todo was initially created.
-	 * @param created the creation date/time or null to remove
+	 * Sets the date-time that the to-do was initially created.
+	 * @param created the creation date-time or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545
 	 * p.136</a>
 	 */
@@ -261,8 +260,8 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date/time that the todo was initially created.
-	 * @param created the creation date/time or null to remove
+	 * Sets the date-time that the to-do was initially created.
+	 * @param created the creation date-time or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545
 	 * p.136</a>
@@ -274,7 +273,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets a detailed description of the todo. The description should be more
+	 * Gets a detailed description of the to-do. The description should be more
 	 * detailed than the one provided by the {@link Summary} property.
 	 * @return the description or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545
@@ -285,7 +284,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets a detailed description of the todo. The description should be more
+	 * Sets a detailed description of the to-do. The description should be more
 	 * detailed than the one provided by the {@link Summary} property.
 	 * @param description the description or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545
@@ -296,7 +295,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets a detailed description of the todo. The description should be more
+	 * Sets a detailed description of the to-do. The description should be more
 	 * detailed than the one provided by the {@link Summary} property.
 	 * @param description the description or null to remove
 	 * @return the property that was created
@@ -310,7 +309,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the date that the todo starts.
+	 * Gets the date that the to-do starts.
 	 * @return the start date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
@@ -320,7 +319,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date that the todo starts.
+	 * Sets the date that the to-do starts.
 	 * @param dateStart the start date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
@@ -330,7 +329,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date that the todo starts.
+	 * Sets the date that the to-do starts.
 	 * @param dateStart the start date or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
@@ -363,7 +362,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the date/time that the todo was last changed.
+	 * Gets the date-time that the to-do was last changed.
 	 * @return the last modified date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
@@ -373,7 +372,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date/time that the todo was last changed.
+	 * Sets the date-time that the to-do was last changed.
 	 * @param lastModified the last modified date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
@@ -383,7 +382,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date/time that the todo was last changed.
+	 * Sets the date-time that the to-do was last changed.
 	 * @param lastModified the last modified date or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
@@ -396,7 +395,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the physical location of the todo.
+	 * Gets the physical location of the to-do.
 	 * @return the location or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-87">RFC 5545
 	 * p.87-8</a>
@@ -406,7 +405,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the physical location of the todo.
+	 * Sets the physical location of the to-do.
 	 * @param location the location or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-87">RFC 5545
 	 * p.87-8</a>
@@ -416,7 +415,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the physical location of the todo.
+	 * Sets the physical location of the to-do.
 	 * @param location the location (e.g. "Room 101") or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-87">RFC 5545
@@ -429,7 +428,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the organizer of the todo.
+	 * Gets the organizer of the to-do.
 	 * @return the organizer or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
 	 * p.111-2</a>
@@ -439,7 +438,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the organizer of the todo.
+	 * Sets the organizer of the to-do.
 	 * @param organizer the organizer or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
 	 * p.111-2</a>
@@ -449,7 +448,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the organizer of the todo.
+	 * Sets the organizer of the to-do.
 	 * @param email the organizer's email address (e.g. "johndoe@example.com")
 	 * or null to remove
 	 * @return the property that was created
@@ -463,7 +462,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the amount that the todo task has been completed.
+	 * Gets the amount that the to-do task has been completed.
 	 * @return the percent complete or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-88">RFC 5545
 	 * p.88-9</a>
@@ -473,7 +472,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the amount that the todo task has been completed.
+	 * Sets the amount that the to-do task has been completed.
 	 * @param percentComplete the percent complete or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-88">RFC 5545
 	 * p.88-9</a>
@@ -483,7 +482,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the amount that the todo task has been completed.
+	 * Sets the amount that the to-do task has been completed.
 	 * @param percent the percent complete (e.g. "50" for 50%) or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-88">RFC 5545
@@ -496,7 +495,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the priority of the todo.
+	 * Gets the priority of the to-do.
 	 * @return the priority or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-89">RFC 5545
 	 * p.89-90</a>
@@ -506,7 +505,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the priority of the todo.
+	 * Sets the priority of the to-do.
 	 * @param priority the priority or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-89">RFC 5545
 	 * p.89-90</a>
@@ -516,7 +515,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the priority of the todo.
+	 * Sets the priority of the to-do.
 	 * @param priority the priority ("0" is undefined, "1" is the highest, "9"
 	 * is the lowest) or null to remove
 	 * @return the property that was created
@@ -530,7 +529,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the original value of the {@link DateStart} property if the todo is
+	 * Gets the original value of the {@link DateStart} property if the to-do is
 	 * recurring and has been modified. Used in conjunction with the {@link Uid}
 	 * and {@link Sequence} properties to uniquely identify a recurrence
 	 * instance.
@@ -543,7 +542,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the original value of the {@link DateStart} property if the todo is
+	 * Sets the original value of the {@link DateStart} property if the to-do is
 	 * recurring and has been modified. Used in conjunction with the {@link Uid}
 	 * and {@link Sequence} properties to uniquely identify a recurrence
 	 * instance.
@@ -556,7 +555,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the original value of the {@link DateStart} property if the todo is
+	 * Sets the original value of the {@link DateStart} property if the to-do is
 	 * recurring and has been modified. Used in conjunction with the {@link Uid}
 	 * and {@link Sequence} properties to uniquely identify a recurrence
 	 * instance.
@@ -571,7 +570,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the revision number of the todo. The organizer can increment this
+	 * Gets the revision number of the to-do. The organizer can increment this
 	 * number every time he or she makes a significant change.
 	 * @return the sequence number
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
@@ -582,7 +581,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the revision number of the todo. The organizer can increment this
+	 * Sets the revision number of the to-do. The organizer can increment this
 	 * number every time he or she makes a significant change.
 	 * @param sequence the sequence number
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
@@ -593,7 +592,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the revision number of the todo. The organizer can increment this
+	 * Sets the revision number of the to-do. The organizer can increment this
 	 * number every time he or she makes a significant change.
 	 * @param sequence the sequence number
 	 * @return the property that was created
@@ -607,7 +606,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Increments the revision number of the todo. The organizer can increment
+	 * Increments the revision number of the to-do. The organizer can increment
 	 * this number every time he or she makes a significant change.
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138-9</a>
@@ -622,7 +621,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the status of the todo.
+	 * Gets the status of the to-do.
 	 * @return the status or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-92">RFC 5545
 	 * p.92-3</a>
@@ -632,9 +631,9 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the status of the todo.
+	 * Sets the status of the to-do.
 	 * <p>
-	 * Valid todo status codes are:
+	 * Valid to-do status codes are:
 	 * <ul>
 	 * <li>NEEDS-ACTION</li>
 	 * <li>COMPLETED</li>
@@ -651,7 +650,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the summary of the todo.
+	 * Gets the summary of the to-do.
 	 * @return the summary or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545
 	 * p.93-4</a>
@@ -661,7 +660,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the summary of the todo.
+	 * Sets the summary of the to-do.
 	 * @param summary the summary or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545
 	 * p.93-4</a>
@@ -671,7 +670,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the summary of the todo.
+	 * Sets the summary of the to-do.
 	 * @param summary the summary or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545
@@ -685,7 +684,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Gets a URL to a resource that contains additional information about the
-	 * todo.
+	 * to-do.
 	 * @return the URL or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
 	 * p.116-7</a>
@@ -696,7 +695,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Sets a URL to a resource that contains additional information about the
-	 * todo.
+	 * to-do.
 	 * @param url the URL or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
 	 * p.116-7</a>
@@ -707,7 +706,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Sets a URL to a resource that contains additional information about the
-	 * todo.
+	 * to-do.
 	 * @param url the URL (e.g. "http://example.com/resource.ics") or null to
 	 * remove
 	 * @return the property that was created
@@ -721,7 +720,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets how often the todo repeats.
+	 * Gets how often the to-do repeats.
 	 * @return the recurrence rule or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
 	 * p.122-32</a>
@@ -731,7 +730,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets how often the todo repeats.
+	 * Sets how often the to-do repeats.
 	 * @param recurrenceRule the recurrence rule or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
 	 * p.122-32</a>
@@ -741,7 +740,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the date that a todo is due by.
+	 * Gets the date that a to-do is due by.
 	 * @return the due date or null if not set
 	 * @see "RFC 5545 96-7"
 	 */
@@ -750,7 +749,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date that a todo is due by. This must NOT be set if a
+	 * Sets the date that a to-do is due by. This must NOT be set if a
 	 * {@link DurationProperty} is defined.
 	 * @param dateDue the due date or null to remove
 	 * @see "RFC 5545 96-7"
@@ -760,7 +759,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date that a todo is due by. This must NOT be set if a
+	 * Sets the date that a to-do is due by. This must NOT be set if a
 	 * {@link DurationProperty} is defined.
 	 * @param dateDue the due date or null to remove
 	 * @return the property that was created
@@ -773,7 +772,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the duration of the todo.
+	 * Gets the duration of the to-do.
 	 * @return the duration or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-99">RFC 5545
 	 * p.99</a>
@@ -783,7 +782,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Sets the duration of the todo. This must NOT be set if a {@link DateDue}
+	 * Sets the duration of the to-do. This must NOT be set if a {@link DateDue}
 	 * is defined.
 	 * @param duration the duration or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-99">RFC 5545
@@ -794,7 +793,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets any attachments that are associated with the todo.
+	 * Gets any attachments that are associated with the to-do.
 	 * @return the attachments
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-80">RFC 5545
 	 * p.80-1</a>
@@ -804,7 +803,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds an attachment to the todo.
+	 * Adds an attachment to the to-do.
 	 * @param attachment the attachment to add
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-80">RFC 5545
 	 * p.80-1</a>
@@ -814,7 +813,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the people who are involved in the todo.
+	 * Gets the people who are involved in the to-do.
 	 * @return the attendees
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
@@ -824,7 +823,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds a person who is involved in the todo.
+	 * Adds a person who is involved in the to-do.
 	 * @param attendee the attendee
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
@@ -834,7 +833,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds a person who is involved in the todo.
+	 * Adds a person who is involved in the to-do.
 	 * @param email the attendee's email address
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
@@ -847,7 +846,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets a list of "tags" or "keywords" that describe the todo.
+	 * Gets a list of "tags" or "keywords" that describe the to-do.
 	 * @return the categories
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545
 	 * p.81-2</a>
@@ -857,7 +856,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds a list of "tags" or "keywords" that describe the todo. Note that a
+	 * Adds a list of "tags" or "keywords" that describe the to-do. Note that a
 	 * single property can hold multiple keywords.
 	 * @param categories the categories to add
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545
@@ -868,7 +867,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds a list of "tags" or "keywords" that describe the todo.
+	 * Adds a list of "tags" or "keywords" that describe the to-do.
 	 * @param categories the categories to add
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545
@@ -881,7 +880,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds a list of "tags" or "keywords" that describe the todo.
+	 * Adds a list of "tags" or "keywords" that describe the to-do.
 	 * @param categories the categories to add
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545
@@ -894,7 +893,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the comments attached to the todo.
+	 * Gets the comments attached to the to-do.
 	 * @return the comments
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
 	 * p.83-4</a>
@@ -904,7 +903,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds a comment to the todo.
+	 * Adds a comment to the to-do.
 	 * @param comment the comment to add
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
 	 * p.83-4</a>
@@ -914,7 +913,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds a comment to the todo.
+	 * Adds a comment to the to-do.
 	 * @param comment the comment to add
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
@@ -927,7 +926,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the contacts associated with the todo.
+	 * Gets the contacts associated with the to-do.
 	 * @return the contacts
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
 	 * p.109-11</a>
@@ -937,7 +936,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds a contact to the todo.
+	 * Adds a contact to the to-do.
 	 * @param contact the contact
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
 	 * p.109-11</a>
@@ -947,7 +946,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds a contact to the todo.
+	 * Adds a contact to the to-do.
 	 * @param contact the contact (e.g. "ACME Co - (123) 555-1234")
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
@@ -960,7 +959,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the list of exceptions to the recurrence rule defined in the todo
+	 * Gets the list of exceptions to the recurrence rule defined in the to-do
 	 * (if one is defined).
 	 * @return the list of exceptions
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-118">RFC 5545
@@ -971,7 +970,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds a list of exceptions to the recurrence rule defined in the todo (if
+	 * Adds a list of exceptions to the recurrence rule defined in the to-do (if
 	 * one is defined). Note that this property can contain multiple dates.
 	 * @param exceptionDates the list of exceptions
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-118">RFC 5545
@@ -1002,7 +1001,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the components that the todo is related to.
+	 * Gets the components that the to-do is related to.
 	 * @return the relationships
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-115">RFC 5545
 	 * p.115-6</a>
@@ -1012,7 +1011,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds a component that the todo is related to.
+	 * Adds a component that the to-do is related to.
 	 * @param relatedTo the relationship
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-115">RFC 5545
 	 * p.115-6</a>
@@ -1032,7 +1031,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds a component that the todo is related to.
+	 * Adds a component that the to-do is related to.
 	 * @param uid the UID of the other component
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-115">RFC 5545
@@ -1045,7 +1044,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Gets the resources that are needed for the todo.
+	 * Gets the resources that are needed for the to-do.
 	 * @return the resources
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-91">RFC 5545
 	 * p.91</a>
@@ -1055,8 +1054,8 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds a list of resources that are needed for the todo. Note that a single
-	 * property can hold multiple resources.
+	 * Adds a list of resources that are needed for the to-do. Note that a
+	 * single property can hold multiple resources.
 	 * @param resources the resources to add
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-91">RFC 5545
 	 * p.91</a>
@@ -1066,7 +1065,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds a list of resources that are needed for the todo.
+	 * Adds a list of resources that are needed for the to-do.
 	 * @param resources the resources to add (e.g. "easel", "projector")
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-91">RFC 5545
@@ -1079,7 +1078,7 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
-	 * Adds a list of resources that are needed for the todo.
+	 * Adds a list of resources that are needed for the to-do.
 	 * @param resources the resources to add (e.g. "easel", "projector")
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-91">RFC 5545
@@ -1093,7 +1092,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Gets the list of dates/periods that help define the recurrence rule of
-	 * this todo (if one is defined).
+	 * this to-do (if one is defined).
 	 * @return the recurrence dates
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-120">RFC 5545
 	 * p.120-2</a>
@@ -1104,7 +1103,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Adds a list of dates/periods that help define the recurrence rule of this
-	 * todo (if one is defined).
+	 * to-do (if one is defined).
 	 * @param recurrenceDates the recurrence dates
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-120">RFC 5545
 	 * p.120-2</a>
@@ -1124,7 +1123,7 @@ public class VTodo extends ICalComponent {
 
 		Status status = getStatus();
 		if (status != null && (status.isTentative() || status.isConfirmed() || status.isDraft() || status.isFinal())) {
-			warnings.add("Invalid status value of \"" + status.getValue() + "\".  Valid status values for todo tasks are \"needs-action\", \"completed\", \"in-progress\", and \"cancelled\".");
+			warnings.add("Invalid status value of \"" + status.getValue() + "\".  Valid status values for to-do tasks are \"needs-action\", \"completed\", \"in-progress\", and \"cancelled\".");
 		}
 
 		DateStart dateStart = getDateStart();
@@ -1138,12 +1137,12 @@ public class VTodo extends ICalComponent {
 			}
 
 			if (dateStart.hasTime() != dateDue.hasTime()) {
-				warnings.add("Both " + DateStart.class.getSimpleName() + " and " + DateDue.class.getSimpleName() + " must have the same data type (they must either both be dates or both be date/times).");
+				warnings.add("Both " + DateStart.class.getSimpleName() + " and " + DateDue.class.getSimpleName() + " must have the same data type (they must either both be dates or both be date-times).");
 			}
 		}
 
 		if (dateDue != null && getDuration() != null) {
-			warnings.add("A " + DateDue.class.getSimpleName() + " and a " + DurationProperty.class.getSimpleName() + " cannot both be defined in the same todo.");
+			warnings.add("A " + DateDue.class.getSimpleName() + " and a " + DurationProperty.class.getSimpleName() + " cannot both be defined in the same to-do.");
 		}
 		if (dateStart == null && (dateDue != null || getDuration() != null)) {
 			warnings.add("A" + DateStart.class.getSimpleName() + " must be defined if a " + DateDue.class.getSimpleName() + " or " + DurationProperty.class.getSimpleName() + " is defined.");
@@ -1151,7 +1150,7 @@ public class VTodo extends ICalComponent {
 
 		RecurrenceId recurrenceId = getRecurrenceId();
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
-			warnings.add("Both " + DateStart.class.getSimpleName() + " and " + RecurrenceId.class.getSimpleName() + " must have the same data type (they must either both be dates or both be date/times).");
+			warnings.add("Both " + DateStart.class.getSimpleName() + " and " + RecurrenceId.class.getSimpleName() + " must have the same data type (they must either both be dates or both be date-times).");
 		}
 	}
 }

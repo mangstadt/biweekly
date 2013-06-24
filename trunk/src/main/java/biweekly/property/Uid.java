@@ -28,7 +28,18 @@ import java.util.UUID;
  */
 
 /**
+ * <p>
  * Defines a unique identifier for a component.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Uid uid = new Uid(&quot;...&quot;);
+ * Uid uid = Uid.random();
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-117">RFC 5545
  * p.117-8</a>

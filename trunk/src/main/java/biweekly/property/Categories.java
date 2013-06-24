@@ -28,8 +28,18 @@ import java.util.List;
  */
 
 /**
+ * <p>
  * Defines a list of "tags" or "keywords" that describe the component that the
  * property belongs to.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Categories categories = new Categories(&quot;foo&quot;, &quot;bar&quot;, &quot;car&quot;);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545 p.81-2</a>
  */

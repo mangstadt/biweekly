@@ -28,7 +28,7 @@ import java.util.Date;
  */
 
 /**
- * Defines the date/time that the calendar information was initially created.
+ * Defines the date-time that the calendar information was initially created.
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545 p.136</a>
  */

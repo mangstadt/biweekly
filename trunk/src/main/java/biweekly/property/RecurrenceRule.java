@@ -32,7 +32,19 @@ import biweekly.component.ICalComponent;
  */
 
 /**
+ * <p>
  * Defines how often a component repeats.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * //bi-weekly
+ * RecurrenceRule rrule = new RecurrenceRule(Frequency.WEEKLY);
+ * rrule.setInterval(2);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
  * p.122-32</a>

@@ -28,7 +28,7 @@ import java.util.Date;
  */
 
 /**
- * Defines the date/time that the calendar data in a component was last changed.
+ * Defines the date-time that the calendar data in a component was last changed.
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545 p.138</a>
  */

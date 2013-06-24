@@ -28,7 +28,7 @@ import java.util.Date;
  */
 
 /**
- * Represents a property whose value is a date/time.
+ * Represents a property whose value is a date-time.
  * @author Michael Angstadt
  */
 public class DateTimeProperty extends ValuedProperty<Date> {

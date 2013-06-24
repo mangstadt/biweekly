@@ -26,7 +26,7 @@ package biweekly.property;
  */
 
 /**
- * Defines a revision number for a component. The organizer of the event, todo,
+ * Defines a revision number for a component. The organizer of the event, to-do,
  * etc can increment this number every time he or she makes a significant change
  * to the component.
  * @author Michael Angstadt

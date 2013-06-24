@@ -33,7 +33,24 @@ import biweekly.property.TimezoneUrl;
  */
 
 /**
+ * <p>
  * Defines a timezone.
+ * </p>
+ * 
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * VTimezone timezone = new VTimezone(&quot;EST&quot;);
+ * 
+ * StandardTime standard = ...
+ * timezone.addStandardTime(standard);
+ * 
+ * DaylightSavingsTime daylightSavings = ...
+ * timezone.addDaylightSavingsTime(daylightSavings);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
  * p.62-71</a>
@@ -42,7 +59,7 @@ public class VTimezone extends ICalComponent {
 	/**
 	 * Creates a new timezone component.
 	 * @param identifier a unique identifier for this timezone (allows it to be
-	 * referenced by certain date-time properties).
+	 * referenced by date-time properties that support timezones).
 	 */
 	public VTimezone(String identifier) {
 		setTimezoneId(identifier);
@@ -81,7 +98,7 @@ public class VTimezone extends ICalComponent {
 	}
 
 	/**
-	 * Gets the date/time that the timezone data was last changed.
+	 * Gets the date-time that the timezone data was last changed.
 	 * @return the last modified date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
@@ -91,7 +108,7 @@ public class VTimezone extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date/time that the timezone data was last changed.
+	 * Sets the date-time that the timezone data was last changed.
 	 * @param lastModified the last modified date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
@@ -101,7 +118,7 @@ public class VTimezone extends ICalComponent {
 	}
 
 	/**
-	 * Sets the date/time that the timezone data was last changed.
+	 * Sets the date-time that the timezone data was last changed.
 	 * @param lastModified the last modified date or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
@@ -172,6 +189,14 @@ public class VTimezone extends ICalComponent {
 	 */
 	public List<DaylightSavingsTime> getDaylightSavingsTime() {
 		return getComponents(DaylightSavingsTime.class);
+	}
+
+	/**
+	 * Adds a "daylight savings" observance time range.
+	 * @param daylightSavingsTime the "daylight savings" observance time
+	 */
+	public void addDaylightSavingsTime(DaylightSavingsTime daylightSavingsTime) {
+		addComponent(daylightSavingsTime);
 	}
 
 	@Override

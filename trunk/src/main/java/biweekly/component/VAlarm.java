@@ -1,5 +1,6 @@
 package biweekly.component;
 
+import java.util.Arrays;
 import java.util.List;
 
 import biweekly.parameter.Related;
@@ -42,7 +43,34 @@ import biweekly.util.Duration;
  */
 
 /**
- * Defines a reminder for an event or todo.
+ * <p>
+ * Defines a reminder for an event or to-do. This class contains static factory
+ * methods to aid in the construction of valid alarms.
+ * </p>
+ * 
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * //audio alarm
+ * Trigger trigger = ...
+ * Attachment sound = ...
+ * VAlarm audio = VAlarm.audio(trigger, sound);
+ * 
+ * //display alarm
+ * Trigger trigger = ...
+ * String message = &quot;Meeting at 1pm&quot;;
+ * VAlarm display = VAlarm.display(trigger, message);
+ * 
+ * //email alarm
+ * Trigger trigger = ...
+ * String subject = &quot;Reminder: Meeting at 1pm&quot;;
+ * String body = &quot;Team,\n\nThe team meeting scheduled for 1pm is about to start.  Snacks will be served!\n\nThanks,\nJohn&quot;;
+ * List&ltString&gt to = Arrays.asList(&quot;janedoe@example.com&quot;, &quot;bobsmith@example.com&quot;);
+ * VAlarm email = VAlarm.email(trigger, subject, body, to);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-71">RFC 5545 p.71-6</a>
  */
@@ -102,6 +130,18 @@ public class VAlarm extends ICalComponent {
 	 * @return the alarm
 	 */
 	public static VAlarm email(Trigger trigger, String subject, String body, String... recipients) {
+		return email(trigger, subject, body, Arrays.asList(recipients));
+	}
+
+	/**
+	 * Creates an email alarm.
+	 * @param trigger the trigger
+	 * @param subject the email subject
+	 * @param body the email body
+	 * @param recipients the email address(es) to send the alert to
+	 * @return the alarm
+	 */
+	public static VAlarm email(Trigger trigger, String subject, String body, List<String> recipients) {
 		VAlarm alarm = new VAlarm(Action.email(), trigger);
 		alarm.setSummary(subject);
 		alarm.setDescription(body);

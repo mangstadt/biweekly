@@ -2,6 +2,7 @@ package biweekly.property;
 
 import java.util.List;
 
+import biweekly.component.VAlarm;
 import biweekly.parameter.CalendarUserType;
 import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
@@ -32,12 +33,24 @@ import biweekly.parameter.Role;
  */
 
 /**
+ * <p>
  * Defines an attendee (such as a person attending an event). This property has
  * different meanings depending on the component that it belongs to:
  * <ul>
- * <li>VALARM (EMAIL action) - an email address that is to receive the alarm</li>
- * <li>all others - an attendee of the event/todo/journal/etc</li>
+ * <li>{@link VAlarm} (EMAIL action) - an email address that is to receive the
+ * alarm</li>
+ * <li>all others - an attendee</li>
  * </ul>
+ * </p>
+ * 
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Attendee attendee = Attendee.email("johndoe@example.com")
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
  * p.107-9</a>

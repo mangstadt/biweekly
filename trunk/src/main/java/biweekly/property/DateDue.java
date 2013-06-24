@@ -28,7 +28,7 @@ import java.util.Date;
  */
 
 /**
- * Defines the date that a todo is due by.
+ * Defines the date that a to-do is due by.
  * @author Michael Angstadt
  * @see "RFC 5545 96-7"
  */
