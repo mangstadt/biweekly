@@ -1,5 +1,7 @@
 package biweekly.property;
 
+import biweekly.Biweekly;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -38,5 +40,13 @@ public class ProductId extends TextProperty {
 	 */
 	public ProductId(String value) {
 		super(value);
+	}
+
+	/**
+	 * Creates a new product identifier property that represents this library.
+	 * @return the property
+	 */
+	public static ProductId biweekly() {
+		return new ProductId("-//Michael Angstadt//biweekly " + Biweekly.VERSION + "//EN");
 	}
 }

@@ -84,7 +84,7 @@ public class ICalendar extends ICalComponent {
 	 */
 	public ICalendar() {
 		setVersion(Version.v2_0());
-		setProductId(new ProductId("-//Michael Angstadt//biweekly " + Biweekly.VERSION + "//EN"));
+		setProductId(ProductId.biweekly());
 	}
 
 	/**
