@@ -34,4 +34,9 @@ public class ICalendarMarshaller extends ICalComponentMarshaller<ICalendar> {
 	public ICalendarMarshaller() {
 		super(ICalendar.class, "VCALENDAR");
 	}
+
+	@Override
+	public ICalendar newInstance() {
+		return new ICalendar();
+	}
 }
