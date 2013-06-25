@@ -60,13 +60,13 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 	@Override
 	protected String _writeText(final RecurrenceDates property) {
 		if (property.getDates() != null) {
-			return StringUtils.join(property.getDates(), ',', new JoinCallback<Date>() {
+			return StringUtils.join(property.getDates(), ",", new JoinCallback<Date>() {
 				public void handle(StringBuilder sb, Date date) {
 					sb.append(writeDate(date, property.hasTime(), null));
 				}
 			});
 		} else if (property.getPeriods() != null) {
-			return StringUtils.join(property.getPeriods(), ',', new JoinCallback<Period>() {
+			return StringUtils.join(property.getPeriods(), ",", new JoinCallback<Period>() {
 				public void handle(StringBuilder sb, Period period) {
 					if (period.getStartDate() != null) {
 						sb.append(writeDate(period.getStartDate(), true, null));

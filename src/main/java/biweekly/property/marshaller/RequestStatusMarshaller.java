@@ -51,7 +51,7 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 		addComponent(property.getStatusCode(), components);
 		Collections.reverse(components);
 
-		return StringUtils.join(components, ';', new JoinCallback<String>() {
+		return StringUtils.join(components, ";", new JoinCallback<String>() {
 			public void handle(StringBuilder sb, String component) {
 				sb.append(escape(component));
 			}

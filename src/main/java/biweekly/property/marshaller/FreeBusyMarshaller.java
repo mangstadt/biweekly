@@ -51,7 +51,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 			return "";
 		}
 
-		return StringUtils.join(values, ',', new JoinCallback<Period>() {
+		return StringUtils.join(values, ",", new JoinCallback<Period>() {
 			public void handle(StringBuilder sb, Period timePeriod) {
 				if (timePeriod.getStartDate() != null) {
 					sb.append(writeDate(timePeriod.getStartDate(), true, null));

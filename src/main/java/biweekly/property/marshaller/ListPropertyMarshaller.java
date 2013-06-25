@@ -43,7 +43,7 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 
 	@Override
 	protected String _writeText(final T property) {
-		return StringUtils.join(property.getValues(), ',', new JoinCallback<V>() {
+		return StringUtils.join(property.getValues(), ",", new JoinCallback<V>() {
 			public void handle(StringBuilder sb, V value) {
 				sb.append(escape(writeValue(property, value)));
 			}
