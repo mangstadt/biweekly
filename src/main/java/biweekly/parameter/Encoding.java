@@ -42,7 +42,8 @@ public class Encoding extends EnumParameterValue {
 	}
 
 	/**
-	 * Searches for an existing encoding parameter object.
+	 * Searches for a parameter value that is defined as a static constant in
+	 * this class.
 	 * @param value the parameter value
 	 * @return the object or null if not found
 	 */
@@ -51,8 +52,9 @@ public class Encoding extends EnumParameterValue {
 	}
 
 	/**
-	 * Searches for an existing encoding parameter object and creates one if it
-	 * cannot be found.
+	 * Searches for a parameter value and creates one if it cannot be found. All
+	 * objects are guaranteed to be unique, so they can be compared with
+	 * <code>==</code> equality.
 	 * @param value the parameter value
 	 * @return the object
 	 */
