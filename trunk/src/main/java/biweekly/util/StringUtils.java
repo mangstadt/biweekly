@@ -87,7 +87,7 @@ public class StringUtils {
 
 	/**
 	 * Callback interface used with the
-	 * {@link StringUtils#join(Collection, char, JoinCallback)} method.
+	 * {@link StringUtils#join(Collection, String, JoinCallback)} method.
 	 * @author Michael Angstadt
 	 * @param <T> the value type
 	 */
@@ -97,7 +97,7 @@ public class StringUtils {
 
 	/**
 	 * Callback interface used with the
-	 * {@link StringUtils#join(Map, char, JoinMapCallback)} method.
+	 * {@link StringUtils#join(Map, String, JoinMapCallback)} method.
 	 * @author Michael Angstadt
 	 * @param <K> the key class
 	 * @param <V> the value class
