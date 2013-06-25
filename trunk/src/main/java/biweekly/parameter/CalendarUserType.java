@@ -44,7 +44,8 @@ public class CalendarUserType extends EnumParameterValue {
 	}
 
 	/**
-	 * Searches for a static constant.
+	 * Searches for a parameter value that is defined as a static constant in
+	 * this class.
 	 * @param value the parameter value
 	 * @return the object or null if not found
 	 */
@@ -53,9 +54,9 @@ public class CalendarUserType extends EnumParameterValue {
 	}
 
 	/**
-	 * Searches for a static constant and creates one if it cannot be found. All
-	 * created objects are assured to be unique, so multiple calls to this
-	 * method will return the same instance.
+	 * Searches for a parameter value and creates one if it cannot be found. All
+	 * objects are guaranteed to be unique, so they can be compared with
+	 * <code>==</code> equality.
 	 * @param value the parameter value
 	 * @return the object
 	 */

@@ -28,7 +28,8 @@ package biweekly.parameter;
 /**
  * Defines the data type of a property's value.
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-29">RFC 5545 p.29-50</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-29">RFC 5545
+ * p.29-50</a>
  */
 public class Value extends EnumParameterValue {
 	private static final ICalParameterCaseClasses<Value> enums = new ICalParameterCaseClasses<Value>(Value.class);
@@ -53,7 +54,8 @@ public class Value extends EnumParameterValue {
 	}
 
 	/**
-	 * Searches for a static constant.
+	 * Searches for a parameter value that is defined as a static constant in
+	 * this class.
 	 * @param value the parameter value
 	 * @return the object or null if not found
 	 */
@@ -62,9 +64,9 @@ public class Value extends EnumParameterValue {
 	}
 
 	/**
-	 * Searches for a static constant and creates one if it cannot be found. All
-	 * created objects are assured to be unique, so multiple calls to this
-	 * method will return the same instance.
+	 * Searches for a parameter value and creates one if it cannot be found. All
+	 * objects are guaranteed to be unique, so they can be compared with
+	 * <code>==</code> equality.
 	 * @param value the parameter value
 	 * @return the object
 	 */
