@@ -239,6 +239,10 @@ public class Biweekly {
 		final List<ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new ArrayList<ICalPropertyMarshaller<? extends ICalProperty>>(0);
 		final List<ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new ArrayList<ICalComponentMarshaller<? extends ICalComponent>>(0);
 		final boolean closeWhenDone;
+
+		@SuppressWarnings("unchecked")
+		final T this_ = (T) this;
+
 		List<List<String>> warnings;
 
 		ParserChain(boolean closeWhenDone) {
@@ -250,10 +254,9 @@ public class Biweekly {
 		 * @param marshaller the marshaller
 		 * @return this
 		 */
-		@SuppressWarnings("unchecked")
 		public T register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
 			propertyMarshallers.add(marshaller);
-			return (T) this;
+			return this_;
 		}
 
 		/**
@@ -261,10 +264,9 @@ public class Biweekly {
 		 * @param marshaller the marshaller
 		 * @return this
 		 */
-		@SuppressWarnings("unchecked")
 		public T register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
 			componentMarshallers.add(marshaller);
-			return (T) this;
+			return this_;
 		}
 
 		/**
@@ -277,10 +279,9 @@ public class Biweekly {
 		 * warnings, then its warning list will be empty.
 		 * @return this
 		 */
-		@SuppressWarnings("unchecked")
 		public T warnings(List<List<String>> warnings) {
 			this.warnings = warnings;
-			return (T) this;
+			return this_;
 		}
 
 		/**
@@ -301,7 +302,7 @@ public class Biweekly {
 		}
 
 		/**
-		 * Reads the first iCalendar object from the stream.
+		 * Reads the first iCalendar object from the data stream.
 		 * @return the first iCalendar object or null if there are no iCalendar
 		 * objects
 		 * @throws IOException if there's an I/O problem
@@ -323,7 +324,7 @@ public class Biweekly {
 		}
 
 		/**
-		 * Reads all iCalendar objects from the stream.
+		 * Reads all iCalendar objects from the data stream.
 		 * @return the parsed iCalendar objects
 		 * @throws IOException if there's an I/O problem
 		 * @throws SAXException if there's a problem parsing the XML
@@ -364,10 +365,9 @@ public class Biweekly {
 		 * @see ICalReader#setCaretDecodingEnabled(boolean)
 		 * @see <a href="http://tools.ietf.org/html/rfc6868">RFC 6868</a>
 		 */
-		@SuppressWarnings("unchecked")
 		public T caretDecoding(boolean enable) {
 			caretDecoding = enable;
-			return (T) this;
+			return this_;
 		}
 
 		@Override
@@ -491,15 +491,40 @@ public class Biweekly {
 		}
 	}
 
-	static abstract class WriterChain {
+	static abstract class WriterChain<T> {
 		final Collection<ICalendar> icals;
+		final List<ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new ArrayList<ICalPropertyMarshaller<? extends ICalProperty>>(0);
+		final List<ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new ArrayList<ICalComponentMarshaller<? extends ICalComponent>>(0);
+
+		@SuppressWarnings("unchecked")
+		final T this_ = (T) this;
 
 		WriterChain(Collection<ICalendar> icals) {
 			this.icals = icals;
 		}
+
+		/**
+		 * Registers a property marshaller.
+		 * @param marshaller the marshaller
+		 * @return this
+		 */
+		public T register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+			propertyMarshallers.add(marshaller);
+			return this_;
+		}
+
+		/**
+		 * Registers a component marshaller.
+		 * @param marshaller the marshaller
+		 * @return this
+		 */
+		public T register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+			componentMarshallers.add(marshaller);
+			return this_;
+		}
 	}
 
-	static abstract class WriterChainText<T> extends WriterChain {
+	static abstract class WriterChainText<T> extends WriterChain<T> {
 		boolean caretEncoding = false;
 
 		WriterChainText(Collection<ICalendar> icals) {
@@ -513,10 +538,9 @@ public class Biweekly {
 		 * @see ICalWriter#setCaretEncodingEnabled(boolean)
 		 * @see <a href="http://tools.ietf.org/html/rfc6868">RFC 6868</a>
 		 */
-		@SuppressWarnings("unchecked")
 		public T caretEncoding(boolean enable) {
 			this.caretEncoding = enable;
-			return (T) this;
+			return this_;
 		}
 
 		/**
@@ -609,6 +633,16 @@ public class Biweekly {
 		}
 
 		@Override
+		public WriterChainTextMulti register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+			return super.register(marshaller);
+		}
+
+		@Override
+		public WriterChainTextMulti register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+			return super.register(marshaller);
+		}
+
+		@Override
 		void addWarnings(List<String> warnings) {
 			if (this.warnings != null) {
 				this.warnings.add(warnings);
@@ -642,6 +676,16 @@ public class Biweekly {
 		public WriterChainTextSingle warnings(List<String> warnings) {
 			this.warnings = warnings;
 			return this;
+		}
+
+		@Override
+		public WriterChainTextSingle register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+			return super.register(marshaller);
+		}
+
+		@Override
+		public WriterChainTextSingle register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+			return super.register(marshaller);
 		}
 
 		@Override
