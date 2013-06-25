@@ -4,7 +4,6 @@ import java.util.List;
 
 import biweekly.component.ICalComponent;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -66,7 +65,7 @@ public class ValuedProperty<T> extends ICalProperty {
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
 		if (value == null) {
-			warnings.add("No value is set.");
+			warnings.add("Value is null.");
 		}
 	}
 }
