@@ -44,7 +44,7 @@ public class StringUtilsTest {
 	@Test
 	public void join_multiple() {
 		Collection<String> values = Arrays.asList("one", "two", "three");
-		assertEquals("ONE,TWO,THREE", StringUtils.join(values, ',', new JoinCallback<String>() {
+		assertEquals("ONE,TWO,THREE", StringUtils.join(values, ",", new JoinCallback<String>() {
 			public void handle(StringBuilder sb, String str) {
 				sb.append(str.toUpperCase());
 			}
@@ -54,7 +54,7 @@ public class StringUtilsTest {
 	@Test
 	public void join_single() {
 		Collection<String> values = Arrays.asList("one");
-		assertEquals("ONE", StringUtils.join(values, ',', new JoinCallback<String>() {
+		assertEquals("ONE", StringUtils.join(values, ",", new JoinCallback<String>() {
 			public void handle(StringBuilder sb, String str) {
 				sb.append(str.toUpperCase());
 			}
@@ -64,7 +64,7 @@ public class StringUtilsTest {
 	@Test
 	public void join_empty() {
 		Collection<String> values = Arrays.asList();
-		assertEquals("", StringUtils.join(values, ',', new JoinCallback<String>() {
+		assertEquals("", StringUtils.join(values, ",", new JoinCallback<String>() {
 			public void handle(StringBuilder sb, String str) {
 				sb.append(str.toUpperCase());
 			}
@@ -74,7 +74,7 @@ public class StringUtilsTest {
 	@Test
 	public void join_strings() {
 		Collection<String> values = Arrays.asList("one", "two", "three");
-		assertEquals("one,two,three", StringUtils.join(values, ','));
+		assertEquals("one,two,three", StringUtils.join(values, ","));
 	}
 
 	@Test
@@ -83,7 +83,7 @@ public class StringUtilsTest {
 		map.put(1, "one");
 		map.put(2, "two");
 		map.put(3, "three");
-		assertEquals("1 - one,2 - two,3 - three", StringUtils.join(map, ',', new JoinMapCallback<Integer, String>() {
+		assertEquals("1 - one,2 - two,3 - three", StringUtils.join(map, ",", new JoinMapCallback<Integer, String>() {
 			public void handle(StringBuilder sb, Integer key, String value) {
 				sb.append(key).append(" - ").append(value);
 			}

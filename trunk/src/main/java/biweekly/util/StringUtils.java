@@ -36,11 +36,11 @@ public class StringUtils {
 	/**
 	 * Joins a collection of strings into a delimited list.
 	 * @param collection the collection of strings
-	 * @param ch the delimiter (e.g. ",")
+	 * @param delimiter the delimiter (e.g. ",")
 	 * @return the final string
 	 */
-	public static String join(Collection<String> collection, char ch) {
-		return join(collection, ch, new JoinCallback<String>() {
+	public static String join(Collection<String> collection, String delimiter) {
+		return join(collection, delimiter, new JoinCallback<String>() {
 			public void handle(StringBuilder sb, String string) {
 				sb.append(string);
 			}
@@ -50,11 +50,11 @@ public class StringUtils {
 	/**
 	 * Joins a collection of values into a delimited list.
 	 * @param collection the collection of values
-	 * @param ch the delimiter (e.g. ",")
+	 * @param delimiter the delimiter (e.g. ",")
 	 * @param join callback function to call on every element in the collection
 	 * @return the final string
 	 */
-	public static <T> String join(Collection<T> collection, char ch, JoinCallback<T> join) {
+	public static <T> String join(Collection<T> collection, String delimiter, JoinCallback<T> join) {
 		StringBuilder sb = new StringBuilder();
 
 		boolean first = true;
@@ -62,7 +62,7 @@ public class StringUtils {
 			if (first) {
 				first = false;
 			} else {
-				sb.append(ch);
+				sb.append(delimiter);
 			}
 			join.handle(sb, element);
 		}
@@ -73,12 +73,12 @@ public class StringUtils {
 	/**
 	 * Joins a map into a delimited list.
 	 * @param map the map
-	 * @param ch the delimiter (e.g. ",")
+	 * @param delimiter the delimiter (e.g. ",")
 	 * @param join callback function to call on every element in the collection
 	 * @return the final string
 	 */
-	public static <K, V> String join(Map<K, V> map, char ch, final JoinMapCallback<K, V> join) {
-		return join(map.entrySet(), ch, new JoinCallback<Map.Entry<K, V>>() {
+	public static <K, V> String join(Map<K, V> map, String delimiter, final JoinMapCallback<K, V> join) {
+		return join(map.entrySet(), delimiter, new JoinCallback<Map.Entry<K, V>>() {
 			public void handle(StringBuilder sb, Map.Entry<K, V> entry) {
 				join.handle(sb, entry.getKey(), entry.getValue());
 			}

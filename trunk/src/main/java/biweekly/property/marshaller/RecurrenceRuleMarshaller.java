@@ -95,9 +95,9 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 			components.put("WKST", property.getWorkweekStarts().getAbbr());
 		}
 
-		return StringUtils.join(components.getMap(), ';', new JoinMapCallback<String, List<String>>() {
+		return StringUtils.join(components.getMap(), ";", new JoinMapCallback<String, List<String>>() {
 			public void handle(StringBuilder sb, String key, List<String> values) {
-				sb.append(key).append('=').append(StringUtils.join(values, ','));
+				sb.append(key).append('=').append(StringUtils.join(values, ","));
 			}
 		});
 	}
