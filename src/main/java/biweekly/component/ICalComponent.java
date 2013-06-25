@@ -7,6 +7,8 @@ import biweekly.ICalendar;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.util.ListMultimap;
+import biweekly.util.StringUtils;
+import biweekly.util.StringUtils.JoinCallback;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -330,30 +332,49 @@ public abstract class ICalComponent {
 	 * consuming application. These problems can largely be avoided by reading
 	 * the Javadocs of the component class, or by being familiar with the
 	 * iCalendar standard.
-	 * @param components the hierarchy of components that the component belongs
+	 * @param hierarchy the hierarchy of components that the component belongs
 	 * to
 	 * @see ICalendar#validate
 	 * @return a list of warnings or an empty list if no problems were found
 	 */
-	public final List<String> validate(List<ICalComponent> components) {
+	public final List<String> validate(List<ICalComponent> hierarchy) {
 		List<String> warnings = new ArrayList<String>();
 
+		//build the component path (e.g. "ICalendar > VEvent > VTimezone")
+		String path;
+		if (hierarchy.isEmpty()) {
+			path = getClass().getSimpleName();
+		} else {
+			path = StringUtils.join(hierarchy, " > ", new JoinCallback<ICalComponent>() {
+				public void handle(StringBuilder sb, ICalComponent value) {
+					sb.append(value.getClass().getSimpleName());
+				}
+			}) + " > " + getClass().getSimpleName(); //can't add "this" to "hierarchy" yet
+		}
+
 		//validate this component
-		validate(components, warnings);
+		List<String> thisWarnings = new ArrayList<String>();
+		validate(hierarchy, thisWarnings);
+		for (String warning : thisWarnings) {
+			warnings.add("[" + path + "]: " + warning);
+		}
 
 		//add this component to the stack
 		//copy list so other validate() calls aren't effected
-		components = new ArrayList<ICalComponent>(components);
-		components.add(this);
-
-		//validate sub-components
-		for (ICalComponent component : this.components.values()) {
-			warnings.addAll(component.validate(components));
-		}
+		hierarchy = new ArrayList<ICalComponent>(hierarchy);
+		hierarchy.add(this);
 
 		//validate properties
 		for (ICalProperty property : properties.values()) {
-			warnings.addAll(property.validate(components));
+			List<String> propWarnings = property.validate(hierarchy);
+			for (String warning : propWarnings) {
+				warnings.add("[" + path + " > " + property.getClass().getSimpleName() + "]: " + warning);
+			}
+		}
+
+		//validate sub-components
+		for (ICalComponent component : components.values()) {
+			warnings.addAll(component.validate(hierarchy));
 		}
 
 		return warnings;
