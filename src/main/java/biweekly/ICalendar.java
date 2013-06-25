@@ -223,7 +223,7 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Adds a to-do.
-	 * @param to-do the to-do
+	 * @param todo the to-do
 	 */
 	public void addVTodo(VTodo todo) {
 		addComponent(todo);
