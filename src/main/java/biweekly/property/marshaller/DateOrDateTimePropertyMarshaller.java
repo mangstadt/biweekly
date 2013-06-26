@@ -44,9 +44,8 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 
 	@Override
 	protected void _prepareParameters(T property, ICalParameters copy) {
-		if (property.getValue() != null && !property.hasTime()) {
-			copy.setValue(Value.DATE);
-		}
+		Value value = (property.getValue() == null || property.hasTime()) ? null : Value.DATE;
+		copy.setValue(value);
 	}
 
 	@Override

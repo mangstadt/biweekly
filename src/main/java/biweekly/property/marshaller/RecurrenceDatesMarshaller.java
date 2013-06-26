@@ -48,13 +48,15 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 
 	@Override
 	protected void _prepareParameters(RecurrenceDates property, ICalParameters copy) {
+		Value value = null;
 		if (property.getDates() != null) {
 			if (!property.hasTime()) {
-				copy.setValue(Value.DATE);
+				value = Value.DATE;
 			}
 		} else if (property.getPeriods() != null) {
-			copy.setValue(Value.PERIOD);
+			value = Value.PERIOD;
 		}
+		copy.setValue(value);
 	}
 
 	@Override
