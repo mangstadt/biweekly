@@ -283,7 +283,11 @@ public class ICalWriter implements Closeable {
 				parameters = pm.prepareParameters(property);
 				value = pm.writeText(property);
 			} catch (SkipMeException e) {
-				addWarning("Property has requested that it be skipped: " + e.getMessage(), pm.getPropertyName());
+				if (e.getMessage() == null) {
+					addWarning("Property has requested that it be skipped.", pm.getPropertyName());
+				} else {
+					addWarning("Property has requested that it be skipped: " + e.getMessage(), pm.getPropertyName());
+				}
 				continue;
 			}
 

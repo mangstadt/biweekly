@@ -190,7 +190,7 @@ public class ICalReader implements IParser {
 	 * @param componentName the name of the component
 	 * @return the component marshallerd
 	 */
-	private ICalComponentMarshaller<? extends ICalComponent> findComponentMarshaller(final String componentName) {
+	private ICalComponentMarshaller<? extends ICalComponent> findComponentMarshaller(String componentName) {
 		ICalComponentMarshaller<? extends ICalComponent> m = componentMarshallers.get(componentName.toUpperCase());
 		if (m == null) {
 			m = ComponentLibrary.getMarshaller(componentName);
@@ -261,7 +261,11 @@ public class ICalReader implements IParser {
 
 				property = result.getValue();
 			} catch (SkipMeException e) {
-				addWarning("Property has requested that it be skipped: " + e.getMessage(), name);
+				if (e.getMessage() == null) {
+					addWarning("Property has requested that it be skipped.", name);
+				} else {
+					addWarning("Property has requested that it be skipped: " + e.getMessage(), name);
+				}
 			} catch (CannotParseException e) {
 				if (e.getMessage() == null) {
 					addWarning("Property value could not be unmarshalled: " + value, name);
