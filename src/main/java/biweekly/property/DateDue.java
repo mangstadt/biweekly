@@ -30,7 +30,7 @@ import java.util.Date;
 /**
  * Defines the date that a to-do is due by.
  * @author Michael Angstadt
- * @see "RFC 5545 96-7"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-96">RFC 5545 p.96-7</a>
  */
 public class DateDue extends DateOrDateTimeProperty {
 	/**

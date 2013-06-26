@@ -742,7 +742,8 @@ public class VTodo extends ICalComponent {
 	/**
 	 * Gets the date that a to-do is due by.
 	 * @return the due date or null if not set
-	 * @see "RFC 5545 96-7"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-96">RFC 5545
+	 * p.96-7</a>
 	 */
 	public DateDue getDateDue() {
 		return getProperty(DateDue.class);
@@ -752,7 +753,8 @@ public class VTodo extends ICalComponent {
 	 * Sets the date that a to-do is due by. This must NOT be set if a
 	 * {@link DurationProperty} is defined.
 	 * @param dateDue the due date or null to remove
-	 * @see "RFC 5545 96-7"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-96">RFC 5545
+	 * p.96-7</a>
 	 */
 	public void setDateDue(DateDue dateDue) {
 		setProperty(DateDue.class, dateDue);
@@ -763,7 +765,8 @@ public class VTodo extends ICalComponent {
 	 * {@link DurationProperty} is defined.
 	 * @param dateDue the due date or null to remove
 	 * @return the property that was created
-	 * @see "RFC 5545 96-7"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-96">RFC 5545
+	 * p.96-7</a>
 	 */
 	public DateDue setDateDue(Date dateDue) {
 		DateDue prop = (dateDue == null) ? null : new DateDue(dateDue);

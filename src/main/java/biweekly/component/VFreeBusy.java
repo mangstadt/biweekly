@@ -226,7 +226,8 @@ public class VFreeBusy extends ICalComponent {
 	/**
 	 * Gets the date that the free/busy entry ends.
 	 * @return the end date or null if not set
-	 * @see "RFC 5545 95-6"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-95">RFC 5545
+	 * p.95-6</a>
 	 */
 	public DateEnd getDateEnd() {
 		return getProperty(DateEnd.class);
@@ -235,7 +236,8 @@ public class VFreeBusy extends ICalComponent {
 	/**
 	 * Sets the date that the free/busy entry ends.
 	 * @param dateEnd the end date or null to remove
-	 * @see "RFC 5545 95-6"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-95">RFC 5545
+	 * p.95-6</a>
 	 */
 	public void setDateEnd(DateEnd dateEnd) {
 		setProperty(DateEnd.class, dateEnd);
@@ -245,7 +247,8 @@ public class VFreeBusy extends ICalComponent {
 	 * Sets the date that the free/busy entry ends.
 	 * @param dateEnd the end date or null to remove
 	 * @return the property that was created
-	 * @see "RFC 5545 95-6"
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-95">RFC 5545
+	 * p.95-6</a>
 	 */
 	public DateEnd setDateEnd(Date dateEnd) {
 		DateEnd prop = (dateEnd == null) ? null : new DateEnd(dateEnd);

@@ -30,7 +30,7 @@ import java.util.Date;
 /**
  * Defines the date that an event or free/busy component ends.
  * @author Michael Angstadt
- * @see "RFC 5545 95-6"
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-95">RFC 5545 p.95-6</a>
  */
 public class DateEnd extends DateOrDateTimeProperty {
 	/**
