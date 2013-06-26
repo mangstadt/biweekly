@@ -44,9 +44,8 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 
 	@Override
 	protected void _prepareParameters(Trigger property, ICalParameters copy) {
-		if (property.getDate() != null) {
-			copy.setValue(Value.DATE_TIME);
-		}
+		Value value = (property.getDate() == null) ? null : Value.DATE_TIME;
+		copy.setValue(value);
 	}
 
 	@Override

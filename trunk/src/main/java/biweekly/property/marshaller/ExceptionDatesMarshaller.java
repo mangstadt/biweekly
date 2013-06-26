@@ -44,9 +44,8 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 
 	@Override
 	protected void _prepareParameters(ExceptionDates property, ICalParameters copy) {
-		if (!property.hasTime()) {
-			copy.setValue(Value.DATE);
-		}
+		Value value = property.hasTime() ? null : Value.DATE;
+		copy.setValue(value);
 	}
 
 	@Override
