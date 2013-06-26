@@ -3,7 +3,7 @@
 	<groupId>net.sf.biweekly</groupId>
 	<artifactId>biweekly</artifactId>
 	<packaging>jar</packaging>
-	<version>0.1.1-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<name>biweekly</name>
 	<url>http://sourceforge.net/p/biweekly</url>
 	<inceptionYear>2013</inceptionYear>
@@ -41,8 +41,8 @@
 	</issueManagement>
 
 	<scm>
-		<connection>scm:svn:http://svn.code.sf.net/p/biweekly/code</connection>
-		<developerConnection>scm:svn:https://svn.code.sf.net/p/biweekly/code</developerConnection>
+		<connection>scm:svn:http://svn.code.sf.net/p/biweekly/code/trunk</connection>
+		<developerConnection>scm:svn:https://svn.code.sf.net/p/biweekly/code/trunk</developerConnection>
 		<url>https://sourceforge.net/p/biweekly/code/HEAD/tree/</url>
 	</scm>
 	
