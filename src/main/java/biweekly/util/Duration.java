@@ -30,12 +30,22 @@ import java.util.regex.Pattern;
 
 /**
  * <p>
- * Represents a period of time (for example, "4 days and 1 hour").
+ * Represents a period of time (for example, "2 hours and 30 minutes").
  * </p>
  * <p>
  * This class is immutable. Use the {@link Builder Duration.Builder} class to
  * construct a new instance, or the {@link #parse} method to parse a duration
  * string.
+ * </p>
+ * 
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Duration duration = new Duration.Builder().hours(2).minutes(30).build();
+ * Duration duration = Duration.parse(&quot;PT2H30M&quot;);
+ * </pre>
+ * 
  * </p>
  * @author Michael Angstadt
  */
