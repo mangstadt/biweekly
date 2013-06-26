@@ -41,8 +41,8 @@
 	</issueManagement>
 
 	<scm>
-		<connection>scm:svn:http://svn.code.sf.net/p/biweekly/code/trunk</connection>
-		<developerConnection>scm:svn:https://svn.code.sf.net/p/biweekly/code/trunk</developerConnection>
+		<connection>scm:svn:http://svn.code.sf.net/p/biweekly/code</connection>
+		<developerConnection>scm:svn:https://svn.code.sf.net/p/biweekly/code</developerConnection>
 		<url>https://sourceforge.net/p/biweekly/code/HEAD/tree/</url>
 	</scm>
 	
