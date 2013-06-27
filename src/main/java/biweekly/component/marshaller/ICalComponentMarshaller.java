@@ -30,6 +30,10 @@ import biweekly.property.ICalProperty;
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * Base class for iCalendar component marshallers.
+ * @author Michael Angstadt
+ */
 public abstract class ICalComponentMarshaller<T extends ICalComponent> {
 	protected final Class<T> clazz;
 	protected final String componentName;
@@ -44,6 +48,10 @@ public abstract class ICalComponentMarshaller<T extends ICalComponent> {
 		this.componentName = componentName;
 	}
 
+	/**
+	 * Gets the component class.
+	 * @return the component class.
+	 */
 	public Class<T> getComponentClass() {
 		return clazz;
 	}
@@ -63,8 +71,8 @@ public abstract class ICalComponentMarshaller<T extends ICalComponent> {
 	public abstract T newInstance();
 
 	/**
-	 * Gets the sub-components to marshal. Child classes can override this in
-	 * order to better control which components are marshalled.
+	 * Gets the sub-components to marshal. Child classes can override this for
+	 * better control over which components are marshalled.
 	 * @param component the component
 	 * @return the sub-components to marshal
 	 */
@@ -73,8 +81,8 @@ public abstract class ICalComponentMarshaller<T extends ICalComponent> {
 	}
 
 	/**
-	 * Gets the properties to marshal. Child classes can override this in order
-	 * to better control which properties are marshalled.
+	 * Gets the properties to marshal. Child classes can override this for
+	 * better control over which properties are marshalled.
 	 * @param component the component
 	 * @return the properties to marshal
 	 */
