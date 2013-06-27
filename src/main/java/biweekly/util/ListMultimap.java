@@ -261,4 +261,9 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	public Iterator<Map.Entry<K, List<V>>> iterator() {
 		return map.entrySet().iterator();
 	}
+
+	@Override
+	public String toString() {
+		return map.toString();
+	}
 }
