@@ -2,13 +2,15 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
+import biweekly.io.CannotParseException;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
-import biweekly.property.RawProperty;
+import biweekly.property.Xml;
 import biweekly.util.XmlUtils;
 
 /*
@@ -37,42 +39,54 @@ import biweekly.util.XmlUtils;
  */
 
 /**
- * Marshals properties that do not have a marshaller associated with them.
+ * Marshals {@link Xml} properties.
  * @author Michael Angstadt
  */
-public class RawPropertyMarshaller extends ICalPropertyMarshaller<RawProperty> {
-	public RawPropertyMarshaller() {
-		this("");
-	}
-
-	public RawPropertyMarshaller(String propertyName) {
-		super(RawProperty.class, propertyName);
+public class XmlMarshaller extends ICalPropertyMarshaller<Xml> {
+	//TODO on writing to plain text: convert to base64 if the string contains values that are illegal within a plain text value (p.17)
+	public XmlMarshaller() {
+		super(Xml.class, "XML");
 	}
 
 	@Override
-	protected String _writeText(RawProperty property) {
-		String value = property.getValue();
-		return (value == null) ? "" : value;
+	protected String _writeText(Xml property) {
+		Document value = property.getValue();
+		if (value == null) {
+			return "";
+		}
+
+		String xml = XmlUtils.toString(value);
+		return escape(xml);
 	}
 
 	@Override
-	protected RawProperty _parseText(String value, ICalParameters parameters, List<String> warnings) {
-		return new RawProperty(propertyName, value);
+	protected Xml _parseText(String value, ICalParameters parameters, List<String> warnings) {
+		value = unescape(value);
+		try {
+			return new Xml(value);
+		} catch (SAXException e) {
+			throw new CannotParseException("Cannot parse value as XML: " + value);
+		}
 	}
 
 	@Override
-	protected RawProperty _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		Value dataType = null;
-		String value = null;
-		for (Element child : XmlUtils.toElementList(element.getElement().getChildNodes())) {
-			if (XCalNamespaceContext.XCAL_NS.equals(child.getNamespaceURI())) {
-				dataType = Value.find(child.getLocalName());
-				value = child.getTextContent();
-				break;
+	protected void _writeXml(Xml property, XCalElement element) {
+		super._writeXml(property, element);
+		//Xml properties are handled as a special case when writing xCal documents, so this method should never get called (see: XCalDocument class)
+	}
+
+	@Override
+	protected Xml _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		Xml xml = new Xml(element.getElement());
+
+		//remove the <parameters> element
+		Element root = XmlUtils.getRootElement(xml.getValue());
+		for (Element child : XmlUtils.toElementList(root.getChildNodes())) {
+			if ("parameters".equals(child.getLocalName()) && XCalNamespaceContext.XCAL_NS.equals(child.getNamespaceURI())) {
+				root.removeChild(child);
 			}
 		}
 
-		parameters.setValue(dataType);
-		return new RawProperty(element.getElement().getLocalName(), value);
+		return xml;
 	}
 }

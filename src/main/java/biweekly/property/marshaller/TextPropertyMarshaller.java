@@ -2,9 +2,10 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
+import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.TextProperty;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -53,6 +54,16 @@ public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICa
 	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 		return newInstance(value);
+	}
+
+	@Override
+	protected void _writeXml(T property, XCalElement element) {
+		element.appendValue(Value.TEXT, property.getValue());
+	}
+
+	@Override
+	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		return newInstance(element.getValue(Value.TEXT));
 	}
 
 	protected abstract T newInstance(String value);

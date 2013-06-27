@@ -1,14 +1,24 @@
 package biweekly.property.marshaller;
 
+import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import javax.xml.namespace.QName;
+
+import org.w3c.dom.Element;
+
+import biweekly.ICalendar;
 import biweekly.io.CannotParseException;
+import biweekly.io.SkipMeException;
 import biweekly.io.text.ICalWriter;
+import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.util.ICalDateFormatter;
 import biweekly.util.ISOFormat;
@@ -46,6 +56,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	private static final String NEWLINE = System.getProperty("line.separator");
 	protected final Class<T> clazz;
 	protected final String propertyName;
+	protected final QName qname;
 
 	/**
 	 * Creates a new marshaller.
@@ -53,8 +64,19 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @param propertyName the property name (e.g. "VERSION")
 	 */
 	public ICalPropertyMarshaller(Class<T> clazz, String propertyName) {
+		this(clazz, propertyName, new QName(XCAL_NS, propertyName.toLowerCase()));
+	}
+
+	/**
+	 * Creates a new marshaller.
+	 * @param clazz the property class
+	 * @param propertyName the property name (e.g. "VERSION")
+	 * @param qname the XML element name and namespace (used for xCal documents)
+	 */
+	public ICalPropertyMarshaller(Class<T> clazz, String propertyName, QName qname) {
 		this.clazz = clazz;
-		this.propertyName = propertyName.toUpperCase();
+		this.propertyName = propertyName;
+		this.qname = qname;
 	}
 
 	/**
@@ -71,6 +93,14 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 */
 	public String getPropertyName() {
 		return propertyName;
+	}
+
+	/**
+	 * Gets this property's local name and namespace for xCal documents.
+	 * @return the XML local name and namespace
+	 */
+	public QName getQName() {
+		return qname;
 	}
 
 	/**
@@ -91,9 +121,23 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * Marshals a property's value to a string.
 	 * @param property the property
 	 * @return the marshalled value
+	 * @throws SkipMeException if the property should not be written to the data
+	 * stream
 	 */
 	public final String writeText(T property) {
 		return _writeText(property);
+	}
+
+	/**
+	 * Marshals a property's value to an XML element (xCal).
+	 * @param property the property
+	 * @param element the property's XML element
+	 * @throws SkipMeException if the property should not be written to the data
+	 * stream
+	 */
+	public final void writeXml(T property, Element element) {
+		XCalElement xcalElement = new XCalElement(element);
+		_writeXml(property, xcalElement);
 	}
 
 	/**
@@ -103,10 +147,29 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @return the unmarshalled property object
 	 * @throws CannotParseException if the marshaller could not parse the
 	 * property's value
+	 * @throws SkipMeException if the property should not be added to the final
+	 * {@link ICalendar} object
 	 */
 	public final Result<T> parseText(String value, ICalParameters parameters) {
 		List<String> warnings = new ArrayList<String>(0);
 		T property = _parseText(value, parameters, warnings);
+		property.setParameters(parameters);
+		return new Result<T>(property, warnings);
+	}
+
+	/**
+	 * Unmarshals a property's value from an XML document (xCal).
+	 * @param element the property's XML element
+	 * @param parameters the property's parameters
+	 * @return the unmarshalled property object
+	 * @throws CannotParseException if the marshaller could not parse the
+	 * property's value
+	 * @throws SkipMeException if the property should not be added to the final
+	 * {@link ICalendar} object
+	 */
+	public final Result<T> parseXml(Element element, ICalParameters parameters) {
+		List<String> warnings = new ArrayList<String>(0);
+		T property = _parseXml(new XCalElement(element), parameters, warnings);
 		property.setParameters(parameters);
 		return new Result<T>(property, warnings);
 	}
@@ -126,8 +189,27 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * Marshals a property's value to a string.
 	 * @param property the property
 	 * @return the marshalled value
+	 * @throws SkipMeException if the property should not be written to the data
+	 * stream
 	 */
 	protected abstract String _writeText(T property);
+
+	/**
+	 * Marshals a property's value to an XML element (xCal).
+	 * @param property the property
+	 * @param element the XML element
+	 * @throws SkipMeException if the property should not be written to the data
+	 * stream
+	 */
+	protected void _writeXml(T property, XCalElement element) {
+		String value = writeText(property);
+		Value dataType = property.getParameters().getValue();
+		if (dataType == null) {
+			element.appendValueUnknown(value);
+		} else {
+			element.appendValue(dataType, value);
+		}
+	}
 
 	/**
 	 * Unmarshals a property's value.
@@ -139,8 +221,27 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @return the unmarshalled property object
 	 * @throws CannotParseException if the marshaller could not parse the
 	 * property's value
+	 * @throws SkipMeException if the property should not be added to the final
+	 * {@link ICalendar} object
 	 */
 	protected abstract T _parseText(String value, ICalParameters parameters, List<String> warnings);
+
+	/**
+	 * Unmarshals a property's value from an XML document (xCal).
+	 * @param element the property's XML element
+	 * @param parameters the property's parameters
+	 * @param warnings allows the programmer to alert the user to any
+	 * note-worthy (but non-critical) issues that occurred during the
+	 * unmarshalling process
+	 * @return the unmarshalled property object
+	 * @throws CannotParseException if the marshaller could not parse the
+	 * property's value
+	 * @throws SkipMeException if the property should not be added to the final
+	 * {@link ICalendar} object
+	 */
+	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		throw new UnsupportedOperationException();
+	}
 
 	/**
 	 * Unescapes all special characters that are escaped with a backslash, as

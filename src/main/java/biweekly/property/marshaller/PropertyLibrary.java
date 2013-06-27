@@ -3,8 +3,9 @@ package biweekly.property.marshaller;
 import java.util.HashMap;
 import java.util.Map;
 
-import biweekly.property.ICalProperty;
+import javax.xml.namespace.QName;
 
+import biweekly.property.ICalProperty;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -38,7 +39,9 @@ import biweekly.property.ICalProperty;
 public class PropertyLibrary {
 	private static final Map<String, ICalPropertyMarshaller<? extends ICalProperty>> byPropName = new HashMap<String, ICalPropertyMarshaller<? extends ICalProperty>>();
 	private static final Map<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>> byClass = new HashMap<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>>();
+	private static final Map<QName, ICalPropertyMarshaller<? extends ICalProperty>> byQName = new HashMap<QName, ICalPropertyMarshaller<? extends ICalProperty>>();
 	static {
+		//RFC 5545
 		addMarshaller(new ActionMarshaller());
 		addMarshaller(new AttachmentMarshaller());
 		addMarshaller(new AttendeeMarshaller());
@@ -85,6 +88,9 @@ public class PropertyLibrary {
 		addMarshaller(new UidMarshaller());
 		addMarshaller(new UrlMarshaller());
 		addMarshaller(new VersionMarshaller());
+
+		//RFC 6321
+		addMarshaller(new XmlMarshaller());
 	}
 
 	/**
@@ -105,9 +111,19 @@ public class PropertyLibrary {
 		return byClass.get(clazz);
 	}
 
+	/**
+	 * Gets a property marshaller by XML local name and namespace.
+	 * @param qname the XML local name and namespace
+	 * @return the property marshaller or null if not found
+	 */
+	public static ICalPropertyMarshaller<? extends ICalProperty> getMarshaller(QName qname) {
+		return byQName.get(qname);
+	}
+
 	private static void addMarshaller(ICalPropertyMarshaller<? extends ICalProperty> m) {
 		byPropName.put(m.getPropertyName().toUpperCase(), m);
 		byClass.put(m.getPropertyClass(), m);
+		byQName.put(m.getQName(), m);
 	}
 
 	private PropertyLibrary() {

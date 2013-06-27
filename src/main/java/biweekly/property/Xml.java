@@ -1,11 +1,11 @@
-package biweekly.property.marshaller;
+package biweekly.property;
 
-import java.util.List;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
-import biweekly.io.xml.XCalElement;
-import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
-import biweekly.property.Version;
+import biweekly.util.XmlUtils;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -33,49 +33,37 @@ import biweekly.property.Version;
  */
 
 /**
- * Marshals {@link Version} properties.
+ * Used for storing properties parsed from xCal documents whose XML namespaces
+ * are not part of the xCal XML namespace.
  * @author Michael Angstadt
+ * @see <a href="http://tools.ietf.org/html/rfc6321#page-17">RFC 6321 p.17-8</a>
  */
-public class VersionMarshaller extends ICalPropertyMarshaller<Version> {
-	public VersionMarshaller() {
-		super(Version.class, "VERSION");
+public class Xml extends ValuedProperty<Document> {
+	/**
+	 * Creates an XML property.
+	 * @param xml the XML to use as the property's value
+	 * @throws SAXException if the XML cannot be parsed
+	 */
+	public Xml(String xml) throws SAXException {
+		super(XmlUtils.toDocument(xml));
 	}
 
-	@Override
-	protected String _writeText(Version property) {
-		StringBuilder sb = new StringBuilder();
-
-		if (property.getMinVersion() != null) {
-			sb.append(property.getMinVersion()).append(';');
-		}
-		if (property.getMaxVersion() != null) {
-			sb.append(property.getMaxVersion());
-		}
-
-		return sb.toString();
+	/**
+	 * Creates an XML property.
+	 * @param element the XML element to use as the property's value (the
+	 * element is imported into an empty {@link Document} object)
+	 */
+	public Xml(Element element) {
+		super(XmlUtils.createDocument());
+		Node imported = value.importNode(element, true);
+		value.appendChild(imported);
 	}
 
-	@Override
-	protected Version _parseText(String value, ICalParameters parameters, List<String> warnings) {
-		String split[] = splitBy(value, ';', false, true);
-
-		String min = null, max = null;
-		if (split.length == 1) {
-			max = split[0];
-		} else {
-			min = split[0];
-			max = split[1];
-		}
-		return new Version(min, max);
-	}
-
-	@Override
-	protected void _writeXml(Version property, XCalElement element) {
-		element.appendValue(Value.TEXT, property.getMaxVersion());
-	}
-
-	@Override
-	protected Version _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		return new Version(element.getValue(Value.TEXT));
+	/**
+	 * Creates an XML property.
+	 * @param document the XML document to use as the property's value
+	 */
+	public Xml(Document document) {
+		super(document);
 	}
 }

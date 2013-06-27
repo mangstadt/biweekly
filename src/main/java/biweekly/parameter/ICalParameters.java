@@ -40,26 +40,26 @@ import biweekly.util.ListMultimap;
  * @author Michael Angstadt
  */
 public class ICalParameters extends ListMultimap<String, String> {
-	private static final String CN = "CN";
-	private static final String ALTREP = "ALTREP";
-	private static final String CUTYPE = "CUTYPE";
-	private static final String DELEGATED_FROM = "DELEGATED-FROM";
-	private static final String DELEGATED_TO = "DELEGATED-TO";
-	private static final String DIR = "DIR";
-	private static final String ENCODING = "ENCODING";
-	private static final String FMTTYPE = "FMTTYPE";
-	private static final String FBTYPE = "FBTYPE";
-	private static final String LANGUAGE = "LANGUAGE";
-	private static final String MEMBER = "MEMBER";
-	private static final String PARTSTAT = "PARTSTAT";
-	private static final String RANGE = "RANGE";
-	private static final String RELATED = "RELATED";
-	private static final String RELTYPE = "RELTYPE";
-	private static final String ROLE = "ROLE";
-	private static final String RSVP = "RSVP";
-	private static final String SENT_BY = "SENT-BY";
-	private static final String TZID = "TZID";
-	private static final String VALUE = "VALUE";
+	public static final String CN = "CN";
+	public static final String ALTREP = "ALTREP";
+	public static final String CUTYPE = "CUTYPE";
+	public static final String DELEGATED_FROM = "DELEGATED-FROM";
+	public static final String DELEGATED_TO = "DELEGATED-TO";
+	public static final String DIR = "DIR";
+	public static final String ENCODING = "ENCODING";
+	public static final String FMTTYPE = "FMTTYPE";
+	public static final String FBTYPE = "FBTYPE";
+	public static final String LANGUAGE = "LANGUAGE";
+	public static final String MEMBER = "MEMBER";
+	public static final String PARTSTAT = "PARTSTAT";
+	public static final String RANGE = "RANGE";
+	public static final String RELATED = "RELATED";
+	public static final String RELTYPE = "RELTYPE";
+	public static final String ROLE = "ROLE";
+	public static final String RSVP = "RSVP";
+	public static final String SENT_BY = "SENT-BY";
+	public static final String TZID = "TZID";
+	public static final String VALUE = "VALUE";
 
 	/**
 	 * Creates a parameters list.

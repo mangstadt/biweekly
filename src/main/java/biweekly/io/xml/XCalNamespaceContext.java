@@ -1,11 +1,10 @@
-package biweekly.property.marshaller;
+package biweekly.io.xml;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.Iterator;
 
-import biweekly.io.xml.XCalElement;
-import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
-import biweekly.property.Version;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.xpath.XPath;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -33,49 +32,55 @@ import biweekly.property.Version;
  */
 
 /**
- * Marshals {@link Version} properties.
+ * Used for xCal xpath expressions.
+ * @see XPath#setNamespaceContext(NamespaceContext)
  * @author Michael Angstadt
  */
-public class VersionMarshaller extends ICalPropertyMarshaller<Version> {
-	public VersionMarshaller() {
-		super(Version.class, "VERSION");
+public class XCalNamespaceContext implements NamespaceContext {
+	/**
+	 * The XML namespace for xCal documents.
+	 */
+	public static final String XCAL_NS = "urn:ietf:params:xml:ns:icalendar-2.0";
+
+	private final String prefix;
+
+	/**
+	 * Creates a new namespace context.
+	 * @param prefix the prefix to use in xpath expressions
+	 */
+	public XCalNamespaceContext(String prefix) {
+		this.prefix = prefix;
 	}
 
-	@Override
-	protected String _writeText(Version property) {
-		StringBuilder sb = new StringBuilder();
+	/**
+	 * Gets the prefix to use in xpath expressions.
+	 * @return the xpath prefix
+	 */
+	public String getPrefix() {
+		return prefix;
+	}
 
-		if (property.getMinVersion() != null) {
-			sb.append(property.getMinVersion()).append(';');
+	//@Override
+	public String getNamespaceURI(String prefix) {
+		if (this.prefix.equals(prefix)) {
+			return XCAL_NS;
 		}
-		if (property.getMaxVersion() != null) {
-			sb.append(property.getMaxVersion());
+		return null;
+	}
+
+	//@Override
+	public String getPrefix(String ns) {
+		if (XCAL_NS.equals(ns)) {
+			return prefix;
 		}
-
-		return sb.toString();
+		return null;
 	}
 
-	@Override
-	protected Version _parseText(String value, ICalParameters parameters, List<String> warnings) {
-		String split[] = splitBy(value, ';', false, true);
-
-		String min = null, max = null;
-		if (split.length == 1) {
-			max = split[0];
-		} else {
-			min = split[0];
-			max = split[1];
+	//@Override
+	public Iterator<String> getPrefixes(String ns) {
+		if (XCAL_NS.equals(ns)) {
+			return Arrays.asList(prefix).iterator();
 		}
-		return new Version(min, max);
-	}
-
-	@Override
-	protected void _writeXml(Version property, XCalElement element) {
-		element.appendValue(Value.TEXT, property.getMaxVersion());
-	}
-
-	@Override
-	protected Version _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		return new Version(element.getValue(Value.TEXT));
+		return null;
 	}
 }
