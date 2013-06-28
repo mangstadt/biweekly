@@ -370,7 +370,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		TimeZone timezone = null;
 		if (timezoneId != null) {
 			if (timezoneId.contains("/")) {
-				timezone = parseTimezoneId(timezoneId);
+				timezone = ICalDateFormatter.parseTimeZoneId(timezoneId);
 				if (timezone == null) {
 					warnings.add("Ignoring unrecognized timezone ID: " + timezoneId);
 				}
@@ -397,7 +397,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 			if (timezoneId == null) {
 				format = ISOFormat.UTC_TIME_BASIC;
 			} else if (timezoneId.contains("/")) {
-				timezone = parseTimezoneId(timezoneId);
+				timezone = ICalDateFormatter.parseTimeZoneId(timezoneId);
 				if (timezone == null) {
 					//unknown timezone
 					format = ISOFormat.UTC_TIME_BASIC;
@@ -413,16 +413,6 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		}
 
 		return ICalDateFormatter.format(value, format, timezone);
-	}
-
-	/**
-	 * Gets the {@link TimeZone} object that corresponds to the given ID.
-	 * @param timezoneId the timezone ID (e.g. "America/New_York")
-	 * @return the timezone object or null if not found
-	 */
-	protected static TimeZone parseTimezoneId(String timezoneId) {
-		TimeZone timezone = TimeZone.getTimeZone(timezoneId);
-		return "GMT".equals(timezone.getID()) ? null : timezone;
 	}
 
 	/**

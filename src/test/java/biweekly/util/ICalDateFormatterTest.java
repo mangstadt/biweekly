@@ -3,6 +3,7 @@ package biweekly.util;
 import static biweekly.util.TestUtils.buildTimezone;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -310,5 +311,14 @@ public class ICalDateFormatterTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void parseTimeZone_invalid() {
 		ICalDateFormatter.parseTimeZone("invalid");
+	}
+
+	@Test
+	public void parseTimezoneId() {
+		TimeZone tz = ICalDateFormatter.parseTimeZoneId("America/New_York");
+		assertEquals(tz.getID(), "America/New_York");
+
+		tz = ICalDateFormatter.parseTimeZoneId("Bogus/Timezone");
+		assertNull(tz);
 	}
 }
