@@ -94,10 +94,10 @@ import biweekly.util.XmlUtils;
  *       "&lt;version&gt;&lt;text&gt;2.0&lt;/text&gt;&lt;/version&gt;" +
  *     "&lt;/properties&gt;" +
  *     "&lt;components&gt;" +
- *     "&lt;vevent&gt;" +
- *       "&lt;properties&gt;" +
- *         "&lt;dtstart&gt;&lt;datetime&gt;2013-06-27T13:00:00&lt;/datetime&gt;&lt;dtstart&gt;" +
- *           "&lt;dtend&gt;&lt;datetime&gt;2013-06-27T15:00:00&lt;/dtend&gt;&lt;dtstart&gt;" +
+ *       "&lt;vevent&gt;" +
+ *         "&lt;properties&gt;" +
+ *           "&lt;dtstart&gt;&lt;date-time&gt;2013-06-27T13:00:00Z&lt;/date-time&gt;&lt;/dtstart&gt;" +
+ *           "&lt;dtend&gt;&lt;date-time&gt;2013-06-27T15:00:00Z&lt;/date-time&gt;&lt;/dtend&gt;" +
  *           "&lt;summary&gt;&lt;text&gt;Team Meeting&lt;/text&gt;&lt;/summary&gt;" +
  *         "&lt;/properties&gt;" +
  *       "&lt;/vevent&gt;" +
