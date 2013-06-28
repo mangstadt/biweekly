@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 
+import biweekly.io.xml.XCalElement;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
@@ -75,6 +76,30 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 		} else {
 			attachment.setUri(value);
 		}
+		return attachment;
+	}
+
+	@Override
+	protected void _writeXml(Attachment property, XCalElement element) {
+		if (property.getUri() != null) {
+			element.append(Value.URI, property.getUri());
+		} else if (property.getData() != null) {
+			element.append(Value.BINARY, Base64.encodeBase64String(property.getData()));
+		}
+	}
+
+	@Override
+	protected Attachment _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		Attachment attachment = new Attachment(null, (String) null);
+
+		String value = element.first(Value.BINARY);
+		if (value != null) {
+			attachment.setData(Base64.decodeBase64(value));
+		} else {
+			value = element.first(Value.URI);
+			attachment.setUri(value);
+		}
+
 		return attachment;
 	}
 }
