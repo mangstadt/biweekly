@@ -4,7 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.DateTimeProperty;
 
 /*
@@ -47,13 +49,37 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 		if (value == null) {
 			return "";
 		}
-		return date(value).write();
+		return date(value).write(); //should always be in UTC time
 	}
 
 	@Override
 	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
+		return parse(value, parameters, warnings);
+	}
+
+	@Override
+	protected void _writeXml(T property, XCalElement element) {
+		Date value = property.getValue();
+		if (value == null) {
+			return;
+		}
+
+		element.append(Value.DATE_TIME, date(value).extended(true).write()); //should always be in UTC time
+	}
+
+	@Override
+	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		String value = element.first(Value.DATE_TIME);
+		if (value == null) {
+			return newInstance(null);
+		}
+
+		return parse(value, parameters, warnings);
+	}
+
+	private T parse(String value, ICalParameters parameters, List<String> warnings) {
 		try {
 			Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
 			return newInstance(date);
