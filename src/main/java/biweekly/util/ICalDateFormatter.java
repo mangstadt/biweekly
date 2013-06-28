@@ -57,8 +57,8 @@ public class ICalDateFormatter {
 	 * Formats a date for inclusion in an iCalendar object.
 	 * @param date the date to format
 	 * @param format the format to use
-	 * @param timeZone the time zone to format the date in. This will be ignored
-	 * if the specified ISOFormat is a "UTC" format
+	 * @param timeZone the timezone to format the date in or null to use the
+	 * JVM's default timezone (ignored with "UTC" formats)
 	 * @return the formatted date
 	 */
 	public static String format(Date date, ISOFormat format, TimeZone timeZone) {
@@ -100,8 +100,9 @@ public class ICalDateFormatter {
 	/**
 	 * Parses an iCalendar date.
 	 * @param dateStr the date string to parse (e.g. "20130609T181023Z")
-	 * @param timezone the timezone that the date is in (if the date string
-	 * contains its own timezone, then that timezone will be used instead)
+	 * @param timezone the timezone to parse the date as or null to use the
+	 * JVM's default timezone (if the date string contains its own timezone,
+	 * then that timezone will be used instead)
 	 * @return the parsed date
 	 * @throws IllegalArgumentException if the date string isn't in one of the
 	 * accepted ISO8601 formats
