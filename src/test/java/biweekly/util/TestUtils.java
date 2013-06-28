@@ -11,6 +11,15 @@ import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import javax.xml.namespace.QName;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
+
+import biweekly.property.ICalProperty;
+import biweekly.property.marshaller.ICalPropertyMarshaller;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -110,5 +119,43 @@ public class TestUtils {
 		}
 
 		return new SimpleTimeZone(hourMillis + minuteMillis, "");
+	}
+
+	/**
+	 * Builds an XML document that contains an empty xCal property element.
+	 * @param marshaller the property marshaller
+	 * @return the document
+	 */
+	public static Document xcalProperty(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+		QName qname = marshaller.getQName();
+		Document document = XmlUtils.createDocument();
+		Element element = document.createElementNS(qname.getNamespaceURI(), qname.getLocalPart());
+		document.appendChild(element);
+		return document;
+	}
+
+	/**
+	 * Builds an XML document that contains a xCal property element.
+	 * @param marshaller the property marshaller
+	 * @param body the XML of the element body
+	 * @return the document
+	 */
+	public static Document xcalProperty(ICalPropertyMarshaller<? extends ICalProperty> marshaller, String body) {
+		QName qname = marshaller.getQName();
+		try {
+			return XmlUtils.toDocument("<" + qname.getLocalPart() + " xmlns=\"" + qname.getNamespaceURI() + "\">" + body + "</" + qname.getLocalPart() + ">");
+		} catch (SAXException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Builds a xCal property element.
+	 * @param marshaller the property marshaller
+	 * @param body the XML of the element body
+	 * @return the property element
+	 */
+	public static Element xcalPropertyElement(ICalPropertyMarshaller<? extends ICalProperty> marshaller, String body) {
+		return XmlUtils.getRootElement(xcalProperty(marshaller, body));
 	}
 }

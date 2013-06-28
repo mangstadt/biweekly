@@ -1,13 +1,20 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.xcalProperty;
+import static biweekly.util.TestUtils.xcalPropertyElement;
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.TextProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.util.XmlUtils;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -72,9 +79,72 @@ public class TextPropertyMarshallerTest {
 		assertWarnings(0, result.getWarnings());
 	}
 
+	@Test
+	public void writeXml() {
+		TextPropertyImpl prop = new TextPropertyImpl("text");
+
+		Document actual = xcalProperty(marshaller);
+		marshaller.writeXml(prop, XmlUtils.getRootElement(actual));
+
+		Document expected = xcalProperty(marshaller, "<text>text</text>");
+		assertXMLEqual(expected, actual);
+	}
+
+	@Test
+	public void writeXml_null() {
+		TextPropertyImpl prop = new TextPropertyImpl(null);
+
+		Document actual = xcalProperty(marshaller);
+		marshaller.writeXml(prop, XmlUtils.getRootElement(actual));
+
+		Document expected = xcalProperty(marshaller, "<text></text>");
+		assertXMLEqual(expected, actual);
+	}
+
+	@Test
+	public void writeXml_data_type() {
+		TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl(Value.CAL_ADDRESS);
+		TextPropertyImpl prop = new TextPropertyImpl("mailto:johndoe@example.com");
+
+		Document actual = xcalProperty(marshaller);
+		marshaller.writeXml(prop, XmlUtils.getRootElement(actual));
+
+		Document expected = xcalProperty(marshaller, "<cal-address>mailto:johndoe@example.com</cal-address>");
+		assertXMLEqual(expected, actual);
+	}
+
+	@Test
+	public void parseXml() {
+		ICalParameters params = new ICalParameters();
+
+		Element element = xcalPropertyElement(marshaller, "<text>text</text>");
+		Result<TextPropertyImpl> result = marshaller.parseXml(element, params);
+
+		TextPropertyImpl prop = result.getValue();
+		assertEquals("text", prop.getValue());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_data_type() {
+		TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl(Value.CAL_ADDRESS);
+		ICalParameters params = new ICalParameters();
+
+		Element element = xcalPropertyElement(marshaller, "<cal-address>mailto:johndoe@example.com</cal-address>");
+		Result<TextPropertyImpl> result = marshaller.parseXml(element, params);
+
+		TextPropertyImpl prop = result.getValue();
+		assertEquals("mailto:johndoe@example.com", prop.getValue());
+		assertWarnings(0, result.getWarnings());
+	}
+
 	private class TextPropertyMarshallerImpl extends TextPropertyMarshaller<TextPropertyImpl> {
 		public TextPropertyMarshallerImpl() {
 			super(TextPropertyImpl.class, "TEXT");
+		}
+
+		public TextPropertyMarshallerImpl(Value dataType) {
+			super(TextPropertyImpl.class, "TEXT", dataType);
 		}
 
 		@Override

@@ -1,5 +1,6 @@
 package biweekly.property.marshaller;
 
+import biweekly.parameter.Value;
 import biweekly.property.Organizer;
 
 /*
@@ -33,7 +34,7 @@ import biweekly.property.Organizer;
  */
 public class OrganizerMarshaller extends TextPropertyMarshaller<Organizer> {
 	public OrganizerMarshaller() {
-		super(Organizer.class, "ORGANIZER");
+		super(Organizer.class, "ORGANIZER", Value.CAL_ADDRESS);
 	}
 
 	@Override

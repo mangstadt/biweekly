@@ -1,5 +1,6 @@
 package biweekly.property.marshaller;
 
+import biweekly.parameter.Value;
 import biweekly.property.TimezoneUrl;
 
 /*
@@ -33,7 +34,7 @@ import biweekly.property.TimezoneUrl;
  */
 public class TimezoneUrlMarshaller extends TextPropertyMarshaller<TimezoneUrl> {
 	public TimezoneUrlMarshaller() {
-		super(TimezoneUrl.class, "TZURL");
+		super(TimezoneUrl.class, "TZURL", Value.URI);
 	}
 
 	@Override

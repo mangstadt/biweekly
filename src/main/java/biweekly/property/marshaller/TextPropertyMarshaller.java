@@ -37,8 +37,15 @@ import biweekly.property.TextProperty;
  * @author Michael Angstadt
  */
 public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICalPropertyMarshaller<T> {
+	protected final Value dataType;
+
 	public TextPropertyMarshaller(Class<T> clazz, String propertyName) {
+		this(clazz, propertyName, Value.TEXT);
+	}
+
+	public TextPropertyMarshaller(Class<T> clazz, String propertyName, Value dataType) {
 		super(clazz, propertyName);
+		this.dataType = dataType;
 	}
 
 	@Override
@@ -58,12 +65,12 @@ public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICa
 
 	@Override
 	protected void _writeXml(T property, XCalElement element) {
-		element.append(Value.TEXT, property.getValue());
+		element.append(dataType, property.getValue());
 	}
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		return newInstance(element.first(Value.TEXT));
+		return newInstance(element.first(dataType));
 	}
 
 	protected abstract T newInstance(String value);
