@@ -3,7 +3,9 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.IntegerProperty;
 
 /*
@@ -49,6 +51,27 @@ public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> exten
 	@Override
 	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
+		return parse(value);
+	}
+
+	@Override
+	protected void _writeXml(T property, XCalElement element) {
+		Integer value = property.getValue();
+		if (value != null) {
+			element.append(Value.INTEGER, value.toString());
+		}
+	}
+
+	@Override
+	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		return parse(element.first(Value.INTEGER));
+	}
+
+	protected T parse(String value) {
+		if (value == null || value.length() == 0) {
+			return newInstance(null);
+		}
+
 		try {
 			Integer intValue = Integer.valueOf(value);
 			return newInstance(intValue);

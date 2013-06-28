@@ -2,14 +2,21 @@ package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.xcalProperty;
+import static biweekly.util.TestUtils.xcalPropertyElement;
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.IntegerProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.util.XmlUtils;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -69,7 +76,8 @@ public class IntegerPropertyMarshallerTest {
 
 		Result<IntegerProperty> result = marshaller.parseText(value, params);
 
-		assertIntEquals(5, result.getValue().getValue());
+		IntegerProperty prop = result.getValue();
+		assertIntEquals(5, prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}
 
@@ -81,12 +89,70 @@ public class IntegerPropertyMarshallerTest {
 		marshaller.parseText(value, params);
 	}
 
-	@Test(expected = CannotParseException.class)
+	@Test
 	public void parseText_empty() {
 		String value = "";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, params);
+		Result<IntegerProperty> result = marshaller.parseText(value, params);
+
+		IntegerProperty prop = result.getValue();
+		assertNull(prop.getValue());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void writeXml() {
+		IntegerProperty prop = new IntegerProperty(5);
+
+		Document actual = xcalProperty(marshaller);
+		marshaller.writeXml(prop, XmlUtils.getRootElement(actual));
+
+		Document expected = xcalProperty(marshaller, "<integer>5</integer>");
+		assertXMLEqual(expected, actual);
+	}
+
+	@Test
+	public void writeXml_null() {
+		IntegerProperty prop = new IntegerProperty(null);
+
+		Document actual = xcalProperty(marshaller);
+		marshaller.writeXml(prop, XmlUtils.getRootElement(actual));
+
+		Document expected = xcalProperty(marshaller, "");
+		assertXMLEqual(expected, actual);
+	}
+
+	@Test
+	public void parseXml() {
+		ICalParameters params = new ICalParameters();
+
+		Element element = xcalPropertyElement(marshaller, "<integer>5</integer>");
+		Result<IntegerProperty> result = marshaller.parseXml(element, params);
+
+		IntegerProperty prop = result.getValue();
+		assertIntEquals(5, prop.getValue());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseXml_invalid() {
+		ICalParameters params = new ICalParameters();
+
+		Element element = xcalPropertyElement(marshaller, "<integer>invalid</integer>");
+		marshaller.parseXml(element, params);
+	}
+
+	@Test
+	public void parseXml_empty() {
+		ICalParameters params = new ICalParameters();
+
+		Element element = xcalPropertyElement(marshaller, "");
+		Result<IntegerProperty> result = marshaller.parseXml(element, params);
+
+		IntegerProperty prop = result.getValue();
+		assertNull(prop.getValue());
+		assertWarnings(0, result.getWarnings());
 	}
 
 	private class IntegerPropertyMarshallerImpl extends IntegerPropertyMarshaller<IntegerProperty> {
