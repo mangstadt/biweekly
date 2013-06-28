@@ -1,5 +1,6 @@
 package biweekly.io;
 
+import biweekly.ICalException;
 import biweekly.ICalendar;
 
 /*
@@ -34,7 +35,7 @@ import biweekly.ICalendar;
  * @author Michael Angstadt
  */
 @SuppressWarnings("serial")
-public class SkipMeException extends RuntimeException {
+public class SkipMeException extends ICalException {
 	public SkipMeException() {
 		super();
 	}
