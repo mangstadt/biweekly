@@ -5,6 +5,7 @@ import java.util.List;
 
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
+import biweekly.util.ICalDateFormatter;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -96,6 +97,11 @@ public class DateOrDateTimeProperty extends ICalProperty {
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
 		if (value == null) {
 			warnings.add("No value set.");
+		}
+
+		String tzid = getTimezoneId();
+		if (tzid != null && tzid.contains("/") && ICalDateFormatter.parseTimeZoneId(tzid) == null) {
+			warnings.add("Unrecognized timezone ID: " + tzid);
 		}
 	}
 }

@@ -1,8 +1,11 @@
 package biweekly.property;
 
 import java.util.Date;
+import java.util.List;
 
+import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
+import biweekly.util.ICalDateFormatter;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -78,5 +81,13 @@ public class ExceptionDates extends ListProperty<Date> {
 	@Override
 	public void setTimezone(VTimezone timezone) {
 		super.setTimezone(timezone);
+	}
+
+	@Override
+	protected void validate(List<ICalComponent> components, List<String> warnings) {
+		String tzid = getTimezoneId();
+		if (tzid != null && tzid.contains("/") && ICalDateFormatter.parseTimeZoneId(tzid) == null) {
+			warnings.add("Unrecognized timezone ID: " + tzid);
+		}
 	}
 }
