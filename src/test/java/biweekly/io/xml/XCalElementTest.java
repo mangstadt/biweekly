@@ -48,76 +48,76 @@ import biweekly.util.XmlUtils;
  */
 public class XCalElementTest {
 	@Test
-	public void getValue() {
+	public void first() {
 		XCalElement XCalElement = build("<prop><one>1</one><two>2</two></prop>");
-		assertEquals("2", XCalElement.getValue("two"));
+		assertEquals("2", XCalElement.first("two"));
 	}
 
 	@Test
-	public void getValue_value_object() {
+	public void first_value_object() {
 		XCalElement XCalElement = build("<prop><text>1</text></prop>");
-		assertEquals("1", XCalElement.getValue(Value.TEXT));
+		assertEquals("1", XCalElement.first(Value.TEXT));
 	}
 
 	@Test
-	public void getValue_unknown() {
+	public void first_unknown() {
 		XCalElement XCalElement = build("<prop><unknown>1</unknown></prop>");
-		assertEquals("1", XCalElement.getValueUnknown());
+		assertEquals("1", XCalElement.firstUnknown());
 	}
 
 	@Test
-	public void getValue_with_prefix() {
+	public void first_with_prefix() {
 		XCalElement XCalElement = build("<v:prop><v:one>1</v:one><v:two>2</v:two></v:prop>", "v");
-		assertEquals("2", XCalElement.getValue("two"));
+		assertEquals("2", XCalElement.first("two"));
 	}
 
 	@Test
-	public void getValue_empty() {
+	public void first_empty() {
 		XCalElement XCalElement = build("<prop><one>1</one><two></two></prop>");
-		assertEquals("", XCalElement.getValue("two"));
+		assertEquals("", XCalElement.first("two"));
 	}
 
 	@Test
-	public void getValue_none() {
+	public void first_none() {
 		XCalElement XCalElement = build("<prop><one>1</one><two>2</two></prop>");
-		assertNull(XCalElement.getValue("three"));
+		assertNull(XCalElement.first("three"));
 	}
 
 	@Test
-	public void getValue_multiple_names() {
+	public void first_multiple_names() {
 		XCalElement XCalElement = build("<prop><one>1</one><two>2</two><three>3</three></prop>");
-		assertEquals("2", XCalElement.getValue("two", "three"));
-		assertEquals("2", XCalElement.getValue("three", "two"));
+		assertEquals("2", XCalElement.first("two", "three"));
+		assertEquals("2", XCalElement.first("three", "two"));
 	}
 
 	@Test
-	public void getValue_ignore_other_namespaces() {
+	public void first_ignore_other_namespaces() {
 		XCalElement XCalElement = build("<prop><n:four xmlns:n=\"http://example.com\"></n:four></prop>");
-		assertNull(XCalElement.getValue("four"));
+		assertNull(XCalElement.first("four"));
 	}
 
 	@Test
-	public void getValues() {
+	public void all() {
 		XCalElement XCalElement = build("<prop><one>1</one><two>2</two><two /><three>3</three><two>2-2</two></prop>");
-		assertEquals(Arrays.asList("2", "", "2-2"), XCalElement.getValues("two"));
+		assertEquals(Arrays.asList("2", "", "2-2"), XCalElement.all("two"));
 	}
 
 	@Test
-	public void getValues_value_object() {
+	public void all_value_object() {
 		XCalElement XCalElement = build("<prop><one>1</one><text>2</text><text /><three>3</three><text>2-2</text></prop>");
-		assertEquals(Arrays.asList("2", "", "2-2"), XCalElement.getValues(Value.TEXT));
+		assertEquals(Arrays.asList("2", "", "2-2"), XCalElement.all(Value.TEXT));
 	}
 
 	@Test
-	public void getValues_none() {
+	public void all_none() {
 		XCalElement XCalElement = build("<prop><one>1</one><two>2</two></prop>");
-		assertTrue(XCalElement.getValues("three").isEmpty());
+		assertTrue(XCalElement.all("three").isEmpty());
 	}
 
 	@Test
-	public void appendValue() {
+	public void append() {
 		XCalElement xCalElement = build("<prop><one>1</one></prop>");
-		Element appendedElement = xCalElement.appendValue("two", "2");
+		Element appendedElement = xCalElement.append("two", "2");
 		assertEquals("two", appendedElement.getLocalName());
 		assertEquals(XCAL_NS, appendedElement.getNamespaceURI());
 		assertEquals("2", appendedElement.getTextContent());
@@ -136,9 +136,9 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void appendValue_value_object() {
+	public void append_value_object() {
 		XCalElement xCalElement = build("<prop><one>1</one></prop>");
-		Element appendedElement = xCalElement.appendValue(Value.TEXT, "2");
+		Element appendedElement = xCalElement.append(Value.TEXT, "2");
 		assertEquals("text", appendedElement.getLocalName());
 		assertEquals(XCAL_NS, appendedElement.getNamespaceURI());
 		assertEquals("2", appendedElement.getTextContent());
@@ -157,9 +157,9 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void appendValueUnknown() {
+	public void appendUnknown() {
 		XCalElement xCalElement = build("<prop><one>1</one></prop>");
-		Element appendedElement = xCalElement.appendValueUnknown("2");
+		Element appendedElement = xCalElement.appendUnknown("2");
 		assertEquals("unknown", appendedElement.getLocalName());
 		assertEquals(XCAL_NS, appendedElement.getNamespaceURI());
 		assertEquals("2", appendedElement.getTextContent());
@@ -178,9 +178,9 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void appendValues() {
+	public void append_multiple() {
 		XCalElement XCalElement = build("<prop />");
-		List<Element> elements = XCalElement.appendValues("number", Arrays.asList("1", "2", "3"));
+		List<Element> elements = XCalElement.append("number", Arrays.asList("1", "2", "3"));
 		Iterator<Element> it = elements.iterator();
 
 		Element element = it.next();

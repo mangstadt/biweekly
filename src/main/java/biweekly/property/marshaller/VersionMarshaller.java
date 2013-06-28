@@ -71,11 +71,11 @@ public class VersionMarshaller extends ICalPropertyMarshaller<Version> {
 
 	@Override
 	protected void _writeXml(Version property, XCalElement element) {
-		element.appendValue(Value.TEXT, property.getMaxVersion());
+		element.append(Value.TEXT, property.getMaxVersion());
 	}
 
 	@Override
 	protected Version _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		return new Version(element.getValue(Value.TEXT));
+		return new Version(element.first(Value.TEXT));
 	}
 }

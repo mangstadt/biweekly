@@ -205,9 +205,9 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		String value = writeText(property);
 		Value dataType = property.getParameters().getValue();
 		if (dataType == null) {
-			element.appendValueUnknown(value);
+			element.appendUnknown(value);
 		} else {
-			element.appendValue(dataType, value);
+			element.append(dataType, value);
 		}
 	}
 

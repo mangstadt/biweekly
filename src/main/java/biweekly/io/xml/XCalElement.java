@@ -62,16 +62,16 @@ public class XCalElement {
 	 * @param dataType the data type to look for
 	 * @return the value or null if not found
 	 */
-	public String getValue(Value dataType) {
-		return getValue(dataType.getValue().toLowerCase());
+	public String first(Value dataType) {
+		return first(dataType.getValue().toLowerCase());
 	}
 
 	/**
 	 * Gets the first value of the "unknown" data type.
 	 * @return the value or null if not found
 	 */
-	public String getValueUnknown() {
-		return getValue("unknown");
+	public String firstUnknown() {
+		return first("unknown");
 	}
 
 	/**
@@ -79,7 +79,7 @@ public class XCalElement {
 	 * @param names the possible names of the element
 	 * @return the element's text or null if not found
 	 */
-	public String getValue(String... names) {
+	public String first(String... names) {
 		List<String> localNamesList = Arrays.asList(names);
 		for (Element child : children()) {
 			if (localNamesList.contains(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {
@@ -94,8 +94,8 @@ public class XCalElement {
 	 * @param dataType the data type to look for
 	 * @return the values
 	 */
-	public List<String> getValues(Value dataType) {
-		return getValues(dataType.getValue().toLowerCase());
+	public List<String> all(Value dataType) {
+		return all(dataType.getValue().toLowerCase());
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class XCalElement {
 	 * @param localName the element name
 	 * @return the values of the child elements
 	 */
-	public List<String> getValues(String localName) {
+	public List<String> all(String localName) {
 		List<String> childrenText = new ArrayList<String>();
 		for (Element child : children()) {
 			if (localName.equals(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {
@@ -119,8 +119,8 @@ public class XCalElement {
 	 * @param value the value
 	 * @return the created element
 	 */
-	public Element appendValueUnknown(String value) {
-		return appendValue("unknown", value);
+	public Element appendUnknown(String value) {
+		return append("unknown", value);
 	}
 
 	/**
@@ -129,8 +129,8 @@ public class XCalElement {
 	 * @param value the value
 	 * @return the created element
 	 */
-	public Element appendValue(Value dataType, String value) {
-		return appendValue(dataType.getValue().toLowerCase(), value);
+	public Element append(Value dataType, String value) {
+		return append(dataType.getValue().toLowerCase(), value);
 	}
 
 	/**
@@ -139,7 +139,7 @@ public class XCalElement {
 	 * @param value the value of the child element.
 	 * @return the created element
 	 */
-	public Element appendValue(String name, String value) {
+	public Element append(String name, String value) {
 		Element child = document.createElementNS(XCAL_NS, name);
 		child.setTextContent(value);
 		element.appendChild(child);
@@ -157,10 +157,10 @@ public class XCalElement {
 	 * @param values the values of each child element
 	 * @return the created elements
 	 */
-	public List<Element> appendValues(String name, Collection<String> values) {
+	public List<Element> append(String name, Collection<String> values) {
 		List<Element> elements = new ArrayList<Element>(values.size());
 		for (String value : values) {
-			elements.add(appendValue(name, value));
+			elements.add(append(name, value));
 		}
 		return elements;
 	}

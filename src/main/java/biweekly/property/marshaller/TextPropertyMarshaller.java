@@ -58,12 +58,12 @@ public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICa
 
 	@Override
 	protected void _writeXml(T property, XCalElement element) {
-		element.appendValue(Value.TEXT, property.getValue());
+		element.append(Value.TEXT, property.getValue());
 	}
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		return newInstance(element.getValue(Value.TEXT));
+		return newInstance(element.first(Value.TEXT));
 	}
 
 	protected abstract T newInstance(String value);
