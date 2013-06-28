@@ -188,9 +188,23 @@ public class ICalPropertyMarshallerTest {
 	}
 
 	@Test
+	public void DateWriter_datetime_extended() {
+		String expected = "2013-06-11T13:43:02Z";
+		String actual = ICalPropertyMarshaller.date(datetime).extended(true).write();
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void DateWriter_date() {
 		String expected = "20130611";
 		String actual = ICalPropertyMarshaller.date(datetime).time(false).write();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void DateWriter_date_extended() {
+		String expected = "2013-06-11";
+		String actual = ICalPropertyMarshaller.date(datetime).time(false).extended(true).write();
 		assertEquals(expected, actual);
 	}
 
@@ -199,6 +213,14 @@ public class ICalPropertyMarshallerTest {
 		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
 		String expected = "20130611T154302";
 		String actual = ICalPropertyMarshaller.date(datetime).tzid(timezone.getID()).write();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void DateWriter_datetime_global_tzid_exnteded() {
+		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
+		String expected = "2013-06-11T15:43:02";
+		String actual = ICalPropertyMarshaller.date(datetime).tzid(timezone.getID()).extended(true).write();
 		assertEquals(expected, actual);
 	}
 

@@ -460,8 +460,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		private Date date;
 		private boolean hasTime = true;
 		private TimeZone timezone;
-
-		//TODO add extended
+		private boolean extended = false;
 
 		/**
 		 * Creates a new date writer object.
@@ -518,15 +517,29 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		}
 
 		/**
+		 * Sets whether to use extended format or basic.
+		 * @param extended true to use extended format, false to use basic.
+		 * @return this
+		 */
+		public DateWriter extended(boolean extended) {
+			this.extended = extended;
+			return this;
+		}
+
+		/**
 		 * Creates the date string.
 		 * @return the date string
 		 */
 		public String write() {
 			ISOFormat format;
 			if (hasTime) {
-				format = (timezone == null) ? ISOFormat.UTC_TIME_BASIC : ISOFormat.TIME_BASIC_WITHOUT_TZ;
+				if (timezone == null) {
+					format = extended ? ISOFormat.UTC_TIME_EXTENDED : ISOFormat.UTC_TIME_BASIC;
+				} else {
+					format = extended ? ISOFormat.TIME_EXTENDED_WITHOUT_TZ : ISOFormat.TIME_BASIC_WITHOUT_TZ;
+				}
 			} else {
-				format = ISOFormat.DATE_BASIC;
+				format = extended ? ISOFormat.DATE_EXTENDED : ISOFormat.DATE_BASIC;
 			}
 
 			return ICalDateFormatter.format(date, format, timezone);
