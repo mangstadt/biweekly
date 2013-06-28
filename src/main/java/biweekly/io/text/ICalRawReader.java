@@ -168,8 +168,8 @@ public class ICalRawReader implements Closeable {
 	/**
 	 * <p>
 	 * Gets whether the reader will decode parameter values that use circumflex
-	 * accent encoding. This escaping mechanism allows newlines and double
-	 * quotes to be included in parameter values. It is enabled by default.
+	 * accent encoding (enabled by default). This escaping mechanism allows
+	 * newlines and double quotes to be included in parameter values.
 	 * </p>
 	 * 
 	 * <table border="1">
@@ -210,8 +210,8 @@ public class ICalRawReader implements Closeable {
 	/**
 	 * <p>
 	 * Sets whether the reader will decode parameter values that use circumflex
-	 * accent encoding. This escaping mechanism allows newlines and double
-	 * quotes to be included in parameter values. It is enabled by default.
+	 * accent encoding (enabled by default). This escaping mechanism allows
+	 * newlines and double quotes to be included in parameter values.
 	 * </p>
 	 * 
 	 * <table border="1">

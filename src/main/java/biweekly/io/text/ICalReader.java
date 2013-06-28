@@ -77,21 +77,24 @@ public class ICalReader implements IParser {
 	private final ICalRawReader reader;
 
 	/**
-	 * @param str the string to read the iCals from
+	 * Creates a reader that parses iCalendar objects from a string.
+	 * @param string the string
 	 */
-	public ICalReader(String str) {
-		this(new StringReader(str));
+	public ICalReader(String string) {
+		this(new StringReader(string));
 	}
 
 	/**
-	 * @param in the input stream to read the iCals from
+	 * Creates a reader that parses iCalendar objects from an input stream.
+	 * @param in the input stream
 	 */
 	public ICalReader(InputStream in) {
 		this(new InputStreamReader(in));
 	}
 
 	/**
-	 * @param file the file to read the iCals from
+	 * Creates a reader that parses iCalendar objects from a file.
+	 * @param file the file
 	 * @throws FileNotFoundException if the file doesn't exist
 	 */
 	public ICalReader(File file) throws FileNotFoundException {
@@ -99,7 +102,8 @@ public class ICalReader implements IParser {
 	}
 
 	/**
-	 * @param reader the reader to read the iCal from
+	 * Creates a reader that parses iCalendar objects from a reader.
+	 * @param reader the reader
 	 */
 	public ICalReader(Reader reader) {
 		this.reader = new ICalRawReader(reader);
@@ -107,8 +111,8 @@ public class ICalReader implements IParser {
 
 	/**
 	 * Gets whether the reader will decode parameter values that use circumflex
-	 * accent encoding. This escaping mechanism allows newlines and double
-	 * quotes to be included in parameter values. It is enabled by default.
+	 * accent encoding (enabled by default). This escaping mechanism allows
+	 * newlines and double quotes to be included in parameter values.
 	 * @return true if circumflex accent decoding is enabled, false if not
 	 * @see ICalRawReader#isCaretDecodingEnabled()
 	 */
@@ -118,8 +122,8 @@ public class ICalReader implements IParser {
 
 	/**
 	 * Sets whether the reader will decode parameter values that use circumflex
-	 * accent encoding. This escaping mechanism allows newlines and double
-	 * quotes to be included in parameter values. It is enabled by default.
+	 * accent encoding (enabled by default). This escaping mechanism allows
+	 * newlines and double quotes to be included in parameter values.
 	 * @param enable true to use circumflex accent decoding, false not to
 	 * @see ICalRawReader#setCaretDecodingEnabled(boolean)
 	 */

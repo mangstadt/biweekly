@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 
 import biweekly.parameter.ICalParameters;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -114,14 +113,14 @@ public class ICalRawWriter implements Closeable {
 
 	/**
 	 * <p>
-	 * Gets whether the writer will use circumflex accent encoding. This
-	 * escaping mechanism allows for newlines and double quotes to be included
-	 * in parameter values.
+	 * Gets whether the writer will apply circumflex accent encoding on
+	 * parameter values (disabled by default). This escaping mechanism allows
+	 * for newlines and double quotes to be included in parameter values.
 	 * </p>
 	 * 
 	 * <p>
-	 * This setting is <b>disabled</b> by default. When disabled, the writer
-	 * will replace newlines with spaces and double quotes with single quotes.
+	 * When disabled, the writer will replace newlines with spaces and double
+	 * quotes with single quotes.
 	 * </p>
 	 * 
 	 * <table border="1">
@@ -167,14 +166,14 @@ public class ICalRawWriter implements Closeable {
 
 	/**
 	 * <p>
-	 * Sets whether the writer will use circumflex accent encoding. This
-	 * escaping mechanism allows for newlines and double quotes to be included
-	 * in parameter values.
+	 * Sets whether the writer will apply circumflex accent encoding on
+	 * parameter values (disabled by default). This escaping mechanism allows
+	 * for newlines and double quotes to be included in parameter values.
 	 * </p>
 	 * 
 	 * <p>
-	 * This setting is <b>disabled</b> by default. When disabled, the writer
-	 * will replace newlines with spaces and double quotes with single quotes.
+	 * When disabled, the writer will replace newlines with spaces and double
+	 * quotes with single quotes.
 	 * </p>
 	 * 
 	 * <table border="1">

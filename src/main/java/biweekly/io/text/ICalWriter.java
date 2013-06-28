@@ -75,8 +75,8 @@ public class ICalWriter implements Closeable {
 	private final ICalRawWriter writer;
 
 	/**
-	 * Creates an iCalendar writer using the standard folding scheme and newline
-	 * sequence.
+	 * Creates an iCalendar writer that writes to an output stream. Uses the
+	 * standard folding scheme and newline sequence.
 	 * @param outputStream the output stream to write to
 	 */
 	public ICalWriter(OutputStream outputStream) {
@@ -84,7 +84,8 @@ public class ICalWriter implements Closeable {
 	}
 
 	/**
-	 * Creates an iCalendar writer using the standard newline sequence.
+	 * Creates an iCalendar writer that writes to an output stream. Uses the
+	 * standard newline sequence.
 	 * @param outputStream the output stream to write to
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 */
@@ -93,7 +94,7 @@ public class ICalWriter implements Closeable {
 	}
 
 	/**
-	 * Creates an iCalendar writer.
+	 * Creates an iCalendar writer that writes to an output stream.
 	 * @param outputStream the output stream to write to
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 * @param newline the newline sequence to use
@@ -103,8 +104,8 @@ public class ICalWriter implements Closeable {
 	}
 
 	/**
-	 * Creates an iCalendar writer using the standard folding scheme and newline
-	 * sequence.
+	 * Creates an iCalendar writer that writes to a file. Uses the standard
+	 * folding scheme and newline sequence.
 	 * @param file the file to write to
 	 * @throws IOException if the file cannot be written to
 	 */
@@ -113,7 +114,8 @@ public class ICalWriter implements Closeable {
 	}
 
 	/**
-	 * Creates an iCalendar writer using the standard newline sequence.
+	 * Creates an iCalendar writer that writes to a file. Uses the standard
+	 * newline sequence.
 	 * @param file the file to write to
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 * @throws IOException if the file cannot be written to
@@ -123,7 +125,7 @@ public class ICalWriter implements Closeable {
 	}
 
 	/**
-	 * Creates an iCalendar writer.
+	 * Creates an iCalendar writer that writes to a file.
 	 * @param file the file to write to
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 * @param newline the newline sequence to use
@@ -134,8 +136,8 @@ public class ICalWriter implements Closeable {
 	}
 
 	/**
-	 * Creates an iCalendar writer using the standard folding scheme and newline
-	 * sequence.
+	 * Creates an iCalendar writer that writes to a writer. Uses the standard
+	 * folding scheme and newline sequence.
 	 * @param writer the writer to the data stream
 	 */
 	public ICalWriter(Writer writer) {
@@ -143,7 +145,8 @@ public class ICalWriter implements Closeable {
 	}
 
 	/**
-	 * Creates an iCalendar writer using the standard newline sequence.
+	 * Creates an iCalendar writer that writes to a writer. Uses the standard
+	 * newline sequence.
 	 * @param writer the writer to the data stream
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 */
@@ -152,7 +155,7 @@ public class ICalWriter implements Closeable {
 	}
 
 	/**
-	 * Creates an iCalendar writer.
+	 * Creates an iCalendar writer that writes to a writer.
 	 * @param writer the writer to the data stream
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 * @param newline the newline sequence to use
@@ -168,14 +171,14 @@ public class ICalWriter implements Closeable {
 
 	/**
 	 * <p>
-	 * Gets whether the writer will use circumflex accent encoding. This
-	 * escaping mechanism allows for newlines and double quotes to be included
-	 * in parameter values.
+	 * Gets whether the writer will apply circumflex accent encoding on
+	 * parameter values (disabled by default). This escaping mechanism allows
+	 * for newlines and double quotes to be included in parameter values.
 	 * </p>
 	 * 
 	 * <p>
-	 * This setting is disabled by default. When disabled, the writer will
-	 * replace newlines with spaces and double quotes with single quotes.
+	 * When disabled, the writer will replace newlines with spaces and double
+	 * quotes with single quotes.
 	 * </p>
 	 * @return true if circumflex accent encoding is enabled, false if not
 	 * @see ICalRawWriter#isCaretEncodingEnabled()
@@ -186,14 +189,14 @@ public class ICalWriter implements Closeable {
 
 	/**
 	 * <p>
-	 * Sets whether the writer will use circumflex accent encoding. This
-	 * escaping mechanism allows for newlines and double quotes to be included
-	 * in parameter values.
+	 * Sets whether the writer will apply circumflex accent encoding on
+	 * parameter values (disabled by default). This escaping mechanism allows
+	 * for newlines and double quotes to be included in parameter values.
 	 * </p>
 	 * 
 	 * <p>
-	 * This setting is disabled by default. When disabled, the writer will
-	 * replace newlines with spaces and double quotes with single quotes.
+	 * When disabled, the writer will replace newlines with spaces and double
+	 * quotes with single quotes.
 	 * </p>
 	 * @param enable true to use circumflex accent encoding, false not to
 	 * @see ICalRawWriter#setCaretEncodingEnabled(boolean)
@@ -245,7 +248,7 @@ public class ICalWriter implements Closeable {
 
 	/**
 	 * Writes an iCal to the data stream.
-	 * @param ical the iCal to write
+	 * @param ical the iCalendar object to write
 	 * @throws IOException
 	 */
 	public void write(ICalendar ical) throws IOException {
