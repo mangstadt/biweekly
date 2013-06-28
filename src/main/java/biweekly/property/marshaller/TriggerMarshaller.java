@@ -1,5 +1,6 @@
 package biweekly.property.marshaller;
 
+import java.util.Date;
 import java.util.List;
 
 import biweekly.io.CannotParseException;
@@ -51,7 +52,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	@Override
 	protected String _writeText(Trigger property) {
 		if (property.getDate() != null) {
-			return writeDate(property.getDate(), true, null);
+			return date(property.getDate()).write();
 		}
 		if (property.getDuration() != null) {
 			return property.getDuration().toString();
@@ -64,7 +65,8 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 		value = unescape(value);
 
 		try {
-			return new Trigger(parseDate(value, parameters.getTimezoneId(), warnings));
+			Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
+			return new Trigger(date);
 		} catch (IllegalArgumentException e) {
 			//unable to parse value as date, must be a duration
 		}

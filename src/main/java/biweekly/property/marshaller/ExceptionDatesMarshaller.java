@@ -59,13 +59,13 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 		if (value == null) {
 			return "";
 		}
-		return writeDate(value, property.hasTime(), property.getParameters().getTimezoneId());
+		return date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).write();
 	}
 
 	@Override
 	protected Date readValue(String value, ICalParameters parameters, List<String> warnings) {
 		try {
-			return parseDate(value, parameters.getTimezoneId(), warnings);
+			return date(value).tzid(parameters.getTimezoneId(), warnings).parse();
 		} catch (IllegalArgumentException e) {
 			throw new CannotParseException("Could not parse date value.");
 		}

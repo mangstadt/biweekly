@@ -359,60 +359,178 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	}
 
 	/**
-	 * Parses a date or date-time string.
+	 * Parses a date string.
 	 * @param value the date string
-	 * @param timezoneId the TZID parameter value (or null if not set)
-	 * @param warnings the warnings list
-	 * @return the parsed date
-	 * @throws IllegalArgumentException if the date string is invalid
+	 * @return the factory object
 	 */
-	protected static Date parseDate(String value, String timezoneId, List<String> warnings) {
-		TimeZone timezone = null;
-		if (timezoneId != null) {
-			if (timezoneId.contains("/")) {
-				timezone = ICalDateFormatter.parseTimeZoneId(timezoneId);
-				if (timezone == null) {
-					warnings.add("Ignoring unrecognized timezone ID: " + timezoneId);
-				}
-			} else {
-				//TODO parse the date-time according to the referenced VTIMEZONE component
-			}
-		}
-
-		return ICalDateFormatter.parse(value, timezone);
+	protected static DateParser date(String value) {
+		return new DateParser(value);
 	}
 
 	/**
-	 * Writes a {@link Date} object as a string
-	 * @param value the date
-	 * @param hasTime whether the time component should be included
-	 * @param timezoneId the TZID parameter value (or null if not set)
-	 * @return the date string
+	 * Formats a {@link Date} object as a string.
+	 * @param date the date
+	 * @return the factory object
 	 */
-	protected static String writeDate(Date value, boolean hasTime, String timezoneId) {
-		ISOFormat format;
-		TimeZone timezone = null;
+	protected static DateWriter date(Date date) {
+		return new DateWriter(date);
+	}
 
-		if (hasTime) {
-			if (timezoneId == null) {
-				format = ISOFormat.UTC_TIME_BASIC;
-			} else if (timezoneId.contains("/")) {
-				timezone = ICalDateFormatter.parseTimeZoneId(timezoneId);
-				if (timezone == null) {
-					//unknown timezone
-					format = ISOFormat.UTC_TIME_BASIC;
-				} else {
-					format = ISOFormat.TIME_BASIC_WITHOUT_TZ;
-				}
-			} else {
-				//TODO format the date-time according to the referenced VTIMEZONE component
-				format = ISOFormat.TIME_BASIC_WITHOUT_TZ;
-			}
-		} else {
-			format = ISOFormat.DATE_BASIC;
+	/**
+	 * Factory class for parsing dates.
+	 */
+	protected static class DateParser {
+		private String value;
+		private TimeZone timezone;
+
+		/**
+		 * Creates a new date writer object.
+		 * @param value the date string to parse
+		 */
+		public DateParser(String value) {
+			this.value = value;
 		}
 
-		return ICalDateFormatter.format(value, format, timezone);
+		/**
+		 * Sets the ID of the timezone to parse the date as (TZID parameter
+		 * value). If the ID does not contain a "/" character, it will be
+		 * ignored.
+		 * @param timezoneId the timezone ID
+		 * @return this
+		 */
+		public DateParser tzid(String timezoneId) {
+			return tzid(timezoneId, null);
+		}
+
+		/**
+		 * Sets the ID of the timezone to parse the date as (TZID parameter
+		 * value). If the ID does not contain a "/" character, it will be
+		 * ignored. If the ID is invalid, the date will be formatted according
+		 * to the JVM's default timezone and a warning message will be added to
+		 * the provided warnings list.
+		 * @param timezoneId the timezone ID
+		 * @param warnings if the ID is not recognized, a warning message will
+		 * be added to this list
+		 * @return this
+		 */
+		public DateParser tzid(String timezoneId, List<String> warnings) {
+			if (timezoneId == null) {
+				timezone = null;
+				return this;
+			}
+
+			if (timezoneId.contains("/")) {
+				timezone = ICalDateFormatter.parseTimeZoneId(timezoneId);
+				if (timezone == null) {
+					timezone = TimeZone.getDefault();
+					if (warnings != null) {
+						warnings.add("Timezone ID not recognized, parsing with default timezone instead: " + timezoneId);
+					}
+				}
+			} else {
+				//TODO support VTIMEZONE
+			}
+			return this;
+		}
+
+		/**
+		 * Sets the timezone to parse the date as.
+		 * @param timezoneId the timezone
+		 * @return this
+		 */
+		public DateParser tz(TimeZone timezone) {
+			this.timezone = timezone;
+			return this;
+		}
+
+		/**
+		 * Parses the date string.
+		 * @return the parsed date
+		 * @throws IllegalArgumentException if the date string is invalid
+		 */
+		public Date parse() {
+			return ICalDateFormatter.parse(value, timezone);
+		}
+	}
+
+	/**
+	 * Factory class for writing dates.
+	 */
+	protected static class DateWriter {
+		private Date date;
+		private boolean hasTime = true;
+		private TimeZone timezone;
+
+		//TODO add extended
+
+		/**
+		 * Creates a new date writer object.
+		 * @param date the date to format
+		 */
+		public DateWriter(Date date) {
+			this.date = date;
+		}
+
+		/**
+		 * Sets whether to output the date's time component.
+		 * @param hasTime true include the time, false if it's strictly a date
+		 * (default is "true")
+		 * @return
+		 */
+		public DateWriter time(boolean hasTime) {
+			this.hasTime = hasTime;
+			return this;
+		}
+
+		/**
+		 * Sets the ID of the timezone to format the date as (TZID parameter
+		 * value). If the ID does not contain a "/" character, it will be
+		 * ignored. If the ID is invalid, the date will be formatted according
+		 * to the JVM's default timezone. If no timezone is specified, the date
+		 * will be formatted as UTC.
+		 * @param timezoneId the timezone ID
+		 * @return this
+		 */
+		public DateWriter tzid(String timezoneId) {
+			if (timezoneId == null) {
+				timezone = null;
+				return this;
+			}
+
+			if (timezoneId.contains("/")) {
+				timezone = ICalDateFormatter.parseTimeZoneId(timezoneId);
+			} else {
+				//TODO support VTIMEZONE
+				timezone = TimeZone.getDefault();
+			}
+			return this;
+		}
+
+		/**
+		 * Sets the timezone to format the date as. If no timezone is specified,
+		 * the date will be formatted as UTC.
+		 * @param timezone the timezone
+		 * @return this
+		 */
+		public DateWriter tz(TimeZone timezone) {
+			this.timezone = timezone;
+			return this;
+		}
+
+		/**
+		 * Creates the date string.
+		 * @return the date string
+		 */
+		public String write() {
+			ISOFormat format;
+			if (hasTime) {
+				format = (timezone == null) ? ISOFormat.UTC_TIME_BASIC : ISOFormat.TIME_BASIC_WITHOUT_TZ;
+			} else {
+				format = ISOFormat.DATE_BASIC;
+			}
+
+			return ICalDateFormatter.format(date, format, timezone);
+		}
 	}
 
 	/**

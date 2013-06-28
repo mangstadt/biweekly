@@ -47,7 +47,7 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 		if (value == null) {
 			return "";
 		}
-		return writeDate(value, true, null);
+		return date(value).write();
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 		value = unescape(value);
 
 		try {
-			Date date = parseDate(value, parameters.getTimezoneId(), warnings);
+			Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
 			return newInstance(date);
 		} catch (IllegalArgumentException e) {
 			throw new CannotParseException("Could not parse date-time value.");

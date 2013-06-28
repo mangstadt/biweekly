@@ -55,7 +55,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 			return "";
 		}
 
-		return writeDate(value, property.hasTime(), property.getParameters().getTimezoneId());
+		return date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).write();
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 		value = unescape(value);
 
 		try {
-			Date date = parseDate(value, parameters.getTimezoneId(), warnings);
+			Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
 			boolean hasTime = value.contains("T");
 			return newInstance(date, hasTime);
 		} catch (IllegalArgumentException e) {

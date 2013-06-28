@@ -64,20 +64,23 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 		if (property.getDates() != null) {
 			return StringUtils.join(property.getDates(), ",", new JoinCallback<Date>() {
 				public void handle(StringBuilder sb, Date date) {
-					sb.append(writeDate(date, property.hasTime(), null));
+					String value = date(date).time(property.hasTime()).write();
+					sb.append(value);
 				}
 			});
 		} else if (property.getPeriods() != null) {
 			return StringUtils.join(property.getPeriods(), ",", new JoinCallback<Period>() {
 				public void handle(StringBuilder sb, Period period) {
 					if (period.getStartDate() != null) {
-						sb.append(writeDate(period.getStartDate(), true, null));
+						String value = date(period.getStartDate()).write();
+						sb.append(value);
 					}
 
 					sb.append('/');
 
 					if (period.getEndDate() != null) {
-						sb.append(writeDate(period.getEndDate(), true, null));
+						String value = date(period.getEndDate()).write();
+						sb.append(value);
 					} else if (period.getDuration() != null) {
 						sb.append(period.getDuration());
 					}
@@ -106,7 +109,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 				String startStr = timePeriodStrSplit[0];
 				Date start;
 				try {
-					start = parseDate(startStr, parameters.getTimezoneId(), warnings);
+					start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
 				} catch (IllegalArgumentException e) {
 					warnings.add("Could not parse start date, skipping time period: " + timePeriodStr);
 					continue;
@@ -114,7 +117,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 
 				String endStr = timePeriodStrSplit[1];
 				try {
-					Date end = parseDate(endStr, parameters.getTimezoneId(), warnings);
+					Date end = date(endStr).tzid(parameters.getTimezoneId(), warnings).parse();
 					periods.add(new Period(start, end));
 				} catch (IllegalArgumentException e) {
 					//must be a duration
@@ -134,7 +137,8 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 			List<Date> dates = new ArrayList<Date>(split.length);
 			for (String s : split) {
 				try {
-					dates.add(parseDate(s, parameters.getTimezoneId(), warnings));
+					Date date = date(s).tzid(parameters.getTimezoneId(), warnings).parse();
+					dates.add(date);
 				} catch (IllegalArgumentException e) {
 					warnings.add("Skipping unparsable date: " + s);
 				}

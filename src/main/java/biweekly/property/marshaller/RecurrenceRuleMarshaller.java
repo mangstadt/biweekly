@@ -58,7 +58,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 		}
 
 		if (property.getUntil() != null) {
-			String s = writeDate(property.getUntil(), property.hasTimeUntilDate(), null);
+			String s = date(property.getUntil()).time(property.hasTimeUntilDate()).write();
 			components.put("UNTIL", s);
 		}
 
@@ -132,7 +132,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 		first = components.first("UNTIL");
 		if (first != null) {
 			try {
-				Date date = parseDate(first, parameters.getTimezoneId(), warnings);
+				Date date = date(first).tzid(parameters.getTimezoneId(), warnings).parse();
 				boolean hasTime = first.contains("T");
 				property.setUntil(date, hasTime);
 			} catch (IllegalArgumentException e) {

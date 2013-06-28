@@ -118,57 +118,62 @@ public class ICalPropertyMarshallerTest {
 	}
 
 	@Test
-	public void parseDate_timezone() {
+	public void DateParser_timezone() {
 		String value = "20130611T134302Z";
-		List<String> warnings = new ArrayList<String>();
 
-		Date actual = ICalPropertyMarshaller.parseDate(value, null, warnings);
+		Date actual = ICalPropertyMarshaller.date(value).parse();
 
 		assertEquals(datetime, actual);
-		assertWarnings(0, warnings);
 	}
 
 	@Test
-	public void parseDate_local() {
+	public void DateParser_local() {
+		String value = "20130611T144302";
+
+		Date actual = ICalPropertyMarshaller.date(value).parse();
+
+		assertEquals(datetime, actual);
+	}
+
+	@Test
+	public void DateParser_tzid() {
 		String value = "20130611T144302";
 		List<String> warnings = new ArrayList<String>();
 
-		Date actual = ICalPropertyMarshaller.parseDate(value, null, warnings);
+		Date actual = ICalPropertyMarshaller.date(value).tzid("some ID", warnings).parse();
 
 		assertEquals(datetime, actual);
 		assertWarnings(0, warnings);
 	}
 
 	@Test
-	public void parseDate_tzid() {
-		String value = "20130611T144302";
-		List<String> warnings = new ArrayList<String>();
-
-		Date actual = ICalPropertyMarshaller.parseDate(value, "some ID", warnings);
-
-		assertEquals(datetime, actual);
-		assertWarnings(0, warnings);
-	}
-
-	@Test
-	public void parseDate_global_tzid() {
+	public void DateParser_global_tzid() {
 		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
-		int hour = 13 + (timezone.getOffset(System.currentTimeMillis()) / (1000 * 60 * 60)); //it might be daylight savings today
-		String value = "20130611T" + hour + "4302";
+		String value = "20130611T154302";
 		List<String> warnings = new ArrayList<String>();
 
-		Date actual = ICalPropertyMarshaller.parseDate(value, timezone.getID(), warnings);
+		Date actual = ICalPropertyMarshaller.date(value).tzid(timezone.getID(), warnings).parse();
 
 		assertEquals(datetime, actual);
 		assertWarnings(0, warnings);
 	}
 
 	@Test
-	public void parseDate_invalid_tzid() {
+	public void DateParser_timezone_object() {
+		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
+		String value = "20130611T154302";
+
+		Date actual = ICalPropertyMarshaller.date(value).tz(timezone).parse();
+
+		assertEquals(datetime, actual);
+	}
+
+	@Test
+	public void DateParser_invalid_tzid() {
 		String value = "20130611T144302";
 		List<String> warnings = new ArrayList<String>();
 
-		Date actual = ICalPropertyMarshaller.parseDate(value, "invalid/timezone", warnings);
+		Date actual = ICalPropertyMarshaller.date(value).tzid("invalid/timezone", warnings).parse();
 
 		//parse as local time and add warning
 		assertEquals(datetime, actual);
@@ -176,39 +181,46 @@ public class ICalPropertyMarshallerTest {
 	}
 
 	@Test
-	public void writeDate_datetime() {
+	public void DateWriter_datetime() {
 		String expected = "20130611T134302Z";
-		String actual = ICalPropertyMarshaller.writeDate(datetime, true, null);
+		String actual = ICalPropertyMarshaller.date(datetime).write();
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void writeDate_date() {
+	public void DateWriter_date() {
 		String expected = "20130611";
-		String actual = ICalPropertyMarshaller.writeDate(datetime, false, null);
+		String actual = ICalPropertyMarshaller.date(datetime).time(false).write();
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void writeDate_datetime_global_tzid() {
+	public void DateWriter_datetime_global_tzid() {
 		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
-		int hour = 13 + (timezone.getOffset(System.currentTimeMillis()) / (1000 * 60 * 60)); //it might be daylight savings today
-		String expected = "20130611T" + hour + "4302";
-		String actual = ICalPropertyMarshaller.writeDate(datetime, true, timezone.getID());
+		String expected = "20130611T154302";
+		String actual = ICalPropertyMarshaller.date(datetime).tzid(timezone.getID()).write();
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void writeDate_datetime_invalid_global_tzid() {
+	public void DateWriter_datetime_timezone() {
+		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
+		String expected = "20130611T154302";
+		String actual = ICalPropertyMarshaller.date(datetime).tz(timezone).write();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void DateWriter_datetime_invalid_global_tzid() {
 		String expected = "20130611T134302Z";
-		String actual = ICalPropertyMarshaller.writeDate(datetime, true, "invalid/timezone");
+		String actual = ICalPropertyMarshaller.date(datetime).tzid("invalid/timezone").write();
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void writeDate_datetime_tzid() {
+	public void DateWriter_datetime_tzid() {
 		String expected = "20130611T144302";
-		String actual = ICalPropertyMarshaller.writeDate(datetime, true, "some ID");
+		String actual = ICalPropertyMarshaller.date(datetime).tzid("some ID").write();
 		assertEquals(expected, actual);
 	}
 

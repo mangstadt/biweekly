@@ -54,13 +54,15 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 		return StringUtils.join(values, ",", new JoinCallback<Period>() {
 			public void handle(StringBuilder sb, Period timePeriod) {
 				if (timePeriod.getStartDate() != null) {
-					sb.append(writeDate(timePeriod.getStartDate(), true, null));
+					String date = date(timePeriod.getStartDate()).write();
+					sb.append(date);
 				}
 
 				sb.append('/');
 
 				if (timePeriod.getEndDate() != null) {
-					sb.append(writeDate(timePeriod.getEndDate(), true, null));
+					String date = date(timePeriod.getEndDate()).write();
+					sb.append(date);
 				} else if (timePeriod.getDuration() != null) {
 					sb.append(timePeriod.getDuration());
 				}
@@ -84,7 +86,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 			String startStr = timePeriodStrSplit[0];
 			Date start = null;
 			try {
-				start = parseDate(startStr, parameters.getTimezoneId(), warnings);
+				start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
 			} catch (IllegalArgumentException e) {
 				warnings.add("Could not parse start date, skipping time period: " + timePeriodStr);
 				continue;
@@ -92,7 +94,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 
 			String endStr = timePeriodStrSplit[1];
 			try {
-				Date end = parseDate(endStr, parameters.getTimezoneId(), warnings);
+				Date end = date(endStr).tzid(parameters.getTimezoneId(), warnings).parse();
 				freebusy.addValue(start, end);
 			} catch (IllegalArgumentException e) {
 				//must be a duration
