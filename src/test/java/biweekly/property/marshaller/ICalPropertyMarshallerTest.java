@@ -97,22 +97,22 @@ public class ICalPropertyMarshallerTest {
 	}
 
 	@Test
-	public void splitBy() {
+	public void split() {
 		String[] actual, expected;
 
-		actual = ICalPropertyMarshaller.splitBy("Doe;John;Joh\\,\\;nny;;Sr.,III", ';', false, false);
+		actual = ICalPropertyMarshaller.split("Doe;John;Joh\\,\\;nny;;Sr.,III", ";").split();
 		expected = new String[] { "Doe", "John", "Joh\\,\\;nny", "", "Sr.,III" };
 		assertArrayEquals(expected, actual);
 
-		actual = ICalPropertyMarshaller.splitBy("Doe;John;Joh\\,\\;nny;;Sr.,III", ';', true, false);
+		actual = ICalPropertyMarshaller.split("Doe;John;Joh\\,\\;nny;;Sr.,III", ";").removeEmpties(true).split();
 		expected = new String[] { "Doe", "John", "Joh\\,\\;nny", "Sr.,III" };
 		assertArrayEquals(expected, actual);
 
-		actual = ICalPropertyMarshaller.splitBy("Doe;John;Joh\\,\\;nny;;Sr.,III", ';', false, true);
+		actual = ICalPropertyMarshaller.split("Doe;John;Joh\\,\\;nny;;Sr.,III", ";").unescape(true).split();
 		expected = new String[] { "Doe", "John", "Joh,;nny", "", "Sr.,III" };
 		assertArrayEquals(expected, actual);
 
-		actual = ICalPropertyMarshaller.splitBy("Doe;John;Joh\\,\\;nny;;Sr.,III", ';', true, true);
+		actual = ICalPropertyMarshaller.split("Doe;John;Joh\\,\\;nny;;Sr.,III", ";").removeEmpties(true).unescape(true).split();
 		expected = new String[] { "Doe", "John", "Joh,;nny", "Sr.,III" };
 		assertArrayEquals(expected, actual);
 	}

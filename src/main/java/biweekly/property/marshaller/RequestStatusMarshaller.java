@@ -68,7 +68,7 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 
 	@Override
 	protected RequestStatus _parseText(String value, ICalParameters parameters, List<String> warnings) {
-		String split[] = splitBy(value, ';', false, true);
+		String split[] = split(value, ";").unescape(true).split();
 		RequestStatus requestStatus = new RequestStatus(split[0]);
 
 		if (split.length > 1) {

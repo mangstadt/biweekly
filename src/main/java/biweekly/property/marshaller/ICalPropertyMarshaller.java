@@ -295,42 +295,78 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	}
 
 	/**
-	 * Splits a string by a character, taking escaped characters into account.
-	 * Each split value is also trimmed.
-	 * <p>
-	 * Example:
-	 * <p>
-	 * <code>splitBy("HE\:LLO::WORLD", ':', false, true)</code>
-	 * <p>
-	 * returns
-	 * <p>
-	 * <code>["HE:LLO", "", "WORLD"]</code>
-	 * @param str the string to split
-	 * @param ch the character to split by
-	 * @param removeEmpties true to remove empty elements, false not to
-	 * @param unescape true to unescape each split string, false not to
-	 * @return the split string
-	 * @see <a
-	 * href="http://stackoverflow.com/q/820172">http://stackoverflow.com/q/820172</a>
+	 * Splits a string by a delimiter.
+	 * @param string the string to split (e.g. "one,two,three")
+	 * @param delimiter the delimiter (e.g. ",")
+	 * @return the factory object
 	 */
-	protected static String[] splitBy(String str, char ch, boolean removeEmpties, boolean unescape) {
-		str = str.trim();
-		String split[] = str.split("\\s*(?<!\\\\)" + Pattern.quote(ch + "") + "\\s*", -1);
+	protected static Splitter split(String string, String delimiter) {
+		return new Splitter(string, delimiter);
+	}
 
-		List<String> list = new ArrayList<String>(split.length);
-		for (String s : split) {
-			if (s.length() == 0 && removeEmpties) {
-				continue;
-			}
+	/**
+	 * Factory class for splitting strings.
+	 */
+	protected static class Splitter {
+		private String string;
+		private String delimiter;
+		private boolean removeEmpties = false;
+		private boolean unescape = false;
 
-			if (unescape) {
-				s = unescape(s);
-			}
-
-			list.add(s);
+		/**
+		 * Creates a new splitter object.
+		 * @param string the string to split (e.g. "one,two,three")
+		 * @param delimiter the delimiter (e.g. ",")
+		 */
+		public Splitter(String string, String delimiter) {
+			this.string = string;
+			this.delimiter = delimiter;
 		}
 
-		return list.toArray(new String[0]);
+		/**
+		 * Sets whether to remove empty elements.
+		 * @param removeEmpties true to remove empty elements, false not to
+		 * (default is false)
+		 * @return this
+		 */
+		public Splitter removeEmpties(boolean removeEmpties) {
+			this.removeEmpties = removeEmpties;
+			return this;
+		}
+
+		/**
+		 * Sets whether to unescape each split string.
+		 * @param unescape true to unescape, false not to (default is false)
+		 * @return this
+		 */
+		public Splitter unescape(boolean unescape) {
+			this.unescape = unescape;
+			return this;
+		}
+
+		/**
+		 * Performs the split operation.
+		 * @return the split string
+		 */
+		public String[] split() {
+			//from: http://stackoverflow.com/q/820172">http://stackoverflow.com/q/820172
+			String split[] = string.split("\\s*(?<!\\\\)" + Pattern.quote(delimiter) + "\\s*", -1);
+
+			List<String> list = new ArrayList<String>(split.length);
+			for (String s : split) {
+				if (s.length() == 0 && removeEmpties) {
+					continue;
+				}
+
+				if (unescape) {
+					s = ICalPropertyMarshaller.unescape(s);
+				}
+
+				list.add(s);
+			}
+
+			return list.toArray(new String[0]);
+		}
 	}
 
 	/**
@@ -339,7 +375,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @return the parsed values
 	 */
 	protected static String[] parseList(String str) {
-		return splitBy(str, ',', true, true);
+		return split(str, ",").removeEmpties(true).unescape(true).split();
 	}
 
 	/**
@@ -348,7 +384,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @return the parsed values
 	 */
 	protected static String[][] parseComponent(String str) {
-		String split[] = splitBy(str, ';', false, false);
+		String split[] = split(str, ";").split();
 		String ret[][] = new String[split.length][];
 		int i = 0;
 		for (String s : split) {
@@ -435,7 +471,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 
 		/**
 		 * Sets the timezone to parse the date as.
-		 * @param timezoneId the timezone
+		 * @param timezone the timezone
 		 * @return this
 		 */
 		public DateParser tz(TimeZone timezone) {
@@ -474,7 +510,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		 * Sets whether to output the date's time component.
 		 * @param hasTime true include the time, false if it's strictly a date
 		 * (default is "true")
-		 * @return
+		 * @return this
 		 */
 		public DateWriter time(boolean hasTime) {
 			this.hasTime = hasTime;
