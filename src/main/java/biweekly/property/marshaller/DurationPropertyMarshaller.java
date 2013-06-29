@@ -3,7 +3,9 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.DurationProperty;
 import biweekly.util.Duration;
 
@@ -50,6 +52,27 @@ public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationP
 	@Override
 	protected DurationProperty _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
+		return parse(value);
+	}
+
+	@Override
+	protected void _writeXml(DurationProperty property, XCalElement element) {
+		Duration value = property.getValue();
+		if (value != null) {
+			element.append(Value.DURATION, value.toString());
+		}
+	}
+
+	@Override
+	protected DurationProperty _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		String value = element.first(Value.DURATION);
+		return parse(value);
+	}
+
+	private DurationProperty parse(String value) {
+		if (value == null) {
+			return new DurationProperty(null);
+		}
 
 		try {
 			Duration duration = Duration.parse(value);

@@ -1,15 +1,22 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.xcalProperty;
+import static biweekly.util.TestUtils.xcalPropertyElement;
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DurationProperty;
+import biweekly.property.ICalProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 import biweekly.util.Duration;
+import biweekly.util.XmlUtils;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -80,5 +87,53 @@ public class DurationPropertyMarshallerTest {
 		ICalParameters params = new ICalParameters();
 
 		marshaller.parseText(value, params);
+	}
+
+	@Test
+	public void writeXml() {
+		DurationProperty prop = new DurationProperty(duration);
+		assertWriteXml("<duration>PT1H30M</duration>", prop, marshaller);
+	}
+
+	@Test
+	public void parseXml() {
+		Result<DurationProperty> result = parseXCalProperty("<duration>PT1H30M</duration>", marshaller);
+
+		DurationProperty prop = result.getValue();
+		assertEquals(duration, prop.getValue());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseXml_invalid() {
+		parseXCalProperty("<duration>invalid</duration>", marshaller);
+	}
+
+	/**
+	 * Tests to see if an xCal property was marshalled correctly.
+	 * @param expectedInnerXml the expected inner XML of the property element
+	 * @param propertyToWrite the property to marshal
+	 * @param marshaller the marshaller object
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static void assertWriteXml(String expectedInnerXml, ICalProperty propertyToWrite, ICalPropertyMarshaller marshaller) {
+		Document actual = xcalProperty(marshaller);
+		marshaller.writeXml(propertyToWrite, XmlUtils.getRootElement(actual));
+
+		Document expected = xcalProperty(marshaller, expectedInnerXml);
+		assertXMLEqual(expected, actual);
+	}
+
+	/**
+	 * Unmarshals an xCal property element.
+	 * @param <T> the property class
+	 * @param innerXml the inner XML of the property element
+	 * @param marshaller the marshaller object
+	 * @return the unmarshal result
+	 */
+	private static <T extends ICalProperty> Result<T> parseXCalProperty(String innerXml, ICalPropertyMarshaller<T> marshaller) {
+		ICalParameters params = new ICalParameters();
+		Element element = xcalPropertyElement(marshaller, innerXml);
+		return marshaller.parseXml(element, params);
 	}
 }
