@@ -3,6 +3,7 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Geo;
 import biweekly.util.ICalFloatFormatter;
@@ -46,14 +47,16 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 		ICalFloatFormatter formatter = new ICalFloatFormatter();
 		StringBuilder sb = new StringBuilder();
 
-		if (property.getLatitude() != null) {
-			sb.append(formatter.format(property.getLatitude()));
+		Double latitude = property.getLatitude();
+		if (latitude != null) {
+			sb.append(formatter.format(latitude));
 		}
 
 		sb.append(';');
 
-		if (property.getLongitude() != null) {
-			sb.append(formatter.format(property.getLongitude()));
+		Double longitude = property.getLongitude();
+		if (longitude != null) {
+			sb.append(formatter.format(longitude));
 		}
 
 		return sb.toString();
@@ -70,18 +73,48 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 		String latitudeStr = split[0];
 		String longitudeStr = split[1];
 
-		Double latitude;
-		try {
-			latitude = Double.valueOf(latitudeStr);
-		} catch (NumberFormatException e) {
-			throw new CannotParseException("Could not parse latitude: " + latitudeStr);
+		return parse(latitudeStr, longitudeStr);
+	}
+
+	@Override
+	protected void _writeXml(Geo property, XCalElement element) {
+		ICalFloatFormatter formatter = new ICalFloatFormatter();
+
+		Double latitude = property.getLatitude();
+		if (latitude != null) {
+			element.append("latitude", formatter.format(latitude));
 		}
 
-		Double longitude;
-		try {
-			longitude = Double.valueOf(longitudeStr);
-		} catch (NumberFormatException e) {
-			throw new CannotParseException("Could not parse longtude: " + longitudeStr);
+		Double longitude = property.getLongitude();
+		if (longitude != null) {
+			element.append("longitude", formatter.format(longitude));
+		}
+	}
+
+	@Override
+	protected Geo _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		String latitudeStr = element.first("latitude");
+		String longitudeStr = element.first("longitude");
+		return parse(latitudeStr, longitudeStr);
+	}
+
+	private Geo parse(String latitudeStr, String longitudeStr) {
+		Double latitude = null;
+		if (latitudeStr != null) {
+			try {
+				latitude = Double.valueOf(latitudeStr);
+			} catch (NumberFormatException e) {
+				throw new CannotParseException("Could not parse latitude: " + latitudeStr);
+			}
+		}
+
+		Double longitude = null;
+		if (longitudeStr != null) {
+			try {
+				longitude = Double.valueOf(longitudeStr);
+			} catch (NumberFormatException e) {
+				throw new CannotParseException("Could not parse longitude: " + longitudeStr);
+			}
 		}
 
 		return new Geo(latitude, longitude);

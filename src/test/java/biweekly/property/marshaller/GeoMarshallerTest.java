@@ -1,14 +1,21 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.xcalProperty;
+import static biweekly.util.TestUtils.xcalPropertyElement;
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Geo;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.util.XmlUtils;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -52,20 +59,26 @@ public class GeoMarshallerTest {
 	}
 
 	@Test
-	public void writeText_null() {
+	public void writeText_missing_latitude() {
 		Geo prop = new Geo(null, 56.78);
 		String actual = marshaller.writeText(prop);
 		String expected = ";56.78";
 		assertEquals(expected, actual);
+	}
 
-		prop = new Geo(12.34, null);
-		actual = marshaller.writeText(prop);
-		expected = "12.34;";
+	@Test
+	public void writeText_missing_longitude() {
+		Geo prop = new Geo(12.34, null);
+		String actual = marshaller.writeText(prop);
+		String expected = "12.34;";
 		assertEquals(expected, actual);
+	}
 
-		prop = new Geo(null, null);
-		actual = marshaller.writeText(prop);
-		expected = ";";
+	@Test
+	public void writeText_missing_both() {
+		Geo prop = new Geo(null, null);
+		String actual = marshaller.writeText(prop);
+		String expected = ";";
 		assertEquals(expected, actual);
 	}
 
@@ -76,8 +89,9 @@ public class GeoMarshallerTest {
 
 		Result<Geo> result = marshaller.parseText(value, params);
 
-		assertEquals(12.34, result.getValue().getLatitude(), 0.001);
-		assertEquals(56.78, result.getValue().getLongitude(), 0.001);
+		Geo prop = result.getValue();
+		assertEquals(12.34, prop.getLatitude(), 0.001);
+		assertEquals(56.78, prop.getLongitude(), 0.001);
 		assertWarnings(0, result.getWarnings());
 	}
 
@@ -111,5 +125,117 @@ public class GeoMarshallerTest {
 		ICalParameters params = new ICalParameters();
 
 		marshaller.parseText(value, params);
+	}
+
+	@Test
+	public void writeXml() {
+		Geo prop = new Geo(12.34, 56.78);
+
+		Document actual = xcalProperty(marshaller);
+		marshaller.writeXml(prop, XmlUtils.getRootElement(actual));
+
+		Document expected = xcalProperty(marshaller, "<latitude>12.34</latitude><longitude>56.78</longitude>");
+		assertXMLEqual(expected, actual);
+	}
+
+	@Test
+	public void writeXml_missing_latitude() {
+		Geo prop = new Geo(null, 56.78);
+
+		Document actual = xcalProperty(marshaller);
+		marshaller.writeXml(prop, XmlUtils.getRootElement(actual));
+
+		Document expected = xcalProperty(marshaller, "<longitude>56.78</longitude>");
+		assertXMLEqual(expected, actual);
+	}
+
+	@Test
+	public void writeXml_missing_longitude() {
+		Geo prop = new Geo(12.34, null);
+
+		Document actual = xcalProperty(marshaller);
+		marshaller.writeXml(prop, XmlUtils.getRootElement(actual));
+
+		Document expected = xcalProperty(marshaller, "<latitude>12.34</latitude>");
+		assertXMLEqual(expected, actual);
+	}
+
+	@Test
+	public void writeXml_missing_both() {
+		Geo prop = new Geo(null, null);
+
+		Document actual = xcalProperty(marshaller);
+		marshaller.writeXml(prop, XmlUtils.getRootElement(actual));
+
+		Document expected = xcalProperty(marshaller, "");
+		assertXMLEqual(expected, actual);
+	}
+
+	@Test
+	public void parseXml() {
+		ICalParameters params = new ICalParameters();
+
+		Element element = xcalPropertyElement(marshaller, "<latitude>12.34</latitude><longitude>56.78</longitude>");
+		Result<Geo> result = marshaller.parseXml(element, params);
+
+		Geo prop = result.getValue();
+		assertEquals(12.34, prop.getLatitude(), 0.001);
+		assertEquals(56.78, prop.getLongitude(), 0.001);
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_missing_latitude() {
+		ICalParameters params = new ICalParameters();
+
+		Element element = xcalPropertyElement(marshaller, "<longitude>56.78</longitude>");
+		Result<Geo> result = marshaller.parseXml(element, params);
+
+		Geo prop = result.getValue();
+		assertNull(prop.getLatitude());
+		assertEquals(56.78, prop.getLongitude(), 0.001);
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_missing_longitude() {
+		ICalParameters params = new ICalParameters();
+
+		Element element = xcalPropertyElement(marshaller, "<latitude>12.34</latitude>");
+		Result<Geo> result = marshaller.parseXml(element, params);
+
+		Geo prop = result.getValue();
+		assertEquals(12.34, prop.getLatitude(), 0.001);
+		assertNull(prop.getLongitude());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_missing_both() {
+		ICalParameters params = new ICalParameters();
+
+		Element element = xcalPropertyElement(marshaller, "");
+		Result<Geo> result = marshaller.parseXml(element, params);
+
+		Geo prop = result.getValue();
+		assertNull(prop.getLatitude());
+		assertNull(prop.getLongitude());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseXml_bad_latitude() {
+		ICalParameters params = new ICalParameters();
+
+		Element element = xcalPropertyElement(marshaller, "<latitude>bad</latitude><longitude>56.78</longitude>");
+		marshaller.parseXml(element, params);
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseXml_bad_longitude() {
+		ICalParameters params = new ICalParameters();
+
+		Element element = xcalPropertyElement(marshaller, "<latitude>12.34</latitude><longitude>bad</longitude>");
+		marshaller.parseXml(element, params);
 	}
 }
