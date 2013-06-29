@@ -1,9 +1,8 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.xcalProperty;
-import static biweekly.util.TestUtils.xcalPropertyElement;
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static biweekly.util.TestUtils.assertWriteXml;
+import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
@@ -11,14 +10,11 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import biweekly.io.CannotParseException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DateTimeProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
-import biweekly.util.XmlUtils;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -106,31 +102,18 @@ public class DateTimePropertyMarshallerTest {
 	@Test
 	public void writeXml() {
 		DateTimePropertyImpl prop = new DateTimePropertyImpl(datetime);
-
-		Document actual = xcalProperty(marshaller);
-		marshaller.writeXml(prop, XmlUtils.getRootElement(actual));
-
-		Document expected = xcalProperty(marshaller, "<date-time>2013-06-11T13:43:02Z</date-time>");
-		assertXMLEqual(expected, actual);
+		assertWriteXml("<date-time>2013-06-11T13:43:02Z</date-time>", prop, marshaller);
 	}
 
 	@Test
 	public void writeXml_null() {
 		DateTimePropertyImpl prop = new DateTimePropertyImpl(null);
-
-		Document actual = xcalProperty(marshaller);
-		marshaller.writeXml(prop, XmlUtils.getRootElement(actual));
-
-		Document expected = xcalProperty(marshaller, "");
-		assertXMLEqual(expected, actual);
+		assertWriteXml("", prop, marshaller);
 	}
 
 	@Test
 	public void parseXml() {
-		ICalParameters params = new ICalParameters();
-
-		Element element = xcalPropertyElement(marshaller, "<date-time>2013-06-11T13:43:02Z</date-time>");
-		Result<DateTimePropertyImpl> result = marshaller.parseXml(element, params);
+		Result<DateTimePropertyImpl> result = parseXCalProperty("<date-time>2013-06-11T13:43:02Z</date-time>", marshaller);
 
 		DateTimePropertyImpl prop = result.getValue();
 		assertEquals(datetime, prop.getValue());

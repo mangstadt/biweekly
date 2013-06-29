@@ -1,24 +1,20 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.xcalProperty;
-import static biweekly.util.TestUtils.xcalPropertyElement;
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static biweekly.util.TestUtils.assertWriteXml;
+import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.Attachment;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
-import biweekly.util.XmlUtils;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -150,31 +146,18 @@ public class AttachmentMarshallerTest {
 	@Test
 	public void writeXml_uri() {
 		Attachment prop = new Attachment("image/png", "http://example.com/image.png");
-
-		Document actual = xcalProperty(marshaller);
-		marshaller.writeXml(prop, XmlUtils.getRootElement(actual));
-
-		Document expected = xcalProperty(marshaller, "<uri>http://example.com/image.png</uri>");
-		assertXMLEqual(expected, actual);
+		assertWriteXml("<uri>http://example.com/image.png</uri>", prop, marshaller);
 	}
 
 	@Test
 	public void writeXml_data() {
 		Attachment prop = new Attachment("image/png", "data".getBytes());
-
-		Document actual = xcalProperty(marshaller);
-		marshaller.writeXml(prop, XmlUtils.getRootElement(actual));
-
-		Document expected = xcalProperty(marshaller, "<binary>" + Base64.encodeBase64String("data".getBytes()) + "</binary>");
-		assertXMLEqual(expected, actual);
+		assertWriteXml("<binary>" + Base64.encodeBase64String("data".getBytes()) + "</binary>", prop, marshaller);
 	}
 
 	@Test
 	public void parseXml_uri() {
-		ICalParameters params = new ICalParameters();
-
-		Element element = xcalPropertyElement(marshaller, "<uri>http://example.com/image.png</uri>");
-		Result<Attachment> result = marshaller.parseXml(element, params);
+		Result<Attachment> result = parseXCalProperty("<uri>http://example.com/image.png</uri>", marshaller);
 
 		Attachment prop = result.getValue();
 		assertEquals("http://example.com/image.png", prop.getUri());
@@ -184,10 +167,7 @@ public class AttachmentMarshallerTest {
 
 	@Test
 	public void parseXml_data() {
-		ICalParameters params = new ICalParameters();
-
-		Element element = xcalPropertyElement(marshaller, "<binary>" + Base64.encodeBase64String("data".getBytes()) + "</binary>");
-		Result<Attachment> result = marshaller.parseXml(element, params);
+		Result<Attachment> result = parseXCalProperty("<binary>" + Base64.encodeBase64String("data".getBytes()) + "</binary>", marshaller);
 
 		Attachment prop = result.getValue();
 		assertNull(prop.getUri());
