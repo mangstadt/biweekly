@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.ExceptionDates;
@@ -56,9 +57,6 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 
 	@Override
 	protected String writeValue(ExceptionDates property, Date value) {
-		if (value == null) {
-			return "";
-		}
 		return date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).write();
 	}
 
@@ -70,4 +68,35 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 			throw new CannotParseException("Could not parse date value.");
 		}
 	}
+
+	@Override
+	protected void _writeXml(ExceptionDates property, XCalElement element) {
+		Value dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
+		for (Date value : property.getValues()) {
+			String dateStr = date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).extended(true).write();
+			element.append(dataType, dateStr);
+		}
+	}
+
+	@Override
+	protected ExceptionDates _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		List<String> values = element.all(Value.DATE_TIME);
+		boolean hasTime = true;
+		if (values.isEmpty()) {
+			values = element.all(Value.DATE);
+			hasTime = false;
+		}
+
+		ExceptionDates prop = new ExceptionDates(hasTime);
+		for (String value : values) {
+			try {
+				Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
+				prop.addValue(date);
+			} catch (IllegalArgumentException e) {
+				throw new CannotParseException("Could not parse date value.");
+			}
+		}
+		return prop;
+	}
+
 }

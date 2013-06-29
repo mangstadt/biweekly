@@ -1,6 +1,8 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertWriteXml;
+import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -116,19 +118,6 @@ public class ExceptionDatesMarshallerTest {
 	}
 
 	@Test
-	public void writeText_null() {
-		ExceptionDates prop = new ExceptionDates(true);
-		prop.addValue(datetime);
-		prop.addValue(null);
-		prop.addValue(datetime);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "20130611T134302Z,,20130611T134302Z";
-		assertEquals(expected, actual);
-	}
-
-	@Test
 	public void parseText_datetime() {
 		String value = "20130611T134302Z,20130611T134302Z";
 		ICalParameters params = new ICalParameters();
@@ -161,5 +150,46 @@ public class ExceptionDatesMarshallerTest {
 		ICalParameters params = new ICalParameters();
 
 		marshaller.parseText(value, params);
+	}
+
+	@Test
+	public void writeXml_datetime() {
+		ExceptionDates prop = new ExceptionDates(true);
+		prop.addValue(datetime);
+		prop.addValue(datetime);
+		assertWriteXml("<date-time>2013-06-11T13:43:02Z</date-time><date-time>2013-06-11T13:43:02Z</date-time>", prop, marshaller);
+	}
+
+	@Test
+	public void writeXml_date() {
+		ExceptionDates prop = new ExceptionDates(false);
+		prop.addValue(datetime);
+		prop.addValue(datetime);
+		assertWriteXml("<date>2013-06-11</date><date>2013-06-11</date>", prop, marshaller);
+	}
+
+	@Test
+	public void parseXml_datetime() {
+		Result<ExceptionDates> result = parseXCalProperty("<date-time>2013-06-11T13:43:02Z</date-time><date-time>2013-06-11T13:43:02Z</date-time>", marshaller);
+
+		ExceptionDates prop = result.getValue();
+		assertEquals(Arrays.asList(datetime, datetime), prop.getValues());
+		assertTrue(prop.hasTime());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_date() {
+		Result<ExceptionDates> result = parseXCalProperty("<date>2013-06-11</date><date>2013-06-11</date>", marshaller);
+
+		ExceptionDates prop = result.getValue();
+		assertEquals(Arrays.asList(date, date), prop.getValues());
+		assertFalse(prop.hasTime());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseXml_invalid() {
+		parseXCalProperty("<date>2013-06-11</date><date>invalid</date>", marshaller);
 	}
 }
