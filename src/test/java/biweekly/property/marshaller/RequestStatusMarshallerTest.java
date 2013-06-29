@@ -1,13 +1,19 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.xcalProperty;
+import static biweekly.util.TestUtils.xcalPropertyElement;
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RequestStatus;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.util.XmlUtils;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -114,6 +120,33 @@ public class RequestStatusMarshallerTest {
 		assertEquals("", prop.getStatusCode());
 		assertEquals(null, prop.getDescription());
 		assertEquals(null, prop.getExceptionText());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void writeXml() {
+		RequestStatus prop = new RequestStatus("1.2.3");
+		prop.setDescription("description");
+		prop.setExceptionText("data");
+
+		Document actual = xcalProperty(marshaller);
+		marshaller.writeXml(prop, XmlUtils.getRootElement(actual));
+
+		Document expected = xcalProperty(marshaller, "<code>1.2.3</code><description>description</description><data>data</data>");
+		assertXMLEqual(expected, actual);
+	}
+
+	@Test
+	public void parseXml() {
+		ICalParameters params = new ICalParameters();
+
+		Element element = xcalPropertyElement(marshaller, "<code>1.2.3</code><description>description</description><data>data</data>");
+		Result<RequestStatus> result = marshaller.parseXml(element, params);
+
+		RequestStatus prop = result.getValue();
+		assertEquals("1.2.3", prop.getStatusCode());
+		assertEquals("description", prop.getDescription());
+		assertEquals("data", prop.getExceptionText());
 		assertWarnings(0, result.getWarnings());
 	}
 }

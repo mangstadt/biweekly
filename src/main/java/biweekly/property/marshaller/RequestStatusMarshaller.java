@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RequestStatus;
 import biweekly.util.StringUtils;
@@ -78,6 +79,32 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 			requestStatus.setExceptionText(split[2]);
 		}
 
+		return requestStatus;
+	}
+
+	@Override
+	protected void _writeXml(RequestStatus property, XCalElement element) {
+		String code = property.getStatusCode();
+		if (code != null) {
+			element.append("code", code);
+		}
+
+		String description = property.getDescription();
+		if (description != null) {
+			element.append("description", description);
+		}
+
+		String data = property.getExceptionText();
+		if (data != null) {
+			element.append("data", data);
+		}
+	}
+
+	@Override
+	protected RequestStatus _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		RequestStatus requestStatus = new RequestStatus(element.first("code"));
+		requestStatus.setDescription(element.first("description"));
+		requestStatus.setExceptionText(element.first("data"));
 		return requestStatus;
 	}
 }
