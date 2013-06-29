@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.DateOrDateTimeProperty;
@@ -62,6 +63,37 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
+		return parse(value, parameters, warnings);
+	}
+
+	@Override
+	protected void _writeXml(DateOrDateTimeProperty property, XCalElement element) {
+		Date value = property.getValue();
+		if (value == null) {
+			return;
+		}
+
+		Value dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
+		String dateStr = date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).extended(true).write();
+		element.append(dataType, dateStr);
+	}
+
+	@Override
+	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		String value = element.first(Value.DATE_TIME);
+		if (value == null) {
+			value = element.first(Value.DATE);
+		}
+		return parse(value, parameters, warnings);
+	}
+
+	protected abstract T newInstance(Date date, boolean hasTime);
+
+	private T parse(String value, ICalParameters parameters, List<String> warnings) {
+		if (value == null) {
+			return newInstance(null, true);
+		}
+
 		try {
 			Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
 			boolean hasTime = value.contains("T");
@@ -70,6 +102,4 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 			throw new CannotParseException("Could not parse date value.");
 		}
 	}
-
-	protected abstract T newInstance(Date date, boolean hasTime);
 }

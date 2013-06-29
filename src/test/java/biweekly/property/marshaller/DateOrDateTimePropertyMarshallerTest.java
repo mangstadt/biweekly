@@ -1,6 +1,8 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertWriteXml;
+import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -158,6 +160,49 @@ public class DateOrDateTimePropertyMarshallerTest {
 		ICalParameters params = new ICalParameters();
 
 		marshaller.parseText(value, params);
+	}
+
+	@Test
+	public void writeXml_datetime() {
+		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(datetime, true);
+		assertWriteXml("<date-time>2013-06-11T13:43:02Z</date-time>", prop, marshaller);
+	}
+
+	@Test
+	public void writeXml_date() {
+		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(datetime, false);
+		assertWriteXml("<date>2013-06-11</date>", prop, marshaller);
+	}
+
+	@Test
+	public void writeXml_null() {
+		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(null, true);
+		assertWriteXml("", prop, marshaller);
+	}
+
+	@Test
+	public void parseXml_datetime() {
+		Result<DateOrDateTimePropertyImpl> result = parseXCalProperty("<date-time>2013-06-11T13:43:02Z</date-time>", marshaller);
+
+		DateOrDateTimePropertyImpl prop = result.getValue();
+		assertEquals(datetime, prop.getValue());
+		assertTrue(prop.hasTime());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_date() {
+		Result<DateOrDateTimePropertyImpl> result = parseXCalProperty("<date>2013-06-11</date>", marshaller);
+
+		DateOrDateTimePropertyImpl prop = result.getValue();
+		assertEquals(date, prop.getValue());
+		assertFalse(prop.hasTime());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseXml_invalid() {
+		parseXCalProperty("<date-time>invalid</date-time>", marshaller);
 	}
 
 	private class DateOrDateTimePropertyMarshallerImpl extends DateOrDateTimePropertyMarshaller<DateOrDateTimePropertyImpl> {
