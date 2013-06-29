@@ -89,12 +89,8 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 
 		ExceptionDates prop = new ExceptionDates(hasTime);
 		for (String value : values) {
-			try {
-				Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
-				prop.addValue(date);
-			} catch (IllegalArgumentException e) {
-				throw new CannotParseException("Could not parse date value.");
-			}
+			Date date = readValue(value, parameters, warnings);
+			prop.addValue(date);
 		}
 		return prop;
 	}
