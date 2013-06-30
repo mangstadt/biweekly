@@ -1,6 +1,8 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertWriteXml;
+import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -149,5 +151,53 @@ public class TriggerMarshallerTest {
 		ICalParameters params = new ICalParameters();
 
 		marshaller.parseText(value, params);
+	}
+
+	@Test
+	public void writeXml_date() {
+		Trigger prop = new Trigger(datetime);
+		assertWriteXml("<date-time>2013-06-11T13:43:02Z</date-time>", prop, marshaller);
+	}
+
+	@Test
+	public void writeXml_duration() {
+		Trigger prop = new Trigger(duration, Related.START);
+		assertWriteXml("<duration>PT2H</duration>", prop, marshaller);
+	}
+
+	@Test
+	public void writeXml_null() {
+		Trigger prop = new Trigger(null);
+		assertWriteXml("", prop, marshaller);
+	}
+
+	@Test
+	public void parseXml_date() {
+		Result<Trigger> result = parseXCalProperty("<date-time>2013-06-11T13:43:02Z</date-time>", marshaller);
+
+		Trigger prop = result.getValue();
+		assertEquals(datetime, prop.getDate());
+		assertNull(prop.getDuration());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_duration() {
+		Result<Trigger> result = parseXCalProperty("<duration>PT2H</duration>", marshaller);
+
+		Trigger prop = result.getValue();
+		assertNull(prop.getDate());
+		assertEquals(duration, prop.getDuration());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseXml_date_invalid() {
+		parseXCalProperty("<date-time>invalid</date-time>", marshaller);
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseXml_duration_invalid() {
+		parseXCalProperty("<duration>invalid</duration>", marshaller);
 	}
 }

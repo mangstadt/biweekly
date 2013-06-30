@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.Trigger;
@@ -78,5 +79,34 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 		}
 
 		throw new CannotParseException("Could not parse value as a date or duration.");
+	}
+
+	@Override
+	protected void _writeXml(Trigger property, XCalElement element) {
+		if (property.getDate() != null) {
+			element.append(Value.DATE_TIME, date(property.getDate()).extended(true).write());
+		} else if (property.getDuration() != null) {
+			element.append(Value.DURATION, property.getDuration().toString());
+		}
+	}
+
+	@Override
+	protected Trigger _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		String value = element.first(Value.DATE_TIME);
+		if (value != null) {
+			try {
+				Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
+				return new Trigger(date);
+			} catch (IllegalArgumentException e) {
+				throw new CannotParseException("Could not parse date: " + value);
+			}
+		}
+
+		value = element.first(Value.DURATION);
+		try {
+			return new Trigger(Duration.parse(value), parameters.getRelated());
+		} catch (IllegalArgumentException e) {
+			throw new CannotParseException("Could not parse duration: " + value);
+		}
 	}
 }
