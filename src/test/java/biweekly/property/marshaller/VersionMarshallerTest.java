@@ -1,6 +1,8 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertWriteXml;
+import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -90,6 +92,22 @@ public class VersionMarshallerTest {
 		ICalParameters params = new ICalParameters();
 
 		Result<Version> result = marshaller.parseText(value, params);
+
+		Version prop = result.getValue();
+		assertNull(prop.getMinVersion());
+		assertEquals("2.0", prop.getMaxVersion());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void writeXml() {
+		Version prop = new Version("2.0");
+		assertWriteXml("<text>2.0</text>", prop, marshaller);
+	}
+
+	@Test
+	public void parseXml() {
+		Result<Version> result = parseXCalProperty("<text>2.0</text>", marshaller);
 
 		Version prop = result.getValue();
 		assertNull(prop.getMinVersion());
