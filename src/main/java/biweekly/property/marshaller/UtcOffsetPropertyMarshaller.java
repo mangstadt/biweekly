@@ -3,7 +3,9 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.UtcOffsetProperty;
 import biweekly.util.ICalDateFormatter;
 
@@ -59,6 +61,36 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 	@Override
 	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
+		return parse(value);
+	}
+
+	@Override
+	protected void _writeXml(T property, XCalElement element) {
+		Integer hour = property.getHourOffset();
+		if (hour == null) {
+			hour = 0;
+		}
+
+		Integer minute = property.getMinuteOffset();
+		if (minute == null) {
+			minute = 0;
+		}
+
+		element.append(Value.UTC_OFFSET, ICalDateFormatter.formatTimeZone(hour, minute, true));
+	}
+
+	@Override
+	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		String value = element.first(Value.UTC_OFFSET);
+		return parse(value);
+	}
+
+	protected abstract T newInstance(Integer hourOffset, Integer minuteOffset);
+
+	private T parse(String value) {
+		if (value == null) {
+			return newInstance(null, null);
+		}
 
 		try {
 			int[] offset = ICalDateFormatter.parseTimeZone(value);
@@ -69,6 +101,4 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 			throw new CannotParseException("Could not parse offset string.");
 		}
 	}
-
-	protected abstract T newInstance(Integer hourOffset, Integer minuteOffset);
 }

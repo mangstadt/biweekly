@@ -2,7 +2,10 @@ package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertWriteXml;
+import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -89,6 +92,43 @@ public class UtcOffsetPropertyMarshallerTest {
 		ICalParameters params = new ICalParameters();
 
 		marshaller.parseText(value, params);
+	}
+
+	@Test
+	public void writeXml() {
+		UtcOffsetPropertyImpl prop = new UtcOffsetPropertyImpl(1, 30);
+		assertWriteXml("<utc-offset>+01:30</utc-offset>", prop, marshaller);
+	}
+
+	@Test
+	public void writeXml_null() {
+		UtcOffsetPropertyImpl prop = new UtcOffsetPropertyImpl(null, null);
+		assertWriteXml("<utc-offset>+00:00</utc-offset>", prop, marshaller);
+	}
+
+	@Test
+	public void parseXml() {
+		Result<UtcOffsetPropertyImpl> result = parseXCalProperty("<utc-offset>+01:30</utc-offset>", marshaller);
+
+		UtcOffsetPropertyImpl prop = result.getValue();
+		assertIntEquals(1, prop.getHourOffset());
+		assertIntEquals(30, prop.getMinuteOffset());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseXml_invalid() {
+		parseXCalProperty("<utc-offset>invalid</utc-offset>", marshaller);
+	}
+
+	@Test
+	public void parseXml_empty() {
+		Result<UtcOffsetPropertyImpl> result = parseXCalProperty("", marshaller);
+
+		UtcOffsetPropertyImpl prop = result.getValue();
+		assertNull(prop.getHourOffset());
+		assertNull(prop.getMinuteOffset());
+		assertWarnings(0, result.getWarnings());
 	}
 
 	private class UtcOffsetPropertyMarshallerImpl extends UtcOffsetPropertyMarshaller<UtcOffsetPropertyImpl> {
