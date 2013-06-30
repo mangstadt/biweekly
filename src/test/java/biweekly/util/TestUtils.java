@@ -77,9 +77,8 @@ public class TestUtils {
 	 * @param expected the expected value of the date, in string form (e.g.
 	 * "20130610T102301")
 	 * @param actual the actual date object
-	 * @throws ParseException
 	 */
-	public static void assertDateEquals(String expected, Date actual) throws ParseException {
+	public static void assertDateEquals(String expected, Date actual) {
 		if (expected.contains("Z")) {
 			expected = expected.replace("Z", "+0000");
 		}
@@ -95,7 +94,11 @@ public class TestUtils {
 			df = new SimpleDateFormat("yyyyMMdd");
 		}
 
-		assertEquals(df.parse(expected), actual);
+		try {
+			assertEquals(df.parse(expected), actual);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

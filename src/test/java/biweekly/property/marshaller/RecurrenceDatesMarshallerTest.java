@@ -324,7 +324,7 @@ public class RecurrenceDatesMarshallerTest {
 	}
 
 	@Test
-	public void parseText_dates() throws Exception {
+	public void parseText_dates() {
 		String value = "20130611,20130612";
 		ICalParameters params = new ICalParameters();
 		params.setValue(Value.DATE);
@@ -347,7 +347,7 @@ public class RecurrenceDatesMarshallerTest {
 	}
 
 	@Test
-	public void parseText_invalid_dates() throws Exception {
+	public void parseText_invalid_dates() {
 		String value = "20130611,invalid,20130612";
 		ICalParameters params = new ICalParameters();
 		params.setValue(Value.DATE);
