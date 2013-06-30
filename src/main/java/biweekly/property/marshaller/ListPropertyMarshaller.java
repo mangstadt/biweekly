@@ -2,7 +2,9 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
+import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.ListProperty;
 import biweekly.util.StringUtils;
 import biweekly.util.StringUtils.JoinCallback;
@@ -37,15 +39,23 @@ import biweekly.util.StringUtils.JoinCallback;
  * @author Michael Angstadt
  */
 public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> extends ICalPropertyMarshaller<T> {
+	protected Value dataType;
+
 	public ListPropertyMarshaller(Class<T> clazz, String propertyName) {
+		this(clazz, propertyName, Value.TEXT);
+	}
+
+	public ListPropertyMarshaller(Class<T> clazz, String propertyName, Value dataType) {
 		super(clazz, propertyName);
+		this.dataType = dataType;
 	}
 
 	@Override
 	protected String _writeText(final T property) {
 		return StringUtils.join(property.getValues(), ",", new JoinCallback<V>() {
 			public void handle(StringBuilder sb, V value) {
-				sb.append(escape(writeValue(property, value)));
+				String valueStr = writeValue(property, value);
+				sb.append(escape(valueStr));
 			}
 		});
 	}
@@ -56,7 +66,28 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 
 		String split[] = parseList(value);
 		for (String s : split) {
-			property.addValue(readValue(s, parameters, warnings));
+			V v = readValue(s, parameters, warnings);
+			property.addValue(v);
+		}
+
+		return property;
+	}
+
+	@Override
+	protected void _writeXml(T property, XCalElement element) {
+		for (V value : property.getValues()) {
+			String valueStr = writeValue(property, value);
+			element.append(dataType, valueStr);
+		}
+	}
+
+	@Override
+	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		T property = newInstance(parameters);
+
+		for (String valueStr : element.all(dataType)) {
+			V value = readValue(valueStr, parameters, warnings);
+			property.addValue(value);
 		}
 
 		return property;

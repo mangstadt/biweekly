@@ -1,6 +1,8 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertWriteXml;
+import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -9,6 +11,7 @@ import java.util.List;
 import org.junit.Test;
 
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.ListProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -99,9 +102,62 @@ public class ListPropertyMarshallerTest {
 		assertWarnings(0, result.getWarnings());
 	}
 
+	@Test
+	public void writeXml() {
+		ListPropertyImpl prop = new ListPropertyImpl();
+		prop.addValue("one");
+		prop.addValue("two");
+		prop.addValue("three");
+
+		assertWriteXml("<text>one</text><text>two</text><text>three</text>", prop, marshaller);
+	}
+
+	@Test
+	public void writeXml_data_type() {
+		ListPropertyMarshallerImpl marshaller = new ListPropertyMarshallerImpl(Value.INTEGER);
+		ListPropertyImpl prop = new ListPropertyImpl();
+		prop.addValue("1");
+		prop.addValue("2");
+		prop.addValue("3");
+
+		assertWriteXml("<integer>1</integer><integer>2</integer><integer>3</integer>", prop, marshaller);
+	}
+
+	@Test
+	public void parseXml() {
+		Result<ListPropertyImpl> result = parseXCalProperty("<text>one</text><text>two</text><text>three</text>", marshaller);
+
+		ListPropertyImpl prop = result.getValue();
+		assertEquals(Arrays.asList("one", "two", "three"), prop.getValues());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_data_type() {
+		ListPropertyMarshallerImpl marshaller = new ListPropertyMarshallerImpl(Value.INTEGER);
+		Result<ListPropertyImpl> result = parseXCalProperty("<integer>1</integer><integer>2</integer><text>ignore</text><integer>3</integer>", marshaller);
+
+		ListPropertyImpl prop = result.getValue();
+		assertEquals(Arrays.asList("1", "2", "3"), prop.getValues());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_empty() {
+		Result<ListPropertyImpl> result = parseXCalProperty("<integer>ignore</integer>", marshaller);
+
+		ListPropertyImpl prop = result.getValue();
+		assertEquals(0, prop.getValues().size());
+		assertWarnings(0, result.getWarnings());
+	}
+
 	private class ListPropertyMarshallerImpl extends ListPropertyMarshaller<ListPropertyImpl, String> {
 		public ListPropertyMarshallerImpl() {
 			super(ListPropertyImpl.class, "LIST");
+		}
+
+		public ListPropertyMarshallerImpl(Value dataType) {
+			super(ListPropertyImpl.class, "LIST", dataType);
 		}
 
 		@Override
