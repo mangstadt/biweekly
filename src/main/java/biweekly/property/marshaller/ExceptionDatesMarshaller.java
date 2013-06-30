@@ -81,11 +81,8 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 	@Override
 	protected ExceptionDates _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		List<String> values = element.all(Value.DATE_TIME);
-		boolean hasTime = true;
-		if (values.isEmpty()) {
-			values = element.all(Value.DATE);
-			hasTime = false;
-		}
+		boolean hasTime = !values.isEmpty();
+		values.addAll(element.all(Value.DATE));
 
 		ExceptionDates prop = new ExceptionDates(hasTime);
 		for (String value : values) {

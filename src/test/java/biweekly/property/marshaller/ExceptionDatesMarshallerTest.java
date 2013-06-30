@@ -188,6 +188,16 @@ public class ExceptionDatesMarshallerTest {
 		assertWarnings(0, result.getWarnings());
 	}
 
+	@Test
+	public void parseXml_combination() {
+		Result<ExceptionDates> result = parseXCalProperty("<date-time>2013-06-11T13:43:02Z</date-time><date>2013-06-11</date>", marshaller);
+
+		ExceptionDates prop = result.getValue();
+		assertEquals(Arrays.asList(datetime, date), prop.getValues());
+		assertTrue(prop.hasTime());
+		assertWarnings(0, result.getWarnings());
+	}
+
 	@Test(expected = CannotParseException.class)
 	public void parseXml_invalid() {
 		parseXCalProperty("<date>2013-06-11</date><date>invalid</date>", marshaller);
