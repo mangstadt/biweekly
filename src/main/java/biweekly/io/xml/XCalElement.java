@@ -3,9 +3,7 @@ package biweekly.io.xml;
 import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.w3c.dom.Document;
@@ -46,7 +44,6 @@ import biweekly.util.XmlUtils;
 public class XCalElement {
 	private final Element element;
 	private final Document document;
-	private List<Element> children;
 
 	/**
 	 * Creates a new xCal element.
@@ -75,14 +72,13 @@ public class XCalElement {
 	}
 
 	/**
-	 * Gets the value of the first child element with one of the given names.
-	 * @param names the possible names of the element
+	 * Gets the value of the first child element with the given name.
+	 * @param localName the name of the element
 	 * @return the element's text or null if not found
 	 */
-	public String first(String... names) {
-		List<String> localNamesList = Arrays.asList(names);
+	public String first(String localName) {
 		for (Element child : children()) {
-			if (localNamesList.contains(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {
+			if (localName.equals(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {
 				return child.getTextContent();
 			}
 		}
@@ -143,12 +139,25 @@ public class XCalElement {
 		Element child = document.createElementNS(XCAL_NS, name);
 		child.setTextContent(value);
 		element.appendChild(child);
-
-		if (children != null) {
-			children.add(child);
-		}
-
 		return child;
+	}
+
+	/**
+	 * Adds a child element.
+	 * @param name the name of the child element
+	 * @return the created element
+	 */
+	public XCalElement append(String name) {
+		return new XCalElement(append(name, (String) null));
+	}
+
+	/**
+	 * Adds an empty value.
+	 * @param dataType the data type
+	 * @return the created element
+	 */
+	public XCalElement append(Value dataType) {
+		return append(dataType.getValue().toLowerCase());
 	}
 
 	/**
@@ -182,12 +191,25 @@ public class XCalElement {
 	}
 
 	/**
-	 * Gets the child elements of the XML element.
+	 * Gets the child elements of the wrapped XML element.
 	 * @return the child elements
 	 */
 	private List<Element> children() {
-		if (children == null) {
-			children = Collections.unmodifiableList(XmlUtils.toElementList(element.getChildNodes()));
+		return XmlUtils.toElementList(element.getChildNodes());
+	}
+
+	/**
+	 * Gets all child elements with the given data type.
+	 * @param dataType the data type
+	 * @return the child elements
+	 */
+	public List<XCalElement> children(Value dataType) {
+		String localName = dataType.getValue().toLowerCase();
+		List<XCalElement> children = new ArrayList<XCalElement>();
+		for (Element child : children()) {
+			if (localName.equals(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {
+				children.add(new XCalElement(child));
+			}
 		}
 		return children;
 	}

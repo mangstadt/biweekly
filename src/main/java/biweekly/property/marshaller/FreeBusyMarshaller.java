@@ -3,7 +3,9 @@ package biweekly.property.marshaller;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.FreeBusy;
 import biweekly.util.Duration;
 import biweekly.util.Period;
@@ -52,19 +54,19 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 		}
 
 		return StringUtils.join(values, ",", new JoinCallback<Period>() {
-			public void handle(StringBuilder sb, Period timePeriod) {
-				if (timePeriod.getStartDate() != null) {
-					String date = date(timePeriod.getStartDate()).write();
+			public void handle(StringBuilder sb, Period period) {
+				if (period.getStartDate() != null) {
+					String date = date(period.getStartDate()).write();
 					sb.append(date);
 				}
 
 				sb.append('/');
 
-				if (timePeriod.getEndDate() != null) {
-					String date = date(timePeriod.getEndDate()).write();
+				if (period.getEndDate() != null) {
+					String date = date(period.getEndDate()).write();
 					sb.append(date);
-				} else if (timePeriod.getDuration() != null) {
-					sb.append(timePeriod.getDuration());
+				} else if (period.getDuration() != null) {
+					sb.append(period.getDuration());
 				}
 			}
 		});
@@ -74,25 +76,25 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 	protected FreeBusy _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		FreeBusy freebusy = new FreeBusy();
 
-		String timePeriodStrs[] = parseList(value);
-		for (String timePeriodStr : timePeriodStrs) {
-			String timePeriodStrSplit[] = timePeriodStr.split("/");
+		String periodStrs[] = parseList(value);
+		for (String periodStr : periodStrs) {
+			String periodStrSplit[] = periodStr.split("/");
 
-			if (timePeriodStrSplit.length < 2) {
-				warnings.add("No end date or duration found, skipping time period: " + timePeriodStr);
+			if (periodStrSplit.length < 2) {
+				warnings.add("No end date or duration found, skipping time period: " + periodStr);
 				continue;
 			}
 
-			String startStr = timePeriodStrSplit[0];
+			String startStr = periodStrSplit[0];
 			Date start = null;
 			try {
 				start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
 			} catch (IllegalArgumentException e) {
-				warnings.add("Could not parse start date, skipping time period: " + timePeriodStr);
+				warnings.add("Could not parse start date, skipping time period: " + periodStr);
 				continue;
 			}
 
-			String endStr = timePeriodStrSplit[1];
+			String endStr = periodStrSplit[1];
 			try {
 				Date end = date(endStr).tzid(parameters.getTimezoneId(), warnings).parse();
 				freebusy.addValue(start, end);
@@ -102,12 +104,77 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 					Duration duration = Duration.parse(endStr);
 					freebusy.addValue(start, duration);
 				} catch (IllegalArgumentException e2) {
-					warnings.add("Could not parse end date or duration value, skipping time period: " + timePeriodStr);
+					warnings.add("Could not parse end date or duration value, skipping time period: " + periodStr);
 					continue;
 				}
 			}
 		}
 
 		return freebusy;
+	}
+
+	@Override
+	protected void _writeXml(FreeBusy property, XCalElement element) {
+		for (Period period : property.getValues()) {
+			XCalElement periodElement = element.append(Value.PERIOD);
+
+			Date start = period.getStartDate();
+			if (start != null) {
+				periodElement.append("start", date(start).extended(true).write());
+			}
+
+			Date end = period.getEndDate();
+			if (end != null) {
+				periodElement.append("end", date(end).extended(true).write());
+			}
+
+			Duration duration = period.getDuration();
+			if (duration != null) {
+				periodElement.append("duration", duration.toString());
+			}
+		}
+	}
+
+	@Override
+	protected FreeBusy _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		FreeBusy prop = new FreeBusy();
+
+		List<XCalElement> periodElements = element.children(Value.PERIOD);
+		for (XCalElement periodElement : periodElements) {
+			Date start = null;
+			String startStr = periodElement.first("start");
+			if (startStr != null) {
+				try {
+					start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
+				} catch (IllegalArgumentException e) {
+					warnings.add("Could not parse start date, skipping time period: " + startStr);
+					continue;
+				}
+			}
+
+			String endStr = periodElement.first("end");
+			if (endStr != null) {
+				try {
+					Date end = date(endStr).tzid(parameters.getTimezoneId(), warnings).parse();
+					prop.addValue(start, end);
+				} catch (IllegalArgumentException e) {
+					warnings.add("Could not parse end date, skipping time period: " + endStr);
+				}
+				continue;
+			}
+
+			String durationStr = periodElement.first("duration");
+			if (durationStr != null) {
+				try {
+					Duration duration = Duration.parse(durationStr);
+					prop.addValue(start, duration);
+				} catch (IllegalArgumentException e) {
+					warnings.add("Could not parse duration, skipping time period: " + durationStr);
+				}
+				continue;
+			}
+		}
+
+		return prop;
 	}
 }

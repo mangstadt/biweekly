@@ -1,6 +1,8 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertWriteXml;
+import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -192,6 +194,150 @@ public class FreeBusyMarshallerTest {
 		ICalParameters params = new ICalParameters();
 
 		Result<FreeBusy> result = marshaller.parseText(value, params);
+
+		Iterator<Period> it = result.getValue().getValues().iterator();
+
+		assertFalse(it.hasNext());
+
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void writeXml() {
+		FreeBusy prop = new FreeBusy();
+		prop.addValue(start, end);
+		prop.addValue(start, duration);
+		//@formatter:off
+		assertWriteXml(
+		"<period>" +
+			"<start>2013-06-11T13:43:02Z</start>" +
+			"<end>2013-06-11T15:43:02Z</end>" +
+		"</period>" +
+		"<period>" +
+			"<start>2013-06-11T13:43:02Z</start>" +
+			"<duration>PT2H</duration>" +
+		"</period>", prop, marshaller);
+		//@formatter:on
+	}
+
+	@Test
+	public void writeXml_empty() {
+		FreeBusy prop = new FreeBusy();
+		assertWriteXml("", prop, marshaller);
+	}
+
+	@Test
+	public void parseXml() {
+		//@formatter:off
+		Result<FreeBusy> result = parseXCalProperty(
+		"<period>" +
+			"<start>2013-06-11T13:43:02Z</start>" +
+			"<end>2013-06-11T15:43:02Z</end>" +
+		"</period>" +
+		"<period>" +
+			"<start>2013-06-11T13:43:02Z</start>" +
+			"<duration>PT2H</duration>" +
+		"</period>", marshaller);
+		//@formatter:on
+
+		Iterator<Period> it = result.getValue().getValues().iterator();
+
+		Period period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertEquals(end, period.getEndDate());
+		assertNull(period.getDuration());
+
+		period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertNull(period.getEndDate());
+		assertEquals(duration, period.getDuration());
+
+		assertFalse(it.hasNext());
+
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_invalid_start_date() {
+		//@formatter:off
+		Result<FreeBusy> result = parseXCalProperty(
+		"<period>" +
+			"<start>2013-06-11T13:43:02Z</start>" +
+			"<end>2013-06-11T15:43:02Z</end>" +
+		"</period>" +
+		"<period>" +
+			"<start>invalid</start>" +
+			"<duration>PT2H</duration>" +
+		"</period>", marshaller);
+		//@formatter:on
+
+		Iterator<Period> it = result.getValue().getValues().iterator();
+
+		Period period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertEquals(end, period.getEndDate());
+		assertNull(period.getDuration());
+
+		assertFalse(it.hasNext());
+
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_invalid_end_date() {
+		//@formatter:off
+		Result<FreeBusy> result = parseXCalProperty(
+		"<period>" +
+			"<start>2013-06-11T13:43:02Z</start>" +
+			"<end>invalid</end>" +
+		"</period>" +
+		"<period>" +
+			"<start>2013-06-11T13:43:02Z</start>" +
+			"<duration>PT2H</duration>" +
+		"</period>", marshaller);
+		//@formatter:on
+
+		Iterator<Period> it = result.getValue().getValues().iterator();
+
+		Period period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertNull(period.getEndDate());
+		assertEquals(duration, period.getDuration());
+
+		assertFalse(it.hasNext());
+
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_invalid_duration() {
+		//@formatter:off
+		Result<FreeBusy> result = parseXCalProperty(
+		"<period>" +
+			"<start>2013-06-11T13:43:02Z</start>" +
+			"<end>2013-06-11T15:43:02Z</end>" +
+		"</period>" +
+		"<period>" +
+			"<start>2013-06-11T13:43:02Z</start>" +
+			"<duration>invalid</duration>" +
+		"</period>", marshaller);
+		//@formatter:on
+
+		Iterator<Period> it = result.getValue().getValues().iterator();
+
+		Period period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertEquals(end, period.getEndDate());
+		assertNull(period.getDuration());
+
+		assertFalse(it.hasNext());
+
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_empty() {
+		Result<FreeBusy> result = parseXCalProperty("", marshaller);
 
 		Iterator<Period> it = result.getValue().getValues().iterator();
 
