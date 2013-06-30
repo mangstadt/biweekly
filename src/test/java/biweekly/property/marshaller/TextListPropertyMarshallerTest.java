@@ -1,6 +1,8 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertWriteXml;
+import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -95,6 +97,34 @@ public class TextListPropertyMarshallerTest {
 		Result<ListPropertyImpl> result = marshaller.parseText(value, params);
 
 		assertEquals(0, result.getValue().getValues().size());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void writeXml() {
+		ListPropertyImpl prop = new ListPropertyImpl();
+		prop.addValue("one");
+		prop.addValue("two");
+		prop.addValue("three");
+
+		assertWriteXml("<text>one</text><text>two</text><text>three</text>", prop, marshaller);
+	}
+
+	@Test
+	public void parseXml() {
+		Result<ListPropertyImpl> result = parseXCalProperty("<text>one</text><text>two</text><float>2.5</float><text>three</text>", marshaller);
+
+		ListPropertyImpl prop = result.getValue();
+		assertEquals(Arrays.asList("one", "two", "three"), prop.getValues());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_empty() {
+		Result<ListPropertyImpl> result = parseXCalProperty("<integer>ignore</integer>", marshaller);
+
+		ListPropertyImpl prop = result.getValue();
+		assertEquals(0, prop.getValues().size());
 		assertWarnings(0, result.getWarnings());
 	}
 

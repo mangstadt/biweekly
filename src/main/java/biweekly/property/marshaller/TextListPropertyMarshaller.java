@@ -3,8 +3,8 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.ListProperty;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -37,7 +37,7 @@ import biweekly.property.ListProperty;
  */
 public abstract class TextListPropertyMarshaller<T extends ListProperty<String>> extends ListPropertyMarshaller<T, String> {
 	public TextListPropertyMarshaller(Class<T> clazz, String propertyName) {
-		super(clazz, propertyName);
+		super(clazz, propertyName, Value.TEXT);
 	}
 
 	@Override
