@@ -2,9 +2,12 @@ package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertDateEquals;
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertWriteXml;
+import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -191,7 +194,8 @@ public class RecurrenceDatesMarshallerTest {
 
 		Result<RecurrenceDates> result = marshaller.parseText(value, params);
 
-		Iterator<Period> it = result.getValue().getPeriods().iterator();
+		RecurrenceDates prop = result.getValue();
+		Iterator<Period> it = prop.getPeriods().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -205,7 +209,7 @@ public class RecurrenceDatesMarshallerTest {
 
 		assertFalse(it.hasNext());
 
-		assertNull(result.getValue().getDates());
+		assertNull(prop.getDates());
 		assertWarnings(0, result.getWarnings());
 	}
 
@@ -217,7 +221,8 @@ public class RecurrenceDatesMarshallerTest {
 
 		Result<RecurrenceDates> result = marshaller.parseText(value, params);
 
-		Iterator<Period> it = result.getValue().getPeriods().iterator();
+		RecurrenceDates prop = result.getValue();
+		Iterator<Period> it = prop.getPeriods().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -226,7 +231,7 @@ public class RecurrenceDatesMarshallerTest {
 
 		assertFalse(it.hasNext());
 
-		assertNull(result.getValue().getDates());
+		assertNull(prop.getDates());
 		assertWarnings(1, result.getWarnings());
 	}
 
@@ -238,7 +243,8 @@ public class RecurrenceDatesMarshallerTest {
 
 		Result<RecurrenceDates> result = marshaller.parseText(value, params);
 
-		Iterator<Period> it = result.getValue().getPeriods().iterator();
+		RecurrenceDates prop = result.getValue();
+		Iterator<Period> it = prop.getPeriods().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -247,7 +253,7 @@ public class RecurrenceDatesMarshallerTest {
 
 		assertFalse(it.hasNext());
 
-		assertNull(result.getValue().getDates());
+		assertNull(prop.getDates());
 		assertWarnings(1, result.getWarnings());
 	}
 
@@ -259,7 +265,8 @@ public class RecurrenceDatesMarshallerTest {
 
 		Result<RecurrenceDates> result = marshaller.parseText(value, params);
 
-		Iterator<Period> it = result.getValue().getPeriods().iterator();
+		RecurrenceDates prop = result.getValue();
+		Iterator<Period> it = prop.getPeriods().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -268,7 +275,7 @@ public class RecurrenceDatesMarshallerTest {
 
 		assertFalse(it.hasNext());
 
-		assertNull(result.getValue().getDates());
+		assertNull(prop.getDates());
 		assertWarnings(1, result.getWarnings());
 	}
 
@@ -279,7 +286,8 @@ public class RecurrenceDatesMarshallerTest {
 
 		Result<RecurrenceDates> result = marshaller.parseText(value, params);
 
-		Iterator<Date> it = result.getValue().getDates().iterator();
+		RecurrenceDates prop = result.getValue();
+		Iterator<Date> it = prop.getDates().iterator();
 
 		Date date = it.next();
 		assertEquals(start, date);
@@ -289,7 +297,7 @@ public class RecurrenceDatesMarshallerTest {
 
 		assertFalse(it.hasNext());
 
-		assertNull(result.getValue().getPeriods());
+		assertNull(prop.getPeriods());
 		assertWarnings(0, result.getWarnings());
 	}
 
@@ -300,7 +308,8 @@ public class RecurrenceDatesMarshallerTest {
 
 		Result<RecurrenceDates> result = marshaller.parseText(value, params);
 
-		Iterator<Date> it = result.getValue().getDates().iterator();
+		RecurrenceDates prop = result.getValue();
+		Iterator<Date> it = prop.getDates().iterator();
 
 		Date date = it.next();
 		assertEquals(start, date);
@@ -310,7 +319,7 @@ public class RecurrenceDatesMarshallerTest {
 
 		assertFalse(it.hasNext());
 
-		assertNull(result.getValue().getPeriods());
+		assertNull(prop.getPeriods());
 		assertWarnings(1, result.getWarnings());
 	}
 
@@ -322,7 +331,8 @@ public class RecurrenceDatesMarshallerTest {
 
 		Result<RecurrenceDates> result = marshaller.parseText(value, params);
 
-		Iterator<Date> it = result.getValue().getDates().iterator();
+		RecurrenceDates prop = result.getValue();
+		Iterator<Date> it = prop.getDates().iterator();
 
 		Date date = it.next();
 		assertDateEquals("20130611", date);
@@ -332,7 +342,7 @@ public class RecurrenceDatesMarshallerTest {
 
 		assertFalse(it.hasNext());
 
-		assertNull(result.getValue().getPeriods());
+		assertNull(prop.getPeriods());
 		assertWarnings(0, result.getWarnings());
 	}
 
@@ -344,7 +354,8 @@ public class RecurrenceDatesMarshallerTest {
 
 		Result<RecurrenceDates> result = marshaller.parseText(value, params);
 
-		Iterator<Date> it = result.getValue().getDates().iterator();
+		RecurrenceDates prop = result.getValue();
+		Iterator<Date> it = prop.getDates().iterator();
 
 		Date date = it.next();
 		assertDateEquals("20130611", date);
@@ -354,7 +365,7 @@ public class RecurrenceDatesMarshallerTest {
 
 		assertFalse(it.hasNext());
 
-		assertNull(result.getValue().getPeriods());
+		assertNull(prop.getPeriods());
 		assertWarnings(1, result.getWarnings());
 	}
 
@@ -365,9 +376,10 @@ public class RecurrenceDatesMarshallerTest {
 		params.setValue(Value.PERIOD);
 
 		Result<RecurrenceDates> result = marshaller.parseText(value, params);
+		RecurrenceDates prop = result.getValue();
 
-		assertEquals(0, result.getValue().getPeriods().size());
-		assertNull(result.getValue().getDates());
+		assertEquals(0, prop.getPeriods().size());
+		assertNull(prop.getDates());
 		assertWarnings(0, result.getWarnings());
 	}
 
@@ -377,9 +389,162 @@ public class RecurrenceDatesMarshallerTest {
 		ICalParameters params = new ICalParameters();
 
 		Result<RecurrenceDates> result = marshaller.parseText(value, params);
+		RecurrenceDates prop = result.getValue();
 
-		assertEquals(0, result.getValue().getDates().size());
-		assertNull(result.getValue().getPeriods());
+		assertEquals(0, prop.getDates().size());
+		assertNull(prop.getPeriods());
 		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void writeXml_periods() {
+		List<Period> periods = Arrays.asList(new Period(start, end), new Period(start, duration));
+		RecurrenceDates prop = new RecurrenceDates(periods);
+		//@formatter:off
+		assertWriteXml(
+		"<period>" +
+			"<start>2013-06-11T13:43:02Z</start>" +
+			"<end>2013-06-11T15:43:02Z</end>" +
+		"</period>" +
+		"<period>" +
+			"<start>2013-06-11T13:43:02Z</start>" +
+			"<duration>PT2H</duration>" +
+		"</period>", prop, marshaller);
+		//@formatter:on
+	}
+
+	@Test
+	public void writeXml_datetimes() {
+		List<Date> dates = Arrays.asList(start, end);
+		RecurrenceDates prop = new RecurrenceDates(dates, true);
+		//@formatter:off
+		assertWriteXml(
+		"<date-time>2013-06-11T13:43:02Z</date-time>" +
+		"<date-time>2013-06-11T15:43:02Z</date-time>", prop, marshaller);
+		//@formatter:on
+	}
+
+	@Test
+	public void writeXml_dates() {
+		List<Date> dates = Arrays.asList(start, end);
+		RecurrenceDates prop = new RecurrenceDates(dates, false);
+		//@formatter:off
+		assertWriteXml(
+		"<date>2013-06-11</date>" +
+		"<date>2013-06-11</date>", prop, marshaller);
+		//@formatter:on
+	}
+
+	@Test
+	public void writeXml_empty() {
+		List<Date> dates = Arrays.asList();
+		RecurrenceDates prop = new RecurrenceDates(dates, false);
+		assertWriteXml("", prop, marshaller);
+	}
+
+	@Test
+	public void parseXml_periods() {
+		//@formatter:off
+		Result<RecurrenceDates> result = parseXCalProperty(
+		"<period>" +
+			"<start>2013-06-11T13:43:02Z</start>" +
+			"<end>2013-06-11T15:43:02Z</end>" +
+		"</period>" +
+		"<period>" +
+			"<start>2013-06-11T13:43:02Z</start>" +
+			"<duration>PT2H</duration>" +
+		"</period>", marshaller);
+		//@formatter:on
+
+		RecurrenceDates prop = result.getValue();
+		assertNull(prop.getDates());
+		Iterator<Period> it = prop.getPeriods().iterator();
+
+		Period period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertEquals(end, period.getEndDate());
+		assertNull(period.getDuration());
+
+		period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertNull(period.getEndDate());
+		assertEquals(duration, period.getDuration());
+
+		assertFalse(it.hasNext());
+
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_dates() {
+		//marshaller is lenient in accepting a combination of both
+		//@formatter:off
+		Result<RecurrenceDates> result = parseXCalProperty(
+		"<date-time>2013-06-11T13:43:02Z</date-time>" +
+		"<date>2013-06-12</date>", marshaller);
+		//@formatter:on
+
+		Date date;
+		{
+			Calendar c = Calendar.getInstance();
+			c.clear();
+			c.set(Calendar.YEAR, 2013);
+			c.set(Calendar.MONTH, Calendar.JUNE);
+			c.set(Calendar.DATE, 12);
+			date = c.getTime();
+		}
+
+		RecurrenceDates prop = result.getValue();
+		assertNull(prop.getPeriods());
+		assertTrue(prop.hasTime());
+		assertEquals(2, prop.getDates().size());
+		assertTrue(prop.getDates().contains(start));
+		assertTrue(prop.getDates().contains(date));
+
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_dates_invalid() {
+		//marshaller is lenient in accepting a combination of both
+		//@formatter:off
+		Result<RecurrenceDates> result = parseXCalProperty(
+		"<date-time>2013-06-11T13:43:02Z</date-time>" +
+		"<date>invalid</date>", marshaller);
+		//@formatter:on
+
+		RecurrenceDates prop = result.getValue();
+		assertNull(prop.getPeriods());
+		assertTrue(prop.hasTime());
+		assertEquals(1, prop.getDates().size());
+		assertTrue(prop.getDates().contains(start));
+
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_periods_invalid() {
+		//@formatter:off
+		Result<RecurrenceDates> result = parseXCalProperty(
+		"<period>" +
+			"<start>invalid</start>" +
+			"<end>2013-06-11T15:43:02Z</end>" +
+		"</period>" +
+		"<period>" +
+			"<start>2013-06-11T13:43:02Z</start>" +
+			"<end>invalid</end>" +
+		"</period>" +
+		"<period>" +
+			"<start>2013-06-11T13:43:02Z</start>" +
+			"<duration>invalid</duration>" +
+		"</period>", marshaller);
+		//@formatter:on
+
+		RecurrenceDates prop = result.getValue();
+		assertNull(prop.getDates());
+		Iterator<Period> it = prop.getPeriods().iterator();
+		assertFalse(it.hasNext());
+
+		assertWarnings(3, result.getWarnings());
 	}
 }

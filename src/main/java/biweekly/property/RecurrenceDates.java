@@ -34,9 +34,35 @@ import biweekly.util.Period;
  */
 
 /**
+ * <p>
  * Defines a list of dates or periods that help define a recurrence rule. This
  * property must contain either dates or time periods. It cannot contain a
  * combination of both.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * //date-time values
+ * Date one = ...
+ * Date two = ...
+ * List&lt;Date&gt; dates = Arrays.asList(one, two);
+ * RecurrenceDates prop = new RecurrenceDates(dates, true);
+ * 
+ * //date values
+ * Date one = ...
+ * Date two = ...
+ * List&lt;Date&gt; dates = Arrays.asList(one, two);
+ * RecurrenceDates prop = new RecurrenceDates(dates, false);
+ * 
+ * //periods
+ * Period one = ...
+ * Period two = ...
+ * List&lt;Period&gt; periods = Arrays.asList(one, two);
+ * RecurrenceDates prop = new RecurrenceDates(periods, true);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-120">RFC 5545
  * p.120-2</a>
