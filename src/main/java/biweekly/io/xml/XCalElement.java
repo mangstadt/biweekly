@@ -95,7 +95,7 @@ public class XCalElement {
 	}
 
 	/**
-	 * Gets the value of all non-empty child elements that have the given name.
+	 * Gets the values of all child elements that have the given name.
 	 * @param localName the element name
 	 * @return the values of the child elements
 	 */
@@ -212,5 +212,20 @@ public class XCalElement {
 			}
 		}
 		return children;
+	}
+
+	/**
+	 * Gets the first child element with the given data type.
+	 * @param dataType the data type
+	 * @return the child element or null if not found
+	 */
+	public XCalElement child(Value dataType) {
+		String localName = dataType.getValue().toLowerCase();
+		for (Element child : children()) {
+			if (localName.equals(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {
+				return new XCalElement(child);
+			}
+		}
+		return null;
 	}
 }

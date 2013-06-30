@@ -218,6 +218,24 @@ public class XCalElementTest {
 	}
 
 	@Test
+	public void child() {
+		//@formatter:off
+		XCalElement xcalElement = build(
+		"<prop>" +
+			"<text>" +
+				"<integer>1</integer>" +
+			"</text>" +
+			"<text>" +
+				"<integer>2</integer>" +
+			"</text>" +
+		"</prop>"
+		);
+		//@formatter:on
+		XCalElement child = xcalElement.child(Value.TEXT);
+		assertEquals("1", child.first(Value.INTEGER));
+	}
+
+	@Test
 	public void children_ignore_other_namespaces() {
 		//@formatter:off
 		XCalElement xcalElement = build(

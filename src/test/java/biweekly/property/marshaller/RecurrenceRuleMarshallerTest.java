@@ -2,6 +2,8 @@ package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertWriteXml;
+import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -183,7 +185,7 @@ public class RecurrenceRuleMarshallerTest {
 	}
 
 	@Test
-	public void parseText_invalid() {
+	public void parseText_invalid_values() {
 		String value = "FREQ=W;COUNT=a;INTERVAL=b;UNTIL=invalid;BYSECOND=58,c,59;BYMINUTE=3,d,4;BYHOUR=1,e,2;BYDAY=f,MO,TU,WE,TH,FR,SA,SU,5FR,fFR;BYMONTHDAY=1,g,2;BYYEARDAY=100,h,101;BYWEEKNO=1,w,2;BYMONTH=5,i,6;BYSETPOS=7,8,j,9;WKST=k";
 		ICalParameters params = new ICalParameters();
 
@@ -230,5 +232,211 @@ public class RecurrenceRuleMarshallerTest {
 		assertEquals(Arrays.asList(), prop.getByWeekNo());
 		assertNull(prop.getWorkweekStarts());
 		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void writeXml() {
+		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
+		prop.setByYearDay(Arrays.asList(100, 101));
+		prop.setByMonthDay(Arrays.asList(1, 2));
+		prop.setByMonth(Arrays.asList(5, 6));
+		prop.setByHour(Arrays.asList(1, 2));
+		prop.setByMinute(Arrays.asList(3, 4));
+		prop.setBySecond(Arrays.asList(58, 59));
+		prop.setBySetPos(Arrays.asList(7, 8, 9));
+		prop.setByWeekNo(Arrays.asList(1, 2));
+		prop.setCount(5);
+		prop.setInterval(10);
+		for (DayOfWeek day : DayOfWeek.values()) {
+			prop.addByDay(day);
+		}
+		prop.addByDay(5, DayOfWeek.FRIDAY);
+		prop.setWorkweekStarts(DayOfWeek.TUESDAY);
+
+		//@formatter:off
+		assertWriteXml(
+		"<recur>" +
+			"<freq>WEEKLY</freq>" +
+			"<count>5</count>" +
+			"<interval>10</interval>" +
+			"<bysecond>58</bysecond>" +
+			"<bysecond>59</bysecond>" +
+			"<byminute>3</byminute>" +
+			"<byminute>4</byminute>" +
+			"<byhour>1</byhour>" +
+			"<byhour>2</byhour>" +
+			"<byday>MO</byday>" +
+			"<byday>TU</byday>" +
+			"<byday>WE</byday>" +
+			"<byday>TH</byday>" +
+			"<byday>FR</byday>" +
+			"<byday>SA</byday>" +
+			"<byday>SU</byday>" +
+			"<byday>5FR</byday>" +
+			"<bymonthday>1</bymonthday>" +
+			"<bymonthday>2</bymonthday>" +
+			"<byyearday>100</byyearday>" +
+			"<byyearday>101</byyearday>" +
+			"<byweekno>1</byweekno>" +
+			"<byweekno>2</byweekno>" +
+			"<bymonth>5</bymonth>" +
+			"<bymonth>6</bymonth>" +
+			"<bysetpos>7</bysetpos>" +
+			"<bysetpos>8</bysetpos>" +
+			"<bysetpos>9</bysetpos>" +
+			"<wkst>TU</wkst>" +
+		"</recur>", prop, marshaller);
+		//@formatter:on
+	}
+
+	@Test
+	public void writeXml_until_datetime() {
+		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
+		prop.setUntil(datetime);
+
+		//@formatter:off
+		assertWriteXml(
+		"<recur>" +
+			"<freq>WEEKLY</freq>" +
+			"<until>2013-06-11T13:43:02Z</until>" +
+		"</recur>", prop, marshaller);
+		//@formatter:on
+	}
+
+	@Test
+	public void writeXml_until_date() {
+		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
+		prop.setUntil(datetime, false);
+
+		//@formatter:off
+		assertWriteXml(
+		"<recur>" +
+			"<freq>WEEKLY</freq>" +
+			"<until>2013-06-11</until>" +
+		"</recur>", prop, marshaller);
+		//@formatter:on
+	}
+
+	@Test
+	public void parseXml() {
+		//@formatter:off
+		Result<RecurrenceRule> result = parseXCalProperty(
+		"<recur>" +
+			"<freq>WEEKLY</freq>" +
+			"<count>5</count>" +
+			"<interval>10</interval>" +
+			"<until>2013-06-11T13:43:02Z</until>" +
+			"<bysecond>58</bysecond>" +
+			"<bysecond>59</bysecond>" +
+			"<byminute>3</byminute>" +
+			"<byminute>4</byminute>" +
+			"<byhour>1</byhour>" +
+			"<byhour>2</byhour>" +
+			"<byday>MO</byday>" +
+			"<byday>TU</byday>" +
+			"<byday>WE</byday>" +
+			"<byday>TH</byday>" +
+			"<byday>FR</byday>" +
+			"<byday>SA</byday>" +
+			"<byday>SU</byday>" +
+			"<byday>5FR</byday>" +
+			"<bymonthday>1</bymonthday>" +
+			"<bymonthday>2</bymonthday>" +
+			"<byyearday>100</byyearday>" +
+			"<byyearday>101</byyearday>" +
+			"<byweekno>1</byweekno>" +
+			"<byweekno>2</byweekno>" +
+			"<bymonth>5</bymonth>" +
+			"<bymonth>6</bymonth>" +
+			"<bysetpos>7</bysetpos>" +
+			"<bysetpos>8</bysetpos>" +
+			"<bysetpos>9</bysetpos>" +
+			"<wkst>TU</wkst>" +
+		"</recur>", marshaller);
+		//@formatter:on
+
+		RecurrenceRule prop = result.getValue();
+		assertEquals(Frequency.WEEKLY, prop.getFrequency());
+		assertIntEquals(5, prop.getCount());
+		assertIntEquals(10, prop.getInterval());
+		assertEquals(datetime, prop.getUntil());
+		assertEquals(Arrays.asList(3, 4), prop.getByMinute());
+		assertEquals(Arrays.asList(1, 2), prop.getByHour());
+		assertEquals(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.FRIDAY), prop.getByDay());
+		assertEquals(Arrays.asList(null, null, null, null, null, null, null, Integer.valueOf(5)), prop.getByDayPrefixes());
+		assertEquals(Arrays.asList(1, 2), prop.getByMonthDay());
+		assertEquals(Arrays.asList(100, 101), prop.getByYearDay());
+		assertEquals(Arrays.asList(5, 6), prop.getByMonth());
+		assertEquals(Arrays.asList(7, 8, 9), prop.getBySetPos());
+		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
+		assertEquals(DayOfWeek.TUESDAY, prop.getWorkweekStarts());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_invalid_values() {
+		//"FREQ=W;COUNT=a;INTERVAL=b;UNTIL=invalid;BYSECOND=58,c,59;BYMINUTE=3,d,4;BYHOUR=1,e,2;BYDAY=f,MO,TU,WE,TH,FR,SA,SU,5FR,fFR;BYMONTHDAY=1,g,2;BYYEARDAY=100,h,101;BYWEEKNO=1,w,2;BYMONTH=5,i,6;BYSETPOS=7,8,j,9;WKST=k";
+		//@formatter:off
+		Result<RecurrenceRule> result = parseXCalProperty(
+		"<recur>" +
+			"<freq>W</freq>" +
+			"<count>a</count>" +
+			"<interval>b</interval>" +
+			"<until>invalid</until>" +
+			"<bysecond>58</bysecond>" +
+			"<bysecond>c</bysecond>" +
+			"<bysecond>59</bysecond>" +
+			"<byminute>3</byminute>" +
+			"<byminute>d</byminute>" +
+			"<byminute>4</byminute>" +
+			"<byhour>1</byhour>" +
+			"<byhour>e</byhour>" +
+			"<byhour>2</byhour>" +
+			"<byday>f</byday>" +
+			"<byday>MO</byday>" +
+			"<byday>TU</byday>" +
+			"<byday>WE</byday>" +
+			"<byday>TH</byday>" +
+			"<byday>FR</byday>" +
+			"<byday>SA</byday>" +
+			"<byday>SU</byday>" +
+			"<byday>5FR</byday>" +
+			"<byday>fFR</byday>" +
+			"<bymonthday>1</bymonthday>" +
+			"<bymonthday>g</bymonthday>" +
+			"<bymonthday>2</bymonthday>" +
+			"<byyearday>100</byyearday>" +
+			"<byyearday>h</byyearday>" +
+			"<byyearday>101</byyearday>" +
+			"<byweekno>1</byweekno>" +
+			"<byweekno>w</byweekno>" +
+			"<byweekno>2</byweekno>" +
+			"<bymonth>5</bymonth>" +
+			"<bymonth>i</bymonth>" +
+			"<bymonth>6</bymonth>" +
+			"<bysetpos>7</bysetpos>" +
+			"<bysetpos>8</bysetpos>" +
+			"<bysetpos>j</bysetpos>" +
+			"<bysetpos>9</bysetpos>" +
+			"<wkst>k</wkst>" +
+		"</recur>", marshaller);
+		//@formatter:on
+
+		RecurrenceRule prop = result.getValue();
+		assertNull(prop.getFrequency());
+		assertNull(prop.getCount());
+		assertNull(prop.getInterval());
+		assertNull(prop.getUntil());
+		assertEquals(Arrays.asList(3, 4), prop.getByMinute());
+		assertEquals(Arrays.asList(1, 2), prop.getByHour());
+		assertEquals(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.FRIDAY), prop.getByDay());
+		assertEquals(Arrays.asList(null, null, null, null, null, null, null, Integer.valueOf(5)), prop.getByDayPrefixes());
+		assertEquals(Arrays.asList(1, 2), prop.getByMonthDay());
+		assertEquals(Arrays.asList(100, 101), prop.getByYearDay());
+		assertEquals(Arrays.asList(5, 6), prop.getByMonth());
+		assertEquals(Arrays.asList(7, 8, 9), prop.getBySetPos());
+		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
+		assertNull(prop.getWorkweekStarts());
+		assertWarnings(15, result.getWarnings());
 	}
 }
