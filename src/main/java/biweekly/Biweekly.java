@@ -15,8 +15,12 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+
+import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -24,9 +28,11 @@ import org.xml.sax.SAXException;
 import biweekly.component.ICalComponent;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.text.ICalRawReader;
+import biweekly.io.text.ICalRawWriter;
 import biweekly.io.text.ICalReader;
 import biweekly.io.text.ICalWriter;
 import biweekly.io.xml.XCalDocument;
+import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.IOUtils;
@@ -282,6 +288,24 @@ public class Biweekly {
 	 */
 	public static ParserChainXmlDocument parseXml(Document document) {
 		return new ParserChainXmlDocument(document);
+	}
+
+	/**
+	 * Writes an xCal document (XML-encoded iCalendar objects).
+	 * @param icals the iCalendar object(s) to write
+	 * @return chainer object for completing the write operation
+	 */
+	public static WriterChainXml writeXml(ICalendar... icals) {
+		return writeXml(Arrays.asList(icals));
+	}
+
+	/**
+	 * Writes an xCal document (XML-encoded iCalendar objects).
+	 * @param icals the iCalendar objects to write
+	 * @return chainer object for completing the write operation
+	 */
+	public static WriterChainXml writeXml(Collection<ICalendar> icals) {
+		return new WriterChainXml(icals);
 	}
 
 	static abstract class ParserChain<T> {
@@ -720,6 +744,10 @@ public class Biweekly {
 		}
 	}
 
+	///////////////////////////////////////////////////////
+	// plain-text
+	///////////////////////////////////////////////////////
+
 	static abstract class WriterChainText<T> extends WriterChain<T> {
 		boolean caretEncoding = false;
 
@@ -728,11 +756,19 @@ public class Biweekly {
 		}
 
 		/**
-		 * Sets whether the writer will use circumflex accent encoding for
-		 * parameter values (disabled by default).
+		 * <p>
+		 * Sets whether the writer will apply circumflex accent encoding on
+		 * parameter values (disabled by default). This escaping mechanism
+		 * allows for newlines and double quotes to be included in parameter
+		 * values.
+		 * </p>
+		 * 
+		 * <p>
+		 * When disabled, the writer will replace newlines with spaces and
+		 * double quotes with single quotes.
+		 * </p>
 		 * @param enable true to use circumflex accent encoding, false not to
-		 * @see ICalWriter#setCaretEncodingEnabled(boolean)
-		 * @see <a href="http://tools.ietf.org/html/rfc6868">RFC 6868</a>
+		 * @see ICalRawWriter#setCaretEncodingEnabled(boolean)
 		 */
 		public T caretEncoding(boolean enable) {
 			this.caretEncoding = enable;
@@ -784,6 +820,12 @@ public class Biweekly {
 		 */
 		public void go(Writer writer) throws IOException {
 			ICalWriter icalWriter = new ICalWriter(writer);
+			for (ICalPropertyMarshaller<? extends ICalProperty> marshaller : propertyMarshallers) {
+				icalWriter.registerMarshaller(marshaller);
+			}
+			for (ICalComponentMarshaller<? extends ICalComponent> marshaller : componentMarshallers) {
+				icalWriter.registerMarshaller(marshaller);
+			}
 			icalWriter.setCaretEncodingEnabled(caretEncoding);
 
 			for (ICalendar ical : icals) {
@@ -813,13 +855,10 @@ public class Biweekly {
 		}
 
 		/**
-		 * Provides a list object that any marshal warnings will be put into.
-		 * @param warnings the list object that will be populated with the
-		 * warnings of each marshalled iCalendar object. Each element of the
-		 * list is the list of warnings for one of the marshalled iCalendar
-		 * objects. Therefore, the size of this list will be equal to the number
-		 * of written iCalendar objects. If an iCalendar object does not have
-		 * any warnings, then its warning list will be empty.
+		 * Provides a list for putting the marshal warnings into.
+		 * @param warnings the list object to populate (it is a
+		 * "list of lists"--each {@link ICalendar} object has its own warnings
+		 * list)
 		 * @return this
 		 */
 		public WriterChainTextMulti warnings(List<List<String>> warnings) {
@@ -862,9 +901,8 @@ public class Biweekly {
 		}
 
 		/**
-		 * Provides a list object that any marshal warnings will be put into.
-		 * @param warnings the list object that will be populated with the
-		 * warnings of the marshalled iCalendar object.
+		 * Provides a list for putting the parser warnings into.
+		 * @param warnings the list object to populate
 		 * @return this
 		 */
 		public WriterChainTextSingle warnings(List<String> warnings) {
@@ -887,6 +925,129 @@ public class Biweekly {
 			if (this.warnings != null) {
 				this.warnings.addAll(warnings);
 			}
+		}
+	}
+
+	///////////////////////////////////////////////////////
+	// XML
+	///////////////////////////////////////////////////////
+
+	/**
+	 * Chainer class for writing xCal documents (XML-encoded iCalendar objects).
+	 * @see Biweekly#writeXml(Collection)
+	 * @see Biweekly#writeXml(ICalendar...)
+	 */
+	public static class WriterChainXml extends WriterChain<WriterChainXml> {
+		int indent = -1;
+		final Map<String, Value> parameterDataTypes = new HashMap<String, Value>(0);
+
+		WriterChainXml(Collection<ICalendar> icals) {
+			super(icals);
+		}
+
+		@Override
+		public WriterChainXml register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+			return super.register(marshaller);
+		}
+
+		@Override
+		public WriterChainXml register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+			return super.register(marshaller);
+		}
+
+		/**
+		 * Registers the data type of an experimental parameter. Experimental
+		 * parameters use the "unknown" xCal data type by default.
+		 * @param parameterName the parameter name (e.g. "x-foo")
+		 * @param dataType the data type
+		 */
+		public WriterChainXml register(String parameterName, Value dataType) {
+			parameterDataTypes.put(parameterName, dataType);
+			return this_;
+		}
+
+		/**
+		 * Sets the number of indent spaces to use for pretty-printing. If not
+		 * set, then the XML will not be pretty-printed.
+		 * @param indent the number of spaces
+		 * @return this
+		 */
+		public WriterChainXml indent(int indent) {
+			this.indent = indent;
+			return this_;
+		}
+
+		/**
+		 * Writes the xCal document to a string.
+		 * @return the XML string
+		 */
+		public String go() {
+			StringWriter sw = new StringWriter();
+			try {
+				go(sw);
+			} catch (TransformerException e) {
+				//writing to a string
+			}
+			return sw.toString();
+		}
+
+		/**
+		 * Writes the xCal document to an output stream.
+		 * @param out the output stream to write to
+		 * @throws TransformerException if there's a problem writing the XML
+		 */
+		public void go(OutputStream out) throws TransformerException {
+			go(new OutputStreamWriter(out));
+		}
+
+		/**
+		 * Writes the xCal document to a file..
+		 * @param file the file to write to
+		 * @throws TransformerException if there's a problem writing the XML
+		 * @throws IOException if there's a problem writing to the file
+		 */
+		public void go(File file) throws TransformerException, IOException {
+			XCalDocument document = constructDocument();
+			document.write(file, indent);
+		}
+
+		/**
+		 * Writes the xCal document to a writer.
+		 * @param writer the writer to write to
+		 * @throws TransformerException if there's a problem writing the XML
+		 */
+		public void go(Writer writer) throws TransformerException {
+			XCalDocument document = constructDocument();
+			document.write(writer, indent);
+		}
+
+		/**
+		 * Writes the xCal document to an XML DOM.
+		 * @return the XML DOM
+		 */
+		public Document dom() {
+			XCalDocument document = constructDocument();
+			return document.getDocument();
+		}
+
+		private XCalDocument constructDocument() {
+			XCalDocument document = new XCalDocument();
+
+			for (ICalPropertyMarshaller<? extends ICalProperty> marshaller : propertyMarshallers) {
+				document.registerMarshaller(marshaller);
+			}
+			for (ICalComponentMarshaller<? extends ICalComponent> marshaller : componentMarshallers) {
+				document.registerMarshaller(marshaller);
+			}
+			for (Map.Entry<String, Value> entry : parameterDataTypes.entrySet()) {
+				document.registerParameterDataType(entry.getKey(), entry.getValue());
+			}
+
+			for (ICalendar ical : icals) {
+				document.add(ical);
+			}
+
+			return document;
 		}
 	}
 

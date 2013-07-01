@@ -271,7 +271,7 @@ public class XCalDocument {
 	 */
 	public void registerParameterDataType(String parameterName, Value dataType) {
 		if (dataType == null) {
-			parameterDataTypes.remove(parameterName);
+			parameterDataTypes.remove(parameterName.toLowerCase());
 		} else {
 			parameterDataTypes.put(parameterName.toLowerCase(), dataType);
 		}
@@ -341,9 +341,9 @@ public class XCalDocument {
 
 	/**
 	 * Adds an iCalendar object to the xCal document. This marshals the
-	 * {@link ICalendar} object to the XML DOM. Any changes that are made to the
-	 * {@link ICalendar} object after calling this method will NOT be applied to
-	 * the xCal document.
+	 * {@link ICalendar} object to the XML DOM. This means that any changes that
+	 * are made to the {@link ICalendar} object after calling this method will
+	 * NOT be applied to the xCal document.
 	 * @param ical the iCalendar object to add
 	 * @throws IllegalArgumentExeption if the marshaller class for a component
 	 * or property object cannot be found (only happens when an experimental
@@ -406,7 +406,8 @@ public class XCalDocument {
 	/**
 	 * Writes the xCal document to a file without pretty-printing it.
 	 * @param file the file
-	 * @throws TransformerException if there's a problem writing to the file
+	 * @throws IOException if there's a problem writing to the file
+	 * @throws TransformerException if there's a problem writing the XML
 	 */
 	public void write(File file) throws TransformerException, IOException {
 		write(file, -1);
@@ -416,7 +417,8 @@ public class XCalDocument {
 	 * Writes the xCal document to a file and pretty-prints it.
 	 * @param file the file stream
 	 * @param indent the number of indent spaces to use for pretty-printing
-	 * @throws TransformerException if there's a problem writing to the file
+	 * @throws IOException if there's a problem writing to the file
+	 * @throws TransformerException if there's a problem writing the XML
 	 */
 	public void write(File file, int indent) throws TransformerException, IOException {
 		FileWriter writer = null;

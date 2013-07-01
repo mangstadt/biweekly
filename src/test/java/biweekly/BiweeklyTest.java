@@ -2,6 +2,7 @@ package biweekly;
 
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertRegex;
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -12,14 +13,18 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import biweekly.component.ICalComponent;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.CannotParseException;
+import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
+import biweekly.util.XmlUtils;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -143,22 +148,22 @@ public class BiweeklyTest {
 	@Test
 	public void parseXml_first() throws Exception {
 		//@formatter:off
-		 String xml =
-		 "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
-		 "<icalendar xmlns=\"urn:ietf:params:xml:ns:icalendar-2.0\">" +
-		   "<vcalendar>" +
-		     "<properties>" +
-		       "<prodid><text>one</text></prodid>" +
-		       "<version><text>2.0</text></version>" +
-		     "</properties>" +
-		   "</vcalendar>" +
-		   "<vcalendar>" +
-		     "<properties>" +
-		       "<prodid><text>two</text></prodid>" +
-		       "<version><text>2.0</text></version>" +
-		     "</properties>" +
-		   "</vcalendar>" +
-		 "</icalendar>";
+		String xml =
+		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
+		"<icalendar xmlns=\"urn:ietf:params:xml:ns:icalendar-2.0\">" +
+		  "<vcalendar>" +
+		    "<properties>" +
+		      "<prodid><text>one</text></prodid>" +
+		      "<version><text>2.0</text></version>" +
+		    "</properties>" +
+		  "</vcalendar>" +
+		  "<vcalendar>" +
+		    "<properties>" +
+		      "<prodid><text>two</text></prodid>" +
+		      "<version><text>2.0</text></version>" +
+		    "</properties>" +
+		  "</vcalendar>" +
+		"</icalendar>";
 		//@formatter:on
 		List<List<String>> warnings = new ArrayList<List<String>>();
 
@@ -172,22 +177,22 @@ public class BiweeklyTest {
 	@Test
 	public void parseXml_all() throws Exception {
 		//@formatter:off
-		 String xml =
-		 "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
-		 "<icalendar xmlns=\"urn:ietf:params:xml:ns:icalendar-2.0\">" +
-		   "<vcalendar>" +
-		     "<properties>" +
-		       "<prodid><text>one</text></prodid>" +
-		       "<version><text>2.0</text></version>" +
-		     "</properties>" +
-		   "</vcalendar>" +
-		   "<vcalendar>" +
-		     "<properties>" +
-		       "<prodid><text>two</text></prodid>" +
-		       "<version><text>2.0</text></version>" +
-		     "</properties>" +
-		   "</vcalendar>" +
-		 "</icalendar>";
+		String xml =
+		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
+		"<icalendar xmlns=\"urn:ietf:params:xml:ns:icalendar-2.0\">" +
+		  "<vcalendar>" +
+		    "<properties>" +
+		      "<prodid><text>one</text></prodid>" +
+		      "<version><text>2.0</text></version>" +
+		    "</properties>" +
+		  "</vcalendar>" +
+		  "<vcalendar>" +
+		    "<properties>" +
+		      "<prodid><text>two</text></prodid>" +
+		      "<version><text>2.0</text></version>" +
+		    "</properties>" +
+		  "</vcalendar>" +
+		"</icalendar>";
 		//@formatter:on
 		List<List<String>> warnings = new ArrayList<List<String>>();
 
@@ -204,6 +209,34 @@ public class BiweeklyTest {
 
 		assertEquals(2, warnings.size());
 		assertFalse(it.hasNext());
+	}
+
+	@Test
+	public void parseXml_register() throws SAXException {
+		//@formatter:off
+		String xml =
+		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
+		"<icalendar xmlns=\"urn:ietf:params:xml:ns:icalendar-2.0\">" +
+		  "<vcalendar>" +
+		    "<properties>" +
+		      "<prodid><text>prodid</text></prodid>" +
+		      "<version><text>2.0</text></version>" +
+		      "<x-test><text>one</text></x-test>" +
+		    "</properties>" +
+		    "<components>" +
+			    "<x-vparty>" +
+			    "</x-vparty>" +
+		    "</components>" +
+		  "</vcalendar>" +
+		"</icalendar>";
+		//@formatter:on
+
+		ICalendar ical = Biweekly.parseXml(xml).register(new TestPropertyMarshaller()).register(new PartyMarshaller()).first();
+
+		assertIntEquals(1, ical.getProperty(TestProperty.class).getNumber());
+		assertEquals(0, ical.getExperimentalProperties().size());
+		assertNotNull(ical.getComponent(Party.class));
+		assertEquals(0, ical.getExperimentalComponents().size());
 	}
 
 	@Test(expected = SAXException.class)
@@ -232,7 +265,7 @@ public class BiweeklyTest {
 	@Test
 	public void write_one_with_warnings() {
 		ICalendar ical = new ICalendar();
-		ical.addProperty(new TestProperty()); //no marshaller registered
+		ical.addProperty(new TestProperty(null)); //no marshaller registered
 
 		List<String> warnings = new ArrayList<String>();
 		Biweekly.write(ical).warnings(warnings).go();
@@ -288,7 +321,7 @@ public class BiweeklyTest {
 		ICalendar ical1 = new ICalendar();
 
 		ICalendar ical2 = new ICalendar();
-		ical2.addProperty(new TestProperty());
+		ical2.addProperty(new TestProperty(null));
 
 		ICalendar ical3 = new ICalendar();
 
@@ -339,26 +372,129 @@ public class BiweeklyTest {
 		assertRegex(expected, actual);
 	}
 
-	class TestProperty extends ICalProperty {
-		Integer number;
+	@Test
+	public void write_register() {
+		ICalendar ical = new ICalendar();
+		ical.addProperty(new TestProperty(1));
+		ical.addComponent(new Party());
 
-		Integer getNumber() {
-			return number;
+		//@formatter:off
+		String expected =
+		"BEGIN:VCALENDAR\r\n" +
+		"VERSION:2\\.0\r\n" +
+		"PRODID:.*?\r\n" +
+		"X-TEST:one\r\n" +
+		"BEGIN:X-VPARTY\r\n" +
+		"END:X-VPARTY\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		String actual = Biweekly.write(ical).register(new TestPropertyMarshaller()).register(new PartyMarshaller()).go();
+
+		assertRegex(expected, actual);
+	}
+
+	@Test
+	public void writeXml() throws Exception {
+		ICalendar ical1 = new ICalendar();
+		ical1.setProductId((String) null);
+
+		ICalendar ical2 = new ICalendar();
+		ical2.setProductId((String) null);
+		ical2.addExperimentalProperty("X-TEST1", "value1");
+
+		ICalendar ical3 = new ICalendar();
+		ical3.setProductId((String) null);
+		ical3.addExperimentalProperty("X-TEST2", "value2");
+
+		//@formatter:off
+		Document expected = XmlUtils.toDocument(
+		 "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
+		 "<icalendar xmlns=\"urn:ietf:params:xml:ns:icalendar-2.0\">" +
+		   "<vcalendar>" +
+		     "<properties>" +
+		       "<version><text>2.0</text></version>" +
+		     "</properties>" +
+		   "</vcalendar>" +
+		   "<vcalendar>" +
+		     "<properties>" +
+		       "<version><text>2.0</text></version>" +
+		       "<x-test1><unknown>value1</unknown></x-test1>" +
+		     "</properties>" +
+		   "</vcalendar>" +
+		   "<vcalendar>" +
+		     "<properties>" +
+		       "<version><text>2.0</text></version>" +
+		       "<x-test2><unknown>value2</unknown></x-test2>" +
+		     "</properties>" +
+		   "</vcalendar>" +
+		 "</icalendar>"
+		);
+		//@formatter:on
+
+		Document actual = Biweekly.writeXml(ical1, ical2, ical3).dom();
+
+		assertXMLEqual(expected, actual);
+	}
+
+	@Test
+	public void writeXml_register() throws Exception {
+		ICalendar ical = new ICalendar();
+		ical.setProductId((String) null);
+		ical.addProperty(new TestProperty(1));
+		ical.addComponent(new Party());
+		ical.getVersion().setParameter("X-TEST1", "value1");
+		ical.getVersion().setParameter("X-TEST2", "value2");
+
+		//@formatter:off
+		Document expected = XmlUtils.toDocument(
+		 "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
+		 "<icalendar xmlns=\"urn:ietf:params:xml:ns:icalendar-2.0\">" +
+		   "<vcalendar>" +
+		     "<properties>" +
+		     	"<version>" +
+		     		"<parameters>" +
+		     			"<x-test1><unknown>value1</unknown></x-test1>" +
+		     			"<x-test2><text>value2</text></x-test2>" +
+		     		"</parameters>" +
+		     		"<text>2.0</text>" +
+		     	"</version>" +
+		     	"<x-test><unknown>one</unknown></x-test>" +
+		     "</properties>" +
+		     "<components>" +
+		     	"<x-vparty/>" +
+		     "</components>" +
+		   "</vcalendar>" +
+		 "</icalendar>"
+		);
+		//@formatter:on
+
+		Document actual = Biweekly.writeXml(ical).register(new TestPropertyMarshaller()).register(new PartyMarshaller()).register("X-TEST2", Value.TEXT).dom();
+
+		assertXMLEqual(expected, actual);
+	}
+
+	private class TestProperty extends ICalProperty {
+		private Integer number;
+
+		public TestProperty(Integer number) {
+			this.number = number;
 		}
 
-		void setNumber(Integer number) {
-			this.number = number;
+		private Integer getNumber() {
+			return number;
 		}
 	}
 
-	class TestPropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
-		TestPropertyMarshaller() {
+	private class TestPropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
+		private TestPropertyMarshaller() {
 			super(TestProperty.class, "X-TEST");
 		}
 
 		@Override
 		protected String _writeText(TestProperty property) {
-			return property.getNumber().toString();
+			Integer value = property.getNumber();
+			return (value == 1) ? "one" : value.toString();
 		}
 
 		@Override
@@ -370,14 +506,18 @@ public class BiweeklyTest {
 				throw new CannotParseException("wat");
 			}
 
-			TestProperty prop = new TestProperty();
-			prop.setNumber(number);
+			TestProperty prop = new TestProperty(number);
 			return prop;
+		}
+
+		@Override
+		protected TestProperty _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+			return _parseText(element.first(Value.TEXT), parameters, warnings);
 		}
 	}
 
-	class PartyMarshaller extends ICalComponentMarshaller<Party> {
-		PartyMarshaller() {
+	private class PartyMarshaller extends ICalComponentMarshaller<Party> {
+		private PartyMarshaller() {
 			super(Party.class, "X-VPARTY");
 		}
 
@@ -387,7 +527,7 @@ public class BiweeklyTest {
 		}
 	}
 
-	class Party extends ICalComponent {
+	private class Party extends ICalComponent {
 		//empty
 	}
 }
