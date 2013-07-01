@@ -1,6 +1,10 @@
 package biweekly.property.marshaller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.xml.transform.OutputKeys;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -55,7 +59,9 @@ public class XmlMarshaller extends ICalPropertyMarshaller<Xml> {
 			return "";
 		}
 
-		String xml = XmlUtils.toString(value);
+		Map<String, String> props = new HashMap<String, String>();
+		props.put(OutputKeys.OMIT_XML_DECLARATION, "yes");
+		String xml = XmlUtils.toString(value, props);
 		return escape(xml);
 	}
 
