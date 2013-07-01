@@ -509,7 +509,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		/**
 		 * Sets whether to output the date's time component.
 		 * @param hasTime true include the time, false if it's strictly a date
-		 * (default is "true")
+		 * (defaults to "true")
 		 * @return this
 		 */
 		public DateWriter time(boolean hasTime) {
@@ -554,7 +554,8 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 
 		/**
 		 * Sets whether to use extended format or basic.
-		 * @param extended true to use extended format, false to use basic.
+		 * @param extended true to use extended format, false to use basic
+		 * (defaults to "false")
 		 * @return this
 		 */
 		public DateWriter extended(boolean extended) {

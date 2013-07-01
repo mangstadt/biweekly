@@ -29,19 +29,23 @@ import biweekly.ICalendar;
  */
 
 /**
- * Thrown during the marshalling/unmarshalling of an iCalendar property to show
- * that the property should NOT be included in the marshalled iCalendar object
- * or the unmarshalled {@link ICalendar} object.
+ * Thrown during the reading or writing of an iCalendar property to show that
+ * the property should not be written to the iCalendar data stream or not be
+ * included in the parsed {@link ICalendar} object.
  * @author Michael Angstadt
  */
 @SuppressWarnings("serial")
 public class SkipMeException extends ICalException {
+	/**
+	 * Creates a new skip-me exception.
+	 */
 	public SkipMeException() {
 		super();
 	}
 
 	/**
-	 * @param msg the reason why this property cannot be marshalled/unmarshalled
+	 * Creates a new skip-me exception.
+	 * @param msg the reason why this property is being skipped
 	 */
 	public SkipMeException(String msg) {
 		super(msg);
