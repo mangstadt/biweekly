@@ -287,8 +287,8 @@ public class XCalDocument {
 
 	/**
 	 * Gets the warnings from the last parse operation.
-	 * @return the warnings (a "list of lists" -- each parsed {@link ICalendar}
-	 * object has its own warnings list)
+	 * @return the warnings (it is a "list of lists"--each parsed
+	 * {@link ICalendar} object has its own warnings list)
 	 * @see #parseAll
 	 * @see #parseFirst
 	 */

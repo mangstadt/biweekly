@@ -18,13 +18,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import biweekly.component.ICalComponent;
 import biweekly.component.marshaller.ICalComponentMarshaller;
-import biweekly.io.IParser;
+import biweekly.io.text.ICalRawReader;
 import biweekly.io.text.ICalReader;
 import biweekly.io.text.ICalWriter;
+import biweekly.io.xml.XCalDocument;
 import biweekly.property.ICalProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.IOUtils;
@@ -235,19 +237,62 @@ public class Biweekly {
 		return new WriterChainTextMulti(icals);
 	}
 
-	static abstract class ParserChain<T, U extends IParser> {
+	/**
+	 * Parses an xCal document (XML-encoded iCalendar objects).
+	 * @param xml the XML string
+	 * @return chainer object for completing the parse operation
+	 */
+	public static ParserChainXmlString parseXml(String xml) {
+		return new ParserChainXmlString(xml);
+	}
+
+	/**
+	 * Parses an xCal document (XML-encoded iCalendar objects).
+	 * @param file the XML file
+	 * @return chainer object for completing the parse operation
+	 * @throws FileNotFoundException if the file does not exist or cannot be
+	 * accessed
+	 */
+	public static ParserChainXmlReader parseXml(File file) throws FileNotFoundException {
+		return new ParserChainXmlReader(file); //close the FileReader, since we created it
+	}
+
+	/**
+	 * Parses an xCal document (XML-encoded iCalendar objects).
+	 * @param in the input stream
+	 * @return chainer object for completing the parse operation
+	 */
+	public static ParserChainXmlReader parseXml(InputStream in) {
+		return parseXml(new InputStreamReader(in));
+	}
+
+	/**
+	 * Parses an xCal document (XML-encoded iCalendar objects).
+	 * @param reader the reader
+	 * @return chainer object for completing the parse operation
+	 */
+	public static ParserChainXmlReader parseXml(Reader reader) {
+		return new ParserChainXmlReader(reader);
+	}
+
+	/**
+	 * Parses an xCal document (XML-encoded iCalendar objects).
+	 * @param document the XML document
+	 * @return chainer object for completing the parse operation
+	 */
+	public static ParserChainXmlDocument parseXml(Document document) {
+		return new ParserChainXmlDocument(document);
+	}
+
+	static abstract class ParserChain<T> {
+		//Note: "package" level is used so various fields/methods don't show up in the Javadocs, but are still visible to child classes
 		final List<ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new ArrayList<ICalPropertyMarshaller<? extends ICalProperty>>(0);
 		final List<ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new ArrayList<ICalComponentMarshaller<? extends ICalComponent>>(0);
-		final boolean closeWhenDone;
 
 		@SuppressWarnings("unchecked")
 		final T this_ = (T) this;
 
 		List<List<String>> warnings;
-
-		ParserChain(boolean closeWhenDone) {
-			this.closeWhenDone = closeWhenDone;
-		}
 
 		/**
 		 * Registers a property marshaller.
@@ -270,13 +315,10 @@ public class Biweekly {
 		}
 
 		/**
-		 * Provides a list object that any unmarshal warnings will be put into.
-		 * @param warnings the list object that will be populated with the
-		 * warnings of each unmarshalled iCalendar object. Each element of the
-		 * list is the list of warnings for one of the unmarshalled iCalendar
-		 * objects. Therefore, the size of this list will be equal to the number
-		 * of parsed iCalendar objects. If an iCalendar object does not have any
-		 * warnings, then its warning list will be empty.
+		 * Provides a list for putting the parser warnings into.
+		 * @param warnings the list object to populate (it is a
+		 * "list of lists"--each parsed {@link ICalendar} object has its own
+		 * warnings list)
 		 * @return this
 		 */
 		public T warnings(List<List<String>> warnings) {
@@ -285,31 +327,51 @@ public class Biweekly {
 		}
 
 		/**
-		 * Creates the parser.
-		 * @return the parser object
+		 * Reads the first iCalendar object from the data stream.
+		 * @return the first iCalendar object or null if there are none
+		 * @throws IOException if there a problem reading from the data stream
+		 * @throws SAXException if there's a problem parsing the XML
 		 */
-		abstract U init() throws IOException, SAXException;
+		public abstract ICalendar first() throws IOException, SAXException;
 
-		U ready() throws IOException, SAXException {
-			U parser = init();
-			for (ICalPropertyMarshaller<? extends ICalProperty> marshaller : propertyMarshallers) {
-				parser.registerMarshaller(marshaller);
-			}
-			for (ICalComponentMarshaller<? extends ICalComponent> marshaller : componentMarshallers) {
-				parser.registerMarshaller(marshaller);
-			}
-			return parser;
+		/**
+		 * Reads all iCalendar objects from the data stream.
+		 * @return the parsed iCalendar objects
+		 * @throws IOException if there's a problem reading from the data stream
+		 * @throws SAXException if there's a problem parsing the XML
+		 */
+		public abstract List<ICalendar> all() throws IOException, SAXException;
+	}
+
+	///////////////////////////////////////////////////////
+	// plain-text
+	///////////////////////////////////////////////////////
+
+	static abstract class ParserChainText<T> extends ParserChain<T> {
+		boolean caretDecoding = true;
+		final boolean closeWhenDone;
+
+		private ParserChainText(boolean closeWhenDone) {
+			this.closeWhenDone = closeWhenDone;
 		}
 
 		/**
-		 * Reads the first iCalendar object from the data stream.
-		 * @return the first iCalendar object or null if there are no iCalendar
-		 * objects
-		 * @throws IOException if there's an I/O problem
-		 * @throws SAXException if there's a problem parsing the XML
+		 * Sets whether the reader will decode parameter values that use
+		 * circumflex accent encoding (enabled by default). This escaping
+		 * mechanism allows newlines and double quotes to be included in
+		 * parameter values.
+		 * @param enable true to use circumflex accent decoding, false not to
+		 * @see ICalRawReader#setCaretDecodingEnabled(boolean)
 		 */
-		public ICalendar first() throws IOException, SAXException {
-			IParser parser = ready();
+		public T caretDecoding(boolean enable) {
+			caretDecoding = enable;
+			return this_;
+		}
+
+		@Override
+		public ICalendar first() throws IOException {
+			ICalReader parser = constructReader();
+
 			try {
 				ICalendar ical = parser.readNext();
 				if (warnings != null) {
@@ -323,14 +385,10 @@ public class Biweekly {
 			}
 		}
 
-		/**
-		 * Reads all iCalendar objects from the data stream.
-		 * @return the parsed iCalendar objects
-		 * @throws IOException if there's an I/O problem
-		 * @throws SAXException if there's a problem parsing the XML
-		 */
-		public List<ICalendar> all() throws IOException, SAXException {
-			IParser parser = ready();
+		@Override
+		public List<ICalendar> all() throws IOException {
+			ICalReader parser = constructReader();
+
 			try {
 				List<ICalendar> icals = new ArrayList<ICalendar>();
 				ICalendar ical;
@@ -348,64 +406,29 @@ public class Biweekly {
 			}
 		}
 
-	}
-
-	static abstract class ParserChainText<T> extends ParserChain<T, ICalReader> {
-		boolean caretDecoding = true;
-
-		ParserChainText(boolean closeWhenDone) {
-			super(closeWhenDone);
-		}
-
-		/**
-		 * Sets whether the reader will decode characters in parameter values
-		 * that use circumflex accent encoding (enabled by default).
-		 * 
-		 * @param enable true to use circumflex accent decoding, false not to
-		 * @see ICalReader#setCaretDecodingEnabled(boolean)
-		 * @see <a href="http://tools.ietf.org/html/rfc6868">RFC 6868</a>
-		 */
-		public T caretDecoding(boolean enable) {
-			caretDecoding = enable;
-			return this_;
-		}
-
-		@Override
-		ICalReader ready() throws IOException, SAXException {
-			ICalReader parser = super.ready();
+		private ICalReader constructReader() {
+			ICalReader parser = _constructReader();
+			for (ICalPropertyMarshaller<? extends ICalProperty> marshaller : propertyMarshallers) {
+				parser.registerMarshaller(marshaller);
+			}
+			for (ICalComponentMarshaller<? extends ICalComponent> marshaller : componentMarshallers) {
+				parser.registerMarshaller(marshaller);
+			}
 			parser.setCaretDecodingEnabled(caretDecoding);
 			return parser;
 		}
 
-		@Override
-		public ICalendar first() throws IOException {
-			try {
-				return super.first();
-			} catch (SAXException e) {
-				//not parsing XML
-			}
-			return null;
-		}
-
-		@Override
-		public List<ICalendar> all() throws IOException {
-			try {
-				return super.all();
-			} catch (SAXException e) {
-				//not parsing XML
-			}
-			return null;
-		}
+		abstract ICalReader _constructReader();
 	}
 
 	/**
-	 * Convenience chainer class for parsing plain text iCalendar data streams.
+	 * Chainer class for parsing plain text iCalendar data streams.
 	 * @see Biweekly#parse(InputStream)
 	 * @see Biweekly#parse(File)
 	 * @see Biweekly#parse(Reader)
 	 */
 	public static class ParserChainTextReader extends ParserChainText<ParserChainTextReader> {
-		private Reader reader;
+		private final Reader reader;
 
 		private ParserChainTextReader(Reader reader, boolean closeWhenDone) {
 			super(closeWhenDone);
@@ -433,17 +456,17 @@ public class Biweekly {
 		}
 
 		@Override
-		ICalReader init() {
+		ICalReader _constructReader() {
 			return new ICalReader(reader);
 		}
 	}
 
 	/**
-	 * Convenience chainer class for parsing plain text iCalendar strings.
+	 * Chainer class for parsing plain text iCalendar strings.
 	 * @see Biweekly#parse(String)
 	 */
 	public static class ParserChainTextString extends ParserChainText<ParserChainTextString> {
-		private String text;
+		private final String text;
 
 		private ParserChainTextString(String text) {
 			super(false);
@@ -466,7 +489,7 @@ public class Biweekly {
 		}
 
 		@Override
-		ICalReader init() {
+		ICalReader _constructReader() {
 			return new ICalReader(text);
 		}
 
@@ -486,6 +509,179 @@ public class Biweekly {
 				return super.all();
 			} catch (IOException e) {
 				//reading from string
+			}
+			return null;
+		}
+	}
+
+	///////////////////////////////////////////////////////
+	// XML
+	///////////////////////////////////////////////////////
+
+	static abstract class ParserChainXml<T> extends ParserChain<T> {
+		@Override
+		public ICalendar first() throws IOException, SAXException {
+			XCalDocument document = constructDocument();
+			ICalendar ical = document.parseFirst();
+			if (warnings != null) {
+				warnings.addAll(document.getParseWarnings());
+			}
+			return ical;
+		}
+
+		@Override
+		public List<ICalendar> all() throws IOException, SAXException {
+			XCalDocument document = constructDocument();
+			List<ICalendar> icals = document.parseAll();
+			if (warnings != null) {
+				warnings.addAll(document.getParseWarnings());
+			}
+			return icals;
+		}
+
+		private XCalDocument constructDocument() throws SAXException, IOException {
+			XCalDocument parser = _constructDocument();
+			for (ICalPropertyMarshaller<? extends ICalProperty> marshaller : propertyMarshallers) {
+				parser.registerMarshaller(marshaller);
+			}
+			for (ICalComponentMarshaller<? extends ICalComponent> marshaller : componentMarshallers) {
+				parser.registerMarshaller(marshaller);
+			}
+			return parser;
+		}
+
+		abstract XCalDocument _constructDocument() throws IOException, SAXException;
+	}
+
+	/**
+	 * Chainer class for parsing XML-encoded iCalendar objects (xCal).
+	 * @see Biweekly#parseXml(String)
+	 */
+	public static class ParserChainXmlString extends ParserChainXml<ParserChainXmlString> {
+		private final String xml;
+
+		public ParserChainXmlString(String xml) {
+			this.xml = xml;
+		}
+
+		@Override
+		public ParserChainXmlString register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+			return super.register(marshaller);
+		}
+
+		@Override
+		public ParserChainXmlString register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+			return super.register(marshaller);
+		}
+
+		@Override
+		XCalDocument _constructDocument() throws SAXException {
+			return new XCalDocument(xml);
+		}
+
+		@Override
+		public ICalendar first() throws SAXException {
+			try {
+				return super.first();
+			} catch (IOException e) {
+				//reading from string
+			}
+			return null;
+		}
+
+		@Override
+		public List<ICalendar> all() throws SAXException {
+			try {
+				return super.all();
+			} catch (IOException e) {
+				//reading from string
+			}
+			return null;
+		}
+	}
+
+	/**
+	 * Chainer class for parsing XML-encoded iCalendar objects (xCal).
+	 * @see Biweekly#parseXml(InputStream)
+	 * @see Biweekly#parseXml(File)
+	 * @see Biweekly#parseXml(Reader)
+	 */
+	public static class ParserChainXmlReader extends ParserChainXml<ParserChainXmlReader> {
+		private final Reader reader;
+		private final File file;
+
+		public ParserChainXmlReader(Reader reader) {
+			this.reader = reader;
+			this.file = null;
+		}
+
+		public ParserChainXmlReader(File file) {
+			this.reader = null;
+			this.file = file;
+		}
+
+		@Override
+		public ParserChainXmlReader register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+			return super.register(marshaller);
+		}
+
+		@Override
+		public ParserChainXmlReader register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+			return super.register(marshaller);
+		}
+
+		@Override
+		XCalDocument _constructDocument() throws IOException, SAXException {
+			return (reader == null) ? new XCalDocument(file) : new XCalDocument(reader);
+		}
+	}
+
+	/**
+	 * Chainer class for parsing XML-encoded iCalendar objects (xCal).
+	 * @see Biweekly#parseXml(Document)
+	 */
+	public static class ParserChainXmlDocument extends ParserChainXml<ParserChainXmlDocument> {
+		private final Document document;
+
+		public ParserChainXmlDocument(Document document) {
+			this.document = document;
+		}
+
+		@Override
+		public ParserChainXmlDocument register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+			return super.register(marshaller);
+		}
+
+		@Override
+		public ParserChainXmlDocument register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+			return super.register(marshaller);
+		}
+
+		@Override
+		XCalDocument _constructDocument() {
+			return new XCalDocument(document);
+		}
+
+		@Override
+		public ICalendar first() {
+			try {
+				return super.first();
+			} catch (IOException e) {
+				//reading from string
+			} catch (SAXException e) {
+				//reading from Document
+			}
+			return null;
+		}
+
+		@Override
+		public List<ICalendar> all() {
+			try {
+				return super.all();
+			} catch (IOException e) {
+				//reading from string
+			} catch (SAXException e) {
+				//reading from Document
 			}
 			return null;
 		}
@@ -600,8 +796,7 @@ public class Biweekly {
 	}
 
 	/**
-	 * Convenience chainer class for writing to plain text iCalendar data
-	 * streams.
+	 * Chainer class for writing to plain text iCalendar data streams.
 	 * @see Biweekly#write(Collection)
 	 * @see Biweekly#write(ICalendar...)
 	 */
@@ -651,8 +846,7 @@ public class Biweekly {
 	}
 
 	/**
-	 * Convenience chainer class for writing to plain text iCalendar data
-	 * streams.
+	 * Chainer class for writing to plain text iCalendar data streams.
 	 * @see Biweekly#write(ICalendar)
 	 */
 	public static class WriterChainTextSingle extends WriterChainText<WriterChainTextSingle> {
@@ -694,5 +888,9 @@ public class Biweekly {
 				this.warnings.addAll(warnings);
 			}
 		}
+	}
+
+	private Biweekly() {
+		//hide
 	}
 }

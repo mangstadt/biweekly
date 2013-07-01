@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
 import biweekly.component.ICalComponent;
 import biweekly.component.marshaller.ICalComponentMarshaller;
@@ -73,11 +74,11 @@ public class BiweeklyTest {
 		String icalStr =
 		"BEGIN:VCALENDAR\r\n" +
 		"VERSION:2.0\r\n" +
-		"PRODID:prodid1\r\n" +
+		"PRODID:one\r\n" +
 		"END:VCALENDAR\r\n" +
 		"BEGIN:VCALENDAR\r\n" +
 		"VERSION:2.0\r\n" +
-		"PRODID:prodid2\r\n" +
+		"PRODID:two\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 		List<List<String>> warnings = new ArrayList<List<String>>();
@@ -87,11 +88,11 @@ public class BiweeklyTest {
 
 		ICalendar ical = it.next();
 		assertEquals("2.0", ical.getVersion().getMaxVersion());
-		assertEquals("prodid1", ical.getProductId().getValue());
+		assertEquals("one", ical.getProductId().getValue());
 
 		ical = it.next();
 		assertEquals("2.0", ical.getVersion().getMaxVersion());
-		assertEquals("prodid2", ical.getProductId().getValue());
+		assertEquals("two", ical.getProductId().getValue());
 
 		assertEquals(2, warnings.size());
 		assertFalse(it.hasNext());
@@ -124,7 +125,7 @@ public class BiweeklyTest {
 		String icalStr =
 		"BEGIN:VCALENDAR\r\n" +
 		"VERSION:2.0\r\n" +
-		"PRODID;X-TEST=the ^'best^' app:prodid1\r\n" +
+		"PRODID;X-TEST=the ^'best^' app:prodid\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
@@ -137,6 +138,78 @@ public class BiweeklyTest {
 
 		ical = Biweekly.parse(icalStr).caretDecoding(false).first();
 		assertEquals("the ^'best^' app", ical.getProductId().getParameter("X-TEST"));
+	}
+
+	@Test
+	public void parseXml_first() throws Exception {
+		//@formatter:off
+		 String xml =
+		 "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
+		 "<icalendar xmlns=\"urn:ietf:params:xml:ns:icalendar-2.0\">" +
+		   "<vcalendar>" +
+		     "<properties>" +
+		       "<prodid><text>one</text></prodid>" +
+		       "<version><text>2.0</text></version>" +
+		     "</properties>" +
+		   "</vcalendar>" +
+		   "<vcalendar>" +
+		     "<properties>" +
+		       "<prodid><text>two</text></prodid>" +
+		       "<version><text>2.0</text></version>" +
+		     "</properties>" +
+		   "</vcalendar>" +
+		 "</icalendar>";
+		//@formatter:on
+		List<List<String>> warnings = new ArrayList<List<String>>();
+
+		ICalendar ical = Biweekly.parseXml(xml).warnings(warnings).first();
+
+		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertEquals("one", ical.getProductId().getValue());
+		assertEquals(1, warnings.size());
+	}
+
+	@Test
+	public void parseXml_all() throws Exception {
+		//@formatter:off
+		 String xml =
+		 "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
+		 "<icalendar xmlns=\"urn:ietf:params:xml:ns:icalendar-2.0\">" +
+		   "<vcalendar>" +
+		     "<properties>" +
+		       "<prodid><text>one</text></prodid>" +
+		       "<version><text>2.0</text></version>" +
+		     "</properties>" +
+		   "</vcalendar>" +
+		   "<vcalendar>" +
+		     "<properties>" +
+		       "<prodid><text>two</text></prodid>" +
+		       "<version><text>2.0</text></version>" +
+		     "</properties>" +
+		   "</vcalendar>" +
+		 "</icalendar>";
+		//@formatter:on
+		List<List<String>> warnings = new ArrayList<List<String>>();
+
+		List<ICalendar> icals = Biweekly.parseXml(xml).warnings(warnings).all();
+		Iterator<ICalendar> it = icals.iterator();
+
+		ICalendar ical = it.next();
+		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertEquals("one", ical.getProductId().getValue());
+
+		ical = it.next();
+		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertEquals("two", ical.getProductId().getValue());
+
+		assertEquals(2, warnings.size());
+		assertFalse(it.hasNext());
+	}
+
+	@Test(expected = SAXException.class)
+	public void parseXml_invalid() throws Exception {
+		String xml = "invalid-xml";
+		Biweekly.parseXml(xml).first();
 	}
 
 	@Test

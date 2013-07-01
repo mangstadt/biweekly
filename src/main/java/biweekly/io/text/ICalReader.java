@@ -1,5 +1,6 @@
 package biweekly.io.text;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -19,7 +20,6 @@ import biweekly.component.marshaller.ComponentLibrary;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.component.marshaller.RawComponentMarshaller;
 import biweekly.io.CannotParseException;
-import biweekly.io.IParser;
 import biweekly.io.SkipMeException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
@@ -70,7 +70,7 @@ import biweekly.property.marshaller.RawPropertyMarshaller;
  * </pre>
  * @author Michael Angstadt
  */
-public class ICalReader implements IParser {
+public class ICalReader implements Closeable {
 	private final List<String> warnings = new ArrayList<String>();
 	private final Map<String, ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new HashMap<String, ICalPropertyMarshaller<? extends ICalProperty>>(0);
 	private final Map<String, ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new HashMap<String, ICalComponentMarshaller<? extends ICalComponent>>(0);
@@ -131,22 +131,36 @@ public class ICalReader implements IParser {
 		reader.setCaretDecodingEnabled(enable);
 	}
 
-	//@Override
+	/**
+	 * Registers a marshaller for an experimental property.
+	 * @param marshaller the marshaller to register
+	 */
 	public void registerMarshaller(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
 		propertyMarshallers.put(marshaller.getPropertyName().toUpperCase(), marshaller);
 	}
 
-	//@Override
+	/**
+	 * Registers a marshaller for an experimental component.
+	 * @param marshaller the marshaller to register
+	 */
 	public void registerMarshaller(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
 		componentMarshallers.put(marshaller.getComponentName().toUpperCase(), marshaller);
 	}
 
-	//@Override
+	/**
+	 * Gets the warnings from the last iCalendar object that was unmarshalled.
+	 * This list is reset every time a new iCalendar object is read.
+	 * @return the warnings or empty list if there were no warnings
+	 */
 	public List<String> getWarnings() {
 		return new ArrayList<String>(warnings);
 	}
 
-	//@Override
+	/**
+	 * Reads the next iCalendar object.
+	 * @return the next iCalendar object or null if there are no more
+	 * @throws IOException if there's a problem reading from the stream
+	 */
 	public ICalendar readNext() throws IOException {
 		if (reader.eof()) {
 			return null;
@@ -348,6 +362,7 @@ public class ICalReader implements IParser {
 	/**
 	 * Closes the underlying {@link Reader} object.
 	 */
+	//@Override
 	public void close() throws IOException {
 		reader.close();
 	}
