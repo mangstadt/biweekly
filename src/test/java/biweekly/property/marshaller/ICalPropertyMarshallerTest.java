@@ -1,7 +1,9 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertWriteXml;
 import static biweekly.util.TestUtils.buildTimezone;
+import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,6 +21,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 
 /*
@@ -296,6 +299,27 @@ public class ICalPropertyMarshallerTest {
 
 		assertEquals(Arrays.asList("parseText"), result.getWarnings());
 		assertTrue(params == result.getValue().getParameters());
+	}
+
+	@Test
+	public void writeXml() {
+		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
+		TestProperty prop = new TestProperty();
+		assertWriteXml("<unknown>value</unknown>", prop, m);
+	}
+
+	@Test
+	public void writeXml_with_value_parameter() {
+		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
+		TestProperty prop = new TestProperty();
+		prop.getParameters().setValue(Value.TEXT);
+		assertWriteXml("<text>value</text>", prop, m);
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void parseXml() {
+		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
+		parseXCalProperty("<text>text</text>", m);
 	}
 
 	private class ICalPropertyMarshallerImpl extends ICalPropertyMarshaller<TestProperty> {

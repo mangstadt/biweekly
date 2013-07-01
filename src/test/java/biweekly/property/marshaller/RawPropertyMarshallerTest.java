@@ -1,11 +1,14 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.RawProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -68,6 +71,26 @@ public class RawPropertyMarshallerTest {
 		Result<RawProperty> result = marshaller.parseText(value, params);
 
 		assertEquals("value", result.getValue().getValue());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml() {
+		Result<RawProperty> result = parseXCalProperty("<text>text</text>", marshaller);
+
+		RawProperty prop = result.getValue();
+		assertEquals("text", prop.getValue());
+		assertEquals(Value.TEXT, prop.getParameters().getValue());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_unknown_tag() {
+		Result<RawProperty> result = parseXCalProperty("<foo>text</foo>", marshaller);
+
+		RawProperty prop = result.getValue();
+		assertEquals("text", prop.getValue());
+		assertNull(prop.getParameters().getValue());
 		assertWarnings(0, result.getWarnings());
 	}
 }
