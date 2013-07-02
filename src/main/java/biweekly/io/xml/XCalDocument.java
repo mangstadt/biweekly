@@ -79,7 +79,8 @@ import biweekly.util.XmlUtils;
 //@formatter:off
 /**
  * <p>
- * Represents an xCal document (an XML document containing XML-encoded iCalendar objects).
+ * Represents an XML document that contains iCalendar objects ("xCal" standard).
+ * This class can be used to read and write xCal documents.
  * </p>
  * <p>
  * <b>Examples:</b>
@@ -109,17 +110,17 @@ import biweekly.util.XmlUtils;
  * XCalDocument xcal = new XCalDocument(xml);
  * List&lt;ICalendar&gt; icals = xcal.parseAll();
  * 
- * //new ICalendar objects can be added to the XCalDocument object at any time
+ * //creating an empty xCal document
+ * XCalDocument xcal = new XCalDocument();
+ * 
+ * //ICalendar objects can be added at any time
  * ICalendar ical = new ICalendar();
  * xcal.add(ical);
  * 
- * //empty xCal documents can be also created
- * XCalDocument xcal = new XCalDocument();
- * 
- * //the raw XML DOM can be retrieved and manipulated if need be
+ * //retrieving the raw XML DOM
  * Document document = xcal.getDocument();
  * 
- * //call one of the "write()" methods to output an xCal document
+ * //call one of the "write()" methods to output the xCal document
  * File file = new File("meeting.xml");
  * xcal.write(file);
  * </pre>

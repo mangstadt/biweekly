@@ -65,8 +65,7 @@ import biweekly.util.IOUtils;
 /**
  * <p>
  * Contains static chaining factory methods for reading/writing iCalendar
- * objects. For data streaming, use the {@link ICalReader} and
- * {@link ICalWriter} classes.
+ * objects.
  * </p>
  * 
  * <p>
@@ -98,6 +97,17 @@ import biweekly.util.IOUtils;
  * ICalendar ical2 = new ICalendar();
  * 
  * String icalString = Biweekly.write(ical1, ical2).go();
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <p>
+ * <b>Writing an XML-encoded iCalendar object (xCal)</b><br>
+ * Call <code>writeXml()</code> instead of <code>write()</code>
+ * 
+ * <pre>
+ * ICalendar ical = new ICalendar();
+ * String xml = Biweekly.writeXml(ical).indent(2).go();
  * </pre>
  * 
  * </p>
@@ -135,21 +145,58 @@ import biweekly.util.IOUtils;
  * </p>
  * 
  * <p>
+ * <b>Reading an XML-encoded iCalendar object (xCal)</b><br>
+ * Call <code>parseXml()</code> instead of <code>parse()</code>
+ * 
+ * <pre>
+ * String xml = ...
+ * ICalendar ical = Biweekly.parseXml(xml).first();
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <p>
  * <b>Retrieving parser warnings</b>
  * 
  * <pre>
  * String icalStr = ...
  * List&lt;List&lt;String&gt;&gt; warnings = new ArrayList&lt;List&lt;String&gt;&gt;();
- * ICalendar ical = Biweekly.parse(icalStr).warnings(warnings).first();
- * for (List&lt;String&gt; warningsList : warnings){
- *   System.out.println("iCal warnings:");
- *   for (String warning : warningsList){
+ * List&lt;ICalendar&gt; icals = Biweekly.parse(icalStr).warnings(warnings).all();
+ * int i = 0;
+ * for (List&lt;String&gt; icalWarnings : warnings){
+ *   System.out.println("iCal #" + (i++) + " warnings:");
+ *   for (String warning : icalWarnings){
  *     System.out.println(warning);
  *   }
  * }
  * </pre>
  * 
  * </p>
+ * 
+ * <p>
+ * The methods in this class make use of the following classes. These classes
+ * can be used if greater control over the read/write operation is required:
+ * </p>
+ * 
+ * <style> table.t td, table.t th {border:1px solid #000;} </style>
+ * <table class="t" cellpadding="5" style="border-collapse:collapse;">
+ * <tr>
+ * <th></th>
+ * <th>Classes</th>
+ * <th>Supports<br>
+ * streaming?</th>
+ * </tr>
+ * <tr>
+ * <th>Text</th>
+ * <td>{@link ICalReader} / {@link ICalWriter}</td>
+ * <td>yes</td>
+ * </tr>
+ * <tr>
+ * <th>XML</th>
+ * <td>{@link XCalDocument}</td>
+ * <td>no</td>
+ * </tr>
+ * </table>
  * @author Michael Angstadt
  */
 public class Biweekly {
