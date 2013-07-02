@@ -772,7 +772,7 @@ public class XCalDocumentTest {
 		}
 
 		@Override
-		public Party newInstance() {
+		protected Party _newInstance() {
 			return new Party();
 		}
 	}

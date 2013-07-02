@@ -36,7 +36,7 @@ public class VTimezoneMarshaller extends ICalComponentMarshaller<VTimezone> {
 	}
 
 	@Override
-	public VTimezone newInstance() {
+	protected VTimezone _newInstance() {
 		return new VTimezone(null);
 	}
 }

@@ -36,7 +36,7 @@ public class ICalendarMarshaller extends ICalComponentMarshaller<ICalendar> {
 	}
 
 	@Override
-	public ICalendar newInstance() {
+	protected ICalendar _newInstance() {
 		return new ICalendar();
 	}
 }

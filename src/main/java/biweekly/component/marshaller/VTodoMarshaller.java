@@ -36,7 +36,7 @@ public class VTodoMarshaller extends ICalComponentMarshaller<VTodo> {
 	}
 
 	@Override
-	public VTodo newInstance() {
+	protected VTodo _newInstance() {
 		return new VTodo();
 	}
 }

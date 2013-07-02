@@ -40,7 +40,7 @@ public class RawComponentMarshaller extends ICalComponentMarshaller<RawComponent
 	}
 
 	@Override
-	public RawComponent newInstance() {
+	protected RawComponent _newInstance() {
 		return new RawComponent(componentName);
 	}
 }

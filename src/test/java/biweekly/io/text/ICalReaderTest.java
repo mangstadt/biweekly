@@ -832,7 +832,7 @@ public class ICalReaderTest {
 		}
 
 		@Override
-		public Party newInstance() {
+		protected Party _newInstance() {
 			return new Party();
 		}
 	}
@@ -868,7 +868,7 @@ public class ICalReaderTest {
 		}
 
 		@Override
-		public MyVEvent newInstance() {
+		protected MyVEvent _newInstance() {
 			return new MyVEvent();
 		}
 	}

@@ -65,10 +65,25 @@ public abstract class ICalComponentMarshaller<T extends ICalComponent> {
 	}
 
 	/**
+	 * Creates a new instance of the component class that doesn't have any
+	 * properties or sub-components.
+	 * @return the new instance
+	 */
+	public T emptyInstance() {
+		T component = _newInstance();
+
+		//remove any properties/components that were created in the constructor
+		component.getProperties().clear();
+		component.getComponents().clear();
+
+		return component;
+	}
+
+	/**
 	 * Creates a new instance of the component class.
 	 * @return the new instance
 	 */
-	public abstract T newInstance();
+	protected abstract T _newInstance();
 
 	/**
 	 * Gets the sub-components to marshal. Child classes can override this for

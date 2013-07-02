@@ -92,7 +92,7 @@ public class VFreeBusyMarshaller extends ICalComponentMarshaller<VFreeBusy> {
 	}
 
 	@Override
-	public VFreeBusy newInstance() {
+	protected VFreeBusy _newInstance() {
 		return new VFreeBusy();
 	}
 }

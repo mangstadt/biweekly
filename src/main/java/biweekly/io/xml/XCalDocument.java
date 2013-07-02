@@ -577,8 +577,7 @@ public class XCalDocument {
 	private ICalComponent parseComponent(Element componentElement, List<String> warnings) {
 		//create the component object
 		ICalComponentMarshaller<? extends ICalComponent> m = findComponentMarshaller(componentElement.getLocalName());
-		ICalComponent component = m.newInstance();
-		component.getProperties().clear(); //clear properties that were created in the constructor
+		ICalComponent component = m.emptyInstance();
 
 		//parse properties
 		for (Element propertyWrapperElement : getChildElements(componentElement, "properties")) { //there should be only one <properties> element, but parse them all incase there are more

@@ -253,8 +253,7 @@ public class ICalReader implements Closeable {
 			ICalComponent parentComponent = getCurrentComponent();
 
 			ICalComponentMarshaller<? extends ICalComponent> m = findComponentMarshaller(name);
-			ICalComponent component = m.newInstance();
-			component.getProperties().clear(); //clear properties that were created in the constructor
+			ICalComponent component = m.emptyInstance();
 			componentStack.add(component);
 			componentNamesStack.add(name);
 

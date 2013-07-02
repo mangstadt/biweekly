@@ -36,7 +36,7 @@ public class DaylightSavingsTimeMarshaller extends ICalComponentMarshaller<Dayli
 	}
 
 	@Override
-	public DaylightSavingsTime newInstance() {
+	protected DaylightSavingsTime _newInstance() {
 		return new DaylightSavingsTime();
 	}
 }
