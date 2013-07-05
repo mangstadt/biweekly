@@ -14,10 +14,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import biweekly.io.text.ICalRawReader;
 import biweekly.io.text.ICalRawReader.ICalDataStreamListener;
 import biweekly.parameter.ICalParameters;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -104,14 +102,13 @@ public class ICalRawReaderTest {
 				assertNotNull("END property expected on line " + line, expected);
 				assertEquals(expected, actual);
 			}
-
-			@Override
-			public void invalidLine_(String line) {
-				fail(line);
-			}
 		};
 		reader.start(listener);
 
+		assertEquals(2, listener.calledBeginComponent);
+		assertEquals(2, listener.calledEndComponent);
+		assertEquals(4, listener.calledReadProperty);
+		assertEquals(0, listener.calledInvalidLine);
 		assertTrue(reader.eof());
 	}
 
@@ -187,11 +184,6 @@ public class ICalRawReaderTest {
 			public void endComponent_(String actual) {
 				//empty
 			}
-
-			@Override
-			public void invalidLine_(String line) {
-				//empty
-			}
 		};
 		reader.start(listener);
 
@@ -207,11 +199,6 @@ public class ICalRawReaderTest {
 
 		listener = new TestListener() {
 			@Override
-			public void beginComponent_(String actual) {
-				//empty
-			}
-
-			@Override
 			public void readProperty_(String name, ICalParameters parameters, String value) {
 				assertEquals("PROP3", name);
 			}
@@ -219,11 +206,6 @@ public class ICalRawReaderTest {
 			@Override
 			public void endComponent_(String actual) {
 				assertEquals("COMP", actual);
-			}
-
-			@Override
-			public void invalidLine_(String line) {
-				//empty
 			}
 		};
 		reader.start(listener);
@@ -244,25 +226,7 @@ public class ICalRawReaderTest {
 		ICalRawReader reader = new ICalRawReader(new StringReader(ical));
 
 		TestListener listener = new TestListener() {
-			@Override
-			public void beginComponent_(String actual) {
-				//empty
-			}
-
-			@Override
-			public void readProperty_(String name, ICalParameters parameters, String value) {
-				//empty
-			}
-
-			@Override
-			public void endComponent_(String actual) {
-				//empty
-			}
-
-			@Override
-			public void invalidLine_(String line) {
-				//empty
-			}
+			//empty
 		};
 		reader.start(listener);
 
@@ -289,18 +253,8 @@ public class ICalRawReaderTest {
 			}
 
 			@Override
-			public void readProperty_(String name, ICalParameters parameters, String value) {
-				//empty
-			}
-
-			@Override
 			public void endComponent_(String actual) {
 				assertEquals("COMP", actual);
-			}
-
-			@Override
-			public void invalidLine_(String line) {
-				//empty
 			}
 		};
 		reader.start(listener);
@@ -344,11 +298,6 @@ public class ICalRawReaderTest {
 			public void endComponent_(String actual) {
 				assertEquals("comP", actual);
 			}
-
-			@Override
-			public void invalidLine_(String line) {
-				fail("Could not parse line: " + line);
-			}
 		};
 		reader.start(listener);
 
@@ -373,10 +322,6 @@ public class ICalRawReaderTest {
 		ICalRawReader reader = new ICalRawReader(new StringReader(ical));
 
 		TestListener listener = new TestListener() {
-			@Override
-			public void beginComponent_(String actual) {
-				//empty
-			}
 
 			@Override
 			public void readProperty_(String name, ICalParameters parameters, String value) {
@@ -389,16 +334,6 @@ public class ICalRawReaderTest {
 				assertEquals(Arrays.asList("seven\"" + NEWLINE + "^^eight"), parameters.get("PARAM4"));
 
 				assertEquals("value", value);
-			}
-
-			@Override
-			public void endComponent_(String actual) {
-				//empty
-			}
-
-			@Override
-			public void invalidLine_(String line) {
-				fail("Could not parse line: " + line);
 			}
 		};
 		reader.start(listener);
@@ -420,11 +355,6 @@ public class ICalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			public void beginComponent_(String actual) {
-				//empty
-			}
-
-			@Override
 			public void readProperty_(String name, ICalParameters parameters, String value) {
 				assertEquals("PROP", name);
 
@@ -432,16 +362,6 @@ public class ICalRawReaderTest {
 				assertEquals(Arrays.asList("one^'^n^^^two"), parameters.get("PARAM1"));
 
 				assertEquals("value", value);
-			}
-
-			@Override
-			public void endComponent_(String actual) {
-				//empty
-			}
-
-			@Override
-			public void invalidLine_(String line) {
-				fail("Could not parse line: " + line);
 			}
 		};
 		reader.setCaretDecodingEnabled(false);
@@ -482,12 +402,20 @@ public class ICalRawReaderTest {
 			invalidLine_(line);
 		}
 
-		abstract void beginComponent_(String actual);
+		protected void beginComponent_(String actual) {
+			fail("\"beginComponent\" should not have been called.");
+		}
 
-		abstract void readProperty_(String name, ICalParameters parameters, String value);
+		protected void readProperty_(String name, ICalParameters parameters, String value) {
+			fail("\"readProperty\" should not have been called.");
+		}
 
-		abstract void endComponent_(String actual);
+		protected void endComponent_(String actual) {
+			fail("\"endComponent\" should not have been called.");
+		}
 
-		abstract void invalidLine_(String line);
+		protected void invalidLine_(String line) {
+			fail("\"invalidLine\" should not have been called.");
+		}
 	}
 }
