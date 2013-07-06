@@ -310,20 +310,20 @@ public class ICalRawWriter implements Closeable {
 
 				boolean first = true;
 				writer.append(';').append(parameterName).append('=');
-				for (String subTypeValue : parameterValues) {
+				for (String parameterValue : parameterValues) {
 					if (!first) {
 						writer.append(',');
 					}
 
-					subTypeValue = sanitizeParameterValue(subTypeValue, parameterName, propertyName);
+					parameterValue = sanitizeParameterValue(parameterValue, parameterName, propertyName);
 
 					//surround with double quotes if contains special chars
-					if (quoteMeRegex.matcher(subTypeValue).matches()) {
+					if (quoteMeRegex.matcher(parameterValue).matches()) {
 						writer.append('"');
-						writer.append(subTypeValue);
+						writer.append(parameterValue);
 						writer.append('"');
 					} else {
-						writer.append(subTypeValue);
+						writer.append(parameterValue);
 					}
 
 					first = false;
