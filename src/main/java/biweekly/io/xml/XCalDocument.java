@@ -139,25 +139,25 @@ public class XCalDocument {
 	 */
 	private final Map<String, Value> parameterDataTypes = new HashMap<String, Value>();
 	{
-		parameterDataTypes.put(ICalParameters.CN, Value.TEXT);
-		parameterDataTypes.put(ICalParameters.ALTREP, Value.URI);
-		parameterDataTypes.put(ICalParameters.CUTYPE, Value.TEXT);
-		parameterDataTypes.put(ICalParameters.DELEGATED_FROM, Value.CAL_ADDRESS);
-		parameterDataTypes.put(ICalParameters.DELEGATED_TO, Value.CAL_ADDRESS);
-		parameterDataTypes.put(ICalParameters.DIR, Value.URI);
-		parameterDataTypes.put(ICalParameters.ENCODING, Value.TEXT);
-		parameterDataTypes.put(ICalParameters.FMTTYPE, Value.TEXT);
-		parameterDataTypes.put(ICalParameters.FBTYPE, Value.TEXT);
-		parameterDataTypes.put(ICalParameters.LANGUAGE, Value.TEXT);
-		parameterDataTypes.put(ICalParameters.MEMBER, Value.CAL_ADDRESS);
-		parameterDataTypes.put(ICalParameters.PARTSTAT, Value.TEXT);
-		parameterDataTypes.put(ICalParameters.RANGE, Value.TEXT);
-		parameterDataTypes.put(ICalParameters.RELATED, Value.TEXT);
-		parameterDataTypes.put(ICalParameters.RELTYPE, Value.TEXT);
-		parameterDataTypes.put(ICalParameters.ROLE, Value.TEXT);
-		parameterDataTypes.put(ICalParameters.RSVP, Value.BOOLEAN);
-		parameterDataTypes.put(ICalParameters.SENT_BY, Value.CAL_ADDRESS);
-		parameterDataTypes.put(ICalParameters.TZID, Value.TEXT);
+		registerParameterDataType(ICalParameters.CN, Value.TEXT);
+		registerParameterDataType(ICalParameters.ALTREP, Value.URI);
+		registerParameterDataType(ICalParameters.CUTYPE, Value.TEXT);
+		registerParameterDataType(ICalParameters.DELEGATED_FROM, Value.CAL_ADDRESS);
+		registerParameterDataType(ICalParameters.DELEGATED_TO, Value.CAL_ADDRESS);
+		registerParameterDataType(ICalParameters.DIR, Value.URI);
+		registerParameterDataType(ICalParameters.ENCODING, Value.TEXT);
+		registerParameterDataType(ICalParameters.FMTTYPE, Value.TEXT);
+		registerParameterDataType(ICalParameters.FBTYPE, Value.TEXT);
+		registerParameterDataType(ICalParameters.LANGUAGE, Value.TEXT);
+		registerParameterDataType(ICalParameters.MEMBER, Value.CAL_ADDRESS);
+		registerParameterDataType(ICalParameters.PARTSTAT, Value.TEXT);
+		registerParameterDataType(ICalParameters.RANGE, Value.TEXT);
+		registerParameterDataType(ICalParameters.RELATED, Value.TEXT);
+		registerParameterDataType(ICalParameters.RELTYPE, Value.TEXT);
+		registerParameterDataType(ICalParameters.ROLE, Value.TEXT);
+		registerParameterDataType(ICalParameters.RSVP, Value.BOOLEAN);
+		registerParameterDataType(ICalParameters.SENT_BY, Value.CAL_ADDRESS);
+		registerParameterDataType(ICalParameters.TZID, Value.TEXT);
 	}
 
 	private final List<List<String>> parseWarnings = new ArrayList<List<String>>();
@@ -271,10 +271,11 @@ public class XCalDocument {
 	 * @param dataType the data type or null to remove
 	 */
 	public void registerParameterDataType(String parameterName, Value dataType) {
+		parameterName = parameterName.toLowerCase();
 		if (dataType == null) {
-			parameterDataTypes.remove(parameterName.toLowerCase());
+			parameterDataTypes.remove(parameterName);
 		} else {
-			parameterDataTypes.put(parameterName.toLowerCase(), dataType);
+			parameterDataTypes.put(parameterName, dataType);
 		}
 	}
 
