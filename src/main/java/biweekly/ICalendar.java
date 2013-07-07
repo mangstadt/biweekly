@@ -7,6 +7,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.transform.TransformerException;
+
 import biweekly.component.ICalComponent;
 import biweekly.component.VEvent;
 import biweekly.component.VFreeBusy;
@@ -337,5 +339,41 @@ public class ICalendar extends ICalComponent {
 	 */
 	public void write(Writer writer) throws IOException {
 		Biweekly.write(this).go(writer);
+	}
+
+	/**
+	 * Marshals this iCalendar object to its XML representation (xCal).
+	 * @return the XML document
+	 */
+	public String writeXml() {
+		return Biweekly.writeXml(this).indent(2).go();
+	}
+
+	/**
+	 * Marshals this iCalendar object to its XML representation (xCal).
+	 * @param file the file to write to
+	 * @throws TransformerException if there's an I/O problem
+	 * @throws IOException if the file cannot be written to
+	 */
+	public void writeXml(File file) throws TransformerException, IOException {
+		Biweekly.writeXml(this).indent(2).go(file);
+	}
+
+	/**
+	 * Marshals this iCalendar object to its XML representation (xCal).
+	 * @param out the data stream to write to
+	 * @throws TransformerException if there's an I/O problem
+	 */
+	public void writeXml(OutputStream out) throws TransformerException {
+		Biweekly.writeXml(this).indent(2).go(out);
+	}
+
+	/**
+	 * Marshals this iCalendar object to its XML representation (xCal).
+	 * @param writer the data stream to write to
+	 * @throws TransformerException if there's an I/O problem
+	 */
+	public void writeXml(Writer writer) throws TransformerException {
+		Biweekly.writeXml(this).indent(2).go(writer);
 	}
 }
