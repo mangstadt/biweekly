@@ -103,9 +103,9 @@ import biweekly.util.IOUtils;
  * 
  * <p>
  * <b>Writing an XML-encoded iCalendar object (xCal)</b><br>
- * Call <code>writeXml()</code> instead of <code>write()</code>
  * 
  * <pre>
+ * //Call writeXml() instead of write()
  * ICalendar ical = new ICalendar();
  * String xml = Biweekly.writeXml(ical).indent(2).go();
  * </pre>
@@ -146,9 +146,9 @@ import biweekly.util.IOUtils;
  * 
  * <p>
  * <b>Reading an XML-encoded iCalendar object (xCal)</b><br>
- * Call <code>parseXml()</code> instead of <code>parse()</code>
  * 
  * <pre>
+ * //Call parseXml() instead of parse()
  * String xml = ...
  * ICalendar ical = Biweekly.parseXml(xml).first();
  * </pre>
