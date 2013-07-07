@@ -486,14 +486,11 @@ public class VFreeBusy extends ICalComponent {
 		setProperty(RequestStatus.class, requestStatus);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
-		if (getUid() == null) {
-			warnings.add(Uid.class.getSimpleName() + " is not set (it is a required property).");
-		}
-		if (getDateTimeStamp() == null) {
-			warnings.add(DateTimeStamp.class.getSimpleName() + " is not set (it is a required property).");
-		}
+		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
+		checkOptionalCardinality(warnings, Contact.class, DateStart.class, DateEnd.class, Organizer.class, Url.class);
 
 		DateStart dateStart = getDateStart();
 		DateEnd dateEnd = getDateEnd();

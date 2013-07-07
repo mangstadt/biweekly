@@ -1115,14 +1115,11 @@ public class VTodo extends ICalComponent {
 		addProperty(recurrenceDates);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
-		if (getUid() == null) {
-			warnings.add(Uid.class.getSimpleName() + " is not set (it is a required property).");
-		}
-		if (getDateTimeStamp() == null) {
-			warnings.add(DateTimeStamp.class.getSimpleName() + " is not set (it is a required property).");
-		}
+		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
+		checkOptionalCardinality(warnings, Classification.class, Completed.class, Created.class, Description.class, DateStart.class, Geo.class, LastModified.class, Location.class, Organizer.class, PercentComplete.class, Priority.class, RecurrenceId.class, Sequence.class, Status.class, Summary.class, Url.class);
 
 		Status status = getStatus();
 		if (status != null && (status.isTentative() || status.isConfirmed() || status.isDraft() || status.isFinal())) {

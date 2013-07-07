@@ -390,4 +390,38 @@ public abstract class ICalComponent {
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
 		//do nothing
 	}
+
+	/**
+	 * Utility method for validating that there is exactly one instance of each
+	 * of the given properties.
+	 * @param warnings the list to add the warnings to
+	 * @param classes the properties to check
+	 */
+	protected void checkRequiredCardinality(List<String> warnings, Class<? extends ICalProperty>... classes) {
+		for (Class<? extends ICalProperty> clazz : classes) {
+			List<? extends ICalProperty> props = getProperties(clazz);
+
+			if (props.isEmpty()) {
+				warnings.add(clazz.getSimpleName() + " is not set (it is a required property).");
+			} else if (props.size() > 1) {
+				warnings.add("There cannot be more than one instance of " + clazz.getSimpleName() + ".");
+			}
+		}
+	}
+
+	/**
+	 * Utility method for validating that there is no more than one instance of
+	 * each of the given properties.
+	 * @param warnings the list to add the warnings to
+	 * @param classes the properties to check
+	 */
+	protected void checkOptionalCardinality(List<String> warnings, Class<? extends ICalProperty>... classes) {
+		for (Class<? extends ICalProperty> clazz : classes) {
+			List<? extends ICalProperty> props = getProperties(clazz);
+
+			if (props.size() > 1) {
+				warnings.add("There cannot be more than one instance of " + clazz.getSimpleName() + ".");
+			}
+		}
+	}
 }

@@ -1101,14 +1101,11 @@ public class VEvent extends ICalComponent {
 		addProperty(recurrenceDates);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
-		if (getUid() == null) {
-			warnings.add(Uid.class.getSimpleName() + " is not set (it is a required property).");
-		}
-		if (getDateTimeStamp() == null) {
-			warnings.add(DateTimeStamp.class.getSimpleName() + " is not set (it is a required property).");
-		}
+		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
+		checkOptionalCardinality(warnings, Classification.class, Created.class, Description.class, Geo.class, LastModified.class, Location.class, Organizer.class, Priority.class, Priority.class, Status.class, Summary.class, Transparency.class, Url.class, RecurrenceId.class);
 
 		Status status = getStatus();
 		if (status != null && (status.isNeedsAction() || status.isCompleted() || status.isInProgress() || status.isDraft() || status.isFinal())) {

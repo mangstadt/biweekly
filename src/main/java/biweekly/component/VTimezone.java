@@ -199,10 +199,14 @@ public class VTimezone extends ICalComponent {
 		addComponent(daylightSavingsTime);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
-		if (getTimezoneId() == null) {
-			warnings.add(TimezoneId.class.getSimpleName() + " is not set (it is required).");
+		checkRequiredCardinality(warnings, TimezoneId.class);
+		checkOptionalCardinality(warnings, LastModified.class, TimezoneUrl.class);
+
+		if (getStandardTimes().isEmpty() && getDaylightSavingsTime().isEmpty()) {
+			warnings.add("At least one " + StandardTime.class.getSimpleName() + " or one " + DaylightSavingsTime.class.getSimpleName() + " must be specified.");
 		}
 	}
 }

@@ -293,14 +293,11 @@ public class ICalendar extends ICalComponent {
 		return validate(new ArrayList<ICalComponent>());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
-		if (getProductId() == null) {
-			warnings.add(ProductId.class.getSimpleName() + " is not set (it is a required property).");
-		}
-		if (getVersion() == null) {
-			warnings.add(Version.class.getSimpleName() + " is not set (it is a required property).");
-		}
+		checkRequiredCardinality(warnings, ProductId.class, Version.class);
+
 		if (this.components.isEmpty()) {
 			warnings.add("An iCalendar object must have at least one component.");
 		}

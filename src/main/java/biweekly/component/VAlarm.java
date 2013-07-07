@@ -431,13 +431,14 @@ public class VAlarm extends ICalComponent {
 		setProperty(Trigger.class, trigger);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
+		//all alarm types require Action and Trigger
+		checkRequiredCardinality(warnings, Action.class, Trigger.class);
+
 		Action action = getAction();
-		Trigger trigger = getTrigger();
-		if (action == null) {
-			warnings.add(Action.class.getSimpleName() + " is not set (it is a required property).");
-		} else {
+		if (action != null) {
 			if (action.isAudio()) {
 				if (getAttachments().size() > 1) {
 					warnings.add("Audio alarms should have no more than 1 attachment.");
@@ -445,17 +446,13 @@ public class VAlarm extends ICalComponent {
 			}
 
 			if (action.isDisplay()) {
-				if (getDescription() == null) {
-					warnings.add(Description.class.getSimpleName() + " is not set (it is a required property for display alarms).");
-				}
+				checkRequiredCardinality(warnings, Description.class);
 			}
 
 			if (action.isEmail()) {
-				if (getSummary() == null) {
-					warnings.add(Summary.class.getSimpleName() + " is not set (it is a required property for email alarms).");
-				}
-				if (getDescription() == null) {
-					warnings.add(Description.class.getSimpleName() + " is not set (it is a required property for email alarms).");
+				checkRequiredCardinality(warnings, Summary.class, Description.class);
+				if (getAttendees().isEmpty()) {
+					warnings.add("Email alarms must have at least one attendee.");
 				}
 			} else {
 				if (!getAttendees().isEmpty()) {
@@ -464,9 +461,8 @@ public class VAlarm extends ICalComponent {
 			}
 		}
 
-		if (trigger == null) {
-			warnings.add(Trigger.class.getSimpleName() + " is not set (it is a required property).");
-		} else {
+		Trigger trigger = getTrigger();
+		if (trigger != null) {
 			Related related = trigger.getRelated();
 
 			if (related == null && trigger.getDuration() != null) {

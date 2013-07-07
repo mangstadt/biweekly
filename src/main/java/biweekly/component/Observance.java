@@ -285,16 +285,9 @@ public abstract class Observance extends ICalComponent {
 		addProperty(exceptionDates);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
-		if (getDateStart() == null) {
-			warnings.add(DateStart.class.getSimpleName() + " is not set (it is a required field).");
-		}
-		if (getTimezoneOffsetTo() == null) {
-			warnings.add(TimezoneOffsetTo.class.getSimpleName() + " is not set (it is a required field).");
-		}
-		if (getTimezoneOffsetFrom() == null) {
-			warnings.add(TimezoneOffsetFrom.class.getSimpleName() + " is not set (it is a required field).");
-		}
+		checkRequiredCardinality(warnings, DateStart.class, TimezoneOffsetTo.class, TimezoneOffsetFrom.class);
 	}
 }

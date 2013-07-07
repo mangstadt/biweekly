@@ -858,14 +858,11 @@ public class VJournal extends ICalComponent {
 		setProperty(RequestStatus.class, requestStatus);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
-		if (getUid() == null) {
-			warnings.add(Uid.class.getSimpleName() + " is not set (it is a required property).");
-		}
-		if (getDateTimeStamp() == null) {
-			warnings.add(DateTimeStamp.class.getSimpleName() + " is not set (it is a required property).");
-		}
+		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
+		checkOptionalCardinality(warnings, Classification.class, Created.class, DateStart.class, LastModified.class, Organizer.class, RecurrenceId.class, Sequence.class, Status.class, Summary.class, Url.class);
 
 		Status status = getStatus();
 		if (status != null && (status.isTentative() || status.isConfirmed() || status.isNeedsAction() || status.isCompleted() || status.isInProgress())) {
