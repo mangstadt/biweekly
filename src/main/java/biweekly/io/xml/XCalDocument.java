@@ -36,6 +36,7 @@ import biweekly.component.ICalComponent;
 import biweekly.component.RawComponent;
 import biweekly.component.marshaller.ComponentLibrary;
 import biweekly.component.marshaller.ICalComponentMarshaller;
+import biweekly.component.marshaller.ICalendarMarshaller;
 import biweekly.component.marshaller.RawComponentMarshaller;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
@@ -131,6 +132,7 @@ import biweekly.util.XmlUtils;
  */
 //@formatter:on
 public class XCalDocument {
+	private static final ICalendarMarshaller icalMarshaller = (ICalendarMarshaller) ComponentLibrary.getMarshaller(ICalendar.class);
 	private static final XCalNamespaceContext nsContext = new XCalNamespaceContext("xcal");
 
 	/**
@@ -568,8 +570,7 @@ public class XCalDocument {
 			ical = (ICalendar) root;
 		} else {
 			//shouldn't happen, since only <vcalendar> elements are passed into this method
-			ical = new ICalendar();
-			ical.getProperties().clear(); //clear properties that were created in the constructor
+			ical = icalMarshaller.emptyInstance();
 			ical.addComponent(root);
 		}
 		return ical;

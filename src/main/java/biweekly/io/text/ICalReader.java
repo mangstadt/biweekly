@@ -18,6 +18,7 @@ import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
 import biweekly.component.marshaller.ComponentLibrary;
 import biweekly.component.marshaller.ICalComponentMarshaller;
+import biweekly.component.marshaller.ICalendarMarshaller;
 import biweekly.component.marshaller.RawComponentMarshaller;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
@@ -71,6 +72,7 @@ import biweekly.property.marshaller.RawPropertyMarshaller;
  * @author Michael Angstadt
  */
 public class ICalReader implements Closeable {
+	private static final ICalendarMarshaller icalMarshaller = (ICalendarMarshaller) ComponentLibrary.getMarshaller(ICalendar.class);
 	private final List<String> warnings = new ArrayList<String>();
 	private final Map<String, ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new HashMap<String, ICalPropertyMarshaller<? extends ICalProperty>>(0);
 	private final Map<String, ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new HashMap<String, ICalComponentMarshaller<? extends ICalComponent>>(0);
@@ -179,16 +181,14 @@ public class ICalReader implements Closeable {
 		ICalendar ical;
 		if (listener.orphanedComponents.isEmpty()) {
 			//there were no components in the iCalendar object
-			ical = new ICalendar();
-			ical.getProperties().clear(); //clear properties that are created in the constructor
+			ical = icalMarshaller.emptyInstance();
 		} else {
 			ICalComponent first = listener.orphanedComponents.get(0);
 			if (first instanceof ICalendar) {
 				//this is the code-path that valid iCalendar objects should reach
 				ical = (ICalendar) first;
 			} else {
-				ical = new ICalendar();
-				ical.getProperties().clear(); //clear properties that are created in the constructor
+				ical = icalMarshaller.emptyInstance();
 				for (ICalComponent component : listener.orphanedComponents) {
 					ical.addComponent(component);
 				}
@@ -225,7 +225,7 @@ public class ICalReader implements Closeable {
 	 * @return the property marshaller
 	 */
 	private ICalPropertyMarshaller<? extends ICalProperty> findPropertyMarshaller(String propertyName) {
-		ICalPropertyMarshaller<? extends ICalProperty> m = propertyMarshallers.get(propertyName);
+		ICalPropertyMarshaller<? extends ICalProperty> m = propertyMarshallers.get(propertyName.toUpperCase());
 		if (m == null) {
 			m = PropertyLibrary.getMarshaller(propertyName);
 			if (m == null) {
