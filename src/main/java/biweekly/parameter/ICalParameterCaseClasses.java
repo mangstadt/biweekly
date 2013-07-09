@@ -44,7 +44,7 @@ public class ICalParameterCaseClasses<T extends EnumParameterValue> extends Case
 	protected T create(String value) {
 		try {
 			//reflection: return new ClassName(value);
-			Constructor<T> constructor = clazz.getConstructor(String.class);
+			Constructor<T> constructor = clazz.getDeclaredConstructor(String.class);
 			constructor.setAccessible(true);
 			return constructor.newInstance(value);
 		} catch (Exception e) {
