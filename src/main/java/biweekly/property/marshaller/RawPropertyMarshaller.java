@@ -41,10 +41,6 @@ import biweekly.util.XmlUtils;
  * @author Michael Angstadt
  */
 public class RawPropertyMarshaller extends ICalPropertyMarshaller<RawProperty> {
-	public RawPropertyMarshaller() {
-		this("");
-	}
-
 	public RawPropertyMarshaller(String propertyName) {
 		super(RawProperty.class, propertyName);
 	}
