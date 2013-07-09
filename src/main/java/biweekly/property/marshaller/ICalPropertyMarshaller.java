@@ -15,6 +15,7 @@ import org.w3c.dom.Element;
 import biweekly.ICalendar;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
+import biweekly.io.json.JCalValue;
 import biweekly.io.text.ICalWriter;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -22,6 +23,10 @@ import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.util.ICalDateFormatter;
 import biweekly.util.ISOFormat;
+import biweekly.util.ListMultimap;
+import biweekly.util.StringUtils;
+import biweekly.util.StringUtils.JoinCallback;
+import biweekly.util.StringUtils.JoinMapCallback;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -166,10 +171,29 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * property's value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
+	 * @throws UnsupportedOperationException if the marshaller does not support
+	 * xCal unmarshalling
 	 */
 	public final Result<T> parseXml(Element element, ICalParameters parameters) {
 		List<String> warnings = new ArrayList<String>(0);
 		T property = _parseXml(new XCalElement(element), parameters, warnings);
+		property.setParameters(parameters);
+		return new Result<T>(property, warnings);
+	}
+
+	/**
+	 * Unmarshals a property's value from a JSON data stream (jCal).
+	 * @param value the property's JSON value
+	 * @param parameters the property's parameters
+	 * @return the unmarshalled property object
+	 * @throws CannotParseException if the marshaller could not parse the
+	 * property's value
+	 * @throws SkipMeException if the property should not be added to the final
+	 * {@link ICalendar} object
+	 */
+	public final Result<T> parseJson(JCalValue value, ICalParameters parameters) {
+		List<String> warnings = new ArrayList<String>(0);
+		T property = _parseJson(value, parameters, warnings);
 		property.setParameters(parameters);
 		return new Result<T>(property, warnings);
 	}
@@ -238,9 +262,66 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * property's value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
+	 * @throws UnsupportedOperationException if the marshaller does not support
+	 * xCal unmarshalling
 	 */
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Unmarshals a property's value from a JSON data stream (jCal).
+	 * @param value the property's JSON value
+	 * @param parameters the property's parameters
+	 * @param warnings allows the programmer to alert the user to any
+	 * note-worthy (but non-critical) issues that occurred during the
+	 * unmarshalling process
+	 * @return the unmarshalled property object
+	 * @throws CannotParseException if the marshaller could not parse the
+	 * property's value
+	 * @throws SkipMeException if the property should not be added to the final
+	 * {@link ICalendar} object
+	 */
+	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		parameters.setValue(value.getDataType());
+		return _parseText(jcalValueToString(value), parameters, warnings);
+	}
+
+	private String jcalValueToString(JCalValue value) {
+		if (value.getValues().size() > 1) {
+			List<String> multi = value.getMultivalued();
+			if (multi != null) {
+				return StringUtils.join(multi, ",", new JoinCallback<String>() {
+					public void handle(StringBuilder sb, String value) {
+						sb.append(escape(value));
+					}
+				});
+			}
+		}
+
+		if (value.getValues().get(0).getArray() != null) {
+			List<String> structured = value.getStructured();
+			if (structured != null) {
+				return StringUtils.join(structured, ";", new JoinCallback<String>() {
+					public void handle(StringBuilder sb, String value) {
+						sb.append(escape(value));
+					}
+				});
+			}
+		}
+
+		if (value.getValues().get(0).getObject() != null) {
+			ListMultimap<String, String> object = value.getObject();
+			if (object != null) {
+				return StringUtils.join(object.getMap(), ";", new JoinMapCallback<String, List<String>>() {
+					public void handle(StringBuilder sb, String key, List<String> value) {
+						sb.append(key).append('=').append(StringUtils.join(value, ","));
+					}
+				});
+			}
+		}
+
+		return value.getSingleValued();
 	}
 
 	/**

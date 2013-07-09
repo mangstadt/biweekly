@@ -2,6 +2,7 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
+import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
@@ -77,5 +78,10 @@ public class VersionMarshaller extends ICalPropertyMarshaller<Version> {
 	@Override
 	protected Version _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		return new Version(element.first(Value.TEXT));
+	}
+
+	@Override
+	protected Version _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		return new Version(value.getSingleValued());
 	}
 }
