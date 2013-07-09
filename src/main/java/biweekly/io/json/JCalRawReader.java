@@ -105,13 +105,17 @@ public class JCalRawReader implements Closeable {
 			return;
 		}
 
-		parseComponent(jp.getValueAsString(), new ArrayList<String>());
+		parseComponent(new ArrayList<String>());
 	}
 
-	private void parseComponent(String componentName, List<String> components) throws IOException {
+	private void parseComponent(List<String> components) throws IOException {
+		if (jp.getCurrentToken() != JsonToken.VALUE_STRING) {
+			throw new JCalParseException(JsonToken.VALUE_STRING, jp.getCurrentToken());
+		}
+		String componentName = jp.getValueAsString();
 		listener.readComponent(components, componentName);
-
 		components.add(componentName);
+
 		//TODO add messages to the jCal exceptions
 
 		//start properties array
@@ -120,33 +124,37 @@ public class JCalRawReader implements Closeable {
 		}
 
 		//read properties
-		jp.nextToken();
-		while (jp.getCurrentToken() != JsonToken.END_ARRAY) { //until we reach the end properties array
+		while (jp.nextToken() != JsonToken.END_ARRAY) { //until we reach the end properties array
+			if (jp.getCurrentToken() != JsonToken.START_ARRAY) {
+				throw new JCalParseException(JsonToken.START_ARRAY, jp.getCurrentToken());
+			}
+			jp.nextToken();
 			parseProperty(components);
 		}
 
-		//start components array
+		//start sub-components array
 		if (jp.nextToken() != JsonToken.START_ARRAY) {
 			throw new JCalParseException(JsonToken.START_ARRAY, jp.getCurrentToken());
 		}
 
-		//read components
-		jp.nextToken();
-		while (jp.getCurrentToken() != JsonToken.END_ARRAY) { //until we reach the end component array
-			if (jp.nextToken() != JsonToken.VALUE_STRING) {
-				throw new JCalParseException(JsonToken.VALUE_STRING, jp.getCurrentToken());
+		//read sub-components
+		while (jp.nextToken() != JsonToken.END_ARRAY) { //until we reach the end sub-components array
+			if (jp.getCurrentToken() != JsonToken.START_ARRAY) {
+				throw new JCalParseException(JsonToken.START_ARRAY, jp.getCurrentToken());
 			}
-			parseComponent(jp.getValueAsString(), new ArrayList<String>(components));
+			jp.nextToken();
+			parseComponent(new ArrayList<String>(components));
 		}
 
-		jp.nextToken(); //read the next token after the END_ARRAY of the component array
+		//read the end of the component array (e.g. the last bracket in this example: ["comp", [ /* props */ ], [ /* comps */] ])
+		if (jp.nextToken() != JsonToken.END_ARRAY) {
+			throw new JCalParseException(JsonToken.END_ARRAY, jp.getCurrentToken());
+		}
 	}
 
 	private void parseProperty(List<String> components) throws IOException {
-		//jp.getCurrentToken == START_ARRAY
-
 		//get property name
-		if (jp.nextToken() != JsonToken.VALUE_STRING) {
+		if (jp.getCurrentToken() != JsonToken.VALUE_STRING) {
 			throw new JCalParseException(JsonToken.VALUE_STRING, jp.getCurrentToken());
 		}
 		String propertyName = jp.getValueAsString().toLowerCase();
@@ -165,16 +173,14 @@ public class JCalRawReader implements Closeable {
 
 		JCalValue value = new JCalValue(dataType, values);
 		listener.readProperty(components, propertyName, parameters, value);
-
-		jp.nextToken(); //read the next token after the END_ARRAY of the property array
 	}
 
 	private ICalParameters parseParameters() throws IOException {
-		ICalParameters parameters = new ICalParameters();
-
 		if (jp.nextToken() != JsonToken.START_OBJECT) {
 			throw new JCalParseException(JsonToken.START_OBJECT, jp.getCurrentToken());
 		}
+
+		ICalParameters parameters = new ICalParameters();
 		while (jp.nextToken() != JsonToken.END_OBJECT) {
 			String parameterName = jp.getText();
 
@@ -193,8 +199,8 @@ public class JCalRawReader implements Closeable {
 
 	private List<JsonValue> parseValues() throws IOException {
 		List<JsonValue> values = new ArrayList<JsonValue>();
-		while (jp.nextToken() != JsonToken.END_ARRAY) { //until we reach the end of the properties array
-			JsonValue value = parseValue(jp.getCurrentToken());
+		while (jp.nextToken() != JsonToken.END_ARRAY) { //until we reach the end of the property array
+			JsonValue value = parseValue();
 			values.add(value);
 		}
 		return values;
@@ -219,11 +225,9 @@ public class JCalRawReader implements Closeable {
 	private List<JsonValue> parseValueArray() throws IOException {
 		List<JsonValue> array = new ArrayList<JsonValue>();
 
-		jp.nextToken();
-		while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
-			JsonValue value = parseValue(jp.getCurrentToken());
+		while (jp.nextToken() != JsonToken.END_ARRAY) {
+			JsonValue value = parseValue();
 			array.add(value);
-			jp.nextToken();
 		}
 
 		return array;
@@ -239,7 +243,8 @@ public class JCalRawReader implements Closeable {
 			}
 
 			String key = jp.getText();
-			JsonValue value = parseValue(jp.nextToken());
+			jp.nextToken();
+			JsonValue value = parseValue();
 			object.put(key, value);
 
 			jp.nextToken();
@@ -248,8 +253,8 @@ public class JCalRawReader implements Closeable {
 		return object;
 	}
 
-	private JsonValue parseValue(JsonToken token) throws IOException {
-		switch (token) {
+	private JsonValue parseValue() throws IOException {
+		switch (jp.getCurrentToken()) {
 		case START_ARRAY:
 			return new JsonValue(parseValueArray());
 		case START_OBJECT:

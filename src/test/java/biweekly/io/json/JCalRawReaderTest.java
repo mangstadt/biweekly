@@ -565,6 +565,123 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
+	public void read_components_deep() throws Throwable {
+		//@formatter:off
+		String json =
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"prop1\", {}, \"text\", \"value1\"]" +
+			"]," +
+			"[" +
+				"[\"comp1\"," +
+					"[" +
+						"[\"prop2\", {}, \"text\", \"value2\"]" +
+					"]," +
+					"[" +
+						"[\"comp2\"," +
+							"[" +
+								"[\"prop3\", {}, \"text\", \"value3\"]" +
+							"]," +
+							"[" +
+								"[\"comp3\"," +
+									"[" +
+										"[\"prop4\", {}, \"text\", \"value4\"]" +
+									"]," +
+									"[" +
+									"]" +
+								"]" +
+							"]" +
+						"]," +
+						"[\"comp4\"," +
+							"[" +
+								"[\"prop5\", {}, \"text\", \"value5\"]" +
+							"]," +
+							"[" +
+							"]" +
+						"]" +
+					"]" +
+				"]" +
+			"]" +
+		"]";
+		//@formatter:on
+
+		JCalRawReader reader = new JCalRawReader(new StringReader(json));
+
+		TestListener listener = new TestListener() {
+			@Override
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+				switch (calledReadProperty) {
+				case 1:
+					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
+					assertEquals("prop1", name);
+					assertTrue(parameters.isEmpty());
+					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals("value1", value.getSingleValued());
+					break;
+				case 2:
+					assertEquals(Arrays.asList("vcalendar", "comp1"), componentHierarchy);
+					assertEquals("prop2", name);
+					assertTrue(parameters.isEmpty());
+					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals("value2", value.getSingleValued());
+					break;
+				case 3:
+					assertEquals(Arrays.asList("vcalendar", "comp1", "comp2"), componentHierarchy);
+					assertEquals("prop3", name);
+					assertTrue(parameters.isEmpty());
+					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals("value3", value.getSingleValued());
+					break;
+				case 4:
+					assertEquals(Arrays.asList("vcalendar", "comp1", "comp2", "comp3"), componentHierarchy);
+					assertEquals("prop4", name);
+					assertTrue(parameters.isEmpty());
+					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals("value4", value.getSingleValued());
+					break;
+				case 5:
+					assertEquals(Arrays.asList("vcalendar", "comp1", "comp4"), componentHierarchy);
+					assertEquals("prop5", name);
+					assertTrue(parameters.isEmpty());
+					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals("value5", value.getSingleValued());
+					break;
+				}
+
+			}
+
+			@Override
+			protected void readComponent_(List<String> parentHierarchy, String name) {
+				switch (calledReadComponent) {
+				case 1:
+					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals("vcalendar", name);
+					break;
+				case 2:
+					assertEquals(Arrays.asList("vcalendar"), parentHierarchy);
+					assertEquals("comp1", name);
+					break;
+				case 3:
+					assertEquals(Arrays.asList("vcalendar", "comp1"), parentHierarchy);
+					assertEquals("comp2", name);
+					break;
+				case 4:
+					assertEquals(Arrays.asList("vcalendar", "comp1", "comp2"), parentHierarchy);
+					assertEquals("comp3", name);
+					break;
+				case 5:
+					assertEquals(Arrays.asList("vcalendar", "comp1"), parentHierarchy);
+					assertEquals("comp4", name);
+					break;
+				}
+			}
+		};
+		reader.readNext(listener);
+		assertEquals(5, listener.calledReadProperty);
+		assertEquals(5, listener.calledReadComponent);
+	}
+
+	@Test
 	public void structured_value() throws Throwable {
 		//@formatter:off
 		String json =
