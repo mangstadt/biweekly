@@ -33,6 +33,7 @@ import java.util.Map;
  * @author Michael Angstadt
  */
 public class JsonValue {
+	private final boolean isNull;
 	private final Object value;
 	private final List<JsonValue> array;
 	private final Map<String, JsonValue> object;
@@ -45,6 +46,7 @@ public class JsonValue {
 		this.value = value;
 		array = null;
 		object = null;
+		isNull = (value == null);
 	}
 
 	/**
@@ -55,6 +57,7 @@ public class JsonValue {
 		this.array = array;
 		value = null;
 		object = null;
+		isNull = (array == null);
 	}
 
 	/**
@@ -65,6 +68,7 @@ public class JsonValue {
 		this.object = object;
 		value = null;
 		array = null;
+		isNull = (object == null);
 	}
 
 	/**
@@ -89,6 +93,10 @@ public class JsonValue {
 	 */
 	public Map<String, JsonValue> getObject() {
 		return object;
+	}
+
+	public boolean isNull() {
+		return isNull;
 	}
 
 	@Override
