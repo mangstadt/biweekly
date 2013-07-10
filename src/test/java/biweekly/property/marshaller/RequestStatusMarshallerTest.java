@@ -7,7 +7,9 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.RequestStatus;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -130,6 +132,17 @@ public class RequestStatusMarshallerTest {
 	@Test
 	public void parseXml() {
 		Result<RequestStatus> result = parseXCalProperty("<code>1.2.3</code><description>description</description><data>data</data>", marshaller);
+
+		RequestStatus prop = result.getValue();
+		assertEquals("1.2.3", prop.getStatusCode());
+		assertEquals("description", prop.getDescription());
+		assertEquals("data", prop.getExceptionText());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson() {
+		Result<RequestStatus> result = marshaller.parseJson(JCalValue.structured(Value.TEXT, "1.2.3", "description", "data"), new ICalParameters());
 
 		RequestStatus prop = result.getValue();
 		assertEquals("1.2.3", prop.getStatusCode());

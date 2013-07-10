@@ -3,6 +3,7 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
@@ -83,6 +84,11 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		String value = element.first(Value.UTC_OFFSET);
 		return parse(value);
+	}
+
+	@Override
+	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		return parse(value.getSingleValued());
 	}
 
 	protected abstract T newInstance(Integer hourOffset, Integer minuteOffset);

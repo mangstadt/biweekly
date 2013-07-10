@@ -10,7 +10,9 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.IntegerProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -130,6 +132,20 @@ public class IntegerPropertyMarshallerTest {
 		IntegerProperty prop = result.getValue();
 		assertNull(prop.getValue());
 		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson() {
+		Result<IntegerProperty> result = marshaller.parseJson(JCalValue.single(Value.INTEGER, 5), new ICalParameters());
+
+		IntegerProperty prop = result.getValue();
+		assertIntEquals(5, prop.getValue());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseJson_invalid() {
+		marshaller.parseJson(JCalValue.single(Value.INTEGER, "invalid"), new ICalParameters());
 	}
 
 	private class IntegerPropertyMarshallerImpl extends IntegerPropertyMarshaller<IntegerProperty> {

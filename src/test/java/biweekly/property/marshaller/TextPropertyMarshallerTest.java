@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.TextProperty;
@@ -110,6 +111,15 @@ public class TextPropertyMarshallerTest {
 
 		TextPropertyImpl prop = result.getValue();
 		assertEquals("mailto:johndoe@example.com", prop.getValue());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson() {
+		Result<TextPropertyImpl> result = marshaller.parseJson(JCalValue.single(Value.TEXT, "text"), new ICalParameters());
+
+		TextPropertyImpl prop = result.getValue();
+		assertEquals("text", prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}
 

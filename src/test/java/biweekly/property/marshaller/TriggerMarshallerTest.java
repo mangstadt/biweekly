@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import org.junit.Test;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Related;
 import biweekly.parameter.Value;
@@ -199,5 +200,35 @@ public class TriggerMarshallerTest {
 	@Test(expected = CannotParseException.class)
 	public void parseXml_duration_invalid() {
 		parseXCalProperty("<duration>invalid</duration>", marshaller);
+	}
+
+	@Test
+	public void parseJson_date() {
+		Result<Trigger> result = marshaller.parseJson(JCalValue.single(Value.DATE_TIME, "2013-06-11T13:43:02Z"), new ICalParameters());
+
+		Trigger prop = result.getValue();
+		assertEquals(datetime, prop.getDate());
+		assertNull(prop.getDuration());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_duration() {
+		Result<Trigger> result = marshaller.parseJson(JCalValue.single(Value.DURATION, "PT2H"), new ICalParameters());
+
+		Trigger prop = result.getValue();
+		assertNull(prop.getDate());
+		assertEquals(duration, prop.getDuration());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseJson_date_invalid() {
+		marshaller.parseJson(JCalValue.single(Value.DATE_TIME, "invalid"), new ICalParameters());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseJson_duration_invalid() {
+		marshaller.parseJson(JCalValue.single(Value.DURATION, "invalid"), new ICalParameters());
 	}
 }

@@ -1,9 +1,11 @@
 package biweekly.property.marshaller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
@@ -93,59 +95,13 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 
 	@Override
 	protected RecurrenceDates _parseText(String value, ICalParameters parameters, List<String> warnings) {
-		String split[] = parseList(value);
-
-		Value valueParam = parameters.getValue();
-		if (valueParam == Value.PERIOD) {
-			//parse as periods
-			List<Period> periods = new ArrayList<Period>(split.length);
-			for (String timePeriodStr : split) {
-				String timePeriodStrSplit[] = timePeriodStr.split("/");
-
-				if (timePeriodStrSplit.length < 2) {
-					warnings.add("No end date or duration found, skipping time period: " + timePeriodStr);
-					continue;
-				}
-
-				String startStr = timePeriodStrSplit[0];
-				Date start;
-				try {
-					start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
-				} catch (IllegalArgumentException e) {
-					warnings.add("Could not parse start date, skipping time period: " + timePeriodStr);
-					continue;
-				}
-
-				String endStr = timePeriodStrSplit[1];
-				try {
-					Date end = date(endStr).tzid(parameters.getTimezoneId(), warnings).parse();
-					periods.add(new Period(start, end));
-				} catch (IllegalArgumentException e) {
-					//must be a duration
-					try {
-						Duration duration = Duration.parse(endStr);
-						periods.add(new Period(start, duration));
-					} catch (IllegalArgumentException e2) {
-						warnings.add("Could not parse end date or duration value, skipping time period: " + timePeriodStr);
-						continue;
-					}
-				}
-			}
-			return new RecurrenceDates(periods);
-		} else {
-			//parse as dates
-			boolean hasTime = (valueParam == null || valueParam == Value.DATE_TIME);
-			List<Date> dates = new ArrayList<Date>(split.length);
-			for (String s : split) {
-				try {
-					Date date = date(s).tzid(parameters.getTimezoneId(), warnings).parse();
-					dates.add(date);
-				} catch (IllegalArgumentException e) {
-					warnings.add("Skipping unparsable date: " + s);
-				}
-			}
-			return new RecurrenceDates(dates, hasTime);
+		Value dataType = parameters.getValue();
+		if (dataType == null) {
+			//default data type
+			dataType = Value.DATE_TIME;
 		}
+
+		return parse(Arrays.asList(parseList(value)), dataType, parameters, warnings);
 	}
 
 	@Override
@@ -234,6 +190,64 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 					dates.add(date);
 				} catch (IllegalArgumentException e) {
 					warnings.add("Skipping unparsable date: " + dateStr);
+				}
+			}
+			return new RecurrenceDates(dates, hasTime);
+		}
+	}
+
+	@Override
+	protected RecurrenceDates _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		return parse(value.getMultivalued(), value.getDataType(), parameters, warnings);
+	}
+
+	private RecurrenceDates parse(List<String> valueStrs, Value dataType, ICalParameters parameters, List<String> warnings) {
+		if (dataType == Value.PERIOD) {
+			//parse as periods
+			List<Period> periods = new ArrayList<Period>(valueStrs.size());
+			for (String timePeriodStr : valueStrs) {
+				String timePeriodStrSplit[] = timePeriodStr.split("/");
+
+				if (timePeriodStrSplit.length < 2) {
+					warnings.add("No end date or duration found, skipping time period: " + timePeriodStr);
+					continue;
+				}
+
+				String startStr = timePeriodStrSplit[0];
+				Date start;
+				try {
+					start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
+				} catch (IllegalArgumentException e) {
+					warnings.add("Could not parse start date, skipping time period: " + timePeriodStr);
+					continue;
+				}
+
+				String endStr = timePeriodStrSplit[1];
+				try {
+					Date end = date(endStr).tzid(parameters.getTimezoneId(), warnings).parse();
+					periods.add(new Period(start, end));
+				} catch (IllegalArgumentException e) {
+					//must be a duration
+					try {
+						Duration duration = Duration.parse(endStr);
+						periods.add(new Period(start, duration));
+					} catch (IllegalArgumentException e2) {
+						warnings.add("Could not parse end date or duration value, skipping time period: " + timePeriodStr);
+						continue;
+					}
+				}
+			}
+			return new RecurrenceDates(periods);
+		} else {
+			//parse as dates
+			boolean hasTime = (dataType == Value.DATE_TIME);
+			List<Date> dates = new ArrayList<Date>(valueStrs.size());
+			for (String s : valueStrs) {
+				try {
+					Date date = date(s).tzid(parameters.getTimezoneId(), warnings).parse();
+					dates.add(date);
+				} catch (IllegalArgumentException e) {
+					warnings.add("Skipping unparsable date: " + s);
 				}
 			}
 			return new RecurrenceDates(dates, hasTime);

@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
@@ -94,5 +95,14 @@ public class XmlMarshaller extends ICalPropertyMarshaller<Xml> {
 		}
 
 		return xml;
+	}
+
+	@Override
+	protected Xml _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		try {
+			return new Xml(value.getSingleValued());
+		} catch (SAXException e) {
+			throw new CannotParseException("Cannot parse value as XML: " + value);
+		}
 	}
 }

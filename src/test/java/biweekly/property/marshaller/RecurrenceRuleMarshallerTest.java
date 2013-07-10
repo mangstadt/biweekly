@@ -16,11 +16,14 @@ import java.util.TimeZone;
 
 import org.junit.Test;
 
+import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.RecurrenceRule;
 import biweekly.property.RecurrenceRule.DayOfWeek;
 import biweekly.property.RecurrenceRule.Frequency;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.util.ListMultimap;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -375,7 +378,6 @@ public class RecurrenceRuleMarshallerTest {
 
 	@Test
 	public void parseXml_invalid_values() {
-		//"FREQ=W;COUNT=a;INTERVAL=b;UNTIL=invalid;BYSECOND=58,c,59;BYMINUTE=3,d,4;BYHOUR=1,e,2;BYDAY=f,MO,TU,WE,TH,FR,SA,SU,5FR,fFR;BYMONTHDAY=1,g,2;BYYEARDAY=100,h,101;BYWEEKNO=1,w,2;BYMONTH=5,i,6;BYSETPOS=7,8,j,9;WKST=k";
 		//@formatter:off
 		Result<RecurrenceRule> result = parseXCalProperty(
 		"<recur>" +
@@ -421,6 +423,122 @@ public class RecurrenceRuleMarshallerTest {
 			"<wkst>k</wkst>" +
 		"</recur>", marshaller);
 		//@formatter:on
+
+		RecurrenceRule prop = result.getValue();
+		assertNull(prop.getFrequency());
+		assertNull(prop.getCount());
+		assertNull(prop.getInterval());
+		assertNull(prop.getUntil());
+		assertEquals(Arrays.asList(3, 4), prop.getByMinute());
+		assertEquals(Arrays.asList(1, 2), prop.getByHour());
+		assertEquals(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.FRIDAY), prop.getByDay());
+		assertEquals(Arrays.asList(null, null, null, null, null, null, null, Integer.valueOf(5)), prop.getByDayPrefixes());
+		assertEquals(Arrays.asList(1, 2), prop.getByMonthDay());
+		assertEquals(Arrays.asList(100, 101), prop.getByYearDay());
+		assertEquals(Arrays.asList(5, 6), prop.getByMonth());
+		assertEquals(Arrays.asList(7, 8, 9), prop.getBySetPos());
+		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
+		assertNull(prop.getWorkweekStarts());
+		assertWarnings(15, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson() {
+		ListMultimap<String, Object> map = new ListMultimap<String, Object>();
+		map.put("freq", "WEEKLY");
+		map.put("count", 5);
+		map.put("interval", 10);
+		map.put("until", "2013-06-11T13:43:02Z");
+		map.put("bysecond", 58);
+		map.put("bysecond", 59);
+		map.put("byminute", 3);
+		map.put("byminute", 4);
+		map.put("byhour", 1);
+		map.put("byhour", 2);
+		map.put("byday", "MO");
+		map.put("byday", "TU");
+		map.put("byday", "WE");
+		map.put("byday", "TH");
+		map.put("byday", "FR");
+		map.put("byday", "SA");
+		map.put("byday", "SU");
+		map.put("byday", "5FR");
+		map.put("bymonthday", 1);
+		map.put("bymonthday", 2);
+		map.put("byyearday", 100);
+		map.put("byyearday", 101);
+		map.put("byweekno", 1);
+		map.put("byweekno", 2);
+		map.put("bymonth", 5);
+		map.put("bymonth", 6);
+		map.put("bysetpos", 7);
+		map.put("bysetpos", 8);
+		map.put("bysetpos", 9);
+		map.put("wkst", "TU");
+		Result<RecurrenceRule> result = marshaller.parseJson(JCalValue.object(Value.TEXT, map), new ICalParameters());
+
+		RecurrenceRule prop = result.getValue();
+		assertEquals(Frequency.WEEKLY, prop.getFrequency());
+		assertIntEquals(5, prop.getCount());
+		assertIntEquals(10, prop.getInterval());
+		assertEquals(datetime, prop.getUntil());
+		assertEquals(Arrays.asList(3, 4), prop.getByMinute());
+		assertEquals(Arrays.asList(1, 2), prop.getByHour());
+		assertEquals(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.FRIDAY), prop.getByDay());
+		assertEquals(Arrays.asList(null, null, null, null, null, null, null, Integer.valueOf(5)), prop.getByDayPrefixes());
+		assertEquals(Arrays.asList(1, 2), prop.getByMonthDay());
+		assertEquals(Arrays.asList(100, 101), prop.getByYearDay());
+		assertEquals(Arrays.asList(5, 6), prop.getByMonth());
+		assertEquals(Arrays.asList(7, 8, 9), prop.getBySetPos());
+		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
+		assertEquals(DayOfWeek.TUESDAY, prop.getWorkweekStarts());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_invalid_values() {
+		ListMultimap<String, Object> map = new ListMultimap<String, Object>();
+		map.put("freq", "W");
+		map.put("count", "a");
+		map.put("interval", "b");
+		map.put("until", "invalid");
+		map.put("bysecond", 58);
+		map.put("bysecond", "c");
+		map.put("bysecond", 59);
+		map.put("byminute", 3);
+		map.put("byminute", "d");
+		map.put("byminute", 4);
+		map.put("byhour", 1);
+		map.put("byhour", "e");
+		map.put("byhour", 2);
+		map.put("byday", "f");
+		map.put("byday", "MO");
+		map.put("byday", "TU");
+		map.put("byday", "WE");
+		map.put("byday", "TH");
+		map.put("byday", "FR");
+		map.put("byday", "SA");
+		map.put("byday", "SU");
+		map.put("byday", "5FR");
+		map.put("byday", "fFR");
+		map.put("bymonthday", 1);
+		map.put("bymonthday", "g");
+		map.put("bymonthday", 2);
+		map.put("byyearday", 100);
+		map.put("byyearday", "h");
+		map.put("byyearday", 101);
+		map.put("byweekno", 1);
+		map.put("byweekno", "w");
+		map.put("byweekno", 2);
+		map.put("bymonth", 5);
+		map.put("bymonth", "i");
+		map.put("bymonth", 6);
+		map.put("bysetpos", 7);
+		map.put("bysetpos", 8);
+		map.put("bysetpos", "j");
+		map.put("bysetpos", 9);
+		map.put("wkst", "k");
+		Result<RecurrenceRule> result = marshaller.parseJson(JCalValue.object(Value.RECUR, map), new ICalParameters());
 
 		RecurrenceRule prop = result.getValue();
 		assertNull(prop.getFrequency());

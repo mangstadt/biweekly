@@ -1,9 +1,11 @@
 package biweekly.property.marshaller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RequestStatus;
@@ -70,16 +72,7 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 	@Override
 	protected RequestStatus _parseText(String value, ICalParameters parameters, List<String> warnings) {
 		String split[] = split(value, ";").unescape(true).split();
-		RequestStatus requestStatus = new RequestStatus(split[0]);
-
-		if (split.length > 1) {
-			requestStatus.setDescription(split[1]);
-		}
-		if (split.length > 2) {
-			requestStatus.setExceptionText(split[2]);
-		}
-
-		return requestStatus;
+		return parse(Arrays.asList(split));
 	}
 
 	@Override
@@ -105,6 +98,25 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 		RequestStatus requestStatus = new RequestStatus(element.first("code"));
 		requestStatus.setDescription(element.first("description"));
 		requestStatus.setExceptionText(element.first("data"));
+		return requestStatus;
+	}
+
+	@Override
+	protected RequestStatus _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		List<String> values = value.getStructured();
+		return parse(values);
+	}
+
+	private RequestStatus parse(List<String> values) {
+		RequestStatus requestStatus = new RequestStatus(values.isEmpty() ? null : values.get(0));
+
+		if (values.size() > 1) {
+			requestStatus.setDescription(values.get(1));
+		}
+		if (values.size() > 2) {
+			requestStatus.setExceptionText(values.get(2));
+		}
+
 		return requestStatus;
 	}
 }

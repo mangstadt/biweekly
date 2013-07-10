@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
@@ -133,6 +134,33 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 		parseByMonth(recur.all("bymonth"), property, warnings);
 		parseBySetPos(recur.all("bysetpos"), property, warnings);
 		parseWkst(recur.first("wkst"), property, warnings);
+
+		return property;
+	}
+
+	@Override
+	protected RecurrenceRule _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		RecurrenceRule property = new RecurrenceRule(null);
+
+		ListMultimap<String, String> object = value.getObject();
+		if (object == null) {
+			return property;
+		}
+
+		parseFreq(object.first("freq"), property, warnings);
+		parseUntil(object.first("until"), property, warnings);
+		parseCount(object.first("count"), property, warnings);
+		parseInterval(object.first("interval"), property, warnings);
+		parseBySecond(object.get("bysecond"), property, warnings);
+		parseByMinute(object.get("byminute"), property, warnings);
+		parseByHour(object.get("byhour"), property, warnings);
+		parseByDay(object.get("byday"), property, warnings);
+		parseByMonthDay(object.get("bymonthday"), property, warnings);
+		parseByYearDay(object.get("byyearday"), property, warnings);
+		parseByWeekNo(object.get("byweekno"), property, warnings);
+		parseByMonth(object.get("bymonth"), property, warnings);
+		parseBySetPos(object.get("bysetpos"), property, warnings);
+		parseWkst(object.first("wkst"), property, warnings);
 
 		return property;
 	}

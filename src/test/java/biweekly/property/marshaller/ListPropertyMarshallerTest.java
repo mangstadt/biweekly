@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.ListProperty;
@@ -148,6 +149,15 @@ public class ListPropertyMarshallerTest {
 
 		ListPropertyImpl prop = result.getValue();
 		assertEquals(0, prop.getValues().size());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson() {
+		Result<ListPropertyImpl> result = marshaller.parseJson(JCalValue.multi(Value.TEXT, "one", "two", "three"), new ICalParameters());
+
+		ListPropertyImpl prop = result.getValue();
+		assertEquals(Arrays.asList("one", "two", "three"), prop.getValues());
 		assertWarnings(0, result.getWarnings());
 	}
 

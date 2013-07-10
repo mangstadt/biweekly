@@ -7,8 +7,11 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+import biweekly.io.CannotParseException;
+import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.Xml;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 import biweekly.util.XmlUtils;
@@ -61,11 +64,19 @@ public class XmlMarshallerTest {
 
 		Result<Xml> result = marshaller.parseText(value, params);
 
-		Document expected = XmlUtils.toDocument("<element xmlns=\"http://example.com\"/>");
+		Document expected = XmlUtils.toDocument(value);
 
 		Xml prop = result.getValue();
 		assertXMLEqual(expected, prop.getValue());
 		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseText_invalid() throws Exception {
+		String value = "invalid";
+		ICalParameters params = new ICalParameters();
+
+		marshaller.parseText(value, params);
 	}
 
 	@Test
@@ -93,5 +104,21 @@ public class XmlMarshallerTest {
 		Xml prop = result.getValue();
 		assertXMLEqual(expected, prop.getValue());
 		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson() throws Throwable {
+		String xml = "<element xmlns=\"http://example.com\"/>";
+		Result<Xml> result = marshaller.parseJson(JCalValue.single(Value.TEXT, xml), new ICalParameters());
+
+		Document expected = XmlUtils.toDocument(xml);
+		Xml prop = result.getValue();
+		assertXMLEqual(expected, prop.getValue());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseJson_invalid() throws Throwable {
+		marshaller.parseJson(JCalValue.single(Value.TEXT, "invalid"), new ICalParameters());
 	}
 }

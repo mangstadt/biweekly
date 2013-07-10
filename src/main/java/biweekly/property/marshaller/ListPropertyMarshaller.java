@@ -1,7 +1,9 @@
 package biweekly.property.marshaller;
 
+import java.util.Arrays;
 import java.util.List;
 
+import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
@@ -62,15 +64,7 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 
 	@Override
 	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
-		T property = newInstance(parameters);
-
-		String split[] = parseList(value);
-		for (String s : split) {
-			V v = readValue(s, parameters, warnings);
-			property.addValue(v);
-		}
-
-		return property;
+		return parse(Arrays.asList(parseList(value)), parameters, warnings);
 	}
 
 	@Override
@@ -83,9 +77,18 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		return parse(element.all(dataType), parameters, warnings);
+	}
+
+	@Override
+	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		return parse(value.getMultivalued(), parameters, warnings);
+	}
+
+	private T parse(List<String> valueStrs, ICalParameters parameters, List<String> warnings) {
 		T property = newInstance(parameters);
 
-		for (String valueStr : element.all(dataType)) {
+		for (String valueStr : valueStrs) {
 			V value = readValue(valueStr, parameters, warnings);
 			property.addValue(value);
 		}

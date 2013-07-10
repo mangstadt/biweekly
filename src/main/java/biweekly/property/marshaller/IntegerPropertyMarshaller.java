@@ -3,6 +3,7 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
@@ -78,6 +79,11 @@ public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> exten
 		} catch (NumberFormatException e) {
 			throw new CannotParseException("Could not parse integer value.");
 		}
+	}
+
+	@Override
+	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		return parse(value.getSingleValued());
 	}
 
 	protected abstract T newInstance(Integer value);

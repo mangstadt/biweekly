@@ -18,6 +18,7 @@ import java.util.TimeZone;
 
 import org.junit.Test;
 
+import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.RecurrenceDates;
@@ -546,5 +547,158 @@ public class RecurrenceDatesMarshallerTest {
 		assertFalse(it.hasNext());
 
 		assertWarnings(3, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_periods() {
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi(Value.PERIOD, "2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/PT2H"), new ICalParameters());
+
+		RecurrenceDates prop = result.getValue();
+		assertNull(prop.getDates());
+		Iterator<Period> it = prop.getPeriods().iterator();
+
+		Period period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertEquals(end, period.getEndDate());
+		assertNull(period.getDuration());
+
+		period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertNull(period.getEndDate());
+		assertEquals(duration, period.getDuration());
+
+		assertFalse(it.hasNext());
+
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_invalid_start_date() {
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi(Value.PERIOD, "2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "invalid/PT2H"), new ICalParameters());
+
+		RecurrenceDates prop = result.getValue();
+		Iterator<Period> it = prop.getPeriods().iterator();
+
+		Period period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertEquals(end, period.getEndDate());
+		assertNull(period.getDuration());
+
+		assertFalse(it.hasNext());
+
+		assertNull(prop.getDates());
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_invalid_end_date() {
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi(Value.PERIOD, "2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/invalid"), new ICalParameters());
+
+		RecurrenceDates prop = result.getValue();
+		Iterator<Period> it = prop.getPeriods().iterator();
+
+		Period period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertEquals(end, period.getEndDate());
+		assertNull(period.getDuration());
+
+		assertFalse(it.hasNext());
+
+		assertNull(prop.getDates());
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_invalid_no_end_date() {
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi(Value.PERIOD, "2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z"), new ICalParameters());
+
+		RecurrenceDates prop = result.getValue();
+		Iterator<Period> it = prop.getPeriods().iterator();
+
+		Period period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertEquals(end, period.getEndDate());
+		assertNull(period.getDuration());
+
+		assertFalse(it.hasNext());
+
+		assertNull(prop.getDates());
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_datetimes() {
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi(Value.DATE_TIME, "2013-06-11T13:43:02Z", "2013-06-11T15:43:02Z"), new ICalParameters());
+
+		RecurrenceDates prop = result.getValue();
+		Iterator<Date> it = prop.getDates().iterator();
+
+		Date date = it.next();
+		assertEquals(start, date);
+
+		date = it.next();
+		assertEquals(end, date);
+
+		assertFalse(it.hasNext());
+
+		assertNull(prop.getPeriods());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_invalid_datetime() {
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi(Value.DATE_TIME, "2013-06-11T13:43:02Z", "invalid", "2013-06-11T15:43:02Z"), new ICalParameters());
+
+		RecurrenceDates prop = result.getValue();
+		Iterator<Date> it = prop.getDates().iterator();
+
+		Date date = it.next();
+		assertEquals(start, date);
+
+		date = it.next();
+		assertEquals(end, date);
+
+		assertFalse(it.hasNext());
+
+		assertNull(prop.getPeriods());
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_dates() {
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi(Value.DATE, "2013-06-11", "2013-06-12"), new ICalParameters());
+
+		RecurrenceDates prop = result.getValue();
+		Iterator<Date> it = prop.getDates().iterator();
+
+		Date date = it.next();
+		assertDateEquals("20130611", date);
+
+		date = it.next();
+		assertDateEquals("20130612", date);
+
+		assertFalse(it.hasNext());
+
+		assertNull(prop.getPeriods());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_invalid_dates() {
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi(Value.DATE, "2013-06-11", "invalid", "2013-06-12"), new ICalParameters());
+
+		RecurrenceDates prop = result.getValue();
+		Iterator<Date> it = prop.getDates().iterator();
+
+		Date date = it.next();
+		assertDateEquals("20130611", date);
+
+		date = it.next();
+		assertDateEquals("20130612", date);
+
+		assertFalse(it.hasNext());
+
+		assertNull(prop.getPeriods());
+		assertWarnings(1, result.getWarnings());
 	}
 }
