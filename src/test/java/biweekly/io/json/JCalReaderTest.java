@@ -1,17 +1,26 @@
 package biweekly.io.json;
 
+import static biweekly.util.TestUtils.assertDateEquals;
+import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 
 import biweekly.ICalendar;
+import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.RawComponent;
+import biweekly.component.StandardTime;
 import biweekly.component.VEvent;
+import biweekly.component.VTimezone;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
@@ -19,8 +28,14 @@ import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
+import biweekly.property.RecurrenceDates;
+import biweekly.property.RecurrenceRule;
+import biweekly.property.RecurrenceRule.DayOfWeek;
+import biweekly.property.RecurrenceRule.Frequency;
 import biweekly.property.Summary;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
+import biweekly.util.Duration;
+import biweekly.util.Period;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -451,6 +466,139 @@ public class JCalReaderTest {
 		//@formatter:on
 
 		JCalReader reader = new JCalReader(json);
+		assertNull(reader.readNext());
+	}
+
+	/**
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05#page-25">jCal
+	 * draft p.25</a>
+	 */
+	@Test
+	public void jcal_draft_example1() throws Throwable {
+		JCalReader reader = new JCalReader(getClass().getResourceAsStream("jcal-draft-example1.json"));
+		ICalendar ical = reader.readNext();
+
+		assertEquals(3, ical.getProperties().size());
+		assertEquals("-//Example Inc.//Example Calendar//EN", ical.getProductId().getValue());
+		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertTrue(ical.getCalendarScale().isGregorian());
+
+		assertEquals(1, ical.getComponents().size());
+		{
+			VEvent event = ical.getEvents().get(0);
+
+			assertEquals(4, event.getProperties().size());
+			assertDateEquals("20080205T191224Z", event.getDateTimeStamp().getValue());
+			assertDateEquals("20081006", event.getDateStart().getValue());
+			assertFalse(event.getDateStart().hasTime());
+			assertEquals("Planning meeting", event.getSummary().getValue());
+			assertEquals("4088E990AD89CB3DBB484909", event.getUid().getValue());
+
+			assertEquals(0, event.getComponents().size());
+		}
+
+		assertNull(reader.readNext());
+	}
+
+	/**
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05#page-27">jCal
+	 * draft p.27</a>
+	 */
+	@Test
+	public void jcal_draft_example2() throws Throwable {
+		JCalReader reader = new JCalReader(getClass().getResourceAsStream("jcal-draft-example2.json"));
+		ICalendar ical = reader.readNext();
+
+		assertEquals(2, ical.getProperties().size());
+		assertEquals("-//Example Corp.//Example Client//EN", ical.getProductId().getValue());
+		assertEquals("2.0", ical.getVersion().getMaxVersion());
+
+		assertEquals(3, ical.getComponents().size());
+		{
+			VTimezone timezone = ical.getTimezones().get(0);
+
+			assertEquals(2, timezone.getProperties().size());
+			assertDateEquals("20040110T032845Z", timezone.getLastModified().getValue());
+			assertEquals("US/Eastern", timezone.getTimezoneId().getValue());
+
+			assertEquals(2, timezone.getComponents().size());
+			{
+				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
+				assertEquals(5, daylight.getProperties().size());
+				assertDateEquals("20000404T020000", daylight.getDateStart().getValue());
+
+				RecurrenceRule rrule = daylight.getRecurrenceRule();
+				assertEquals(Frequency.YEARLY, rrule.getFrequency());
+				assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());
+				assertEquals(Arrays.asList(1), rrule.getByDayPrefixes());
+				assertEquals(Arrays.asList(4), rrule.getByMonth());
+
+				assertEquals("EDT", daylight.getTimezoneNames().get(0).getValue());
+				assertIntEquals(-5, daylight.getTimezoneOffsetFrom().getHourOffset());
+				assertIntEquals(0, daylight.getTimezoneOffsetFrom().getMinuteOffset());
+
+				assertIntEquals(-4, daylight.getTimezoneOffsetTo().getHourOffset());
+				assertIntEquals(0, daylight.getTimezoneOffsetTo().getMinuteOffset());
+			}
+			{
+				StandardTime standard = timezone.getStandardTimes().get(0);
+				assertEquals(5, standard.getProperties().size());
+				assertDateEquals("20001026T020000", standard.getDateStart().getValue());
+
+				RecurrenceRule rrule = standard.getRecurrenceRule();
+				assertEquals(Frequency.YEARLY, rrule.getFrequency());
+				assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());
+				assertEquals(Arrays.asList(1), rrule.getByDayPrefixes());
+				assertEquals(Arrays.asList(10), rrule.getByMonth());
+
+				assertEquals("EST", standard.getTimezoneNames().get(0).getValue());
+				assertIntEquals(-4, standard.getTimezoneOffsetFrom().getHourOffset());
+				assertIntEquals(0, standard.getTimezoneOffsetFrom().getMinuteOffset());
+
+				assertIntEquals(-5, standard.getTimezoneOffsetTo().getHourOffset());
+				assertIntEquals(0, standard.getTimezoneOffsetTo().getMinuteOffset());
+			}
+		}
+		{
+			VEvent event = ical.getEvents().get(0);
+
+			assertEquals(8, event.getProperties().size());
+			assertDateEquals("20060206T001121Z", event.getDateTimeStamp().getValue());
+			assertDateEquals("20060102T120000", event.getDateStart().getValue());
+			assertEquals("US/Eastern", event.getDateStart().getTimezoneId());
+			assertEquals(new Duration.Builder().hours(1).build(), event.getDuration().getValue());
+
+			RecurrenceRule rrule = event.getRecurrenceRule();
+			assertEquals(Frequency.DAILY, rrule.getFrequency());
+			assertIntEquals(5, rrule.getCount());
+
+			RecurrenceDates rdate = event.getRecurrenceDates().get(0);
+			assertNull(rdate.getDates());
+			assertEquals(1, rdate.getPeriods().size());
+			assertEquals(new Period(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2006-01-02T15:00:00"), new Duration.Builder().hours(2).build()), rdate.getPeriods().get(0));
+			assertEquals("US/Eastern", rdate.getTimezoneId());
+
+			assertEquals("Event #2", event.getSummary().getValue());
+			assertEquals("We are having a meeting all this week at 12 pm for one hour, with an additional meeting on the first day 2 hours long." + NEWLINE + "Please bring your own lunch for the 12 pm meetings.", event.getDescription().getValue());
+			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
+		}
+		{
+			VEvent event = ical.getEvents().get(1);
+
+			assertEquals(6, event.getProperties().size());
+			assertDateEquals("20060206T001121Z", event.getDateTimeStamp().getValue());
+			assertDateEquals("20060102T140000", event.getDateStart().getValue());
+			assertEquals("US/Eastern", event.getDateStart().getTimezoneId());
+			assertEquals(new Duration.Builder().hours(1).build(), event.getDuration().getValue());
+
+			assertDateEquals("20060104T120000", event.getRecurrenceId().getValue());
+			assertEquals("US/Eastern", event.getRecurrenceId().getTimezoneId());
+			assertEquals("Event #2", event.getSummary().getValue());
+			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
+		}
+
 		assertNull(reader.readNext());
 	}
 
