@@ -8,7 +8,9 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.DurationProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 import biweekly.util.Duration;
@@ -102,5 +104,19 @@ public class DurationPropertyMarshallerTest {
 	@Test(expected = CannotParseException.class)
 	public void parseXml_invalid() {
 		parseXCalProperty("<duration>invalid</duration>", marshaller);
+	}
+
+	@Test
+	public void parseJson() {
+		Result<DurationProperty> result = marshaller.parseJson(JCalValue.single(Value.DURATION, "PT1H30M"), new ICalParameters());
+
+		DurationProperty prop = result.getValue();
+		assertEquals(duration, prop.getValue());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseJson_invalid() {
+		marshaller.parseJson(JCalValue.single(Value.DURATION, "invalid"), new ICalParameters());
 	}
 }

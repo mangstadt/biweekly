@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 
+import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
@@ -98,6 +99,20 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 		} else {
 			value = element.first(Value.URI);
 			attachment.setUri(value);
+		}
+
+		return attachment;
+	}
+
+	@Override
+	protected Attachment _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		Attachment attachment = new Attachment(null, (String) null);
+
+		String valueStr = value.getSingleValued();
+		if (value.getDataType() == Value.BINARY) {
+			attachment.setData(Base64.decodeBase64(valueStr));
+		} else {
+			attachment.setUri(valueStr);
 		}
 
 		return attachment;

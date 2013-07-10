@@ -1,8 +1,10 @@
 package biweekly.property.marshaller;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
@@ -74,43 +76,8 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 
 	@Override
 	protected FreeBusy _parseText(String value, ICalParameters parameters, List<String> warnings) {
-		FreeBusy freebusy = new FreeBusy();
-
 		String periodStrs[] = parseList(value);
-		for (String periodStr : periodStrs) {
-			String periodStrSplit[] = periodStr.split("/");
-
-			if (periodStrSplit.length < 2) {
-				warnings.add("No end date or duration found, skipping time period: " + periodStr);
-				continue;
-			}
-
-			String startStr = periodStrSplit[0];
-			Date start = null;
-			try {
-				start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
-			} catch (IllegalArgumentException e) {
-				warnings.add("Could not parse start date, skipping time period: " + periodStr);
-				continue;
-			}
-
-			String endStr = periodStrSplit[1];
-			try {
-				Date end = date(endStr).tzid(parameters.getTimezoneId(), warnings).parse();
-				freebusy.addValue(start, end);
-			} catch (IllegalArgumentException e) {
-				//must be a duration
-				try {
-					Duration duration = Duration.parse(endStr);
-					freebusy.addValue(start, duration);
-				} catch (IllegalArgumentException e2) {
-					warnings.add("Could not parse end date or duration value, skipping time period: " + periodStr);
-					continue;
-				}
-			}
-		}
-
-		return freebusy;
+		return parse(Arrays.asList(periodStrs), parameters, warnings);
 	}
 
 	@Override
@@ -176,5 +143,49 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 		}
 
 		return prop;
+	}
+
+	@Override
+	protected FreeBusy _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		return parse(value.getMultivalued(), parameters, warnings);
+	}
+
+	private FreeBusy parse(List<String> periods, ICalParameters parameters, List<String> warnings) {
+		FreeBusy freebusy = new FreeBusy();
+
+		for (String period : periods) {
+			String periodSplit[] = period.split("/");
+
+			if (periodSplit.length < 2) {
+				warnings.add("No end date or duration found, skipping time period: " + period);
+				continue;
+			}
+
+			String startStr = periodSplit[0];
+			Date start = null;
+			try {
+				start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
+			} catch (IllegalArgumentException e) {
+				warnings.add("Could not parse start date, skipping time period: " + period);
+				continue;
+			}
+
+			String endStr = periodSplit[1];
+			try {
+				Date end = date(endStr).tzid(parameters.getTimezoneId(), warnings).parse();
+				freebusy.addValue(start, end);
+			} catch (IllegalArgumentException e) {
+				//must be a duration
+				try {
+					Duration duration = Duration.parse(endStr);
+					freebusy.addValue(start, duration);
+				} catch (IllegalArgumentException e2) {
+					warnings.add("Could not parse end date or duration value, skipping time period: " + period);
+					continue;
+				}
+			}
+		}
+
+		return freebusy;
 	}
 }

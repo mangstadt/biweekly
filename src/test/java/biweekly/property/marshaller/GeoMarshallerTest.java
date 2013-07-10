@@ -9,7 +9,9 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.Geo;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -195,5 +197,45 @@ public class GeoMarshallerTest {
 	@Test(expected = CannotParseException.class)
 	public void parseXml_bad_longitude() {
 		parseXCalProperty("<latitude>12.34</latitude><longitude>bad</longitude>", marshaller);
+	}
+
+	@Test
+	public void parseJson() {
+		Result<Geo> result = marshaller.parseJson(JCalValue.structured(Value.FLOAT, "12.34", "56.78"), new ICalParameters());
+
+		Geo prop = result.getValue();
+		assertEquals(12.34, prop.getLatitude(), 0.001);
+		assertEquals(56.78, prop.getLongitude(), 0.001);
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_missing_longitude() {
+		Result<Geo> result = marshaller.parseJson(JCalValue.structured(Value.FLOAT, "12.34"), new ICalParameters());
+
+		Geo prop = result.getValue();
+		assertEquals(12.34, prop.getLatitude(), 0.001);
+		assertNull(prop.getLongitude());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_missing_both() {
+		Result<Geo> result = marshaller.parseJson(JCalValue.structured(Value.FLOAT), new ICalParameters());
+
+		Geo prop = result.getValue();
+		assertNull(prop.getLatitude());
+		assertNull(prop.getLongitude());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseJson_bad_latitude() {
+		marshaller.parseJson(JCalValue.structured(Value.FLOAT, "bad", "56.78"), new ICalParameters());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseJson_bad_longitude() {
+		marshaller.parseJson(JCalValue.structured(Value.FLOAT, "12.34", "bad"), new ICalParameters());
 	}
 }

@@ -3,7 +3,7 @@ package biweekly.io.json;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -88,7 +88,7 @@ public class JCalValue {
 	 * @return the jCal value
 	 */
 	public static JCalValue object(Value dataType, ListMultimap<String, Object> value) {
-		Map<String, JsonValue> object = new HashMap<String, JsonValue>();
+		Map<String, JsonValue> object = new LinkedHashMap<String, JsonValue>();
 		for (Map.Entry<String, List<Object>> entry : value) {
 			String key = entry.getKey();
 			List<Object> list = entry.getValue();

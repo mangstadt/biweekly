@@ -14,7 +14,9 @@ import java.util.TimeZone;
 
 import org.junit.Test;
 
+import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.FreeBusy;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 import biweekly.util.Duration;
@@ -338,6 +340,86 @@ public class FreeBusyMarshallerTest {
 	@Test
 	public void parseXml_empty() {
 		Result<FreeBusy> result = parseXCalProperty("", marshaller);
+
+		Iterator<Period> it = result.getValue().getValues().iterator();
+
+		assertFalse(it.hasNext());
+
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson() {
+		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi(Value.PERIOD, "2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/PT2H"), new ICalParameters());
+
+		Iterator<Period> it = result.getValue().getValues().iterator();
+
+		Period period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertEquals(end, period.getEndDate());
+		assertNull(period.getDuration());
+
+		period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertNull(period.getEndDate());
+		assertEquals(duration, period.getDuration());
+
+		assertFalse(it.hasNext());
+
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_invalid_start_date() {
+		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi(Value.PERIOD, "2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "invalid/PT2H"), new ICalParameters());
+
+		Iterator<Period> it = result.getValue().getValues().iterator();
+
+		Period period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertEquals(end, period.getEndDate());
+		assertNull(period.getDuration());
+
+		assertFalse(it.hasNext());
+
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_invalid_end_date() {
+		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi(Value.PERIOD, "2013-06-11T13:43:02Z/invalid", "2013-06-11T13:43:02Z/PT2H"), new ICalParameters());
+
+		Iterator<Period> it = result.getValue().getValues().iterator();
+
+		Period period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertNull(period.getEndDate());
+		assertEquals(duration, period.getDuration());
+
+		assertFalse(it.hasNext());
+
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_invalid_duration() {
+		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi(Value.PERIOD, "2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/invalid"), new ICalParameters());
+
+		Iterator<Period> it = result.getValue().getValues().iterator();
+
+		Period period = it.next();
+		assertEquals(start, period.getStartDate());
+		assertEquals(end, period.getEndDate());
+		assertNull(period.getDuration());
+
+		assertFalse(it.hasNext());
+
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_empty() {
+		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi(Value.PERIOD), new ICalParameters());
 
 		Iterator<Period> it = result.getValue().getValues().iterator();
 

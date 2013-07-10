@@ -3,6 +3,7 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Geo;
@@ -118,5 +119,13 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 		}
 
 		return new Geo(latitude, longitude);
+	}
+
+	@Override
+	protected Geo _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		List<String> values = value.getStructured();
+		String latitudeStr = (values.size() > 0) ? values.get(0) : null;
+		String longitudeStr = (values.size() > 1) ? values.get(1) : null;
+		return parse(latitudeStr, longitudeStr);
 	}
 }

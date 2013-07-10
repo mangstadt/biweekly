@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
@@ -92,4 +93,16 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 		return prop;
 	}
 
+	@Override
+	protected ExceptionDates _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		boolean hasTime = value.getDataType() == Value.DATE_TIME;
+		List<String> valueStrs = value.getMultivalued();
+
+		ExceptionDates prop = new ExceptionDates(hasTime);
+		for (String valueStr : valueStrs) {
+			Date date = readValue(valueStr, parameters, warnings);
+			prop.addValue(date);
+		}
+		return prop;
+	}
 }

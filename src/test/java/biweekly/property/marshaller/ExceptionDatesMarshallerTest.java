@@ -16,6 +16,7 @@ import java.util.TimeZone;
 import org.junit.Test;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.ExceptionDates;
@@ -201,5 +202,30 @@ public class ExceptionDatesMarshallerTest {
 	@Test(expected = CannotParseException.class)
 	public void parseXml_invalid() {
 		parseXCalProperty("<date>2013-06-11</date><date>invalid</date>", marshaller);
+	}
+
+	@Test
+	public void parseJson_datetime() {
+		Result<ExceptionDates> result = marshaller.parseJson(JCalValue.multi(Value.DATE_TIME, "2013-06-11T13:43:02Z", "2013-06-11T13:43:02Z"), new ICalParameters());
+
+		ExceptionDates prop = result.getValue();
+		assertEquals(Arrays.asList(datetime, datetime), prop.getValues());
+		assertTrue(prop.hasTime());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_date() {
+		Result<ExceptionDates> result = marshaller.parseJson(JCalValue.multi(Value.DATE, "2013-06-11", "2013-06-11"), new ICalParameters());
+
+		ExceptionDates prop = result.getValue();
+		assertEquals(Arrays.asList(date, date), prop.getValues());
+		assertFalse(prop.hasTime());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseJson_invalid() {
+		marshaller.parseJson(JCalValue.multi(Value.DATE, "2013-06-11", "invalid"), new ICalParameters());
 	}
 }

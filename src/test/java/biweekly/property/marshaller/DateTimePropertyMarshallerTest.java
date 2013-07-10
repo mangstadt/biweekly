@@ -12,7 +12,9 @@ import java.util.TimeZone;
 import org.junit.Test;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.DateTimeProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -118,6 +120,25 @@ public class DateTimePropertyMarshallerTest {
 		DateTimePropertyImpl prop = result.getValue();
 		assertEquals(datetime, prop.getValue());
 		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseXml_invalid() {
+		parseXCalProperty("<date-time>invalid</date-time>", marshaller);
+	}
+
+	@Test
+	public void parseJson() {
+		Result<DateTimePropertyImpl> result = marshaller.parseJson(JCalValue.single(Value.DATE_TIME, "2013-06-11T13:43:02Z"), new ICalParameters());
+
+		DateTimePropertyImpl prop = result.getValue();
+		assertEquals(datetime, prop.getValue());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseJson_invalid() {
+		marshaller.parseJson(JCalValue.single(Value.DATE_TIME, "invalid"), new ICalParameters());
 	}
 
 	private class DateTimePropertyMarshallerImpl extends DateTimePropertyMarshaller<DateTimePropertyImpl> {

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
@@ -77,6 +78,13 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 		}
 
 		return parse(value, parameters, warnings);
+	}
+
+	@Override
+	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		String valueStr = value.getSingleValued();
+
+		return parse(valueStr, parameters, warnings);
 	}
 
 	private T parse(String value, ICalParameters parameters, List<String> warnings) {

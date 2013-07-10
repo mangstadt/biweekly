@@ -15,6 +15,7 @@ import java.util.TimeZone;
 import org.junit.Test;
 
 import biweekly.io.CannotParseException;
+import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.DateOrDateTimeProperty;
@@ -203,6 +204,31 @@ public class DateOrDateTimePropertyMarshallerTest {
 	@Test(expected = CannotParseException.class)
 	public void parseXml_invalid() {
 		parseXCalProperty("<date-time>invalid</date-time>", marshaller);
+	}
+
+	@Test
+	public void parseJson_datetime() {
+		Result<DateOrDateTimePropertyImpl> result = marshaller.parseJson(JCalValue.single(Value.DATE_TIME, "2013-06-11T13:43:02Z"), new ICalParameters());
+
+		DateOrDateTimePropertyImpl prop = result.getValue();
+		assertEquals(datetime, prop.getValue());
+		assertTrue(prop.hasTime());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_date() {
+		Result<DateOrDateTimePropertyImpl> result = marshaller.parseJson(JCalValue.single(Value.DATE, "2013-06-11"), new ICalParameters());
+
+		DateOrDateTimePropertyImpl prop = result.getValue();
+		assertEquals(date, prop.getValue());
+		assertFalse(prop.hasTime());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseJson_invalid() {
+		marshaller.parseJson(JCalValue.single(Value.DATE, "invalid"), new ICalParameters());
 	}
 
 	private class DateOrDateTimePropertyMarshallerImpl extends DateOrDateTimePropertyMarshaller<DateOrDateTimePropertyImpl> {

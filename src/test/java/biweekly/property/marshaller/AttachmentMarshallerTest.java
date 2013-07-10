@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
+import biweekly.io.json.JCalValue;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
@@ -168,6 +169,27 @@ public class AttachmentMarshallerTest {
 	@Test
 	public void parseXml_data() {
 		Result<Attachment> result = parseXCalProperty("<binary>" + Base64.encodeBase64String("data".getBytes()) + "</binary>", marshaller);
+
+		Attachment prop = result.getValue();
+		assertNull(prop.getUri());
+		assertArrayEquals("data".getBytes(), prop.getData());
+
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_uri() {
+		Result<Attachment> result = marshaller.parseJson(JCalValue.single(Value.URI, "http://example.com/image.png"), new ICalParameters());
+
+		Attachment prop = result.getValue();
+		assertEquals("http://example.com/image.png", prop.getUri());
+		assertNull(prop.getData());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_data() {
+		Result<Attachment> result = marshaller.parseJson(JCalValue.single(Value.BINARY, Base64.encodeBase64String("data".getBytes())), new ICalParameters());
 
 		Attachment prop = result.getValue();
 		assertNull(prop.getUri());

@@ -20,9 +20,12 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
+import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.util.ListMultimap;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -274,7 +277,7 @@ public class ICalPropertyMarshallerTest {
 	@Test
 	public void prepareParameters() {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		TestProperty property = new TestProperty();
+		TestProperty property = new TestProperty("value");
 		ICalParameters copy = m.prepareParameters(property);
 
 		assertFalse(property.getParameters() == copy);
@@ -284,7 +287,7 @@ public class ICalPropertyMarshallerTest {
 	@Test
 	public void writeText() {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		TestProperty property = new TestProperty();
+		TestProperty property = new TestProperty("value");
 		String value = m.writeText(property);
 
 		assertEquals("value", value);
@@ -304,14 +307,14 @@ public class ICalPropertyMarshallerTest {
 	@Test
 	public void writeXml() {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		TestProperty prop = new TestProperty();
+		TestProperty prop = new TestProperty("value");
 		assertWriteXml("<unknown>value</unknown>", prop, m);
 	}
 
 	@Test
 	public void writeXml_with_value_parameter() {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		TestProperty prop = new TestProperty();
+		TestProperty prop = new TestProperty("value");
 		prop.getParameters().setValue(Value.TEXT);
 		assertWriteXml("<text>value</text>", prop, m);
 	}
@@ -322,8 +325,56 @@ public class ICalPropertyMarshallerTest {
 		parseXCalProperty("<text>text</text>", m);
 	}
 
+	@Test
+	public void parseJson_single() {
+		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
+		Result<TestProperty> result = m.parseJson(JCalValue.single(Value.TEXT, "value"), new ICalParameters());
+
+		TestProperty prop = result.getValue();
+		assertEquals("value", prop.getValue());
+		assertEquals(Value.TEXT, prop.getParameters().getValue());
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_list() {
+		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
+		Result<TestProperty> result = m.parseJson(JCalValue.multi(Value.TEXT, "value1", "val,;ue2"), new ICalParameters());
+
+		TestProperty prop = result.getValue();
+		assertEquals("value1,val\\,\\;ue2", prop.getValue());
+		assertEquals(Value.TEXT, prop.getParameters().getValue());
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_structured() {
+		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
+		Result<TestProperty> result = m.parseJson(JCalValue.structured(Value.TEXT, "value1", "val,;ue2"), new ICalParameters());
+
+		TestProperty prop = result.getValue();
+		assertEquals("value1;val\\,\\;ue2", prop.getValue());
+		assertEquals(Value.TEXT, prop.getParameters().getValue());
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseJson_object() {
+		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
+		ListMultimap<String, Object> map = new ListMultimap<String, Object>();
+		map.put("a", "one");
+		map.put("b", "two");
+		map.put("b", "three");
+		Result<TestProperty> result = m.parseJson(JCalValue.object(Value.TEXT, map), new ICalParameters());
+
+		TestProperty prop = result.getValue();
+		assertEquals("a=one;b=two,three", prop.getValue());
+		assertEquals(Value.TEXT, prop.getParameters().getValue());
+		assertWarnings(1, result.getWarnings());
+	}
+
 	private class ICalPropertyMarshallerImpl extends ICalPropertyMarshaller<TestProperty> {
-		ICalPropertyMarshallerImpl() {
+		private ICalPropertyMarshallerImpl() {
 			super(TestProperty.class, "TEST");
 		}
 
@@ -334,17 +385,25 @@ public class ICalPropertyMarshallerTest {
 
 		@Override
 		protected String _writeText(TestProperty property) {
-			return "value";
+			return property.getValue();
 		}
 
 		@Override
 		protected TestProperty _parseText(String value, ICalParameters parameters, List<String> warnings) {
 			warnings.add("parseText");
-			return new TestProperty();
+			return new TestProperty(value);
 		}
 	}
 
 	private class TestProperty extends ICalProperty {
-		//empty
+		private String value;
+
+		public TestProperty(String value) {
+			this.value = value;
+		}
+
+		private String getValue() {
+			return value;
+		}
 	}
 }
