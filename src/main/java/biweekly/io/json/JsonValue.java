@@ -88,13 +88,17 @@ public class JsonValue {
 	}
 
 	/**
-	 * Gest the JSON object.
+	 * Gets the JSON object.
 	 * @return the object or null if it's not a JSON object
 	 */
 	public Map<String, JsonValue> getObject() {
 		return object;
 	}
 
+	/**
+	 * Determines if the value is "null" or not.
+	 * @return true if the value is "null", false if not
+	 */
 	public boolean isNull() {
 		return isNull;
 	}
@@ -104,6 +108,7 @@ public class JsonValue {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((array == null) ? 0 : array.hashCode());
+		result = prime * result + (isNull ? 1231 : 1237);
 		result = prime * result + ((object == null) ? 0 : object.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
@@ -122,6 +127,8 @@ public class JsonValue {
 			if (other.array != null)
 				return false;
 		} else if (!array.equals(other.array))
+			return false;
+		if (isNull != other.isNull)
 			return false;
 		if (object == null) {
 			if (other.object != null)
