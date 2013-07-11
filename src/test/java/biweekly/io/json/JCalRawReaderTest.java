@@ -881,7 +881,7 @@ public class JCalRawReaderTest {
 					expected.add(new JsonValue(true));
 					expected.add(new JsonValue(1.1));
 					expected.add(new JsonValue(1L));
-					expected.add(new JsonValue(""));
+					expected.add(new JsonValue((Object) null));
 					expected.add(new JsonValue("text"));
 					assertEquals(expected, value.getValues());
 					break;

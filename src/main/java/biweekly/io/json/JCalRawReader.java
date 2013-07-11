@@ -216,7 +216,7 @@ public class JCalRawReader implements Closeable {
 		case VALUE_NUMBER_INT:
 			return jp.getLongValue();
 		case VALUE_NULL:
-			return "";
+			return null;
 		default:
 			return jp.getText();
 		}
