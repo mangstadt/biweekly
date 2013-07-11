@@ -361,6 +361,18 @@ public class VAlarm extends ICalComponent {
 	}
 
 	/**
+	 * Sets the length of the pause between alarm repetitions.
+	 * @param duration the duration or null to remove
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-99">RFC 5545
+	 * p.99</a>
+	 */
+	public DurationProperty setDuration(Duration duration) {
+		DurationProperty prop = (duration == null) ? null : new DurationProperty(duration);
+		setDuration(prop);
+		return prop;
+	}
+
+	/**
 	 * Gets the number of times an alarm should be repeated after its initial
 	 * trigger.
 	 * @return the repeat count or null if not set

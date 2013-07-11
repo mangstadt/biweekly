@@ -35,6 +35,7 @@ import biweekly.property.Status;
 import biweekly.property.Summary;
 import biweekly.property.Uid;
 import biweekly.property.Url;
+import biweekly.util.Duration;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -793,6 +794,19 @@ public class VTodo extends ICalComponent {
 	 */
 	public void setDuration(DurationProperty duration) {
 		setProperty(DurationProperty.class, duration);
+	}
+
+	/**
+	 * Sets the duration of the to-do. This must NOT be set if a {@link DateDue}
+	 * is defined.
+	 * @param duration the duration or null to remove
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-99">RFC 5545
+	 * p.99</a>
+	 */
+	public DurationProperty setDuration(Duration duration) {
+		DurationProperty prop = (duration == null) ? null : new DurationProperty(duration);
+		setDuration(prop);
+		return prop;
 	}
 
 	/**
