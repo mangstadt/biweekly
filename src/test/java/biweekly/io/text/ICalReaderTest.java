@@ -5,10 +5,14 @@ import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.StringReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.Test;
 
@@ -16,14 +20,20 @@ import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.StandardTime;
+import biweekly.component.VAlarm;
 import biweekly.component.VEvent;
+import biweekly.component.VFreeBusy;
+import biweekly.component.VJournal;
 import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
+import biweekly.parameter.CalendarUserType;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
+import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.ICalProperty;
 import biweekly.property.ProductId;
@@ -32,6 +42,8 @@ import biweekly.property.RecurrenceRule.DayOfWeek;
 import biweekly.property.RecurrenceRule.Frequency;
 import biweekly.property.Summary;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
+import biweekly.util.Duration;
+import biweekly.util.Period;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -62,7 +74,13 @@ import biweekly.property.marshaller.ICalPropertyMarshaller;
  * @author Michael Angstadt
  */
 public class ICalReaderTest {
-	final String NEWLINE = System.getProperty("line.separator");
+	private final String NEWLINE = System.getProperty("line.separator");
+
+	private final DateFormat utcFormatter;
+	{
+		utcFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+		utcFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
 
 	@Test
 	public void basic() throws Exception {
@@ -660,15 +678,14 @@ public class ICalReaderTest {
 		assertEquals("TRUE", ical.getExperimentalProperty("X-MS-OLK-FORCEINSPECTOROPEN").getValue());
 
 		assertEquals(2, ical.getComponents().size());
-		VTimezone timezone = ical.getTimezones().get(0);
 		{
+			VTimezone timezone = ical.getTimezones().get(0);
 			assertEquals(1, timezone.getProperties().size());
 			assertEquals("Eastern Standard Time", timezone.getTimezoneId().getValue());
 
 			assertEquals(2, timezone.getComponents().size());
-
-			StandardTime standard = timezone.getStandardTimes().get(0);
 			{
+				StandardTime standard = timezone.getStandardTimes().get(0);
 				assertEquals(4, standard.getProperties().size());
 				assertDateEquals("16011104T020000", standard.getDateStart().getValue());
 
@@ -686,9 +703,8 @@ public class ICalReaderTest {
 
 				assertEquals(0, standard.getComponents().size());
 			}
-
-			DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
 			{
+				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
 				assertEquals(4, daylight.getProperties().size());
 				assertDateEquals("16010311T020000", daylight.getDateStart().getValue());
 
@@ -707,9 +723,8 @@ public class ICalReaderTest {
 				assertEquals(0, daylight.getComponents().size());
 			}
 		}
-
-		VEvent event = ical.getEvents().get(0);
 		{
+			VEvent event = ical.getEvents().get(0);
 			assertEquals(24, event.getProperties().size());
 
 			Attendee attendee = event.getAttendees().get(0);
@@ -776,7 +791,271 @@ public class ICalReaderTest {
 			assertEquals("1", event.getExperimentalProperty("X-MS-OLK-APPTLASTSEQUENCE").getValue());
 			assertEquals("20130425T124303Z", event.getExperimentalProperty("X-MS-OLK-APPTSEQTIME").getValue());
 			assertEquals("0", event.getExperimentalProperty("X-MS-OLK-CONFTYPE").getValue());
+
+			assertEquals(0, event.getComponents().size());
 		}
+		
+		assertWarnings(0, ical.validate());
+
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void example1() throws Throwable {
+		ICalReader reader = new ICalReader(getClass().getResourceAsStream("rfc5545-example1.ics"));
+		ICalendar ical = reader.readNext();
+
+		assertEquals(2, ical.getProperties().size());
+		assertEquals("-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN", ical.getProductId().getValue());
+		assertEquals("2.0", ical.getVersion().getMaxVersion());
+
+		assertEquals(1, ical.getComponents().size());
+		{
+			VEvent event = ical.getEvents().get(0);
+			assertEquals(9, event.getProperties().size());
+			assertDateEquals("19960704T120000Z", event.getDateTimeStamp().getValue());
+			assertEquals("uid1@example.com", event.getUid().getValue());
+			assertEquals("mailto:jsmith@example.com", event.getOrganizer().getValue());
+			assertDateEquals("19960918T143000Z", event.getDateStart().getValue());
+			assertDateEquals("19960920T220000Z", event.getDateEnd().getValue());
+			assertTrue(event.getStatus().isConfirmed());
+			assertEquals(Arrays.asList("CONFERENCE"), event.getCategories().get(0).getValues());
+			assertEquals("Networld+Interop Conference", event.getSummary().getValue());
+			assertEquals("Networld+Interop Conferenceand Exhibit\nAtlanta World Congress Center\nAtlanta, Georgia", event.getDescription().getValue());
+
+			assertEquals(0, event.getComponents().size());
+		}
+
+		assertWarnings(0, ical.validate());
+
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void example2() throws Throwable {
+		DateFormat nycFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+		nycFormatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+
+		ICalReader reader = new ICalReader(getClass().getResourceAsStream("rfc5545-example2.ics"));
+		ICalendar ical = reader.readNext();
+
+		assertEquals(2, ical.getProperties().size());
+		assertEquals("-//RDU Software//NONSGML HandCal//EN", ical.getProductId().getValue());
+		assertEquals("2.0", ical.getVersion().getMaxVersion());
+
+		assertEquals(2, ical.getComponents().size());
+		{
+			VTimezone timezone = ical.getTimezones().get(0);
+			assertEquals(1, timezone.getProperties().size());
+			assertEquals("America/New_York", timezone.getTimezoneId().getValue());
+
+			assertEquals(2, timezone.getComponents().size());
+			{
+				StandardTime standard = timezone.getStandardTimes().get(0);
+				assertEquals(4, standard.getProperties().size());
+				assertDateEquals("19981025T020000", standard.getDateStart().getValue());
+
+				assertIntEquals(-4, standard.getTimezoneOffsetFrom().getHourOffset());
+				assertIntEquals(0, standard.getTimezoneOffsetFrom().getMinuteOffset());
+
+				assertIntEquals(-5, standard.getTimezoneOffsetTo().getHourOffset());
+				assertIntEquals(0, standard.getTimezoneOffsetTo().getMinuteOffset());
+
+				assertEquals("EST", standard.getTimezoneNames().get(0).getValue());
+
+				assertEquals(0, standard.getComponents().size());
+			}
+			{
+				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
+				assertEquals(4, daylight.getProperties().size());
+				assertDateEquals("19990404T020000", daylight.getDateStart().getValue());
+
+				assertIntEquals(-5, daylight.getTimezoneOffsetFrom().getHourOffset());
+				assertIntEquals(0, daylight.getTimezoneOffsetFrom().getMinuteOffset());
+
+				assertIntEquals(-4, daylight.getTimezoneOffsetTo().getHourOffset());
+				assertIntEquals(0, daylight.getTimezoneOffsetTo().getMinuteOffset());
+
+				assertEquals("EDT", daylight.getTimezoneNames().get(0).getValue());
+
+				assertEquals(0, daylight.getComponents().size());
+			}
+		}
+		{
+			VEvent event = ical.getEvents().get(0);
+			assertEquals(12, event.getProperties().size());
+			assertDateEquals("19980309T231000Z", event.getDateTimeStamp().getValue());
+			assertEquals("guid-1.example.com", event.getUid().getValue());
+			assertEquals("mailto:mrbig@example.com", event.getOrganizer().getValue());
+
+			Attendee attendee = event.getAttendees().get(0);
+			assertEquals("mailto:employee-A@example.com", attendee.getValue());
+			assertTrue(attendee.getRsvp());
+			assertEquals(Role.REQ_PARTICIPANT, attendee.getRole());
+			assertEquals(CalendarUserType.GROUP, attendee.getCalendarUserType());
+
+			assertEquals("Project XYZ Review Meeting", event.getDescription().getValue());
+			assertEquals(Arrays.asList("MEETING"), event.getCategories().get(0).getValues());
+			assertTrue(event.getClassification().isPublic());
+			assertDateEquals("19980309T130000Z", event.getCreated().getValue());
+			assertEquals("XYZ Project Review", event.getSummary().getValue());
+
+			assertEquals(nycFormatter.parse("19980312T083000"), event.getDateStart().getValue());
+			assertEquals("America/New_York", event.getDateStart().getTimezoneId());
+
+			assertEquals(nycFormatter.parse("19980312T093000"), event.getDateEnd().getValue());
+			assertEquals("America/New_York", event.getDateEnd().getTimezoneId());
+
+			assertEquals("1CP Conference Room 4350", event.getLocation().getValue());
+
+			assertEquals(0, event.getComponents().size());
+		}
+
+		assertWarnings(0, ical.validate());
+
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void example3() throws Throwable {
+		ICalReader reader = new ICalReader(getClass().getResourceAsStream("rfc5545-example3.ics"));
+		ICalendar ical = reader.readNext();
+
+		assertEquals(3, ical.getProperties().size());
+		assertEquals("xyz", ical.getMethod().getValue());
+		assertEquals("-//ABC Corporation//NONSGML My Product//EN", ical.getProductId().getValue());
+		assertEquals("2.0", ical.getVersion().getMaxVersion());
+
+		assertEquals(1, ical.getComponents().size());
+		{
+			VEvent event = ical.getEvents().get(0);
+			assertEquals(13, event.getProperties().size());
+			assertDateEquals("19970324T120000Z", event.getDateTimeStamp().getValue());
+			assertIntEquals(0, event.getSequence().getValue());
+			assertEquals("uid3@example.com", event.getUid().getValue());
+			assertEquals("mailto:jdoe@example.com", event.getOrganizer().getValue());
+			assertDateEquals("19970324T123000Z", event.getDateStart().getValue());
+			assertDateEquals("19970324T210000Z", event.getDateEnd().getValue());
+			assertEquals(Arrays.asList("MEETING", "PROJECT"), event.getCategories().get(0).getValues());
+			assertTrue(event.getClassification().isPublic());
+			assertEquals("Calendaring Interoperability Planning Meeting", event.getSummary().getValue());
+			assertEquals("Discuss how we can test c&s interoperability" + NEWLINE + "using iCalendar and other IETF standards.", event.getDescription().getValue());
+			assertEquals("LDB Lobby", event.getLocation().getValue());
+
+			Attachment attach = event.getAttachments().get(0);
+			assertEquals("ftp://example.com/pub/conf/bkgrnd.ps", attach.getUri());
+			assertEquals("application/postscript", attach.getFormatType());
+
+			assertEquals(0, event.getComponents().size());
+		}
+
+		assertWarnings(0, ical.validate());
+
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void example4() throws Throwable {
+		ICalReader reader = new ICalReader(getClass().getResourceAsStream("rfc5545-example4.ics"));
+		ICalendar ical = reader.readNext();
+
+		assertEquals(2, ical.getProperties().size());
+		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertEquals("-//ABC Corporation//NONSGML My Product//EN", ical.getProductId().getValue());
+
+		assertEquals(1, ical.getComponents().size());
+		{
+			VTodo todo = ical.getTodos().get(0);
+			assertEquals(8, todo.getProperties().size());
+			assertDateEquals("19980130T134500Z", todo.getDateTimeStamp().getValue());
+			assertIntEquals(2, todo.getSequence().getValue());
+			assertEquals("uid4@example.com", todo.getUid().getValue());
+			assertEquals("mailto:unclesam@example.com", todo.getOrganizer().getValue());
+
+			Attendee attendee = todo.getAttendees().get(0);
+			assertEquals("mailto:jqpublic@example.com", attendee.getValue());
+			assertEquals(ParticipationStatus.ACCEPTED, attendee.getParticipationStatus());
+
+			assertDateEquals("19980415T000000", todo.getDateDue().getValue());
+			assertTrue(todo.getStatus().isNeedsAction());
+			assertEquals("Submit Income Taxes", todo.getSummary().getValue());
+
+			assertEquals(1, todo.getComponents().size());
+			{
+				VAlarm alarm = todo.getAlarms().get(0);
+				assertEquals(5, alarm.getProperties().size());
+				assertTrue(alarm.getAction().isAudio());
+				assertDateEquals("19980403T120000Z", alarm.getTrigger().getDate());
+
+				Attachment attach = alarm.getAttachments().get(0);
+				assertEquals("http://example.com/pub/audio-files/ssbanner.aud", attach.getUri());
+				assertEquals("audio/basic", attach.getFormatType());
+
+				assertIntEquals(4, alarm.getRepeat().getValue());
+				assertEquals(new Duration.Builder().hours(1).build(), alarm.getDuration().getValue());
+			}
+		}
+
+		assertWarnings(0, ical.validate());
+
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void example5() throws Throwable {
+		ICalReader reader = new ICalReader(getClass().getResourceAsStream("rfc5545-example5.ics"));
+		ICalendar ical = reader.readNext();
+
+		assertEquals(2, ical.getProperties().size());
+		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertEquals("-//ABC Corporation//NONSGML My Product//EN", ical.getProductId().getValue());
+
+		assertEquals(1, ical.getComponents().size());
+		{
+			VJournal journal = ical.getJournals().get(0);
+			assertEquals(7, journal.getProperties().size());
+			assertDateEquals("19970324T120000Z", journal.getDateTimeStamp().getValue());
+			assertEquals("uid5@example.com", journal.getUid().getValue());
+			assertEquals("mailto:jsmith@example.com", journal.getOrganizer().getValue());
+			assertTrue(journal.getStatus().isDraft());
+			assertTrue(journal.getClassification().isPublic());
+			assertEquals(Arrays.asList("Project Report", "XYZ", "Weekly Meeting"), journal.getCategories().get(0).getValues());
+			assertEquals("Project xyz Review Meeting Minutes" + NEWLINE + "Agenda" + NEWLINE + "1. Review of project version 1.0 requirements." + NEWLINE + "2.Definitionof project processes." + NEWLINE + "3. Review of project schedule." + NEWLINE + "Participants: John Smith, Jane Doe, Jim Dandy" + NEWLINE + "-It wasdecided that the requirements need to be signed off byproduct marketing." + NEWLINE + "-Project processes were accepted." + NEWLINE + "-Project schedule needs to account for scheduled holidaysand employee vacation time. Check with HR for specificdates." + NEWLINE + "-New schedule will be distributed by Friday." + NEWLINE + "-Next weeks meeting is cancelled. No meeting until 3/23.", journal.getDescriptions().get(0).getValue());
+
+			assertEquals(0, journal.getComponents().size());
+		}
+
+		assertWarnings(0, ical.validate());
+
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void example6() throws Throwable {
+		ICalReader reader = new ICalReader(getClass().getResourceAsStream("rfc5545-example6.ics"));
+		ICalendar ical = reader.readNext();
+
+		assertEquals(2, ical.getProperties().size());
+		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertEquals("-//RDU Software//NONSGML HandCal//EN", ical.getProductId().getValue());
+
+		assertEquals(1, ical.getComponents().size());
+		{
+			VFreeBusy freebusy = ical.getFreeBusies().get(0);
+			assertEquals(7, freebusy.getProperties().size());
+			assertEquals("mailto:jsmith@example.com", freebusy.getOrganizer().getValue());
+			assertDateEquals("19980313T141711Z", freebusy.getDateStart().getValue());
+			assertDateEquals("19980410T141711Z", freebusy.getDateEnd().getValue());
+			assertEquals(Arrays.asList(new Period(utcFormatter.parse("19980314T233000"), utcFormatter.parse("19980315T003000Z"))), freebusy.getFreeBusy().get(0).getValues());
+			assertEquals(Arrays.asList(new Period(utcFormatter.parse("19980316T153000"), utcFormatter.parse("19980316T163000"))), freebusy.getFreeBusy().get(1).getValues());
+			assertEquals(Arrays.asList(new Period(utcFormatter.parse("19980318T030000"), utcFormatter.parse("19980318T040000"))), freebusy.getFreeBusy().get(2).getValues());
+			assertEquals("http://www.example.com/calendar/busytime/jsmith.ifb", freebusy.getUrl().getValue());
+
+			assertEquals(0, freebusy.getComponents().size());
+		}
+
+		//UID and DTSTAMP missing from VFREEBUSY
+		assertWarnings(2, ical.validate());
 
 		assertNull(reader.readNext());
 	}
