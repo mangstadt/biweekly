@@ -48,6 +48,11 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 	protected void _prepareParameters(T property, ICalParameters copy) {
 		Value value = (property.getValue() == null || property.hasTime()) ? null : Value.DATE;
 		copy.setValue(value);
+
+		//TODO "dtstart" needs to be outputted without a "Z" for "daylight" and "standard" components
+		if ("local".equals(copy.getTimezoneId())) {
+			copy.setTimezoneId(null);
+		}
 	}
 
 	@Override

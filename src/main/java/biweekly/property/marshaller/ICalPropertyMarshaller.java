@@ -628,7 +628,8 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		 * ignored. If the ID is invalid, the date will be formatted according
 		 * to the JVM's default timezone. If no timezone is specified, the date
 		 * will be formatted as UTC.
-		 * @param timezoneId the timezone ID
+		 * @param timezoneId the timezone ID or "local" to use the JVM's default
+		 * timezone
 		 * @return this
 		 */
 		public DateWriter tzid(String timezoneId) {
@@ -637,7 +638,10 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 				return this;
 			}
 
-			if (timezoneId.contains("/")) {
+			if (timezoneId.equals("local")) {
+				//TODO "dtstart" needs to be outputted without a "Z" for "daylight" and "standard" components
+				timezone = TimeZone.getDefault();
+			} else if (timezoneId.contains("/")) {
 				timezone = ICalDateFormatter.parseTimeZoneId(timezoneId);
 			} else {
 				//TODO support VTIMEZONE
