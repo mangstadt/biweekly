@@ -305,7 +305,6 @@ public class ICalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw);
-		writer.registerMarshaller(new TestPropertyMarshaller());
 		writer.write(ical);
 		writer.close();
 
