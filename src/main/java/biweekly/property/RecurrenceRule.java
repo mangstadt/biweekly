@@ -120,6 +120,10 @@ public class RecurrenceRule extends ICalProperty {
 		return bySecond;
 	}
 
+	public void addBySecond(Integer bySecond) {
+		this.bySecond.add(bySecond);
+	}
+
 	public void setBySecond(List<Integer> bySecond) {
 		this.bySecond = bySecond;
 	}
@@ -128,12 +132,20 @@ public class RecurrenceRule extends ICalProperty {
 		return byMinute;
 	}
 
+	public void addByMinute(Integer byMinute) {
+		this.byMinute.add(byMinute);
+	}
+
 	public void setByMinute(List<Integer> byMinute) {
 		this.byMinute = byMinute;
 	}
 
 	public List<Integer> getByHour() {
 		return byHour;
+	}
+
+	public void addByHour(Integer byHour) {
+		this.byHour.add(byHour);
 	}
 
 	public void setByHour(List<Integer> byHour) {
@@ -161,12 +173,20 @@ public class RecurrenceRule extends ICalProperty {
 		return byMonthDay;
 	}
 
+	public void addMonthDay(Integer byMonthDay) {
+		this.byMonthDay.add(byMonthDay);
+	}
+
 	public void setByMonthDay(List<Integer> byMonthDay) {
 		this.byMonthDay = byMonthDay;
 	}
 
 	public List<Integer> getByYearDay() {
 		return byYearDay;
+	}
+
+	public void addByYearDay(Integer byYearDay) {
+		this.byYearDay.add(byYearDay);
 	}
 
 	public void setByYearDay(List<Integer> byYearDay) {
@@ -177,6 +197,10 @@ public class RecurrenceRule extends ICalProperty {
 		return byWeekNo;
 	}
 
+	public void addByWeekNo(Integer byWeekNo) {
+		this.byWeekNo.add(byWeekNo);
+	}
+
 	public void setByWeekNo(List<Integer> byWeekNo) {
 		this.byWeekNo = byWeekNo;
 	}
@@ -185,12 +209,20 @@ public class RecurrenceRule extends ICalProperty {
 		return byMonth;
 	}
 
+	public void addByMonth(Integer byMonth) {
+		this.byMonth.add(byMonth);
+	}
+
 	public void setByMonth(List<Integer> byMonth) {
 		this.byMonth = byMonth;
 	}
 
 	public List<Integer> getBySetPos() {
 		return bySetPos;
+	}
+
+	public void addBySetPos(Integer bySetPos) {
+		this.bySetPos.add(bySetPos);
 	}
 
 	public void setBySetPos(List<Integer> bySetPos) {
