@@ -5,7 +5,6 @@ import static biweekly.util.TestUtils.assertWarnings;
 
 import java.io.StringWriter;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.junit.Test;
 
@@ -48,15 +47,6 @@ import biweekly.property.marshaller.ICalPropertyMarshaller;
  * @author Michael Angstadt
  */
 public class ICalWriterTest {
-	public static void main(String args[]) {
-		String regex = "BEGIN:VCALENDAR\r\nVERSION:2\\.0\r\nBEGIN:VEVENT\r\nSUMMARY:summary\r\nEND:VEVENT\r\nEND:VCALENDAR";
-		String str = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nSUMMARY:summary\r\nEND:VEVENT\r\nEND:VCALENDAR";
-
-		Pattern p = Pattern.compile(regex, Pattern.DOTALL);
-
-		System.out.println(p.matcher(str).matches());
-	}
-
 	@Test
 	public void basic() throws Exception {
 		ICalendar ical = new ICalendar();
