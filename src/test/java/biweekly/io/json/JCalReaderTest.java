@@ -556,6 +556,8 @@ public class JCalReaderTest {
 
 				assertIntEquals(-4, daylight.getTimezoneOffsetTo().getHourOffset());
 				assertIntEquals(0, daylight.getTimezoneOffsetTo().getMinuteOffset());
+
+				assertEquals(0, daylight.getComponents().size());
 			}
 			{
 				StandardTime standard = timezone.getStandardTimes().get(0);
@@ -574,6 +576,8 @@ public class JCalReaderTest {
 
 				assertIntEquals(-5, standard.getTimezoneOffsetTo().getHourOffset());
 				assertIntEquals(0, standard.getTimezoneOffsetTo().getMinuteOffset());
+
+				assertEquals(0, standard.getComponents().size());
 			}
 		}
 		{
@@ -598,6 +602,8 @@ public class JCalReaderTest {
 			assertEquals("Event #2", event.getSummary().getValue());
 			assertEquals("We are having a meeting all this week at 12 pm for one hour, with an additional meeting on the first day 2 hours long." + NEWLINE + "Please bring your own lunch for the 12 pm meetings.", event.getDescription().getValue());
 			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
+
+			assertEquals(0, event.getComponents().size());
 		}
 		{
 			VEvent event = ical.getEvents().get(1);
@@ -612,6 +618,8 @@ public class JCalReaderTest {
 			assertEquals("US/Eastern", event.getRecurrenceId().getTimezoneId());
 			assertEquals("Event #2", event.getSummary().getValue());
 			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
+
+			assertEquals(0, event.getComponents().size());
 		}
 
 		assertWarnings(0, ical.validate());
