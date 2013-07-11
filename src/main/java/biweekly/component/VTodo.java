@@ -1129,6 +1129,26 @@ public class VTodo extends ICalComponent {
 		addProperty(recurrenceDates);
 	}
 
+	/**
+	 * Gets the alarms that are assigned to this to-do.
+	 * @return the alarms
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-71">RFC 5545
+	 * p.71-6</a>
+	 */
+	public List<VAlarm> getAlarms() {
+		return getComponents(VAlarm.class);
+	}
+
+	/**
+	 * Adds an alarm to this to-do.
+	 * @param alarm the alarm
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-71">RFC 5545
+	 * p.71-6</a>
+	 */
+	public void addAlarm(VAlarm alarm) {
+		addComponent(alarm);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {

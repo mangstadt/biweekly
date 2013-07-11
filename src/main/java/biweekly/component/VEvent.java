@@ -782,19 +782,6 @@ public class VEvent extends ICalComponent {
 		}
 	}
 
-	//zero or more
-	//	private List<Attachment> attachments;
-	//	private List<Attendee> attendees;
-	//	private List<Categories> categories;
-	//	private List<Comment> comments;
-	//	private List<Contact> contact;
-	//	private List<Exdate> exdates;
-	//	private List<Rstatus> rstatus;
-	//	private List<Related> related;
-	//	private List<Resource> resources;
-	//	private List<Rdate> rdates;
-	//  private List<VAlarm> alarms;
-
 	/**
 	 * Gets any attachments that are associated with the event.
 	 * @return the attachments
@@ -1113,6 +1100,26 @@ public class VEvent extends ICalComponent {
 	 */
 	public void addRecurrenceDates(RecurrenceDates recurrenceDates) {
 		addProperty(recurrenceDates);
+	}
+
+	/**
+	 * Gets the alarms that are assigned to this event.
+	 * @return the alarms
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-71">RFC 5545
+	 * p.71-6</a>
+	 */
+	public List<VAlarm> getAlarms() {
+		return getComponents(VAlarm.class);
+	}
+
+	/**
+	 * Adds an alarm to this event.
+	 * @param alarm the alarm
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-71">RFC 5545
+	 * p.71-6</a>
+	 */
+	public void addAlarm(VAlarm alarm) {
+		addComponent(alarm);
 	}
 
 	@SuppressWarnings("unchecked")
