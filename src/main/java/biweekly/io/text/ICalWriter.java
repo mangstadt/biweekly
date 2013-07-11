@@ -247,9 +247,9 @@ public class ICalWriter implements Closeable {
 	}
 
 	/**
-	 * Writes an iCal to the data stream.
+	 * Writes an iCalendar object to the data stream.
 	 * @param ical the iCalendar object to write
-	 * @throws IOException
+	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	public void write(ICalendar ical) throws IOException {
 		warnings.clear();
@@ -259,7 +259,7 @@ public class ICalWriter implements Closeable {
 	/**
 	 * Writes a component to the data stream.
 	 * @param component the component to write
-	 * @throws IOException
+	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeComponent(ICalComponent component) throws IOException {

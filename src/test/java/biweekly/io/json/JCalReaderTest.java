@@ -487,13 +487,9 @@ public class JCalReaderTest {
 		assertNull(reader.readNext());
 	}
 
-	/**
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05#page-25">jCal
-	 * draft p.25</a>
-	 */
 	@Test
 	public void jcal_draft_example1() throws Throwable {
+		//see: http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05#page-25
 		JCalReader reader = new JCalReader(getClass().getResourceAsStream("jcal-draft-example1.json"));
 		ICalendar ical = reader.readNext();
 
@@ -519,13 +515,9 @@ public class JCalReaderTest {
 		assertNull(reader.readNext());
 	}
 
-	/**
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05#page-27">jCal
-	 * draft p.27</a>
-	 */
 	@Test
 	public void jcal_draft_example2() throws Throwable {
+		//see: http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05#page-27
 		JCalReader reader = new JCalReader(getClass().getResourceAsStream("jcal-draft-example2.json"));
 		ICalendar ical = reader.readNext();
 
