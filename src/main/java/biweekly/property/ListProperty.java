@@ -5,7 +5,6 @@ import java.util.List;
 
 import biweekly.component.ICalComponent;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -84,7 +83,7 @@ public class ListProperty<T> extends ICalProperty {
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
 		if (values.isEmpty()) {
-			warnings.add("No values are defined.");
+			warnings.add("Value list is empty.");
 		}
 	}
 }
