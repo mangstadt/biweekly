@@ -5,7 +5,6 @@ import java.util.Map;
 
 import biweekly.component.ICalComponent;
 
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -43,6 +42,7 @@ public class ComponentLibrary {
 		addMarshaller(new VAlarmMarshaller());
 		addMarshaller(new VEventMarshaller());
 		addMarshaller(new VFreeBusyMarshaller());
+		addMarshaller(new VJournalMarshaller());
 		addMarshaller(new VTodoMarshaller());
 		addMarshaller(new VTimezoneMarshaller());
 		addMarshaller(new StandardTimeMarshaller());
