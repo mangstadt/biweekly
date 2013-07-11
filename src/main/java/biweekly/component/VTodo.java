@@ -1178,9 +1178,10 @@ public class VTodo extends ICalComponent {
 		if (dateDue != null && getDuration() != null) {
 			warnings.add("A " + DateDue.class.getSimpleName() + " and a " + DurationProperty.class.getSimpleName() + " cannot both be defined in the same to-do.");
 		}
-		if (dateStart == null && (dateDue != null || getDuration() != null)) {
-			warnings.add("A" + DateStart.class.getSimpleName() + " must be defined if a " + DateDue.class.getSimpleName() + " or " + DurationProperty.class.getSimpleName() + " is defined.");
-		}
+		//not sure where I got this from
+		//		if (dateStart == null && (dateDue != null || getDuration() != null)) {
+		//			warnings.add("A " + DateStart.class.getSimpleName() + " must be defined if a " + DateDue.class.getSimpleName() + " or " + DurationProperty.class.getSimpleName() + " is defined.");
+		//		}
 
 		RecurrenceId recurrenceId = getRecurrenceId();
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
