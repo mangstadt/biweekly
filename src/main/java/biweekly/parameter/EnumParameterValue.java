@@ -75,4 +75,9 @@ public class EnumParameterValue {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return value;
+	}
 }
