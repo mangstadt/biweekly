@@ -81,6 +81,11 @@ public class VersionMarshaller extends ICalPropertyMarshaller<Version> {
 	}
 
 	@Override
+	protected JCalValue _writeJson(Version property) {
+		return JCalValue.single(Value.TEXT, property.getMaxVersion());
+	}
+
+	@Override
 	protected Version _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
 		return new Version(value.getSingleValued());
 	}

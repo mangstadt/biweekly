@@ -1,0 +1,549 @@
+package biweekly.io.json;
+
+import static biweekly.util.TestUtils.assertWarnings;
+import static org.junit.Assert.assertEquals;
+
+import java.io.StringWriter;
+import java.util.List;
+
+import org.junit.Test;
+
+import biweekly.ICalendar;
+import biweekly.component.ICalComponent;
+import biweekly.component.VEvent;
+import biweekly.component.marshaller.ICalComponentMarshaller;
+import biweekly.io.SkipMeException;
+import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
+import biweekly.property.ICalProperty;
+import biweekly.property.RawProperty;
+import biweekly.property.Version;
+import biweekly.property.marshaller.ICalPropertyMarshaller;
+
+/*
+ Copyright (c) 2013, Michael Angstadt
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met: 
+
+ 1. Redistributions of source code must retain the above copyright notice, this
+ list of conditions and the following disclaimer. 
+ 2. Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution. 
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/**
+ * @author Michael Angstadt
+ */
+public class JCalWriterTest {
+	@Test
+	public void basic() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.setProductId("prodid");
+
+		VEvent event = new VEvent();
+		event.getProperties().clear();
+		event.setSummary("summary");
+		ical.addEvent(event);
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]," +
+				"[\"prodid\",{},\"text\",\"prodid\"]" +
+			"]," +
+			"[" +
+				"[\"vevent\"," +
+					"[" +
+						"[\"summary\",{},\"text\",\"summary\"]" +
+					"]," +
+					"[" +
+					"]" +
+				"]" +
+			"]" +
+		"]";
+		//@formatter:on
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+		assertWarnings(0, writer.getWarnings());
+	}
+
+	@Test
+	public void write_multiple() throws Throwable {
+		ICalendar ical1 = new ICalendar();
+		ical1.setProductId("prodid1");
+
+		VEvent event = new VEvent();
+		event.getProperties().clear();
+		event.setSummary("summary1");
+		ical1.addEvent(event);
+
+		ICalendar ical2 = new ICalendar();
+		ical2.setProductId("prodid2");
+
+		event = new VEvent();
+		event.getProperties().clear();
+		event.setSummary("summary2");
+		ical2.addEvent(event);
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw, true);
+		writer.write(ical1);
+		writer.write(ical2);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"[" +
+			"[\"vcalendar\"," +
+				"[" +
+					"[\"version\",{},\"text\",\"2.0\"]," +
+					"[\"prodid\",{},\"text\",\"prodid1\"]" +
+				"]," +
+				"[" +
+					"[\"vevent\"," +
+						"[" +
+							"[\"summary\",{},\"text\",\"summary1\"]" +
+						"]," +
+						"[" +
+						"]" +
+					"]" +
+				"]" +
+			"]," +
+			"[\"vcalendar\"," +
+				"[" +
+					"[\"version\",{},\"text\",\"2.0\"]," +
+					"[\"prodid\",{},\"text\",\"prodid2\"]" +
+				"]," +
+				"[" +
+					"[\"vevent\"," +
+						"[" +
+							"[\"summary\",{},\"text\",\"summary2\"]" +
+						"]," +
+						"[" +
+						"]" +
+					"]" +
+				"]" +
+			"]" +
+		"]";
+		//@formatter:on
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void write_multiple_components() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.setProductId("prodid");
+
+		VEvent event = new VEvent();
+		event.getProperties().clear();
+		event.setSummary("summary1");
+		ical.addEvent(event);
+
+		event = new VEvent();
+		event.getProperties().clear();
+		event.setSummary("summary2");
+		ical.addEvent(event);
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]," +
+				"[\"prodid\",{},\"text\",\"prodid\"]" +
+			"]," +
+			"[" +
+				"[\"vevent\"," +
+					"[" +
+						"[\"summary\",{},\"text\",\"summary1\"]" +
+					"]," +
+					"[" +
+					"]" +
+				"]," +
+				"[\"vevent\"," +
+					"[" +
+						"[\"summary\",{},\"text\",\"summary2\"]" +
+					"]," +
+					"[" +
+					"]" +
+				"]" +
+			"]" +
+		"]";
+		//@formatter:on
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+		assertWarnings(0, writer.getWarnings());
+	}
+
+	@Test
+	public void write_empty() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"[\"vcalendar\"," +
+			"[" +
+			"]," +
+			"[" +
+			"]" +
+		"]";
+		//@formatter:on
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+		assertWarnings(0, writer.getWarnings());
+	}
+
+	@Test
+	public void no_property_marshaller() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.setProductId("prodid");
+		ical.addProperty(new TestProperty("value"));
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]," +
+				"[\"prodid\",{},\"text\",\"prodid\"]" +
+			"]," +
+			"[" +
+			"]" +
+		"]";
+		//@formatter:on
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+		assertWarnings(1, writer.getWarnings());
+	}
+
+	@Test
+	public void no_component_marshaller() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.setProductId("prodid");
+		ical.addComponent(new Party());
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]," +
+				"[\"prodid\",{},\"text\",\"prodid\"]" +
+			"]," +
+			"[" +
+			"]" +
+		"]";
+		//@formatter:on
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+		assertWarnings(1, writer.getWarnings());
+	}
+
+	@Test
+	public void skipMeException() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.setProductId("prodid");
+		ical.addProperty(new TestProperty("value"));
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw);
+		writer.registerMarshaller(new SkipMeMarshaller());
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]," +
+				"[\"prodid\",{},\"text\",\"prodid\"]" +
+			"]," +
+			"[" +
+			"]" +
+		"]";
+		//@formatter:on
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+		assertWarnings(1, writer.getWarnings());
+	}
+
+	@Test
+	public void override_marshaller() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.setProductId("prodid");
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw);
+		writer.registerMarshaller(new MyVersionMarshaller());
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"version\",{},\"text\",\"2.0 (beta)\"]," +
+				"[\"prodid\",{},\"text\",\"prodid\"]" +
+			"]," +
+			"[" +
+			"]" +
+		"]";
+		//@formatter:on
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+		assertWarnings(0, writer.getWarnings());
+	}
+
+	@Test
+	public void experimental_property() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.setProductId("prodid");
+		ical.addExperimentalProperty("X-NUMBER", "1");
+		RawProperty prop = ical.addExperimentalProperty("X-NUMBER", "2");
+		prop.getParameters().setValue(Value.INTEGER);
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]," +
+				"[\"prodid\",{},\"text\",\"prodid\"]," +
+				"[\"x-number\",{},\"unknown\",\"1\"]," +
+				"[\"x-number\",{},\"integer\",\"2\"]" +
+			"]," +
+			"[" +
+			"]" +
+		"]";
+		//@formatter:on
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+		assertWarnings(0, writer.getWarnings());
+	}
+
+	@Test
+	public void experimental_property_marshaller() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.setProductId("prodid");
+		ical.addProperty(new TestProperty("one"));
+		ical.addProperty(new TestProperty("two"));
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw);
+		writer.registerMarshaller(new TestPropertyMarshaller());
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]," +
+				"[\"prodid\",{},\"text\",\"prodid\"]," +
+				"[\"x-test\",{},\"text\",\"one\"]," +
+				"[\"x-test\",{},\"text\",\"two\"]" +
+			"]," +
+			"[" +
+			"]" +
+		"]";
+		//@formatter:on
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+		assertWarnings(0, writer.getWarnings());
+	}
+
+	@Test
+	public void experimental_component() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.setProductId("prodid");
+		ical.addExperimentalComponent("X-VPARTY");
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]," +
+				"[\"prodid\",{},\"text\",\"prodid\"]" +
+			"]," +
+			"[" +
+				"[\"x-vparty\"," +
+					"[" +
+					"]," +
+					"[" +
+					"]" +
+				"]" +
+			"]" +
+		"]";
+		//@formatter:on
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+		assertWarnings(0, writer.getWarnings());
+	}
+
+	@Test
+	public void experimental_component_marshaller() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.setProductId("prodid");
+		ical.addComponent(new Party());
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw);
+		writer.registerMarshaller(new PartyMarshaller());
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]," +
+				"[\"prodid\",{},\"text\",\"prodid\"]" +
+			"]," +
+			"[" +
+				"[\"x-vparty\"," +
+					"[" +
+					"]," +
+					"[" +
+					"]" +
+				"]" +
+			"]" +
+		"]";
+		//@formatter:on
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+		assertWarnings(0, writer.getWarnings());
+	}
+
+	private class TestProperty extends ICalProperty {
+		private String value;
+
+		public TestProperty(String value) {
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+	}
+
+	private class TestPropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
+		public TestPropertyMarshaller() {
+			super(TestProperty.class, "X-TEST");
+		}
+
+		@Override
+		protected String _writeText(TestProperty property) {
+			return property.getValue();
+		}
+
+		@Override
+		protected TestProperty _parseText(String value, ICalParameters parameters, List<String> warnings) {
+			return new TestProperty(value);
+		}
+
+		@Override
+		protected JCalValue _writeJson(TestProperty property) {
+			return JCalValue.single(Value.TEXT, _writeText(property));
+		}
+	}
+
+	private class SkipMeMarshaller extends ICalPropertyMarshaller<TestProperty> {
+		public SkipMeMarshaller() {
+			super(TestProperty.class, "NAME");
+		}
+
+		@Override
+		protected String _writeText(TestProperty property) {
+			throw new SkipMeException("Skipped");
+		}
+
+		@Override
+		protected TestProperty _parseText(String value, ICalParameters parameters, List<String> warnings) {
+			return new TestProperty(value);
+		}
+	}
+
+	private class MyVersionMarshaller extends ICalPropertyMarshaller<Version> {
+		public MyVersionMarshaller() {
+			super(Version.class, "VERSION");
+		}
+
+		@Override
+		protected String _writeText(Version property) {
+			return property.getMaxVersion() + " (beta)";
+		}
+
+		@Override
+		protected Version _parseText(String value, ICalParameters parameters, List<String> warnings) {
+			return new Version(value);
+		}
+
+		@Override
+		protected JCalValue _writeJson(Version property) {
+			return JCalValue.single(Value.TEXT, _writeText(property));
+		}
+	}
+
+	private class PartyMarshaller extends ICalComponentMarshaller<Party> {
+		public PartyMarshaller() {
+			super(Party.class, "X-VPARTY");
+		}
+
+		@Override
+		protected Party _newInstance() {
+			return new Party();
+		}
+	}
+
+	private class Party extends ICalComponent {
+		//empty
+	}
+}

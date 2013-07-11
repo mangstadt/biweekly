@@ -146,6 +146,17 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	}
 
 	/**
+	 * Marshals a property's value to a JSON data stream (jCal).
+	 * @param property the property
+	 * @return the marshalled value
+	 * @throws SkipMeException if the property should not be written to the data
+	 * stream
+	 */
+	public final JCalValue writeJson(T property) {
+		return _writeJson(property);
+	}
+
+	/**
 	 * Unmarshals a property's value.
 	 * @param value the value
 	 * @param parameters the property's parameters
@@ -233,6 +244,19 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		} else {
 			element.append(dataType, value);
 		}
+	}
+
+	/**
+	 * Marshals a property's value to a JSON data stream (jCal).
+	 * @param property the property
+	 * @return the marshalled value
+	 * @throws SkipMeException if the property should not be written to the data
+	 * stream
+	 */
+	protected JCalValue _writeJson(T property) {
+		String value = writeText(property);
+		Value dataType = property.getParameters().getValue();
+		return JCalValue.single(dataType, value);
 	}
 
 	/**

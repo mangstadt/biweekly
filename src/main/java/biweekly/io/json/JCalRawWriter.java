@@ -39,33 +39,29 @@ import com.fasterxml.jackson.core.JsonGenerator;
  */
 
 /**
- * Writes data to an iCalendar data stream.
+ * Writes data to an iCalendar JSON data stream (jCal).
  * @author Michael Angstadt
+ * @see <a href="http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05">jCal
+ * draft</a>
  */
 public class JCalRawWriter implements Closeable {
 	private static final String newline = System.getProperty("line.separator");
-	private final JsonGenerator jg;
+	private final Writer writer;
+	private JsonGenerator jg;
 	private boolean wrapInArray;
 	private boolean indent = false;
 	private final LinkedList<Info> stack = new LinkedList<Info>();
 	private boolean componentEnded = false;
 
 	/**
-	 * Creates an iCalendar raw writer using the standard folding scheme and
-	 * newline sequence.
+	 * Creates a new raw writer.
 	 * @param writer the writer to the data stream
+	 * @param wrapInArray true to wrap everything in an array, false not to
+	 * (useful when writing more than one iCalendar object)
 	 */
-	public JCalRawWriter(Writer writer, boolean wrapInArray) throws IOException {
+	public JCalRawWriter(Writer writer, boolean wrapInArray) {
+		this.writer = writer;
 		this.wrapInArray = wrapInArray;
-
-		JsonFactory factory = new JsonFactory();
-		//factory.configure(Feature.AUTO_CLOSE_TARGET, false);
-		jg = factory.createJsonGenerator(writer);
-
-		if (wrapInArray) {
-			jg.writeStartArray();
-			indent(0);
-		}
 	}
 
 	/**
@@ -82,16 +78,20 @@ public class JCalRawWriter implements Closeable {
 	 * @param indent true to pretty-print it, false not to (defaults to false)
 	 */
 	public void setIndent(boolean indent) {
+		//TODO implement
 		this.indent = indent;
 	}
 
 	/**
-	 * Writes a property marking the beginning of a component (in other words,
-	 * writes a "BEGIN:NAME" property).
-	 * @param componentName the component name (e.g. "VEVENT")
+	 * Writes the beginning of a new component array.
+	 * @param componentName the component name (e.g. "vevent")
 	 * @throws IOException if there's an I/O problem
 	 */
 	public void writeStartComponent(String componentName) throws IOException {
+		if (jg == null) {
+			init();
+		}
+
 		componentEnded = false;
 
 		if (!stack.isEmpty()) {
@@ -100,9 +100,9 @@ public class JCalRawWriter implements Closeable {
 				jg.writeEndArray();
 				parent.wroteEndPropertiesArray = true;
 			}
-			if (!parent.wroteStartComponentsArray) {
+			if (!parent.wroteStartSubComponentsArray) {
 				jg.writeStartArray();
-				parent.wroteStartComponentsArray = true;
+				parent.wroteStartSubComponentsArray = true;
 			}
 		}
 
@@ -114,9 +114,9 @@ public class JCalRawWriter implements Closeable {
 	}
 
 	/**
-	 * Writes a property marking the end of a component (in other words, writes
-	 * a "END:NAME" property).
-	 * @param componentName the component name (e.g. "VEVENT")
+	 * Closes the current component array.
+	 * @throws IllegalStateException if there are no open components (
+	 * {@link #writeStartComponent(String)} must be called first)
 	 * @throws IOException if there's an I/O problem
 	 */
 	public void writeEndComponent() throws IOException {
@@ -128,22 +128,23 @@ public class JCalRawWriter implements Closeable {
 		if (!cur.wroteEndPropertiesArray) {
 			jg.writeEndArray();
 		}
-		if (!cur.wroteStartComponentsArray) {
+		if (!cur.wroteStartSubComponentsArray) {
 			jg.writeStartArray();
 		}
 
-		jg.writeEndArray(); //end components array
-		jg.writeEndArray(); //end this component array
+		jg.writeEndArray(); //end sub-components array
+		jg.writeEndArray(); //end the array of this component
 
 		componentEnded = true;
 	}
 
 	/**
-	 * Writes a property to the iCalendar data stream.
-	 * @param propertyName the property name (e.g. "VERSION")
-	 * @param value the property value (e.g. "2.0")
-	 * @throws IllegalArgumentException if the property name contains invalid
-	 * characters
+	 * Writes a property to the current component.
+	 * @param propertyName the property name (e.g. "version")
+	 * @param value the property value
+	 * @throws IllegalStateException if there are no open components (
+	 * {@link #writeStartComponent(String)} must be called first) or if the last
+	 * method called was {@link #writeEndComponent()}.
 	 * @throws IOException if there's an I/O problem
 	 */
 	public void writeProperty(String propertyName, JCalValue value) throws IOException {
@@ -151,12 +152,13 @@ public class JCalRawWriter implements Closeable {
 	}
 
 	/**
-	 * Writes a property to the iCalendar data stream.
-	 * @param propertyName the property name (e.g. "VERSION")
-	 * @param parameters the property parameters
-	 * @param value the property value (e.g. "2.0")
-	 * @throws IllegalArgumentException if the property name contains invalid
-	 * characters
+	 * Writes a property to the current component.
+	 * @param propertyName the property name (e.g. "version")
+	 * @param parameters the parameters
+	 * @param value the property value
+	 * @throws IllegalStateException if there are no open components (
+	 * {@link #writeStartComponent(String)} must be called first) or if the last
+	 * method called was {@link #writeEndComponent()}.
 	 * @throws IOException if there's an I/O problem
 	 */
 	public void writeProperty(String propertyName, ICalParameters parameters, JCalValue value) throws IOException {
@@ -164,7 +166,7 @@ public class JCalRawWriter implements Closeable {
 			throw new IllegalStateException("Call \"writeStartComponent\" first.");
 		}
 		if (componentEnded) {
-			throw new IllegalStateException("Cannot write a property afte closing a component.");
+			throw new IllegalStateException("Cannot write a property after calling \"writeEndComponent\".");
 		}
 
 		jg.writeStartArray();
@@ -271,10 +273,15 @@ public class JCalRawWriter implements Closeable {
 	}
 
 	/**
-	 * Ends the jCard data stream, but does not close the underlying writer.
+	 * Finishes writing the JSON document so that it is syntactically correct.
+	 * No more data can be written once this method is called.
 	 * @throws IOException if there's a problem closing the stream
 	 */
 	public void closeJsonStream() throws IOException {
+		if (jg == null) {
+			return;
+		}
+
 		while (!stack.isEmpty()) {
 			writeEndComponent();
 		}
@@ -286,16 +293,32 @@ public class JCalRawWriter implements Closeable {
 	}
 
 	/**
-	 * Ends the jCard data stream and closes the underlying writer.
+	 * Finishes writing the JSON document and closes the underlying
+	 * {@link Writer}.
 	 * @throws IOException if there's a problem closing the stream
 	 */
 	public void close() throws IOException {
+		if (jg == null) {
+			return;
+		}
+
 		closeJsonStream();
 		jg.close();
 	}
 
+	private void init() throws IOException {
+		JsonFactory factory = new JsonFactory();
+		//factory.configure(Feature.AUTO_CLOSE_TARGET, false);
+		jg = factory.createJsonGenerator(writer);
+
+		if (wrapInArray) {
+			jg.writeStartArray();
+			indent(0);
+		}
+	}
+
 	private class Info {
 		public boolean wroteEndPropertiesArray = false;
-		public boolean wroteStartComponentsArray = false;
+		public boolean wroteStartSubComponentsArray = false;
 	}
 }
