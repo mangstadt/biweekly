@@ -67,7 +67,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 		if (property.getDates() != null) {
 			return StringUtils.join(property.getDates(), ",", new JoinCallback<Date>() {
 				public void handle(StringBuilder sb, Date date) {
-					String value = date(date).time(property.hasTime()).write();
+					String value = date(date).time(property.hasTime()).tzid(property.getTimezoneId()).write();
 					sb.append(value);
 				}
 			});
@@ -75,14 +75,14 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 			return StringUtils.join(property.getPeriods(), ",", new JoinCallback<Period>() {
 				public void handle(StringBuilder sb, Period period) {
 					if (period.getStartDate() != null) {
-						String value = date(period.getStartDate()).write();
+						String value = date(period.getStartDate()).tzid(property.getTimezoneId()).write();
 						sb.append(value);
 					}
 
 					sb.append('/');
 
 					if (period.getEndDate() != null) {
-						String value = date(period.getEndDate()).write();
+						String value = date(period.getEndDate()).tzid(property.getTimezoneId()).write();
 						sb.append(value);
 					} else if (period.getDuration() != null) {
 						sb.append(period.getDuration());
@@ -109,7 +109,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 		if (property.getDates() != null) {
 			Value dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
 			for (Date date : property.getDates()) {
-				String dateStr = date(date).time(property.hasTime()).extended(true).write();
+				String dateStr = date(date).time(property.hasTime()).tzid(property.getTimezoneId()).extended(true).write();
 				element.append(dataType, dateStr);
 			}
 		} else if (property.getPeriods() != null) {
@@ -118,12 +118,12 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 
 				Date start = period.getStartDate();
 				if (start != null) {
-					periodElement.append("start", date(start).extended(true).write());
+					periodElement.append("start", date(start).tzid(property.getTimezoneId()).extended(true).write());
 				}
 
 				Date end = period.getEndDate();
 				if (end != null) {
-					periodElement.append("end", date(end).extended(true).write());
+					periodElement.append("end", date(end).tzid(property.getTimezoneId()).extended(true).write());
 				}
 
 				Duration duration = period.getDuration();
@@ -205,7 +205,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 			dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
 
 			for (Date date : property.getDates()) {
-				String dateStr = date(date).time(property.hasTime()).extended(true).write();
+				String dateStr = date(date).time(property.hasTime()).tzid(property.getTimezoneId()).extended(true).write();
 				values.add(dateStr);
 			}
 		} else if (property.getPeriods() != null) {
@@ -214,14 +214,14 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 			for (Period period : property.getPeriods()) {
 				StringBuilder sb = new StringBuilder();
 				if (period.getStartDate() != null) {
-					String value = date(period.getStartDate()).extended(true).write();
+					String value = date(period.getStartDate()).tzid(property.getTimezoneId()).extended(true).write();
 					sb.append(value);
 				}
 
 				sb.append('/');
 
 				if (period.getEndDate() != null) {
-					String value = date(period.getEndDate()).extended(true).write();
+					String value = date(period.getEndDate()).tzid(property.getTimezoneId()).extended(true).write();
 					sb.append(value);
 				} else if (period.getDuration() != null) {
 					sb.append(period.getDuration());
