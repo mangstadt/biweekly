@@ -1,24 +1,43 @@
 package biweekly.io.json;
 
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.buildTimezone;
 import static org.junit.Assert.assertEquals;
 
 import java.io.StringWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import biweekly.ICalendar;
+import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
+import biweekly.component.StandardTime;
 import biweekly.component.VEvent;
+import biweekly.component.VTimezone;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.SkipMeException;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
+import biweekly.property.CalendarScale;
+import biweekly.property.DateStart;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
+import biweekly.property.RecurrenceDates;
+import biweekly.property.RecurrenceRule;
+import biweekly.property.RecurrenceRule.DayOfWeek;
+import biweekly.property.RecurrenceRule.Frequency;
 import biweekly.property.Version;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
+import biweekly.util.Duration;
+import biweekly.util.IOUtils;
+import biweekly.util.Period;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -49,6 +68,32 @@ import biweekly.property.marshaller.ICalPropertyMarshaller;
  * @author Michael Angstadt
  */
 public class JCalWriterTest {
+	private static TimeZone defaultTz;
+	private final DateFormat utcFormatter;
+	{
+		utcFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		utcFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
+	private final DateFormat usEasternFormatter;
+	{
+		usEasternFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		usEasternFormatter.setTimeZone(TimeZone.getTimeZone("US/Eastern"));
+	}
+	private final DateFormat localFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	private final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+
+	@BeforeClass
+	public static void beforeClass() {
+		//change the default timezone because my timezone is "US/Eastern", which is what the example jCal documents use
+		defaultTz = TimeZone.getDefault();
+		TimeZone.setDefault(buildTimezone(1, 0));
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		TimeZone.setDefault(defaultTz);
+	}
+
 	@Test
 	public void basic() throws Throwable {
 		ICalendar ical = new ICalendar();
@@ -460,6 +505,126 @@ public class JCalWriterTest {
 		String actual = sw.toString();
 		assertEquals(expected, actual);
 		assertWarnings(0, writer.getWarnings());
+	}
+
+	@Test
+	public void jcal_draft_example1() throws Throwable {
+		//see: http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05#page-25
+		//Note: all whitespace is removed from the expected JSON string it easier to compare it with the actual result
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.setCalendarScale(CalendarScale.gregorian());
+		ical.setProductId("-//ExampleInc.//ExampleCalendar//EN");
+		ical.setVersion(Version.v2_0());
+		{
+			VEvent event = new VEvent();
+			event.getProperties().clear();
+			event.setDateTimeStamp(utcFormatter.parse("2008-02-05T19:12:24"));
+			event.setDateStart(new DateStart(dateFormatter.parse("2008-10-06"), false));
+			event.setSummary("Planningmeeting");
+			event.setUid("4088E990AD89CB3DBB484909");
+			ical.addEvent(event);
+		}
+
+		assertWarnings(0, ical.validate());
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw);
+		writer.write(ical);
+		writer.close();
+
+		String expected = new String(IOUtils.toByteArray(getClass().getResourceAsStream("jcal-draft-example1.json")));
+		expected = expected.replaceAll("\\s", "");
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void jcal_draft_example2() throws Throwable {
+		//see: http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05#page-27
+		//Note: all whitespace is removed from the expected JSON string it easier to compare it with the actual result
+		VTimezone usEasternTz;
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.setProductId("-//ExampleCorp.//ExampleClient//EN");
+		ical.setVersion(Version.v2_0());
+		{
+			usEasternTz = new VTimezone(null);
+			usEasternTz.setLastModified(utcFormatter.parse("2004-01-10T03:28:45"));
+			usEasternTz.setTimezoneId("US/Eastern");
+			{
+				DaylightSavingsTime daylight = new DaylightSavingsTime();
+				daylight.setDateStart(localFormatter.parse("2000-04-04T02:00:00")).setTimezoneId("local");
+
+				RecurrenceRule rrule = new RecurrenceRule(Frequency.YEARLY);
+				rrule.addByDay(1, DayOfWeek.SUNDAY);
+				rrule.addByMonth(4);
+				daylight.setRecurrenceRule(rrule);
+
+				daylight.addTimezoneName("EDT");
+				daylight.setTimezoneOffsetFrom(-5, 0);
+				daylight.setTimezoneOffsetTo(-4, 0);
+
+				usEasternTz.addDaylightSavingsTime(daylight);
+			}
+			{
+				StandardTime standard = new StandardTime();
+				standard.setDateStart(localFormatter.parse("2000-10-26T02:00:00")).setTimezoneId("local");
+
+				RecurrenceRule rrule = new RecurrenceRule(Frequency.YEARLY);
+				rrule.addByDay(1, DayOfWeek.SUNDAY);
+				rrule.addByMonth(10);
+				standard.setRecurrenceRule(rrule);
+
+				standard.addTimezoneName("EST");
+				standard.setTimezoneOffsetFrom(-4, 0);
+				standard.setTimezoneOffsetTo(-5, 0);
+
+				usEasternTz.addStandardTime(standard);
+			}
+			ical.addTimezone(usEasternTz);
+		}
+		{
+			VEvent event = new VEvent();
+			event.setDateTimeStamp(utcFormatter.parse("2006-02-06T00:11:21"));
+			event.setDateStart(usEasternFormatter.parse("2006-01-02T12:00:00")).setTimezone(usEasternTz);
+			event.setDuration(new Duration.Builder().hours(1).build());
+
+			RecurrenceRule rrule = new RecurrenceRule(Frequency.DAILY);
+			rrule.setCount(5);
+			event.setRecurrenceRule(rrule);
+
+			RecurrenceDates rdate = new RecurrenceDates(Arrays.asList(new Period(usEasternFormatter.parse("2006-01-02T15:00:00"), new Duration.Builder().hours(2).build())));
+			rdate.setTimezone(usEasternTz);
+			event.addRecurrenceDates(rdate);
+
+			event.setSummary("Event#2");
+			event.setDescription("Wearehavingameetingallthisweekat12pmforonehour,withanadditionalmeetingonthefirstday2hourslong.\nPleasebringyourownlunchforthe12pmmeetings.");
+			event.setUid("00959BC664CA650E933C892C@example.com");
+			ical.addEvent(event);
+		}
+		{
+			VEvent event = new VEvent();
+			event.setDateTimeStamp(utcFormatter.parse("2006-02-06T00:11:21"));
+			event.setDateStart(usEasternFormatter.parse("2006-01-02T14:00:00")).setTimezone(usEasternTz);
+			event.setDuration(new Duration.Builder().hours(1).build());
+
+			event.setRecurrenceId(usEasternFormatter.parse("2006-01-04T12:00:00")).setTimezone(usEasternTz);
+
+			event.setSummary("Event#2");
+			event.setUid("00959BC664CA650E933C892C@example.com");
+			ical.addEvent(event);
+		}
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw);
+		writer.write(ical);
+		writer.close();
+
+		String expected = new String(IOUtils.toByteArray(getClass().getResourceAsStream("jcal-draft-example2.json")));
+		expected = expected.replaceAll("\\s", "");
+		String actual = sw.toString();
+		assertEquals(expected, actual);
 	}
 
 	private class TestProperty extends ICalProperty {
