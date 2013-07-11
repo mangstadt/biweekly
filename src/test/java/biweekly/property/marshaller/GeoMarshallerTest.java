@@ -5,8 +5,7 @@ import static biweekly.util.TestUtils.assertWriteXml;
 import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-
-import java.util.Arrays;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -207,7 +206,8 @@ public class GeoMarshallerTest {
 
 		JCalValue actual = marshaller.writeJson(prop);
 		assertEquals(Value.FLOAT, actual.getDataType());
-		assertEquals(Arrays.asList("12.34", "56.78"), actual.getStructured());
+		assertEquals(12.34, actual.getValues().get(0).getArray().get(0).getValue());
+		assertEquals(56.78, actual.getValues().get(0).getArray().get(1).getValue());
 	}
 
 	@Test
@@ -216,7 +216,8 @@ public class GeoMarshallerTest {
 
 		JCalValue actual = marshaller.writeJson(prop);
 		assertEquals(Value.FLOAT, actual.getDataType());
-		assertEquals(Arrays.asList(null, "56.78"), actual.getStructured());
+		assertTrue(actual.getValues().get(0).getArray().get(0).isNull());
+		assertEquals(56.78, actual.getValues().get(0).getArray().get(1).getValue());
 	}
 
 	@Test
@@ -225,7 +226,8 @@ public class GeoMarshallerTest {
 
 		JCalValue actual = marshaller.writeJson(prop);
 		assertEquals(Value.FLOAT, actual.getDataType());
-		assertEquals(Arrays.asList("12.34", null), actual.getStructured());
+		assertEquals(12.34, actual.getValues().get(0).getArray().get(0).getValue());
+		assertTrue(actual.getValues().get(0).getArray().get(1).isNull());
 	}
 
 	@Test
@@ -234,7 +236,8 @@ public class GeoMarshallerTest {
 
 		JCalValue actual = marshaller.writeJson(prop);
 		assertEquals(Value.FLOAT, actual.getDataType());
-		assertEquals(Arrays.asList(null, null), actual.getStructured());
+		assertTrue(actual.getValues().get(0).getArray().get(0).isNull());
+		assertTrue(actual.getValues().get(0).getArray().get(1).isNull());
 	}
 
 	@Test

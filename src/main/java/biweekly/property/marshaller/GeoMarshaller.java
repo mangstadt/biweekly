@@ -102,15 +102,9 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 
 	@Override
 	protected JCalValue _writeJson(Geo property) {
-		ICalFloatFormatter formatter = new ICalFloatFormatter();
-
 		Double latitude = property.getLatitude();
-		String latitudeStr = (latitude == null) ? null : formatter.format(latitude);
-
 		Double longitude = property.getLongitude();
-		String longitudeStr = (longitude == null) ? null : formatter.format(longitude);
-
-		return JCalValue.structured(Value.FLOAT, latitudeStr, longitudeStr);
+		return JCalValue.structured(Value.FLOAT, latitude, longitude);
 	}
 
 	@Override
