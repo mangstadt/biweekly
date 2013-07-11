@@ -59,7 +59,17 @@ public class JCalValue {
 	 * @return the jCal value
 	 */
 	public static JCalValue multi(Value dataType, Object... values) {
-		List<JsonValue> multiValues = new ArrayList<JsonValue>(values.length);
+		return multi(dataType, Arrays.asList(values));
+	}
+
+	/**
+	 * Creates a multi-valued value.
+	 * @param dataType the data type or null for "unknown"
+	 * @param values the values
+	 * @return the jCal value
+	 */
+	public static JCalValue multi(Value dataType, List<?> values) {
+		List<JsonValue> multiValues = new ArrayList<JsonValue>(values.size());
 		for (Object value : values) {
 			multiValues.add(new JsonValue(value));
 		}
@@ -135,6 +145,10 @@ public class JCalValue {
 
 		JsonValue first = values.get(0);
 
+		if (first.isNull()) {
+			return null;
+		}
+
 		Object obj = first.getValue();
 		if (obj != null) {
 			return obj.toString();
@@ -174,6 +188,11 @@ public class JCalValue {
 		if (array != null) {
 			List<String> values = new ArrayList<String>(array.size());
 			for (JsonValue value : array) {
+				if (value.isNull()) {
+					values.add(null);
+					continue;
+				}
+
 				Object obj = value.getValue();
 				if (obj != null) {
 					values.add(obj.toString());
@@ -188,6 +207,13 @@ public class JCalValue {
 		if (obj != null) {
 			List<String> values = new ArrayList<String>(1);
 			values.add(obj.toString());
+			return values;
+		}
+
+		//["request-status", {}, "text", null]
+		if (first.isNull()) {
+			List<String> values = new ArrayList<String>(1);
+			values.add(null);
 			return values;
 		}
 
@@ -214,6 +240,11 @@ public class JCalValue {
 
 		List<String> multi = new ArrayList<String>(values.size());
 		for (JsonValue value : values) {
+			if (value.isNull()) {
+				multi.add(null);
+				continue;
+			}
+
 			Object obj = value.getValue();
 			if (obj != null) {
 				multi.add(obj.toString());
@@ -247,6 +278,11 @@ public class JCalValue {
 		for (Map.Entry<String, JsonValue> entry : map.entrySet()) {
 			String key = entry.getKey();
 			JsonValue value = entry.getValue();
+
+			if (value.isNull()) {
+				values.put(key, null);
+				continue;
+			}
 
 			Object obj = value.getValue();
 			if (obj != null) {

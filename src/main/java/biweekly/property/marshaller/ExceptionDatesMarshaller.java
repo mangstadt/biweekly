@@ -1,5 +1,6 @@
 package biweekly.property.marshaller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -91,6 +92,17 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 			prop.addValue(date);
 		}
 		return prop;
+	}
+
+	@Override
+	protected JCalValue _writeJson(ExceptionDates property) {
+		Value dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
+		List<String> values = new ArrayList<String>();
+		for (Date value : property.getValues()) {
+			String dateStr = date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).extended(true).write();
+			values.add(dateStr);
+		}
+		return JCalValue.multi(dataType, values);
 	}
 
 	@Override

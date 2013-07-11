@@ -205,6 +205,28 @@ public class ExceptionDatesMarshallerTest {
 	}
 
 	@Test
+	public void writeJson_datetime() {
+		ExceptionDates prop = new ExceptionDates(true);
+		prop.addValue(datetime);
+		prop.addValue(datetime);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DATE_TIME, actual.getDataType());
+		assertEquals(Arrays.asList("2013-06-11T13:43:02Z", "2013-06-11T13:43:02Z"), actual.getMultivalued());
+	}
+
+	@Test
+	public void writeJson_date() {
+		ExceptionDates prop = new ExceptionDates(false);
+		prop.addValue(datetime);
+		prop.addValue(datetime);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DATE, actual.getDataType());
+		assertEquals(Arrays.asList("2013-06-11", "2013-06-11"), actual.getMultivalued());
+	}
+
+	@Test
 	public void parseJson_datetime() {
 		Result<ExceptionDates> result = marshaller.parseJson(JCalValue.multi(Value.DATE_TIME, "2013-06-11T13:43:02Z", "2013-06-11T13:43:02Z"), new ICalParameters());
 

@@ -81,6 +81,11 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 	}
 
 	@Override
+	protected JCalValue _writeJson(T property) {
+		return JCalValue.multi(dataType, property.getValues());
+	}
+
+	@Override
 	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
 		return parse(value.getMultivalued(), parameters, warnings);
 	}

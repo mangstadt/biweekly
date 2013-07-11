@@ -4,6 +4,7 @@ import static biweekly.util.TestUtils.assertWarnings;
 import static biweekly.util.TestUtils.assertWriteXml;
 import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -93,6 +94,12 @@ public class DurationPropertyMarshallerTest {
 	}
 
 	@Test
+	public void writeXml_null() {
+		DurationProperty prop = new DurationProperty(null);
+		assertWriteXml("", prop, marshaller);
+	}
+
+	@Test
 	public void parseXml() {
 		Result<DurationProperty> result = parseXCalProperty("<duration>PT1H30M</duration>", marshaller);
 
@@ -104,6 +111,24 @@ public class DurationPropertyMarshallerTest {
 	@Test(expected = CannotParseException.class)
 	public void parseXml_invalid() {
 		parseXCalProperty("<duration>invalid</duration>", marshaller);
+	}
+
+	@Test
+	public void writeJson() {
+		DurationProperty prop = new DurationProperty(duration);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DURATION, actual.getDataType());
+		assertEquals("PT1H30M", actual.getSingleValued());
+	}
+
+	@Test
+	public void writeJson_null() {
+		DurationProperty prop = new DurationProperty(null);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DURATION, actual.getDataType());
+		assertTrue(actual.getValues().get(0).isNull());
 	}
 
 	@Test

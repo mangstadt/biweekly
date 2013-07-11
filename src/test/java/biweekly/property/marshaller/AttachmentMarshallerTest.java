@@ -178,6 +178,24 @@ public class AttachmentMarshallerTest {
 	}
 
 	@Test
+	public void writeJson_uri() {
+		Attachment prop = new Attachment("image/png", "http://example.com/image.png");
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.URI, actual.getDataType());
+		assertEquals("http://example.com/image.png", actual.getSingleValued());
+	}
+
+	@Test
+	public void writeJson_data() {
+		Attachment prop = new Attachment("image/png", "data".getBytes());
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.BINARY, actual.getDataType());
+		assertEquals(Base64.encodeBase64String("data".getBytes()), actual.getSingleValued());
+	}
+
+	@Test
 	public void parseJson_uri() {
 		Result<Attachment> result = marshaller.parseJson(JCalValue.single(Value.URI, "http://example.com/image.png"), new ICalParameters());
 
@@ -197,4 +215,5 @@ public class AttachmentMarshallerTest {
 
 		assertWarnings(0, result.getWarnings());
 	}
+
 }

@@ -135,6 +135,24 @@ public class IntegerPropertyMarshallerTest {
 	}
 
 	@Test
+	public void writeJson() {
+		IntegerProperty prop = new IntegerProperty(5);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.INTEGER, actual.getDataType());
+		assertEquals("5", actual.getSingleValued());
+	}
+
+	@Test
+	public void writeJson_null() {
+		IntegerProperty prop = new IntegerProperty(null);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.INTEGER, actual.getDataType());
+		assertEquals(null, actual.getSingleValued());
+	}
+
+	@Test
 	public void parseJson() {
 		Result<IntegerProperty> result = marshaller.parseJson(JCalValue.single(Value.INTEGER, 5), new ICalParameters());
 

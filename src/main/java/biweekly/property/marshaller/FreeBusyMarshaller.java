@@ -1,5 +1,6 @@
 package biweekly.property.marshaller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -143,6 +144,32 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 		}
 
 		return prop;
+	}
+
+	@Override
+	protected JCalValue _writeJson(FreeBusy property) {
+		List<String> values = new ArrayList<String>();
+
+		for (Period period : property.getValues()) {
+			StringBuilder sb = new StringBuilder();
+			if (period.getStartDate() != null) {
+				String date = date(period.getStartDate()).extended(true).write();
+				sb.append(date);
+			}
+
+			sb.append('/');
+
+			if (period.getEndDate() != null) {
+				String date = date(period.getEndDate()).extended(true).write();
+				sb.append(date);
+			} else if (period.getDuration() != null) {
+				sb.append(period.getDuration());
+			}
+
+			values.add(sb.toString());
+		}
+
+		return JCalValue.multi(Value.PERIOD, values);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import static biweekly.util.TestUtils.assertWarnings;
 import static biweekly.util.TestUtils.assertWriteXml;
 import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -125,6 +126,24 @@ public class DateTimePropertyMarshallerTest {
 	@Test(expected = CannotParseException.class)
 	public void parseXml_invalid() {
 		parseXCalProperty("<date-time>invalid</date-time>", marshaller);
+	}
+
+	@Test
+	public void writeJson() {
+		DateTimePropertyImpl prop = new DateTimePropertyImpl(datetime);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DATE_TIME, actual.getDataType());
+		assertEquals("2013-06-11T13:43:02Z", actual.getSingleValued());
+	}
+
+	@Test
+	public void writeJson_null() {
+		DateTimePropertyImpl prop = new DateTimePropertyImpl(null);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DATE_TIME, actual.getDataType());
+		assertTrue(actual.getValues().get(0).isNull());
 	}
 
 	@Test

@@ -81,6 +81,13 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 	}
 
 	@Override
+	protected JCalValue _writeJson(T property) {
+		Date value = property.getValue();
+		String dateStr = (value == null) ? null : date(value).extended(true).write();
+		return JCalValue.single(Value.DATE_TIME, dateStr);
+	}
+
+	@Override
 	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
 		String valueStr = value.getSingleValued();
 

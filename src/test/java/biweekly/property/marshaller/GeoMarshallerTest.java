@@ -6,6 +6,8 @@ import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
 import biweekly.io.CannotParseException;
@@ -197,6 +199,42 @@ public class GeoMarshallerTest {
 	@Test(expected = CannotParseException.class)
 	public void parseXml_bad_longitude() {
 		parseXCalProperty("<latitude>12.34</latitude><longitude>bad</longitude>", marshaller);
+	}
+
+	@Test
+	public void writeJson() {
+		Geo prop = new Geo(12.34, 56.78);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.FLOAT, actual.getDataType());
+		assertEquals(Arrays.asList("12.34", "56.78"), actual.getStructured());
+	}
+
+	@Test
+	public void writeJson_missing_latitude() {
+		Geo prop = new Geo(null, 56.78);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.FLOAT, actual.getDataType());
+		assertEquals(Arrays.asList(null, "56.78"), actual.getStructured());
+	}
+
+	@Test
+	public void writeJson_missing_longitude() {
+		Geo prop = new Geo(12.34, null);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.FLOAT, actual.getDataType());
+		assertEquals(Arrays.asList("12.34", null), actual.getStructured());
+	}
+
+	@Test
+	public void writeJson_missing_both() {
+		Geo prop = new Geo(null, null);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.FLOAT, actual.getDataType());
+		assertEquals(Arrays.asList(null, null), actual.getStructured());
 	}
 
 	@Test

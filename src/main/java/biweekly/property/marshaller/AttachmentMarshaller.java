@@ -105,6 +105,14 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	}
 
 	@Override
+	protected JCalValue _writeJson(Attachment property) {
+		if (property.getData() != null) {
+			return JCalValue.single(Value.BINARY, Base64.encodeBase64String(property.getData()));
+		}
+		return JCalValue.single(Value.URI, property.getUri());
+	}
+
+	@Override
 	protected Attachment _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
 		Attachment attachment = new Attachment(null, (String) null);
 

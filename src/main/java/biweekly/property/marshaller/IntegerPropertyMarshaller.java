@@ -68,7 +68,17 @@ public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> exten
 		return parse(element.first(Value.INTEGER));
 	}
 
-	protected T parse(String value) {
+	@Override
+	protected JCalValue _writeJson(T property) {
+		return JCalValue.single(Value.INTEGER, property.getValue());
+	}
+
+	@Override
+	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		return parse(value.getSingleValued());
+	}
+
+	private T parse(String value) {
 		if (value == null || value.length() == 0) {
 			return newInstance(null);
 		}
@@ -79,11 +89,6 @@ public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> exten
 		} catch (NumberFormatException e) {
 			throw new CannotParseException("Could not parse integer value.");
 		}
-	}
-
-	@Override
-	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
-		return parse(value.getSingleValued());
 	}
 
 	protected abstract T newInstance(Integer value);

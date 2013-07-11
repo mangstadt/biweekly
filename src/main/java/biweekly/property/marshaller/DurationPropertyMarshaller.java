@@ -71,6 +71,13 @@ public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationP
 	}
 
 	@Override
+	protected JCalValue _writeJson(DurationProperty property) {
+		Duration value = property.getValue();
+		String valueStr = (value == null) ? null : value.toString();
+		return JCalValue.single(Value.DURATION, valueStr);
+	}
+
+	@Override
 	protected DurationProperty _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
 		String valueStr = value.getSingleValued();
 		return parse(valueStr);

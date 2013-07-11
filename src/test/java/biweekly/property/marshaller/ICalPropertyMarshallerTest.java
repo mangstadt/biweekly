@@ -7,6 +7,7 @@ import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -323,6 +324,27 @@ public class ICalPropertyMarshallerTest {
 	public void parseXml() {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
 		parseXCalProperty("<text>text</text>", m);
+	}
+
+	@Test
+	public void writeJson() {
+		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
+		TestProperty prop = new TestProperty("value");
+
+		JCalValue actual = m.writeJson(prop);
+		assertNull(actual.getDataType());
+		assertEquals("value", actual.getSingleValued());
+	}
+
+	@Test
+	public void writeJson_with_value_parameter() {
+		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
+		TestProperty prop = new TestProperty("value");
+		prop.getParameters().setValue(Value.TEXT);
+
+		JCalValue actual = m.writeJson(prop);
+		assertEquals(Value.TEXT, actual.getDataType());
+		assertEquals("value", actual.getSingleValued());
 	}
 
 	@Test

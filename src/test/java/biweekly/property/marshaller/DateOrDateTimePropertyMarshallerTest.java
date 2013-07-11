@@ -207,6 +207,33 @@ public class DateOrDateTimePropertyMarshallerTest {
 	}
 
 	@Test
+	public void writeJson_datetime() {
+		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(datetime, true);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DATE_TIME, actual.getDataType());
+		assertEquals("2013-06-11T13:43:02Z", actual.getSingleValued());
+	}
+
+	@Test
+	public void writeJson_date() {
+		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(datetime, false);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DATE, actual.getDataType());
+		assertEquals("2013-06-11", actual.getSingleValued());
+	}
+
+	@Test
+	public void writeJson_null() {
+		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(null, true);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DATE_TIME, actual.getDataType());
+		assertTrue(actual.getValues().get(0).isNull());
+	}
+
+	@Test
 	public void parseJson_datetime() {
 		Result<DateOrDateTimePropertyImpl> result = marshaller.parseJson(JCalValue.single(Value.DATE_TIME, "2013-06-11T13:43:02Z"), new ICalParameters());
 

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -346,6 +347,26 @@ public class FreeBusyMarshallerTest {
 		assertFalse(it.hasNext());
 
 		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void writeJson() {
+		FreeBusy prop = new FreeBusy();
+		prop.addValue(start, end);
+		prop.addValue(start, duration);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.PERIOD, actual.getDataType());
+		assertEquals(Arrays.asList("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/PT2H"), actual.getMultivalued());
+	}
+
+	@Test
+	public void writeJson_empty() {
+		FreeBusy prop = new FreeBusy();
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.PERIOD, actual.getDataType());
+		assertEquals(Arrays.asList(), actual.getMultivalued());
 	}
 
 	@Test

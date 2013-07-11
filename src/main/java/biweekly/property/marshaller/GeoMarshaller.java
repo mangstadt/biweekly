@@ -6,6 +6,7 @@ import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.Geo;
 import biweekly.util.ICalFloatFormatter;
 
@@ -99,6 +100,27 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 		return parse(latitudeStr, longitudeStr);
 	}
 
+	@Override
+	protected JCalValue _writeJson(Geo property) {
+		ICalFloatFormatter formatter = new ICalFloatFormatter();
+
+		Double latitude = property.getLatitude();
+		String latitudeStr = (latitude == null) ? null : formatter.format(latitude);
+
+		Double longitude = property.getLongitude();
+		String longitudeStr = (longitude == null) ? null : formatter.format(longitude);
+
+		return JCalValue.structured(Value.FLOAT, latitudeStr, longitudeStr);
+	}
+
+	@Override
+	protected Geo _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		List<String> values = value.getStructured();
+		String latitudeStr = (values.size() > 0) ? values.get(0) : null;
+		String longitudeStr = (values.size() > 1) ? values.get(1) : null;
+		return parse(latitudeStr, longitudeStr);
+	}
+
 	private Geo parse(String latitudeStr, String longitudeStr) {
 		Double latitude = null;
 		if (latitudeStr != null) {
@@ -119,13 +141,5 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 		}
 
 		return new Geo(latitude, longitude);
-	}
-
-	@Override
-	protected Geo _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
-		List<String> values = value.getStructured();
-		String latitudeStr = (values.size() > 0) ? values.get(0) : null;
-		String longitudeStr = (values.size() > 1) ? values.get(1) : null;
-		return parse(latitudeStr, longitudeStr);
 	}
 }

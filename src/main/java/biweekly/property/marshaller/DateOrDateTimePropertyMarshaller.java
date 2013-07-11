@@ -89,6 +89,18 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 	}
 
 	@Override
+	protected JCalValue _writeJson(T property) {
+		Date value = property.getValue();
+		if (value == null) {
+			return JCalValue.single(Value.DATE_TIME, null);
+		}
+
+		Value dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
+		String dateStr = date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).extended(true).write();
+		return JCalValue.single(dataType, dateStr);
+	}
+
+	@Override
 	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
 		String valueStr = value.getSingleValued();
 		return parse(valueStr, parameters, warnings);
