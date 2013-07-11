@@ -170,12 +170,6 @@ public abstract class Observance extends ICalComponent {
 		setProperty(RecurrenceRule.class, recurrenceRule);
 	}
 
-	//
-	//zero or more
-	//  private List<Comment> comments;
-	//  private List<RDate> rdates;
-	//  private List<TimezoneName> timezoneName;
-
 	/**
 	 * Gets the comments attached to the timezone.
 	 * @return the comments
