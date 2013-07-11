@@ -719,7 +719,7 @@ public class VJournal extends ICalComponent {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545
 	 * p.84-5</a>
 	 */
-	public List<Description> getDescription() {
+	public List<Description> getDescriptions() {
 		return getProperties(Description.class);
 	}
 
