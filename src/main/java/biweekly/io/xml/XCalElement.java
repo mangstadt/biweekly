@@ -56,11 +56,13 @@ public class XCalElement {
 
 	/**
 	 * Gets the first value of the given data type.
-	 * @param dataType the data type to look for
+	 * @param dataType the data type to look for or null for the "unknown" data
+	 * type
 	 * @return the value or null if not found
 	 */
 	public String first(Value dataType) {
-		return first(dataType.getValue().toLowerCase());
+		String dataTypeStr = (dataType == null) ? "unknown" : dataType.getValue().toLowerCase();
+		return first(dataTypeStr);
 	}
 
 	/**
@@ -68,7 +70,7 @@ public class XCalElement {
 	 * @return the value or null if not found
 	 */
 	public String firstUnknown() {
-		return first("unknown");
+		return first((Value) null);
 	}
 
 	/**
@@ -116,17 +118,18 @@ public class XCalElement {
 	 * @return the created element
 	 */
 	public Element appendUnknown(String value) {
-		return append("unknown", value);
+		return append((Value) null, value);
 	}
 
 	/**
 	 * Adds a value.
-	 * @param dataType the data type
+	 * @param dataType the data type or null for the "unknown" data type
 	 * @param value the value
 	 * @return the created element
 	 */
 	public Element append(Value dataType, String value) {
-		return append(dataType.getValue().toLowerCase(), value);
+		String dataTypeStr = (dataType == null) ? "unknown" : dataType.getValue().toLowerCase();
+		return append(dataTypeStr, value);
 	}
 
 	/**
