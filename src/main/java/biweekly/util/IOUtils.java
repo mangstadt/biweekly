@@ -62,7 +62,9 @@ public class IOUtils {
 			}
 			return out.toByteArray();
 		} finally {
-			in.close();
+			if (close) {
+				closeQuietly(in);
+			}
 		}
 	}
 
