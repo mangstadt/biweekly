@@ -3,15 +3,20 @@ package biweekly.io.json;
 import static biweekly.util.TestUtils.assertDateEquals;
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.buildTimezone;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import biweekly.ICalendar;
@@ -70,7 +75,20 @@ import biweekly.util.Period;
  * @author Michael Angstadt
  */
 public class JCalReaderTest {
+	private static TimeZone defaultTz;
 	private final String NEWLINE = System.getProperty("line.separator");
+
+	@BeforeClass
+	public static void beforeClass() {
+		//change the default timezone because my timezone is "US/Eastern", which is what the example jCal documents use
+		defaultTz = TimeZone.getDefault();
+		TimeZone.setDefault(buildTimezone(1, 0));
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		TimeZone.setDefault(defaultTz);
+	}
 
 	@Test
 	public void read_single() throws Throwable {
@@ -511,6 +529,9 @@ public class JCalReaderTest {
 		JCalReader reader = new JCalReader(getClass().getResourceAsStream("jcal-draft-example2.json"));
 		ICalendar ical = reader.readNext();
 
+		DateFormat usEastern = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		usEastern.setTimeZone(TimeZone.getTimeZone("US/Eastern"));
+
 		assertEquals(2, ical.getProperties().size());
 		assertEquals("-//Example Corp.//Example Client//EN", ical.getProductId().getValue());
 		assertEquals("2.0", ical.getVersion().getMaxVersion());
@@ -566,7 +587,7 @@ public class JCalReaderTest {
 
 			assertEquals(8, event.getProperties().size());
 			assertDateEquals("20060206T001121Z", event.getDateTimeStamp().getValue());
-			assertDateEquals("20060102T120000", event.getDateStart().getValue());
+			assertEquals(usEastern.parse("2006-01-02T12:00:00"), event.getDateStart().getValue());
 			assertEquals("US/Eastern", event.getDateStart().getTimezoneId());
 			assertEquals(new Duration.Builder().hours(1).build(), event.getDuration().getValue());
 
@@ -577,7 +598,7 @@ public class JCalReaderTest {
 			RecurrenceDates rdate = event.getRecurrenceDates().get(0);
 			assertNull(rdate.getDates());
 			assertEquals(1, rdate.getPeriods().size());
-			assertEquals(new Period(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse("2006-01-02T15:00:00"), new Duration.Builder().hours(2).build()), rdate.getPeriods().get(0));
+			assertEquals(new Period(usEastern.parse("2006-01-02T15:00:00"), new Duration.Builder().hours(2).build()), rdate.getPeriods().get(0));
 			assertEquals("US/Eastern", rdate.getTimezoneId());
 
 			assertEquals("Event #2", event.getSummary().getValue());
@@ -589,11 +610,11 @@ public class JCalReaderTest {
 
 			assertEquals(6, event.getProperties().size());
 			assertDateEquals("20060206T001121Z", event.getDateTimeStamp().getValue());
-			assertDateEquals("20060102T140000", event.getDateStart().getValue());
+			assertEquals(usEastern.parse("2006-01-02T14:00:00"), event.getDateStart().getValue());
 			assertEquals("US/Eastern", event.getDateStart().getTimezoneId());
 			assertEquals(new Duration.Builder().hours(1).build(), event.getDuration().getValue());
 
-			assertDateEquals("20060104T120000", event.getRecurrenceId().getValue());
+			assertEquals(usEastern.parse("2006-01-04T12:00:00"), event.getRecurrenceId().getValue());
 			assertEquals("US/Eastern", event.getRecurrenceId().getTimezoneId());
 			assertEquals("Event #2", event.getSummary().getValue());
 			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
