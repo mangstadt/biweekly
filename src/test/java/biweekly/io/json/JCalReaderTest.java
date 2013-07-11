@@ -512,6 +512,8 @@ public class JCalReaderTest {
 			assertEquals(0, event.getComponents().size());
 		}
 
+		assertWarnings(0, ical.validate());
+
 		assertNull(reader.readNext());
 	}
 
@@ -611,6 +613,8 @@ public class JCalReaderTest {
 			assertEquals("Event #2", event.getSummary().getValue());
 			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
 		}
+
+		assertWarnings(0, ical.validate());
 
 		assertNull(reader.readNext());
 	}

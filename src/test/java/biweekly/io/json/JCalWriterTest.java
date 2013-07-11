@@ -616,6 +616,8 @@ public class JCalWriterTest {
 			ical.addEvent(event);
 		}
 
+		assertWarnings(0, ical.validate());
+
 		StringWriter sw = new StringWriter();
 		JCalWriter writer = new JCalWriter(sw);
 		writer.write(ical);
