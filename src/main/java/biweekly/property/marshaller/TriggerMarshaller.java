@@ -112,6 +112,21 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	}
 
 	@Override
+	protected JCalValue _writeJson(Trigger property) {
+		if (property.getDate() != null) {
+			String dateStr = date(property.getDate()).extended(true).write();
+			return JCalValue.single(Value.DATE_TIME, dateStr);
+		}
+
+		if (property.getDuration() != null) {
+			String durationStr = property.getDuration().toString();
+			return JCalValue.single(Value.DURATION, durationStr);
+		}
+
+		return JCalValue.single(Value.DURATION, null);
+	}
+
+	@Override
 	protected Trigger _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
 		String valueStr = value.getSingleValued();
 

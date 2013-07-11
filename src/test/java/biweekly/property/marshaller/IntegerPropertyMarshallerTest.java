@@ -6,6 +6,7 @@ import static biweekly.util.TestUtils.assertWriteXml;
 import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -140,7 +141,7 @@ public class IntegerPropertyMarshallerTest {
 
 		JCalValue actual = marshaller.writeJson(prop);
 		assertEquals(Value.INTEGER, actual.getDataType());
-		assertEquals("5", actual.getSingleValued());
+		assertEquals(5, actual.getValues().get(0).getValue());
 	}
 
 	@Test
@@ -149,7 +150,7 @@ public class IntegerPropertyMarshallerTest {
 
 		JCalValue actual = marshaller.writeJson(prop);
 		assertEquals(Value.INTEGER, actual.getDataType());
-		assertEquals(null, actual.getSingleValued());
+		assertTrue(actual.getValues().get(0).isNull());
 	}
 
 	@Test

@@ -142,4 +142,25 @@ public class JsonValue {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		if (isNull) {
+			return "NULL";
+		}
+
+		if (value != null) {
+			return "VALUE = " + value;
+		}
+
+		if (array != null) {
+			return "ARRAY = " + array;
+		}
+
+		if (object != null) {
+			return "OBJECT = " + object;
+		}
+
+		return "";
+	}
 }

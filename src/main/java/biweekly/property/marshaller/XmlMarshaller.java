@@ -15,6 +15,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.Xml;
 import biweekly.util.XmlUtils;
 
@@ -60,9 +61,7 @@ public class XmlMarshaller extends ICalPropertyMarshaller<Xml> {
 			return "";
 		}
 
-		Map<String, String> props = new HashMap<String, String>();
-		props.put(OutputKeys.OMIT_XML_DECLARATION, "yes");
-		String xml = XmlUtils.toString(value, props);
+		String xml = valueToString(value);
 		return escape(xml);
 	}
 
@@ -79,7 +78,7 @@ public class XmlMarshaller extends ICalPropertyMarshaller<Xml> {
 	@Override
 	protected void _writeXml(Xml property, XCalElement element) {
 		super._writeXml(property, element);
-		//Xml properties are handled as a special case when writing xCal documents, so this method should never get called (see: XCalDocument class)
+		//Xml properties are handled as a special case when writing xCal documents, so this method should never get called (see: "XCalDocument" class)
 	}
 
 	@Override
@@ -98,11 +97,29 @@ public class XmlMarshaller extends ICalPropertyMarshaller<Xml> {
 	}
 
 	@Override
+	protected JCalValue _writeJson(Xml property) {
+		String xml = null;
+		Document value = property.getValue();
+		if (value != null) {
+			xml = valueToString(value);
+		}
+
+		return JCalValue.single(Value.TEXT, xml);
+	}
+
+	@Override
 	protected Xml _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
 		try {
-			return new Xml(value.getSingleValued());
+			String xml = value.getSingleValued();
+			return (xml == null) ? new Xml((Document) null) : new Xml(xml);
 		} catch (SAXException e) {
 			throw new CannotParseException("Cannot parse value as XML: " + value);
 		}
+	}
+
+	private String valueToString(Document document) {
+		Map<String, String> props = new HashMap<String, String>();
+		props.put(OutputKeys.OMIT_XML_DECLARATION, "yes");
+		return XmlUtils.toString(document, props);
 	}
 }

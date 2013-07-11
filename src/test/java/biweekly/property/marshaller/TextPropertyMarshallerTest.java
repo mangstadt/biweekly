@@ -4,6 +4,7 @@ import static biweekly.util.TestUtils.assertWarnings;
 import static biweekly.util.TestUtils.assertWriteXml;
 import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -112,6 +113,34 @@ public class TextPropertyMarshallerTest {
 		TextPropertyImpl prop = result.getValue();
 		assertEquals("mailto:johndoe@example.com", prop.getValue());
 		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void writeJson() {
+		TextPropertyImpl prop = new TextPropertyImpl("text");
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.TEXT, actual.getDataType());
+		assertEquals("text", actual.getSingleValued());
+	}
+
+	@Test
+	public void writeJson_null() {
+		TextPropertyImpl prop = new TextPropertyImpl(null);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.TEXT, actual.getDataType());
+		assertTrue(actual.getValues().get(0).isNull());
+	}
+
+	@Test
+	public void writeJson_data_type() {
+		TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl(Value.CAL_ADDRESS);
+		TextPropertyImpl prop = new TextPropertyImpl("mailto:johndoe@example.com");
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.CAL_ADDRESS, actual.getDataType());
+		assertEquals("mailto:johndoe@example.com", actual.getSingleValued());
 	}
 
 	@Test

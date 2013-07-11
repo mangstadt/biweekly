@@ -134,6 +134,24 @@ public class UtcOffsetPropertyMarshallerTest {
 	}
 
 	@Test
+	public void writeJson() {
+		UtcOffsetPropertyImpl prop = new UtcOffsetPropertyImpl(1, 30);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.UTC_OFFSET, actual.getDataType());
+		assertEquals("+01:30", actual.getSingleValued());
+	}
+
+	@Test
+	public void writeJson_null() {
+		UtcOffsetPropertyImpl prop = new UtcOffsetPropertyImpl(null, null);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.UTC_OFFSET, actual.getDataType());
+		assertEquals("+00:00", actual.getSingleValued());
+	}
+
+	@Test
 	public void parseJson() {
 		Result<UtcOffsetPropertyImpl> result = marshaller.parseJson(JCalValue.single(Value.UTC_OFFSET, "+01:30"), new ICalParameters());
 

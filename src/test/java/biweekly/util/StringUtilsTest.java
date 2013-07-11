@@ -2,6 +2,7 @@ package biweekly.util;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -72,9 +73,13 @@ public class StringUtilsTest {
 	}
 
 	@Test
-	public void join_strings() {
-		Collection<String> values = Arrays.asList("one", "two", "three");
-		assertEquals("one,two,three", StringUtils.join(values, ","));
+	public void join_objects() {
+		Collection<Object> values = new ArrayList<Object>();
+		values.add(false);
+		values.add(1);
+		values.add("two");
+		values.add(null);
+		assertEquals("false,1,two,null", StringUtils.join(values, ","));
 	}
 
 	@Test

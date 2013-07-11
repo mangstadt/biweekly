@@ -5,6 +5,8 @@ import static biweekly.util.TestUtils.assertWriteXml;
 import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
 import biweekly.io.json.JCalValue;
@@ -138,6 +140,37 @@ public class RequestStatusMarshallerTest {
 		assertEquals("description", prop.getDescription());
 		assertEquals("data", prop.getExceptionText());
 		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void writeJson() {
+		RequestStatus prop = new RequestStatus("1.2.3");
+		prop.setDescription("description");
+		prop.setExceptionText("data");
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.TEXT, actual.getDataType());
+		assertEquals(Arrays.asList("1.2.3", "description", "data"), actual.getStructured());
+	}
+
+	@Test
+	public void writeJson_missing_data() {
+		RequestStatus prop = new RequestStatus("1.2.3");
+		prop.setDescription("description");
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.TEXT, actual.getDataType());
+		assertEquals(Arrays.asList("1.2.3", "description"), actual.getStructured());
+	}
+
+	@Test
+	public void writeJson_missing_description() {
+		RequestStatus prop = new RequestStatus("1.2.3");
+		prop.setExceptionText("data");
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.TEXT, actual.getDataType());
+		assertEquals(Arrays.asList("1.2.3", "", "data"), actual.getStructured());
 	}
 
 	@Test

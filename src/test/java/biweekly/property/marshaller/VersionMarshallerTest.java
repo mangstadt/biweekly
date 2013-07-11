@@ -118,6 +118,15 @@ public class VersionMarshallerTest {
 	}
 
 	@Test
+	public void writeJson() {
+		Version prop = new Version("2.0");
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.TEXT, actual.getDataType());
+		assertEquals("2.0", actual.getSingleValued());
+	}
+
+	@Test
 	public void parseJson() {
 		Result<Version> result = marshaller.parseJson(JCalValue.single(Value.TEXT, "2.0"), new ICalParameters());
 

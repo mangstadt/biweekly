@@ -87,6 +87,21 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 	}
 
 	@Override
+	protected JCalValue _writeJson(T property) {
+		Integer hour = property.getHourOffset();
+		if (hour == null) {
+			hour = 0;
+		}
+
+		Integer minute = property.getMinuteOffset();
+		if (minute == null) {
+			minute = 0;
+		}
+
+		return JCalValue.single(Value.UTC_OFFSET, ICalDateFormatter.formatTimeZone(hour, minute, true));
+	}
+
+	@Override
 	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
 		return parse(value.getSingleValued());
 	}

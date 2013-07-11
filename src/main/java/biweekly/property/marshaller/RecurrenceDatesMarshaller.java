@@ -197,6 +197,46 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 	}
 
 	@Override
+	protected JCalValue _writeJson(RecurrenceDates property) {
+		Value dataType;
+		List<String> values = new ArrayList<String>();
+
+		if (property.getDates() != null) {
+			dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
+
+			for (Date date : property.getDates()) {
+				String dateStr = date(date).time(property.hasTime()).extended(true).write();
+				values.add(dateStr);
+			}
+		} else if (property.getPeriods() != null) {
+			dataType = Value.PERIOD;
+
+			for (Period period : property.getPeriods()) {
+				StringBuilder sb = new StringBuilder();
+				if (period.getStartDate() != null) {
+					String value = date(period.getStartDate()).extended(true).write();
+					sb.append(value);
+				}
+
+				sb.append('/');
+
+				if (period.getEndDate() != null) {
+					String value = date(period.getEndDate()).extended(true).write();
+					sb.append(value);
+				} else if (period.getDuration() != null) {
+					sb.append(period.getDuration());
+				}
+
+				values.add(sb.toString());
+			}
+		} else {
+			dataType = Value.DATE_TIME;
+		}
+
+		return JCalValue.multi(dataType, values);
+	}
+
+	@Override
 	protected RecurrenceDates _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
 		return parse(value.getMultivalued(), value.getDataType(), parameters, warnings);
 	}

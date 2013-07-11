@@ -5,6 +5,7 @@ import static biweekly.util.TestUtils.assertWriteXml;
 import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -200,6 +201,33 @@ public class TriggerMarshallerTest {
 	@Test(expected = CannotParseException.class)
 	public void parseXml_duration_invalid() {
 		parseXCalProperty("<duration>invalid</duration>", marshaller);
+	}
+
+	@Test
+	public void writeJson_date() {
+		Trigger prop = new Trigger(datetime);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DATE_TIME, actual.getDataType());
+		assertEquals("2013-06-11T13:43:02Z", actual.getSingleValued());
+	}
+
+	@Test
+	public void writeJson_duration() {
+		Trigger prop = new Trigger(duration, Related.START);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DURATION, actual.getDataType());
+		assertEquals("PT2H", actual.getSingleValued());
+	}
+
+	@Test
+	public void writeJson_null() {
+		Trigger prop = new Trigger(null);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DURATION, actual.getDataType());
+		assertTrue(actual.getValues().get(0).isNull());
 	}
 
 	@Test

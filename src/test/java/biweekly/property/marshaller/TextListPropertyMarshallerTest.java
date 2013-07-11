@@ -131,6 +131,18 @@ public class TextListPropertyMarshallerTest {
 	}
 
 	@Test
+	public void writeJson() {
+		ListPropertyImpl prop = new ListPropertyImpl();
+		prop.addValue("one");
+		prop.addValue("two");
+		prop.addValue("three");
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.TEXT, actual.getDataType());
+		assertEquals(Arrays.asList("one", "two", "three"), actual.getMultivalued());
+	}
+
+	@Test
 	public void parseJson() {
 		Result<ListPropertyImpl> result = marshaller.parseJson(JCalValue.multi(Value.TEXT, "one", "two", "three"), new ICalParameters());
 

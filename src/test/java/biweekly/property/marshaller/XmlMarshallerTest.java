@@ -3,6 +3,7 @@ package biweekly.property.marshaller;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -48,7 +49,7 @@ public class XmlMarshallerTest {
 	private final XmlMarshaller marshaller = new XmlMarshaller();
 
 	@Test
-	public void writeText() throws Exception {
+	public void writeText() throws Throwable {
 		Xml prop = new Xml("<element xmlns=\"http://example.com\"/>");
 
 		String actual = marshaller.writeText(prop);
@@ -58,7 +59,7 @@ public class XmlMarshallerTest {
 	}
 
 	@Test
-	public void parseText() throws Exception {
+	public void parseText() throws Throwable {
 		String value = "<element xmlns=\"http://example.com\"/>";
 		ICalParameters params = new ICalParameters();
 
@@ -85,7 +86,7 @@ public class XmlMarshallerTest {
 	}
 
 	@Test
-	public void parseXml() throws Exception {
+	public void parseXml() throws Throwable {
 		ICalParameters parameters = new ICalParameters();
 		parameters.put("x-foo", "value");
 		//@formatter:off
@@ -104,6 +105,24 @@ public class XmlMarshallerTest {
 		Xml prop = result.getValue();
 		assertXMLEqual(expected, prop.getValue());
 		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void writeJson() throws Throwable {
+		Xml prop = new Xml("<element xmlns=\"http://example.com\"/>");
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.TEXT, actual.getDataType());
+		assertEquals("<element xmlns=\"http://example.com\"/>", actual.getSingleValued());
+	}
+
+	@Test
+	public void writeJson_null() throws Throwable {
+		Xml prop = new Xml((Document) null);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.TEXT, actual.getDataType());
+		assertTrue(actual.getValues().get(0).isNull());
 	}
 
 	@Test

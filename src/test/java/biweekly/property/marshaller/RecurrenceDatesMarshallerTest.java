@@ -550,6 +550,46 @@ public class RecurrenceDatesMarshallerTest {
 	}
 
 	@Test
+	public void writeJson_periods() {
+		List<Period> periods = Arrays.asList(new Period(start, end), new Period(start, duration));
+		RecurrenceDates prop = new RecurrenceDates(periods);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.PERIOD, actual.getDataType());
+		assertEquals(Arrays.asList("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/PT2H"), actual.getMultivalued());
+	}
+
+	@Test
+	public void writeJson_datetimes() {
+		List<Date> dates = Arrays.asList(start, end);
+		RecurrenceDates prop = new RecurrenceDates(dates, true);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DATE_TIME, actual.getDataType());
+		assertEquals(Arrays.asList("2013-06-11T13:43:02Z", "2013-06-11T15:43:02Z"), actual.getMultivalued());
+	}
+
+	@Test
+	public void writeJson_dates() {
+		List<Date> dates = Arrays.asList(start, end);
+		RecurrenceDates prop = new RecurrenceDates(dates, false);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DATE, actual.getDataType());
+		assertEquals(Arrays.asList("2013-06-11", "2013-06-11"), actual.getMultivalued());
+	}
+
+	@Test
+	public void writeJson_empty() {
+		List<Date> dates = Arrays.asList();
+		RecurrenceDates prop = new RecurrenceDates(dates, false);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DATE, actual.getDataType());
+		assertEquals(Arrays.asList(), actual.getMultivalued());
+	}
+
+	@Test
 	public void parseJson_periods() {
 		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi(Value.PERIOD, "2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/PT2H"), new ICalParameters());
 

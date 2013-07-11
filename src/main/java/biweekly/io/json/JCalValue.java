@@ -78,13 +78,23 @@ public class JCalValue {
 
 	/**
 	 * Creates a structured value.
-	 * @param dataType the data type
+	 * @param dataType the data type or null for "unknown"
 	 * @param values the values
 	 * @return the jCal value
 	 */
 	public static JCalValue structured(Value dataType, Object... values) {
+		return structured(dataType, Arrays.asList(values));
+	}
+
+	/**
+	 * Creates a structured value.
+	 * @param dataType the data type or null for "unknown"
+	 * @param values the values
+	 * @return the jCal value
+	 */
+	public static JCalValue structured(Value dataType, List<?> values) {
 		//TODO this should accept a "list of lists"
-		List<JsonValue> array = new ArrayList<JsonValue>(values.length);
+		List<JsonValue> array = new ArrayList<JsonValue>(values.size());
 		for (Object value : values) {
 			array.add(new JsonValue(value));
 		}
@@ -108,8 +118,8 @@ public class JCalValue {
 				v = new JsonValue(list.get(0));
 			} else {
 				List<JsonValue> array = new ArrayList<JsonValue>(list.size());
-				for (Object o : list) {
-					array.add(new JsonValue(o));
+				for (Object element : list) {
+					array.add(new JsonValue(element));
 				}
 				v = new JsonValue(array);
 			}

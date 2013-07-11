@@ -34,15 +34,15 @@ import java.util.Map;
  */
 public class StringUtils {
 	/**
-	 * Joins a collection of strings into a delimited list.
-	 * @param collection the collection of strings
+	 * Joins a collection of values into a delimited list.
+	 * @param collection the collection of values
 	 * @param delimiter the delimiter (e.g. ",")
 	 * @return the final string
 	 */
-	public static String join(Collection<String> collection, String delimiter) {
-		return join(collection, delimiter, new JoinCallback<String>() {
-			public void handle(StringBuilder sb, String string) {
-				sb.append(string);
+	public static <T> String join(Collection<T> collection, String delimiter) {
+		return join(collection, delimiter, new JoinCallback<T>() {
+			public void handle(StringBuilder sb, T value) {
+				sb.append(value);
 			}
 		});
 	}

@@ -8,6 +8,7 @@ import java.util.List;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.RequestStatus;
 import biweekly.util.StringUtils;
 import biweekly.util.StringUtils.JoinCallback;
@@ -99,6 +100,17 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 		requestStatus.setDescription(element.first("description"));
 		requestStatus.setExceptionText(element.first("data"));
 		return requestStatus;
+	}
+
+	@Override
+	protected JCalValue _writeJson(RequestStatus property) {
+		List<String> components = new ArrayList<String>();
+		addComponent(property.getExceptionText(), components);
+		addComponent(property.getDescription(), components);
+		addComponent(property.getStatusCode(), components);
+		Collections.reverse(components);
+
+		return JCalValue.structured(Value.TEXT, components);
 	}
 
 	@Override

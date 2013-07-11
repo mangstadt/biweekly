@@ -11,12 +11,15 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.junit.Test;
 
 import biweekly.io.json.JCalValue;
+import biweekly.io.json.JsonValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.RecurrenceRule;
@@ -440,6 +443,73 @@ public class RecurrenceRuleMarshallerTest {
 		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
 		assertNull(prop.getWorkweekStarts());
 		assertWarnings(15, result.getWarnings());
+	}
+
+	@Test
+	public void writeJson() {
+		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
+		prop.setByYearDay(Arrays.asList(100, 101));
+		prop.setByMonthDay(Arrays.asList(1, 2));
+		prop.setByMonth(Arrays.asList(5, 6));
+		prop.setByHour(Arrays.asList(1, 2));
+		prop.setByMinute(Arrays.asList(3, 4));
+		prop.setBySecond(Arrays.asList(58, 59));
+		prop.setBySetPos(Arrays.asList(7, 8, 9));
+		prop.setByWeekNo(Arrays.asList(1, 2));
+		prop.setCount(5);
+		prop.setInterval(10);
+		for (DayOfWeek day : DayOfWeek.values()) {
+			prop.addByDay(day);
+		}
+		prop.addByDay(5, DayOfWeek.FRIDAY);
+		prop.setWorkweekStarts(DayOfWeek.TUESDAY);
+
+		Map<String, JsonValue> expected = new LinkedHashMap<String, JsonValue>();
+		expected.put("freq", new JsonValue("WEEKLY"));
+		expected.put("count", new JsonValue(5));
+		expected.put("interval", new JsonValue(10));
+		expected.put("bysecond", new JsonValue(Arrays.asList(new JsonValue(58), new JsonValue(59))));
+		expected.put("byminute", new JsonValue(Arrays.asList(new JsonValue(3), new JsonValue(4))));
+		expected.put("byhour", new JsonValue(Arrays.asList(new JsonValue(1), new JsonValue(2))));
+		expected.put("byday", new JsonValue(Arrays.asList(new JsonValue("MO"), new JsonValue("TU"), new JsonValue("WE"), new JsonValue("TH"), new JsonValue("FR"), new JsonValue("SA"), new JsonValue("SU"), new JsonValue("5FR"))));
+		expected.put("bymonthday", new JsonValue(Arrays.asList(new JsonValue(1), new JsonValue(2))));
+		expected.put("byyearday", new JsonValue(Arrays.asList(new JsonValue(100), new JsonValue(101))));
+		expected.put("byweekno", new JsonValue(Arrays.asList(new JsonValue(1), new JsonValue(2))));
+		expected.put("bymonth", new JsonValue(Arrays.asList(new JsonValue(5), new JsonValue(6))));
+		expected.put("bysetpos", new JsonValue(Arrays.asList(new JsonValue(7), new JsonValue(8), new JsonValue(9))));
+		expected.put("wkst", new JsonValue("TU"));
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.RECUR, actual.getDataType());
+		assertEquals(expected, actual.getValues().get(0).getObject());
+	}
+
+	@Test
+	public void writeJson_until_datetime() {
+		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
+		prop.setUntil(datetime);
+
+		Map<String, JsonValue> expected = new LinkedHashMap<String, JsonValue>();
+		expected.put("freq", new JsonValue("WEEKLY"));
+		expected.put("until", new JsonValue("2013-06-11T13:43:02Z"));
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.RECUR, actual.getDataType());
+		assertEquals(expected, actual.getValues().get(0).getObject());
+	}
+
+	@Test
+	public void writeJson_until_date() {
+		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
+		prop.setUntil(datetime, false);
+
+		Map<String, JsonValue> expected = new LinkedHashMap<String, JsonValue>();
+		expected.put("freq", new JsonValue("WEEKLY"));
+		expected.put("until", new JsonValue("2013-06-11"));
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.RECUR, actual.getDataType());
+		assertEquals(expected, actual.getValues().get(0).getObject());
 	}
 
 	@Test

@@ -55,10 +55,10 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 
 	@Override
 	protected String _writeText(RecurrenceRule property) {
-		ListMultimap<String, String> components = buildComponents(property, false);
+		ListMultimap<String, Object> components = buildComponents(property, false);
 
-		return StringUtils.join(components.getMap(), ";", new JoinMapCallback<String, List<String>>() {
-			public void handle(StringBuilder sb, String key, List<String> values) {
+		return StringUtils.join(components.getMap(), ";", new JoinMapCallback<String, List<Object>>() {
+			public void handle(StringBuilder sb, String key, List<Object> values) {
 				sb.append(key).append('=').append(StringUtils.join(values, ","));
 			}
 		});
@@ -100,13 +100,13 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 
 	@Override
 	protected void _writeXml(RecurrenceRule property, XCalElement element) {
-		ListMultimap<String, String> components = buildComponents(property, true);
+		ListMultimap<String, Object> components = buildComponents(property, true);
 
 		XCalElement recur = element.append(Value.RECUR);
-		for (Map.Entry<String, List<String>> component : components) {
+		for (Map.Entry<String, List<Object>> component : components) {
 			String name = component.getKey().toLowerCase();
-			for (String value : component.getValue()) {
-				recur.append(name, value);
+			for (Object value : component.getValue()) {
+				recur.append(name, value.toString());
 			}
 		}
 	}
@@ -136,6 +136,20 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 		parseWkst(recur.first("wkst"), property, warnings);
 
 		return property;
+	}
+
+	@Override
+	protected JCalValue _writeJson(RecurrenceRule property) {
+		ListMultimap<String, Object> components = buildComponents(property, true);
+
+		//lower-case all the keys
+		ListMultimap<String, Object> object = new ListMultimap<String, Object>();
+		for (Map.Entry<String, List<Object>> entry : components) {
+			String key = entry.getKey().toLowerCase();
+			object.putAll(key, entry.getValue());
+		}
+
+		return JCalValue.object(Value.RECUR, object);
 	}
 
 	@Override
@@ -292,8 +306,8 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 		}
 	}
 
-	private ListMultimap<String, String> buildComponents(RecurrenceRule property, boolean extended) {
-		ListMultimap<String, String> components = new ListMultimap<String, String>();
+	private ListMultimap<String, Object> buildComponents(RecurrenceRule property, boolean extended) {
+		ListMultimap<String, Object> components = new ListMultimap<String, Object>();
 
 		if (property.getFrequency() != null) {
 			components.put("FREQ", property.getFrequency().name());
@@ -305,11 +319,11 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 		}
 
 		if (property.getCount() != null) {
-			components.put("COUNT", property.getCount().toString());
+			components.put("COUNT", property.getCount());
 		}
 
 		if (property.getInterval() != null) {
-			components.put("INTERVAL", property.getInterval().toString());
+			components.put("INTERVAL", property.getInterval());
 		}
 
 		addIntegerListComponent(components, "BYSECOND", property.getBySecond());
@@ -354,12 +368,12 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 		return list;
 	}
 
-	private void addIntegerListComponent(ListMultimap<String, String> components, String name, List<Integer> values) {
+	private void addIntegerListComponent(ListMultimap<String, Object> components, String name, List<Integer> values) {
 		if (values == null) {
 			return;
 		}
 		for (Integer value : values) {
-			components.put(name, value.toString());
+			components.put(name, value);
 		}
 	}
 }
