@@ -200,6 +200,20 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
+	 * Sets the value of the Content-Type "method" parameter if the iCalendar
+	 * object is defined as a MIME message entity.
+	 * @param method the method or null to remove
+	 * @return the property that was created
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545
+	 * p.77-8</a>
+	 */
+	public Method setMethod(String method) {
+		Method prop = (method == null) ? null : new Method(method);
+		setMethod(prop);
+		return prop;
+	}
+
+	/**
 	 * Gets the events.
 	 * @return the events
 	 */
