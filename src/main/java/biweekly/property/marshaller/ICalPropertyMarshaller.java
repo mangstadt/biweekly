@@ -545,33 +545,38 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 
 		/**
 		 * Sets the ID of the timezone to parse the date as (TZID parameter
-		 * value). If the ID does not contain a "/" character, it will be
-		 * ignored. If the ID is invalid, the date will be formatted according
-		 * to the JVM's default timezone and a warning message will be added to
-		 * the provided warnings list.
-		 * @param timezoneId the timezone ID
-		 * @param warnings if the ID is not recognized, a warning message will
-		 * be added to this list
+		 * value).
+		 * @param timezoneId the timezone ID. If the ID is global (contains a
+		 * "/" character), it will attempt to look up the timezone in Java's
+		 * timezone registry and parse the date according to that timezone. If
+		 * the timezone is not found, the date will be parsed according to the
+		 * JVM's default timezone and a warning message will be added to the
+		 * provided warnings list. If the ID is not global, it will be parsed
+		 * according to the JVM's default timezone. Whichever timezone is chosen
+		 * here, it will be ignored if the date string is in UTC time or
+		 * contains an offset.
+		 * @param warnings if the ID is global and is not recognized, a warning
+		 * message will be added to this list
 		 * @return this
 		 */
 		public DateParser tzid(String timezoneId, List<String> warnings) {
 			if (timezoneId == null) {
-				timezone = null;
-				return this;
+				return tz(null);
 			}
 
 			if (timezoneId.contains("/")) {
-				timezone = ICalDateFormatter.parseTimeZoneId(timezoneId);
+				TimeZone timezone = ICalDateFormatter.parseTimeZoneId(timezoneId);
 				if (timezone == null) {
 					timezone = TimeZone.getDefault();
 					if (warnings != null) {
 						warnings.add("Timezone ID not recognized, parsing with default timezone instead: " + timezoneId);
 					}
 				}
-			} else {
-				//TODO support VTIMEZONE
+				return tz(timezone);
 			}
-			return this;
+
+			//TODO parse according to the associated VTIMEZONE component
+			return tz(TimeZone.getDefault());
 		}
 
 		/**
@@ -624,35 +629,53 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 
 		/**
 		 * Sets the ID of the timezone to format the date as (TZID parameter
-		 * value). If the ID does not contain a "/" character, it will be
-		 * ignored. If the ID is invalid, the date will be formatted according
-		 * to the JVM's default timezone. If no timezone is specified, the date
-		 * will be formatted as UTC.
-		 * @param timezoneId the timezone ID or "local" to use the JVM's default
-		 * timezone
+		 * value).
+		 * @param timezoneId the timezone ID. If the ID is global (contains a
+		 * "/" character), it will attempt to look up the timezone in Java's
+		 * timezone registry and format the date according to that timezone. If
+		 * the timezone is not found, the date will be formatted in UTC. If the
+		 * ID is not global, it will be formatted according to the JVM's default
+		 * timezone. If no timezone preference is specified, the date will be
+		 * formatted as UTC.
 		 * @return this
 		 */
 		public DateWriter tzid(String timezoneId) {
 			if (timezoneId == null) {
-				timezone = null;
-				return this;
+				return tz(null);
 			}
 
-			if (timezoneId.equals("local")) {
-				//TODO "dtstart" needs to be outputted without a "Z" for "daylight" and "standard" components
-				timezone = TimeZone.getDefault();
-			} else if (timezoneId.contains("/")) {
-				timezone = ICalDateFormatter.parseTimeZoneId(timezoneId);
-			} else {
-				//TODO support VTIMEZONE
-				timezone = TimeZone.getDefault();
+			if (timezoneId.contains("/")) {
+				return tz(ICalDateFormatter.parseTimeZoneId(timezoneId));
 			}
-			return this;
+
+			//TODO format according to the associated VTIMEZONE component
+			return tz(TimeZone.getDefault());
 		}
 
 		/**
-		 * Sets the timezone to format the date as. If no timezone is specified,
-		 * the date will be formatted as UTC.
+		 * Outputs the date in local time (without a timezone). If no timezone
+		 * preference is specified, the date will be formatted as UTC.
+		 * @param localTz true to use local time, false not to
+		 * @return this
+		 */
+		public DateWriter localTz(boolean localTz) {
+			return localTz ? tz(TimeZone.getDefault()) : this;
+		}
+
+		/**
+		 * Convenience method that combines {@link #localTz(boolean)} and
+		 * {@link #tzid(String)} into one method.
+		 * @param localTz true to use local time, false not to
+		 * @param timezoneId the timezone ID
+		 * @return this
+		 */
+		public DateWriter tz(boolean localTz, String timezoneId) {
+			return localTz ? localTz(true) : tzid(timezoneId);
+		}
+
+		/**
+		 * Sets the timezone to format the date as. If no timezone preference is
+		 * specified, the date will be formatted as UTC.
 		 * @param timezone the timezone
 		 * @return this
 		 */
@@ -678,6 +701,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		 */
 		public String write() {
 			ISOFormat format;
+			TimeZone timezone = this.timezone;
 			if (hasTime) {
 				if (timezone == null) {
 					format = extended ? ISOFormat.UTC_TIME_EXTENDED : ISOFormat.UTC_TIME_BASIC;
@@ -686,6 +710,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 				}
 			} else {
 				format = extended ? ISOFormat.DATE_EXTENDED : ISOFormat.DATE_BASIC;
+				timezone = null;
 			}
 
 			return ICalDateFormatter.format(date, format, timezone);

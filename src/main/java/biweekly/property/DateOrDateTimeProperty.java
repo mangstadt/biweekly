@@ -39,6 +39,7 @@ import biweekly.util.ICalDateFormatter;
 public class DateOrDateTimeProperty extends ICalProperty {
 	protected Date value;
 	protected boolean hasTime;
+	protected boolean localTime;
 
 	/**
 	 * Creates a new property.
@@ -76,6 +77,30 @@ public class DateOrDateTimeProperty extends ICalProperty {
 	 */
 	public boolean hasTime() {
 		return hasTime;
+	}
+
+	/**
+	 * Gets whether the date should be outputted in local time (without a
+	 * timezone).
+	 * @return true to output the date without a timezone, false to include a
+	 * timezone
+	 */
+	public boolean isLocalTime() {
+		return localTime;
+	}
+
+	/**
+	 * Sets whether the date should be outputted in local time (without a
+	 * timezone). Use {@link #setTimezoneId(String)} to specify a timezone.
+	 * Dates are written in UTC time by default.
+	 * @param localTime true to output the date without a timezone, false to
+	 * include a timezone (defaults to false)
+	 */
+	public void setLocalTime(boolean localTime) {
+		this.localTime = localTime;
+		if (localTime) {
+			setTimezoneId(null);
+		}
 	}
 
 	@Override

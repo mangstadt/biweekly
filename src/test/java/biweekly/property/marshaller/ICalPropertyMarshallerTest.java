@@ -149,6 +149,19 @@ public class ICalPropertyMarshallerTest {
 
 		Date actual = ICalPropertyMarshaller.date(value).tzid("some ID", warnings).parse();
 
+		//parse as local time
+		assertEquals(datetime, actual);
+		assertWarnings(0, warnings);
+	}
+
+	@Test
+	public void DateParser_tzid_null() {
+		String value = "20130611T144302";
+		List<String> warnings = new ArrayList<String>();
+
+		Date actual = ICalPropertyMarshaller.date(value).tzid(null, warnings).parse();
+
+		//parse as local time
 		assertEquals(datetime, actual);
 		assertWarnings(0, warnings);
 	}
@@ -176,7 +189,7 @@ public class ICalPropertyMarshallerTest {
 	}
 
 	@Test
-	public void DateParser_invalid_tzid() {
+	public void DateParser_invalid_global_tzid() {
 		String value = "20130611T144302";
 		List<String> warnings = new ArrayList<String>();
 
@@ -189,7 +202,7 @@ public class ICalPropertyMarshallerTest {
 
 	@Test
 	public void DateWriter_datetime() {
-		String expected = "20130611T134302Z";
+		String expected = "20130611T134302Z"; //write as UTC by default
 		String actual = ICalPropertyMarshaller.date(datetime).write();
 		assertEquals(expected, actual);
 	}
@@ -224,7 +237,7 @@ public class ICalPropertyMarshallerTest {
 	}
 
 	@Test
-	public void DateWriter_datetime_global_tzid_exnteded() {
+	public void DateWriter_datetime_global_tzid_extended() {
 		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
 		String expected = "2013-06-11T15:43:02";
 		String actual = ICalPropertyMarshaller.date(datetime).tzid(timezone.getID()).extended(true).write();
@@ -250,6 +263,27 @@ public class ICalPropertyMarshallerTest {
 	public void DateWriter_datetime_tzid() {
 		String expected = "20130611T144302";
 		String actual = ICalPropertyMarshaller.date(datetime).tzid("some ID").write();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void DateWriter_datetime_tzid_null() {
+		String expected = "20130611T134302Z";
+		String actual = ICalPropertyMarshaller.date(datetime).tzid(null).write();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void DateWriter_datetime_local_time() {
+		String expected = "20130611T144302";
+		String actual = ICalPropertyMarshaller.date(datetime).localTz(true).write();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void DateWriter_datetime_local_time_false() {
+		String expected = "20130611T134302Z";
+		String actual = ICalPropertyMarshaller.date(datetime).localTz(false).write(); //should ignore the method call
 		assertEquals(expected, actual);
 	}
 

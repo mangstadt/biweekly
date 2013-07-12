@@ -9,6 +9,7 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.DateOrDateTimeProperty;
+import biweekly.util.ICalDateFormatter;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -48,11 +49,6 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 	protected void _prepareParameters(T property, ICalParameters copy) {
 		Value value = (property.getValue() == null || property.hasTime()) ? null : Value.DATE;
 		copy.setValue(value);
-
-		//TODO "dtstart" needs to be outputted without a "Z" for "daylight" and "standard" components
-		if ("local".equals(copy.getTimezoneId())) {
-			copy.setTimezoneId(null);
-		}
 	}
 
 	@Override
@@ -62,7 +58,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 			return "";
 		}
 
-		return date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).write();
+		return date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).write();
 	}
 
 	@Override
@@ -80,7 +76,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 		}
 
 		Value dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
-		String dateStr = date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).extended(true).write();
+		String dateStr = date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).extended(true).write();
 		element.append(dataType, dateStr);
 	}
 
@@ -101,7 +97,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 		}
 
 		Value dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
-		String dateStr = date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).extended(true).write();
+		String dateStr = date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).extended(true).write();
 		return JCalValue.single(dataType, dateStr);
 	}
 
@@ -120,8 +116,12 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 
 		try {
 			Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
-			boolean hasTime = value.contains("T");
-			return newInstance(date, hasTime);
+			boolean hasTime = ICalDateFormatter.dateHasTime(value);
+			boolean localTz = !ICalDateFormatter.dateHasTimezone(value) && parameters.getTimezoneId() == null;
+
+			T prop = newInstance(date, hasTime);
+			prop.setLocalTime(localTz);
+			return prop;
 		} catch (IllegalArgumentException e) {
 			throw new CannotParseException("Could not parse date value.");
 		}

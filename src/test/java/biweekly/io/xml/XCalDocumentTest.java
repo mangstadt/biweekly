@@ -937,7 +937,7 @@ public class XCalDocumentTest {
 			usEasternTz.setTimezoneId("US/Eastern");
 			{
 				DaylightSavingsTime daylight = new DaylightSavingsTime();
-				daylight.setDateStart(localFormatter.parse("2000-04-04T02:00:00")).setTimezoneId("local");
+				daylight.setDateStart(localFormatter.parse("2000-04-04T02:00:00")).setLocalTime(true);
 
 				RecurrenceRule rrule = new RecurrenceRule(Frequency.YEARLY);
 				rrule.addByDay(1, DayOfWeek.SUNDAY);
@@ -952,7 +952,7 @@ public class XCalDocumentTest {
 			}
 			{
 				StandardTime standard = new StandardTime();
-				standard.setDateStart(localFormatter.parse("2000-10-26T02:00:00")).setTimezoneId("local");
+				standard.setDateStart(localFormatter.parse("2000-10-26T02:00:00")).setLocalTime(true);
 
 				RecurrenceRule rrule = new RecurrenceRule(Frequency.YEARLY);
 				rrule.addByDay(-1, DayOfWeek.SUNDAY);
