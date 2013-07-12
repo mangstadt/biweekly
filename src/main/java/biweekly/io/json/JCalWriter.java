@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalendar;
@@ -70,7 +68,6 @@ import biweekly.property.marshaller.RawPropertyMarshaller;
  * draft</a>
  */
 public class JCalWriter implements Closeable {
-	private final List<String> warnings = new ArrayList<String>();
 	private final Map<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new HashMap<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>>(0);
 	private final Map<Class<? extends ICalComponent>, ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new HashMap<Class<? extends ICalComponent>, ICalComponentMarshaller<? extends ICalComponent>>(0);
 	private final JCalRawWriter writer;
@@ -132,15 +129,6 @@ public class JCalWriter implements Closeable {
 	}
 
 	/**
-	 * Gets the warnings from the last iCalendar object that was written. This
-	 * list is reset every time a new iCalendar object is written.
-	 * @return the warnings or empty list if there were no warnings
-	 */
-	public List<String> getWarnings() {
-		return new ArrayList<String>(warnings);
-	}
-
-	/**
 	 * Registers a marshaller for an experimental property.
 	 * @param marshaller the marshaller to register
 	 */
@@ -159,24 +147,30 @@ public class JCalWriter implements Closeable {
 	/**
 	 * Writes an iCalendar object to the data stream.
 	 * @param ical the iCalendar object to write
+	 * @throws IllegalArgumentExeption if the marshaller class for a component
+	 * or property object cannot be found (only happens when an experimental
+	 * property/component marshaller is not registered with the
+	 * <code>registerMarshaller</code> method.)
 	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	public void write(ICalendar ical) throws IOException {
-		warnings.clear();
 		writeComponent(ical);
 	}
 
 	/**
 	 * Writes a component to the data stream.
 	 * @param component the component to write
+	 * @throws IllegalArgumentExeption if the marshaller class for a component
+	 * or property object cannot be found (only happens when an experimental
+	 * property/component marshaller is not registered with the
+	 * <code>registerMarshaller</code> method.)
 	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeComponent(ICalComponent component) throws IOException {
 		ICalComponentMarshaller compMarshaller = findComponentMarshaller(component);
 		if (compMarshaller == null) {
-			warnings.add("No marshaller found for component class \"" + component.getClass().getName() + "\".  This component will not be written.");
-			return;
+			throw new IllegalArgumentException("No marshaller found for component class \"" + component.getClass().getName() + "\".  This component will not be written.");
 		}
 
 		writer.writeStartComponent(compMarshaller.getComponentName().toLowerCase());
@@ -186,8 +180,7 @@ public class JCalWriter implements Closeable {
 			ICalProperty property = (ICalProperty) obj;
 			ICalPropertyMarshaller propMarshaller = findPropertyMarshaller(property);
 			if (propMarshaller == null) {
-				warnings.add("No marshaller found for property class \"" + property.getClass().getName() + "\".  This property will not be written.");
-				continue;
+				throw new IllegalArgumentException("No marshaller found for property class \"" + property.getClass().getName() + "\".  This property will not be written.");
 			}
 
 			//marshal property
@@ -198,11 +191,6 @@ public class JCalWriter implements Closeable {
 				parameters = propMarshaller.prepareParameters(property);
 				value = propMarshaller.writeJson(property);
 			} catch (SkipMeException e) {
-				if (e.getMessage() == null) {
-					addWarning("Property has requested that it be skipped.", propertyName);
-				} else {
-					addWarning("Property has requested that it be skipped: " + e.getMessage(), propertyName);
-				}
 				continue;
 			}
 
@@ -274,9 +262,5 @@ public class JCalWriter implements Closeable {
 	 */
 	public void closeJsonStream() throws IOException {
 		writer.closeJsonStream();
-	}
-
-	private void addWarning(String message, String propertyName) {
-		warnings.add(propertyName + " property: " + message);
 	}
 }

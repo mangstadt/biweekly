@@ -130,7 +130,6 @@ public class JCalWriterTest {
 		//@formatter:on
 		String actual = sw.toString();
 		assertEquals(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
 	@Test
@@ -243,7 +242,6 @@ public class JCalWriterTest {
 		//@formatter:on
 		String actual = sw.toString();
 		assertEquals(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
 	@Test
@@ -267,10 +265,9 @@ public class JCalWriterTest {
 		//@formatter:on
 		String actual = sw.toString();
 		assertEquals(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void no_property_marshaller() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
@@ -279,25 +276,9 @@ public class JCalWriterTest {
 		StringWriter sw = new StringWriter();
 		JCalWriter writer = new JCalWriter(sw);
 		writer.write(ical);
-		writer.close();
-
-		//@formatter:off
-		String expected =
-		"[\"vcalendar\"," +
-			"[" +
-				"[\"version\",{},\"text\",\"2.0\"]," +
-				"[\"prodid\",{},\"text\",\"prodid\"]" +
-			"]," +
-			"[" +
-			"]" +
-		"]";
-		//@formatter:on
-		String actual = sw.toString();
-		assertEquals(expected, actual);
-		assertWarnings(1, writer.getWarnings());
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void no_component_marshaller() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
@@ -306,22 +287,6 @@ public class JCalWriterTest {
 		StringWriter sw = new StringWriter();
 		JCalWriter writer = new JCalWriter(sw);
 		writer.write(ical);
-		writer.close();
-
-		//@formatter:off
-		String expected =
-		"[\"vcalendar\"," +
-			"[" +
-				"[\"version\",{},\"text\",\"2.0\"]," +
-				"[\"prodid\",{},\"text\",\"prodid\"]" +
-			"]," +
-			"[" +
-			"]" +
-		"]";
-		//@formatter:on
-		String actual = sw.toString();
-		assertEquals(expected, actual);
-		assertWarnings(1, writer.getWarnings());
 	}
 
 	@Test
@@ -349,7 +314,6 @@ public class JCalWriterTest {
 		//@formatter:on
 		String actual = sw.toString();
 		assertEquals(expected, actual);
-		assertWarnings(1, writer.getWarnings());
 	}
 
 	@Test
@@ -376,7 +340,6 @@ public class JCalWriterTest {
 		//@formatter:on
 		String actual = sw.toString();
 		assertEquals(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
 	@Test
@@ -407,7 +370,6 @@ public class JCalWriterTest {
 		//@formatter:on
 		String actual = sw.toString();
 		assertEquals(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
 	@Test
@@ -438,7 +400,6 @@ public class JCalWriterTest {
 		//@formatter:on
 		String actual = sw.toString();
 		assertEquals(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
 	@Test
@@ -471,7 +432,6 @@ public class JCalWriterTest {
 		//@formatter:on
 		String actual = sw.toString();
 		assertEquals(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
 	@Test
@@ -505,7 +465,6 @@ public class JCalWriterTest {
 		//@formatter:on
 		String actual = sw.toString();
 		assertEquals(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
 	@Test
