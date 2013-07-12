@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -28,6 +29,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
@@ -810,13 +812,7 @@ public class XCalDocumentTest {
 		}
 
 		assertWarnings(0, ical.validate());
-
-		XCalDocument xcal = new XCalDocument();
-		xcal.add(ical);
-
-		Document expected = XmlUtils.toDocument(new InputStreamReader(getClass().getResourceAsStream("rfc6321-example1.xml")));
-		Document actual = xcal.getDocument();
-		assertXMLEqual(XmlUtils.toString(actual), expected, actual);
+		assertExample(ical, "rfc6321-example1.xml");
 	}
 
 	@Test
@@ -1000,12 +996,16 @@ public class XCalDocumentTest {
 		}
 
 		assertWarnings(0, ical.validate());
+		assertExample(ical, "rfc6321-example2.xml");
+	}
 
+	private void assertExample(ICalendar ical, String exampleFileName) throws IOException, SAXException {
 		XCalDocument xcal = new XCalDocument();
 		xcal.add(ical);
 
-		Document expected = XmlUtils.toDocument(new InputStreamReader(getClass().getResourceAsStream("rfc6321-example2.xml")));
+		Document expected = XmlUtils.toDocument(new InputStreamReader(getClass().getResourceAsStream(exampleFileName)));
 		Document actual = xcal.getDocument();
+
 		assertXMLEqual(XmlUtils.toString(actual), expected, actual);
 	}
 

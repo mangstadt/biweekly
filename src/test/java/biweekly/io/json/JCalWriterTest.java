@@ -4,6 +4,7 @@ import static biweekly.util.TestUtils.assertWarnings;
 import static biweekly.util.TestUtils.buildTimezone;
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -527,16 +528,7 @@ public class JCalWriterTest {
 		}
 
 		assertWarnings(0, ical.validate());
-
-		StringWriter sw = new StringWriter();
-		JCalWriter writer = new JCalWriter(sw);
-		writer.write(ical);
-		writer.close();
-
-		String expected = new String(IOUtils.toByteArray(getClass().getResourceAsStream("jcal-draft-example1.json")));
-		expected = expected.replaceAll("\\s", "");
-		String actual = sw.toString();
-		assertEquals(expected, actual);
+		assertExample(ical, "jcal-draft-example1.json");
 	}
 
 	@Test
@@ -617,15 +609,20 @@ public class JCalWriterTest {
 		}
 
 		assertWarnings(0, ical.validate());
+		assertExample(ical, "jcal-draft-example2.json");
+	}
 
+	private void assertExample(ICalendar ical, String exampleFileName) throws IOException {
 		StringWriter sw = new StringWriter();
 		JCalWriter writer = new JCalWriter(sw);
 		writer.write(ical);
 		writer.close();
 
-		String expected = new String(IOUtils.toByteArray(getClass().getResourceAsStream("jcal-draft-example2.json")));
+		String expected = new String(IOUtils.toByteArray(getClass().getResourceAsStream(exampleFileName)));
 		expected = expected.replaceAll("\\s", "");
+
 		String actual = sw.toString();
+
 		assertEquals(expected, actual);
 	}
 
