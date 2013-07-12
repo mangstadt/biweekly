@@ -1162,7 +1162,6 @@ public class VTodo extends ICalComponent {
 
 		DateStart dateStart = getDateStart();
 		DateDue dateDue = getDateDue();
-
 		if (dateStart != null && dateDue != null) {
 			Date start = dateStart.getValue();
 			Date due = dateDue.getValue();
@@ -1175,13 +1174,13 @@ public class VTodo extends ICalComponent {
 			}
 		}
 
-		if (dateDue != null && getDuration() != null) {
+		DurationProperty duration = getDuration();
+		if (dateDue != null && duration != null) {
 			warnings.add("A " + DateDue.class.getSimpleName() + " and a " + DurationProperty.class.getSimpleName() + " cannot both be defined in the same to-do.");
 		}
-		//not sure where I got this from
-		//		if (dateStart == null && (dateDue != null || getDuration() != null)) {
-		//			warnings.add("A " + DateStart.class.getSimpleName() + " must be defined if a " + DateDue.class.getSimpleName() + " or " + DurationProperty.class.getSimpleName() + " is defined.");
-		//		}
+		if (dateStart == null && duration != null) {
+			warnings.add("A " + DateStart.class.getSimpleName() + " must be defined if a " + DurationProperty.class.getSimpleName() + " is defined.");
+		}
 
 		RecurrenceId recurrenceId = getRecurrenceId();
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
