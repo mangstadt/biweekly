@@ -2,21 +2,47 @@ package biweekly.io.text;
 
 import static biweekly.util.TestUtils.assertRegex;
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.buildTimezone;
+import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.io.StringWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.TimeZone;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import biweekly.ICalendar;
+import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
+import biweekly.component.StandardTime;
+import biweekly.component.VAlarm;
 import biweekly.component.VEvent;
+import biweekly.component.VFreeBusy;
+import biweekly.component.VJournal;
+import biweekly.component.VTimezone;
+import biweekly.component.VTodo;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.SkipMeException;
+import biweekly.parameter.CalendarUserType;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.ParticipationStatus;
+import biweekly.parameter.Role;
+import biweekly.property.Attachment;
+import biweekly.property.Attendee;
+import biweekly.property.Classification;
+import biweekly.property.FreeBusy;
 import biweekly.property.ICalProperty;
+import biweekly.property.Status;
+import biweekly.property.Trigger;
 import biweekly.property.Version;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
+import biweekly.util.Duration;
+import biweekly.util.IOUtils;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -47,6 +73,31 @@ import biweekly.property.marshaller.ICalPropertyMarshaller;
  * @author Michael Angstadt
  */
 public class ICalWriterTest {
+	private static TimeZone defaultTz;
+	private final DateFormat utcFormatter;
+	{
+		utcFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+		utcFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
+	private final DateFormat usEasternFormatter;
+	{
+		usEasternFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+		usEasternFormatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+	}
+	private final DateFormat localFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+
+	@BeforeClass
+	public static void beforeClass() {
+		//change the default timezone because my timezone is "American/New_York", which is what the example jCal documents use
+		defaultTz = TimeZone.getDefault();
+		TimeZone.setDefault(buildTimezone(1, 0));
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		TimeZone.setDefault(defaultTz);
+	}
+
 	@Test
 	public void basic() throws Exception {
 		ICalendar ical = new ICalendar();
@@ -399,6 +450,231 @@ public class ICalWriterTest {
 		String actual = sw.toString();
 		assertRegex(expected, actual);
 		assertWarnings(0, writer.getWarnings());
+	}
+
+	@Test
+	public void example1() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.setProductId("-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN");
+		ical.setVersion(Version.v2_0());
+		{
+			VEvent event = new VEvent();
+			event.getProperties().clear();
+			event.setDateTimeStamp(utcFormatter.parse("19960704T120000"));
+			event.setUid("uid1@example.com");
+			event.setOrganizer("jsmith@example.com");
+			event.setDateStart(utcFormatter.parse("19960918T143000"));
+			event.setDateEnd(utcFormatter.parse("19960920T220000"));
+			event.setStatus(Status.confirmed());
+			event.addCategories("CONFERENCE");
+			event.setSummary("Networld+Interop Conference");
+			event.setDescription("Networld+Interop Conferenceand Exhibit\nAtlanta World Congress Center\nAtlanta, Georgia");
+			ical.addEvent(event);
+		}
+
+		assertWarnings(0, ical.validate());
+		assertExample(ical, "rfc5545-example1.ics");
+	}
+
+	@Test
+	public void example2() throws Throwable {
+		VTimezone usEasternTz;
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.setProductId("-//RDU Software//NONSGML HandCal//EN");
+		ical.setVersion(Version.v2_0());
+		{
+			usEasternTz = new VTimezone(null);
+			usEasternTz.setTimezoneId("America/New_York");
+			{
+				StandardTime standard = new StandardTime();
+				standard.setDateStart(localFormatter.parse("19981025T020000")).setLocalTime(true);
+				standard.setTimezoneOffsetFrom(-4, 0);
+				standard.setTimezoneOffsetTo(-5, 0);
+				standard.addTimezoneName("EST");
+				usEasternTz.addStandardTime(standard);
+			}
+			{
+				DaylightSavingsTime daylight = new DaylightSavingsTime();
+				daylight.setDateStart(localFormatter.parse("19990404T020000")).setLocalTime(true);
+				daylight.setTimezoneOffsetFrom(-5, 0);
+				daylight.setTimezoneOffsetTo(-4, 0);
+				daylight.addTimezoneName("EDT");
+				usEasternTz.addDaylightSavingsTime(daylight);
+			}
+			ical.addTimezone(usEasternTz);
+		}
+		{
+			VEvent event = new VEvent();
+			event.setDateTimeStamp(utcFormatter.parse("19980309T231000"));
+			event.setUid("guid-1.example.com");
+			event.setOrganizer("mrbig@example.com");
+
+			Attendee attendee = Attendee.email("employee-A@example.com");
+			attendee.setRsvp(true);
+			attendee.setRole(Role.REQ_PARTICIPANT);
+			attendee.setCalendarUserType(CalendarUserType.GROUP);
+			event.addAttendee(attendee);
+
+			event.setDescription("Project XYZ Review Meeting");
+			event.addCategories("MEETING");
+			event.setClassification(Classification.public_());
+			event.setCreated(utcFormatter.parse("19980309T130000"));
+			event.setSummary("XYZ Project Review");
+			event.setDateStart(usEasternFormatter.parse("19980312T083000")).setTimezone(usEasternTz);
+			event.setDateEnd(usEasternFormatter.parse("19980312T093000")).setTimezone(usEasternTz);
+			event.setLocation("1CP Conference Room 4350");
+			ical.addEvent(event);
+		}
+
+		assertWarnings(0, ical.validate());
+		assertExample(ical, "rfc5545-example2.ics");
+	}
+
+	@Test
+	public void example3() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.setMethod("xyz");
+		ical.setVersion(Version.v2_0());
+		ical.setProductId("-//ABC Corporation//NONSGML My Product//EN");
+		{
+			VEvent event = new VEvent();
+			event.getProperties().clear();
+			event.setDateTimeStamp(utcFormatter.parse("19970324T120000"));
+			event.setSequence(0);
+			event.setUid("uid3@example.com");
+			event.setOrganizer("jdoe@example.com");
+
+			Attendee attendee = Attendee.email("jsmith@example.com");
+			attendee.setRsvp(true);
+			event.addAttendee(attendee);
+
+			event.setDateStart(utcFormatter.parse("19970324T123000"));
+			event.setDateEnd(utcFormatter.parse("19970324T210000"));
+			event.addCategories("MEETING", "PROJECT");
+			event.setClassification(Classification.public_());
+			event.setSummary("Calendaring Interoperability Planning Meeting");
+			event.setDescription("Discuss how we can test c&s interoperability\nusing iCalendar and other IETF standards.");
+			event.setLocation("LDB Lobby");
+
+			Attachment attach = new Attachment("application/postscript", "ftp://example.com/pub/conf/bkgrnd.ps");
+			event.addAttachment(attach);
+
+			ical.addEvent(event);
+		}
+
+		assertWarnings(0, ical.validate());
+		assertExample(ical, "rfc5545-example3.ics");
+	}
+
+	@Test
+	public void example4() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.setVersion(Version.v2_0());
+		ical.setProductId("-//ABC Corporation//NONSGML My Product//EN");
+		{
+			VTodo todo = new VTodo();
+			todo.getProperties().clear();
+			todo.setDateTimeStamp(utcFormatter.parse("19980130T134500"));
+			todo.setSequence(2);
+			todo.setUid("uid4@example.com");
+			todo.setOrganizer("unclesam@example.com");
+
+			Attendee attendee = Attendee.email("jqpublic@example.com");
+			attendee.setParticipationStatus(ParticipationStatus.ACCEPTED);
+			todo.addAttendee(attendee);
+
+			todo.setDateDue(localFormatter.parse("19980415T000000")).setLocalTime(true);
+			todo.setStatus(Status.needsAction());
+			todo.setSummary("Submit Income Taxes");
+			{
+				Trigger trigger = new Trigger(utcFormatter.parse("19980403T120000"));
+				Attachment attach = new Attachment("audio/basic", "http://example.com/pub/audio-files/ssbanner.aud");
+				VAlarm alarm = VAlarm.audio(trigger, attach);
+				alarm.setRepeat(4);
+				alarm.setDuration(new Duration.Builder().hours(1).build());
+				todo.addAlarm(alarm);
+			}
+
+			ical.addTodo(todo);
+		}
+
+		assertWarnings(0, ical.validate());
+		assertExample(ical, "rfc5545-example4.ics");
+	}
+
+	@Test
+	public void example5() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.setVersion(Version.v2_0());
+		ical.setProductId("-//ABC Corporation//NONSGML My Product//EN");
+		{
+			VJournal journal = new VJournal();
+			journal.getProperties().clear();
+			journal.setDateTimeStamp(utcFormatter.parse("19970324T120000"));
+			journal.setUid("uid5@example.com");
+			journal.setOrganizer("jsmith@example.com");
+			journal.setStatus(Status.draft());
+			journal.setClassification(Classification.public_());
+			journal.addCategories("Project Report", "XYZ", "Weekly Meeting");
+			journal.addDescription("Project xyz Review Meeting Minutes\nAgenda\n1. Review of project version 1.0 requirements.\n2.Definitionof project processes.\n3. Review of project schedule.\nParticipants: John Smith, Jane Doe, Jim Dandy\n-It wasdecided that the requirements need to be signed off byproduct marketing.\n-Project processes were accepted.\n-Project schedule needs to account for scheduled holidaysand employee vacation time. Check with HR for specificdates.\n-New schedule will be distributed by Friday.\n-Next weeks meeting is cancelled. No meeting until 3/23.");
+			ical.addJournal(journal);
+		}
+
+		assertWarnings(0, ical.validate());
+		assertExample(ical, "rfc5545-example5.ics");
+	}
+
+	@Test
+	public void example6() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.setVersion(Version.v2_0());
+		ical.setProductId("-//RDU Software//NONSGML HandCal//EN");
+		{
+			VFreeBusy freebusy = new VFreeBusy();
+			freebusy.getProperties().clear();
+			freebusy.setOrganizer("jsmith@example.com");
+			freebusy.setDateStart(utcFormatter.parse("19980313T141711"));
+			freebusy.setDateEnd(utcFormatter.parse("19980410T141711"));
+
+			FreeBusy fb = new FreeBusy();
+			fb.addValue(utcFormatter.parse("19980314T233000"), utcFormatter.parse("19980315T003000"));
+			freebusy.addFreeBusy(fb);
+
+			fb = new FreeBusy();
+			fb.addValue(utcFormatter.parse("19980316T153000"), utcFormatter.parse("19980316T163000"));
+			freebusy.addFreeBusy(fb);
+
+			fb = new FreeBusy();
+			fb.addValue(utcFormatter.parse("19980318T030000"), utcFormatter.parse("19980318T040000"));
+			freebusy.addFreeBusy(fb);
+
+			freebusy.setUrl("http://www.example.com/calendar/busytime/jsmith.ifb");
+			ical.addFreeBusy(freebusy);
+		}
+
+		assertWarnings(2, ical.validate()); //UID and DTSTAMP missing
+		assertExample(ical, "rfc5545-example6.ics");
+	}
+
+	private void assertExample(ICalendar ical, String exampleFileName) throws IOException {
+		StringWriter sw = new StringWriter();
+		ICalWriter writer = new ICalWriter(sw, null);
+		writer.write(ical);
+		writer.close();
+
+		String expected = new String(IOUtils.toByteArray(getClass().getResourceAsStream(exampleFileName)));
+		expected = expected.replaceAll("([^\r])\n", "$1\r\n"); //replace \n with \r\n
+		expected = expected.replaceAll("\r\n ", ""); //unfold folded lines
+
+		String actual = sw.toString();
+
+		assertEquals(expected, actual);
 	}
 
 	private class TestProperty extends ICalProperty {
