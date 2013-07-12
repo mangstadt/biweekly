@@ -146,7 +146,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void parseXml_first() throws Exception {
+	public void parseXml_first() throws Throwable {
 		//@formatter:off
 		String xml =
 		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
@@ -175,7 +175,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void parseXml_all() throws Exception {
+	public void parseXml_all() throws Throwable {
 		//@formatter:off
 		String xml =
 		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
@@ -240,7 +240,7 @@ public class BiweeklyTest {
 	}
 
 	@Test(expected = SAXException.class)
-	public void parseXml_invalid() throws Exception {
+	public void parseXml_invalid() throws Throwable {
 		String xml = "invalid-xml";
 		Biweekly.parseXml(xml).first();
 	}
@@ -335,7 +335,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void write_caretEncoding() throws Exception {
+	public void write_caretEncoding() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
 		ical.getProductId().addParameter("X-TEST", "the \"best\" app");
@@ -395,7 +395,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void writeXml() throws Exception {
+	public void writeXml() throws Throwable {
 		ICalendar ical1 = new ICalendar();
 		ical1.setProductId((String) null);
 
@@ -438,7 +438,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void writeXml_register() throws Exception {
+	public void writeXml_register() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId((String) null);
 		ical.addProperty(new TestProperty(1));
@@ -472,6 +472,104 @@ public class BiweeklyTest {
 		Document actual = Biweekly.writeXml(ical).register(new TestPropertyMarshaller()).register(new PartyMarshaller()).register("X-TEST2", Value.TEXT).dom();
 
 		assertXMLEqual(expected, actual);
+	}
+
+	@Test
+	public void writeJson_single() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.setProductId((String) null);
+
+		//@formatter:off
+		String expected =
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]" +
+			"]," +
+			"[" +
+			"]" +
+		"]";
+		//@formatter:on
+
+		String actual = Biweekly.writeJson(ical).go();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeJson_multiple() throws Throwable {
+		ICalendar ical1 = new ICalendar();
+		ical1.setProductId((String) null);
+
+		ICalendar ical2 = new ICalendar();
+		ical2.setProductId((String) null);
+		ical2.addExperimentalProperty("X-TEST1", "value1");
+
+		ICalendar ical3 = new ICalendar();
+		ical3.setProductId((String) null);
+		ical3.addExperimentalProperty("X-TEST2", "value2");
+
+		//@formatter:off
+		String expected =
+		"[" +
+			"[\"vcalendar\"," +
+				"[" +
+					"[\"version\",{},\"text\",\"2.0\"]" +
+				"]," +
+				"[" +
+				"]" +
+			"]," +
+			"[\"vcalendar\"," +
+				"[" +
+					"[\"version\",{},\"text\",\"2.0\"]," +
+					"[\"x-test1\",{},\"unknown\",\"value1\"]" +
+				"]," +
+				"[" +
+				"]" +
+			"]," +
+			"[\"vcalendar\"," +
+				"[" +
+					"[\"version\",{},\"text\",\"2.0\"]," +
+					"[\"x-test2\",{},\"unknown\",\"value2\"]" +
+				"]," +
+				"[" +
+				"]" +
+			"]" +
+		"]";
+		//@formatter:on
+
+		String actual = Biweekly.writeJson(ical1, ical2, ical3).go();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeJson_register() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.setProductId((String) null);
+		ical.addProperty(new TestProperty(1));
+		ical.addComponent(new Party());
+
+		//@formatter:off
+		String expected =
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]," +
+				"[\"x-test\",{},\"unknown\",\"one\"]" +
+			"]," +
+			"[" +
+				"[\"x-vparty\"," +
+					"[" +
+					"]," +
+					"[" +
+					"]" +
+				"]" +
+			"]" +
+		"]";
+		//@formatter:on
+
+		String actual = Biweekly.writeJson(ical).register(new TestPropertyMarshaller()).register(new PartyMarshaller()).go();
+
+		assertEquals(expected, actual);
 	}
 
 	private class TestProperty extends ICalProperty {

@@ -27,6 +27,8 @@ import org.xml.sax.SAXException;
 
 import biweekly.component.ICalComponent;
 import biweekly.component.marshaller.ICalComponentMarshaller;
+import biweekly.io.json.JCalReader;
+import biweekly.io.json.JCalWriter;
 import biweekly.io.text.ICalRawReader;
 import biweekly.io.text.ICalRawWriter;
 import biweekly.io.text.ICalReader;
@@ -113,6 +115,17 @@ import biweekly.util.IOUtils;
  * </p>
  * 
  * <p>
+ * <b>Writing a JSON-encoded iCalendar object (jCal)</b><br>
+ * 
+ * <pre>
+ * //Call writeJson() instead of write()
+ * ICalendar ical = new ICalendar();
+ * String json = Biweekly.writeJson(ical).go();
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <p>
  * <b>Reading an iCalendar object</b>
  * 
  * <pre>
@@ -151,6 +164,17 @@ import biweekly.util.IOUtils;
  * //Call parseXml() instead of parse()
  * String xml = ...
  * ICalendar ical = Biweekly.parseXml(xml).first();
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <p>
+ * <b>Reading a JSON-encoded iCalendar object (Cal)</b><br>
+ * 
+ * <pre>
+ * //Call parseJson() instead of parse()
+ * String json = ...
+ * ICalendar ical = Biweekly.parseJson(json).first();
  * </pre>
  * 
  * </p>
@@ -195,6 +219,11 @@ import biweekly.util.IOUtils;
  * <th>XML</th>
  * <td>{@link XCalDocument}</td>
  * <td>no</td>
+ * </tr>
+ * <tr>
+ * <th>JSON</th>
+ * <td>{@link JCalReader} / {@link JCalWriter}</td>
+ * <td>yes</td>
  * </tr>
  * </table>
  * @author Michael Angstadt
@@ -307,7 +336,7 @@ public class Biweekly {
 	 * accessed
 	 */
 	public static ParserChainXmlReader parseXml(File file) throws FileNotFoundException {
-		return new ParserChainXmlReader(file); //close the FileReader, since we created it
+		return new ParserChainXmlReader(file);
 	}
 
 	/**
@@ -353,6 +382,62 @@ public class Biweekly {
 	 */
 	public static WriterChainXml writeXml(Collection<ICalendar> icals) {
 		return new WriterChainXml(icals);
+	}
+
+	/**
+	 * Parses a jCal data stream (JSON-encoded iCalendar objects).
+	 * @param json the JSON data
+	 * @return chainer object for completing the parse operation
+	 */
+	public static ParserChainJsonString parseJson(String json) {
+		return new ParserChainJsonString(json);
+	}
+
+	/**
+	 * Parses a jCal data stream (JSON-encoded iCalendar objects).
+	 * @param file the JSON file
+	 * @return chainer object for completing the parse operation
+	 * @throws FileNotFoundException if the file does not exist or cannot be
+	 * accessed
+	 */
+	public static ParserChainJsonReader parseJson(File file) throws FileNotFoundException {
+		return new ParserChainJsonReader(new FileReader(file), true); //close the FileReader, since we created it
+	}
+
+	/**
+	 * Parses a jCal data stream (JSON-encoded iCalendar objects).
+	 * @param in the input stream
+	 * @return chainer object for completing the parse operation
+	 */
+	public static ParserChainJsonReader parseJson(InputStream in) {
+		return parseJson(new InputStreamReader(in));
+	}
+
+	/**
+	 * Parses a jCal data stream (JSON-encoded iCalendar objects).
+	 * @param reader the reader
+	 * @return chainer object for completing the parse operation
+	 */
+	public static ParserChainJsonReader parseJson(Reader reader) {
+		return new ParserChainJsonReader(reader, false);
+	}
+
+	/**
+	 * Writes an xCal document (XML-encoded iCalendar objects).
+	 * @param icals the iCalendar object(s) to write
+	 * @return chainer object for completing the write operation
+	 */
+	public static WriterChainJson writeJson(ICalendar... icals) {
+		return writeJson(Arrays.asList(icals));
+	}
+
+	/**
+	 * Writes an xCal document (XML-encoded iCalendar objects).
+	 * @param icals the iCalendar objects to write
+	 * @return chainer object for completing the write operation
+	 */
+	public static WriterChainJson writeJson(Collection<ICalendar> icals) {
+		return new WriterChainJson(icals);
 	}
 
 	static abstract class ParserChain<T> {
@@ -792,6 +877,152 @@ public class Biweekly {
 	}
 
 	///////////////////////////////////////////////////////
+	// JSON
+	///////////////////////////////////////////////////////
+
+	static abstract class ParserChainJson<T> extends ParserChain<T> {
+		final boolean closeWhenDone;
+
+		private ParserChainJson(boolean closeWhenDone) {
+			this.closeWhenDone = closeWhenDone;
+		}
+
+		@Override
+		public ICalendar first() throws IOException {
+			JCalReader parser = constructReader();
+
+			try {
+				ICalendar ical = parser.readNext();
+				if (warnings != null) {
+					warnings.add(parser.getWarnings());
+				}
+				return ical;
+			} finally {
+				if (closeWhenDone) {
+					IOUtils.closeQuietly(parser);
+				}
+			}
+		}
+
+		@Override
+		public List<ICalendar> all() throws IOException {
+			JCalReader parser = constructReader();
+
+			try {
+				List<ICalendar> icals = new ArrayList<ICalendar>();
+				ICalendar ical;
+				while ((ical = parser.readNext()) != null) {
+					if (warnings != null) {
+						warnings.add(parser.getWarnings());
+					}
+					icals.add(ical);
+				}
+				return icals;
+			} finally {
+				if (closeWhenDone) {
+					IOUtils.closeQuietly(parser);
+				}
+			}
+		}
+
+		private JCalReader constructReader() {
+			JCalReader parser = _constructReader();
+			for (ICalPropertyMarshaller<? extends ICalProperty> marshaller : propertyMarshallers) {
+				parser.registerMarshaller(marshaller);
+			}
+			for (ICalComponentMarshaller<? extends ICalComponent> marshaller : componentMarshallers) {
+				parser.registerMarshaller(marshaller);
+			}
+			return parser;
+		}
+
+		abstract JCalReader _constructReader();
+	}
+
+	/**
+	 * Chainer class for parsing JSON-encoded iCalendar data streams (jCal).
+	 * @see Biweekly#parseJson(InputStream)
+	 * @see Biweekly#parseJson(File)
+	 * @see Biweekly#parseJson(Reader)
+	 */
+	public static class ParserChainJsonReader extends ParserChainJson<ParserChainJsonReader> {
+		private final Reader reader;
+
+		private ParserChainJsonReader(Reader reader, boolean closeWhenDone) {
+			super(closeWhenDone);
+			this.reader = reader;
+		}
+
+		@Override
+		public ParserChainJsonReader register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+			return super.register(marshaller);
+		}
+
+		@Override
+		public ParserChainJsonReader register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+			return super.register(marshaller);
+		}
+
+		@Override
+		public ParserChainJsonReader warnings(List<List<String>> warnings) {
+			return super.warnings(warnings);
+		}
+
+		@Override
+		JCalReader _constructReader() {
+			return new JCalReader(reader);
+		}
+	}
+
+	/**
+	 * Chainer class for parsing JSON-encoded iCalendar strings (jCal).
+	 * @see Biweekly#parseJson(String)
+	 */
+	public static class ParserChainJsonString extends ParserChainJson<ParserChainJsonString> {
+		private final String text;
+
+		private ParserChainJsonString(String text) {
+			super(false);
+			this.text = text;
+		}
+
+		@Override
+		public ParserChainJsonString register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+			return super.register(marshaller);
+		}
+
+		@Override
+		public ParserChainJsonString register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+			return super.register(marshaller);
+		}
+
+		@Override
+		JCalReader _constructReader() {
+			return new JCalReader(text);
+		}
+
+		@Override
+		public ICalendar first() {
+			try {
+				return super.first();
+			} catch (IOException e) {
+				//reading from string
+			}
+			return null;
+		}
+
+		@Override
+		public List<ICalendar> all() {
+			try {
+				return super.all();
+			} catch (IOException e) {
+				//reading from string
+			}
+			return null;
+		}
+	}
+
+	///////////////////////////////////////////////////////
 	// plain-text
 	///////////////////////////////////////////////////////
 
@@ -1027,6 +1258,10 @@ public class Biweekly {
 		/**
 		 * Writes the xCal document to a string.
 		 * @return the XML string
+		 * @throws IllegalArgumentException if the marshaller class for a
+		 * component or property object cannot be found (only happens when an
+		 * experimental property/component marshaller is not registered with the
+		 * <code>register</code> method.)
 		 */
 		public String go() {
 			StringWriter sw = new StringWriter();
@@ -1041,6 +1276,10 @@ public class Biweekly {
 		/**
 		 * Writes the xCal document to an output stream.
 		 * @param out the output stream to write to
+		 * @throws IllegalArgumentException if the marshaller class for a
+		 * component or property object cannot be found (only happens when an
+		 * experimental property/component marshaller is not registered with the
+		 * <code>register</code> method.)
 		 * @throws TransformerException if there's a problem writing the XML
 		 */
 		public void go(OutputStream out) throws TransformerException {
@@ -1048,8 +1287,12 @@ public class Biweekly {
 		}
 
 		/**
-		 * Writes the xCal document to a file..
+		 * Writes the xCal document to a file.
 		 * @param file the file to write to
+		 * @throws IllegalArgumentException if the marshaller class for a
+		 * component or property object cannot be found (only happens when an
+		 * experimental property/component marshaller is not registered with the
+		 * <code>register</code> method.)
 		 * @throws TransformerException if there's a problem writing the XML
 		 * @throws IOException if there's a problem writing to the file
 		 */
@@ -1061,6 +1304,10 @@ public class Biweekly {
 		/**
 		 * Writes the xCal document to a writer.
 		 * @param writer the writer to write to
+		 * @throws IllegalArgumentException if the marshaller class for a
+		 * component or property object cannot be found (only happens when an
+		 * experimental property/component marshaller is not registered with the
+		 * <code>register</code> method.)
 		 * @throws TransformerException if there's a problem writing the XML
 		 */
 		public void go(Writer writer) throws TransformerException {
@@ -1095,6 +1342,95 @@ public class Biweekly {
 			}
 
 			return document;
+		}
+	}
+
+	///////////////////////////////////////////////////////
+	// JSON
+	///////////////////////////////////////////////////////
+
+	/**
+	 * Chainer class for writing to JSON-encoded iCalendar data streams (jCal).
+	 * @see Biweekly#writeJson(Collection)
+	 * @see Biweekly#writeJson(ICalendar...)
+	 */
+	public static class WriterChainJson extends WriterChain<WriterChainJson> {
+		private WriterChainJson(Collection<ICalendar> icals) {
+			super(icals);
+		}
+
+		/**
+		 * Writes the iCalendar objects to a string.
+		 * @return the iCalendar string
+		 * @throws IllegalArgumentException if the marshaller class for a
+		 * component or property object cannot be found (only happens when an
+		 * experimental property/component marshaller is not registered with the
+		 * <code>register</code> method.)
+		 */
+		public String go() {
+			StringWriter sw = new StringWriter();
+			try {
+				go(sw);
+			} catch (IOException e) {
+				//writing to a string
+			}
+			return sw.toString();
+		}
+
+		/**
+		 * Writes the iCalendar objects to a data stream.
+		 * @param out the output stream to write to
+		 * @throws IllegalArgumentException if the marshaller class for a
+		 * component or property object cannot be found (only happens when an
+		 * experimental property/component marshaller is not registered with the
+		 * <code>register</code> method.)
+		 * @throws IOException if there's a problem writing to the output stream
+		 */
+		public void go(OutputStream out) throws IOException {
+			go(new OutputStreamWriter(out));
+		}
+
+		/**
+		 * Writes the iCalendar objects to a file.
+		 * @param file the file to write to
+		 * @throws IllegalArgumentException if the marshaller class for a
+		 * component or property object cannot be found (only happens when an
+		 * experimental property/component marshaller is not registered with the
+		 * <code>register</code> method.)
+		 * @throws IOException if there's a problem writing to the file
+		 */
+		public void go(File file) throws IOException {
+			FileWriter writer = null;
+			try {
+				writer = new FileWriter(file);
+				go(writer);
+			} finally {
+				IOUtils.closeQuietly(writer);
+			}
+		}
+
+		/**
+		 * Writes the iCalendar objects to a data stream.
+		 * @param writer the writer to write to
+		 * @throws IllegalArgumentException if the marshaller class for a
+		 * component or property object cannot be found (only happens when an
+		 * experimental property/component marshaller is not registered with the
+		 * <code>register</code> method.)
+		 * @throws IOException if there's a problem writing to the writer
+		 */
+		public void go(Writer writer) throws IOException {
+			JCalWriter jcalWriter = new JCalWriter(writer, icals.size() > 1);
+			for (ICalPropertyMarshaller<? extends ICalProperty> marshaller : propertyMarshallers) {
+				jcalWriter.registerMarshaller(marshaller);
+			}
+			for (ICalComponentMarshaller<? extends ICalComponent> marshaller : componentMarshallers) {
+				jcalWriter.registerMarshaller(marshaller);
+			}
+
+			for (ICalendar ical : icals) {
+				jcalWriter.write(ical);
+			}
+			jcalWriter.closeJsonStream();
 		}
 	}
 
