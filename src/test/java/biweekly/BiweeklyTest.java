@@ -6,7 +6,6 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -263,27 +262,6 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void write_one_with_warnings() {
-		ICalendar ical = new ICalendar();
-		ical.addProperty(new TestProperty(null)); //no marshaller registered
-
-		List<String> warnings = new ArrayList<String>();
-		Biweekly.write(ical).warnings(warnings).go();
-
-		assertFalse(warnings.isEmpty());
-	}
-
-	@Test
-	public void write_one_without_warnings() {
-		ICalendar ical = new ICalendar();
-
-		List<String> warnings = new ArrayList<String>();
-		Biweekly.write(ical).warnings(warnings).go();
-
-		assertTrue(warnings.isEmpty());
-	}
-
-	@Test
 	public void write_multiple() {
 		ICalendar ical1 = new ICalendar();
 
@@ -314,24 +292,6 @@ public class BiweeklyTest {
 		String actual = Biweekly.write(ical1, ical2, ical3).go();
 
 		assertRegex(expected, actual);
-	}
-
-	@Test
-	public void write_multiple_warnings() {
-		ICalendar ical1 = new ICalendar();
-
-		ICalendar ical2 = new ICalendar();
-		ical2.addProperty(new TestProperty(null));
-
-		ICalendar ical3 = new ICalendar();
-
-		List<List<String>> warnings = new ArrayList<List<String>>();
-		Biweekly.write(ical1, ical2, ical3).warnings(warnings).go();
-
-		assertEquals(3, warnings.size());
-		assertTrue(warnings.get(0).isEmpty());
-		assertFalse(warnings.get(1).isEmpty()); //no marshaller
-		assertTrue(warnings.get(2).isEmpty());
 	}
 
 	@Test

@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalendar;
@@ -19,7 +17,6 @@ import biweekly.component.marshaller.ComponentLibrary;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.component.marshaller.RawComponentMarshaller;
 import biweekly.io.SkipMeException;
-import biweekly.io.text.ICalRawWriter.ParameterValueChangedListener;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
@@ -69,7 +66,6 @@ import biweekly.property.marshaller.RawPropertyMarshaller;
  * @author Michael Angstadt
  */
 public class ICalWriter implements Closeable {
-	private final List<String> warnings = new ArrayList<String>();
 	private final Map<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new HashMap<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>>(0);
 	private final Map<Class<? extends ICalComponent>, ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new HashMap<Class<? extends ICalComponent>, ICalComponentMarshaller<? extends ICalComponent>>(0);
 	private final ICalRawWriter writer;
@@ -162,11 +158,6 @@ public class ICalWriter implements Closeable {
 	 */
 	public ICalWriter(Writer writer, FoldingScheme foldingScheme, String newline) {
 		this.writer = new ICalRawWriter(writer, foldingScheme, newline);
-		this.writer.setParameterValueChangedListener(new ParameterValueChangedListener() {
-			public void onParameterValueChanged(String propertyName, String parameterName, String originalValue, String modifiedValue) {
-				warnings.add("Parameter \"" + parameterName + "\" of property \"" + propertyName + "\" contained one or more characters which are not allowed.  These characters were removed.");
-			}
-		});
 	}
 
 	/**
@@ -222,15 +213,6 @@ public class ICalWriter implements Closeable {
 	}
 
 	/**
-	 * Gets the warnings from the last iCal that was written. This list is reset
-	 * every time a new iCal is written.
-	 * @return the warnings or empty list if there were no warnings
-	 */
-	public List<String> getWarnings() {
-		return new ArrayList<String>(warnings);
-	}
-
-	/**
 	 * Registers a marshaller for an experimental property.
 	 * @param marshaller the marshaller to register
 	 */
@@ -252,7 +234,6 @@ public class ICalWriter implements Closeable {
 	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	public void write(ICalendar ical) throws IOException {
-		warnings.clear();
 		writeComponent(ical);
 	}
 
@@ -265,8 +246,7 @@ public class ICalWriter implements Closeable {
 	private void writeComponent(ICalComponent component) throws IOException {
 		ICalComponentMarshaller m = findComponentMarshaller(component);
 		if (m == null) {
-			warnings.add("No marshaller found for component class \"" + component.getClass().getName() + "\".  This component will not be written.");
-			return;
+			throw new IllegalArgumentException("No marshaller found for component class \"" + component.getClass().getName() + "\".  This component will not be written.");
 		}
 
 		writer.writeBeginComponent(m.getComponentName());
@@ -275,8 +255,7 @@ public class ICalWriter implements Closeable {
 			ICalProperty property = (ICalProperty) obj;
 			ICalPropertyMarshaller pm = findPropertyMarshaller(property);
 			if (pm == null) {
-				warnings.add("No marshaller found for property class \"" + property.getClass().getName() + "\".  This property will not be written.");
-				continue;
+				throw new IllegalArgumentException("No marshaller found for property class \"" + property.getClass().getName() + "\".  This property will not be written.");
 			}
 
 			//marshal property
@@ -286,21 +265,11 @@ public class ICalWriter implements Closeable {
 				parameters = pm.prepareParameters(property);
 				value = pm.writeText(property);
 			} catch (SkipMeException e) {
-				if (e.getMessage() == null) {
-					addWarning("Property has requested that it be skipped.", pm.getPropertyName());
-				} else {
-					addWarning("Property has requested that it be skipped: " + e.getMessage(), pm.getPropertyName());
-				}
 				continue;
 			}
 
 			//write property to data stream
-			try {
-				writer.writeProperty(pm.getPropertyName(), parameters, value);
-			} catch (IllegalArgumentException e) {
-				addWarning("Property could not be written: " + e.getMessage(), pm.getPropertyName());
-				continue;
-			}
+			writer.writeProperty(pm.getPropertyName(), parameters, value);
 		}
 
 		for (Object obj : m.getComponents(component)) {
@@ -354,9 +323,5 @@ public class ICalWriter implements Closeable {
 	 */
 	public void close() throws IOException {
 		writer.close();
-	}
-
-	private void addWarning(String message, String propertyName) {
-		warnings.add(propertyName + " property: " + message);
 	}
 }

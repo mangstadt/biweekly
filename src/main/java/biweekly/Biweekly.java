@@ -293,20 +293,11 @@ public class Biweekly {
 	}
 
 	/**
-	 * Writes an iCalendar object to a data stream.
-	 * @param ical the iCalendar object to write
-	 * @return chainer object for completing the write operation
-	 */
-	public static WriterChainTextSingle write(ICalendar ical) {
-		return new WriterChainTextSingle(ical);
-	}
-
-	/**
 	 * Writes multiple iCalendar objects to a data stream.
 	 * @param icals the iCalendar objects to write
 	 * @return chainer object for completing the write operation
 	 */
-	public static WriterChainTextMulti write(ICalendar... icals) {
+	public static WriterChainText write(ICalendar... icals) {
 		return write(Arrays.asList(icals));
 	}
 
@@ -315,8 +306,8 @@ public class Biweekly {
 	 * @param icals the iCalendar objects to write
 	 * @return chainer object for completing the write operation
 	 */
-	public static WriterChainTextMulti write(Collection<ICalendar> icals) {
-		return new WriterChainTextMulti(icals);
+	public static WriterChainText write(Collection<ICalendar> icals) {
+		return new WriterChainText(icals);
 	}
 
 	/**
@@ -843,39 +834,6 @@ public class Biweekly {
 		}
 	}
 
-	static abstract class WriterChain<T> {
-		final Collection<ICalendar> icals;
-		final List<ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new ArrayList<ICalPropertyMarshaller<? extends ICalProperty>>(0);
-		final List<ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new ArrayList<ICalComponentMarshaller<? extends ICalComponent>>(0);
-
-		@SuppressWarnings("unchecked")
-		final T this_ = (T) this;
-
-		WriterChain(Collection<ICalendar> icals) {
-			this.icals = icals;
-		}
-
-		/**
-		 * Registers a property marshaller.
-		 * @param marshaller the marshaller
-		 * @return this
-		 */
-		public T register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
-			propertyMarshallers.add(marshaller);
-			return this_;
-		}
-
-		/**
-		 * Registers a component marshaller.
-		 * @param marshaller the marshaller
-		 * @return this
-		 */
-		public T register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
-			componentMarshallers.add(marshaller);
-			return this_;
-		}
-	}
-
 	///////////////////////////////////////////////////////
 	// JSON
 	///////////////////////////////////////////////////////
@@ -1022,14 +980,52 @@ public class Biweekly {
 		}
 	}
 
+	static abstract class WriterChain<T> {
+		final Collection<ICalendar> icals;
+		final List<ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new ArrayList<ICalPropertyMarshaller<? extends ICalProperty>>(0);
+		final List<ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new ArrayList<ICalComponentMarshaller<? extends ICalComponent>>(0);
+
+		@SuppressWarnings("unchecked")
+		final T this_ = (T) this;
+
+		WriterChain(Collection<ICalendar> icals) {
+			this.icals = icals;
+		}
+
+		/**
+		 * Registers a property marshaller.
+		 * @param marshaller the marshaller
+		 * @return this
+		 */
+		public T register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+			propertyMarshallers.add(marshaller);
+			return this_;
+		}
+
+		/**
+		 * Registers a component marshaller.
+		 * @param marshaller the marshaller
+		 * @return this
+		 */
+		public T register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+			componentMarshallers.add(marshaller);
+			return this_;
+		}
+	}
+
 	///////////////////////////////////////////////////////
 	// plain-text
 	///////////////////////////////////////////////////////
 
-	static abstract class WriterChainText<T> extends WriterChain<T> {
+	/**
+	 * Chainer class for writing to plain text iCalendar data streams.
+	 * @see Biweekly#write(Collection)
+	 * @see Biweekly#write(ICalendar...)
+	 */
+	public static class WriterChainText extends WriterChain<WriterChainText> {
 		boolean caretEncoding = false;
 
-		WriterChainText(Collection<ICalendar> icals) {
+		private WriterChainText(Collection<ICalendar> icals) {
 			super(icals);
 		}
 
@@ -1048,7 +1044,7 @@ public class Biweekly {
 		 * @param enable true to use circumflex accent encoding, false not to
 		 * @see ICalRawWriter#setCaretEncodingEnabled(boolean)
 		 */
-		public T caretEncoding(boolean enable) {
+		public WriterChainText caretEncoding(boolean enable) {
 			this.caretEncoding = enable;
 			return this_;
 		}
@@ -1056,6 +1052,10 @@ public class Biweekly {
 		/**
 		 * Writes the iCalendar objects to a string.
 		 * @return the iCalendar string
+		 * @throws IllegalArgumentException if the marshaller class for a
+		 * component or property object cannot be found (only happens when an
+		 * experimental property/component marshaller is not registered with the
+		 * <code>register</code> method.)
 		 */
 		public String go() {
 			StringWriter sw = new StringWriter();
@@ -1070,6 +1070,10 @@ public class Biweekly {
 		/**
 		 * Writes the iCalendar objects to a data stream.
 		 * @param out the output stream to write to
+		 * @throws IllegalArgumentException if the marshaller class for a
+		 * component or property object cannot be found (only happens when an
+		 * experimental property/component marshaller is not registered with the
+		 * <code>register</code> method.)
 		 * @throws IOException if there's a problem writing to the output stream
 		 */
 		public void go(OutputStream out) throws IOException {
@@ -1079,6 +1083,10 @@ public class Biweekly {
 		/**
 		 * Writes the iCalendar objects to a file.
 		 * @param file the file to write to
+		 * @throws IllegalArgumentException if the marshaller class for a
+		 * component or property object cannot be found (only happens when an
+		 * experimental property/component marshaller is not registered with the
+		 * <code>register</code> method.)
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file) throws IOException {
@@ -1094,6 +1102,10 @@ public class Biweekly {
 		/**
 		 * Writes the iCalendar objects to a data stream.
 		 * @param writer the writer to write to
+		 * @throws IllegalArgumentException if the marshaller class for a
+		 * component or property object cannot be found (only happens when an
+		 * experimental property/component marshaller is not registered with the
+		 * <code>register</code> method.)
 		 * @throws IOException if there's a problem writing to the writer
 		 */
 		public void go(Writer writer) throws IOException {
@@ -1108,100 +1120,6 @@ public class Biweekly {
 
 			for (ICalendar ical : icals) {
 				icalWriter.write(ical);
-				addWarnings(icalWriter.getWarnings());
-			}
-		}
-
-		abstract void addWarnings(List<String> warnings);
-	}
-
-	/**
-	 * Chainer class for writing to plain text iCalendar data streams.
-	 * @see Biweekly#write(Collection)
-	 * @see Biweekly#write(ICalendar...)
-	 */
-	public static class WriterChainTextMulti extends WriterChainText<WriterChainTextMulti> {
-		private List<List<String>> warnings;
-
-		private WriterChainTextMulti(Collection<ICalendar> icals) {
-			super(icals);
-		}
-
-		@Override
-		public WriterChainTextMulti caretEncoding(boolean enable) {
-			return super.caretEncoding(enable);
-		}
-
-		/**
-		 * Provides a list for putting the marshal warnings into.
-		 * @param warnings the list object to populate (it is a
-		 * "list of lists"--each {@link ICalendar} object has its own warnings
-		 * list)
-		 * @return this
-		 */
-		public WriterChainTextMulti warnings(List<List<String>> warnings) {
-			this.warnings = warnings;
-			return this;
-		}
-
-		@Override
-		public WriterChainTextMulti register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
-			return super.register(marshaller);
-		}
-
-		@Override
-		public WriterChainTextMulti register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
-			return super.register(marshaller);
-		}
-
-		@Override
-		void addWarnings(List<String> warnings) {
-			if (this.warnings != null) {
-				this.warnings.add(warnings);
-			}
-		}
-	}
-
-	/**
-	 * Chainer class for writing to plain text iCalendar data streams.
-	 * @see Biweekly#write(ICalendar)
-	 */
-	public static class WriterChainTextSingle extends WriterChainText<WriterChainTextSingle> {
-		private List<String> warnings;
-
-		private WriterChainTextSingle(ICalendar ical) {
-			super(Arrays.asList(ical));
-		}
-
-		@Override
-		public WriterChainTextSingle caretEncoding(boolean enable) {
-			return super.caretEncoding(enable);
-		}
-
-		/**
-		 * Provides a list for putting the parser warnings into.
-		 * @param warnings the list object to populate
-		 * @return this
-		 */
-		public WriterChainTextSingle warnings(List<String> warnings) {
-			this.warnings = warnings;
-			return this;
-		}
-
-		@Override
-		public WriterChainTextSingle register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
-			return super.register(marshaller);
-		}
-
-		@Override
-		public WriterChainTextSingle register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
-			return super.register(marshaller);
-		}
-
-		@Override
-		void addWarnings(List<String> warnings) {
-			if (this.warnings != null) {
-				this.warnings.addAll(warnings);
 			}
 		}
 	}

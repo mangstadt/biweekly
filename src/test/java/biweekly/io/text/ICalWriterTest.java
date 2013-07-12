@@ -126,7 +126,6 @@ public class ICalWriterTest {
 
 		String actual = sw.toString();
 		assertRegex(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
 	@Test
@@ -157,7 +156,6 @@ public class ICalWriterTest {
 
 		String actual = sw.toString();
 		assertRegex(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
 	@Test
@@ -180,7 +178,6 @@ public class ICalWriterTest {
 
 		String actual = sw.toString();
 		assertRegex(expected, actual);
-		assertWarnings(1, writer.getWarnings());
 	}
 
 	@Test
@@ -204,7 +201,6 @@ public class ICalWriterTest {
 
 		String actual = sw.toString();
 		assertRegex(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
 	@Test
@@ -231,7 +227,7 @@ public class ICalWriterTest {
 		assertRegex(expected, actual);
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void no_property_marshaller() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.addProperty(new TestProperty("value"));
@@ -239,22 +235,9 @@ public class ICalWriterTest {
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw);
 		writer.write(ical);
-		writer.close();
-
-		//@formatter:off
-		String expected = 
-		"BEGIN:VCALENDAR\r\n" +
-			"VERSION:2\\.0\r\n" +
-			"PRODID:.*?\r\n" +
-		"END:VCALENDAR\r\n";
-		//@formatter:on
-
-		String actual = sw.toString();
-		assertRegex(expected, actual);
-		assertWarnings(1, writer.getWarnings());
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void no_component_marshaller() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.addComponent(new Party());
@@ -262,22 +245,9 @@ public class ICalWriterTest {
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw);
 		writer.write(ical);
-		writer.close();
-
-		//@formatter:off
-		String expected = 
-		"BEGIN:VCALENDAR\r\n" +
-			"VERSION:2\\.0\r\n" +
-			"PRODID:.*?\r\n" +
-		"END:VCALENDAR\r\n";
-		//@formatter:on
-
-		String actual = sw.toString();
-		assertRegex(expected, actual);
-		assertWarnings(1, writer.getWarnings());
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void bad_property_name() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.addProperty(new TestProperty("value"));
@@ -286,19 +256,6 @@ public class ICalWriterTest {
 		ICalWriter writer = new ICalWriter(sw);
 		writer.registerMarshaller(new BadNameMarshaller());
 		writer.write(ical);
-		writer.close();
-
-		//@formatter:off
-		String expected = 
-		"BEGIN:VCALENDAR\r\n" +
-			"VERSION:2\\.0\r\n" +
-			"PRODID:.*?\r\n" +
-		"END:VCALENDAR\r\n";
-		//@formatter:on
-
-		String actual = sw.toString();
-		assertRegex(expected, actual);
-		assertWarnings(1, writer.getWarnings());
 	}
 
 	@Test
@@ -322,7 +279,6 @@ public class ICalWriterTest {
 
 		String actual = sw.toString();
 		assertRegex(expected, actual);
-		assertWarnings(1, writer.getWarnings());
 	}
 
 	@Test
@@ -345,7 +301,6 @@ public class ICalWriterTest {
 
 		String actual = sw.toString();
 		assertRegex(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
 	@Test
@@ -371,7 +326,6 @@ public class ICalWriterTest {
 
 		String actual = sw.toString();
 		assertRegex(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
 	@Test
@@ -398,7 +352,6 @@ public class ICalWriterTest {
 
 		String actual = sw.toString();
 		assertRegex(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
 	@Test
@@ -423,7 +376,6 @@ public class ICalWriterTest {
 
 		String actual = sw.toString();
 		assertRegex(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
 	@Test
@@ -449,7 +401,6 @@ public class ICalWriterTest {
 
 		String actual = sw.toString();
 		assertRegex(expected, actual);
-		assertWarnings(0, writer.getWarnings());
 	}
 
 	@Test
