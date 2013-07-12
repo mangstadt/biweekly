@@ -26,9 +26,23 @@ package biweekly.property;
  */
 
 /**
+ * <p>
  * Defines the number of times an alarm should be repeated after its initial
  * trigger. Used in conjunction with {@link DurationProperty}, which defines the
  * length of the pause between repeats.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * //repeat 5 more times after the first time
+ * Repeat relatedTo = new Repeat(5);
+ * 
+ * VAlarm alarm = ...;
+ * alarm.setRepeat(5);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-133">RFC 5545 p.133</a>
  */

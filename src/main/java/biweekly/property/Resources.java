@@ -28,8 +28,18 @@ import java.util.List;
  */
 
 /**
- * Defines a list of resources that are needed for an event or to-do (for
- * example, an easel, a projector or a DVD player).
+ * <p>
+ * Defines a list of resources that are needed for an event or to-do task (for
+ * example a projector or DVD player).
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Resources resources = new Resources(&quot;projector&quot;, &quot;DVD player&quot;);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-91">RFC 5545 p.91</a>
  */

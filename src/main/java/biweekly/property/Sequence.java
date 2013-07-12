@@ -26,9 +26,22 @@ package biweekly.property;
  */
 
 /**
- * Defines a revision number for a component. The organizer of the event, to-do,
- * etc can increment this number every time he or she makes a significant change
- * to the component.
+ * <p>
+ * Defines a revision number for an event, to-do task, or journal entry. This
+ * number can be incremented every time a significant change is made to the
+ * component.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Sequence sequence = new Sequence(2);
+ * 
+ * VEvent event = ...
+ * event.setSequence(2);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
  * p.138-9</a>

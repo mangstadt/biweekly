@@ -28,7 +28,18 @@ import java.util.Date;
  */
 
 /**
- * Defines the date and time that a to-do was completed.
+ * <p>
+ * Defines the date and time that a to-do task was completed.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Date datetime = ...
+ * Completed completed = new Completed(datetime);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-94">RFC 5545 p.94-5</a>
  */

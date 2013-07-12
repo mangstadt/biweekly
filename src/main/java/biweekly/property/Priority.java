@@ -26,7 +26,24 @@ package biweekly.property;
  */
 
 /**
- * Defines the priority of an event or to-do.
+ * <p>
+ * Defines the priority of an event or to-do task.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * //highest
+ * Priority priority = new Priority(1);
+ * 
+ * //lowest
+ * Priority priority = new Priority(9);
+ * 
+ * VTodo todo = new VTodo();
+ * todo.setPriority(1);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-89">RFC 5545
  * p.89-90</a>

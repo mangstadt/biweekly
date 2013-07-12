@@ -28,8 +28,29 @@ import java.util.Date;
  */
 
 /**
+ * <p>
  * Defines the date that an event, free/busy component, or timezone component
  * starts.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * //date and time
+ * Date datetime = ...
+ * DateStart created = new DateStart(datetime);
+ * 
+ * //local date and time (don't print a timezone)
+ * Date datetime = ...
+ * DateStart created = new DateStart(datetime);
+ * created.setLocalTime(true);
+ * 
+ * //date
+ * Date date = ...
+ * DateStart created = new DateStart(date, false);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545 p.97-8</a>
  */

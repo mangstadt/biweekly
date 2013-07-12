@@ -30,7 +30,17 @@ import biweekly.component.ICalComponent;
  */
 
 /**
+ * <p>
  * Defines a set of geographical coordinates.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Geo geo = new Geo(40.714623, -74.006605);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-85">RFC 5545 p.85-7</a>
  */

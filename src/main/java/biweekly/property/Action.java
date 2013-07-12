@@ -34,10 +34,11 @@ package biweekly.property;
  * <b>Examples:</b>
  * 
  * <pre>
+ * //creating a new property
  * Action action = Action.audio();
  * 
  * if (action.isAudio()) {
- *   ...
+ * 	//it's an &quot;AUDIO&quot; alarm
  * }
  * </pre>
  * 

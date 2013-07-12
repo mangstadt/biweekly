@@ -29,14 +29,14 @@ import java.util.List;
 
 /**
  * <p>
- * Defines a list of "tags" or "keywords" that describe the component that the
- * property belongs to.
+ * Defines a list of "tags" or "keywords" that describe the component.
  * </p>
  * <p>
  * <b>Examples:</b>
  * 
  * <pre>
- * Categories categories = new Categories(&quot;foo&quot;, &quot;bar&quot;, &quot;car&quot;);
+ * //creating a new property (multi-valued)
+ * Categories categories = new Categories(&quot;conference&quot;, &quot;meeting&quot;);
  * </pre>
  * 
  * </p>

@@ -30,7 +30,20 @@ import biweekly.component.ICalComponent;
  */
 
 /**
- * Defines the amount that a to-do task has been completed.
+ * <p>
+ * Defines a to-do task's level of completion.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * PercentComplete percentComplete = new PercentComplete(50); //50%
+ * 
+ * VTodo todo = new VTodo();
+ * todo.setPercentComplete(50);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-88">RFC 5545 p.88-9</a>
  */

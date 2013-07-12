@@ -28,16 +28,17 @@ package biweekly.property;
 /**
  * <p>
  * Specifies the calendar system that this iCalendar object uses. If none is
- * specified, then the calendar is assumed to be in Gregorian format.
+ * specified, then the calendar is assumed to be in "gregorian" format.
  * </p>
  * <p>
  * <b>Examples:</b>
  * 
  * <pre>
+ * //creating a new property
  * CalendarScale calscale = CalendarScale.gregorian();
  * 
  * if (calscale.isGregorian()) {
- * 	 ...
+ * 	//its value is &quot;GREGORIAN&quot;
  * }
  * </pre>
  * 

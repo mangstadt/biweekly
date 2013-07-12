@@ -43,7 +43,14 @@ import biweekly.util.IOUtils;
  * <b>Examples:</b>
  * 
  * <pre>
+ * //from a byte array
+ * byte[] data = ...
+ * Attachment attach = new Attachment("image/png", data);
+ * 
+ * //reading from a file 
  * Attachment attach = new Attachment(&quot;image/png&quot;, new File(&quot;image.png&quot;));
+ * 
+ * //referencing a URL
  * Attachment attach = new Attachment(&quot;image/png&quot;, &quot;http://example.com/image.png&quot;);
  * </pre>
  * 

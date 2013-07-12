@@ -35,15 +35,21 @@ import biweekly.component.VTodo;
  * Defines an organizer. This property has different meanings depending on the
  * component it belongs to:
  * <ul>
- * <li>{@link VEvent}, {@link VTodo}, {@link VJournal} - the organizer of the
- * event/to-do/journal</li>
- * <li>{@link VFreeBusy} - the person requesting the free/busy time</li>
+ * <li>{@link VEvent} - The organizer of the event.</li>
+ * <li>{@link VTodo} - The creator of the to-do task.</li>
+ * <li>{@link VJournal} - The owner of the journal entry.</li>
+ * <li>{@link VFreeBusy} - The person requesting the free/busy time.</li>
  * </ul>
  * </p>
+ * <p>
+ * <b>Examples:</b>
  * 
  * <pre>
- * Organizer organizer = Organizer.email("johndoe@example.com")
+ * Organizer organizer = Organizer.email(&quot;johndoe@example.com&quot;);
+ * organizer.setCommonName(&quot;John Doe&quot;);
  * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
  * p.111-2</a>

@@ -35,11 +35,11 @@ import biweekly.util.Duration;
  * Defines a duration of time (for example, "2 hours and 30 minutes"). It has
  * different meanings depending on the component it belongs to:
  * <ul>
- * <li>{@link VEvent} - the duration of the event (used in place of a
- * {@link DateEnd} property)</li>
- * <li>{@link VTodo} - the duration of the to-do (used in place of a
- * {@link DateEnd} property)</li>
- * <li>{@link VAlarm} - the pause between alarm repetitions</li>
+ * <li>{@link VEvent} - The duration of the event (used in place of a
+ * {@link DateEnd} property).</li>
+ * <li>{@link VTodo} - The duration of the to-do task (used in place of a
+ * {@link DateEnd} property).</li>
+ * <li>{@link VAlarm} - The pause between alarm repetitions.</li>
  * </ul>
  * </p>
  * 

@@ -28,16 +28,17 @@ package biweekly.property;
 /**
  * <p>
  * Defines the level of sensitivity of the iCalendar data. If not specified, the
- * data within the iCalendar object should be considered "public".
+ * data should be considered "public".
  * </p>
  * <p>
  * <b>Examples:</b>
  * 
  * <pre>
- * Classification clazz = Classification.public_();
+ * //creating a new property
+ * Classification classification = Classification.public_();
  * 
- * if (clazz.isPublic()) {
- * 	 ...
+ * if (classification.isPublic()) {
+ * 	//its value is &quot;PUBLIC&quot;
  * }
  * </pre>
  * 

@@ -26,8 +26,22 @@ package biweekly.property;
  */
 
 /**
+ * <p>
  * Defines a short, one line summary of the component that this property belongs
- * to. For email alarms, this is the subject line of the email.
+ * to. The summary should be a more concise version of the text provided by the
+ * {@link Description} property.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Summary summary = new Summary("summary text");
+ * 
+ * VEvent event = ...;
+ * event.setSummary("summary text");
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545 p.93-4</a>
  */

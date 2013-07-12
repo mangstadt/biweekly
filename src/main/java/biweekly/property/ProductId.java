@@ -28,7 +28,20 @@ import biweekly.Biweekly;
  */
 
 /**
+ * <p>
  * Identifies the application that created the iCalendar object.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * ProductId prodid = new ProductId(&quot;-//Company//Application Name//EN&quot;);
+ * 
+ * ICalendar ical = new ICalendar();
+ * ical.setProductId(&quot;-//Company//Application Name//EN&quot;);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545 p.78-9</a>
  */
@@ -36,7 +49,7 @@ public class ProductId extends TextProperty {
 	/**
 	 * Creates a new product identifier property.
 	 * @param value a unique string representing the application (e.g.
-	 * "-//Company//Application//EN")
+	 * "-//Company//Application Name//EN")
 	 */
 	public ProductId(String value) {
 		super(value);

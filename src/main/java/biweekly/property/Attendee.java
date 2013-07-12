@@ -37,9 +37,9 @@ import biweekly.parameter.Role;
  * Defines an attendee (such as a person attending an event). This property has
  * different meanings depending on the component that it belongs to:
  * <ul>
- * <li>{@link VAlarm} (EMAIL action) - an email address that is to receive the
- * alarm</li>
- * <li>all others - an attendee</li>
+ * <li>{@link VAlarm} (with "EMAIL" action) - An email address that is to
+ * receive the alarm.</li>
+ * <li>All others - An attendee of the event.</li>
  * </ul>
  * </p>
  * 
@@ -48,6 +48,10 @@ import biweekly.parameter.Role;
  * 
  * <pre>
  * Attendee attendee = Attendee.email("johndoe@example.com")
+ * attendee.setCommonName("John Doe");
+ * attendee.setRsvp(true);
+ * attendee.setRole(Role.CHAIR);
+ * attendee.setParticipationStatus(ParticipationStatus.ACCEPTED);
  * </pre>
  * 
  * </p>

@@ -26,7 +26,17 @@ package biweekly.property;
  */
 
 /**
+ * <p>
  * Defines a free-text comment to be read by the user.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Comment comment = new Comment(&quot;Free text&quot;);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545 p.83-4</a>
  */

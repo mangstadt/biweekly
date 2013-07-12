@@ -30,9 +30,25 @@ import biweekly.parameter.Range;
  */
 
 /**
+ * <p>
  * Records the original value of the {@link DateStart} property if a recurrence
  * instance has been modified. Used in conjunction with the {@link Uid} and
  * {@link Sequence} properties to uniquely identify a recurrence instance.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * //date-time value
+ * Date datetime = ...
+ * RecurrenceId recurrenceId = new RecurrenceId(datetime);
+ * 
+ * //datevalue
+ * Date date = ...
+ * RecurrenceId recurrenceId = new RecurrenceId(date, false);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-112">RFC 5545
  * p.112-4</a>

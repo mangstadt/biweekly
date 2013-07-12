@@ -28,8 +28,18 @@ import biweekly.parameter.RelationshipType;
  */
 
 /**
+ * <p>
  * Defines a relationship between the component that this property belongs to
  * and another component.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * RelatedTo relatedTo = new RelatedTo(&quot;uid-value&quot;);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-115">RFC 5545
  * p.115-6</a>

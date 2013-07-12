@@ -26,8 +26,18 @@ package biweekly.property;
  */
 
 /**
+ * <p>
  * Defines contact information for a person or other entity (for example, the
  * name of a business and its phone number).
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Contact contact = new Contact(&quot;Acme Co: (212) 555-1234&quot;);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
  * p.109-11</a>
@@ -36,7 +46,7 @@ public class Contact extends TextProperty {
 	//TODO override get/setValue methods to customize the Javadocs?
 	/**
 	 * Creates a contact property.
-	 * @param contact the contact information (e.g. "ACME Co - (123) 555-1234")
+	 * @param contact the contact information (e.g. "Acme Co: (212) 555-1234")
 	 */
 	public Contact(String contact) {
 		super(contact);

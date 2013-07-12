@@ -26,7 +26,17 @@ package biweekly.property;
  */
 
 /**
+ * <p>
  * Defines the physical location of an event.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Location location = new Location(&quot;Room 32B&quot;);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-87">RFC 5545 p.87-8</a>
  */

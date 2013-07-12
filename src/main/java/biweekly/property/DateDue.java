@@ -28,7 +28,23 @@ import java.util.Date;
  */
 
 /**
- * Defines the date that a to-do is due by.
+ * <p>
+ * Defines the date that a to-do task is due by.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * //date and time
+ * Date datetime = ...
+ * DateDue created = new DateDue(datetime);
+ * 
+ * //date
+ * Date date = ...
+ * DateDue created = new DateDue(date, false);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-96">RFC 5545 p.96-7</a>
  */

@@ -28,7 +28,18 @@ import java.util.Date;
  */
 
 /**
+ * <p>
  * Defines the date-time that the calendar information was initially created.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Date datetime = ...
+ * Created created = new Created(datetime);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545 p.136</a>
  */

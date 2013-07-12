@@ -39,7 +39,7 @@ import biweekly.component.ICalComponent;
  * <b>Examples:</b>
  * 
  * <pre>
- * //bi-weekly
+ * //&quot;bi-weekly&quot;
  * RecurrenceRule rrule = new RecurrenceRule(Frequency.WEEKLY);
  * rrule.setInterval(2);
  * </pre>

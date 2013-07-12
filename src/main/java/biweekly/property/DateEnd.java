@@ -28,7 +28,23 @@ import java.util.Date;
  */
 
 /**
+ * <p>
  * Defines the date that an event or free/busy component ends.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * //date and time
+ * Date datetime = ...
+ * DateEnd created = new DateEnd(datetime);
+ * 
+ * //date
+ * Date date = ...
+ * DateEnd created = new DateEnd(date, false);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-95">RFC 5545 p.95-6</a>
  */

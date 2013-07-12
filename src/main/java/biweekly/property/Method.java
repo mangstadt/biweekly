@@ -26,8 +26,18 @@ package biweekly.property;
  */
 
 /**
- * Specifies the value of the Content-Type "method" parameter if the iCal is
- * defined as a MIME message entity.
+ * <p>
+ * Specifies the value of the Content-Type "method" parameter if the iCalendar
+ * object is defined as a MIME message entity.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Method method = new Method(&quot;value&quot;);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545 p.77-8</a>
  */

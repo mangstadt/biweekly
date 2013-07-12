@@ -30,8 +30,31 @@ import biweekly.component.ICalComponent;
  */
 
 /**
+ * <p>
  * Represents a response to a scheduling request, describing whether the request
  * was successfully processed or not.
+ * </p>
+ * <p>
+ * Each property instance has a status code. The following status code families
+ * are defined:
+ * <ul>
+ * <li><b>1.x</b> - The request has been received, but is still being processed.
+ * </li>
+ * <li><b>2.x</b> - The request was processed successfully.</li>
+ * <li><b>3.x</b> - There is a client-side problem with the request (such as
+ * some incorrect syntax).</li>
+ * <li><b>4.x</b> - A server-side error occurred.</li>
+ * </ul>
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * RequestStatus requestStatus = new RequestStatus(&quot;2.0&quot;);
+ * requestStatus.setDescription(&quot;Success&quot;);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-141">RFC 5545
  * p.141-3</a>

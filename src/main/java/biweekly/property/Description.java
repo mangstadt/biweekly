@@ -26,9 +26,20 @@ package biweekly.property;
  */
 
 /**
+ * <p>
  * A detailed description of the component that this property belongs to. The
- * description should be a more detailed version of the one provided by the
+ * description should be a more detailed version of the text provided by the
  * {@link Summary} property.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Description description = new Description(&quot;description text&quot;);
+ * </pre>
+ * 
+ * </p>
+ * 
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545 p.84-5</a>
  */

@@ -26,7 +26,23 @@ package biweekly.property;
  */
 
 /**
- * Defines the status of the component that this property belongs to.
+ * <p>
+ * Defines the status of the component that this property belongs to, such as a
+ * to-do task being in a "completed" state.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * //creating a new property
+ * Status status = Status.completed();
+ * 
+ * if (status.isCompleted()) {
+ * 	//its value is &quot;COMPLETED&quot;
+ * }
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-92">RFC 5545 p.92-3</a>
  */
@@ -134,7 +150,8 @@ public class Status extends TextProperty {
 	}
 
 	/**
-	 * Creates a "in-progress" status property (only valid for to-do components).
+	 * Creates a "in-progress" status property (only valid for to-do
+	 * components).
 	 * @return the property
 	 */
 	public static Status inProgress() {
