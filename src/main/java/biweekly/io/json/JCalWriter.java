@@ -147,7 +147,7 @@ public class JCalWriter implements Closeable {
 	/**
 	 * Writes an iCalendar object to the data stream.
 	 * @param ical the iCalendar object to write
-	 * @throws IllegalArgumentExeption if the marshaller class for a component
+	 * @throws IllegalArgumentException if the marshaller class for a component
 	 * or property object cannot be found (only happens when an experimental
 	 * property/component marshaller is not registered with the
 	 * <code>registerMarshaller</code> method.)
@@ -160,7 +160,7 @@ public class JCalWriter implements Closeable {
 	/**
 	 * Writes a component to the data stream.
 	 * @param component the component to write
-	 * @throws IllegalArgumentExeption if the marshaller class for a component
+	 * @throws IllegalArgumentException if the marshaller class for a component
 	 * or property object cannot be found (only happens when an experimental
 	 * property/component marshaller is not registered with the
 	 * <code>registerMarshaller</code> method.)
