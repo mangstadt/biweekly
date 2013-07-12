@@ -176,11 +176,6 @@ public class JCalValue {
 		return null;
 	}
 
-	//
-	//	public void addSingleValued(Object value) {
-	//		this.values.add(new JsonValue(value));
-	//	}
-
 	/**
 	 * Gets the value of a structured property (such as {@link RequestStatus}).
 	 * @return the values or empty list if not found
@@ -230,15 +225,6 @@ public class JCalValue {
 		return Collections.emptyList();
 	}
 
-	//	public void addStructured(Object... values) {
-	//		List<JsonValue> array = new ArrayList<JsonValue>(values.length);
-	//		for (Object value : values) {
-	//			array.add(new JsonValue(value));
-	//		}
-	//
-	//		this.values.add(new JsonValue(array));
-	//	}
-
 	/**
 	 * Gets the value of a multi-valued property (such as {@link Categories}).
 	 * @return the values or empty list if not found
@@ -262,12 +248,6 @@ public class JCalValue {
 		}
 		return multi;
 	}
-
-	//	public void addMultivalued(Object... values) {
-	//		for (Object value : values) {
-	//			this.values.add(new JsonValue(value));
-	//		}
-	//	}
 
 	/**
 	 * Gets the value of a property whose value is an object (such as the
@@ -312,15 +292,4 @@ public class JCalValue {
 		}
 		return values;
 	}
-
-	//	public void addObject(Map<String, Object> value) {
-	//		Map<String, JsonValue> values = new HashMap<String, JsonValue>();
-	//		for (Map.Entry<String, Object> entry : value.entrySet()) {
-	//			String key = entry.getKey();
-	//			JsonValue v = new JsonValue(entry.getValue());
-	//			values.put(key, v);
-	//		}
-	//
-	//		this.values.add(new JsonValue(values));
-	//	}
 }
