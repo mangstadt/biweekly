@@ -505,7 +505,7 @@ public class JCalWriterTest {
 			usEasternTz.setTimezoneId("US/Eastern");
 			{
 				DaylightSavingsTime daylight = new DaylightSavingsTime();
-				daylight.setDateStart(localFormatter.parse("2000-04-04T02:00:00")).setLocalTime(true);
+				daylight.setDateStart(localFormatter.parse("2000-04-04T02:00:00"));
 
 				RecurrenceRule rrule = new RecurrenceRule(Frequency.YEARLY);
 				rrule.addByDay(1, DayOfWeek.SUNDAY);
@@ -520,7 +520,7 @@ public class JCalWriterTest {
 			}
 			{
 				StandardTime standard = new StandardTime();
-				standard.setDateStart(localFormatter.parse("2000-10-26T02:00:00")).setLocalTime(true);
+				standard.setDateStart(localFormatter.parse("2000-10-26T02:00:00"));
 
 				RecurrenceRule rrule = new RecurrenceRule(Frequency.YEARLY);
 				rrule.addByDay(1, DayOfWeek.SUNDAY);

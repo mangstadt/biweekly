@@ -440,7 +440,7 @@ public class ICalWriterTest {
 			usEasternTz.setTimezoneId("America/New_York");
 			{
 				StandardTime standard = new StandardTime();
-				standard.setDateStart(localFormatter.parse("19981025T020000")).setLocalTime(true);
+				standard.setDateStart(localFormatter.parse("19981025T020000"));
 				standard.setTimezoneOffsetFrom(-4, 0);
 				standard.setTimezoneOffsetTo(-5, 0);
 				standard.addTimezoneName("EST");
@@ -448,7 +448,7 @@ public class ICalWriterTest {
 			}
 			{
 				DaylightSavingsTime daylight = new DaylightSavingsTime();
-				daylight.setDateStart(localFormatter.parse("19990404T020000")).setLocalTime(true);
+				daylight.setDateStart(localFormatter.parse("19990404T020000"));
 				daylight.setTimezoneOffsetFrom(-5, 0);
 				daylight.setTimezoneOffsetTo(-4, 0);
 				daylight.addTimezoneName("EDT");
