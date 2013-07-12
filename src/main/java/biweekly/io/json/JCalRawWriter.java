@@ -12,6 +12,7 @@ import biweekly.parameter.Value;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonGenerator.Feature;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -290,6 +291,8 @@ public class JCalRawWriter implements Closeable {
 			indent(0);
 			jg.writeEndArray();
 		}
+
+		jg.close();
 	}
 
 	/**
@@ -303,12 +306,12 @@ public class JCalRawWriter implements Closeable {
 		}
 
 		closeJsonStream();
-		jg.close();
+		writer.close();
 	}
 
 	private void init() throws IOException {
 		JsonFactory factory = new JsonFactory();
-		//factory.configure(Feature.AUTO_CLOSE_TARGET, false);
+		factory.configure(Feature.AUTO_CLOSE_TARGET, false);
 		jg = factory.createJsonGenerator(writer);
 
 		if (wrapInArray) {
