@@ -349,7 +349,7 @@ public class XCalDocument {
 	 * are made to the {@link ICalendar} object after calling this method will
 	 * NOT be applied to the xCal document.
 	 * @param ical the iCalendar object to add
-	 * @throws IllegalArgumentExeption if the marshaller class for a component
+	 * @throws IllegalArgumentException if the marshaller class for a component
 	 * or property object cannot be found (only happens when an experimental
 	 * property/component marshaller is not registered with the
 	 * <code>registerMarshaller</code> method.)
