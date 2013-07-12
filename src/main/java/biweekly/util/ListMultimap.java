@@ -211,8 +211,8 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 * Returns all the values.
 	 * @return all the values
 	 */
-	public Collection<V> values() {
-		Collection<V> list = new ArrayList<V>();
+	public List<V> values() {
+		List<V> list = new ArrayList<V>();
 		for (List<V> value : map.values()) {
 			list.addAll(value);
 		}

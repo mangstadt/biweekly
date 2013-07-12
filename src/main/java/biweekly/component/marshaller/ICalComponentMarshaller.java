@@ -1,6 +1,7 @@
 package biweekly.component.marshaller;
 
 import java.util.Collection;
+import java.util.List;
 
 import biweekly.component.ICalComponent;
 import biweekly.property.ICalProperty;
@@ -101,7 +102,7 @@ public abstract class ICalComponentMarshaller<T extends ICalComponent> {
 	 * @param component the component
 	 * @return the properties to marshal
 	 */
-	public Collection<ICalProperty> getProperties(T component) {
+	public List<ICalProperty> getProperties(T component) {
 		return component.getProperties().values();
 	}
 }

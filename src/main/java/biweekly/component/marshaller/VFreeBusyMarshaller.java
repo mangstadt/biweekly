@@ -1,7 +1,6 @@
 package biweekly.component.marshaller;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -46,10 +45,15 @@ public class VFreeBusyMarshaller extends ICalComponentMarshaller<VFreeBusy> {
 	}
 
 	@Override
-	public Collection<ICalProperty> getProperties(VFreeBusy component) {
-		//sort FREEBUSY properties by start date
-		//TODO this will require that a List be returned
+	public List<ICalProperty> getProperties(VFreeBusy component) {
+		List<ICalProperty> properties = super.getProperties(component);
+
 		List<FreeBusy> fb = new ArrayList<FreeBusy>(component.getFreeBusy());
+		if (fb.isEmpty()) {
+			return properties;
+		}
+
+		//sort FREEBUSY properties by start date (p.100)
 		Collections.sort(fb, new Comparator<FreeBusy>() {
 			public int compare(FreeBusy one, FreeBusy two) {
 				Date oneStart = getEarliestStartDate(one);
@@ -80,15 +84,22 @@ public class VFreeBusyMarshaller extends ICalComponentMarshaller<VFreeBusy> {
 			}
 		});
 
-		//make sure the FREEBUSY properties appear in sorted order
-		Collection<ICalProperty> all = super.getProperties(component);
-		for (FreeBusy f : fb) {
-			if (all.remove(f)) {
-				all.add(f);
+		//find index of first FREEBUSY instance
+		int index = 0;
+		for (ICalProperty prop : properties) {
+			if (prop instanceof FreeBusy) {
+				break;
 			}
+			index++;
 		}
 
-		return all;
+		//remove and re-add the FREEBUSY instances in sorted order
+		for (FreeBusy f : fb) {
+			properties.remove(f);
+			properties.add(index++, f);
+		}
+
+		return properties;
 	}
 
 	@Override
