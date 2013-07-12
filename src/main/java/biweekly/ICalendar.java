@@ -353,16 +353,26 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Marshals this iCalendar object to its XML representation (xCal).
+	 * Marshals this iCalendar object to its XML representation (xCal). If the
+	 * iCalendar object contains user-defined property or component objects, use
+	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * classes.
 	 * @return the XML document
+	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * user-defined property or component objects
 	 */
 	public String writeXml() {
 		return Biweekly.writeXml(this).indent(2).go();
 	}
 
 	/**
-	 * Marshals this iCalendar object to its XML representation (xCal).
+	 * Marshals this iCalendar object to its XML representation (xCal). If the
+	 * iCalendar object contains user-defined property or component objects, use
+	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * classes.
 	 * @param file the file to write to
+	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * user-defined property or component objects
 	 * @throws TransformerException if there's an I/O problem
 	 * @throws IOException if the file cannot be written to
 	 */
@@ -371,8 +381,13 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Marshals this iCalendar object to its XML representation (xCal).
+	 * Marshals this iCalendar object to its XML representation (xCal). If the
+	 * iCalendar object contains user-defined property or component objects, use
+	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * classes.
 	 * @param out the data stream to write to
+	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * user-defined property or component objects
 	 * @throws TransformerException if there's an I/O problem
 	 */
 	public void writeXml(OutputStream out) throws TransformerException {
@@ -380,11 +395,71 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Marshals this iCalendar object to its XML representation (xCal).
+	 * Marshals this iCalendar object to its XML representation (xCal). If the
+	 * iCalendar object contains user-defined property or component objects, use
+	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * classes.
 	 * @param writer the data stream to write to
+	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * user-defined property or component objects
 	 * @throws TransformerException if there's an I/O problem
 	 */
 	public void writeXml(Writer writer) throws TransformerException {
 		Biweekly.writeXml(this).indent(2).go(writer);
+	}
+
+	/**
+	 * Marshals this iCalendar object to its JSON representation (jCal). If the
+	 * iCalendar object contains user-defined property or component objects, use
+	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * classes.
+	 * @return the JSON string
+	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * user-defined property or component objects
+	 */
+	public String writeJson() {
+		return Biweekly.writeJson(this).go();
+	}
+
+	/**
+	 * Marshals this iCalendar object to its JSON representation (jCal). If the
+	 * iCalendar object contains user-defined property or component objects, use
+	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * classes.
+	 * @param file the file to write to
+	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * user-defined property or component objects
+	 * @throws IOException if there's a problem writing to the file
+	 */
+	public void writeJson(File file) throws IOException {
+		Biweekly.writeJson(this).go(file);
+	}
+
+	/**
+	 * Marshals this iCalendar object to its JSON representation (jCal). If the
+	 * iCalendar object contains user-defined property or component objects, use
+	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * classes.
+	 * @param out the data stream to write to
+	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * user-defined property or component objects
+	 * @throws IOException if there's a problem writing to the output stream
+	 */
+	public void writeJson(OutputStream out) throws IOException {
+		Biweekly.writeJson(this).go(out);
+	}
+
+	/**
+	 * Marshals this iCalendar object to its JSON representation (jCal). If the
+	 * iCalendar object contains user-defined property or component objects, use
+	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * classes.
+	 * @param writer the data stream to write to
+	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * user-defined property or component objects
+	 * @throws IOException if there's a problem writing to the writer
+	 */
+	public void writeJson(Writer writer) throws IOException {
+		Biweekly.writeJson(this).go(writer);
 	}
 }
