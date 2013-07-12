@@ -27,6 +27,7 @@ import org.xml.sax.SAXException;
 
 import biweekly.component.ICalComponent;
 import biweekly.component.marshaller.ICalComponentMarshaller;
+import biweekly.io.json.JCalParseException;
 import biweekly.io.json.JCalReader;
 import biweekly.io.json.JCalWriter;
 import biweekly.io.text.ICalRawReader;
@@ -38,6 +39,8 @@ import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.IOUtils;
+
+import com.fasterxml.jackson.core.JsonParseException;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -845,6 +848,11 @@ public class Biweekly {
 			this.closeWhenDone = closeWhenDone;
 		}
 
+		/**
+		 * @throws JCalParseException if the jCal syntax is incorrect (the JSON
+		 * syntax may be valid, but it is not in the correct jCal format).
+		 * @throws JsonParseException if the JSON syntax is incorrect
+		 */
 		@Override
 		public ICalendar first() throws IOException {
 			JCalReader parser = constructReader();
@@ -862,6 +870,11 @@ public class Biweekly {
 			}
 		}
 
+		/**
+		 * @throws JCalParseException if the jCal syntax is incorrect (the JSON
+		 * syntax may be valid, but it is not in the correct jCal format).
+		 * @throws JsonParseException if the JSON syntax is incorrect
+		 */
 		@Override
 		public List<ICalendar> all() throws IOException {
 			JCalReader parser = constructReader();
