@@ -43,6 +43,7 @@ import biweekly.util.Duration;
  * //15 minutes before the start time
  * Duration duration = new Duration.Builder().prior(true).minutes(15).build();
  * Trigger trigger = new Trigger(duration, Related.START);
+ * VAlarm alarm = VAlarm.display(trigger, &quot;Meeting in 15 minutes&quot;);
  * </pre>
  * 
  * </p>

@@ -35,11 +35,17 @@ package biweekly.property;
  * <b>Examples:</b>
  * 
  * <pre>
+ * //creating a new property
  * Transparency transp = Transparency.opaque();
  * 
  * if (transp.isOpaque()) {
- *   ...
+ *   //its value is "OPAQUE"
  * }
+ * 
+ * //usage in a VEVENT component
+ * VEvent event = ...
+ * event.setTransparency(true); //hidden from searches ("TRANSPARENT")
+ * event.setTransparency(false); //visible to searches ("OPAQUE")
  * </pre>
  * 
  * </p>

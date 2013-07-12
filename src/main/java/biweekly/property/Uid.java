@@ -36,6 +36,8 @@ import java.util.UUID;
  * 
  * <pre>
  * Uid uid = new Uid(&quot;...&quot;);
+ * 
+ * //random UID
  * Uid uid = Uid.random();
  * </pre>
  * 

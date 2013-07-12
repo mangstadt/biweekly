@@ -38,11 +38,11 @@ import biweekly.component.ICalComponent;
  * <b>Examples:</b>
  * 
  * <pre>
- * //gets the default iCal version
+ * //the default iCal version
  * Version version = Version.v2_0();
  * 
  * if (verison.isV2_0()) {
- *   ...
+ * 	//version is &quot;2.0&quot;
  * }
  * </pre>
  * 

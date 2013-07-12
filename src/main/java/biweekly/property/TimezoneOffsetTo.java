@@ -26,8 +26,26 @@ package biweekly.property;
  */
 
 /**
+ * <p>
  * Defines the timezone offset that is currently in use in a timezone
  * observance.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * //creating a new property
+ * TimezoneOffsetTo tzname = new TimezoneOffsetTo(-4, 0);
+ * 
+ * //usage in a VTIMEZONE component
+ * VTimezone timezone = ...
+ * StandardTime standard = new StandardTime();
+ * standard.setTimezoneOffsetTo(-4, 0);
+ * ...
+ * timezone.addStandardTime(standard);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-105">RFC 5545
  * p.105-6</a>

@@ -26,7 +26,17 @@ package biweekly.property;
  */
 
 /**
+ * <p>
  * Points to a resource that contains additional information about a component.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Url url = new Url(&quot;http://example.com&quot;);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
  * p.116-7</a>

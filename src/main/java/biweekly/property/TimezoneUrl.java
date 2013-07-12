@@ -26,8 +26,23 @@ package biweekly.property;
  */
 
 /**
+ * <p>
  * Defines a URL that points to an iCalendar object that contains further
  * information on a timezone.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * //creating a new property
+ * TimezoneUrl tzurl = new TimezoneUrl("http://example.com/tz.ics");
+ * 
+ * //usage in a VTIMEZONE component
+ * VTimezone timezone = ...
+ * timezone.getTimezoneUrl("http://example.com/tz.ics");
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-106">RFC 5545 p.106</a>
  */
