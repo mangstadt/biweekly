@@ -15,6 +15,7 @@ import biweekly.parameter.Value;
 import biweekly.property.RecurrenceRule;
 import biweekly.property.RecurrenceRule.DayOfWeek;
 import biweekly.property.RecurrenceRule.Frequency;
+import biweekly.util.ICalDateFormatter;
 import biweekly.util.ListMultimap;
 import biweekly.util.StringUtils;
 import biweekly.util.StringUtils.JoinMapCallback;
@@ -193,7 +194,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 		if (value != null) {
 			try {
 				Date date = date(value).parse();
-				boolean hasTime = value.contains("T");
+				boolean hasTime = ICalDateFormatter.dateHasTime(value);
 				property.setUntil(date, hasTime);
 			} catch (IllegalArgumentException e) {
 				warnings.add("Could not parse UNTIL date: " + value);

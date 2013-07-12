@@ -84,7 +84,7 @@ public class TestUtils {
 		}
 
 		SimpleDateFormat df;
-		if (expected.contains("T")) {
+		if (ICalDateFormatter.dateHasTime(expected)) {
 			if (expected.contains("-") || expected.contains("+")) {
 				df = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
 			} else {

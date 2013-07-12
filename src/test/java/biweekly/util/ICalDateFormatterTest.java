@@ -3,7 +3,9 @@ package biweekly.util;
 import static biweekly.util.TestUtils.buildTimezone;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -210,6 +212,22 @@ public class ICalDateFormatterTest {
 
 			assertEquals(expected, actual);
 		}
+	}
+
+	@Test
+	public void dateHasTime() {
+		assertFalse(ICalDateFormatter.dateHasTime("20130601"));
+		assertTrue(ICalDateFormatter.dateHasTime("20130601T120000"));
+	}
+
+	@Test
+	public void dateHasTimezone() {
+		assertFalse(ICalDateFormatter.dateHasTimezone("20130601T120000"));
+		assertTrue(ICalDateFormatter.dateHasTimezone("20130601T120000Z"));
+		assertTrue(ICalDateFormatter.dateHasTimezone("20130601T120000+0100"));
+		assertTrue(ICalDateFormatter.dateHasTimezone("20130601T120000-0100"));
+		assertTrue(ICalDateFormatter.dateHasTimezone("2013-06-01T12:00:00+01:00"));
+		assertTrue(ICalDateFormatter.dateHasTimezone("2013-06-01T12:00:00-01:00"));
 	}
 
 	@Test

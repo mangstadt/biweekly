@@ -149,6 +149,25 @@ public class ICalDateFormatter {
 	}
 
 	/**
+	 * Determines whether a date string has a time component.
+	 * @param dateStr the date string (e.g. "20130601T120000")
+	 * @return true if it has a time component, false if not
+	 */
+	public static boolean dateHasTime(String dateStr) {
+		return dateStr.contains("T");
+	}
+
+	/**
+	 * Determines whether a date string is in UTC time or has a timezone offset.
+	 * @param dateStr the date string (e.g. "20130601T120000Z",
+	 * "20130601T120000-0400")
+	 * @return true if it has a timezone, false if not
+	 */
+	public static boolean dateHasTimezone(String dateStr) {
+		return dateStr.endsWith("Z") || dateStr.matches(".*?[-+]\\d\\d:?\\d\\d");
+	}
+
+	/**
 	 * Parses a timezone that's in ISO8601 format.
 	 * @param offsetStr the timezone offset string (e.g. "-0500" or "-05:00")
 	 * @return the hour offset (index 0) and the minute offset (index 1)
