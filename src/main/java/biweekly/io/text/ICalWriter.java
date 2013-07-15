@@ -246,7 +246,7 @@ public class ICalWriter implements Closeable {
 	private void writeComponent(ICalComponent component) throws IOException {
 		ICalComponentMarshaller m = findComponentMarshaller(component);
 		if (m == null) {
-			throw new IllegalArgumentException("No marshaller found for component class \"" + component.getClass().getName() + "\".  This component will not be written.");
+			throw new IllegalArgumentException("No marshaller found for component class \"" + component.getClass().getName() + "\".");
 		}
 
 		writer.writeBeginComponent(m.getComponentName());
@@ -255,7 +255,7 @@ public class ICalWriter implements Closeable {
 			ICalProperty property = (ICalProperty) obj;
 			ICalPropertyMarshaller pm = findPropertyMarshaller(property);
 			if (pm == null) {
-				throw new IllegalArgumentException("No marshaller found for property class \"" + property.getClass().getName() + "\".  This property will not be written.");
+				throw new IllegalArgumentException("No marshaller found for property class \"" + property.getClass().getName() + "\".");
 			}
 
 			//marshal property

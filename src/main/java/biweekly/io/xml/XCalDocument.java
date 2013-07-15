@@ -462,7 +462,7 @@ public class XCalDocument {
 	private Element buildComponentElement(ICalComponent component) {
 		ICalComponentMarshaller m = findComponentMarshaller(component);
 		if (m == null) {
-			throw new IllegalArgumentException("No marshaller found for component class \"" + component.getClass().getName() + "\".  Use the \"registerMarshaller()\" method to register a marshaller.");
+			throw new IllegalArgumentException("No marshaller found for component class \"" + component.getClass().getName() + "\".");
 		}
 
 		Element componentElement = buildElement(m.getComponentName().toLowerCase());
@@ -518,7 +518,7 @@ public class XCalDocument {
 		} else {
 			ICalPropertyMarshaller pm = findPropertyMarshaller(property);
 			if (pm == null) {
-				throw new IllegalArgumentException("No marshaller found for property class \"" + property.getClass().getName() + "\".  Use the \"registerMarshaller()\" method to register a marshaller.");
+				throw new IllegalArgumentException("No marshaller found for property class \"" + property.getClass().getName() + "\".");
 			}
 
 			propertyElement = buildElement(pm.getQName());
