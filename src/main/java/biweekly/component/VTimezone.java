@@ -34,20 +34,28 @@ import biweekly.property.TimezoneUrl;
 
 /**
  * <p>
- * Defines a timezone.
+ * Defines a timezone's UTC offsets throughout the year.
  * </p>
  * 
  * <p>
  * <b>Examples:</b>
  * 
  * <pre>
- * VTimezone timezone = new VTimezone(&quot;EST&quot;);
+ * VTimezone timezone = new VTimezone("Eastern Standard Time");
  * 
- * StandardTime standard = ...
+ * StandardTime standard = new StandardTime();
+ * Date startStandard = ...
+ * standard.setDateStart(startStandard);
+ * standard.setTimezoneOffsetFrom(-4, 0);
+ * standard.setTimezoneOffsetTo(-5, 0);
  * timezone.addStandardTime(standard);
  * 
- * DaylightSavingsTime daylightSavings = ...
- * timezone.addDaylightSavingsTime(daylightSavings);
+ * DaylightSavingsTime daylight = new DaylightSavingsTime();
+ * Date startDaylight = ...
+ * daylight.setDateStart(startDaylight);
+ * daylight.setTimezoneOffsetFrom(-5, 0);
+ * daylight.setTimezoneOffsetTo(-4, 0);
+ * timezone.addDaylightSavingsTime(daylight);
  * </pre>
  * 
  * </p>

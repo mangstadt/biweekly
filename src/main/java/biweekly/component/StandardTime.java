@@ -26,7 +26,23 @@ package biweekly.component;
  */
 
 /**
- * Defines a time range in which a timezone is in "standard" time.
+ * <p>
+ * Defines a standard time range within a {@link VTimezone}.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * VTimezone timezone = new VTimezone("Eastern Standard Time");
+ * StandardTime standard = new StandardTime();
+ * Date start = ...
+ * standard.setDateStart(start);
+ * standard.setTimezoneOffsetFrom(-4, 0);
+ * standard.setTimezoneOffsetTo(-5, 0);
+ * timezone.addStandardTime(standard);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
  * p.62-71</a>

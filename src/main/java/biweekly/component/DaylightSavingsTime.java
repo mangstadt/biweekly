@@ -26,7 +26,23 @@ package biweekly.component;
  */
 
 /**
- * Defines a time range in which a timezone is in "daylight savings" time.
+ * <p>
+ * Defines a daylight savings time range within a {@link VTimezone}.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * VTimezone timezone = new VTimezone("Eastern Standard Time");
+ * DaylightSavingsTime daylight = new DaylightSavingsTime();
+ * Date start = ...
+ * daylight.setDateStart(start);
+ * daylight.setTimezoneOffsetFrom(-5, 0);
+ * daylight.setTimezoneOffsetTo(-4, 0);
+ * timezone.addDaylightSavingsTime(daylight);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
  * p.62-71</a>

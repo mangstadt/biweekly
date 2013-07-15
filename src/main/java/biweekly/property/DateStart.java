@@ -38,16 +38,21 @@ import java.util.Date;
  * <pre>
  * //date and time
  * Date datetime = ...
- * DateStart created = new DateStart(datetime);
- * 
- * //local date and time (don't print a timezone)
- * Date datetime = ...
- * DateStart created = new DateStart(datetime);
- * created.setLocalTime(true);
+ * DateStart dtstart = new DateStart(datetime);
  * 
  * //date
  * Date date = ...
- * DateStart created = new DateStart(date, false);
+ * DateStart dtstart = new DateStart(date, false);
+ * 
+ * //local date and time (don't print a timezone)
+ * Date datetime = ...
+ * DateStart dtstart = new DateStart(datetime);
+ * dtstart.setLocalTime(true);
+ * 
+ * //with timezone 
+ * Date datetime = ... 
+ * DateEnd dtstart = new DateEnd(datetime); 
+ * dtstart.setTimezoneId("America/New_York");
  * </pre>
  * 
  * </p>

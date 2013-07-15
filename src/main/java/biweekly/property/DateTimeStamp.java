@@ -40,6 +40,15 @@ import java.util.Date;
  * modified (the {@link LastModified} property also holds this information).</li>
  * </ul>
  * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * Date datetime = ... 
+ * DateTimeStamp dtstamp = new DateTimeStamp(datetime);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-137">RFC 5545
  * p.137-8</a>

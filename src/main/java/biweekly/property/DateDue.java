@@ -37,11 +37,16 @@ import java.util.Date;
  * <pre>
  * //date and time
  * Date datetime = ...
- * DateDue created = new DateDue(datetime);
+ * DateDue due = new DateDue(datetime);
  * 
  * //date
  * Date date = ...
- * DateDue created = new DateDue(date, false);
+ * DateDue due = new DateDue(date, false);
+ * 
+ * //with timezone 
+ * Date datetime = ... 
+ * DateEnd due = new DateEnd(datetime); 
+ * due.setTimezoneId("America/New_York");
  * </pre>
  * 
  * </p>

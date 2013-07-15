@@ -62,7 +62,25 @@ import biweekly.util.Duration;
  */
 
 /**
+ * <p>
  * Defines a scheduled activity, such as a meeting that's two hours long.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * VEvent event = new VEvent();
+ * Date start = ...
+ * event.setDateStart(start);
+ * Date end = ...
+ * event.setDateEnd(end);
+ * event.setSummary("Team Meeting");
+ * event.setLocation("Room 21C");
+ * event.setCreated(new Date());
+ * event.setRecurrenceRule(new RecurrenceRule(Frequency.WEEKLY));
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-52">RFC 5545 p.52-5</a>
  */

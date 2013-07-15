@@ -63,7 +63,21 @@ import biweekly.util.Duration;
  */
 
 /**
- * Defines an action item or assignment.
+ * <p>
+ * Defines a task or assignment.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * VTodo todo = new VTodo();
+ * todo.setSummary("Complete report");
+ * Date due = ...
+ * todo.setDateDue(due);
+ * todo.setStatus(Status.confirmed());
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545 p.55-7</a>
  */

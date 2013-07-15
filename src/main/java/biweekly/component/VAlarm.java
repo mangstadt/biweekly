@@ -44,8 +44,8 @@ import biweekly.util.Duration;
 
 /**
  * <p>
- * Defines a reminder for an event or to-do. This class contains static factory
- * methods to aid in the construction of valid alarms.
+ * Defines a reminder for an event or to-do task. This class contains static
+ * factory methods to aid in the construction of valid alarms.
  * </p>
  * 
  * <p>
@@ -66,7 +66,7 @@ import biweekly.util.Duration;
  * Trigger trigger = ...
  * String subject = &quot;Reminder: Meeting at 1pm&quot;;
  * String body = &quot;Team,\n\nThe team meeting scheduled for 1pm is about to start.  Snacks will be served!\n\nThanks,\nJohn&quot;;
- * List&ltString&gt to = Arrays.asList(&quot;janedoe@example.com&quot;, &quot;bobsmith@example.com&quot;);
+ * List&lt;String&gt; to = Arrays.asList(&quot;janedoe@example.com&quot;, &quot;bobsmith@example.com&quot;);
  * VAlarm email = VAlarm.email(trigger, subject, body, to);
  * </pre>
  * 

@@ -45,7 +45,26 @@ import biweekly.util.Duration;
  */
 
 /**
- * Defines a set of free/busy data.
+ * <p>
+ * Defines a collection of time ranges that describe when the person is
+ * available or unavailable.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * VEvent event = new VEvent();
+ * Date start = ...
+ * event.setDateStart(start);
+ * Date end = ...
+ * event.setDateEnd(end);
+ * event.setSummary("Team Meeting");
+ * event.setLocation("Room 21C");
+ * event.setCreated(new Date());
+ * event.setRecurrenceRule(new RecurrenceRule(Frequency.WEEKLY));
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-59">RFC 5545
  * p.59-62</a>

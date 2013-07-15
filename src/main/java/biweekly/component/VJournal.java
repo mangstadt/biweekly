@@ -54,7 +54,21 @@ import biweekly.property.Url;
  */
 
 /**
+ * <p>
  * Defines descriptive text associated with the calendar data.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * VJournal journal = new VJournal();
+ * journal.setSummary("Team Meeting");
+ * journal.setDescription("The following items were discussed: ...");
+ * byte[] slides = ...
+ * journal.addAttachment(new Attachment("application/vnd.ms-powerpoint", slides));
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-57">RFC 5545 p.57-9</a>
  */
