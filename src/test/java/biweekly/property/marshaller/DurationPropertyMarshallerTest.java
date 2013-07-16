@@ -46,7 +46,7 @@ import biweekly.util.Duration;
  */
 public class DurationPropertyMarshallerTest {
 	private final DurationPropertyMarshaller marshaller = new DurationPropertyMarshaller();
-	private final Duration duration = new Duration.Builder().hours(1).minutes(30).build();
+	private final Duration duration = Duration.builder().hours(1).minutes(30).build();
 
 	@Test
 	public void writeText() {

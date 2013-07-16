@@ -539,13 +539,13 @@ public class JCalWriterTest {
 			VEvent event = new VEvent();
 			event.setDateTimeStamp(utcFormatter.parse("2006-02-06T00:11:21"));
 			event.setDateStart(usEasternFormatter.parse("2006-01-02T12:00:00")).setTimezone(usEasternTz);
-			event.setDuration(new Duration.Builder().hours(1).build());
+			event.setDuration(Duration.builder().hours(1).build());
 
 			RecurrenceRule rrule = new RecurrenceRule(Frequency.DAILY);
 			rrule.setCount(5);
 			event.setRecurrenceRule(rrule);
 
-			RecurrenceDates rdate = new RecurrenceDates(Arrays.asList(new Period(usEasternFormatter.parse("2006-01-02T15:00:00"), new Duration.Builder().hours(2).build())));
+			RecurrenceDates rdate = new RecurrenceDates(Arrays.asList(new Period(usEasternFormatter.parse("2006-01-02T15:00:00"), Duration.builder().hours(2).build())));
 			rdate.setTimezone(usEasternTz);
 			event.addRecurrenceDates(rdate);
 
@@ -558,7 +558,7 @@ public class JCalWriterTest {
 			VEvent event = new VEvent();
 			event.setDateTimeStamp(utcFormatter.parse("2006-02-06T00:11:21"));
 			event.setDateStart(usEasternFormatter.parse("2006-01-02T14:00:00")).setTimezone(usEasternTz);
-			event.setDuration(new Duration.Builder().hours(1).build());
+			event.setDuration(Duration.builder().hours(1).build());
 
 			event.setRecurrenceId(usEasternFormatter.parse("2006-01-04T12:00:00")).setTimezone(usEasternTz);
 

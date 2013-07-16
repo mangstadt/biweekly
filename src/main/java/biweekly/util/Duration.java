@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  * <b>Examples:</b>
  * 
  * <pre>
- * Duration duration = new Duration.Builder().hours(2).minutes(30).build();
+ * Duration duration = Duration.builder().hours(2).minutes(30).build();
  * Duration duration = Duration.parse(&quot;PT2H30M&quot;);
  * </pre>
  * 
@@ -74,7 +74,7 @@ public class Duration {
 		}
 
 		//@formatter:off
-		return new Duration.Builder()
+		return Duration.builder()
 		.prior(value.startsWith("-"))
 		.weeks(parseComponent(value, 'W'))
 		.days(parseComponent(value, 'D'))
@@ -83,6 +83,14 @@ public class Duration {
 		.seconds(parseComponent(value, 'S'))
 		.build();
 		//@formatter:on
+	}
+
+	/**
+	 * Creates a builder object for constructing new instances of this class.
+	 * @return the builder object
+	 */
+	public static Builder builder() {
+		return new Builder();
 	}
 
 	private static Integer parseComponent(String value, char ch) {

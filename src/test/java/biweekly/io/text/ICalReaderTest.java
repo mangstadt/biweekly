@@ -992,7 +992,7 @@ public class ICalReaderTest {
 				assertEquals("audio/basic", attach.getFormatType());
 
 				assertIntEquals(4, alarm.getRepeat().getValue());
-				assertEquals(new Duration.Builder().hours(1).build(), alarm.getDuration().getValue());
+				assertEquals(Duration.builder().hours(1).build(), alarm.getDuration().getValue());
 			}
 		}
 

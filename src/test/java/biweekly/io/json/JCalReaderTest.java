@@ -587,7 +587,7 @@ public class JCalReaderTest {
 			assertDateEquals("20060206T001121Z", event.getDateTimeStamp().getValue());
 			assertEquals(usEastern.parse("2006-01-02T12:00:00"), event.getDateStart().getValue());
 			assertEquals("US/Eastern", event.getDateStart().getTimezoneId());
-			assertEquals(new Duration.Builder().hours(1).build(), event.getDuration().getValue());
+			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
 
 			RecurrenceRule rrule = event.getRecurrenceRule();
 			assertEquals(Frequency.DAILY, rrule.getFrequency());
@@ -596,7 +596,7 @@ public class JCalReaderTest {
 			RecurrenceDates rdate = event.getRecurrenceDates().get(0);
 			assertNull(rdate.getDates());
 			assertEquals(1, rdate.getPeriods().size());
-			assertEquals(new Period(usEastern.parse("2006-01-02T15:00:00"), new Duration.Builder().hours(2).build()), rdate.getPeriods().get(0));
+			assertEquals(new Period(usEastern.parse("2006-01-02T15:00:00"), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
 			assertEquals("US/Eastern", rdate.getTimezoneId());
 
 			assertEquals("Event #2", event.getSummary().getValue());
@@ -612,7 +612,7 @@ public class JCalReaderTest {
 			assertDateEquals("20060206T001121Z", event.getDateTimeStamp().getValue());
 			assertEquals(usEastern.parse("2006-01-02T14:00:00"), event.getDateStart().getValue());
 			assertEquals("US/Eastern", event.getDateStart().getTimezoneId());
-			assertEquals(new Duration.Builder().hours(1).build(), event.getDuration().getValue());
+			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
 
 			assertEquals(usEastern.parse("2006-01-04T12:00:00"), event.getRecurrenceId().getValue());
 			assertEquals("US/Eastern", event.getRecurrenceId().getTimezoneId());

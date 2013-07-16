@@ -65,7 +65,7 @@ public class DurationTest {
 
 	@Test
 	public void builder() {
-		Duration duration = new Duration.Builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
+		Duration duration = Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
 		assertEquals(true, duration.isPrior());
 		assertIntEquals(1, duration.getWeeks());
 		assertIntEquals(2, duration.getDays());
@@ -76,7 +76,7 @@ public class DurationTest {
 
 	@Test
 	public void builder_empty() {
-		Duration duration = new Duration.Builder().build();
+		Duration duration = Duration.builder().build();
 		assertEquals(false, duration.isPrior());
 		assertNull(duration.getWeeks());
 		assertNull(duration.getDays());
@@ -87,7 +87,7 @@ public class DurationTest {
 
 	@Test
 	public void builder_copy() {
-		Duration duration = new Duration.Builder().weeks(1).days(2).hours(3).build();
+		Duration duration = Duration.builder().weeks(1).days(2).hours(3).build();
 		duration = new Duration.Builder(duration).weeks(1).days(5).minutes(4).build();
 		assertEquals(false, duration.isPrior());
 		assertIntEquals(1, duration.getWeeks());
@@ -99,32 +99,32 @@ public class DurationTest {
 
 	@Test
 	public void toString_all() {
-		Duration duration = new Duration.Builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
+		Duration duration = Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
 		assertEquals("-P1W2DT3H4M50S", duration.toString());
 	}
 
 	@Test
 	public void toString_some() {
-		Duration duration = new Duration.Builder().weeks(1).days(2).build();
+		Duration duration = Duration.builder().weeks(1).days(2).build();
 		assertEquals("P1W2D", duration.toString());
 	}
 
 	@Test
 	public void toString_just_time() {
-		Duration duration = new Duration.Builder().hours(3).build();
+		Duration duration = Duration.builder().hours(3).build();
 		assertEquals("PT3H", duration.toString());
 	}
 
 	@Test
 	public void equals_hashCode() {
-		Duration duration1 = new Duration.Builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
-		Duration duration2 = new Duration.Builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
+		Duration duration1 = Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
+		Duration duration2 = Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
 		assertTrue(duration1.equals(duration2));
 		assertTrue(duration2.equals(duration1));
 		assertTrue(duration1.hashCode() == duration1.hashCode());
 
-		duration1 = new Duration.Builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
-		duration2 = new Duration.Builder().weeks(2).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
+		duration1 = Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
+		duration2 = Duration.builder().weeks(2).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
 		assertFalse(duration1.equals(duration2));
 		assertFalse(duration2.equals(duration1));
 	}

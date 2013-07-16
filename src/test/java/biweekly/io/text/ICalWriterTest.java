@@ -546,7 +546,7 @@ public class ICalWriterTest {
 				Attachment attach = new Attachment("audio/basic", "http://example.com/pub/audio-files/ssbanner.aud");
 				VAlarm alarm = VAlarm.audio(trigger, attach);
 				alarm.setRepeat(4);
-				alarm.setDuration(new Duration.Builder().hours(1).build());
+				alarm.setDuration(Duration.builder().hours(1).build());
 				todo.addAlarm(alarm);
 			}
 

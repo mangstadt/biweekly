@@ -53,7 +53,7 @@ import biweekly.util.Period;
  * freebusy.addValue(onePM, threePM);
  * 
  * Date fourPM = ...
- * Duration oneHour = new Duration.Builder().hours(1).build();
+ * Duration oneHour = Duration.builder().hours(1).build();
  * freeBusy.addValue(fourPM, oneHour);
  * </pre>
  * 

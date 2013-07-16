@@ -78,7 +78,7 @@ public class RecurrenceDatesMarshallerTest {
 		end = c.getTime();
 	}
 
-	private final Duration duration = new Duration.Builder().hours(2).build();
+	private final Duration duration = Duration.builder().hours(2).build();
 
 	@Test
 	public void prepareParameters_periods() {

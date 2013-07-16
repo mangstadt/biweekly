@@ -68,7 +68,7 @@ public class TriggerMarshallerTest {
 
 	private final Duration duration;
 	{
-		duration = new Duration.Builder().hours(2).build();
+		duration = Duration.builder().hours(2).build();
 	}
 
 	@Test
