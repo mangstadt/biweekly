@@ -105,4 +105,8 @@ public class StringUtils {
 	public static interface JoinMapCallback<K, V> {
 		void handle(StringBuilder sb, K key, V value);
 	}
+
+	private StringUtils() {
+		//hide
+	}
 }
