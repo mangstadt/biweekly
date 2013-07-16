@@ -33,9 +33,8 @@ import java.util.regex.Pattern;
  * Represents a period of time (for example, "2 hours and 30 minutes").
  * </p>
  * <p>
- * This class is immutable. Use the {@link Builder Duration.Builder} class to
- * construct a new instance, or the {@link #parse} method to parse a duration
- * string.
+ * This class is immutable. Use the {@link #builder} method to construct a new
+ * instance, or the {@link #parse} method to parse a duration string.
  * </p>
  * 
  * <p>
