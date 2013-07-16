@@ -113,6 +113,8 @@ public abstract class ICalProperty {
 		parameters.removeAll(name);
 	}
 
+	//Note: The following parameter helper methods are package-scoped to prevent them from cluttering up the Javadocs
+
 	/**
 	 * Gets a URI pointing to additional information about the entity
 	 * represented by the property.
@@ -120,7 +122,7 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-14">RFC 5545
 	 * p.14-5</a>
 	 */
-	protected String getAltRepresentation() {
+	String getAltRepresentation() {
 		return parameters.getAltRepresentation();
 	}
 
@@ -131,7 +133,7 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-14">RFC 5545
 	 * p.14-5</a>
 	 */
-	protected void setAltRepresentation(String uri) {
+	void setAltRepresentation(String uri) {
 		parameters.setAltRepresentation(uri);
 	}
 
@@ -141,7 +143,7 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-19">RFC 5545
 	 * p.19-20</a>
 	 */
-	protected String getFormatType() {
+	String getFormatType() {
 		return parameters.getFormatType();
 	}
 
@@ -151,7 +153,7 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-19">RFC 5545
 	 * p.19-20</a>
 	 */
-	protected void setFormatType(String formatType) {
+	void setFormatType(String formatType) {
 		parameters.setFormatType(formatType);
 	}
 
@@ -161,7 +163,7 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
 	 * p.21</a>
 	 */
-	protected String getLanguage() {
+	String getLanguage() {
 		return parameters.getLanguage();
 	}
 
@@ -171,7 +173,7 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
 	 * p.21</a>
 	 */
-	protected void setLanguage(String language) {
+	void setLanguage(String language) {
 		parameters.setLanguage(language);
 	}
 
@@ -185,7 +187,7 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
 	 * p.27-8</a>
 	 */
-	protected String getTimezoneId() {
+	String getTimezoneId() {
 		return parameters.getTimezoneId();
 	}
 
@@ -200,7 +202,7 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
 	 * p.27-8</a>
 	 */
-	protected void setTimezoneId(String timezoneId) {
+	void setTimezoneId(String timezoneId) {
 		parameters.setTimezoneId(timezoneId);
 	}
 
@@ -212,7 +214,7 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
 	 * p.27-8</a>
 	 */
-	protected void setTimezone(VTimezone timezone) {
+	void setTimezone(VTimezone timezone) {
 		if (timezone == null) {
 			setTimezoneId(null);
 			return;
@@ -232,7 +234,7 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
 	 * p.27</a>
 	 */
-	protected String getSentBy() {
+	String getSentBy() {
 		return parameters.getSentBy();
 	}
 
@@ -244,7 +246,7 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
 	 * p.27</a>
 	 */
-	protected void setSentBy(String uri) {
+	void setSentBy(String uri) {
 		parameters.setSentBy(uri);
 	}
 
@@ -254,7 +256,7 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-15">RFC 5545
 	 * p.15-6</a>
 	 */
-	protected String getCommonName() {
+	String getCommonName() {
 		return parameters.getCommonName();
 	}
 
@@ -264,7 +266,7 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-15">RFC 5545
 	 * p.15-6</a>
 	 */
-	protected void setCommonName(String commonName) {
+	void setCommonName(String commonName) {
 		parameters.setCommonName(commonName);
 	}
 
@@ -274,7 +276,7 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545
 	 * p.18</a>
 	 */
-	protected String getDirectoryEntry() {
+	String getDirectoryEntry() {
 		return parameters.getDirectoryEntry();
 	}
 
@@ -284,7 +286,7 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545
 	 * p.18</a>
 	 */
-	protected void setDirectoryEntry(String uri) {
+	void setDirectoryEntry(String uri) {
 		parameters.setDirectoryEntry(uri);
 	}
 
