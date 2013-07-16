@@ -53,6 +53,8 @@ import biweekly.property.marshaller.RawPropertyMarshaller;
  * <p>
  * Writes {@link ICalendar} objects to an iCalendar data stream.
  * </p>
+ * <p>
+ * <b>Example:</b>
  * 
  * <pre>
  * List&lt;ICalendar&gt; icals = ... 
@@ -63,7 +65,10 @@ import biweekly.property.marshaller.RawPropertyMarshaller;
  * }
  * icalWriter.close();
  * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
+ * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalWriter implements Closeable {
 	private final Map<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new HashMap<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>>(0);

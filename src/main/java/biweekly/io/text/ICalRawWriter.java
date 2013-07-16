@@ -38,6 +38,7 @@ import biweekly.parameter.ICalParameters;
 /**
  * Writes data to an iCalendar data stream.
  * @author Michael Angstadt
+ * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalRawWriter implements Closeable {
 	/**

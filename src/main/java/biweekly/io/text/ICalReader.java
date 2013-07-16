@@ -59,6 +59,8 @@ import biweekly.property.marshaller.RawPropertyMarshaller;
  * <p>
  * Parses {@link ICalendar} objects from an iCalendar data stream.
  * </p>
+ * <p>
+ * <b>Example:</b>
  * 
  * <pre>
  * Reader reader = ...
@@ -69,7 +71,10 @@ import biweekly.property.marshaller.RawPropertyMarshaller;
  * }
  * icalReader.close();
  * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
+ * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalReader implements Closeable {
 	private static final ICalendarMarshaller icalMarshaller = (ICalendarMarshaller) ComponentLibrary.getMarshaller(ICalendar.class);

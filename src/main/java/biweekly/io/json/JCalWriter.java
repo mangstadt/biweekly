@@ -53,6 +53,8 @@ import biweekly.property.marshaller.RawPropertyMarshaller;
  * <p>
  * Writes {@link ICalendar} objects to a JSON data stream (jCal).
  * </p>
+ * <p>
+ * <b>Example:</b>
  * 
  * <pre>
  * List&lt;ICalendar&gt; icals = ... 
@@ -63,6 +65,8 @@ import biweekly.property.marshaller.RawPropertyMarshaller;
  * }
  * jcalWriter.close();
  * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05">jCal
  * draft</a>

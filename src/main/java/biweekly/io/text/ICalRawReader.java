@@ -35,6 +35,7 @@ import biweekly.parameter.ICalParameters;
 /**
  * Parses an iCalendar data stream.
  * @author Michael Angstadt
+ * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalRawReader implements Closeable {
 	private static final String NEWLINE = System.getProperty("line.separator");

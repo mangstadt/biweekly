@@ -59,7 +59,23 @@ import com.fasterxml.jackson.core.JsonParseException;
  */
 
 /**
+ * <p>
  * Parses {@link ICalendar} objects from a jCal data stream (JSON).
+ * </p>
+ * <p>
+ * <b>Example:</b>
+ * 
+ * <pre>
+ * Reader reader = ...
+ * JCalReader jcalReader = new JCalReader(reader);
+ * ICalendar ical;
+ * while ((ical = jcalReader.readNext()) != null){
+ *   ...
+ * }
+ * jcalReader.close();
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05">jCal
  * draft</a>
