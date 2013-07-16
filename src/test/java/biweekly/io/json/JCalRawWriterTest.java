@@ -43,6 +43,8 @@ import biweekly.parameter.Value;
  * @author Michael Angstadt
  */
 public class JCalRawWriterTest {
+	private final String NEWLINE = System.getProperty("line.separator");
+
 	@Test
 	public void write_multiple() throws Throwable {
 		StringWriter sw = new StringWriter();
@@ -329,6 +331,54 @@ public class JCalRawWriterTest {
 					"]" +
 				"]" +
 			"]" +
+		"]";
+		//@formatter:on
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void indent() throws Throwable {
+		StringWriter sw = new StringWriter();
+		JCalRawWriter writer = new JCalRawWriter(sw, true);
+		writer.setIndent(true);
+
+		//@formatter:off
+		writer.writeStartComponent("empty");
+		writer.writeEndComponent();
+		writer.writeStartComponent("comp1");
+			writer.writeProperty("prop1", JCalValue.single(Value.TEXT, "value1"));
+			writer.writeProperty("prop2", JCalValue.single(Value.TEXT, "value2"));
+			writer.writeStartComponent("comp2");
+				writer.writeStartComponent("comp3");
+				writer.writeEndComponent();
+				writer.writeStartComponent("comp4");
+					writer.writeProperty("prop3", JCalValue.single(Value.TEXT, "value3"));
+				writer.writeEndComponent();
+			writer.writeEndComponent();
+		writer.writeEndComponent();
+		writer.writeStartComponent("comp4");
+			writer.writeProperty("prop1", JCalValue.single(Value.TEXT, "value1"));
+			writer.writeProperty("prop2", JCalValue.single(Value.TEXT, "value2"));
+		writer.writeEndComponent();
+		//@formatter:on
+		writer.close();
+
+		String actual = sw.toString();
+		//@formatter:off
+		String expected =
+		"[" + NEWLINE +
+		"[" + NEWLINE +
+		"\"empty\",[],[]],[" + NEWLINE +
+		"\"comp1\",[[" + NEWLINE +
+		"  \"prop1\",{},\"text\",\"value1\"],[" + NEWLINE +
+		"  \"prop2\",{},\"text\",\"value2\"]],[[" + NEWLINE +
+		"  \"comp2\",[],[[" + NEWLINE +
+		"    \"comp3\",[],[]],[" + NEWLINE +
+		"    \"comp4\",[[" + NEWLINE +
+		"      \"prop3\",{},\"text\",\"value3\"]],[]]]]]],[" + NEWLINE +
+		"\"comp4\",[[" + NEWLINE +
+		"  \"prop1\",{},\"text\",\"value1\"],[" + NEWLINE +
+		"  \"prop2\",{},\"text\",\"value2\"]],[]]" + NEWLINE +
 		"]";
 		//@formatter:on
 		assertEquals(expected, actual);

@@ -1286,8 +1286,21 @@ public class Biweekly {
 	 * @see Biweekly#writeJson(ICalendar...)
 	 */
 	public static class WriterChainJson extends WriterChain<WriterChainJson> {
+		private boolean indent = false;
+
 		private WriterChainJson(Collection<ICalendar> icals) {
 			super(icals);
+		}
+
+		/**
+		 * Sets whether or not to pretty-print the JSON.
+		 * @param indent true to pretty-print it, false not to (defaults to
+		 * false)
+		 * @return this
+		 */
+		public WriterChainJson indent(boolean indent) {
+			this.indent = indent;
+			return this_;
 		}
 
 		/**
@@ -1357,6 +1370,7 @@ public class Biweekly {
 			for (ICalComponentMarshaller<? extends ICalComponent> marshaller : componentMarshallers) {
 				jcalWriter.registerMarshaller(marshaller);
 			}
+			jcalWriter.setIndent(indent);
 
 			for (ICalendar ical : icals) {
 				jcalWriter.write(ical);

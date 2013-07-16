@@ -79,7 +79,6 @@ public class JCalRawWriter implements Closeable {
 	 * @param indent true to pretty-print it, false not to (defaults to false)
 	 */
 	public void setIndent(boolean indent) {
-		//TODO implement
 		this.indent = indent;
 	}
 
@@ -108,6 +107,7 @@ public class JCalRawWriter implements Closeable {
 		}
 
 		jg.writeStartArray();
+		indent(stack.size() * 2);
 		jg.writeString(componentName);
 		jg.writeStartArray(); //start properties array
 
@@ -171,6 +171,7 @@ public class JCalRawWriter implements Closeable {
 		}
 
 		jg.writeStartArray();
+		indent(stack.size() * 2);
 
 		//write the property name
 		jg.writeString(propertyName);

@@ -54,6 +54,8 @@ import biweekly.util.XmlUtils;
  * @author Michael Angstadt
  */
 public class BiweeklyTest {
+	private final String NEWLINE = System.getProperty("line.separator");
+
 	@Test
 	public void parse_first() {
 		//@formatter:off
@@ -498,6 +500,23 @@ public class BiweeklyTest {
 		//@formatter:on
 
 		String actual = Biweekly.writeJson(ical1, ical2, ical3).go();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeJson_indent() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.setProductId((String) null);
+
+		//@formatter:off
+		String expected =
+		"[" + NEWLINE +
+		"\"vcalendar\",[[" + NEWLINE +
+		"  \"version\",{},\"text\",\"2.0\"]],[]]";
+		//@formatter:on
+
+		String actual = Biweekly.writeJson(ical).indent(true).go();
 
 		assertEquals(expected, actual);
 	}

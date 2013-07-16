@@ -149,6 +149,23 @@ public class JCalWriter implements Closeable {
 	}
 
 	/**
+	 * Gets whether or not the JSON will be pretty-printed.
+	 * @return true if it will be pretty-printed, false if not (defaults to
+	 * false)
+	 */
+	public boolean isIndent() {
+		return writer.isIndent();
+	}
+
+	/**
+	 * Sets whether or not to pretty-print the JSON.
+	 * @param indent true to pretty-print it, false not to (defaults to false)
+	 */
+	public void setIndent(boolean indent) {
+		writer.setIndent(indent);
+	}
+
+	/**
 	 * Writes an iCalendar object to the data stream.
 	 * @param ical the iCalendar object to write
 	 * @throws IllegalArgumentException if the marshaller class for a component

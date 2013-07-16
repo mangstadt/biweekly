@@ -69,6 +69,8 @@ import biweekly.util.Period;
  * @author Michael Angstadt
  */
 public class JCalWriterTest {
+	private final String NEWLINE = System.getProperty("line.separator");
+
 	private static TimeZone defaultTz;
 	private final DateFormat utcFormatter;
 	{
@@ -462,6 +464,35 @@ public class JCalWriterTest {
 				"]" +
 			"]" +
 		"]";
+		//@formatter:on
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void indent() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.setProductId("prodid");
+
+		VEvent event = new VEvent();
+		event.getProperties().clear();
+		event.setSummary("summary");
+		ical.addEvent(event);
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw);
+		writer.setIndent(true);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"[" + NEWLINE +
+		"\"vcalendar\",[[" + NEWLINE +
+		"  \"version\",{},\"text\",\"2.0\"],[" + NEWLINE +
+		"  \"prodid\",{},\"text\",\"prodid\"]],[[" + NEWLINE +
+		"  \"vevent\",[[" + NEWLINE +
+		"    \"summary\",{},\"text\",\"summary\"]],[]]]]";
 		//@formatter:on
 		String actual = sw.toString();
 		assertEquals(expected, actual);
