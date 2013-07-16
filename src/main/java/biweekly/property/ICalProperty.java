@@ -61,7 +61,7 @@ public abstract class ICalProperty {
 	}
 
 	/**
-	 * Gets the first value of the parameter with the given name.
+	 * Gets the first value of a parameter with the given name.
 	 * @param name the parameter name (case insensitive, e.g. "LANGUAGE")
 	 * @return the parameter value or null if not found
 	 */
@@ -70,7 +70,7 @@ public abstract class ICalProperty {
 	}
 
 	/**
-	 * Gets all values of the parameter with the given name.
+	 * Gets all values of a parameter with the given name.
 	 * @param name the parameter name (case insensitive, e.g. "LANGUAGE")
 	 * @return the parameter values
 	 */
@@ -88,7 +88,7 @@ public abstract class ICalProperty {
 	}
 
 	/**
-	 * Sets a parameter's value, replacing all pre-existing values.
+	 * Replaces all existing values of a parameter with the given value.
 	 * @param name the parameter name (case insensitive, e.g. "LANGUAGE")
 	 * @param value the parameter value
 	 */
@@ -97,7 +97,7 @@ public abstract class ICalProperty {
 	}
 
 	/**
-	 * Sets a parameter's values, replacing all pre-existing values.
+	 * Replaces all existing values of a parameter with the given values.
 	 * @param name the parameter name (case insensitive, e.g. "LANGUAGE")
 	 * @param values the parameter values
 	 */
@@ -192,11 +192,11 @@ public abstract class ICalProperty {
 	}
 
 	/**
-	 * Sets the property's timezone in the form of a globally-defined timezone
-	 * (e.g. "America/New_York"). For a list of globally-defined timezones, see
-	 * the <a href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>. Use
-	 * {@link #setTimezone(VTimezone)} to use a timezone that's defined within
-	 * the iCalendar object.
+	 * Sets the timezone identifier. This either (a) references the
+	 * {@link TimezoneId} property of a {@link VTimezone} component, or (b)
+	 * specifies a globally-defined timezone (e.g. "America/New_York"). For a
+	 * list of globally-defined timezones, see the <a
+	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
 	 * @param timezoneId the timezone identifier (e.g. "America/New_York") or
 	 * null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
@@ -210,7 +210,7 @@ public abstract class ICalProperty {
 	 * Sets the property's timezone to a timezone that is defined within the
 	 * iCalendar object. Use {@link #setTimezoneId(String)} to use a
 	 * globally-defined timezone (e.g. "America/New_York").
-	 * @param timezone the timezone component or null to remove
+	 * @param timezone the timezone component to reference or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
 	 * p.27-8</a>
 	 */
@@ -310,7 +310,8 @@ public abstract class ICalProperty {
 
 	/**
 	 * Checks the property for data consistency problems or deviations from the
-	 * spec. Meant to be overridden by child classes.
+	 * spec. Meant to be overridden by child classes that wish to provide
+	 * validation logic.
 	 * @param components the hierarchy of components that the property belongs
 	 * to
 	 * @param warnings the list to add the warnings to
