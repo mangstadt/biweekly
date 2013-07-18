@@ -236,6 +236,10 @@ public class ICalWriter implements Closeable {
 	/**
 	 * Writes an iCalendar object to the data stream.
 	 * @param ical the iCalendar object to write
+	 * @throws IllegalArgumentException if the marshaller class for a component
+	 * or property object cannot be found (only happens when an experimental
+	 * property/component marshaller is not registered with the
+	 * <code>registerMarshaller</code> method.)
 	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	public void write(ICalendar ical) throws IOException {
