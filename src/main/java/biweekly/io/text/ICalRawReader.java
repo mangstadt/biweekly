@@ -120,6 +120,11 @@ public class ICalRawReader implements Closeable {
 			} else if ((ch == ';' || ch == ':') && !inQuotes) {
 				if (propertyName == null) {
 					propertyName = buffer.toString();
+				} else if (curParamName == null) {
+					//value-less parameter (bad iCal syntax)
+					String parameterName = buffer.toString();
+					listener.valuelessParameter(propertyName, parameterName);
+					parameters.put(parameterName, null);
 				} else {
 					//parameter value
 					String paramValue = buffer.toString();
@@ -302,6 +307,13 @@ public class ICalRawReader implements Closeable {
 		 * the data stream
 		 */
 		void invalidLine(String line);
+
+		/**
+		 * Called when a value-less parameter is read.
+		 * @param propertyName the property name (e.g. "VERSION")
+		 * @param parameterName the parameter name (e.g. "FMTTYPE")
+		 */
+		void valuelessParameter(String propertyName, String parameterName);
 	}
 
 	/**

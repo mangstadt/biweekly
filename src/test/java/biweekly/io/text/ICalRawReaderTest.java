@@ -3,6 +3,7 @@ package biweekly.io.text;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -49,7 +50,7 @@ public class ICalRawReaderTest {
 	final String NEWLINE = System.getProperty("line.separator");
 
 	@Test
-	public void basic() throws Exception {
+	public void basic() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -108,12 +109,11 @@ public class ICalRawReaderTest {
 		assertEquals(2, listener.calledBeginComponent);
 		assertEquals(2, listener.calledEndComponent);
 		assertEquals(4, listener.calledReadProperty);
-		assertEquals(0, listener.calledInvalidLine);
 		assertTrue(reader.eof());
 	}
 
 	@Test
-	public void bad_line() throws Exception {
+	public void bad_line() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -156,7 +156,7 @@ public class ICalRawReaderTest {
 	}
 
 	@Test
-	public void stop_and_continue() throws Exception {
+	public void stop_and_continue() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:COMP\r\n" +
@@ -188,9 +188,7 @@ public class ICalRawReaderTest {
 		reader.start(listener);
 
 		assertEquals(1, listener.calledBeginComponent);
-		assertEquals(0, listener.calledEndComponent);
 		assertEquals(2, listener.calledReadProperty);
-		assertEquals(0, listener.calledInvalidLine);
 		assertFalse(reader.eof());
 
 		//////////////////
@@ -210,15 +208,13 @@ public class ICalRawReaderTest {
 		};
 		reader.start(listener);
 
-		assertEquals(0, listener.calledBeginComponent);
 		assertEquals(1, listener.calledEndComponent);
 		assertEquals(1, listener.calledReadProperty);
-		assertEquals(0, listener.calledInvalidLine);
 		assertTrue(reader.eof());
 	}
 
 	@Test
-	public void empty() throws Exception {
+	public void empty() throws Throwable {
 		//@formatter:off
 		String ical =
 		"";
@@ -230,15 +226,11 @@ public class ICalRawReaderTest {
 		};
 		reader.start(listener);
 
-		assertEquals(0, listener.calledBeginComponent);
-		assertEquals(0, listener.calledEndComponent);
-		assertEquals(0, listener.calledReadProperty);
-		assertEquals(0, listener.calledInvalidLine);
 		assertTrue(reader.eof());
 	}
 
 	@Test
-	public void component_case_insensitive() throws Exception {
+	public void component_case_insensitive() throws Throwable {
 		//@formatter:off
 		String ical =
 		"Begin:COMP\r\n" +
@@ -261,13 +253,11 @@ public class ICalRawReaderTest {
 
 		assertEquals(1, listener.calledBeginComponent);
 		assertEquals(1, listener.calledEndComponent);
-		assertEquals(0, listener.calledReadProperty);
-		assertEquals(0, listener.calledInvalidLine);
 		assertTrue(reader.eof());
 	}
 
 	@Test
-	public void preserve_case() throws Exception {
+	public void preserve_case() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:Comp\r\n" +
@@ -304,12 +294,11 @@ public class ICalRawReaderTest {
 		assertEquals(1, listener.calledBeginComponent);
 		assertEquals(1, listener.calledEndComponent);
 		assertEquals(1, listener.calledReadProperty);
-		assertEquals(0, listener.calledInvalidLine);
 		assertTrue(reader.eof());
 	}
 
 	@Test
-	public void parameter() throws Exception {
+	public void parameter() throws Throwable {
 		//@formatter:off
 		String ical =
 		"PROP" +
@@ -322,7 +311,6 @@ public class ICalRawReaderTest {
 		ICalRawReader reader = new ICalRawReader(new StringReader(ical));
 
 		TestListener listener = new TestListener() {
-
 			@Override
 			public void readProperty_(String name, ICalParameters parameters, String value) {
 				assertEquals("PROP", name);
@@ -338,15 +326,46 @@ public class ICalRawReaderTest {
 		};
 		reader.start(listener);
 
-		assertEquals(0, listener.calledBeginComponent);
-		assertEquals(0, listener.calledEndComponent);
 		assertEquals(1, listener.calledReadProperty);
-		assertEquals(0, listener.calledInvalidLine);
 		assertTrue(reader.eof());
 	}
 
 	@Test
-	public void caret_encoding_disabled() throws Exception {
+	public void parameter_valueless() throws Throwable {
+		//@formatter:off
+		String ical =
+		"PROP;PARAM1;PARAM2=two:value";
+		//@formatter:on
+		ICalRawReader reader = new ICalRawReader(new StringReader(ical));
+
+		TestListener listener = new TestListener() {
+			@Override
+			public void readProperty_(String name, ICalParameters parameters, String value) {
+				assertEquals("PROP", name);
+
+				assertEquals(2, parameters.size());
+				assertNull(parameters.first("PARAM1"));
+				assertEquals(Arrays.asList((String) null), parameters.get("PARAM1"));
+				assertEquals(Arrays.asList("two"), parameters.get("PARAM2"));
+
+				assertEquals("value", value);
+			}
+
+			@Override
+			public void valuelessParameter_(String propertyName, String parameterName) {
+				assertEquals("PROP", propertyName);
+				assertEquals("PARAM1", parameterName);
+			}
+		};
+		reader.start(listener);
+
+		assertEquals(1, listener.calledReadProperty);
+		assertEquals(1, listener.calledValuelessParameter);
+		assertTrue(reader.eof());
+	}
+
+	@Test
+	public void caret_encoding_disabled() throws Throwable {
 		//@formatter:off
 		String ical =
 		"PROP;PARAM1=one^'^n^^^two:value\r\n";
@@ -367,16 +386,13 @@ public class ICalRawReaderTest {
 		reader.setCaretDecodingEnabled(false);
 		reader.start(listener);
 
-		assertEquals(0, listener.calledBeginComponent);
-		assertEquals(0, listener.calledEndComponent);
 		assertEquals(1, listener.calledReadProperty);
-		assertEquals(0, listener.calledInvalidLine);
 		assertTrue(reader.eof());
 	}
 
 	abstract class TestListener implements ICalDataStreamListener {
 		int line = 0;
-		int calledBeginComponent = 0, calledReadProperty = 0, calledEndComponent = 0, calledInvalidLine = 0;
+		int calledBeginComponent = 0, calledReadProperty = 0, calledEndComponent = 0, calledInvalidLine = 0, calledValuelessParameter = 0;
 
 		public final void beginComponent(String actual) {
 			line++;
@@ -402,6 +418,11 @@ public class ICalRawReaderTest {
 			invalidLine_(line);
 		}
 
+		public final void valuelessParameter(String propertyName, String parameterName) {
+			calledValuelessParameter++;
+			valuelessParameter_(propertyName, parameterName);
+		}
+
 		protected void beginComponent_(String actual) {
 			fail("\"beginComponent\" should not have been called.");
 		}
@@ -416,6 +437,10 @@ public class ICalRawReaderTest {
 
 		protected void invalidLine_(String line) {
 			fail("\"invalidLine\" should not have been called.");
+		}
+
+		protected void valuelessParameter_(String propertyName, String parameterName) {
+			fail("\"valuelessParameter\" should not have been called.");
 		}
 	}
 }

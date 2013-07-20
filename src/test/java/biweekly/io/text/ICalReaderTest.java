@@ -83,7 +83,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void basic() throws Exception {
+	public void basic() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -119,7 +119,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void read_multiple() throws Exception {
+	public void read_multiple() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -170,7 +170,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void caret_encoding_enabled() throws Exception {
+	public void caret_encoding_enabled() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -194,7 +194,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void caret_encoding_disabled() throws Exception {
+	public void caret_encoding_disabled() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -218,7 +218,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void missing_vcalendar_component_no_components() throws Exception {
+	public void missing_vcalendar_component_no_components() throws Throwable {
 		//@formatter:off
 		String ical =
 		"PRODID:prodid\r\n" +
@@ -236,7 +236,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void missing_vcalendar_component_with_component() throws Exception {
+	public void missing_vcalendar_component_with_component() throws Throwable {
 		//@formatter:off
 		String ical =
 		"PRODID:prodid\r\n" +
@@ -262,7 +262,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void missing_end_property() throws Exception {
+	public void missing_end_property() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -302,7 +302,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void invalid_end_property() throws Exception {
+	public void invalid_end_property() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -330,7 +330,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void experimental_property() throws Exception {
+	public void experimental_property() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -371,7 +371,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void experiemental_property_marshaller() throws Exception {
+	public void experiemental_property_marshaller() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -410,7 +410,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void experimental_component() throws Exception {
+	public void experimental_component() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -436,7 +436,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void experiemental_component_marshaller() throws Exception {
+	public void experiemental_component_marshaller() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -463,7 +463,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void override_property_marshaller() throws Exception {
+	public void override_property_marshaller() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -484,7 +484,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void override_component_marshaller() throws Exception {
+	public void override_component_marshaller() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -515,7 +515,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void invalid_line() throws Exception {
+	public void invalid_line() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -538,7 +538,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void property_warning() throws Exception {
+	public void property_warning() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -564,7 +564,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void warnings_cleared_between_reads() throws Exception {
+	public void warnings_cleared_between_reads() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -610,7 +610,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void skipMeException() throws Exception {
+	public void skipMeException() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -636,7 +636,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void cannotParseException() throws Exception {
+	public void cannotParseException() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -664,7 +664,26 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void outlook2010() throws Exception {
+	public void valueless_parameter() throws Throwable {
+		//@formatter:off
+		String ical =
+		"BEGIN:VCALENDAR\r\n" +
+			"PRODID;PARAM:value\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		ICalReader reader = new ICalReader(new StringReader(ical));
+		ICalendar icalendar = reader.readNext();
+
+		assertEquals("value", icalendar.getProductId().getValue());
+		assertEquals(Arrays.asList((String) null), icalendar.getProductId().getParameters("PARAM"));
+
+		assertWarnings(1, reader.getWarnings());
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void outlook2010() throws Throwable {
 		ICalReader reader = new ICalReader(getClass().getResourceAsStream("outlook-2010.ics"));
 		ICalendar ical = reader.readNext();
 
@@ -794,7 +813,7 @@ public class ICalReaderTest {
 
 			assertEquals(0, event.getComponents().size());
 		}
-		
+
 		assertWarnings(0, ical.validate());
 
 		assertNull(reader.readNext());

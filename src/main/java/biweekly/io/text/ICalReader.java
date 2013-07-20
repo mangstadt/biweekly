@@ -336,6 +336,10 @@ public class ICalReader implements Closeable {
 			addWarning("Skipping malformed line: \"" + line + "\"");
 		}
 
+		public void valuelessParameter(String propertyName, String parameterName) {
+			addWarning("Value-less parameter encountered: " + parameterName, propertyName);
+		}
+
 		private ICalComponent getCurrentComponent() {
 			if (componentStack.isEmpty()) {
 				return null;
