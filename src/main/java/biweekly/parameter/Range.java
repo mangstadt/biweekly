@@ -1,5 +1,7 @@
 package biweekly.parameter;
 
+import java.util.Collection;
+
 import biweekly.property.RecurrenceId;
 
 /*
@@ -66,5 +68,14 @@ public class Range extends EnumParameterValue {
 	 */
 	public static Range get(String value) {
 		return enums.get(value);
+	}
+
+	/**
+	 * Gets all of the parameter values that are defined as static constants in
+	 * this class.
+	 * @return the parameter values
+	 */
+	public static Collection<Range> all() {
+		return enums.all();
 	}
 }

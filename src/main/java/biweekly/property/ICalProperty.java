@@ -303,8 +303,13 @@ public abstract class ICalProperty {
 	 * @return a list of warnings or an empty list if no problems were found
 	 */
 	public final List<String> validate(List<ICalComponent> components) {
+		//validate property value
 		List<String> warnings = new ArrayList<String>(0);
 		validate(components, warnings);
+
+		//validate parameters
+		warnings.addAll(parameters.validate());
+
 		return warnings;
 	}
 

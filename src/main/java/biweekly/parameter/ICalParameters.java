@@ -1,5 +1,6 @@
 package biweekly.parameter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import biweekly.component.VTimezone;
@@ -584,6 +585,70 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 */
 	public void setValue(Value value) {
 		replace(VALUE, (value == null) ? null : value.getValue());
+	}
+
+	/**
+	 * Checks this parameters list for data consistency problems or deviations
+	 * from the spec. These problems will not prevent the iCalendar object from
+	 * being written to a data stream, but may prevent it from being parsed
+	 * correctly by the consuming application.
+	 * @return a list of warnings or an empty list if no problems were found
+	 */
+	public List<String> validate() {
+		List<String> warnings = new ArrayList<String>(0);
+		String message = "%s parameter has a non-standard value (\"%s\").  Standard values are: %s";
+
+		String value = first(RSVP);
+		if (value != null && !value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("false")) {
+			warnings.add(String.format(message, RSVP, value, "[TRUE, FALSE]"));
+		}
+
+		value = first(CUTYPE);
+		if (value != null && CalendarUserType.find(value) == null) {
+			warnings.add(String.format(message, CUTYPE, value, CalendarUserType.all()));
+		}
+
+		value = first(ENCODING);
+		if (value != null && Encoding.find(value) == null) {
+			warnings.add(String.format(message, ENCODING, value, Encoding.all()));
+		}
+
+		value = first(FBTYPE);
+		if (value != null && FreeBusyType.find(value) == null) {
+			warnings.add(String.format(message, FBTYPE, value, FreeBusyType.all()));
+		}
+
+		value = first(PARTSTAT);
+		if (value != null && ParticipationStatus.find(value) == null) {
+			warnings.add(String.format(message, PARTSTAT, value, ParticipationStatus.all()));
+		}
+
+		value = first(RANGE);
+		if (value != null && Range.find(value) == null) {
+			warnings.add(String.format(message, RANGE, value, Range.all()));
+		}
+
+		value = first(RELATED);
+		if (value != null && Related.find(value) == null) {
+			warnings.add(String.format(message, RELATED, value, Related.all()));
+		}
+
+		value = first(RELTYPE);
+		if (value != null && RelationshipType.find(value) == null) {
+			warnings.add(String.format(message, RELTYPE, value, RelationshipType.all()));
+		}
+
+		value = first(ROLE);
+		if (value != null && Role.find(value) == null) {
+			warnings.add(String.format(message, ROLE, value, Role.all()));
+		}
+
+		value = first(VALUE);
+		if (value != null && Value.find(value) == null) {
+			warnings.add(String.format(message, VALUE, value, Value.all()));
+		}
+
+		return warnings;
 	}
 
 	@Override

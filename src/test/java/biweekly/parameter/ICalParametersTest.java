@@ -1,13 +1,12 @@
 package biweekly.parameter;
 
+import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import biweekly.parameter.ICalParameters;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -38,7 +37,7 @@ import biweekly.parameter.ICalParameters;
  * @author Michael Angstadt
  */
 public class ICalParametersTest {
-	ICalParameters params;
+	private ICalParameters params;
 
 	@Before
 	public void before() {
@@ -60,5 +59,56 @@ public class ICalParametersTest {
 		assertTrue(Boolean.TRUE.equals(params.getRsvp()));
 		params.setRsvp(false);
 		assertTrue(Boolean.FALSE.equals(params.getRsvp()));
+	}
+
+	@Test
+	public void validate_empty() {
+		assertWarnings(0, params.validate());
+	}
+
+	@Test
+	public void validate_rsvp() {
+		params.replace(ICalParameters.RSVP, "foo");
+		assertWarnings(1, params.validate());
+
+		params.replace(ICalParameters.RSVP, "true");
+		assertWarnings(0, params.validate());
+
+		params.replace(ICalParameters.RSVP, "false");
+		assertWarnings(0, params.validate());
+
+		params.replace(ICalParameters.RSVP, "TRUE");
+		assertWarnings(0, params.validate());
+
+		params.replace(ICalParameters.RSVP, "FALSE");
+		assertWarnings(0, params.validate());
+	}
+
+	@Test
+	public void validate_bad_values() {
+		params.put(ICalParameters.CUTYPE, "foo");
+		params.put(ICalParameters.FBTYPE, "foo");
+		params.put(ICalParameters.PARTSTAT, "foo");
+		params.put(ICalParameters.RANGE, "foo");
+		params.put(ICalParameters.RELATED, "foo");
+		params.put(ICalParameters.RELTYPE, "foo");
+		params.put(ICalParameters.ROLE, "foo");
+		params.put(ICalParameters.VALUE, "foo");
+
+		assertWarnings(8, params.validate());
+	}
+
+	@Test
+	public void validate_good_values() {
+		params.put(ICalParameters.CUTYPE, CalendarUserType.GROUP.getValue());
+		params.put(ICalParameters.FBTYPE, FreeBusyType.BUSY.getValue());
+		params.put(ICalParameters.PARTSTAT, ParticipationStatus.ACCEPTED.getValue());
+		params.put(ICalParameters.RANGE, Range.THIS_AND_FUTURE.getValue());
+		params.put(ICalParameters.RELATED, Related.END.getValue());
+		params.put(ICalParameters.RELTYPE, RelationshipType.CHILD.getValue());
+		params.put(ICalParameters.ROLE, Role.CHAIR.getValue());
+		params.put(ICalParameters.VALUE, Value.BINARY.getValue());
+
+		assertWarnings(0, params.validate());
 	}
 }

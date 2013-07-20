@@ -1,5 +1,7 @@
 package biweekly.parameter;
 
+import java.util.Collection;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -61,5 +63,14 @@ public class FreeBusyType extends EnumParameterValue {
 	 */
 	public static FreeBusyType get(String value) {
 		return enums.get(value);
+	}
+
+	/**
+	 * Gets all of the parameter values that are defined as static constants in
+	 * this class.
+	 * @return the parameter values
+	 */
+	public static Collection<FreeBusyType> all() {
+		return enums.all();
 	}
 }
