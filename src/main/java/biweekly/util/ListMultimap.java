@@ -46,14 +46,14 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	private final Map<K, List<V>> map;
 
 	/**
-	 * Creates a new multi map.
+	 * Creates an empty multimap.
 	 */
 	public ListMultimap() {
 		map = new LinkedHashMap<K, List<V>>();
 	}
 
 	/**
-	 * Creates a new multi map.
+	 * Creates an empty multimap.
 	 * @param initialCapacity the initial capacity of the underlying map.
 	 */
 	public ListMultimap(int initialCapacity) {
@@ -61,7 +61,7 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	}
 
 	/**
-	 * Copy constructor.
+	 * Creates a copy of an existing multimap.
 	 * @param orig the multimap to copy from
 	 */
 	public ListMultimap(ListMultimap<K, V> orig) {
@@ -167,7 +167,7 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 * Replaces all values with the given value.
 	 * @param key the key
 	 * @param value the value with which to replace all existing values, or null
-	 * will remove all values
+	 * to remove all values
 	 * @return the values that were replaced
 	 */
 	public List<V> replace(K key, V value) {
