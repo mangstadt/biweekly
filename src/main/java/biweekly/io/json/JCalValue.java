@@ -283,6 +283,11 @@ public class JCalValue {
 			List<JsonValue> array = value.getArray();
 			if (array != null) {
 				for (JsonValue element : array) {
+					if (element.isNull()) {
+						values.put(key, null);
+						continue;
+					}
+
 					obj = element.getValue();
 					if (obj != null) {
 						values.put(key, obj.toString());
