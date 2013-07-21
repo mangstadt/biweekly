@@ -12,8 +12,6 @@ import java.util.Set;
 
 import org.junit.Test;
 
-import biweekly.util.ListMultimap;
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
