@@ -45,7 +45,7 @@ import java.util.Date;
  * 
  * //with timezone 
  * Date datetime = ... 
- * DateEnd due = new DateEnd(datetime); 
+ * DateDue due = new DateDue(datetime); 
  * due.setTimezoneId("America/New_York");
  * </pre>
  * 

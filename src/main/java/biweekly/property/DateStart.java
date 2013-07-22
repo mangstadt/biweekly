@@ -53,8 +53,12 @@ import biweekly.util.DateTimeComponents;
  * 
  * //with timezone 
  * Date datetime = ... 
- * DateEnd dtstart = new DateEnd(datetime); 
+ * DateStart dtstart = new DateStart(datetime); 
  * dtstart.setTimezoneId("America/New_York");
+ * 
+ * //raw components 
+ * DateTimeComponents components = new DateTimeComponents(1999, 4, 4, 2, 0, 0, false);
+ * DateStart dtstart = new DateStart(components);
  * </pre>
  * 
  * </p>

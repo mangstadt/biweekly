@@ -33,10 +33,10 @@ package biweekly.component;
  * <b>Examples:</b>
  * 
  * <pre>
- * VTimezone timezone = new VTimezone("Eastern Standard Time");
+ * VTimezone timezone = new VTimezone(&quot;Eastern Standard Time&quot;);
  * DaylightSavingsTime daylight = new DaylightSavingsTime();
- * Date start = ...
- * daylight.setDateStart(start);
+ * DateTimeComponents components = new DateTimeComponents(1999, 4, 4, 2, 0, 0, false);
+ * daylight.setDateStart(components);
  * daylight.setTimezoneOffsetFrom(-5, 0);
  * daylight.setTimezoneOffsetTo(-4, 0);
  * timezone.addDaylightSavingsTime(daylight);

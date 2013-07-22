@@ -34,7 +34,30 @@ import java.util.regex.Pattern;
  */
 
 /**
+ * <p>
  * Contains the raw components of a date-time value.
+ * </p>
+ * <p>
+ * <b>Examples:</b>
+ * 
+ * <pre>
+ * //July 22, 2013 at 17:25
+ * DateTimeComponents components = new DateTimeComponents(2013, 07, 22, 17, 25, 0, false);
+ * 
+ * //parsing a date string (accepts basic and extended formats)
+ * DateTimeComponents components = DateTimeComponents.parse(&quot;20130722T172500&quot;);
+ * 
+ * //converting to date string
+ * DateTimeComponents components = new DateTimeComponents(2013, 07, 22, 17, 25, 0, false);
+ * String str = components.toString(true); //&quot;2013-07-22T17:25:00&quot;
+ * 
+ * //converting to a Date object
+ * DateTimeComponents components = new DateTimeComponents(2013, 07, 22, 17, 25, 0, false);
+ * Date date = components.toDate();
+ * 
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  */
 public class DateTimeComponents {
@@ -47,6 +70,7 @@ public class DateTimeComponents {
 	 * @param dateString the date-time string (e.g. "20130331T020000" or
 	 * "2013-03-31T02:00:00")
 	 * @return the parsed components
+	 * @throws IllegalArgumentException if the date string cannot be parsed
 	 */
 	public static DateTimeComponents parse(String dateString) {
 		Matcher m = regex.matcher(dateString);
@@ -126,7 +150,7 @@ public class DateTimeComponents {
 
 	/**
 	 * Gets the year component.
-	 * @return the year (e.g. "2013)
+	 * @return the year
 	 */
 	public int getYear() {
 		return year;
@@ -174,7 +198,7 @@ public class DateTimeComponents {
 
 	/**
 	 * Gets whether the time is in UTC or not
-	 * @return true if it's in UTC, false if not
+	 * @return true if the time is in UTC, false if not
 	 */
 	public boolean isUtc() {
 		return utc;
@@ -198,9 +222,9 @@ public class DateTimeComponents {
 		NumberFormat nf = new DecimalFormat("00");
 		String dash = extended ? "-" : "";
 		String colon = extended ? ":" : "";
-		String utc = this.utc ? "Z" : "";
+		String z = utc ? "Z" : "";
 
-		return year + dash + nf.format(month) + dash + nf.format(date) + "T" + nf.format(hour) + colon + nf.format(minute) + colon + nf.format(second) + utc;
+		return year + dash + nf.format(month) + dash + nf.format(date) + "T" + nf.format(hour) + colon + nf.format(minute) + colon + nf.format(second) + z;
 	}
 
 	/**

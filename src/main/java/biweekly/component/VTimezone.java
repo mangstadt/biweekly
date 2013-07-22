@@ -41,18 +41,18 @@ import biweekly.property.TimezoneUrl;
  * <b>Examples:</b>
  * 
  * <pre>
- * VTimezone timezone = new VTimezone("Eastern Standard Time");
+ * VTimezone timezone = new VTimezone(&quot;Eastern Standard Time&quot;);
  * 
  * StandardTime standard = new StandardTime();
- * Date startStandard = ...
- * standard.setDateStart(startStandard);
+ * DateTimeComponents componentsStandard = new DateTimeComponents(1998, 10, 25, 2, 0, 0, false);
+ * standard.setDateStart(componentsStandard);
  * standard.setTimezoneOffsetFrom(-4, 0);
  * standard.setTimezoneOffsetTo(-5, 0);
  * timezone.addStandardTime(standard);
  * 
  * DaylightSavingsTime daylight = new DaylightSavingsTime();
- * Date startDaylight = ...
- * daylight.setDateStart(startDaylight);
+ * DateTimeComponents componentsDaylight = new DateTimeComponents(1999, 4, 4, 2, 0, 0, false);
+ * daylight.setDateStart(componentsDaylight);
  * daylight.setTimezoneOffsetFrom(-5, 0);
  * daylight.setTimezoneOffsetTo(-4, 0);
  * timezone.addDaylightSavingsTime(daylight);

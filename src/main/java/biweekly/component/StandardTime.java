@@ -33,10 +33,10 @@ package biweekly.component;
  * <b>Examples:</b>
  * 
  * <pre>
- * VTimezone timezone = new VTimezone("Eastern Standard Time");
+ * VTimezone timezone = new VTimezone(&quot;Eastern Standard Time&quot;);
  * StandardTime standard = new StandardTime();
- * Date start = ...
- * standard.setDateStart(start);
+ * DateTimeComponents components = new DateTimeComponents(1998, 10, 25, 2, 0, 0, false);
+ * standard.setDateStart(components);
  * standard.setTimezoneOffsetFrom(-4, 0);
  * standard.setTimezoneOffsetTo(-5, 0);
  * timezone.addStandardTime(standard);
