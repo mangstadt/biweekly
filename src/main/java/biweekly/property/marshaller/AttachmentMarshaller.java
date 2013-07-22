@@ -2,14 +2,13 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
-import org.apache.commons.codec.binary.Base64;
-
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.Attachment;
+import biweekly.util.Base64;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -62,7 +61,7 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 			return property.getUri();
 		}
 		if (property.getData() != null) {
-			return Base64.encodeBase64String(property.getData());
+			return Base64.encode(property.getData());
 		}
 		return null;
 	}
@@ -73,7 +72,7 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 
 		Attachment attachment = new Attachment(null, (String) null);
 		if (parameters.getValue() == Value.BINARY || parameters.getEncoding() == Encoding.BASE64) {
-			attachment.setData(Base64.decodeBase64(value));
+			attachment.setData(Base64.decode(value));
 		} else {
 			attachment.setUri(value);
 		}
@@ -85,7 +84,7 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 		if (property.getUri() != null) {
 			element.append(Value.URI, property.getUri());
 		} else if (property.getData() != null) {
-			element.append(Value.BINARY, Base64.encodeBase64String(property.getData()));
+			element.append(Value.BINARY, Base64.encode(property.getData()));
 		}
 	}
 
@@ -95,7 +94,7 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 
 		String value = element.first(Value.BINARY);
 		if (value != null) {
-			attachment.setData(Base64.decodeBase64(value));
+			attachment.setData(Base64.decode(value));
 		} else {
 			value = element.first(Value.URI);
 			attachment.setUri(value);
@@ -107,7 +106,7 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	@Override
 	protected JCalValue _writeJson(Attachment property) {
 		if (property.getData() != null) {
-			return JCalValue.single(Value.BINARY, Base64.encodeBase64String(property.getData()));
+			return JCalValue.single(Value.BINARY, Base64.encode(property.getData()));
 		}
 		return JCalValue.single(Value.URI, property.getUri());
 	}
@@ -118,7 +117,7 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 
 		String valueStr = value.getSingleValued();
 		if (value.getDataType() == Value.BINARY) {
-			attachment.setData(Base64.decodeBase64(valueStr));
+			attachment.setData(Base64.decode(valueStr));
 		} else {
 			attachment.setUri(valueStr);
 		}
