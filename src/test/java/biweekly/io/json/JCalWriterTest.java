@@ -1,7 +1,6 @@
 package biweekly.io.json;
 
 import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.buildTimezone;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -12,8 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import biweekly.ICalendar;
@@ -36,6 +33,7 @@ import biweekly.property.RecurrenceRule.DayOfWeek;
 import biweekly.property.RecurrenceRule.Frequency;
 import biweekly.property.Version;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
+import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
 import biweekly.util.Period;
@@ -71,7 +69,6 @@ import biweekly.util.Period;
 public class JCalWriterTest {
 	private final String NEWLINE = System.getProperty("line.separator");
 
-	private static TimeZone defaultTz;
 	private final DateFormat utcFormatter;
 	{
 		utcFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -82,20 +79,7 @@ public class JCalWriterTest {
 		usEasternFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		usEasternFormatter.setTimeZone(TimeZone.getTimeZone("US/Eastern"));
 	}
-	private final DateFormat localFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	private final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-
-	@BeforeClass
-	public static void beforeClass() {
-		//change the default timezone because my timezone is "US/Eastern", which is what the example jCal documents use
-		defaultTz = TimeZone.getDefault();
-		TimeZone.setDefault(buildTimezone(1, 0));
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		TimeZone.setDefault(defaultTz);
-	}
 
 	@Test
 	public void basic() throws Throwable {
@@ -536,7 +520,7 @@ public class JCalWriterTest {
 			usEasternTz.setTimezoneId("US/Eastern");
 			{
 				DaylightSavingsTime daylight = new DaylightSavingsTime();
-				daylight.setDateStart(localFormatter.parse("2000-04-04T02:00:00"));
+				daylight.setDateStart(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false));
 
 				RecurrenceRule rrule = new RecurrenceRule(Frequency.YEARLY);
 				rrule.addByDay(1, DayOfWeek.SUNDAY);
@@ -551,7 +535,7 @@ public class JCalWriterTest {
 			}
 			{
 				StandardTime standard = new StandardTime();
-				standard.setDateStart(localFormatter.parse("2000-10-26T02:00:00"));
+				standard.setDateStart(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false));
 
 				RecurrenceRule rrule = new RecurrenceRule(Frequency.YEARLY);
 				rrule.addByDay(1, DayOfWeek.SUNDAY);

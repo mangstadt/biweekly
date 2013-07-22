@@ -6,7 +6,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
@@ -191,5 +193,30 @@ public class TestUtils {
 		ICalParameters params = new ICalParameters();
 		Element element = xcalPropertyElement(marshaller, innerXml);
 		return marshaller.parseXml(element, params);
+	}
+
+	/**
+	 * Holds a list of test runs for a unit test.
+	 */
+	public static class Tests implements Iterable<Object[]> {
+		private List<Object[]> tests = new ArrayList<Object[]>();
+
+		/**
+		 * Adds a test run.
+		 * @param test the test data
+		 * @return this
+		 */
+		public Tests add(Object... test) {
+			tests.add(test);
+			return this;
+		}
+
+		public Iterator<Object[]> iterator() {
+			return tests.iterator();
+		}
+	}
+
+	private TestUtils() {
+		//hide
 	}
 }

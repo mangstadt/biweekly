@@ -42,6 +42,7 @@ import biweekly.property.RecurrenceRule.DayOfWeek;
 import biweekly.property.RecurrenceRule.Frequency;
 import biweekly.property.Summary;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
+import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.Period;
 
@@ -873,6 +874,7 @@ public class ICalReaderTest {
 				StandardTime standard = timezone.getStandardTimes().get(0);
 				assertEquals(4, standard.getProperties().size());
 				assertDateEquals("19981025T020000", standard.getDateStart().getValue());
+				assertEquals(new DateTimeComponents(1998, 10, 25, 2, 0, 0, false), standard.getDateStart().getRawComponents());
 
 				assertIntEquals(-4, standard.getTimezoneOffsetFrom().getHourOffset());
 				assertIntEquals(0, standard.getTimezoneOffsetFrom().getMinuteOffset());
@@ -888,6 +890,7 @@ public class ICalReaderTest {
 				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
 				assertEquals(4, daylight.getProperties().size());
 				assertDateEquals("19990404T020000", daylight.getDateStart().getValue());
+				assertEquals(new DateTimeComponents(1999, 04, 04, 2, 0, 0, false), daylight.getDateStart().getRawComponents());
 
 				assertIntEquals(-5, daylight.getTimezoneOffsetFrom().getHourOffset());
 				assertIntEquals(0, daylight.getTimezoneOffsetFrom().getMinuteOffset());

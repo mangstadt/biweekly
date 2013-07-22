@@ -5,6 +5,7 @@ import java.util.List;
 
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
+import biweekly.util.DateTimeComponents;
 import biweekly.util.ICalDateFormatter;
 
 /*
@@ -38,13 +39,22 @@ import biweekly.util.ICalDateFormatter;
  */
 public class DateOrDateTimeProperty extends ICalProperty {
 	protected Date value;
+	protected DateTimeComponents rawComponents;
 	protected boolean hasTime;
 	protected boolean localTime;
 
 	/**
 	 * Creates a new property.
-	 * @param value the date
-	 * @param hasTime true if the date has a time component, false if it is
+	 * @param rawComponents the raw components of the date-time value
+	 */
+	public DateOrDateTimeProperty(DateTimeComponents rawComponents) {
+		setRawComponents(rawComponents);
+	}
+
+	/**
+	 * Creates a new property.
+	 * @param value the date-time value
+	 * @param hasTime true if the value has a time component, false if it is
 	 * strictly a date
 	 */
 	public DateOrDateTimeProperty(Date value, boolean hasTime) {
@@ -52,17 +62,17 @@ public class DateOrDateTimeProperty extends ICalProperty {
 	}
 
 	/**
-	 * Gets the date.
-	 * @return the date
+	 * Gets the date-time value.
+	 * @return the date-time value
 	 */
 	public Date getValue() {
 		return value;
 	}
 
 	/**
-	 * Sets the date.
-	 * @param value the date
-	 * @param hasTime true if the date has a time component, false if it is
+	 * Sets the date-time value.
+	 * @param value the date-time value
+	 * @param hasTime true if the value has a time component, false if it is
 	 * strictly a date
 	 */
 	public void setValue(Date value, boolean hasTime) {
@@ -71,8 +81,24 @@ public class DateOrDateTimeProperty extends ICalProperty {
 	}
 
 	/**
-	 * Determines whether the date has a time component.
-	 * @return true if the date has a time component, false if it is strictly a
+	 * Gets the raw components of the date-time value.
+	 * @return the raw components
+	 */
+	public DateTimeComponents getRawComponents() {
+		return rawComponents;
+	}
+
+	/**
+	 * Sets the raw components of the date-time value.
+	 * @param rawComponents the raw components
+	 */
+	public void setRawComponents(DateTimeComponents rawComponents) {
+		this.rawComponents = rawComponents;
+	}
+
+	/**
+	 * Determines whether the date-time value has a time component.
+	 * @return true if the value has a time component, false if it is strictly a
 	 * date
 	 */
 	public boolean hasTime() {
@@ -120,7 +146,7 @@ public class DateOrDateTimeProperty extends ICalProperty {
 
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
-		if (value == null) {
+		if (value == null && components == null) {
 			warnings.add("No value set.");
 		}
 

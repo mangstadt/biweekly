@@ -9,6 +9,7 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.DateOrDateTimeProperty;
+import biweekly.util.DateTimeComponents;
 import biweekly.util.ICalDateFormatter;
 
 /*
@@ -47,17 +48,21 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 
 	@Override
 	protected void _prepareParameters(T property, ICalParameters copy) {
-		Value value = (property.getValue() == null || property.hasTime()) ? null : Value.DATE;
+		Value value = (property.getRawComponents() != null || property.getValue() == null || property.hasTime()) ? null : Value.DATE;
 		copy.setValue(value);
 	}
 
 	@Override
 	protected String _writeText(T property) {
 		Date value = property.getValue();
-		if (value == null) {
+		DateTimeComponents components = property.getRawComponents();
+		if (value == null && components == null) {
 			return "";
 		}
 
+		if (components != null) {
+			return components.toString(false);
+		}
 		return date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).write();
 	}
 
@@ -71,12 +76,20 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 	@Override
 	protected void _writeXml(DateOrDateTimeProperty property, XCalElement element) {
 		Date value = property.getValue();
-		if (value == null) {
+		DateTimeComponents components = property.getRawComponents();
+		if (value == null && components == null) {
 			return;
 		}
 
-		Value dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
-		String dateStr = date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).extended(true).write();
+		Value dataType;
+		String dateStr;
+		if (components != null) {
+			dataType = Value.DATE_TIME;
+			dateStr = components.toString(true);
+		} else {
+			dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
+			dateStr = date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).extended(true).write();
+		}
 		element.append(dataType, dateStr);
 	}
 
@@ -92,12 +105,20 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 	@Override
 	protected JCalValue _writeJson(T property) {
 		Date value = property.getValue();
-		if (value == null) {
+		DateTimeComponents components = property.getRawComponents();
+		if (value == null && components == null) {
 			return JCalValue.single(Value.DATE_TIME, null);
 		}
 
-		Value dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
-		String dateStr = date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).extended(true).write();
+		Value dataType;
+		String dateStr;
+		if (components != null) {
+			dataType = Value.DATE_TIME;
+			dateStr = components.toString(true);
+		} else {
+			dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
+			dateStr = date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).extended(true).write();
+		}
 		return JCalValue.single(dataType, dateStr);
 	}
 
@@ -114,16 +135,27 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 			return newInstance(null, true);
 		}
 
+		Date date;
 		try {
-			Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
-			boolean hasTime = ICalDateFormatter.dateHasTime(value);
-			boolean localTz = !ICalDateFormatter.dateHasTimezone(value) && parameters.getTimezoneId() == null;
-
-			T prop = newInstance(date, hasTime);
-			prop.setLocalTime(localTz);
-			return prop;
+			date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
 		} catch (IllegalArgumentException e) {
-			throw new CannotParseException("Could not parse date value.");
+			throw new CannotParseException("Could not parse date-time value.");
 		}
+
+		DateTimeComponents components;
+		try {
+			components = DateTimeComponents.parse(value);
+		} catch (IllegalArgumentException e) {
+			warnings.add("Could not parse the raw date-time components: " + value);
+			components = null;
+		}
+
+		boolean hasTime = ICalDateFormatter.dateHasTime(value);
+		boolean localTz = !ICalDateFormatter.dateHasTimezone(value) && parameters.getTimezoneId() == null;
+
+		T prop = newInstance(date, hasTime);
+		prop.setRawComponents(components);
+		prop.setLocalTime(localTz);
+		return prop;
 	}
 }

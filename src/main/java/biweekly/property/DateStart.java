@@ -2,6 +2,8 @@ package biweekly.property;
 
 import java.util.Date;
 
+import biweekly.util.DateTimeComponents;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -76,5 +78,13 @@ public class DateStart extends DateOrDateTimeProperty {
 	 */
 	public DateStart(Date startDate, boolean hasTime) {
 		super(startDate, hasTime);
+	}
+
+	/**
+	 * Creates a start date property.
+	 * @param components the raw components of the date-time value
+	 */
+	public DateStart(DateTimeComponents components) {
+		super(components);
 	}
 }

@@ -2,7 +2,6 @@ package biweekly.io.text;
 
 import static biweekly.util.TestUtils.assertRegex;
 import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.buildTimezone;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -12,8 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import biweekly.ICalendar;
@@ -41,6 +38,7 @@ import biweekly.property.Status;
 import biweekly.property.Trigger;
 import biweekly.property.Version;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
+import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
 
@@ -73,7 +71,6 @@ import biweekly.util.IOUtils;
  * @author Michael Angstadt
  */
 public class ICalWriterTest {
-	private static TimeZone defaultTz;
 	private final DateFormat utcFormatter;
 	{
 		utcFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
@@ -85,18 +82,6 @@ public class ICalWriterTest {
 		usEasternFormatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 	}
 	private final DateFormat localFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
-
-	@BeforeClass
-	public static void beforeClass() {
-		//change the default timezone because my timezone is "American/New_York", which is what the example jCal documents use
-		defaultTz = TimeZone.getDefault();
-		TimeZone.setDefault(buildTimezone(1, 0));
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		TimeZone.setDefault(defaultTz);
-	}
 
 	@Test
 	public void basic() throws Exception {
@@ -440,7 +425,7 @@ public class ICalWriterTest {
 			usEasternTz.setTimezoneId("America/New_York");
 			{
 				StandardTime standard = new StandardTime();
-				standard.setDateStart(localFormatter.parse("19981025T020000"));
+				standard.setDateStart(new DateTimeComponents(1998, 10, 25, 2, 0, 0, false));
 				standard.setTimezoneOffsetFrom(-4, 0);
 				standard.setTimezoneOffsetTo(-5, 0);
 				standard.addTimezoneName("EST");
@@ -448,7 +433,7 @@ public class ICalWriterTest {
 			}
 			{
 				DaylightSavingsTime daylight = new DaylightSavingsTime();
-				daylight.setDateStart(localFormatter.parse("19990404T020000"));
+				daylight.setDateStart(new DateTimeComponents(1999, 4, 4, 2, 0, 0, false));
 				daylight.setTimezoneOffsetFrom(-5, 0);
 				daylight.setTimezoneOffsetTo(-4, 0);
 				daylight.addTimezoneName("EDT");

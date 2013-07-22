@@ -20,6 +20,7 @@ import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Value;
 import biweekly.property.DateOrDateTimeProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.util.DateTimeComponents;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -63,6 +64,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 		c.set(Calendar.SECOND, 2);
 		datetime = c.getTime();
 	}
+	private final DateTimeComponents components = new DateTimeComponents(2013, 6, 11, 13, 43, 2, false);
 
 	private final Date date;
 	{
@@ -90,6 +92,15 @@ public class DateOrDateTimePropertyMarshallerTest {
 		ICalParameters params = marshaller.prepareParameters(prop);
 
 		assertEquals(Value.DATE, params.getValue());
+	}
+
+	@Test
+	public void prepareParameters_components() {
+		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(components);
+
+		ICalParameters params = marshaller.prepareParameters(prop);
+
+		assertNull(params.getValue());
 	}
 
 	@Test
@@ -122,6 +133,16 @@ public class DateOrDateTimePropertyMarshallerTest {
 	}
 
 	@Test
+	public void writeText_components() {
+		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(components);
+
+		String actual = marshaller.writeText(prop);
+
+		String expected = "20130611T134302";
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void writeText_null() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(null, true);
 
@@ -138,8 +159,10 @@ public class DateOrDateTimePropertyMarshallerTest {
 
 		Result<DateOrDateTimePropertyImpl> result = marshaller.parseText(value, params);
 
-		assertEquals(datetime, result.getValue().getValue());
-		assertTrue(result.getValue().hasTime());
+		DateOrDateTimePropertyImpl prop = result.getValue();
+		assertEquals(datetime, prop.getValue());
+		assertEquals(new DateTimeComponents(2013, 6, 11, 13, 43, 2, true), prop.getRawComponents());
+		assertTrue(prop.hasTime());
 		assertWarnings(0, result.getWarnings());
 	}
 
@@ -150,8 +173,10 @@ public class DateOrDateTimePropertyMarshallerTest {
 
 		Result<DateOrDateTimePropertyImpl> result = marshaller.parseText(value, params);
 
-		assertEquals(date, result.getValue().getValue());
-		assertFalse(result.getValue().hasTime());
+		DateOrDateTimePropertyImpl prop = result.getValue();
+		assertEquals(date, prop.getValue());
+		assertEquals(new DateTimeComponents(2013, 6, 11, 0, 0, 0, false), prop.getRawComponents());
+		assertFalse(prop.hasTime());
 		assertWarnings(0, result.getWarnings());
 	}
 
@@ -176,6 +201,12 @@ public class DateOrDateTimePropertyMarshallerTest {
 	}
 
 	@Test
+	public void writeXml_components() {
+		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(components);
+		assertWriteXml("<date-time>2013-06-11T13:43:02</date-time>", prop, marshaller);
+	}
+
+	@Test
 	public void writeXml_null() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(null, true);
 		assertWriteXml("", prop, marshaller);
@@ -187,6 +218,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 
 		DateOrDateTimePropertyImpl prop = result.getValue();
 		assertEquals(datetime, prop.getValue());
+		assertEquals(new DateTimeComponents(2013, 6, 11, 13, 43, 2, true), prop.getRawComponents());
 		assertTrue(prop.hasTime());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -197,6 +229,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 
 		DateOrDateTimePropertyImpl prop = result.getValue();
 		assertEquals(date, prop.getValue());
+		assertEquals(new DateTimeComponents(2013, 6, 11, 0, 0, 0, false), prop.getRawComponents());
 		assertFalse(prop.hasTime());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -225,6 +258,15 @@ public class DateOrDateTimePropertyMarshallerTest {
 	}
 
 	@Test
+	public void writeJson_components() {
+		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(components);
+
+		JCalValue actual = marshaller.writeJson(prop);
+		assertEquals(Value.DATE_TIME, actual.getDataType());
+		assertEquals("2013-06-11T13:43:02", actual.getSingleValued());
+	}
+
+	@Test
 	public void writeJson_null() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(null, true);
 
@@ -239,6 +281,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 
 		DateOrDateTimePropertyImpl prop = result.getValue();
 		assertEquals(datetime, prop.getValue());
+		assertEquals(new DateTimeComponents(2013, 6, 11, 13, 43, 2, true), prop.getRawComponents());
 		assertTrue(prop.hasTime());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -249,6 +292,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 
 		DateOrDateTimePropertyImpl prop = result.getValue();
 		assertEquals(date, prop.getValue());
+		assertEquals(new DateTimeComponents(2013, 6, 11, 0, 0, 0, false), prop.getRawComponents());
 		assertFalse(prop.hasTime());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -270,6 +314,10 @@ public class DateOrDateTimePropertyMarshallerTest {
 	}
 
 	private class DateOrDateTimePropertyImpl extends DateOrDateTimeProperty {
+		public DateOrDateTimePropertyImpl(DateTimeComponents component) {
+			super(component);
+		}
+
 		public DateOrDateTimePropertyImpl(Date value, boolean hasTime) {
 			super(value, hasTime);
 		}

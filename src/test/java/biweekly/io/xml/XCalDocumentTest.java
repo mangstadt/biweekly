@@ -4,7 +4,6 @@ import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
 import static biweekly.util.TestUtils.assertDateEquals;
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.buildTimezone;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -24,7 +23,6 @@ import java.util.TimeZone;
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -55,6 +53,7 @@ import biweekly.property.Summary;
 import biweekly.property.Version;
 import biweekly.property.Xml;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
+import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
 import biweekly.util.Period;
@@ -89,8 +88,6 @@ import biweekly.util.XmlUtils;
  * @author Michael Angstadt
  */
 public class XCalDocumentTest {
-	private static TimeZone defaultTz;
-
 	private final DateFormat utcFormatter;
 	{
 		utcFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -101,21 +98,11 @@ public class XCalDocumentTest {
 		usEasternFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		usEasternFormatter.setTimeZone(TimeZone.getTimeZone("US/Eastern"));
 	}
-	private final DateFormat localFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	private final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
 	@BeforeClass
 	public static void beforeClass() {
-		//change the default timezone because my timezone is "US/Eastern", which is what the example jCal documents use
-		defaultTz = TimeZone.getDefault();
-		TimeZone.setDefault(buildTimezone(1, 0));
-
 		XMLUnit.setIgnoreWhitespace(true);
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		TimeZone.setDefault(defaultTz);
 	}
 
 	@Test
@@ -845,6 +832,7 @@ public class XCalDocumentTest {
 				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
 				assertEquals(5, daylight.getProperties().size());
 				assertDateEquals("20000404T020000", daylight.getDateStart().getValue());
+				assertEquals(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false), daylight.getDateStart().getRawComponents());
 
 				RecurrenceRule rrule = daylight.getRecurrenceRule();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
@@ -863,6 +851,7 @@ public class XCalDocumentTest {
 				StandardTime standard = timezone.getStandardTimes().get(0);
 				assertEquals(5, standard.getProperties().size());
 				assertDateEquals("20001026T020000", standard.getDateStart().getValue());
+				assertEquals(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false), standard.getDateStart().getRawComponents());
 
 				RecurrenceRule rrule = standard.getRecurrenceRule();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
@@ -933,7 +922,7 @@ public class XCalDocumentTest {
 			usEasternTz.setTimezoneId("US/Eastern");
 			{
 				DaylightSavingsTime daylight = new DaylightSavingsTime();
-				daylight.setDateStart(localFormatter.parse("2000-04-04T02:00:00"));
+				daylight.setDateStart(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false));
 
 				RecurrenceRule rrule = new RecurrenceRule(Frequency.YEARLY);
 				rrule.addByDay(1, DayOfWeek.SUNDAY);
@@ -948,7 +937,7 @@ public class XCalDocumentTest {
 			}
 			{
 				StandardTime standard = new StandardTime();
-				standard.setDateStart(localFormatter.parse("2000-10-26T02:00:00"));
+				standard.setDateStart(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false));
 
 				RecurrenceRule rrule = new RecurrenceRule(Frequency.YEARLY);
 				rrule.addByDay(-1, DayOfWeek.SUNDAY);
