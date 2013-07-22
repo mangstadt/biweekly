@@ -72,4 +72,8 @@ public class Base64 {
 		}
 		return buffer;
 	}
+
+	private Base64() {
+		//hide
+	}
 }
