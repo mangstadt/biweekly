@@ -339,7 +339,8 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 			if (object != null) {
 				return StringUtils.join(object.getMap(), ";", new JoinMapCallback<String, List<String>>() {
 					public void handle(StringBuilder sb, String key, List<String> value) {
-						sb.append(key).append('=').append(StringUtils.join(value, ","));
+						sb.append(key).append('=');
+						StringUtils.join(value, ",", sb);
 					}
 				});
 			}

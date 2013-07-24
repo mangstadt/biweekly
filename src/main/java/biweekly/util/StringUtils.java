@@ -40,7 +40,19 @@ public class StringUtils {
 	 * @return the final string
 	 */
 	public static <T> String join(Collection<T> collection, String delimiter) {
-		return join(collection, delimiter, new JoinCallback<T>() {
+		StringBuilder sb = new StringBuilder();
+		join(collection, delimiter, sb);
+		return sb.toString();
+	}
+
+	/**
+	 * Joins a collection of values into a delimited list.
+	 * @param collection the collection of values
+	 * @param delimiter the delimiter (e.g. ",")
+	 * @param sb the string builder to append onto
+	 */
+	public static <T> void join(Collection<T> collection, String delimiter, StringBuilder sb) {
+		join(collection, delimiter, sb, new JoinCallback<T>() {
 			public void handle(StringBuilder sb, T value) {
 				sb.append(value);
 			}

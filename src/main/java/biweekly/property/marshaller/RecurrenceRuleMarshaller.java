@@ -60,7 +60,8 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 
 		return StringUtils.join(components.getMap(), ";", new JoinMapCallback<String, List<Object>>() {
 			public void handle(StringBuilder sb, String key, List<Object> values) {
-				sb.append(key).append('=').append(StringUtils.join(values, ","));
+				sb.append(key).append('=');
+				StringUtils.join(values, ",", sb);
 			}
 		});
 	}
