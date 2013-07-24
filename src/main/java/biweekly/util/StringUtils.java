@@ -56,7 +56,18 @@ public class StringUtils {
 	 */
 	public static <T> String join(Collection<T> collection, String delimiter, JoinCallback<T> join) {
 		StringBuilder sb = new StringBuilder();
+		join(collection, delimiter, sb, join);
+		return sb.toString();
+	}
 
+	/**
+	 * Joins a collection of values into a delimited list.
+	 * @param collection the collection of values
+	 * @param delimiter the delimiter (e.g. ",")
+	 * @param sb the string builder to append onto
+	 * @param join callback function to call on every element in the collection
+	 */
+	public static <T> void join(Collection<T> collection, String delimiter, StringBuilder sb, JoinCallback<T> join) {
 		boolean first = true;
 		for (T element : collection) {
 			if (first) {
@@ -66,8 +77,6 @@ public class StringUtils {
 			}
 			join.handle(sb, element);
 		}
-
-		return sb.toString();
 	}
 
 	/**

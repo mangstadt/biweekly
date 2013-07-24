@@ -302,9 +302,9 @@ public class ICalendar extends ICalComponent {
 	 * by being familiar with the iCalendar standard.
 	 * @return a list of warnings or an empty list if no problems were found
 	 */
-	public List<String> validate() {
+	public List<ValidationWarnings> validate() {
 		//TODO make concurrent
-		return validate(new ArrayList<ICalComponent>());
+		return validate(new ArrayList<ICalComponent>(0));
 	}
 
 	@SuppressWarnings("unchecked")

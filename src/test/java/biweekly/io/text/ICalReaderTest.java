@@ -2,6 +2,7 @@ package biweekly.io.text;
 
 import static biweekly.util.TestUtils.assertDateEquals;
 import static biweekly.util.TestUtils.assertIntEquals;
+import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -815,7 +816,7 @@ public class ICalReaderTest {
 			assertEquals(0, event.getComponents().size());
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 
 		assertNull(reader.readNext());
 	}
@@ -846,7 +847,7 @@ public class ICalReaderTest {
 			assertEquals(0, event.getComponents().size());
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 
 		assertNull(reader.readNext());
 	}
@@ -933,7 +934,7 @@ public class ICalReaderTest {
 			assertEquals(0, event.getComponents().size());
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 
 		assertNull(reader.readNext());
 	}
@@ -971,7 +972,7 @@ public class ICalReaderTest {
 			assertEquals(0, event.getComponents().size());
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 
 		assertNull(reader.readNext());
 	}
@@ -1018,7 +1019,7 @@ public class ICalReaderTest {
 			}
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 
 		assertNull(reader.readNext());
 	}
@@ -1047,7 +1048,7 @@ public class ICalReaderTest {
 			assertEquals(0, journal.getComponents().size());
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 
 		assertNull(reader.readNext());
 	}
@@ -1062,8 +1063,8 @@ public class ICalReaderTest {
 		assertEquals("-//RDU Software//NONSGML HandCal//EN", ical.getProductId().getValue());
 
 		assertEquals(1, ical.getComponents().size());
+		VFreeBusy freebusy = ical.getFreeBusies().get(0);
 		{
-			VFreeBusy freebusy = ical.getFreeBusies().get(0);
 			assertEquals(7, freebusy.getProperties().size());
 			assertEquals("mailto:jsmith@example.com", freebusy.getOrganizer().getValue());
 			assertDateEquals("19980313T141711Z", freebusy.getDateStart().getValue());
@@ -1076,8 +1077,8 @@ public class ICalReaderTest {
 			assertEquals(0, freebusy.getComponents().size());
 		}
 
-		//UID and DTSTAMP missing from VFREEBUSY
-		assertWarnings(2, ical.validate());
+		//UID and DTSTAMP are missing from VFREEBUSY
+		assertValidate(ical.validate(), freebusy, freebusy);
 
 		assertNull(reader.readNext());
 	}

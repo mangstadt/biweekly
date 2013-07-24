@@ -1,6 +1,6 @@
 package biweekly;
 
-import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertValidate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -50,10 +50,10 @@ public class ICalendarTest {
 	@Test
 	public void validate() {
 		ICalendar ical = new ICalendar();
-		assertWarnings(1, ical.validate());
+		assertValidate(ical.validate(), ical);
 
 		ical.addExperimentalComponent("X-TEST");
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 	}
 
 	@Test
@@ -61,17 +61,20 @@ public class ICalendarTest {
 		ICalendar ical = new ICalendar();
 
 		TestComponent outter1 = new TestComponent();
-		outter1.addProperty(new TestProperty());
+		TestProperty prop1 = new TestProperty();
+		outter1.addProperty(prop1);
 		TestComponent inner = new TestComponent();
-		inner.addProperty(new TestProperty());
+		TestProperty prop2 = new TestProperty();
+		inner.addProperty(prop2);
 		outter1.addComponent(inner);
 		ical.addComponent(outter1);
 
 		TestComponent outter2 = new TestComponent();
-		outter2.addProperty(new TestProperty());
+		TestProperty prop3 = new TestProperty();
+		outter2.addProperty(prop3);
 		ical.addComponent(outter2);
 
-		assertWarnings(6, ical.validate());
+		assertValidate(ical.validate(), outter1, prop1, inner, prop2, outter2, prop3);
 	}
 
 	private class TestComponent extends ICalComponent {

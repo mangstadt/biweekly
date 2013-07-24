@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import biweekly.ICalendar;
+import biweekly.ValidationWarnings;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.util.ListMultimap;
-import biweekly.util.StringUtils;
-import biweekly.util.StringUtils.JoinCallback;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -337,38 +336,26 @@ public abstract class ICalComponent {
 	 * @see ICalendar#validate
 	 * @return a list of warnings or an empty list if no problems were found
 	 */
-	public final List<String> validate(List<ICalComponent> hierarchy) {
-		List<String> warnings = new ArrayList<String>();
-
-		//build the component path (e.g. "ICalendar > VEvent > VTimezone")
-		String path;
-		if (hierarchy.isEmpty()) {
-			path = getClass().getSimpleName();
-		} else {
-			path = StringUtils.join(hierarchy, " > ", new JoinCallback<ICalComponent>() {
-				public void handle(StringBuilder sb, ICalComponent value) {
-					sb.append(value.getClass().getSimpleName());
-				}
-			}) + " > " + getClass().getSimpleName(); //can't add "this" to "hierarchy" yet
-		}
+	public final List<ValidationWarnings> validate(List<ICalComponent> hierarchy) {
+		List<ValidationWarnings> warnings = new ArrayList<ValidationWarnings>();
 
 		//validate this component
-		List<String> thisWarnings = new ArrayList<String>();
-		validate(hierarchy, thisWarnings);
-		for (String warning : thisWarnings) {
-			warnings.add("[" + path + "]: " + warning);
+		List<String> warningsBuf = new ArrayList<String>(0);
+		validate(hierarchy, warningsBuf);
+		if (!warningsBuf.isEmpty()) {
+			warnings.add(new ValidationWarnings(this, hierarchy, warningsBuf));
 		}
 
-		//add this component to the stack
-		//copy list so other validate() calls aren't effected
+		//add this component to the hierarchy list
+		//copy the list so other validate() calls aren't effected
 		hierarchy = new ArrayList<ICalComponent>(hierarchy);
 		hierarchy.add(this);
 
 		//validate properties
 		for (ICalProperty property : properties.values()) {
 			List<String> propWarnings = property.validate(hierarchy);
-			for (String warning : propWarnings) {
-				warnings.add("[" + path + " > " + property.getClass().getSimpleName() + "]: " + warning);
+			if (!propWarnings.isEmpty()) {
+				warnings.add(new ValidationWarnings(property, hierarchy, propWarnings));
 			}
 		}
 

@@ -2,6 +2,7 @@ package biweekly.io.json;
 
 import static biweekly.util.TestUtils.assertDateEquals;
 import static biweekly.util.TestUtils.assertIntEquals;
+import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -497,7 +498,7 @@ public class JCalReaderTest {
 			assertEquals(0, event.getComponents().size());
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 
 		assertNull(reader.readNext());
 	}
@@ -609,7 +610,7 @@ public class JCalReaderTest {
 			assertEquals(0, event.getComponents().size());
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 
 		assertNull(reader.readNext());
 	}

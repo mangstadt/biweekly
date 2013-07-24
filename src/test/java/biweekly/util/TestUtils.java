@@ -3,13 +3,16 @@ package biweekly.util;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
@@ -20,6 +23,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import biweekly.ValidationWarnings;
+import biweekly.component.ICalComponent;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
@@ -62,6 +67,34 @@ public class TestUtils {
 	 */
 	public static void assertWarnings(int expectedSize, List<String> warnings) {
 		assertEquals(warnings.toString(), expectedSize, warnings.size());
+	}
+
+	/**
+	 * Asserts that a validation warnings list is correct.
+	 * @param warnings the warnings list
+	 * @param expectedPropsAndComps the property and component objects that are
+	 * expected to have warnings. The object should be added multiple times to
+	 * this vararg parameter, depending on how many warnings it is expected to
+	 * have (e.g. 3 times for 3 warnings)
+	 */
+	public static void assertValidate(List<ValidationWarnings> warnings, Object... expectedPropsAndComps) {
+		Counts<Object> expectedCounts = new Counts<Object>();
+		for (Object obj : expectedPropsAndComps) {
+			if (!(obj instanceof ICalProperty) && !(obj instanceof ICalComponent)) {
+				fail("Bad unit test: \"TestUtils.assertValidate()\" only accepts ICalProperty and ICalComponent objects.");
+			}
+			expectedCounts.increment(obj);
+		}
+
+		Counts<Object> actualCounts = new Counts<Object>();
+		for (ValidationWarnings warning : warnings) {
+			for (int i = 0; i < warning.getMessages().size(); i++) {
+				Object obj = (warning.getProperty() == null) ? warning.getComponent() : warning.getProperty();
+				actualCounts.increment(obj);
+			}
+		}
+
+		assertEquals(expectedCounts, actualCounts);
 	}
 
 	/**
@@ -218,5 +251,44 @@ public class TestUtils {
 
 	private TestUtils() {
 		//hide
+	}
+
+	/**
+	 * Keeps a count of how many identical instances of an object there are.
+	 */
+	private static class Counts<T> {
+		private final Map<T, Integer> map = new HashMap<T, Integer>();
+
+		public void increment(T t) {
+			Integer value = getCount(t);
+			map.put(t, value++);
+		}
+
+		public Integer getCount(T t) {
+			Integer value = map.get(t);
+			return (value == null) ? 0 : value;
+		}
+
+		@Override
+		public int hashCode() {
+			return map.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			Counts<?> other = (Counts<?>) obj;
+			return map.equals(other.map);
+		}
+
+		@Override
+		public String toString() {
+			return map.toString();
+		}
 	}
 }

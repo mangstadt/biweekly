@@ -3,6 +3,7 @@ package biweekly.io.xml;
 import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
 import static biweekly.util.TestUtils.assertDateEquals;
 import static biweekly.util.TestUtils.assertIntEquals;
+import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
@@ -778,7 +779,7 @@ public class XCalDocumentTest {
 			assertEquals("4088E990AD89CB3DBB484909", event.getUid().getValue());
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 	}
 
 	@Test
@@ -798,7 +799,7 @@ public class XCalDocumentTest {
 			ical.addEvent(event);
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 		assertExample(ical, "rfc6321-example1.xml");
 	}
 
@@ -905,7 +906,7 @@ public class XCalDocumentTest {
 			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 	}
 
 	@Test
@@ -984,7 +985,7 @@ public class XCalDocumentTest {
 			ical.addEvent(event);
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 		assertExample(ical, "rfc6321-example2.xml");
 	}
 

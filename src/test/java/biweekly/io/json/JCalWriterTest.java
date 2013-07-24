@@ -1,6 +1,6 @@
 package biweekly.io.json;
 
-import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertValidate;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -501,7 +501,7 @@ public class JCalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 		assertExample(ical, "jcal-draft-example1.json");
 	}
 
@@ -582,7 +582,7 @@ public class JCalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 		assertExample(ical, "jcal-draft-example2.json");
 	}
 

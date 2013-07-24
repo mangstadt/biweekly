@@ -1,7 +1,7 @@
 package biweekly.io.text;
 
 import static biweekly.util.TestUtils.assertRegex;
-import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertValidate;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -409,7 +409,7 @@ public class ICalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 		assertExample(ical, "rfc5545-example1.ics");
 	}
 
@@ -464,7 +464,7 @@ public class ICalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 		assertExample(ical, "rfc5545-example2.ics");
 	}
 
@@ -501,7 +501,7 @@ public class ICalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 		assertExample(ical, "rfc5545-example3.ics");
 	}
 
@@ -538,7 +538,7 @@ public class ICalWriterTest {
 			ical.addTodo(todo);
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 		assertExample(ical, "rfc5545-example4.ics");
 	}
 
@@ -561,7 +561,7 @@ public class ICalWriterTest {
 			ical.addJournal(journal);
 		}
 
-		assertWarnings(0, ical.validate());
+		assertValidate(ical.validate());
 		assertExample(ical, "rfc5545-example5.ics");
 	}
 
@@ -571,8 +571,8 @@ public class ICalWriterTest {
 		ical.getProperties().clear();
 		ical.setVersion(Version.v2_0());
 		ical.setProductId("-//RDU Software//NONSGML HandCal//EN");
+		VFreeBusy freebusy = new VFreeBusy();
 		{
-			VFreeBusy freebusy = new VFreeBusy();
 			freebusy.getProperties().clear();
 			freebusy.setOrganizer("jsmith@example.com");
 			freebusy.setDateStart(utcFormatter.parse("19980313T141711"));
@@ -594,7 +594,7 @@ public class ICalWriterTest {
 			ical.addFreeBusy(freebusy);
 		}
 
-		assertWarnings(2, ical.validate()); //UID and DTSTAMP missing
+		assertValidate(ical.validate(), freebusy, freebusy); //UID and DTSTAMP missing
 		assertExample(ical, "rfc5545-example6.ics");
 	}
 
