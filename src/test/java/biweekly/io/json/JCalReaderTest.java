@@ -1,5 +1,6 @@
 package biweekly.io.json;
 
+import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertDateEquals;
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertValidate;
@@ -74,8 +75,6 @@ import biweekly.util.Period;
  * @author Michael Angstadt
  */
 public class JCalReaderTest {
-	private final String NEWLINE = System.getProperty("line.separator");
-
 	@Test
 	public void read_single() throws Throwable {
 		//@formatter:off

@@ -1,5 +1,6 @@
 package biweekly;
 
+import static biweekly.util.StringUtils.NEWLINE;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -39,8 +40,6 @@ import biweekly.util.TestUtils.Tests;
  * @author Michael Angstadt
  */
 public class ValidationWarningsTest {
-	private final String NEWLINE = System.getProperty("line.separator");
-
 	@Test
 	public void toString_() {
 		//@formatter:off

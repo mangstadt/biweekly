@@ -1,6 +1,7 @@
 package biweekly.io.xml;
 
 import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
+import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertDateEquals;
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertValidate;
@@ -736,20 +737,19 @@ public class XCalDocumentTest {
 		XCalDocument xcal = new XCalDocument();
 		xcal.add(ical);
 
-		String newline = System.getProperty("line.separator");
 		String actual = xcal.write(2);
 		//@formatter:off
 		String expected =
-		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" + newline +
-		"<icalendar xmlns=\"" + XCAL_NS + "\">" + newline +
-		"  <vcalendar>" + newline +	
-		"    <properties>" + newline +
-		"      <summary>" + newline +
-		"        <text>summary</text>" + newline +
-		"      </summary>" + newline +
-		"    </properties>" + newline +
-		"  </vcalendar>" + newline +
-		"</icalendar>" + newline;
+		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" + NEWLINE +
+		"<icalendar xmlns=\"" + XCAL_NS + "\">" + NEWLINE +
+		"  <vcalendar>" + NEWLINE +	
+		"    <properties>" + NEWLINE +
+		"      <summary>" + NEWLINE +
+		"        <text>summary</text>" + NEWLINE +
+		"      </summary>" + NEWLINE +
+		"    </properties>" + NEWLINE +
+		"  </vcalendar>" + NEWLINE +
+		"</icalendar>" + NEWLINE;
 		//@formatter:on
 
 		assertEquals(expected, actual);

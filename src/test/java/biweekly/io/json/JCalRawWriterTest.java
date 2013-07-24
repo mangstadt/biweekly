@@ -1,5 +1,6 @@
 package biweekly.io.json;
 
+import static biweekly.util.StringUtils.NEWLINE;
 import static org.junit.Assert.assertEquals;
 
 import java.io.StringWriter;
@@ -43,8 +44,6 @@ import biweekly.parameter.Value;
  * @author Michael Angstadt
  */
 public class JCalRawWriterTest {
-	private final String NEWLINE = System.getProperty("line.separator");
-
 	@Test
 	public void write_multiple() throws Throwable {
 		StringWriter sw = new StringWriter();

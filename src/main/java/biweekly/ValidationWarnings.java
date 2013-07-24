@@ -107,7 +107,7 @@ public class ValidationWarnings {
 	@Override
 	public String toString() {
 		final String prefix = "[" + buildPath() + "]: ";
-		return StringUtils.join(messages, System.getProperty("line.separator"), new JoinCallback<String>() {
+		return StringUtils.join(messages, StringUtils.NEWLINE, new JoinCallback<String>() {
 			public void handle(StringBuilder sb, String message) {
 				sb.append(prefix).append(message);
 			}

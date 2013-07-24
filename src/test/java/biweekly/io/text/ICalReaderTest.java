@@ -1,5 +1,6 @@
 package biweekly.io.text;
 
+import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertDateEquals;
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertValidate;
@@ -76,8 +77,6 @@ import biweekly.util.Period;
  * @author Michael Angstadt
  */
 public class ICalReaderTest {
-	private final String NEWLINE = System.getProperty("line.separator");
-
 	private final DateFormat utcFormatter;
 	{
 		utcFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");

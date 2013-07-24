@@ -1,5 +1,6 @@
 package biweekly;
 
+import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertRegex;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
@@ -54,8 +55,6 @@ import biweekly.util.XmlUtils;
  * @author Michael Angstadt
  */
 public class BiweeklyTest {
-	private final String NEWLINE = System.getProperty("line.separator");
-
 	@Test
 	public void parse_first() {
 		//@formatter:off

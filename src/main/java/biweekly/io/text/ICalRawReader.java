@@ -1,5 +1,7 @@
 package biweekly.io.text;
 
+import static biweekly.util.StringUtils.NEWLINE;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
@@ -38,7 +40,6 @@ import biweekly.parameter.ICalParameters;
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalRawReader implements Closeable {
-	private static final String NEWLINE = System.getProperty("line.separator");
 	private final FoldedLineReader reader;
 	private boolean caretDecodingEnabled = true;
 	private boolean eof = false;

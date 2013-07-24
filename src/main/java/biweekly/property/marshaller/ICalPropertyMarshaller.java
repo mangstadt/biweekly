@@ -58,7 +58,6 @@ import biweekly.util.StringUtils.JoinMapCallback;
  * @author Michael Angstadt
  */
 public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
-	private static final String NEWLINE = System.getProperty("line.separator");
 	protected final Class<T> clazz;
 	protected final String propertyName;
 	protected final QName qname;
@@ -363,7 +362,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 			if (escaped) {
 				if (ch == 'n' || ch == 'N') {
 					//newlines appear as "\n" or "\N" (see RFC 2426 p.7)
-					sb.append(NEWLINE);
+					sb.append(StringUtils.NEWLINE);
 				} else {
 					sb.append(ch);
 				}

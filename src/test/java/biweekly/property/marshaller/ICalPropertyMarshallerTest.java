@@ -1,5 +1,6 @@
 package biweekly.property.marshaller;
 
+import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertWarnings;
 import static biweekly.util.TestUtils.assertWriteXml;
 import static biweekly.util.TestUtils.buildTimezone;
@@ -57,8 +58,6 @@ import biweekly.util.ListMultimap;
  * @author Michael Angstadt
  */
 public class ICalPropertyMarshallerTest {
-	private final String NEWLINE = System.getProperty("line.separator");
-
 	private static TimeZone defaultTz;
 
 	private final Date datetime;

@@ -1,5 +1,6 @@
 package biweekly.io.json;
 
+import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertValidate;
 import static org.junit.Assert.assertEquals;
 
@@ -67,8 +68,6 @@ import biweekly.util.Period;
  * @author Michael Angstadt
  */
 public class JCalWriterTest {
-	private final String NEWLINE = System.getProperty("line.separator");
-
 	private final DateFormat utcFormatter;
 	{
 		utcFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");

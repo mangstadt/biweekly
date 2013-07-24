@@ -1,5 +1,6 @@
 package biweekly.io.json;
 
+import static biweekly.util.StringUtils.NEWLINE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -49,8 +50,6 @@ import com.fasterxml.jackson.core.JsonToken;
  * @author Michael Angstadt
  */
 public class JCalRawReaderTest {
-	private final String NEWLINE = System.getProperty("line.separator");
-
 	@Test
 	public void basic() throws Throwable {
 		//@formatter:off

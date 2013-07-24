@@ -1,5 +1,6 @@
 package biweekly.io.text;
 
+import static biweekly.util.StringUtils.NEWLINE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -47,8 +48,6 @@ import biweekly.parameter.ICalParameters;
  * @author Michael Angstadt
  */
 public class ICalRawReaderTest {
-	final String NEWLINE = System.getProperty("line.separator");
-
 	@Test
 	public void basic() throws Throwable {
 		//@formatter:off

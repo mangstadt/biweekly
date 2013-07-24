@@ -34,6 +34,11 @@ import java.util.Map;
  */
 public class StringUtils {
 	/**
+	 * The local computer's newline character sequence.
+	 */
+	public static final String NEWLINE = System.getProperty("line.separator");
+
+	/**
 	 * Joins a collection of values into a delimited list.
 	 * @param collection the collection of values
 	 * @param delimiter the delimiter (e.g. ",")
