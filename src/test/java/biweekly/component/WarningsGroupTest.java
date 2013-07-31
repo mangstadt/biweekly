@@ -1,4 +1,4 @@
-package biweekly;
+package biweekly.component;
 
 import static biweekly.util.StringUtils.NEWLINE;
 import static org.junit.Assert.assertEquals;
@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import biweekly.component.ICalComponent;
+import biweekly.component.ValidationWarnings.WarningsGroup;
 import biweekly.property.ICalProperty;
 import biweekly.util.TestUtils.Tests;
 
@@ -39,43 +39,43 @@ import biweekly.util.TestUtils.Tests;
 /**
  * @author Michael Angstadt
  */
-public class ValidationWarningsTest {
+public class WarningsGroupTest {
 	@Test
 	public void toString_() {
 		//@formatter:off
 		Tests tests = new Tests();
 		tests.add(
 			"[Grandparent > Parent > TestComponent]: one",
-			new ValidationWarnings(new TestComponent(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList("one"))
+			new WarningsGroup(new TestComponent(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList("one"))
 		);
 		tests.add(
 			"[Grandparent > Parent > TestComponent]: one" + NEWLINE + 
 			"[Grandparent > Parent > TestComponent]: two",
-			new ValidationWarnings(new TestComponent(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList("one", "two"))
+			new WarningsGroup(new TestComponent(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList("one", "two"))
 		);
 		tests.add(
 			"[TestComponent]: one",
-			new ValidationWarnings(new TestComponent(), Arrays.asList(new ICalComponent[0]), Arrays.asList("one"))
+			new WarningsGroup(new TestComponent(), Arrays.asList(new ICalComponent[0]), Arrays.asList("one"))
 		);
 		tests.add(
 			"[Grandparent > Parent > TestProperty]: one",
-			new ValidationWarnings(new TestProperty(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList("one"))
+			new WarningsGroup(new TestProperty(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList("one"))
 		);
 		tests.add(
 			"[Grandparent > Parent > TestProperty]: one" + NEWLINE + 
 			"[Grandparent > Parent > TestProperty]: two",
-			new ValidationWarnings(new TestProperty(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList("one", "two"))
+			new WarningsGroup(new TestProperty(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList("one", "two"))
 		);
 		tests.add(
 			"[TestProperty]: one",
-			new ValidationWarnings(new TestProperty(), Arrays.asList(new ICalComponent[0]), Arrays.asList("one"))
+			new WarningsGroup(new TestProperty(), Arrays.asList(new ICalComponent[0]), Arrays.asList("one"))
 		);
 		//@formatter:on
 
 		for (Object[] test : tests) {
 			String expected = (String) test[0];
-			ValidationWarnings warnings = (ValidationWarnings) test[1];
-			String actual = warnings.toString();
+			WarningsGroup group = (WarningsGroup) test[1];
+			String actual = group.toString();
 
 			assertEquals(expected, actual);
 		}

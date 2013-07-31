@@ -15,6 +15,8 @@ import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
 import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
+import biweekly.component.ValidationWarnings;
+import biweekly.component.ValidationWarnings.WarningsGroup;
 import biweekly.property.CalendarScale;
 import biweekly.property.Method;
 import biweekly.property.ProductId;
@@ -300,11 +302,12 @@ public class ICalendar extends ICalComponent {
 	 * correctly by the consuming application. These problems can largely be
 	 * avoided by reading the Javadocs of the component and property classes, or
 	 * by being familiar with the iCalendar standard.
-	 * @return a list of warnings or an empty list if no problems were found
+	 * @return the validation warnings
 	 */
-	public List<ValidationWarnings> validate() {
+	public ValidationWarnings validate() {
 		//TODO make concurrent
-		return validate(new ArrayList<ICalComponent>(0));
+		List<WarningsGroup> warnings = validate(new ArrayList<ICalComponent>(0));
+		return new ValidationWarnings(warnings);
 	}
 
 	@SuppressWarnings("unchecked")

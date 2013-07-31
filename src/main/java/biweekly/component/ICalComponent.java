@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import biweekly.ICalendar;
-import biweekly.ValidationWarnings;
+import biweekly.component.ValidationWarnings.WarningsGroup;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.util.ListMultimap;
@@ -336,14 +336,14 @@ public abstract class ICalComponent {
 	 * @see ICalendar#validate
 	 * @return a list of warnings or an empty list if no problems were found
 	 */
-	public final List<ValidationWarnings> validate(List<ICalComponent> hierarchy) {
-		List<ValidationWarnings> warnings = new ArrayList<ValidationWarnings>();
+	public final List<WarningsGroup> validate(List<ICalComponent> hierarchy) {
+		List<WarningsGroup> warnings = new ArrayList<WarningsGroup>();
 
 		//validate this component
 		List<String> warningsBuf = new ArrayList<String>(0);
 		validate(hierarchy, warningsBuf);
 		if (!warningsBuf.isEmpty()) {
-			warnings.add(new ValidationWarnings(this, hierarchy, warningsBuf));
+			warnings.add(new WarningsGroup(this, hierarchy, warningsBuf));
 		}
 
 		//add this component to the hierarchy list
@@ -355,7 +355,7 @@ public abstract class ICalComponent {
 		for (ICalProperty property : properties.values()) {
 			List<String> propWarnings = property.validate(hierarchy);
 			if (!propWarnings.isEmpty()) {
-				warnings.add(new ValidationWarnings(property, hierarchy, propWarnings));
+				warnings.add(new WarningsGroup(property, hierarchy, propWarnings));
 			}
 		}
 

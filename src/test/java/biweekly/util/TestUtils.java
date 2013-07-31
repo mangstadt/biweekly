@@ -23,8 +23,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import biweekly.ValidationWarnings;
 import biweekly.component.ICalComponent;
+import biweekly.component.ValidationWarnings;
+import biweekly.component.ValidationWarnings.WarningsGroup;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
@@ -77,7 +78,7 @@ public class TestUtils {
 	 * this vararg parameter, depending on how many warnings it is expected to
 	 * have (e.g. 3 times for 3 warnings)
 	 */
-	public static void assertValidate(List<ValidationWarnings> warnings, Object... expectedPropsAndComps) {
+	public static void assertValidate(ValidationWarnings warnings, Object... expectedPropsAndComps) {
 		Counts<Object> expectedCounts = new Counts<Object>();
 		for (Object obj : expectedPropsAndComps) {
 			if (!(obj instanceof ICalProperty) && !(obj instanceof ICalComponent)) {
@@ -87,14 +88,15 @@ public class TestUtils {
 		}
 
 		Counts<Object> actualCounts = new Counts<Object>();
-		for (ValidationWarnings warning : warnings) {
+		for (WarningsGroup warning : warnings) {
+			assertTrue(warning.getMessages().size() > 0);
 			for (int i = 0; i < warning.getMessages().size(); i++) {
 				Object obj = (warning.getProperty() == null) ? warning.getComponent() : warning.getProperty();
 				actualCounts.increment(obj);
 			}
 		}
 
-		assertEquals(expectedCounts, actualCounts);
+		assertEquals(warnings.toString(), expectedCounts, actualCounts);
 	}
 
 	/**
