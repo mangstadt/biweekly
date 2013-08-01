@@ -453,7 +453,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		 * Performs the split operation.
 		 * @return the split string
 		 */
-		public String[] split() {
+		public List<String> split() {
 			//from: http://stackoverflow.com/q/820172">http://stackoverflow.com/q/820172
 			String split[] = string.split("\\s*(?<!\\\\)" + Pattern.quote(delimiter) + "\\s*", -1);
 
@@ -469,8 +469,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 
 				list.add(s);
 			}
-
-			return list.toArray(new String[0]);
+			return list;
 		}
 	}
 
@@ -479,7 +478,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @param str the string to parse (e.g. "one,two,th\,ree")
 	 * @return the parsed values
 	 */
-	protected static String[] parseList(String str) {
+	protected static List<String> parseList(String str) {
 		return split(str, ",").removeEmpties(true).unescape(true).split();
 	}
 
@@ -488,13 +487,12 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @param str the string to parse (e.g. "one;two,three;four")
 	 * @return the parsed values
 	 */
-	protected static String[][] parseComponent(String str) {
-		String split[] = split(str, ";").split();
-		String ret[][] = new String[split.length][];
-		int i = 0;
+	protected static List<List<String>> parseComponent(String str) {
+		List<String> split = split(str, ";").split();
+		List<List<String>> ret = new ArrayList<List<String>>(split.size());
 		for (String s : split) {
-			String split2[] = parseList(s);
-			ret[i++] = split2;
+			List<String> split2 = parseList(s);
+			ret.add(split2);
 		}
 		return ret;
 	}

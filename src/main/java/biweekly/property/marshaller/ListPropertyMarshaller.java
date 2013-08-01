@@ -1,6 +1,5 @@
 package biweekly.property.marshaller;
 
-import java.util.Arrays;
 import java.util.List;
 
 import biweekly.io.json.JCalValue;
@@ -64,7 +63,7 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 
 	@Override
 	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
-		return parse(Arrays.asList(parseList(value)), parameters, warnings);
+		return parse(parseList(value), parameters, warnings);
 	}
 
 	@Override

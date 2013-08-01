@@ -58,14 +58,14 @@ public class VersionMarshaller extends ICalPropertyMarshaller<Version> {
 
 	@Override
 	protected Version _parseText(String value, ICalParameters parameters, List<String> warnings) {
-		String split[] = split(value, ";").unescape(true).split();
+		List<String> split = split(value, ";").unescape(true).split();
 
 		String min = null, max = null;
-		if (split.length == 1) {
-			max = split[0];
+		if (split.size() == 1) {
+			max = split.get(0);
 		} else {
-			min = split[0];
-			max = split[1];
+			min = split.get(0);
+			max = split.get(1);
 		}
 		return new Version(min, max);
 	}

@@ -1,7 +1,6 @@
 package biweekly.property.marshaller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -101,7 +100,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 			dataType = Value.DATE_TIME;
 		}
 
-		return parse(Arrays.asList(parseList(value)), dataType, parameters, warnings);
+		return parse(parseList(value), dataType, parameters, warnings);
 	}
 
 	@Override

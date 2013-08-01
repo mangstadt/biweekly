@@ -1,7 +1,6 @@
 package biweekly.property.marshaller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -72,8 +71,8 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 
 	@Override
 	protected RequestStatus _parseText(String value, ICalParameters parameters, List<String> warnings) {
-		String split[] = split(value, ";").unescape(true).split();
-		return parse(Arrays.asList(split));
+		List<String> split = split(value, ";").unescape(true).split();
+		return parse(split);
 	}
 
 	@Override

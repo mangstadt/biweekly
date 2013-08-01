@@ -5,7 +5,6 @@ import static biweekly.util.TestUtils.assertWarnings;
 import static biweekly.util.TestUtils.assertWriteXml;
 import static biweekly.util.TestUtils.buildTimezone;
 import static biweekly.util.TestUtils.parseXCalProperty;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -104,23 +103,23 @@ public class ICalPropertyMarshallerTest {
 
 	@Test
 	public void split() {
-		String[] actual, expected;
+		List<String> actual, expected;
 
 		actual = ICalPropertyMarshaller.split("Doe;John;Joh\\,\\;nny;;Sr.,III", ";").split();
-		expected = new String[] { "Doe", "John", "Joh\\,\\;nny", "", "Sr.,III" };
-		assertArrayEquals(expected, actual);
+		expected = Arrays.asList("Doe", "John", "Joh\\,\\;nny", "", "Sr.,III");
+		assertEquals(expected, actual);
 
 		actual = ICalPropertyMarshaller.split("Doe;John;Joh\\,\\;nny;;Sr.,III", ";").removeEmpties(true).split();
-		expected = new String[] { "Doe", "John", "Joh\\,\\;nny", "Sr.,III" };
-		assertArrayEquals(expected, actual);
+		expected = Arrays.asList("Doe", "John", "Joh\\,\\;nny", "Sr.,III");
+		assertEquals(expected, actual);
 
 		actual = ICalPropertyMarshaller.split("Doe;John;Joh\\,\\;nny;;Sr.,III", ";").unescape(true).split();
-		expected = new String[] { "Doe", "John", "Joh,;nny", "", "Sr.,III" };
-		assertArrayEquals(expected, actual);
+		expected = Arrays.asList("Doe", "John", "Joh,;nny", "", "Sr.,III");
+		assertEquals(expected, actual);
 
 		actual = ICalPropertyMarshaller.split("Doe;John;Joh\\,\\;nny;;Sr.,III", ";").removeEmpties(true).unescape(true).split();
-		expected = new String[] { "Doe", "John", "Joh,;nny", "Sr.,III" };
-		assertArrayEquals(expected, actual);
+		expected = Arrays.asList("Doe", "John", "Joh,;nny", "Sr.,III");
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -288,24 +287,24 @@ public class ICalPropertyMarshallerTest {
 
 	@Test
 	public void parseList() {
-		String[] actual = ICalPropertyMarshaller.parseList("one , two,three\\,four");
-		String[] expected = new String[] { "one", "two", "three,four" };
-		assertArrayEquals(expected, actual);
+		List<String> actual = ICalPropertyMarshaller.parseList("one , two,three\\,four");
+		List<String> expected = Arrays.asList("one", "two", "three,four");
+		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void parseComponents() {
-		String[][] actual = ICalPropertyMarshaller.parseComponent("one ; two,three\\,four;; ;five\\;six");
+		List<List<String>> actual = ICalPropertyMarshaller.parseComponent("one ; two,three\\,four;; ;five\\;six");
 		//@formatter:off
-		String[][] expected = new String[][] {
-			new String[]{"one"},
-			new String[]{"two", "three,four"},
-			new String[]{},
-			new String[]{},
-			new String[]{"five;six"}
-		};
+		List<List<?>> expected = Arrays.<List<?>>asList(
+			Arrays.asList("one"),
+			Arrays.asList("two", "three,four"),
+			Arrays.asList(),
+			Arrays.asList(),
+			Arrays.asList("five;six")
+		);
 		//@formatter:on
-		assertArrayEquals(expected, actual);
+		assertEquals(expected, actual);
 	}
 
 	@Test

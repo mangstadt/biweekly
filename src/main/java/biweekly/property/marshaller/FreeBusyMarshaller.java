@@ -1,7 +1,6 @@
 package biweekly.property.marshaller;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -77,8 +76,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 
 	@Override
 	protected FreeBusy _parseText(String value, ICalParameters parameters, List<String> warnings) {
-		String periodStrs[] = parseList(value);
-		return parse(Arrays.asList(periodStrs), parameters, warnings);
+		return parse(parseList(value), parameters, warnings);
 	}
 
 	@Override
