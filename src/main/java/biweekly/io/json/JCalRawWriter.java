@@ -49,10 +49,10 @@ import com.fasterxml.jackson.core.JsonGenerator.Feature;
  */
 public class JCalRawWriter implements Closeable {
 	private final Writer writer;
-	private JsonGenerator jg;
-	private boolean wrapInArray;
-	private boolean indent = false;
+	private final boolean wrapInArray;
 	private final LinkedList<Info> stack = new LinkedList<Info>();
+	private JsonGenerator jg;
+	private boolean indent = false;
 	private boolean componentEnded = false;
 
 	/**
