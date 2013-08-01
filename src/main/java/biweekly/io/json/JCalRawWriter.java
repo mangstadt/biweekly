@@ -322,7 +322,7 @@ public class JCalRawWriter implements Closeable {
 		}
 	}
 
-	private class Info {
+	private static class Info {
 		public boolean wroteEndPropertiesArray = false;
 		public boolean wroteStartSubComponentsArray = false;
 	}
