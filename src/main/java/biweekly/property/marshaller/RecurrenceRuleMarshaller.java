@@ -159,10 +159,6 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 		RecurrenceRule property = new RecurrenceRule(null);
 
 		ListMultimap<String, String> object = value.getObject();
-		if (object == null) {
-			return property;
-		}
-
 		parseFreq(object.first("freq"), property, warnings);
 		parseUntil(object.first("until"), property, warnings);
 		parseCount(object.first("count"), property, warnings);
@@ -182,95 +178,108 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 	}
 
 	private void parseFreq(String value, RecurrenceRule property, List<String> warnings) {
-		if (value != null) {
-			try {
-				property.setFrequency(Frequency.valueOf(value.toUpperCase()));
-			} catch (IllegalArgumentException e) {
-				warnings.add("Invalid frequency value: " + value);
-			}
+		if (value == null) {
+			return;
+		}
+
+		try {
+			property.setFrequency(Frequency.valueOf(value.toUpperCase()));
+		} catch (IllegalArgumentException e) {
+			warnings.add("Invalid frequency value: " + value);
 		}
 	}
 
 	private void parseUntil(String value, RecurrenceRule property, List<String> warnings) {
-		if (value != null) {
-			try {
-				Date date = date(value).parse();
-				boolean hasTime = ICalDateFormatter.dateHasTime(value);
-				property.setUntil(date, hasTime);
-			} catch (IllegalArgumentException e) {
-				warnings.add("Could not parse UNTIL date: " + value);
-			}
+		if (value == null) {
+			return;
+		}
+
+		try {
+			Date date = date(value).parse();
+			boolean hasTime = ICalDateFormatter.dateHasTime(value);
+			property.setUntil(date, hasTime);
+		} catch (IllegalArgumentException e) {
+			warnings.add("Could not parse UNTIL date: " + value);
 		}
 	}
 
 	private void parseCount(String value, RecurrenceRule property, List<String> warnings) {
-		if (value != null) {
-			try {
-				property.setCount(Integer.valueOf(value));
-			} catch (NumberFormatException e) {
-				warnings.add("Could not parse COUNT integer: " + value);
-			}
+		if (value == null) {
+			return;
+		}
+
+		try {
+			property.setCount(Integer.valueOf(value));
+		} catch (NumberFormatException e) {
+			warnings.add("Could not parse COUNT integer: " + value);
 		}
 	}
 
 	private void parseInterval(String value, RecurrenceRule property, List<String> warnings) {
-		if (value != null) {
-			try {
-				property.setInterval(Integer.valueOf(value));
-			} catch (NumberFormatException e) {
-				warnings.add("Could not parse INTERVAL integer: " + value);
-			}
+		if (value == null) {
+			return;
+		}
+
+		try {
+			property.setInterval(Integer.valueOf(value));
+		} catch (NumberFormatException e) {
+			warnings.add("Could not parse INTERVAL integer: " + value);
 		}
 	}
 
 	private void parseBySecond(List<String> values, RecurrenceRule property, List<String> warnings) {
-		if (!values.isEmpty()) {
-			property.setBySecond(toIntegerList("BYSECOND", values, warnings));
+		if (values.isEmpty()) {
+			return;
 		}
+		property.setBySecond(toIntegerList("BYSECOND", values, warnings));
 	}
 
 	private void parseByMinute(List<String> values, RecurrenceRule property, List<String> warnings) {
-		if (!values.isEmpty()) {
-			property.setByMinute(toIntegerList("BYMINUTE", values, warnings));
+		if (values.isEmpty()) {
+			return;
 		}
+		property.setByMinute(toIntegerList("BYMINUTE", values, warnings));
 	}
 
 	private void parseByHour(List<String> values, RecurrenceRule property, List<String> warnings) {
-		if (!values.isEmpty()) {
-			property.setByHour(toIntegerList("BYHOUR", values, warnings));
+		if (values.isEmpty()) {
+			return;
 		}
-
+		property.setByHour(toIntegerList("BYHOUR", values, warnings));
 	}
 
 	private void parseByDay(List<String> values, RecurrenceRule property, List<String> warnings) {
-		if (!values.isEmpty()) {
-			Pattern p = Pattern.compile("^([-+]?\\d+)?(.*)$");
-			for (String v : values) {
-				Matcher m = p.matcher(v);
-				if (m.find()) {
-					String prefixStr = m.group(1);
-					String dayStr = m.group(2);
+		if (values.isEmpty()) {
+			return;
+		}
 
-					DayOfWeek day = DayOfWeek.valueOfAbbr(dayStr);
-					if (day == null) {
-						warnings.add("Ignoring invalid day string: " + dayStr);
-						continue;
-					}
+		Pattern p = Pattern.compile("^([-+]?\\d+)?(.*)$");
+		for (String v : values) {
+			Matcher m = p.matcher(v);
+			if (m.find()) {
+				String prefixStr = m.group(1);
+				String dayStr = m.group(2);
 
-					Integer prefix = (prefixStr == null) ? null : Integer.valueOf(prefixStr);
-					property.addByDay(prefix, day);
-				} else {
-					//should never reach here due to nature of regular expression
-					warnings.add("Problem parsing BYDAY value: " + v);
+				DayOfWeek day = DayOfWeek.valueOfAbbr(dayStr);
+				if (day == null) {
+					warnings.add("Ignoring invalid day string: " + dayStr);
+					continue;
 				}
+
+				Integer prefix = (prefixStr == null) ? null : Integer.valueOf(prefixStr);
+				property.addByDay(prefix, day);
+			} else {
+				//should never reach here due to nature of regular expression
+				warnings.add("Problem parsing BYDAY value: " + v);
 			}
 		}
 	}
 
 	private void parseByMonthDay(List<String> values, RecurrenceRule property, List<String> warnings) {
-		if (!values.isEmpty()) {
-			property.setByMonthDay(toIntegerList("BYMONTHDAY", values, warnings));
+		if (values.isEmpty()) {
+			return;
 		}
+		property.setByMonthDay(toIntegerList("BYMONTHDAY", values, warnings));
 	}
 
 	private void parseByYearDay(List<String> values, RecurrenceRule property, List<String> warnings) {
@@ -280,31 +289,36 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 	}
 
 	private void parseByWeekNo(List<String> values, RecurrenceRule property, List<String> warnings) {
-		if (!values.isEmpty()) {
-			property.setByWeekNo(toIntegerList("BYWEEKNO", values, warnings));
+		if (values.isEmpty()) {
+			return;
 		}
+		property.setByWeekNo(toIntegerList("BYWEEKNO", values, warnings));
 	}
 
 	private void parseByMonth(List<String> values, RecurrenceRule property, List<String> warnings) {
-		if (!values.isEmpty()) {
-			property.setByMonth(toIntegerList("BYMONTH", values, warnings));
+		if (values.isEmpty()) {
+			return;
 		}
+		property.setByMonth(toIntegerList("BYMONTH", values, warnings));
 	}
 
 	private void parseBySetPos(List<String> values, RecurrenceRule property, List<String> warnings) {
-		if (!values.isEmpty()) {
-			property.setBySetPos(toIntegerList("BYSETPOS", values, warnings));
+		if (values.isEmpty()) {
+			return;
 		}
+		property.setBySetPos(toIntegerList("BYSETPOS", values, warnings));
 	}
 
 	private void parseWkst(String value, RecurrenceRule property, List<String> warnings) {
-		if (value != null) {
-			DayOfWeek day = DayOfWeek.valueOfAbbr(value);
-			if (day == null) {
-				warnings.add("Invalid day string: " + value);
-			} else {
-				property.setWorkweekStarts(day);
-			}
+		if (value == null) {
+			return;
+		}
+
+		DayOfWeek day = DayOfWeek.valueOfAbbr(value);
+		if (day == null) {
+			warnings.add("Invalid day string: " + value);
+		} else {
+			property.setWorkweekStarts(day);
 		}
 	}
 
