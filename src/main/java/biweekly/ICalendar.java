@@ -176,7 +176,7 @@ public class ICalendar extends ICalComponent {
 	 * p.76-7</a>
 	 */
 	public void setCalendarScale(CalendarScale calendarScale) {
-		setProperty(calendarScale);
+		setProperty(CalendarScale.class, calendarScale);
 	}
 
 	/**
@@ -198,7 +198,7 @@ public class ICalendar extends ICalComponent {
 	 * p.77-8</a>
 	 */
 	public void setMethod(Method method) {
-		setProperty(method);
+		setProperty(Method.class, method);
 	}
 
 	/**
