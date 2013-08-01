@@ -1081,6 +1081,33 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
+	public void no_ical() throws Throwable {
+		//@formatter:off
+		String json =
+		"{" +
+			"\"foo\": \"bar\"" +
+		"}";
+		//@formatter:on
+
+		JCalRawReader reader = new JCalRawReader(new StringReader(json));
+
+		TestListener listener = new TestListener() {
+			@Override
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+				//empty
+			}
+
+			@Override
+			protected void readComponent_(List<String> parentHierarchy, String name) {
+				//empty
+			}
+		};
+		reader.readNext(listener);
+		assertEquals(0, listener.calledReadProperty);
+		assertEquals(0, listener.calledReadComponent);
+	}
+
+	@Test
 	public void parameters() throws Throwable {
 		//@formatter:off
 		String json =
