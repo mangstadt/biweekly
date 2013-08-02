@@ -1,5 +1,8 @@
 package biweekly.property;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -46,8 +49,7 @@ package biweekly.property;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-92">RFC 5545 p.92-3</a>
  */
-public class Status extends TextProperty {
-	//TODO create separate classes for each component?
+public class Status extends EnumProperty {
 	private static final String TENTATIVE = "TENTATIVE";
 	private static final String CONFIRMED = "CONFIRMED";
 	private static final String CANCELLED = "CANCELLED";
@@ -202,7 +204,8 @@ public class Status extends TextProperty {
 		return new Status(status);
 	}
 
-	private boolean is(String status) {
-		return status.equalsIgnoreCase(value);
+	@Override
+	protected Collection<String> getStandardValues() {
+		return Arrays.asList(TENTATIVE, CONFIRMED, CANCELLED, NEEDS_ACTION, COMPLETED, IN_PROGRESS, DRAFT, FINAL);
 	}
 }

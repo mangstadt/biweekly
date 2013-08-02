@@ -1,5 +1,8 @@
 package biweekly.property;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -46,7 +49,7 @@ package biweekly.property;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-82">RFC 5545 p.82-3</a>
  */
-public class Classification extends TextProperty {
+public class Classification extends EnumProperty {
 	private static final String PUBLIC = "PUBLIC";
 	private static final String PRIVATE = "PRIVATE";
 	private static final String CONFIDENTIAL = "CONFIDENTIAL";
@@ -112,7 +115,8 @@ public class Classification extends TextProperty {
 		return new Classification(classification);
 	}
 
-	private boolean is(String classification) {
-		return classification.equalsIgnoreCase(value);
+	@Override
+	protected Collection<String> getStandardValues() {
+		return Arrays.asList(PUBLIC, PRIVATE, CONFIDENTIAL);
 	}
 }

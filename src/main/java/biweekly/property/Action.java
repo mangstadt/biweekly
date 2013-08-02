@@ -1,5 +1,8 @@
 package biweekly.property;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -47,7 +50,7 @@ package biweekly.property;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-132">RFC 5545
  * p.132-3</a>
  */
-public class Action extends TextProperty {
+public class Action extends EnumProperty {
 	private static final String AUDIO = "AUDIO";
 	private static final String DISPLAY = "DISPLAY";
 	private static final String EMAIL = "EMAIL";
@@ -114,7 +117,8 @@ public class Action extends TextProperty {
 		return new Action(value);
 	}
 
-	private boolean is(String value) {
-		return value.equalsIgnoreCase(this.value);
+	@Override
+	protected Collection<String> getStandardValues() {
+		return Arrays.asList(AUDIO, DISPLAY, EMAIL);
 	}
 }

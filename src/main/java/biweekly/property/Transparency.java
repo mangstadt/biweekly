@@ -1,5 +1,8 @@
 package biweekly.property;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -53,7 +56,7 @@ package biweekly.property;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-101">RFC 5545
  * p.101-2</a>
  */
-public class Transparency extends TextProperty {
+public class Transparency extends EnumProperty {
 	private static final String OPAQUE = "OPAQUE";
 	private static final String TRANSPARENT = "TRANSPARENT";
 
@@ -103,7 +106,8 @@ public class Transparency extends TextProperty {
 		return new Transparency(value);
 	}
 
-	private boolean is(String value) {
-		return value.equalsIgnoreCase(this.value);
+	@Override
+	protected Collection<String> getStandardValues() {
+		return Arrays.asList(OPAQUE, TRANSPARENT);
 	}
 }

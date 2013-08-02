@@ -1,7 +1,9 @@
 package biweekly.property;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+
+import biweekly.component.ICalComponent;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -29,57 +31,49 @@ import java.util.Collection;
  */
 
 /**
- * <p>
- * Specifies the calendar system that this iCalendar object uses. If none is
- * specified, then the calendar is assumed to be in "gregorian" format.
- * </p>
- * <p>
- * <b>Examples:</b>
- * 
- * <pre>
- * //creating a new property
- * CalendarScale calscale = CalendarScale.gregorian();
- * 
- * if (calscale.isGregorian()) {
- * 	//its value is &quot;GREGORIAN&quot;
- * }
- * </pre>
- * 
- * </p>
+ * Parent class for properties that have a defined set of acceptable values (for
+ * example, {@link Action}).
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-76">RFC 5545 p.76-7</a>
  */
-public class CalendarScale extends EnumProperty {
-	private static final String GREGORIAN = "GREGORIAN";
-
+public abstract class EnumProperty extends TextProperty {
 	/**
-	 * Creates a new calendar scale property. Use of this constructor is
-	 * discouraged and may put the property in an invalid state. Use one of the
-	 * static factory methods instead.
-	 * @param value the value of the property (e.g. "gregorian")
+	 * Creates an enum property.
+	 * @param value the property value
 	 */
-	public CalendarScale(String value) {
+	public EnumProperty(String value) {
 		super(value);
 	}
 
 	/**
-	 * Creates a new property whose value is set to "gregorian".
-	 * @return the new property
+	 * Compares the property's value with a given string (case-insensitive).
+	 * @param value the string
+	 * @return true if it's equal, false if not
 	 */
-	public static CalendarScale gregorian() {
-		return new CalendarScale(GREGORIAN);
+	protected boolean is(String value) {
+		return value.equalsIgnoreCase(this.value);
 	}
 
 	/**
-	 * Determines whether the property is set to "gregorian".
-	 * @return true if it's set to "gregorian", false if not
+	 * Gets the list of acceptable values for this property.
+	 * @return the list of acceptable values
 	 */
-	public boolean isGregorian() {
-		return is(GREGORIAN);
-	}
+	protected abstract Collection<String> getStandardValues();
 
 	@Override
-	protected Collection<String> getStandardValues() {
-		return Arrays.asList(GREGORIAN);
+	protected void validate(List<ICalComponent> components, List<String> warnings) {
+		super.validate(components, warnings);
+		if (value == null) {
+			return;
+		}
+
+		Collection<String> standardValues = getStandardValues();
+		for (String standardValue : standardValues) {
+			if (value.equalsIgnoreCase(standardValue)) {
+				//found, value is OK
+				return;
+			}
+		}
+
+		warnings.add("Non-standard value \"" + value + "\".  Standard values are: " + standardValues);
 	}
 }

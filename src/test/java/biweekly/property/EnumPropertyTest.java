@@ -1,7 +1,14 @@
 package biweekly.property;
 
+import static biweekly.util.TestUtils.assertWarnings;
+
 import java.util.Arrays;
 import java.util.Collection;
+
+import org.junit.Test;
+
+import biweekly.property.EnumProperty;
+import biweekly.util.TestUtils.Tests;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -29,57 +36,40 @@ import java.util.Collection;
  */
 
 /**
- * <p>
- * Specifies the calendar system that this iCalendar object uses. If none is
- * specified, then the calendar is assumed to be in "gregorian" format.
- * </p>
- * <p>
- * <b>Examples:</b>
- * 
- * <pre>
- * //creating a new property
- * CalendarScale calscale = CalendarScale.gregorian();
- * 
- * if (calscale.isGregorian()) {
- * 	//its value is &quot;GREGORIAN&quot;
- * }
- * </pre>
- * 
- * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-76">RFC 5545 p.76-7</a>
  */
-public class CalendarScale extends EnumProperty {
-	private static final String GREGORIAN = "GREGORIAN";
+public class EnumPropertyTest {
+	@Test
+	public void validate() {
+		Tests tests = new Tests();
 
-	/**
-	 * Creates a new calendar scale property. Use of this constructor is
-	 * discouraged and may put the property in an invalid state. Use one of the
-	 * static factory methods instead.
-	 * @param value the value of the property (e.g. "gregorian")
-	 */
-	public CalendarScale(String value) {
-		super(value);
+		//null value
+		tests.add(null, 1);
+
+		//invalid value
+		tests.add("three", 1);
+
+		//case-insensitive compare
+		tests.add("two", 0);
+		tests.add("ONE", 0);
+
+		for (Object[] test : tests) {
+			String value = (String) test[0];
+			Integer expectedWarnings = (Integer) test[1];
+
+			TestProperty prop = new TestProperty(value);
+			assertWarnings(expectedWarnings, prop.validate(null));
+		}
 	}
 
-	/**
-	 * Creates a new property whose value is set to "gregorian".
-	 * @return the new property
-	 */
-	public static CalendarScale gregorian() {
-		return new CalendarScale(GREGORIAN);
-	}
+	private class TestProperty extends EnumProperty {
+		public TestProperty(String value) {
+			super(value);
+		}
 
-	/**
-	 * Determines whether the property is set to "gregorian".
-	 * @return true if it's set to "gregorian", false if not
-	 */
-	public boolean isGregorian() {
-		return is(GREGORIAN);
-	}
-
-	@Override
-	protected Collection<String> getStandardValues() {
-		return Arrays.asList(GREGORIAN);
+		@Override
+		protected Collection<String> getStandardValues() {
+			return Arrays.asList("one", "TWO");
+		}
 	}
 }
