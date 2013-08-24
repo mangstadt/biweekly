@@ -70,7 +70,7 @@ public class TextPropertyMarshallerTest {
 		String value = "the\\;text";
 		ICalParameters params = new ICalParameters();
 
-		Result<TextPropertyImpl> result = marshaller.parseText(value, params);
+		Result<TextPropertyImpl> result = marshaller.parseText(value, Value.TEXT, params);
 
 		TextPropertyImpl prop = result.getValue();
 		assertEquals("the;text", prop.getValue());
@@ -120,7 +120,6 @@ public class TextPropertyMarshallerTest {
 		TextPropertyImpl prop = new TextPropertyImpl("text");
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.TEXT, actual.getDataType());
 		assertEquals("text", actual.getSingleValued());
 	}
 
@@ -129,23 +128,12 @@ public class TextPropertyMarshallerTest {
 		TextPropertyImpl prop = new TextPropertyImpl(null);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.TEXT, actual.getDataType());
 		assertTrue(actual.getValues().get(0).isNull());
 	}
 
 	@Test
-	public void writeJson_data_type() {
-		TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl(Value.CAL_ADDRESS);
-		TextPropertyImpl prop = new TextPropertyImpl("mailto:johndoe@example.com");
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.CAL_ADDRESS, actual.getDataType());
-		assertEquals("mailto:johndoe@example.com", actual.getSingleValued());
-	}
-
-	@Test
 	public void parseJson() {
-		Result<TextPropertyImpl> result = marshaller.parseJson(JCalValue.single(Value.TEXT, "text"), new ICalParameters());
+		Result<TextPropertyImpl> result = marshaller.parseJson(JCalValue.single("text"), Value.TEXT, new ICalParameters());
 
 		TextPropertyImpl prop = result.getValue();
 		assertEquals("text", prop.getValue());

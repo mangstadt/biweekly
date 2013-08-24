@@ -363,11 +363,11 @@ public class JCalReaderTest {
 		assertEquals(2, ical.getProperties().size());
 
 		RawProperty company = ical.getExperimentalProperty("x-company");
-		assertEquals(Value.TEXT, company.getParameters().getValue());
+		assertEquals(Value.TEXT, company.getDataType());
 		assertEquals("value", company.getValue());
 
 		company = ical.getExperimentalProperty("x-company2");
-		assertNull(company.getParameters().getValue());
+		assertNull(company.getDataType());
 		assertEquals("value", company.getValue());
 
 		assertEquals(0, ical.getComponents().size());
@@ -451,7 +451,7 @@ public class JCalReaderTest {
 		assertEquals(1, ical.getProperties().size());
 		assertNull(ical.getProperty(Company.class));
 		RawProperty company = ical.getExperimentalProperty("x-company");
-		assertEquals(Value.TEXT, company.getParameters().getValue());
+		assertEquals(Value.TEXT, company.getDataType());
 		assertEquals("don't-parse-me-bro", company.getValue());
 
 		assertEquals(0, ical.getComponents().size());
@@ -616,7 +616,7 @@ public class JCalReaderTest {
 
 	private class CompanyMarshaller extends ICalPropertyMarshaller<Company> {
 		public CompanyMarshaller() {
-			super(Company.class, "X-COMPANY");
+			super(Company.class, "X-COMPANY", null);
 		}
 
 		@Override
@@ -625,12 +625,12 @@ public class JCalReaderTest {
 		}
 
 		@Override
-		protected Company _parseText(String value, ICalParameters parameters, List<String> warnings) {
+		protected Company _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 			return new Company(value);
 		}
 
 		@Override
-		protected Company _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+		protected Company _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
 			String boss = value.getSingleValued();
 			if (boss.equals("skip-me")) {
 				throw new SkipMeException();

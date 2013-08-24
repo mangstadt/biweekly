@@ -11,7 +11,6 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import biweekly.parameter.Value;
 import biweekly.util.ListMultimap;
 
 /*
@@ -45,9 +44,7 @@ import biweekly.util.ListMultimap;
 public class JCalValueTest {
 	@Test
 	public void single() {
-		JCalValue value = JCalValue.single(Value.TEXT, "value");
-
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = JCalValue.single("value");
 
 		//@formatter:off
 		List<JsonValue> expected = Arrays.asList(
@@ -60,9 +57,7 @@ public class JCalValueTest {
 
 	@Test
 	public void single_null() {
-		JCalValue value = JCalValue.single(Value.TEXT, null);
-
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = JCalValue.single(null);
 
 		//@formatter:off
 		List<JsonValue> expected = Arrays.asList(
@@ -75,29 +70,25 @@ public class JCalValueTest {
 
 	@Test
 	public void getSingleValued() {
-		JCalValue value = new JCalValue(Value.TEXT, new JsonValue("value1"), new JsonValue("value2"));
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = new JCalValue(new JsonValue("value1"), new JsonValue("value2"));
 		assertEquals("value1", value.getSingleValued());
 	}
 
 	@Test
 	public void getSingleValued_non_string() {
-		JCalValue value = new JCalValue(Value.TEXT, new JsonValue(false));
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = new JCalValue(new JsonValue(false));
 		assertEquals("false", value.getSingleValued());
 	}
 
 	@Test
 	public void getSingleValued_null() {
-		JCalValue value = new JCalValue(Value.TEXT, new JsonValue((Object) null));
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = new JCalValue(new JsonValue((Object) null));
 		assertEquals(null, value.getSingleValued());
 	}
 
 	@Test
 	public void getSingleValued_array() {
-		JCalValue value = new JCalValue(Value.TEXT, new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue("value1"))));
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = new JCalValue(new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue("value1"))));
 		assertEquals("value1", value.getSingleValued());
 	}
 
@@ -105,16 +96,13 @@ public class JCalValueTest {
 	public void getSingleValued_object() {
 		Map<String, JsonValue> object = new HashMap<String, JsonValue>();
 		object.put("a", new JsonValue("one"));
-		JCalValue value = new JCalValue(Value.TEXT, new JsonValue(object));
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = new JCalValue(new JsonValue(object));
 		assertEquals(null, value.getSingleValued());
 	}
 
 	@Test
 	public void multi() {
-		JCalValue value = JCalValue.multi(Value.TEXT, "value", 42, false, null);
-
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = JCalValue.multi("value", 42, false, null);
 
 		//@formatter:off
 		List<JsonValue> expected = Arrays.asList(
@@ -130,15 +118,13 @@ public class JCalValueTest {
 
 	@Test
 	public void getMultivalued() {
-		JCalValue value = new JCalValue(Value.TEXT, new JsonValue("value1"), new JsonValue(false), new JsonValue((Object) null));
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = new JCalValue(new JsonValue("value1"), new JsonValue(false), new JsonValue((Object) null));
 		assertEquals(Arrays.asList("value1", "false", null), value.getMultivalued());
 	}
 
 	@Test
 	public void getMultivalued_array() {
-		JCalValue value = new JCalValue(Value.TEXT, new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue(false))));
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = new JCalValue(new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue(false))));
 		assertEquals(Arrays.asList(), value.getMultivalued());
 	}
 
@@ -146,16 +132,13 @@ public class JCalValueTest {
 	public void getMultivalued_object() {
 		Map<String, JsonValue> object = new HashMap<String, JsonValue>();
 		object.put("a", new JsonValue("one"));
-		JCalValue value = new JCalValue(Value.TEXT, new JsonValue(object));
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = new JCalValue(new JsonValue(object));
 		assertEquals(Arrays.asList(), value.getMultivalued());
 	}
 
 	@Test
 	public void structured() {
-		JCalValue value = JCalValue.structured(Value.TEXT, "value", 42, false, null);
-
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = JCalValue.structured("value", 42, false, null);
 
 		//@formatter:off
 		List<JsonValue> expected = Arrays.asList(
@@ -170,15 +153,13 @@ public class JCalValueTest {
 
 	@Test
 	public void getStructured() {
-		JCalValue value = new JCalValue(Value.TEXT, new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue(false), new JsonValue((Object) null))));
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = new JCalValue(new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue(false), new JsonValue((Object) null))));
 		assertEquals(Arrays.asList("value1", "false", null), value.getStructured());
 	}
 
 	@Test
 	public void getStructured_single_value() {
-		JCalValue value = new JCalValue(Value.TEXT, new JsonValue("value1"));
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = new JCalValue(new JsonValue("value1"));
 		assertEquals(Arrays.asList("value1"), value.getStructured());
 	}
 
@@ -186,8 +167,7 @@ public class JCalValueTest {
 	public void getStructured_object() {
 		Map<String, JsonValue> object = new HashMap<String, JsonValue>();
 		object.put("a", new JsonValue("one"));
-		JCalValue value = new JCalValue(Value.TEXT, new JsonValue(object));
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = new JCalValue(new JsonValue(object));
 		assertEquals(Arrays.asList(), value.getStructured());
 	}
 
@@ -198,9 +178,7 @@ public class JCalValueTest {
 		object.put("b", 2);
 		object.put("b", 3.0);
 		object.put("b", null);
-		JCalValue value = JCalValue.object(Value.TEXT, object);
-
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = JCalValue.object(object);
 
 		//@formatter:off
 		Map<String, JsonValue> expectedMap = new HashMap<String, JsonValue>();
@@ -220,9 +198,7 @@ public class JCalValueTest {
 		object.put("a", new JsonValue("one"));
 		object.put("b", new JsonValue(Arrays.asList(new JsonValue(2), new JsonValue(3.0), new JsonValue((Object) null))));
 		object.put("c", new JsonValue((Object) null));
-		JCalValue value = new JCalValue(Value.TEXT, new JsonValue(object));
-
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = new JCalValue(new JsonValue(object));
 
 		ListMultimap<String, Object> expected = new ListMultimap<String, Object>();
 		expected.put("a", "one");
@@ -235,15 +211,13 @@ public class JCalValueTest {
 
 	@Test
 	public void getObject_single_value() {
-		JCalValue value = new JCalValue(Value.TEXT, new JsonValue("value1"));
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = new JCalValue(new JsonValue("value1"));
 		assertTrue(value.getObject().isEmpty());
 	}
 
 	@Test
 	public void getObject_array() {
-		JCalValue value = new JCalValue(Value.TEXT, new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue(false))));
-		assertEquals(Value.TEXT, value.getDataType());
+		JCalValue value = new JCalValue(new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue(false))));
 		assertTrue(value.getObject().isEmpty());
 	}
 }

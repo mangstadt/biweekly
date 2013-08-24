@@ -72,23 +72,15 @@ public class TriggerMarshallerTest {
 	}
 
 	@Test
-	public void prepareParameters_date() {
+	public void getDataType_date() {
 		Trigger prop = new Trigger(datetime);
-
-		ICalParameters params = marshaller.prepareParameters(prop);
-
-		assertEquals(Value.DATE_TIME, params.getValue());
-		assertNull(params.getRelated());
+		assertEquals(Value.DATE_TIME, marshaller.getDataType(prop));
 	}
 
 	@Test
-	public void prepareParameters_duration() {
+	public void getDataType_duration() {
 		Trigger prop = new Trigger(duration, Related.START);
-
-		ICalParameters params = marshaller.prepareParameters(prop);
-
-		assertNull(params.getValue());
-		assertEquals(Related.START, params.getRelated());
+		assertEquals(Value.DURATION, marshaller.getDataType(prop));
 	}
 
 	@Test
@@ -126,7 +118,7 @@ public class TriggerMarshallerTest {
 		String value = "20130611T134302Z";
 		ICalParameters params = new ICalParameters();
 
-		Result<Trigger> result = marshaller.parseText(value, params);
+		Result<Trigger> result = marshaller.parseText(value, Value.DATE_TIME, params);
 
 		Trigger prop = result.getValue();
 		assertEquals(datetime, prop.getDate());
@@ -139,7 +131,7 @@ public class TriggerMarshallerTest {
 		String value = "PT2H";
 		ICalParameters params = new ICalParameters();
 
-		Result<Trigger> result = marshaller.parseText(value, params);
+		Result<Trigger> result = marshaller.parseText(value, Value.DURATION, params);
 
 		Trigger prop = result.getValue();
 		assertNull(prop.getDate());
@@ -152,7 +144,7 @@ public class TriggerMarshallerTest {
 		String value = "invalid";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, params);
+		marshaller.parseText(value, Value.DURATION, params);
 	}
 
 	@Test
@@ -208,7 +200,6 @@ public class TriggerMarshallerTest {
 		Trigger prop = new Trigger(datetime);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.DATE_TIME, actual.getDataType());
 		assertEquals("2013-06-11T13:43:02Z", actual.getSingleValued());
 	}
 
@@ -217,7 +208,6 @@ public class TriggerMarshallerTest {
 		Trigger prop = new Trigger(duration, Related.START);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.DURATION, actual.getDataType());
 		assertEquals("PT2H", actual.getSingleValued());
 	}
 
@@ -226,13 +216,12 @@ public class TriggerMarshallerTest {
 		Trigger prop = new Trigger(null);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.DURATION, actual.getDataType());
 		assertTrue(actual.getValues().get(0).isNull());
 	}
 
 	@Test
 	public void parseJson_date() {
-		Result<Trigger> result = marshaller.parseJson(JCalValue.single(Value.DATE_TIME, "2013-06-11T13:43:02Z"), new ICalParameters());
+		Result<Trigger> result = marshaller.parseJson(JCalValue.single("2013-06-11T13:43:02Z"), Value.DATE_TIME, new ICalParameters());
 
 		Trigger prop = result.getValue();
 		assertEquals(datetime, prop.getDate());
@@ -242,7 +231,7 @@ public class TriggerMarshallerTest {
 
 	@Test
 	public void parseJson_duration() {
-		Result<Trigger> result = marshaller.parseJson(JCalValue.single(Value.DURATION, "PT2H"), new ICalParameters());
+		Result<Trigger> result = marshaller.parseJson(JCalValue.single("PT2H"), Value.DURATION, new ICalParameters());
 
 		Trigger prop = result.getValue();
 		assertNull(prop.getDate());
@@ -252,11 +241,11 @@ public class TriggerMarshallerTest {
 
 	@Test(expected = CannotParseException.class)
 	public void parseJson_date_invalid() {
-		marshaller.parseJson(JCalValue.single(Value.DATE_TIME, "invalid"), new ICalParameters());
+		marshaller.parseJson(JCalValue.single("invalid"), Value.DATE_TIME, new ICalParameters());
 	}
 
 	@Test(expected = CannotParseException.class)
 	public void parseJson_duration_invalid() {
-		marshaller.parseJson(JCalValue.single(Value.DURATION, "invalid"), new ICalParameters());
+		marshaller.parseJson(JCalValue.single("invalid"), Value.DURATION, new ICalParameters());
 	}
 }

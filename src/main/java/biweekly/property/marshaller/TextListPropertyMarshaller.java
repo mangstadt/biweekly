@@ -46,7 +46,7 @@ public abstract class TextListPropertyMarshaller<T extends ListProperty<String>>
 	}
 
 	@Override
-	protected String readValue(String value, ICalParameters parameters, List<String> warnings) {
+	protected String readValue(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		return value;
 	}
 }

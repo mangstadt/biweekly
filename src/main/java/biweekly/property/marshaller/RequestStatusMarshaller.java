@@ -43,7 +43,7 @@ import biweekly.util.StringUtils.JoinCallback;
  */
 public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatus> {
 	public RequestStatusMarshaller() {
-		super(RequestStatus.class, "REQUEST-STATUS");
+		super(RequestStatus.class, "REQUEST-STATUS", Value.TEXT);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 	}
 
 	@Override
-	protected RequestStatus _parseText(String value, ICalParameters parameters, List<String> warnings) {
+	protected RequestStatus _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		List<String> split = split(value, ";").unescape(true).split();
 		return parse(split);
 	}
@@ -109,11 +109,11 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 		addComponent(property.getStatusCode(), components);
 		Collections.reverse(components);
 
-		return JCalValue.structured(Value.TEXT, components);
+		return JCalValue.structured(components);
 	}
 
 	@Override
-	protected RequestStatus _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+	protected RequestStatus _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		List<String> values = value.getStructured();
 		return parse(values);
 	}

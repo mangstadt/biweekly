@@ -68,7 +68,7 @@ public class RawPropertyMarshallerTest {
 		String value = "value";
 		ICalParameters params = new ICalParameters();
 
-		Result<RawProperty> result = marshaller.parseText(value, params);
+		Result<RawProperty> result = marshaller.parseText(value, null, params);
 
 		assertEquals("value", result.getValue().getValue());
 		assertWarnings(0, result.getWarnings());
@@ -80,7 +80,7 @@ public class RawPropertyMarshallerTest {
 
 		RawProperty prop = result.getValue();
 		assertEquals("text", prop.getValue());
-		assertEquals(Value.TEXT, prop.getParameters().getValue());
+		assertEquals(Value.TEXT, prop.getDataType());
 		assertWarnings(0, result.getWarnings());
 	}
 

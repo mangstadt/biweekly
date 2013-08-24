@@ -45,7 +45,7 @@ import biweekly.util.StringUtils.JoinCallback;
  */
 public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 	public FreeBusyMarshaller() {
-		super(FreeBusy.class, "FREEBUSY");
+		super(FreeBusy.class, "FREEBUSY", Value.PERIOD);
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 	}
 
 	@Override
-	protected FreeBusy _parseText(String value, ICalParameters parameters, List<String> warnings) {
+	protected FreeBusy _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		return parse(parseList(value), parameters, warnings);
 	}
 
@@ -167,11 +167,11 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 			values.add(sb.toString());
 		}
 
-		return JCalValue.multi(Value.PERIOD, values);
+		return JCalValue.multi(values);
 	}
 
 	@Override
-	protected FreeBusy _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+	protected FreeBusy _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		return parse(value.getMultivalued(), parameters, warnings);
 	}
 

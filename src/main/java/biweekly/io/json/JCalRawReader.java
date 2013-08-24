@@ -171,8 +171,8 @@ public class JCalRawReader implements Closeable {
 		//get property value(s)
 		List<JsonValue> values = parseValues();
 
-		JCalValue value = new JCalValue(dataType, values);
-		listener.readProperty(components, propertyName, parameters, value);
+		JCalValue value = new JCalValue(values);
+		listener.readProperty(components, propertyName, parameters, dataType, value);
 	}
 
 	private ICalParameters parseParameters() throws IOException {
@@ -290,9 +290,10 @@ public class JCalRawReader implements Closeable {
 		 * property belongs to
 		 * @param propertyName the property name (e.g. "summary")
 		 * @param parameters the parameters
+		 * @param dataType the data type (e.g. "text")
 		 * @param value the property value
 		 */
-		void readProperty(List<String> componentHierarchy, String propertyName, ICalParameters parameters, JCalValue value);
+		void readProperty(List<String> componentHierarchy, String propertyName, ICalParameters parameters, Value dataType, JCalValue value);
 	}
 
 	/**

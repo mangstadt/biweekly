@@ -51,7 +51,7 @@ import biweekly.util.StringUtils.JoinMapCallback;
  */
 public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceRule> {
 	public RecurrenceRuleMarshaller() {
-		super(RecurrenceRule.class, "RRULE");
+		super(RecurrenceRule.class, "RRULE", Value.RECUR);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 	}
 
 	@Override
-	protected RecurrenceRule _parseText(String value, ICalParameters parameters, List<String> warnings) {
+	protected RecurrenceRule _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		ListMultimap<String, String> components = new ListMultimap<String, String>();
 		for (String component : value.split(";")) {
 			String split[] = component.split("=");
@@ -104,7 +104,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 	protected void _writeXml(RecurrenceRule property, XCalElement element) {
 		ListMultimap<String, Object> components = buildComponents(property, true);
 
-		XCalElement recur = element.append(Value.RECUR);
+		XCalElement recur = element.append(getDataType(property));
 		for (Map.Entry<String, List<Object>> component : components) {
 			String name = component.getKey().toLowerCase();
 			for (Object value : component.getValue()) {
@@ -117,7 +117,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 	protected RecurrenceRule _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		RecurrenceRule property = new RecurrenceRule(null);
 
-		XCalElement recur = element.child(Value.RECUR);
+		XCalElement recur = element.child(defaultDataType);
 		if (recur == null) {
 			return property;
 		}
@@ -151,11 +151,11 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 			object.putAll(key, entry.getValue());
 		}
 
-		return JCalValue.object(Value.RECUR, object);
+		return JCalValue.object(object);
 	}
 
 	@Override
-	protected RecurrenceRule _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+	protected RecurrenceRule _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		RecurrenceRule property = new RecurrenceRule(null);
 
 		ListMultimap<String, String> object = value.getObject();

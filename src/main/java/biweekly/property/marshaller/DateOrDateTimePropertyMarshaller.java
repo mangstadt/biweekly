@@ -43,13 +43,12 @@ import biweekly.util.ICalDateFormatter;
  */
 public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeProperty> extends ICalPropertyMarshaller<T> {
 	public DateOrDateTimePropertyMarshaller(Class<T> clazz, String propertyName) {
-		super(clazz, propertyName);
+		super(clazz, propertyName, Value.DATE_TIME);
 	}
 
 	@Override
-	protected void _prepareParameters(T property, ICalParameters copy) {
-		Value value = (property.getRawComponents() != null || property.getValue() == null || property.hasTime()) ? null : Value.DATE;
-		copy.setValue(value);
+	protected Value _getDataType(T property) {
+		return (property.getRawComponents() != null || property.getValue() == null || property.hasTime()) ? Value.DATE_TIME : Value.DATE;
 	}
 
 	@Override
@@ -67,7 +66,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 	}
 
 	@Override
-	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
+	protected T _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
 		return parse(value, parameters, warnings);
@@ -81,16 +80,13 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 			return;
 		}
 
-		Value dataType;
 		String dateStr;
 		if (components != null) {
-			dataType = Value.DATE_TIME;
 			dateStr = components.toString(true);
 		} else {
-			dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
 			dateStr = date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).extended(true).write();
 		}
-		element.append(dataType, dateStr);
+		element.append(getDataType(property), dateStr);
 	}
 
 	@Override
@@ -107,23 +103,20 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 		Date value = property.getValue();
 		DateTimeComponents components = property.getRawComponents();
 		if (value == null && components == null) {
-			return JCalValue.single(Value.DATE_TIME, null);
+			return JCalValue.single(null);
 		}
 
-		Value dataType;
 		String dateStr;
 		if (components != null) {
-			dataType = Value.DATE_TIME;
 			dateStr = components.toString(true);
 		} else {
-			dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
 			dateStr = date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).extended(true).write();
 		}
-		return JCalValue.single(dataType, dateStr);
+		return JCalValue.single(dateStr);
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		String valueStr = value.getSingleValued();
 		return parse(valueStr, parameters, warnings);
 	}

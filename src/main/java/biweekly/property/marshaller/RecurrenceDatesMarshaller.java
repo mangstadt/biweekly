@@ -45,20 +45,18 @@ import biweekly.util.StringUtils.JoinCallback;
  */
 public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<RecurrenceDates> {
 	public RecurrenceDatesMarshaller() {
-		super(RecurrenceDates.class, "RDATE");
+		super(RecurrenceDates.class, "RDATE", Value.DATE_TIME);
 	}
 
 	@Override
-	protected void _prepareParameters(RecurrenceDates property, ICalParameters copy) {
-		Value value = null;
+	protected Value _getDataType(RecurrenceDates property) {
 		if (property.getDates() != null) {
-			if (!property.hasTime()) {
-				value = Value.DATE;
-			}
-		} else if (property.getPeriods() != null) {
-			value = Value.PERIOD;
+			return property.hasTime() ? Value.DATE_TIME : Value.DATE;
 		}
-		copy.setValue(value);
+		if (property.getPeriods() != null) {
+			return Value.PERIOD;
+		}
+		return null;
 	}
 
 	@Override
@@ -93,13 +91,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 	}
 
 	@Override
-	protected RecurrenceDates _parseText(String value, ICalParameters parameters, List<String> warnings) {
-		Value dataType = parameters.getValue();
-		if (dataType == null) {
-			//default data type
-			dataType = Value.DATE_TIME;
-		}
-
+	protected RecurrenceDates _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		return parse(parseList(value), dataType, parameters, warnings);
 	}
 
@@ -197,19 +189,14 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 
 	@Override
 	protected JCalValue _writeJson(RecurrenceDates property) {
-		Value dataType;
 		List<String> values = new ArrayList<String>();
 
 		if (property.getDates() != null) {
-			dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
-
 			for (Date date : property.getDates()) {
 				String dateStr = date(date).time(property.hasTime()).tzid(property.getTimezoneId()).extended(true).write();
 				values.add(dateStr);
 			}
 		} else if (property.getPeriods() != null) {
-			dataType = Value.PERIOD;
-
 			for (Period period : property.getPeriods()) {
 				StringBuilder sb = new StringBuilder();
 				if (period.getStartDate() != null) {
@@ -228,16 +215,14 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 
 				values.add(sb.toString());
 			}
-		} else {
-			dataType = Value.DATE_TIME;
 		}
 
-		return JCalValue.multi(dataType, values);
+		return JCalValue.multi(values);
 	}
 
 	@Override
-	protected RecurrenceDates _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
-		return parse(value.getMultivalued(), value.getDataType(), parameters, warnings);
+	protected RecurrenceDates _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+		return parse(value.getMultivalued(), dataType, parameters, warnings);
 	}
 
 	private RecurrenceDates parse(List<String> valueStrs, Value dataType, ICalParameters parameters, List<String> warnings) {

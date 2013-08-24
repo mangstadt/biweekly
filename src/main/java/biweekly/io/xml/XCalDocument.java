@@ -532,7 +532,6 @@ public class XCalDocument {
 
 			//get parameters
 			parameters = pm.prepareParameters(property);
-			parameters.setValue(null);
 		}
 
 		//build parameters

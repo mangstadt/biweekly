@@ -91,7 +91,7 @@ public class RequestStatusMarshallerTest {
 		ICalParameters params = new ICalParameters();
 
 		String value = "1.2.3;description\\;here;data\\;here";
-		Result<RequestStatus> result = marshaller.parseText(value, params);
+		Result<RequestStatus> result = marshaller.parseText(value, Value.TEXT, params);
 		RequestStatus prop = result.getValue();
 		assertEquals("1.2.3", prop.getStatusCode());
 		assertEquals("description;here", prop.getDescription());
@@ -99,7 +99,7 @@ public class RequestStatusMarshallerTest {
 		assertWarnings(0, result.getWarnings());
 
 		value = "1.2.3;description\\;here";
-		result = marshaller.parseText(value, params);
+		result = marshaller.parseText(value, Value.TEXT, params);
 		prop = result.getValue();
 		assertEquals("1.2.3", prop.getStatusCode());
 		assertEquals("description;here", prop.getDescription());
@@ -107,7 +107,7 @@ public class RequestStatusMarshallerTest {
 		assertWarnings(0, result.getWarnings());
 
 		value = "1.2.3";
-		result = marshaller.parseText(value, params);
+		result = marshaller.parseText(value, Value.TEXT, params);
 		prop = result.getValue();
 		assertEquals("1.2.3", prop.getStatusCode());
 		assertEquals(null, prop.getDescription());
@@ -115,7 +115,7 @@ public class RequestStatusMarshallerTest {
 		assertWarnings(0, result.getWarnings());
 
 		value = "";
-		result = marshaller.parseText(value, params);
+		result = marshaller.parseText(value, Value.TEXT, params);
 		prop = result.getValue();
 		assertEquals("", prop.getStatusCode());
 		assertEquals(null, prop.getDescription());
@@ -149,7 +149,6 @@ public class RequestStatusMarshallerTest {
 		prop.setExceptionText("data");
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.TEXT, actual.getDataType());
 		assertEquals(Arrays.asList("1.2.3", "description", "data"), actual.getStructured());
 	}
 
@@ -159,7 +158,6 @@ public class RequestStatusMarshallerTest {
 		prop.setDescription("description");
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.TEXT, actual.getDataType());
 		assertEquals(Arrays.asList("1.2.3", "description"), actual.getStructured());
 	}
 
@@ -169,13 +167,12 @@ public class RequestStatusMarshallerTest {
 		prop.setExceptionText("data");
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.TEXT, actual.getDataType());
 		assertEquals(Arrays.asList("1.2.3", "", "data"), actual.getStructured());
 	}
 
 	@Test
 	public void parseJson() {
-		Result<RequestStatus> result = marshaller.parseJson(JCalValue.structured(Value.TEXT, "1.2.3", "description", "data"), new ICalParameters());
+		Result<RequestStatus> result = marshaller.parseJson(JCalValue.structured("1.2.3", "description", "data"), Value.TEXT, new ICalParameters());
 
 		RequestStatus prop = result.getValue();
 		assertEquals("1.2.3", prop.getStatusCode());

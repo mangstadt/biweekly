@@ -5,7 +5,6 @@ import static biweekly.util.TestUtils.assertWriteXml;
 import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
@@ -77,39 +76,27 @@ public class DateOrDateTimePropertyMarshallerTest {
 	}
 
 	@Test
-	public void prepareParameters_datetime() {
+	public void getDataType_datetime() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(datetime, true);
-
-		ICalParameters params = marshaller.prepareParameters(prop);
-
-		assertNull(params.getValue());
+		assertEquals(Value.DATE_TIME, marshaller.getDataType(prop));
 	}
 
 	@Test
-	public void prepareParameters_date() {
+	public void getDataType_date() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(datetime, false);
-
-		ICalParameters params = marshaller.prepareParameters(prop);
-
-		assertEquals(Value.DATE, params.getValue());
+		assertEquals(Value.DATE, marshaller.getDataType(prop));
 	}
 
 	@Test
-	public void prepareParameters_components() {
+	public void getDataType_components() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(components);
-
-		ICalParameters params = marshaller.prepareParameters(prop);
-
-		assertNull(params.getValue());
+		assertEquals(Value.DATE_TIME, marshaller.getDataType(prop));
 	}
 
 	@Test
-	public void prepareParameters_null_value() {
+	public void getDataType_null_value() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(null, false);
-
-		ICalParameters params = marshaller.prepareParameters(prop);
-
-		assertNull(params.getValue());
+		assertEquals(Value.DATE_TIME, marshaller.getDataType(prop));
 	}
 
 	@Test
@@ -157,7 +144,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 		String value = "20130611T134302Z";
 		ICalParameters params = new ICalParameters();
 
-		Result<DateOrDateTimePropertyImpl> result = marshaller.parseText(value, params);
+		Result<DateOrDateTimePropertyImpl> result = marshaller.parseText(value, Value.DATE_TIME, params);
 
 		DateOrDateTimePropertyImpl prop = result.getValue();
 		assertEquals(datetime, prop.getValue());
@@ -171,7 +158,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 		String value = "20130611";
 		ICalParameters params = new ICalParameters();
 
-		Result<DateOrDateTimePropertyImpl> result = marshaller.parseText(value, params);
+		Result<DateOrDateTimePropertyImpl> result = marshaller.parseText(value, Value.DATE, params);
 
 		DateOrDateTimePropertyImpl prop = result.getValue();
 		assertEquals(date, prop.getValue());
@@ -185,7 +172,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 		String value = "invalid";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, params);
+		marshaller.parseText(value, Value.DATE_TIME, params);
 	}
 
 	@Test
@@ -244,7 +231,6 @@ public class DateOrDateTimePropertyMarshallerTest {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(datetime, true);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.DATE_TIME, actual.getDataType());
 		assertEquals("2013-06-11T13:43:02Z", actual.getSingleValued());
 	}
 
@@ -253,7 +239,6 @@ public class DateOrDateTimePropertyMarshallerTest {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(datetime, false);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.DATE, actual.getDataType());
 		assertEquals("2013-06-11", actual.getSingleValued());
 	}
 
@@ -262,7 +247,6 @@ public class DateOrDateTimePropertyMarshallerTest {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(components);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.DATE_TIME, actual.getDataType());
 		assertEquals("2013-06-11T13:43:02", actual.getSingleValued());
 	}
 
@@ -271,13 +255,12 @@ public class DateOrDateTimePropertyMarshallerTest {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(null, true);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.DATE_TIME, actual.getDataType());
 		assertTrue(actual.getValues().get(0).isNull());
 	}
 
 	@Test
 	public void parseJson_datetime() {
-		Result<DateOrDateTimePropertyImpl> result = marshaller.parseJson(JCalValue.single(Value.DATE_TIME, "2013-06-11T13:43:02Z"), new ICalParameters());
+		Result<DateOrDateTimePropertyImpl> result = marshaller.parseJson(JCalValue.single("2013-06-11T13:43:02Z"), Value.DATE_TIME, new ICalParameters());
 
 		DateOrDateTimePropertyImpl prop = result.getValue();
 		assertEquals(datetime, prop.getValue());
@@ -288,7 +271,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 
 	@Test
 	public void parseJson_date() {
-		Result<DateOrDateTimePropertyImpl> result = marshaller.parseJson(JCalValue.single(Value.DATE, "2013-06-11"), new ICalParameters());
+		Result<DateOrDateTimePropertyImpl> result = marshaller.parseJson(JCalValue.single("2013-06-11"), Value.DATE_TIME, new ICalParameters());
 
 		DateOrDateTimePropertyImpl prop = result.getValue();
 		assertEquals(date, prop.getValue());
@@ -299,7 +282,7 @@ public class DateOrDateTimePropertyMarshallerTest {
 
 	@Test(expected = CannotParseException.class)
 	public void parseJson_invalid() {
-		marshaller.parseJson(JCalValue.single(Value.DATE, "invalid"), new ICalParameters());
+		marshaller.parseJson(JCalValue.single("invalid"), Value.DATE, new ICalParameters());
 	}
 
 	private class DateOrDateTimePropertyMarshallerImpl extends DateOrDateTimePropertyMarshaller<DateOrDateTimePropertyImpl> {

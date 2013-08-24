@@ -87,7 +87,7 @@ public class DateTimePropertyMarshallerTest {
 		String value = "20130611T134302Z";
 		ICalParameters params = new ICalParameters();
 
-		Result<DateTimePropertyImpl> result = marshaller.parseText(value, params);
+		Result<DateTimePropertyImpl> result = marshaller.parseText(value, Value.DATE_TIME, params);
 
 		DateTimePropertyImpl prop = result.getValue();
 		assertEquals(datetime, prop.getValue());
@@ -99,7 +99,7 @@ public class DateTimePropertyMarshallerTest {
 		String value = "invalid";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, params);
+		marshaller.parseText(value, Value.DATE_TIME, params);
 	}
 
 	@Test
@@ -133,7 +133,6 @@ public class DateTimePropertyMarshallerTest {
 		DateTimePropertyImpl prop = new DateTimePropertyImpl(datetime);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.DATE_TIME, actual.getDataType());
 		assertEquals("2013-06-11T13:43:02Z", actual.getSingleValued());
 	}
 
@@ -142,13 +141,12 @@ public class DateTimePropertyMarshallerTest {
 		DateTimePropertyImpl prop = new DateTimePropertyImpl(null);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.DATE_TIME, actual.getDataType());
 		assertTrue(actual.getValues().get(0).isNull());
 	}
 
 	@Test
 	public void parseJson() {
-		Result<DateTimePropertyImpl> result = marshaller.parseJson(JCalValue.single(Value.DATE_TIME, "2013-06-11T13:43:02Z"), new ICalParameters());
+		Result<DateTimePropertyImpl> result = marshaller.parseJson(JCalValue.single("2013-06-11T13:43:02Z"), Value.DATE_TIME, new ICalParameters());
 
 		DateTimePropertyImpl prop = result.getValue();
 		assertEquals(datetime, prop.getValue());
@@ -157,7 +155,7 @@ public class DateTimePropertyMarshallerTest {
 
 	@Test(expected = CannotParseException.class)
 	public void parseJson_invalid() {
-		marshaller.parseJson(JCalValue.single(Value.DATE_TIME, "invalid"), new ICalParameters());
+		marshaller.parseJson(JCalValue.single("invalid"), Value.DATE_TIME, new ICalParameters());
 	}
 
 	private class DateTimePropertyMarshallerImpl extends DateTimePropertyMarshaller<DateTimePropertyImpl> {

@@ -5,7 +5,6 @@ import static biweekly.util.TestUtils.assertWriteXml;
 import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -77,21 +76,15 @@ public class ExceptionDatesMarshallerTest {
 	}
 
 	@Test
-	public void prepareParameters_datetime() {
+	public void getDataType_datetime() {
 		ExceptionDates prop = new ExceptionDates(true);
-
-		ICalParameters params = marshaller.prepareParameters(prop);
-
-		assertNull(params.getValue());
+		assertEquals(Value.DATE_TIME, marshaller.getDataType(prop));
 	}
 
 	@Test
-	public void prepareParameters_date() {
+	public void getDataType_date() {
 		ExceptionDates prop = new ExceptionDates(false);
-
-		ICalParameters params = marshaller.prepareParameters(prop);
-
-		assertEquals(Value.DATE, params.getValue());
+		assertEquals(Value.DATE, marshaller.getDataType(prop));
 	}
 
 	@Test
@@ -123,7 +116,7 @@ public class ExceptionDatesMarshallerTest {
 		String value = "20130611T134302Z,20130611T134302Z";
 		ICalParameters params = new ICalParameters();
 
-		Result<ExceptionDates> result = marshaller.parseText(value, params);
+		Result<ExceptionDates> result = marshaller.parseText(value, Value.DATE_TIME, params);
 
 		ExceptionDates prop = result.getValue();
 		assertEquals(Arrays.asList(datetime, datetime), prop.getValues());
@@ -135,9 +128,8 @@ public class ExceptionDatesMarshallerTest {
 	public void parseText_date() {
 		String value = "20130611,20130611";
 		ICalParameters params = new ICalParameters();
-		params.setValue(Value.DATE);
 
-		Result<ExceptionDates> result = marshaller.parseText(value, params);
+		Result<ExceptionDates> result = marshaller.parseText(value, Value.DATE, params);
 
 		ExceptionDates prop = result.getValue();
 		assertEquals(Arrays.asList(date, date), prop.getValues());
@@ -150,7 +142,7 @@ public class ExceptionDatesMarshallerTest {
 		String value = "20130611T134302Z,invalid";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, params);
+		marshaller.parseText(value, Value.DATE_TIME, params);
 	}
 
 	@Test
@@ -211,7 +203,6 @@ public class ExceptionDatesMarshallerTest {
 		prop.addValue(datetime);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.DATE_TIME, actual.getDataType());
 		assertEquals(Arrays.asList("2013-06-11T13:43:02Z", "2013-06-11T13:43:02Z"), actual.getMultivalued());
 	}
 
@@ -222,13 +213,12 @@ public class ExceptionDatesMarshallerTest {
 		prop.addValue(datetime);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.DATE, actual.getDataType());
 		assertEquals(Arrays.asList("2013-06-11", "2013-06-11"), actual.getMultivalued());
 	}
 
 	@Test
 	public void parseJson_datetime() {
-		Result<ExceptionDates> result = marshaller.parseJson(JCalValue.multi(Value.DATE_TIME, "2013-06-11T13:43:02Z", "2013-06-11T13:43:02Z"), new ICalParameters());
+		Result<ExceptionDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z", "2013-06-11T13:43:02Z"), Value.DATE_TIME, new ICalParameters());
 
 		ExceptionDates prop = result.getValue();
 		assertEquals(Arrays.asList(datetime, datetime), prop.getValues());
@@ -238,7 +228,7 @@ public class ExceptionDatesMarshallerTest {
 
 	@Test
 	public void parseJson_date() {
-		Result<ExceptionDates> result = marshaller.parseJson(JCalValue.multi(Value.DATE, "2013-06-11", "2013-06-11"), new ICalParameters());
+		Result<ExceptionDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11", "2013-06-11"), Value.DATE, new ICalParameters());
 
 		ExceptionDates prop = result.getValue();
 		assertEquals(Arrays.asList(date, date), prop.getValues());
@@ -248,6 +238,6 @@ public class ExceptionDatesMarshallerTest {
 
 	@Test(expected = CannotParseException.class)
 	public void parseJson_invalid() {
-		marshaller.parseJson(JCalValue.multi(Value.DATE, "2013-06-11", "invalid"), new ICalParameters());
+		marshaller.parseJson(JCalValue.multi("2013-06-11", "invalid"), Value.DATE, new ICalParameters());
 	}
 }

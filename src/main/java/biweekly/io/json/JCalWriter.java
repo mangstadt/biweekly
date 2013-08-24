@@ -18,6 +18,7 @@ import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.component.marshaller.RawComponentMarshaller;
 import biweekly.io.SkipMeException;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
@@ -215,9 +216,11 @@ public class JCalWriter implements Closeable {
 				continue;
 			}
 
+			//get the data type
+			Value dataType = propMarshaller.getDataType(property);
+
 			//write property
-			parameters.setValue(null);
-			writer.writeProperty(propertyName, parameters, value);
+			writer.writeProperty(propertyName, parameters, dataType, value);
 		}
 
 		//write sub-components

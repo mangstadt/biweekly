@@ -39,7 +39,7 @@ import biweekly.property.Version;
  */
 public class VersionMarshaller extends ICalPropertyMarshaller<Version> {
 	public VersionMarshaller() {
-		super(Version.class, "VERSION");
+		super(Version.class, "VERSION", Value.TEXT);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class VersionMarshaller extends ICalPropertyMarshaller<Version> {
 	}
 
 	@Override
-	protected Version _parseText(String value, ICalParameters parameters, List<String> warnings) {
+	protected Version _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		List<String> split = split(value, ";").unescape(true).split();
 
 		String min = null, max = null;
@@ -72,21 +72,21 @@ public class VersionMarshaller extends ICalPropertyMarshaller<Version> {
 
 	@Override
 	protected void _writeXml(Version property, XCalElement element) {
-		element.append(Value.TEXT, property.getMaxVersion());
+		element.append(getDataType(property), property.getMaxVersion());
 	}
 
 	@Override
 	protected Version _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		return new Version(element.first(Value.TEXT));
+		return new Version(element.first(defaultDataType));
 	}
 
 	@Override
 	protected JCalValue _writeJson(Version property) {
-		return JCalValue.single(Value.TEXT, property.getMaxVersion());
+		return JCalValue.single(property.getMaxVersion());
 	}
 
 	@Override
-	protected Version _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+	protected Version _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		return new Version(value.getSingleValued());
 	}
 }

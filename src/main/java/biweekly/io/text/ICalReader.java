@@ -23,6 +23,7 @@ import biweekly.component.marshaller.RawComponentMarshaller;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
@@ -273,9 +274,20 @@ public class ICalReader implements Closeable {
 			dataWasRead = true;
 
 			ICalPropertyMarshaller<? extends ICalProperty> m = findPropertyMarshaller(name);
+
+			//get the data type
+			Value dataType = parameters.getValue();
+			if (dataType == null) {
+				//use the default data type if there is no VALUE parameter
+				dataType = m.getDefaultDataType();
+			} else {
+				//remove VALUE parameter if it is set
+				parameters.setValue(null);
+			}
+
 			ICalProperty property = null;
 			try {
-				Result<? extends ICalProperty> result = m.parseText(value, parameters);
+				Result<? extends ICalProperty> result = m.parseText(value, dataType, parameters);
 
 				for (String warning : result.getWarnings()) {
 					addWarning(warning, name);
@@ -294,7 +306,7 @@ public class ICalReader implements Closeable {
 				} else {
 					addWarning("Property value could not be unmarshalled.\n  Value: " + value + "\n  Reason: " + e.getMessage(), name);
 				}
-				property = new RawProperty(name, value);
+				property = new RawProperty(name, dataType, value);
 			}
 
 			if (property != null) {

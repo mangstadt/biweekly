@@ -73,7 +73,7 @@ public class DurationPropertyMarshallerTest {
 		String value = "PT1H30M";
 		ICalParameters params = new ICalParameters();
 
-		Result<DurationProperty> result = marshaller.parseText(value, params);
+		Result<DurationProperty> result = marshaller.parseText(value, Value.DURATION, params);
 
 		assertEquals(duration, result.getValue().getValue());
 		assertWarnings(0, result.getWarnings());
@@ -84,7 +84,7 @@ public class DurationPropertyMarshallerTest {
 		String value = "invalid";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, params);
+		marshaller.parseText(value, Value.DURATION, params);
 	}
 
 	@Test
@@ -118,7 +118,6 @@ public class DurationPropertyMarshallerTest {
 		DurationProperty prop = new DurationProperty(duration);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.DURATION, actual.getDataType());
 		assertEquals("PT1H30M", actual.getSingleValued());
 	}
 
@@ -127,13 +126,12 @@ public class DurationPropertyMarshallerTest {
 		DurationProperty prop = new DurationProperty(null);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.DURATION, actual.getDataType());
 		assertTrue(actual.getValues().get(0).isNull());
 	}
 
 	@Test
 	public void parseJson() {
-		Result<DurationProperty> result = marshaller.parseJson(JCalValue.single(Value.DURATION, "PT1H30M"), new ICalParameters());
+		Result<DurationProperty> result = marshaller.parseJson(JCalValue.single("PT1H30M"), Value.DURATION, new ICalParameters());
 
 		DurationProperty prop = result.getValue();
 		assertEquals(duration, prop.getValue());
@@ -142,6 +140,6 @@ public class DurationPropertyMarshallerTest {
 
 	@Test(expected = CannotParseException.class)
 	public void parseJson_invalid() {
-		marshaller.parseJson(JCalValue.single(Value.DURATION, "invalid"), new ICalParameters());
+		marshaller.parseJson(JCalValue.single("invalid"), Value.DURATION, new ICalParameters());
 	}
 }

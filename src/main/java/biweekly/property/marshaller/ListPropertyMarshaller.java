@@ -40,15 +40,12 @@ import biweekly.util.StringUtils.JoinCallback;
  * @author Michael Angstadt
  */
 public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> extends ICalPropertyMarshaller<T> {
-	protected Value dataType;
-
 	public ListPropertyMarshaller(Class<T> clazz, String propertyName) {
 		this(clazz, propertyName, Value.TEXT);
 	}
 
 	public ListPropertyMarshaller(Class<T> clazz, String propertyName, Value dataType) {
-		super(clazz, propertyName);
-		this.dataType = dataType;
+		super(clazz, propertyName, dataType);
 	}
 
 	@Override
@@ -62,47 +59,47 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 	}
 
 	@Override
-	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
-		return parse(parseList(value), parameters, warnings);
+	protected T _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+		return parse(parseList(value), dataType, parameters, warnings);
 	}
 
 	@Override
 	protected void _writeXml(T property, XCalElement element) {
 		for (V value : property.getValues()) {
 			String valueStr = writeValue(property, value);
-			element.append(dataType, valueStr);
+			element.append(getDataType(property), valueStr);
 		}
 	}
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		return parse(element.all(dataType), parameters, warnings);
+		return parse(element.all(defaultDataType), defaultDataType, parameters, warnings);
 	}
 
 	@Override
 	protected JCalValue _writeJson(T property) {
-		return JCalValue.multi(dataType, property.getValues());
+		return JCalValue.multi(property.getValues());
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
-		return parse(value.getMultivalued(), parameters, warnings);
+	protected T _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+		return parse(value.getMultivalued(), dataType, parameters, warnings);
 	}
 
-	private T parse(List<String> valueStrs, ICalParameters parameters, List<String> warnings) {
-		T property = newInstance(parameters);
+	private T parse(List<String> valueStrs, Value dataType, ICalParameters parameters, List<String> warnings) {
+		T property = newInstance(dataType, parameters);
 
 		for (String valueStr : valueStrs) {
-			V value = readValue(valueStr, parameters, warnings);
+			V value = readValue(valueStr, dataType, parameters, warnings);
 			property.addValue(value);
 		}
 
 		return property;
 	}
 
-	protected abstract T newInstance(ICalParameters parameters);
+	protected abstract T newInstance(Value dataType, ICalParameters parameters);
 
 	protected abstract String writeValue(T property, V value);
 
-	protected abstract V readValue(String value, ICalParameters parameters, List<String> warnings);
+	protected abstract V readValue(String value, Value dataType, ICalParameters parameters, List<String> warnings);
 }

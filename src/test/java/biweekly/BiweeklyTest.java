@@ -564,7 +564,7 @@ public class BiweeklyTest {
 
 	private class TestPropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
 		private TestPropertyMarshaller() {
-			super(TestProperty.class, "X-TEST");
+			super(TestProperty.class, "X-TEST", null);
 		}
 
 		@Override
@@ -574,7 +574,7 @@ public class BiweeklyTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 			Integer number;
 			if (value.equals("one")) {
 				number = 1;
@@ -588,7 +588,7 @@ public class BiweeklyTest {
 
 		@Override
 		protected TestProperty _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-			return _parseText(element.first(Value.TEXT), parameters, warnings);
+			return _parseText(element.first(Value.TEXT), null, parameters, warnings);
 		}
 	}
 

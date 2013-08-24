@@ -51,7 +51,7 @@ import biweekly.util.XmlUtils;
 public class XmlMarshaller extends ICalPropertyMarshaller<Xml> {
 	//TODO on writing to plain text: convert to base64 if the string contains values that are illegal within a plain text value (p.17)
 	public XmlMarshaller() {
-		super(Xml.class, "XML");
+		super(Xml.class, "XML", Value.TEXT);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class XmlMarshaller extends ICalPropertyMarshaller<Xml> {
 	}
 
 	@Override
-	protected Xml _parseText(String value, ICalParameters parameters, List<String> warnings) {
+	protected Xml _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 		try {
 			return new Xml(value);
@@ -104,11 +104,11 @@ public class XmlMarshaller extends ICalPropertyMarshaller<Xml> {
 			xml = valueToString(value);
 		}
 
-		return JCalValue.single(Value.TEXT, xml);
+		return JCalValue.single(xml);
 	}
 
 	@Override
-	protected Xml _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+	protected Xml _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		try {
 			String xml = value.getSingleValued();
 			return (xml == null) ? new Xml((Document) null) : new Xml(xml);

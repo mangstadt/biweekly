@@ -376,7 +376,7 @@ public class XCalDocumentTest {
 
 		RawProperty prop = ical.getExperimentalProperty("X-BOSS");
 		assertEquals("John Doe", prop.getValue());
-		assertEquals(Value.TEXT, prop.getParameters().getValue());
+		assertEquals(Value.TEXT, prop.getDataType());
 	}
 
 	@Test
@@ -1001,7 +1001,7 @@ public class XCalDocumentTest {
 
 	private class CompanyMarshaller extends ICalPropertyMarshaller<Company> {
 		public CompanyMarshaller() {
-			super(Company.class, "X-COMPANY", new QName("http://example.com", "company"));
+			super(Company.class, "X-COMPANY", null, new QName("http://example.com", "company"));
 		}
 
 		@Override
@@ -1010,7 +1010,7 @@ public class XCalDocumentTest {
 		}
 
 		@Override
-		protected Company _parseText(String value, ICalParameters parameters, List<String> warnings) {
+		protected Company _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 			return new Company(value);
 		}
 

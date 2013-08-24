@@ -42,13 +42,12 @@ import biweekly.util.Duration;
  */
 public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	public TriggerMarshaller() {
-		super(Trigger.class, "TRIGGER");
+		super(Trigger.class, "TRIGGER", Value.DURATION);
 	}
 
 	@Override
-	protected void _prepareParameters(Trigger property, ICalParameters copy) {
-		Value value = (property.getDate() == null) ? null : Value.DATE_TIME;
-		copy.setValue(value);
+	protected Value _getDataType(Trigger property) {
+		return (property.getDate() == null) ? Value.DURATION : Value.DATE_TIME;
 	}
 
 	@Override
@@ -63,7 +62,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	}
 
 	@Override
-	protected Trigger _parseText(String value, ICalParameters parameters, List<String> warnings) {
+	protected Trigger _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
 		try {
@@ -113,24 +112,22 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 
 	@Override
 	protected JCalValue _writeJson(Trigger property) {
+		String value = null;
+
 		if (property.getDate() != null) {
-			String dateStr = date(property.getDate()).extended(true).write();
-			return JCalValue.single(Value.DATE_TIME, dateStr);
+			value = date(property.getDate()).extended(true).write();
+		} else if (property.getDuration() != null) {
+			value = property.getDuration().toString();
 		}
 
-		if (property.getDuration() != null) {
-			String durationStr = property.getDuration().toString();
-			return JCalValue.single(Value.DURATION, durationStr);
-		}
-
-		return JCalValue.single(Value.DURATION, null);
+		return JCalValue.single(value);
 	}
 
 	@Override
-	protected Trigger _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+	protected Trigger _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		String valueStr = value.getSingleValued();
 
-		if (value.getDataType() == Value.DATE_TIME) {
+		if (dataType == Value.DATE_TIME) {
 			try {
 				Date date = date(valueStr).tzid(parameters.getTimezoneId(), warnings).parse();
 				return new Trigger(date);

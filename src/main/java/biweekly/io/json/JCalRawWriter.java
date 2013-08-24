@@ -143,27 +143,29 @@ public class JCalRawWriter implements Closeable {
 	/**
 	 * Writes a property to the current component.
 	 * @param propertyName the property name (e.g. "version")
+	 * @param dataType the property's data type (e.g. "text")
 	 * @param value the property value
 	 * @throws IllegalStateException if there are no open components (
 	 * {@link #writeStartComponent(String)} must be called first) or if the last
 	 * method called was {@link #writeEndComponent()}.
 	 * @throws IOException if there's an I/O problem
 	 */
-	public void writeProperty(String propertyName, JCalValue value) throws IOException {
-		writeProperty(propertyName, new ICalParameters(), value);
+	public void writeProperty(String propertyName, Value dataType, JCalValue value) throws IOException {
+		writeProperty(propertyName, new ICalParameters(), dataType, value);
 	}
 
 	/**
 	 * Writes a property to the current component.
 	 * @param propertyName the property name (e.g. "version")
 	 * @param parameters the parameters
+	 * @param dataType the property's data type (e.g. "text")
 	 * @param value the property value
 	 * @throws IllegalStateException if there are no open components (
 	 * {@link #writeStartComponent(String)} must be called first) or if the last
 	 * method called was {@link #writeEndComponent()}.
 	 * @throws IOException if there's an I/O problem
 	 */
-	public void writeProperty(String propertyName, ICalParameters parameters, JCalValue value) throws IOException {
+	public void writeProperty(String propertyName, ICalParameters parameters, Value dataType, JCalValue value) throws IOException {
 		if (stack.isEmpty()) {
 			throw new IllegalStateException("Call \"writeStartComponent\" first.");
 		}
@@ -199,7 +201,6 @@ public class JCalRawWriter implements Closeable {
 		jg.writeEndObject();
 
 		//write data type
-		Value dataType = value.getDataType();
 		jg.writeString((dataType == null) ? "unknown" : dataType.getValue().toLowerCase());
 
 		//write value

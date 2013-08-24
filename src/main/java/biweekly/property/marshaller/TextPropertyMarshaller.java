@@ -38,15 +38,12 @@ import biweekly.property.TextProperty;
  * @author Michael Angstadt
  */
 public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICalPropertyMarshaller<T> {
-	protected final Value dataType;
-
 	public TextPropertyMarshaller(Class<T> clazz, String propertyName) {
 		this(clazz, propertyName, Value.TEXT);
 	}
 
 	public TextPropertyMarshaller(Class<T> clazz, String propertyName, Value dataType) {
-		super(clazz, propertyName);
-		this.dataType = dataType;
+		super(clazz, propertyName, dataType);
 	}
 
 	@Override
@@ -56,28 +53,28 @@ public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICa
 	}
 
 	@Override
-	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
+	protected T _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 		return newInstance(value);
 	}
 
 	@Override
 	protected void _writeXml(T property, XCalElement element) {
-		element.append(dataType, property.getValue());
+		element.append(getDataType(property), property.getValue());
 	}
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		return newInstance(element.first(dataType));
+		return newInstance(element.first(defaultDataType));
 	}
 
 	@Override
 	protected JCalValue _writeJson(T property) {
-		return JCalValue.single(dataType, property.getValue());
+		return JCalValue.single(property.getValue());
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		return newInstance(value.getSingleValued());
 	}
 

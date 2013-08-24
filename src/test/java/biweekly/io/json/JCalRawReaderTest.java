@@ -76,34 +76,34 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN", value.getSingleValued());
 					break;
 				case 2:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("version", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("2.0", value.getSingleValued());
 					break;
 				case 3:
 					assertEquals(Arrays.asList("vcalendar", "vevent"), componentHierarchy);
 					assertEquals("summary", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("Networld+Interop Conference", value.getSingleValued());
 					break;
 				case 4:
 					assertEquals(Arrays.asList("vcalendar", "vevent"), componentHierarchy);
 					assertEquals("description", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("Networld+Interop Conference" + NEWLINE + "and Exhibit" + NEWLINE + "Atlanta World Congress Center" + NEWLINE + "Atlanta, Georgia", value.getSingleValued());
 					break;
 				}
@@ -155,13 +155,13 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("prodid1", value.getSingleValued());
 					break;
 				}
@@ -186,13 +186,13 @@ public class JCalRawReaderTest {
 
 		listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("prodid2", value.getSingleValued());
 					break;
 				}
@@ -234,13 +234,13 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("prodid", value.getSingleValued());
 					break;
 				}
@@ -290,13 +290,13 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("prodid", value.getSingleValued());
 					break;
 				}
@@ -327,20 +327,20 @@ public class JCalRawReaderTest {
 
 		listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("prodid", value.getSingleValued());
 					break;
 				case 2:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("version", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("2.0", value.getSingleValued());
 					break;
 				}
@@ -384,13 +384,13 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar", "vevent"), componentHierarchy);
 					assertEquals("summary", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("summary-value", value.getSingleValued());
 					break;
 				}
@@ -443,13 +443,13 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("prodid1", value.getSingleValued());
 					break;
 				}
@@ -471,13 +471,13 @@ public class JCalRawReaderTest {
 
 		listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("prodid2", value.getSingleValued());
 					break;
 				}
@@ -524,7 +524,7 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				//empty
 			}
 
@@ -544,7 +544,7 @@ public class JCalRawReaderTest {
 
 		listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				//empty
 			}
 
@@ -608,41 +608,41 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("prop1", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("value1", value.getSingleValued());
 					break;
 				case 2:
 					assertEquals(Arrays.asList("vcalendar", "comp1"), componentHierarchy);
 					assertEquals("prop2", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("value2", value.getSingleValued());
 					break;
 				case 3:
 					assertEquals(Arrays.asList("vcalendar", "comp1", "comp2"), componentHierarchy);
 					assertEquals("prop3", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("value3", value.getSingleValued());
 					break;
 				case 4:
 					assertEquals(Arrays.asList("vcalendar", "comp1", "comp2", "comp3"), componentHierarchy);
 					assertEquals("prop4", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("value4", value.getSingleValued());
 					break;
 				case 5:
 					assertEquals(Arrays.asList("vcalendar", "comp1", "comp4"), componentHierarchy);
 					assertEquals("prop5", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("value5", value.getSingleValued());
 					break;
 				}
@@ -698,20 +698,20 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("request-status", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals(Arrays.asList("3.7", "Invalid Calendar User", "ATTENDEE:mailto:jsmith@example.org"), value.getStructured());
 					break;
 				case 2:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("request-status", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals(Arrays.asList(), value.getStructured());
 					break;
 				}
@@ -752,20 +752,20 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("categories", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals(Arrays.asList("one", "two", "three"), value.getMultivalued());
 					break;
 				case 2:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("categories", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals(Arrays.asList("one"), value.getMultivalued());
 					break;
 				}
@@ -806,13 +806,13 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("rrule", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 
 					ListMultimap<String, String> expected = new ListMultimap<String, String>();
 					expected.put("freq", "WEEKLY");
@@ -825,7 +825,7 @@ public class JCalRawReaderTest {
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("rrule", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 
 					expected = new ListMultimap<String, String>();
 					assertEquals(expected, value.getObject());
@@ -867,13 +867,13 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("prop", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 
 					List<JsonValue> expected = new ArrayList<JsonValue>();
 					expected.add(new JsonValue(false));
@@ -927,13 +927,13 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("prop", name);
 					assertTrue(parameters.isEmpty());
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 
 					List<JsonValue> expected = new ArrayList<JsonValue>();
 					Map<String, JsonValue> m = new HashMap<String, JsonValue>();
@@ -984,13 +984,13 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("prop", name);
 					assertTrue(parameters.isEmpty());
-					assertNull(value.getDataType());
+					assertNull(dataType);
 					assertEquals("value", value.getSingleValued());
 					break;
 				}
@@ -1028,13 +1028,13 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("prop", name);
 					assertTrue(parameters.isEmpty());
-					assertTrue(Value.get("foo") == value.getDataType());
+					assertTrue(Value.get("foo") == dataType);
 					assertEquals("value", value.getSingleValued());
 					break;
 				}
@@ -1066,7 +1066,7 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				//empty
 			}
 
@@ -1093,7 +1093,7 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				//empty
 			}
 
@@ -1124,7 +1124,7 @@ public class JCalRawReaderTest {
 
 		TestListener listener = new TestListener() {
 			@Override
-			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+			protected void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
@@ -1133,7 +1133,7 @@ public class JCalRawReaderTest {
 					assertEquals(Arrays.asList("one"), parameters.get("a"));
 					assertEquals(Arrays.asList("two"), parameters.get("b"));
 					assertEquals(Arrays.asList("three", "four"), parameters.get("c"));
-					assertEquals(Value.TEXT, value.getDataType());
+					assertEquals(Value.TEXT, dataType);
 					assertEquals("value", value.getSingleValued());
 					break;
 				}
@@ -1157,9 +1157,9 @@ public class JCalRawReaderTest {
 	private abstract class TestListener implements JCalDataStreamListener {
 		protected int calledReadProperty = 0, calledReadComponent = 0;
 
-		public final void readProperty(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value) {
+		public final void readProperty(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value) {
 			calledReadProperty++;
-			readProperty_(componentHierarchy, name, parameters, value);
+			readProperty_(componentHierarchy, name, parameters, dataType, value);
 		}
 
 		public final void readComponent(List<String> parentHierarchy, String name) {
@@ -1167,7 +1167,7 @@ public class JCalRawReaderTest {
 			readComponent_(parentHierarchy, name);
 		}
 
-		protected abstract void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, JCalValue value);
+		protected abstract void readProperty_(List<String> componentHierarchy, String name, ICalParameters parameters, Value dataType, JCalValue value);
 
 		protected abstract void readComponent_(List<String> parentHierarchy, String name);
 	}

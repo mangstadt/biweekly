@@ -80,7 +80,7 @@ public class UtcOffsetPropertyMarshallerTest {
 		String value = "+0130";
 		ICalParameters params = new ICalParameters();
 
-		Result<UtcOffsetPropertyImpl> result = marshaller.parseText(value, params);
+		Result<UtcOffsetPropertyImpl> result = marshaller.parseText(value, Value.UTC_OFFSET, params);
 
 		UtcOffsetProperty prop = result.getValue();
 		assertIntEquals(1, prop.getHourOffset());
@@ -93,7 +93,7 @@ public class UtcOffsetPropertyMarshallerTest {
 		String value = "invalid";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, params);
+		marshaller.parseText(value, Value.UTC_OFFSET, params);
 	}
 
 	@Test
@@ -138,7 +138,6 @@ public class UtcOffsetPropertyMarshallerTest {
 		UtcOffsetPropertyImpl prop = new UtcOffsetPropertyImpl(1, 30);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.UTC_OFFSET, actual.getDataType());
 		assertEquals("+01:30", actual.getSingleValued());
 	}
 
@@ -147,13 +146,12 @@ public class UtcOffsetPropertyMarshallerTest {
 		UtcOffsetPropertyImpl prop = new UtcOffsetPropertyImpl(null, null);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.UTC_OFFSET, actual.getDataType());
 		assertEquals("+00:00", actual.getSingleValued());
 	}
 
 	@Test
 	public void parseJson() {
-		Result<UtcOffsetPropertyImpl> result = marshaller.parseJson(JCalValue.single(Value.UTC_OFFSET, "+01:30"), new ICalParameters());
+		Result<UtcOffsetPropertyImpl> result = marshaller.parseJson(JCalValue.single("+01:30"), Value.UTC_OFFSET, new ICalParameters());
 
 		UtcOffsetPropertyImpl prop = result.getValue();
 		assertIntEquals(1, prop.getHourOffset());
@@ -163,7 +161,7 @@ public class UtcOffsetPropertyMarshallerTest {
 
 	@Test(expected = CannotParseException.class)
 	public void parseJson_invalid() {
-		marshaller.parseJson(JCalValue.single(Value.UTC_OFFSET, "invalid"), new ICalParameters());
+		marshaller.parseJson(JCalValue.single("invalid"), Value.UTC_OFFSET, new ICalParameters());
 	}
 
 	private class UtcOffsetPropertyMarshallerImpl extends UtcOffsetPropertyMarshaller<UtcOffsetPropertyImpl> {

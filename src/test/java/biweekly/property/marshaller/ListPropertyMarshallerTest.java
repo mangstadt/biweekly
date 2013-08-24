@@ -86,7 +86,7 @@ public class ListPropertyMarshallerTest {
 		String value = "one,two,three\\,four";
 		ICalParameters params = new ICalParameters();
 
-		Result<ListPropertyImpl> result = marshaller.parseText(value, params);
+		Result<ListPropertyImpl> result = marshaller.parseText(value, Value.TEXT, params);
 
 		assertEquals(Arrays.asList("one", "two", "three,four"), result.getValue().getValues());
 		assertWarnings(0, result.getWarnings());
@@ -97,7 +97,7 @@ public class ListPropertyMarshallerTest {
 		String value = "";
 		ICalParameters params = new ICalParameters();
 
-		Result<ListPropertyImpl> result = marshaller.parseText(value, params);
+		Result<ListPropertyImpl> result = marshaller.parseText(value, Value.TEXT, params);
 
 		assertEquals(0, result.getValue().getValues().size());
 		assertWarnings(0, result.getWarnings());
@@ -160,26 +160,12 @@ public class ListPropertyMarshallerTest {
 		prop.addValue("three");
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.TEXT, actual.getDataType());
 		assertEquals(Arrays.asList("one", "two", "three"), actual.getMultivalued());
 	}
 
 	@Test
-	public void writeJson_data_type() {
-		ListPropertyMarshallerImpl marshaller = new ListPropertyMarshallerImpl(Value.INTEGER);
-		ListPropertyImpl prop = new ListPropertyImpl();
-		prop.addValue("1");
-		prop.addValue("2");
-		prop.addValue("3");
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.INTEGER, actual.getDataType());
-		assertEquals(Arrays.asList("1", "2", "3"), actual.getMultivalued());
-	}
-
-	@Test
 	public void parseJson() {
-		Result<ListPropertyImpl> result = marshaller.parseJson(JCalValue.multi(Value.TEXT, "one", "two", "three"), new ICalParameters());
+		Result<ListPropertyImpl> result = marshaller.parseJson(JCalValue.multi("one", "two", "three"), Value.TEXT, new ICalParameters());
 
 		ListPropertyImpl prop = result.getValue();
 		assertEquals(Arrays.asList("one", "two", "three"), prop.getValues());
@@ -196,7 +182,7 @@ public class ListPropertyMarshallerTest {
 		}
 
 		@Override
-		protected ListPropertyImpl newInstance(ICalParameters parameters) {
+		protected ListPropertyImpl newInstance(Value dataType, ICalParameters parameters) {
 			return new ListPropertyImpl();
 		}
 
@@ -206,7 +192,7 @@ public class ListPropertyMarshallerTest {
 		}
 
 		@Override
-		protected String readValue(String value, ICalParameters parameters, List<String> warnings) {
+		protected String readValue(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 			return value;
 		}
 	}

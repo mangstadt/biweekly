@@ -63,7 +63,7 @@ public class XmlMarshallerTest {
 		String value = "<element xmlns=\"http://example.com\"/>";
 		ICalParameters params = new ICalParameters();
 
-		Result<Xml> result = marshaller.parseText(value, params);
+		Result<Xml> result = marshaller.parseText(value, Value.TEXT, params);
 
 		Document expected = XmlUtils.toDocument(value);
 
@@ -77,7 +77,7 @@ public class XmlMarshallerTest {
 		String value = "invalid";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, params);
+		marshaller.parseText(value, Value.TEXT, params);
 	}
 
 	@Test
@@ -112,7 +112,6 @@ public class XmlMarshallerTest {
 		Xml prop = new Xml("<element xmlns=\"http://example.com\"/>");
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.TEXT, actual.getDataType());
 		assertEquals("<element xmlns=\"http://example.com\"/>", actual.getSingleValued());
 	}
 
@@ -121,14 +120,13 @@ public class XmlMarshallerTest {
 		Xml prop = new Xml((Document) null);
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.TEXT, actual.getDataType());
 		assertTrue(actual.getValues().get(0).isNull());
 	}
 
 	@Test
 	public void parseJson() throws Throwable {
 		String xml = "<element xmlns=\"http://example.com\"/>";
-		Result<Xml> result = marshaller.parseJson(JCalValue.single(Value.TEXT, xml), new ICalParameters());
+		Result<Xml> result = marshaller.parseJson(JCalValue.single(xml), Value.TEXT, new ICalParameters());
 
 		Document expected = XmlUtils.toDocument(xml);
 		Xml prop = result.getValue();
@@ -138,6 +136,6 @@ public class XmlMarshallerTest {
 
 	@Test(expected = CannotParseException.class)
 	public void parseJson_invalid() throws Throwable {
-		marshaller.parseJson(JCalValue.single(Value.TEXT, "invalid"), new ICalParameters());
+		marshaller.parseJson(JCalValue.single("invalid"), Value.TEXT, new ICalParameters());
 	}
 }

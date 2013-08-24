@@ -52,12 +52,10 @@ public class AttachmentMarshallerTest {
 	public void prepareParameters_uri() {
 		Attachment prop = new Attachment("image/png", "http://example.com/image.png");
 		prop.getParameters().setEncoding(Encoding.BASE64); //should be cleared
-		prop.getParameters().setValue(Value.BINARY); //should be cleared
 
 		ICalParameters params = marshaller.prepareParameters(prop);
 
 		assertEquals("image/png", params.getFormatType());
-		assertNull(params.getValue());
 		assertNull(params.getEncoding());
 	}
 
@@ -68,8 +66,19 @@ public class AttachmentMarshallerTest {
 		ICalParameters params = marshaller.prepareParameters(prop);
 
 		assertEquals("image/png", params.getFormatType());
-		assertEquals(Value.BINARY, params.getValue());
 		assertEquals(Encoding.BASE64, params.getEncoding());
+	}
+
+	@Test
+	public void getDataType_uri() {
+		Attachment prop = new Attachment("image/png", "http://example.com/image.png");
+		assertEquals(Value.URI, marshaller.getDataType(prop));
+	}
+
+	@Test
+	public void getDataType_data() {
+		Attachment prop = new Attachment("image/png", "data".getBytes());
+		assertEquals(Value.BINARY, marshaller.getDataType(prop));
 	}
 
 	@Test
@@ -97,7 +106,7 @@ public class AttachmentMarshallerTest {
 		String value = "http://example.com/image.png";
 		ICalParameters params = new ICalParameters();
 
-		Result<Attachment> result = marshaller.parseText(value, params);
+		Result<Attachment> result = marshaller.parseText(value, Value.URI, params);
 
 		Attachment prop = result.getValue();
 		assertEquals("http://example.com/image.png", prop.getUri());
@@ -110,34 +119,30 @@ public class AttachmentMarshallerTest {
 		String value = Base64.encodeBase64String("data".getBytes());
 		ICalParameters params = new ICalParameters();
 
-		params.setValue(Value.BINARY);
 		params.setEncoding(null);
-		Result<Attachment> result = marshaller.parseText(value, params);
+		Result<Attachment> result = marshaller.parseText(value, Value.BINARY, params);
 		Attachment prop = result.getValue();
 		assertNull(prop.getUri());
 		assertArrayEquals("data".getBytes(), prop.getData());
 		assertWarnings(0, result.getWarnings());
 
-		params.setValue(null);
 		params.setEncoding(Encoding.BASE64);
-		result = marshaller.parseText(value, params);
+		result = marshaller.parseText(value, Value.URI, params);
 		prop = result.getValue();
 		assertNull(prop.getUri());
 		assertArrayEquals("data".getBytes(), prop.getData());
 		assertWarnings(0, result.getWarnings());
 
-		params.setValue(Value.BINARY);
 		params.setEncoding(Encoding.BASE64);
-		result = marshaller.parseText(value, params);
+		result = marshaller.parseText(value, Value.BINARY, params);
 		prop = result.getValue();
 		assertNull(prop.getUri());
 		assertArrayEquals("data".getBytes(), prop.getData());
 		assertWarnings(0, result.getWarnings());
 
 		//treats base64 as a URI if no parameters are set
-		params.setValue(null);
 		params.setEncoding(null);
-		result = marshaller.parseText(value, params);
+		result = marshaller.parseText(value, Value.URI, params);
 		prop = result.getValue();
 		assertEquals(Base64.encodeBase64String("data".getBytes()), prop.getUri());
 		assertNull(prop.getData());
@@ -182,7 +187,6 @@ public class AttachmentMarshallerTest {
 		Attachment prop = new Attachment("image/png", "http://example.com/image.png");
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.URI, actual.getDataType());
 		assertEquals("http://example.com/image.png", actual.getSingleValued());
 	}
 
@@ -191,13 +195,12 @@ public class AttachmentMarshallerTest {
 		Attachment prop = new Attachment("image/png", "data".getBytes());
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.BINARY, actual.getDataType());
 		assertEquals(Base64.encodeBase64String("data".getBytes()), actual.getSingleValued());
 	}
 
 	@Test
 	public void parseJson_uri() {
-		Result<Attachment> result = marshaller.parseJson(JCalValue.single(Value.URI, "http://example.com/image.png"), new ICalParameters());
+		Result<Attachment> result = marshaller.parseJson(JCalValue.single("http://example.com/image.png"), Value.URI, new ICalParameters());
 
 		Attachment prop = result.getValue();
 		assertEquals("http://example.com/image.png", prop.getUri());
@@ -207,7 +210,7 @@ public class AttachmentMarshallerTest {
 
 	@Test
 	public void parseJson_data() {
-		Result<Attachment> result = marshaller.parseJson(JCalValue.single(Value.BINARY, Base64.encodeBase64String("data".getBytes())), new ICalParameters());
+		Result<Attachment> result = marshaller.parseJson(JCalValue.single(Base64.encodeBase64String("data".getBytes())), Value.BINARY, new ICalParameters());
 
 		Attachment prop = result.getValue();
 		assertNull(prop.getUri());

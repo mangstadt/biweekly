@@ -60,26 +60,32 @@ import biweekly.util.StringUtils.JoinMapCallback;
 public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	protected final Class<T> clazz;
 	protected final String propertyName;
+	protected final Value defaultDataType;
 	protected final QName qname;
 
 	/**
 	 * Creates a new marshaller.
 	 * @param clazz the property class
 	 * @param propertyName the property name (e.g. "VERSION")
+	 * @param defaultDataType the property's default data type (e.g. "text") or
+	 * null if unknown
 	 */
-	public ICalPropertyMarshaller(Class<T> clazz, String propertyName) {
-		this(clazz, propertyName, new QName(XCAL_NS, propertyName.toLowerCase()));
+	public ICalPropertyMarshaller(Class<T> clazz, String propertyName, Value defaultDataType) {
+		this(clazz, propertyName, defaultDataType, new QName(XCAL_NS, propertyName.toLowerCase()));
 	}
 
 	/**
 	 * Creates a new marshaller.
 	 * @param clazz the property class
 	 * @param propertyName the property name (e.g. "VERSION")
+	 * @param defaultDataType the property's default data type (e.g. "text") or
+	 * null if unknown
 	 * @param qname the XML element name and namespace (used for xCal documents)
 	 */
-	public ICalPropertyMarshaller(Class<T> clazz, String propertyName, QName qname) {
+	public ICalPropertyMarshaller(Class<T> clazz, String propertyName, Value defaultDataType, QName qname) {
 		this.clazz = clazz;
 		this.propertyName = propertyName;
+		this.defaultDataType = defaultDataType;
 		this.qname = qname;
 	}
 
@@ -97,6 +103,14 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 */
 	public String getPropertyName() {
 		return propertyName;
+	}
+
+	/**
+	 * Gets the property's default data type.
+	 * @return the default data type (e.g. "text") or null if unknown
+	 */
+	public Value getDefaultDataType() {
+		return defaultDataType;
 	}
 
 	/**
@@ -119,6 +133,15 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		ICalParameters copy = new ICalParameters(property.getParameters());
 		_prepareParameters(property, copy);
 		return copy;
+	}
+
+	/**
+	 * Determines the data type of a property instance.
+	 * @param property the property
+	 * @return the data type or null if unknown
+	 */
+	public final Value getDataType(T property) {
+		return _getDataType(property);
 	}
 
 	/**
@@ -158,6 +181,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	/**
 	 * Unmarshals a property's value.
 	 * @param value the value
+	 * @param dataType the data type
 	 * @param parameters the property's parameters
 	 * @return the unmarshalled property object
 	 * @throws CannotParseException if the marshaller could not parse the
@@ -165,9 +189,9 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	public final Result<T> parseText(String value, ICalParameters parameters) {
+	public final Result<T> parseText(String value, Value dataType, ICalParameters parameters) {
 		List<String> warnings = new ArrayList<String>(0);
-		T property = _parseText(value, parameters, warnings);
+		T property = _parseText(value, dataType, parameters, warnings);
 		property.setParameters(parameters);
 		return new Result<T>(property, warnings);
 	}
@@ -194,6 +218,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	/**
 	 * Unmarshals a property's value from a JSON data stream (jCal).
 	 * @param value the property's JSON value
+	 * @param dataType the data type
 	 * @param parameters the property's parameters
 	 * @return the unmarshalled property object
 	 * @throws CannotParseException if the marshaller could not parse the
@@ -201,9 +226,9 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	public final Result<T> parseJson(JCalValue value, ICalParameters parameters) {
+	public final Result<T> parseJson(JCalValue value, Value dataType, ICalParameters parameters) {
 		List<String> warnings = new ArrayList<String>(0);
-		T property = _parseJson(value, parameters, warnings);
+		T property = _parseJson(value, dataType, parameters, warnings);
 		property.setParameters(parameters);
 		return new Result<T>(property, warnings);
 	}
@@ -217,6 +242,16 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 */
 	protected void _prepareParameters(T property, ICalParameters copy) {
 		//do nothing
+	}
+
+	/**
+	 * Determines the data type of a property instance. If this method is not
+	 * overridden, it will return the property's default data type.
+	 * @param property the property
+	 * @return the data type or null if unknown
+	 */
+	protected Value _getDataType(T property) {
+		return defaultDataType;
 	}
 
 	/**
@@ -250,13 +285,13 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 */
 	protected JCalValue _writeJson(T property) {
 		String value = writeText(property);
-		Value dataType = property.getParameters().getValue();
-		return JCalValue.single(dataType, value);
+		return JCalValue.single(value);
 	}
 
 	/**
 	 * Unmarshals a property's value.
 	 * @param value the value
+	 * @param dataType the data type
 	 * @param parameters the property's parameters
 	 * @param warnings allows the programmer to alert the user to any
 	 * note-worthy (but non-critical) issues that occurred during the
@@ -267,7 +302,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	protected abstract T _parseText(String value, ICalParameters parameters, List<String> warnings);
+	protected abstract T _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings);
 
 	/**
 	 * Unmarshals a property's value from an XML document (xCal).
@@ -291,6 +326,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	/**
 	 * Unmarshals a property's value from a JSON data stream (jCal).
 	 * @param value the property's JSON value
+	 * @param dataType the data type
 	 * @param parameters the property's parameters
 	 * @param warnings allows the programmer to alert the user to any
 	 * note-worthy (but non-critical) issues that occurred during the
@@ -301,12 +337,12 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
-		parameters.setValue(value.getDataType());
-		return _parseText(jcalValueToString(value), parameters, warnings);
+	protected T _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+		parameters.setValue(dataType);
+		return _parseText(jcalValueToString(value), dataType, parameters, warnings);
 	}
 
-	private String jcalValueToString(JCalValue value) {
+	protected String jcalValueToString(JCalValue value) {
 		if (value.getValues().size() > 1) {
 			List<String> multi = value.getMultivalued();
 			if (multi != null) {

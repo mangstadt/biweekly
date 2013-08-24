@@ -25,6 +25,7 @@ import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.io.json.JCalRawReader.JCalDataStreamListener;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
@@ -216,7 +217,7 @@ public class JCalReader implements Closeable {
 	private class JCalDataStreamListenerImpl implements JCalDataStreamListener {
 		private final Map<List<String>, ICalComponent> components = new HashMap<List<String>, ICalComponent>();
 
-		public void readProperty(List<String> componentHierarchy, String propertyName, ICalParameters parameters, JCalValue value) {
+		public void readProperty(List<String> componentHierarchy, String propertyName, ICalParameters parameters, Value dataType, JCalValue value) {
 			//get the component that the property belongs to
 			ICalComponent parent = components.get(componentHierarchy);
 
@@ -224,7 +225,7 @@ public class JCalReader implements Closeable {
 			ICalPropertyMarshaller<? extends ICalProperty> m = findPropertyMarshaller(propertyName);
 			ICalProperty property = null;
 			try {
-				Result<? extends ICalProperty> result = m.parseJson(value, parameters);
+				Result<? extends ICalProperty> result = m.parseJson(value, dataType, parameters);
 
 				for (String warning : result.getWarnings()) {
 					addWarning(warning, propertyName);
@@ -244,7 +245,7 @@ public class JCalReader implements Closeable {
 					addWarning("Property value could not be unmarshalled.\n  Value: " + value + "\n  Reason: " + e.getMessage(), propertyName);
 				}
 
-				Result<? extends ICalProperty> result = new RawPropertyMarshaller(propertyName).parseJson(value, parameters);
+				Result<? extends ICalProperty> result = new RawPropertyMarshaller(propertyName).parseJson(value, dataType, parameters);
 				for (String warning : result.getWarnings()) {
 					addWarning(warning, propertyName);
 				}

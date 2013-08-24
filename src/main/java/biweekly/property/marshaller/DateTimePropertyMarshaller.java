@@ -41,7 +41,7 @@ import biweekly.property.DateTimeProperty;
  */
 public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> extends ICalPropertyMarshaller<T> {
 	public DateTimePropertyMarshaller(Class<T> clazz, String propertyName) {
-		super(clazz, propertyName);
+		super(clazz, propertyName, Value.DATE_TIME);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 	}
 
 	@Override
-	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
+	protected T _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
 		return parse(value, parameters, warnings);
@@ -67,12 +67,12 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 			return;
 		}
 
-		element.append(Value.DATE_TIME, date(value).extended(true).write()); //should always be in UTC time
+		element.append(defaultDataType, date(value).extended(true).write()); //should always be in UTC time
 	}
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		String value = element.first(Value.DATE_TIME);
+		String value = element.first(defaultDataType);
 		if (value == null) {
 			return newInstance(null);
 		}
@@ -84,11 +84,11 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 	protected JCalValue _writeJson(T property) {
 		Date value = property.getValue();
 		String dateStr = (value == null) ? null : date(value).extended(true).write();
-		return JCalValue.single(Value.DATE_TIME, dateStr);
+		return JCalValue.single(dateStr);
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		String valueStr = value.getSingleValued();
 
 		return parse(valueStr, parameters, warnings);

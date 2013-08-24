@@ -27,7 +27,6 @@ import biweekly.parameter.Value;
 import biweekly.property.CalendarScale;
 import biweekly.property.DateStart;
 import biweekly.property.ICalProperty;
-import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceDates;
 import biweekly.property.RecurrenceRule;
 import biweekly.property.RecurrenceRule.DayOfWeek;
@@ -332,8 +331,7 @@ public class JCalWriterTest {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
 		ical.addExperimentalProperty("X-NUMBER", "1");
-		RawProperty prop = ical.addExperimentalProperty("X-NUMBER", "2");
-		prop.getParameters().setValue(Value.INTEGER);
+		ical.addExperimentalProperty("X-NUMBER", Value.INTEGER, "2");
 
 		StringWriter sw = new StringWriter();
 		JCalWriter writer = new JCalWriter(sw);
@@ -613,7 +611,7 @@ public class JCalWriterTest {
 
 	private class TestPropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
 		public TestPropertyMarshaller() {
-			super(TestProperty.class, "X-TEST");
+			super(TestProperty.class, "X-TEST", Value.TEXT);
 		}
 
 		@Override
@@ -622,19 +620,19 @@ public class JCalWriterTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 			return new TestProperty(value);
 		}
 
 		@Override
 		protected JCalValue _writeJson(TestProperty property) {
-			return JCalValue.single(Value.TEXT, _writeText(property));
+			return JCalValue.single(_writeText(property));
 		}
 	}
 
 	private class SkipMeMarshaller extends ICalPropertyMarshaller<TestProperty> {
 		public SkipMeMarshaller() {
-			super(TestProperty.class, "NAME");
+			super(TestProperty.class, "NAME", null);
 		}
 
 		@Override
@@ -643,14 +641,14 @@ public class JCalWriterTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 			return new TestProperty(value);
 		}
 	}
 
 	private class MyVersionMarshaller extends ICalPropertyMarshaller<Version> {
 		public MyVersionMarshaller() {
-			super(Version.class, "VERSION");
+			super(Version.class, "VERSION", Value.TEXT);
 		}
 
 		@Override
@@ -659,13 +657,13 @@ public class JCalWriterTest {
 		}
 
 		@Override
-		protected Version _parseText(String value, ICalParameters parameters, List<String> warnings) {
+		protected Version _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 			return new Version(value);
 		}
 
 		@Override
 		protected JCalValue _writeJson(Version property) {
-			return JCalValue.single(Value.TEXT, _writeText(property));
+			return JCalValue.single(_writeText(property));
 		}
 	}
 

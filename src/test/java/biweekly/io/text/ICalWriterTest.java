@@ -29,6 +29,7 @@ import biweekly.parameter.CalendarUserType;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
+import biweekly.parameter.Value;
 import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.Classification;
@@ -389,6 +390,32 @@ public class ICalWriterTest {
 	}
 
 	@Test
+	public void data_types() throws Exception {
+		ICalendar ical = new ICalendar();
+		ical.addProperty(new TestProperty("one"));
+		ical.addProperty(new TestProperty("2"));
+
+		StringWriter sw = new StringWriter();
+		ICalWriter writer = new ICalWriter(sw);
+		writer.registerMarshaller(new DataTypePropertyMarshaller());
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected = 
+		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:2\\.0\r\n" +
+			"PRODID:.*?\r\n" +
+			"X-TEST:one\r\n" +
+			"X-TEST;VALUE=INTEGER:2\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		String actual = sw.toString();
+		assertRegex(expected, actual);
+	}
+
+	@Test
 	public void example1() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
@@ -627,7 +654,7 @@ public class ICalWriterTest {
 
 	private class TestPropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
 		public TestPropertyMarshaller() {
-			super(TestProperty.class, "X-TEST");
+			super(TestProperty.class, "X-TEST", null);
 		}
 
 		@Override
@@ -636,14 +663,14 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 			return new TestProperty(value);
 		}
 	}
 
 	private class BadNameMarshaller extends ICalPropertyMarshaller<TestProperty> {
 		public BadNameMarshaller() {
-			super(TestProperty.class, "BAD*NAME");
+			super(TestProperty.class, "BAD*NAME", null);
 		}
 
 		@Override
@@ -652,14 +679,14 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 			return new TestProperty(value);
 		}
 	}
 
 	private class SkipMeMarshaller extends ICalPropertyMarshaller<TestProperty> {
 		public SkipMeMarshaller() {
-			super(TestProperty.class, "NAME");
+			super(TestProperty.class, "NAME", null);
 		}
 
 		@Override
@@ -668,14 +695,14 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 			return new TestProperty(value);
 		}
 	}
 
 	private class MyVersionMarshaller extends ICalPropertyMarshaller<Version> {
 		public MyVersionMarshaller() {
-			super(Version.class, "VERSION");
+			super(Version.class, "VERSION", Value.TEXT);
 		}
 
 		@Override
@@ -684,7 +711,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected Version _parseText(String value, ICalParameters parameters, List<String> warnings) {
+		protected Version _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 			return new Version(value);
 		}
 	}
@@ -702,5 +729,29 @@ public class ICalWriterTest {
 
 	private class Party extends ICalComponent {
 		//empty
+	}
+
+	private class DataTypePropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
+		public DataTypePropertyMarshaller() {
+			super(TestProperty.class, "X-TEST", Value.TEXT);
+		}
+
+		@Override
+		protected Value _getDataType(TestProperty property) {
+			if (property.getValue().matches("\\d+")) {
+				return Value.INTEGER;
+			}
+			return Value.TEXT;
+		}
+
+		@Override
+		protected String _writeText(TestProperty property) {
+			return property.getValue();
+		}
+
+		@Override
+		protected TestProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+			return new TestProperty(value);
+		}
 	}
 }

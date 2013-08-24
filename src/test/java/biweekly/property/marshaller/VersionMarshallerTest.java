@@ -80,7 +80,7 @@ public class VersionMarshallerTest {
 		String value = "1.0;2.0";
 		ICalParameters params = new ICalParameters();
 
-		Result<Version> result = marshaller.parseText(value, params);
+		Result<Version> result = marshaller.parseText(value, Value.TEXT, params);
 
 		Version prop = result.getValue();
 		assertEquals("1.0", prop.getMinVersion());
@@ -93,7 +93,7 @@ public class VersionMarshallerTest {
 		String value = "2.0";
 		ICalParameters params = new ICalParameters();
 
-		Result<Version> result = marshaller.parseText(value, params);
+		Result<Version> result = marshaller.parseText(value, Value.TEXT, params);
 
 		Version prop = result.getValue();
 		assertNull(prop.getMinVersion());
@@ -122,13 +122,12 @@ public class VersionMarshallerTest {
 		Version prop = new Version("2.0");
 
 		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Value.TEXT, actual.getDataType());
 		assertEquals("2.0", actual.getSingleValued());
 	}
 
 	@Test
 	public void parseJson() {
-		Result<Version> result = marshaller.parseJson(JCalValue.single(Value.TEXT, "2.0"), new ICalParameters());
+		Result<Version> result = marshaller.parseJson(JCalValue.single("2.0"), Value.TEXT, new ICalParameters());
 
 		Version prop = result.getValue();
 		assertNull(prop.getMinVersion());

@@ -41,7 +41,7 @@ import biweekly.util.ICalDateFormatter;
  */
 public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> extends ICalPropertyMarshaller<T> {
 	public UtcOffsetPropertyMarshaller(Class<T> clazz, String propertyName) {
-		super(clazz, propertyName);
+		super(clazz, propertyName, Value.UTC_OFFSET);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 	}
 
 	@Override
-	protected T _parseText(String value, ICalParameters parameters, List<String> warnings) {
+	protected T _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 		return parse(value);
 	}
@@ -77,12 +77,12 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 			minute = 0;
 		}
 
-		element.append(Value.UTC_OFFSET, ICalDateFormatter.formatTimeZone(hour, minute, true));
+		element.append(getDataType(property), ICalDateFormatter.formatTimeZone(hour, minute, true));
 	}
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		String value = element.first(Value.UTC_OFFSET);
+		String value = element.first(defaultDataType);
 		return parse(value);
 	}
 
@@ -98,11 +98,11 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 			minute = 0;
 		}
 
-		return JCalValue.single(Value.UTC_OFFSET, ICalDateFormatter.formatTimeZone(hour, minute, true));
+		return JCalValue.single(ICalDateFormatter.formatTimeZone(hour, minute, true));
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		return parse(value.getSingleValued());
 	}
 

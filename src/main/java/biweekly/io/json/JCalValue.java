@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import biweekly.parameter.Value;
 import biweekly.property.Categories;
 import biweekly.property.RecurrenceRule;
 import biweekly.property.RequestStatus;
@@ -15,99 +14,88 @@ import biweekly.property.Summary;
 import biweekly.util.ListMultimap;
 
 /**
- * Holds the data type and value of a jCal property.
+ * Holds the value of a jCal property.
  * @author Michael Angstadt
  */
 public class JCalValue {
-	private final Value dataType;
 	private final List<JsonValue> values;
 
 	/**
 	 * Creates a new jCal value.
-	 * @param dataType the data type or null for "unknown"
 	 * @param values the values
 	 */
-	public JCalValue(Value dataType, List<JsonValue> values) {
-		this.dataType = dataType;
+	public JCalValue(List<JsonValue> values) {
 		this.values = Collections.unmodifiableList(values);
 	}
 
 	/**
 	 * Creates a new jCal value.
-	 * @param dataType the data type or null for "unknown"
 	 * @param values the values
 	 */
-	public JCalValue(Value dataType, JsonValue... values) {
-		this.dataType = dataType;
+	public JCalValue(JsonValue... values) {
 		this.values = Arrays.asList(values); //unmodifiable
 	}
 
 	/**
 	 * Creates a single-valued value.
-	 * @param dataType the data type or null for "unknown"
 	 * @param value the value
 	 * @return the jCal value
 	 */
-	public static JCalValue single(Value dataType, Object value) {
-		return new JCalValue(dataType, new JsonValue(value));
+	public static JCalValue single(Object value) {
+		return new JCalValue(new JsonValue(value));
 	}
 
 	/**
 	 * Creates a multi-valued value.
-	 * @param dataType the data type or null for "unknown"
 	 * @param values the values
 	 * @return the jCal value
 	 */
-	public static JCalValue multi(Value dataType, Object... values) {
-		return multi(dataType, Arrays.asList(values));
+	public static JCalValue multi(Object... values) {
+		return multi(Arrays.asList(values));
 	}
 
 	/**
 	 * Creates a multi-valued value.
-	 * @param dataType the data type or null for "unknown"
 	 * @param values the values
 	 * @return the jCal value
 	 */
-	public static JCalValue multi(Value dataType, List<?> values) {
+	public static JCalValue multi(List<?> values) {
 		List<JsonValue> multiValues = new ArrayList<JsonValue>(values.size());
 		for (Object value : values) {
 			multiValues.add(new JsonValue(value));
 		}
-		return new JCalValue(dataType, multiValues);
+		return new JCalValue(multiValues);
 	}
 
 	/**
 	 * Creates a structured value.
-	 * @param dataType the data type or null for "unknown"
 	 * @param values the values
 	 * @return the jCal value
 	 */
-	public static JCalValue structured(Value dataType, Object... values) {
-		return structured(dataType, Arrays.asList(values));
+	public static JCalValue structured(Object... values) {
+		return structured(Arrays.asList(values));
 	}
 
 	/**
 	 * Creates a structured value.
-	 * @param dataType the data type or null for "unknown"
 	 * @param values the values
 	 * @return the jCal value
 	 */
-	public static JCalValue structured(Value dataType, List<?> values) {
+	public static JCalValue structured(List<?> values) {
 		//TODO this should accept a "list of lists"
 		List<JsonValue> array = new ArrayList<JsonValue>(values.size());
 		for (Object value : values) {
 			array.add(new JsonValue(value));
 		}
-		return new JCalValue(dataType, new JsonValue(array));
+		return new JCalValue(new JsonValue(array));
 	}
 
 	/**
 	 * Creates an object value.
-	 * @param dataType the data type or null for "unknown"
 	 * @param value the object
 	 * @return the jCal value
 	 */
-	public static JCalValue object(Value dataType, ListMultimap<String, Object> value) {
+	public static JCalValue object(ListMultimap<String, Object> value) {
 		Map<String, JsonValue> object = new LinkedHashMap<String, JsonValue>();
 		for (Map.Entry<String, List<Object>> entry : value) {
 			String key = entry.getKey();
@@ -125,15 +113,7 @@ public class JCalValue {
 			}
 			object.put(key, v);
 		}
-		return new JCalValue(dataType, new JsonValue(object));
-	}
-
-	/**
-	 * Gets the jCard data type
-	 * @return the data type or null for "unknown"
-	 */
-	public Value getDataType() {
-		return dataType;
+		return new JCalValue(new JsonValue(object));
 	}
 
 	/**

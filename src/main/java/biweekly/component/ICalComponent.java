@@ -5,6 +5,7 @@ import java.util.List;
 
 import biweekly.ICalendar;
 import biweekly.component.ValidationWarnings.WarningsGroup;
+import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.util.ListMultimap;
@@ -159,7 +160,18 @@ public abstract class ICalComponent {
 	 * @return the property object that was created
 	 */
 	public RawProperty addExperimentalProperty(String name, String value) {
-		RawProperty raw = new RawProperty(name, value); //TODO rename to XProperty
+		return addExperimentalProperty(name, null, value);
+	}
+
+	/**
+	 * Adds an experimental property to this component.
+	 * @param name the property name (e.g. "X-ALT-DESC")
+	 * @param dataType the property's data type (e.g. "text") or null if unknown
+	 * @param value the property value
+	 * @return the property object that was created
+	 */
+	public RawProperty addExperimentalProperty(String name, Value dataType, String value) {
+		RawProperty raw = new RawProperty(name, dataType, value);
 		addProperty(raw);
 		return raw;
 	}
@@ -172,10 +184,20 @@ public abstract class ICalComponent {
 	 * @return the property object that was created
 	 */
 	public RawProperty setExperimentalProperty(String name, String value) {
+		return setExperimentalProperty(name, null, value);
+	}
+
+	/**
+	 * Adds an experimental property to this component, removing all existing
+	 * properties that have the same name.
+	 * @param name the property name (e.g. "X-ALT-DESC")
+	 * @param dataType the property's data type (e.g. "text") or null if unknown
+	 * @param value the property value
+	 * @return the property object that was created
+	 */
+	public RawProperty setExperimentalProperty(String name, Value dataType, String value) {
 		removeExperimentalProperty(name);
-		RawProperty raw = new RawProperty(name, value);
-		addProperty(raw);
-		return raw;
+		return addExperimentalProperty(name, dataType, value);
 	}
 
 	/**

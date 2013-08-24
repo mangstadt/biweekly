@@ -41,7 +41,7 @@ import biweekly.util.Duration;
  */
 public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationProperty> {
 	public DurationPropertyMarshaller() {
-		super(DurationProperty.class, "DURATION");
+		super(DurationProperty.class, "DURATION", Value.DURATION);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationP
 	}
 
 	@Override
-	protected DurationProperty _parseText(String value, ICalParameters parameters, List<String> warnings) {
+	protected DurationProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 		return parse(value);
 	}
@@ -60,13 +60,13 @@ public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationP
 	protected void _writeXml(DurationProperty property, XCalElement element) {
 		Duration value = property.getValue();
 		if (value != null) {
-			element.append(Value.DURATION, value.toString());
+			element.append(getDataType(property), value.toString());
 		}
 	}
 
 	@Override
 	protected DurationProperty _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		String value = element.first(Value.DURATION);
+		String value = element.first(defaultDataType);
 		return parse(value);
 	}
 
@@ -74,11 +74,11 @@ public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationP
 	protected JCalValue _writeJson(DurationProperty property) {
 		Duration value = property.getValue();
 		String valueStr = (value == null) ? null : value.toString();
-		return JCalValue.single(Value.DURATION, valueStr);
+		return JCalValue.single(valueStr);
 	}
 
 	@Override
-	protected DurationProperty _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+	protected DurationProperty _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		String valueStr = value.getSingleValued();
 		return parse(valueStr);
 	}

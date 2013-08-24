@@ -6,6 +6,7 @@ import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -13,6 +14,7 @@ import java.io.StringReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -35,6 +37,7 @@ import biweekly.parameter.CalendarUserType;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
+import biweekly.parameter.Value;
 import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.ICalProperty;
@@ -684,6 +687,42 @@ public class ICalReaderTest {
 	}
 
 	@Test
+	public void data_types() throws Throwable {
+		//@formatter:off
+		String ical =
+		"BEGIN:VCALENDAR\r\n" +
+			"PRODID:prodid\r\n" +
+			"VERSION:2.0\r\n" +
+			"X-TEST:one\r\n" +
+			"X-TEST;VALUE=INTEGER:one\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		ICalReader reader = new ICalReader(new StringReader(ical));
+		reader.registerMarshaller(new TestPropertyMarshaller());
+
+		ICalendar icalendar = reader.readNext();
+
+		assertEquals("prodid", icalendar.getProductId().getValue());
+		assertEquals("2.0", icalendar.getVersion().getMaxVersion());
+
+		Iterator<TestProperty> it = icalendar.getProperties(TestProperty.class).iterator();
+
+		TestProperty prop = it.next();
+		assertEquals(Value.TEXT, prop.parsedDataType);
+		assertNull(prop.getParameters().getValue());
+
+		prop = it.next();
+		assertEquals(Value.INTEGER, prop.parsedDataType);
+		assertNull(prop.getParameters().getValue());
+
+		assertFalse(it.hasNext());
+
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
+	}
+
+	@Test
 	public void outlook2010() throws Throwable {
 		ICalReader reader = new ICalReader(getClass().getResourceAsStream("outlook-2010.ics"));
 		ICalendar ical = reader.readNext();
@@ -1084,7 +1123,7 @@ public class ICalReaderTest {
 
 	private class TestPropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
 		public TestPropertyMarshaller() {
-			super(TestProperty.class, "X-TEST");
+			super(TestProperty.class, "X-TEST", Value.TEXT);
 		}
 
 		@Override
@@ -1093,7 +1132,7 @@ public class ICalReaderTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 			TestProperty prop = new TestProperty();
 			Integer number = null;
 			if (value.equals("one")) {
@@ -1111,12 +1150,14 @@ public class ICalReaderTest {
 				throw new CannotParseException("wat");
 			}
 			prop.setNumber(number);
+			prop.setParsedDataType(dataType);
 			return prop;
 		}
 	}
 
 	private class TestProperty extends ICalProperty {
 		private Integer number;
+		private Value parsedDataType;
 
 		public Integer getNumber() {
 			return number;
@@ -1124,6 +1165,10 @@ public class ICalReaderTest {
 
 		public void setNumber(Integer number) {
 			this.number = number;
+		}
+
+		public void setParsedDataType(Value parsedDataType) {
+			this.parsedDataType = parsedDataType;
 		}
 	}
 
@@ -1145,7 +1190,7 @@ public class ICalReaderTest {
 	private class MyProductIdMarshaller extends ICalPropertyMarshaller<ProductId> {
 
 		public MyProductIdMarshaller() {
-			super(ProductId.class, "PRODID");
+			super(ProductId.class, "PRODID", Value.TEXT);
 		}
 
 		@Override
@@ -1154,7 +1199,7 @@ public class ICalReaderTest {
 		}
 
 		@Override
-		protected ProductId _parseText(String value, ICalParameters parameters, List<String> warnings) {
+		protected ProductId _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 			return new ProductId(value.toUpperCase());
 		}
 	}

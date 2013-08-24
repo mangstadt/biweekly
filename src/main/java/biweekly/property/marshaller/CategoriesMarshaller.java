@@ -1,6 +1,7 @@
 package biweekly.property.marshaller;
 
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Value;
 import biweekly.property.Categories;
 
 /*
@@ -38,7 +39,7 @@ public class CategoriesMarshaller extends TextListPropertyMarshaller<Categories>
 	}
 
 	@Override
-	public Categories newInstance(ICalParameters parameters) {
+	public Categories newInstance(Value dataType, ICalParameters parameters) {
 		return new Categories();
 	}
 }

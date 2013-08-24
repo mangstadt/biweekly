@@ -7,7 +7,6 @@ import static biweekly.util.TestUtils.buildTimezone;
 import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -331,7 +330,7 @@ public class ICalPropertyMarshallerTest {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
 		ICalParameters params = new ICalParameters();
 		params.put("PARAM", "value");
-		ICalPropertyMarshaller.Result<TestProperty> result = m.parseText("value", params);
+		ICalPropertyMarshaller.Result<TestProperty> result = m.parseText("value", Value.TEXT, params);
 
 		assertEquals(Arrays.asList("parseText"), result.getWarnings());
 		assertTrue(params == result.getValue().getParameters());
@@ -364,25 +363,13 @@ public class ICalPropertyMarshallerTest {
 		TestProperty prop = new TestProperty("value");
 
 		JCalValue actual = m.writeJson(prop);
-		assertNull(actual.getDataType());
-		assertEquals("value", actual.getSingleValued());
-	}
-
-	@Test
-	public void writeJson_with_value_parameter() {
-		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		TestProperty prop = new TestProperty("value");
-		prop.getParameters().setValue(Value.TEXT);
-
-		JCalValue actual = m.writeJson(prop);
-		assertEquals(Value.TEXT, actual.getDataType());
 		assertEquals("value", actual.getSingleValued());
 	}
 
 	@Test
 	public void parseJson_single() {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		Result<TestProperty> result = m.parseJson(JCalValue.single(Value.TEXT, "value"), new ICalParameters());
+		Result<TestProperty> result = m.parseJson(JCalValue.single("value"), Value.TEXT, new ICalParameters());
 
 		TestProperty prop = result.getValue();
 		assertEquals("value", prop.getValue());
@@ -393,7 +380,7 @@ public class ICalPropertyMarshallerTest {
 	@Test
 	public void parseJson_list() {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		Result<TestProperty> result = m.parseJson(JCalValue.multi(Value.TEXT, "value1", "val,;ue2"), new ICalParameters());
+		Result<TestProperty> result = m.parseJson(JCalValue.multi("value1", "val,;ue2"), Value.TEXT, new ICalParameters());
 
 		TestProperty prop = result.getValue();
 		assertEquals("value1,val\\,\\;ue2", prop.getValue());
@@ -404,7 +391,7 @@ public class ICalPropertyMarshallerTest {
 	@Test
 	public void parseJson_structured() {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		Result<TestProperty> result = m.parseJson(JCalValue.structured(Value.TEXT, "value1", "val,;ue2"), new ICalParameters());
+		Result<TestProperty> result = m.parseJson(JCalValue.structured("value1", "val,;ue2"), Value.TEXT, new ICalParameters());
 
 		TestProperty prop = result.getValue();
 		assertEquals("value1;val\\,\\;ue2", prop.getValue());
@@ -419,7 +406,7 @@ public class ICalPropertyMarshallerTest {
 		map.put("a", "one");
 		map.put("b", "two");
 		map.put("b", "three");
-		Result<TestProperty> result = m.parseJson(JCalValue.object(Value.TEXT, map), new ICalParameters());
+		Result<TestProperty> result = m.parseJson(JCalValue.object(map), Value.TEXT, new ICalParameters());
 
 		TestProperty prop = result.getValue();
 		assertEquals("a=one;b=two,three", prop.getValue());
@@ -429,7 +416,7 @@ public class ICalPropertyMarshallerTest {
 
 	private class ICalPropertyMarshallerImpl extends ICalPropertyMarshaller<TestProperty> {
 		private ICalPropertyMarshallerImpl() {
-			super(TestProperty.class, "TEST");
+			super(TestProperty.class, "TEST", Value.TEXT);
 		}
 
 		@Override
@@ -443,7 +430,7 @@ public class ICalPropertyMarshallerTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 			warnings.add("parseText");
 			return new TestProperty(value);
 		}

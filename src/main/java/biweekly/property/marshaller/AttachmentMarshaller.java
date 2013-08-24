@@ -41,18 +41,27 @@ import biweekly.util.Base64;
  */
 public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	public AttachmentMarshaller() {
-		super(Attachment.class, "ATTACH");
+		super(Attachment.class, "ATTACH", Value.URI);
 	}
 
 	@Override
 	protected void _prepareParameters(Attachment property, ICalParameters copy) {
 		if (property.getUri() != null) {
 			copy.setEncoding(null);
-			copy.setValue(null);
 		} else if (property.getData() != null) {
 			copy.setEncoding(Encoding.BASE64);
-			copy.setValue(Value.BINARY);
 		}
+	}
+
+	@Override
+	protected Value _getDataType(Attachment property) {
+		if (property.getUri() != null) {
+			return Value.URI;
+		}
+		if (property.getData() != null) {
+			return Value.BINARY;
+		}
+		return null;
 	}
 
 	@Override
@@ -67,11 +76,11 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	}
 
 	@Override
-	protected Attachment _parseText(String value, ICalParameters parameters, List<String> warnings) {
+	protected Attachment _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
 		Attachment attachment = new Attachment(null, (String) null);
-		if (parameters.getValue() == Value.BINARY || parameters.getEncoding() == Encoding.BASE64) {
+		if (dataType == Value.BINARY || parameters.getEncoding() == Encoding.BASE64) {
 			attachment.setData(Base64.decode(value));
 		} else {
 			attachment.setUri(value);
@@ -106,17 +115,17 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	@Override
 	protected JCalValue _writeJson(Attachment property) {
 		if (property.getData() != null) {
-			return JCalValue.single(Value.BINARY, Base64.encode(property.getData()));
+			return JCalValue.single(Base64.encode(property.getData()));
 		}
-		return JCalValue.single(Value.URI, property.getUri());
+		return JCalValue.single(property.getUri());
 	}
 
 	@Override
-	protected Attachment _parseJson(JCalValue value, ICalParameters parameters, List<String> warnings) {
+	protected Attachment _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
 		Attachment attachment = new Attachment(null, (String) null);
 
 		String valueStr = value.getSingleValued();
-		if (value.getDataType() == Value.BINARY) {
+		if (dataType == Value.BINARY) {
 			attachment.setData(Base64.decode(valueStr));
 		} else {
 			attachment.setUri(valueStr);

@@ -1,5 +1,7 @@
 package biweekly.property;
 
+import biweekly.parameter.Value;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -31,15 +33,25 @@ package biweekly.property;
  */
 public class RawProperty extends ICalProperty {
 	private String name;
+	private Value dataType;
 	private String value;
 
 	public RawProperty(String name, String value) {
+		this(name, null, value);
+	}
+
+	public RawProperty(String name, Value dataType, String value) {
 		this.name = name;
+		this.dataType = dataType;
 		this.value = value;
 	}
 
 	public String getValue() {
 		return value;
+	}
+
+	public Value getDataType() {
+		return dataType;
 	}
 
 	public String getName() {
