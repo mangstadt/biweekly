@@ -74,7 +74,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 	}
 
 	@Override
-	protected void _writeXml(DateOrDateTimeProperty property, XCalElement element) {
+	protected void _writeXml(T property, XCalElement element) {
 		Date value = property.getValue();
 		DateTimeComponents components = property.getRawComponents();
 		if (value == null && components == null) {
