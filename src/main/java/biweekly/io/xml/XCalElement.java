@@ -66,14 +66,6 @@ public class XCalElement {
 	}
 
 	/**
-	 * Gets the first value of the "unknown" data type.
-	 * @return the value or null if not found
-	 */
-	public String firstUnknown() {
-		return first((Value) null);
-	}
-
-	/**
 	 * Gets the value of the first child element with the given name.
 	 * @param localName the name of the element
 	 * @return the element's text or null if not found
@@ -110,15 +102,6 @@ public class XCalElement {
 			}
 		}
 		return childrenText;
-	}
-
-	/**
-	 * Adds a value with the "unknown" data type.
-	 * @param value the value
-	 * @return the created element
-	 */
-	public Element appendUnknown(String value) {
-		return append((Value) null, value);
 	}
 
 	/**

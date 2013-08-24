@@ -81,7 +81,7 @@ public class XCalElementTest {
 		"</prop>"
 		);
 		//@formatter:on
-		assertEquals("1", xcalElement.firstUnknown());
+		assertEquals("1", xcalElement.first((Value) null));
 	}
 
 	@Test
@@ -294,7 +294,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void appendUnknown() {
+	public void append_unknown() {
 		//@formatter:off
 		XCalElement xCalElement = build(
 		"<prop>" +
@@ -302,7 +302,7 @@ public class XCalElementTest {
 		"</prop>"
 		);
 		//@formatter:on
-		Element appendedElement = xCalElement.appendUnknown("2");
+		Element appendedElement = xCalElement.append((Value) null, "2");
 		assertEquals("unknown", appendedElement.getLocalName());
 		assertEquals(XCAL_NS, appendedElement.getNamespaceURI());
 		assertEquals("2", appendedElement.getTextContent());

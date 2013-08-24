@@ -238,11 +238,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	protected void _writeXml(T property, XCalElement element) {
 		String value = writeText(property);
 		Value dataType = property.getParameters().getValue();
-		if (dataType == null) {
-			element.appendUnknown(value);
-		} else {
-			element.append(dataType, value);
-		}
+		element.append(dataType, value);
 	}
 
 	/**
