@@ -9,9 +9,9 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.RequestStatus;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -91,7 +91,7 @@ public class RequestStatusMarshallerTest {
 		ICalParameters params = new ICalParameters();
 
 		String value = "1.2.3;description\\;here;data\\;here";
-		Result<RequestStatus> result = marshaller.parseText(value, Value.TEXT, params);
+		Result<RequestStatus> result = marshaller.parseText(value, ICalDataType.TEXT, params);
 		RequestStatus prop = result.getValue();
 		assertEquals("1.2.3", prop.getStatusCode());
 		assertEquals("description;here", prop.getDescription());
@@ -99,7 +99,7 @@ public class RequestStatusMarshallerTest {
 		assertWarnings(0, result.getWarnings());
 
 		value = "1.2.3;description\\;here";
-		result = marshaller.parseText(value, Value.TEXT, params);
+		result = marshaller.parseText(value, ICalDataType.TEXT, params);
 		prop = result.getValue();
 		assertEquals("1.2.3", prop.getStatusCode());
 		assertEquals("description;here", prop.getDescription());
@@ -107,7 +107,7 @@ public class RequestStatusMarshallerTest {
 		assertWarnings(0, result.getWarnings());
 
 		value = "1.2.3";
-		result = marshaller.parseText(value, Value.TEXT, params);
+		result = marshaller.parseText(value, ICalDataType.TEXT, params);
 		prop = result.getValue();
 		assertEquals("1.2.3", prop.getStatusCode());
 		assertEquals(null, prop.getDescription());
@@ -115,7 +115,7 @@ public class RequestStatusMarshallerTest {
 		assertWarnings(0, result.getWarnings());
 
 		value = "";
-		result = marshaller.parseText(value, Value.TEXT, params);
+		result = marshaller.parseText(value, ICalDataType.TEXT, params);
 		prop = result.getValue();
 		assertEquals("", prop.getStatusCode());
 		assertEquals(null, prop.getDescription());
@@ -172,7 +172,7 @@ public class RequestStatusMarshallerTest {
 
 	@Test
 	public void parseJson() {
-		Result<RequestStatus> result = marshaller.parseJson(JCalValue.structured("1.2.3", "description", "data"), Value.TEXT, new ICalParameters());
+		Result<RequestStatus> result = marshaller.parseJson(JCalValue.structured("1.2.3", "description", "data"), ICalDataType.TEXT, new ICalParameters());
 
 		RequestStatus prop = result.getValue();
 		assertEquals("1.2.3", prop.getStatusCode());

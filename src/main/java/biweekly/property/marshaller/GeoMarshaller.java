@@ -2,11 +2,11 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
+import biweekly.ICalDataType;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.Geo;
 import biweekly.util.ICalFloatFormatter;
 
@@ -41,7 +41,7 @@ import biweekly.util.ICalFloatFormatter;
  */
 public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 	public GeoMarshaller() {
-		super(Geo.class, "GEO", Value.FLOAT);
+		super(Geo.class, "GEO", ICalDataType.FLOAT);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 	}
 
 	@Override
-	protected Geo _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected Geo _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		String split[] = value.split(";");
 
 		if (split.length < 2) {
@@ -108,7 +108,7 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 	}
 
 	@Override
-	protected Geo _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected Geo _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		List<String> values = value.getStructured();
 		String latitudeStr = (values.size() > 0) ? values.get(0) : null;
 		String longitudeStr = (values.size() > 1) ? values.get(1) : null;

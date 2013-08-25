@@ -2,11 +2,11 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.Attachment;
 import biweekly.util.Base64;
 
@@ -41,7 +41,7 @@ import biweekly.util.Base64;
  */
 public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	public AttachmentMarshaller() {
-		super(Attachment.class, "ATTACH", Value.URI);
+		super(Attachment.class, "ATTACH", ICalDataType.URI);
 	}
 
 	@Override
@@ -54,12 +54,12 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	}
 
 	@Override
-	protected Value _getDataType(Attachment property) {
+	protected ICalDataType _getDataType(Attachment property) {
 		if (property.getUri() != null) {
-			return Value.URI;
+			return ICalDataType.URI;
 		}
 		if (property.getData() != null) {
-			return Value.BINARY;
+			return ICalDataType.BINARY;
 		}
 		return null;
 	}
@@ -76,11 +76,11 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	}
 
 	@Override
-	protected Attachment _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected Attachment _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
 		Attachment attachment = new Attachment(null, (String) null);
-		if (dataType == Value.BINARY || parameters.getEncoding() == Encoding.BASE64) {
+		if (dataType == ICalDataType.BINARY || parameters.getEncoding() == Encoding.BASE64) {
 			attachment.setData(Base64.decode(value));
 		} else {
 			attachment.setUri(value);
@@ -91,9 +91,9 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	@Override
 	protected void _writeXml(Attachment property, XCalElement element) {
 		if (property.getUri() != null) {
-			element.append(Value.URI, property.getUri());
+			element.append(ICalDataType.URI, property.getUri());
 		} else if (property.getData() != null) {
-			element.append(Value.BINARY, Base64.encode(property.getData()));
+			element.append(ICalDataType.BINARY, Base64.encode(property.getData()));
 		}
 	}
 
@@ -101,11 +101,11 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	protected Attachment _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		Attachment attachment = new Attachment(null, (String) null);
 
-		String value = element.first(Value.BINARY);
+		String value = element.first(ICalDataType.BINARY);
 		if (value != null) {
 			attachment.setData(Base64.decode(value));
 		} else {
-			value = element.first(Value.URI);
+			value = element.first(ICalDataType.URI);
 			attachment.setUri(value);
 		}
 
@@ -121,11 +121,11 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	}
 
 	@Override
-	protected Attachment _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected Attachment _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		Attachment attachment = new Attachment(null, (String) null);
 
 		String valueStr = value.getSingleValued();
-		if (dataType == Value.BINARY) {
+		if (dataType == ICalDataType.BINARY) {
 			attachment.setData(Base64.decode(valueStr));
 		} else {
 			attachment.setUri(valueStr);

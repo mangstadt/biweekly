@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.RequestStatus;
 import biweekly.util.StringUtils;
 import biweekly.util.StringUtils.JoinCallback;
@@ -43,7 +43,7 @@ import biweekly.util.StringUtils.JoinCallback;
  */
 public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatus> {
 	public RequestStatusMarshaller() {
-		super(RequestStatus.class, "REQUEST-STATUS", Value.TEXT);
+		super(RequestStatus.class, "REQUEST-STATUS", ICalDataType.TEXT);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 	}
 
 	@Override
-	protected RequestStatus _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected RequestStatus _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		List<String> split = split(value, ";").unescape(true).split();
 		return parse(split);
 	}
@@ -113,7 +113,7 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 	}
 
 	@Override
-	protected RequestStatus _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected RequestStatus _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		List<String> values = value.getStructured();
 		return parse(values);
 	}

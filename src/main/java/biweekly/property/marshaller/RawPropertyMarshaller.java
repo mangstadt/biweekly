@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.w3c.dom.Element;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.RawProperty;
 import biweekly.util.XmlUtils;
 
@@ -47,7 +47,7 @@ public class RawPropertyMarshaller extends ICalPropertyMarshaller<RawProperty> {
 	}
 
 	@Override
-	protected Value _getDataType(RawProperty property) {
+	protected ICalDataType _getDataType(RawProperty property) {
 		return property.getDataType();
 	}
 
@@ -58,17 +58,17 @@ public class RawPropertyMarshaller extends ICalPropertyMarshaller<RawProperty> {
 	}
 
 	@Override
-	protected RawProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected RawProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		return new RawProperty(propertyName, dataType, value);
 	}
 
 	@Override
 	protected RawProperty _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		Value dataType = null;
+		ICalDataType dataType = null;
 		String value = null;
 		for (Element child : XmlUtils.toElementList(element.getElement().getChildNodes())) {
 			if (XCalNamespaceContext.XCAL_NS.equals(child.getNamespaceURI())) {
-				dataType = Value.find(child.getLocalName());
+				dataType = ICalDataType.find(child.getLocalName());
 				value = child.getTextContent();
 				break;
 			}
@@ -78,7 +78,7 @@ public class RawPropertyMarshaller extends ICalPropertyMarshaller<RawProperty> {
 	}
 
 	@Override
-	protected RawProperty _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected RawProperty _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		return _parseText(jcalValueToString(value), dataType, parameters, warnings);
 	}
 }

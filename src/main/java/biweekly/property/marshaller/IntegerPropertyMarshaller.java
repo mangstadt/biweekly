@@ -2,11 +2,11 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
+import biweekly.ICalDataType;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.IntegerProperty;
 
 /*
@@ -40,7 +40,7 @@ import biweekly.property.IntegerProperty;
  */
 public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> extends ICalPropertyMarshaller<T> {
 	public IntegerPropertyMarshaller(Class<T> clazz, String propertyName) {
-		super(clazz, propertyName, Value.INTEGER);
+		super(clazz, propertyName, ICalDataType.INTEGER);
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> exten
 	}
 
 	@Override
-	protected T _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 		return parse(value);
 	}
@@ -74,7 +74,7 @@ public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> exten
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		return parse(value.getSingleValued());
 	}
 

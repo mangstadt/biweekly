@@ -1,6 +1,6 @@
 package biweekly.property.marshaller;
 
-import biweekly.parameter.Value;
+import biweekly.ICalDataType;
 import biweekly.property.Attendee;
 
 /*
@@ -34,7 +34,7 @@ import biweekly.property.Attendee;
  */
 public class AttendeeMarshaller extends TextPropertyMarshaller<Attendee> {
 	public AttendeeMarshaller() {
-		super(Attendee.class, "ATTENDEE", Value.CAL_ADDRESS);
+		super(Attendee.class, "ATTENDEE", ICalDataType.CAL_ADDRESS);
 	}
 
 	@Override

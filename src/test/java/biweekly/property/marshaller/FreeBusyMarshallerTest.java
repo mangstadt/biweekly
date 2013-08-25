@@ -15,9 +15,9 @@ import java.util.TimeZone;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.FreeBusy;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 import biweekly.util.Duration;
@@ -115,7 +115,7 @@ public class FreeBusyMarshallerTest {
 		String value = "20130611T134302Z/20130611T154302Z,20130611T134302Z/PT2H";
 		ICalParameters params = new ICalParameters();
 
-		Result<FreeBusy> result = marshaller.parseText(value, Value.PERIOD, params);
+		Result<FreeBusy> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
 
 		Iterator<Period> it = result.getValue().getValues().iterator();
 
@@ -139,7 +139,7 @@ public class FreeBusyMarshallerTest {
 		String value = "20130611T134302Z/20130611T154302Z,invalid/PT2H";
 		ICalParameters params = new ICalParameters();
 
-		Result<FreeBusy> result = marshaller.parseText(value, Value.PERIOD, params);
+		Result<FreeBusy> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
 
 		Iterator<Period> it = result.getValue().getValues().iterator();
 
@@ -158,7 +158,7 @@ public class FreeBusyMarshallerTest {
 		String value = "20130611T134302Z/20130611T154302Z,20130611T134302Z/invalid";
 		ICalParameters params = new ICalParameters();
 
-		Result<FreeBusy> result = marshaller.parseText(value, Value.PERIOD, params);
+		Result<FreeBusy> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
 
 		Iterator<Period> it = result.getValue().getValues().iterator();
 
@@ -177,7 +177,7 @@ public class FreeBusyMarshallerTest {
 		String value = "20130611T134302Z/20130611T154302Z,20130611T134302Z";
 		ICalParameters params = new ICalParameters();
 
-		Result<FreeBusy> result = marshaller.parseText(value, Value.PERIOD, params);
+		Result<FreeBusy> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
 
 		Iterator<Period> it = result.getValue().getValues().iterator();
 
@@ -196,7 +196,7 @@ public class FreeBusyMarshallerTest {
 		String value = "";
 		ICalParameters params = new ICalParameters();
 
-		Result<FreeBusy> result = marshaller.parseText(value, Value.PERIOD, params);
+		Result<FreeBusy> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
 
 		Iterator<Period> it = result.getValue().getValues().iterator();
 
@@ -369,7 +369,7 @@ public class FreeBusyMarshallerTest {
 
 	@Test
 	public void parseJson() {
-		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/PT2H"), Value.PERIOD, new ICalParameters());
+		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/PT2H"), ICalDataType.PERIOD, new ICalParameters());
 
 		Iterator<Period> it = result.getValue().getValues().iterator();
 
@@ -390,7 +390,7 @@ public class FreeBusyMarshallerTest {
 
 	@Test
 	public void parseJson_invalid_start_date() {
-		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "invalid/PT2H"), Value.PERIOD, new ICalParameters());
+		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "invalid/PT2H"), ICalDataType.PERIOD, new ICalParameters());
 
 		Iterator<Period> it = result.getValue().getValues().iterator();
 
@@ -406,7 +406,7 @@ public class FreeBusyMarshallerTest {
 
 	@Test
 	public void parseJson_invalid_end_date() {
-		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/invalid", "2013-06-11T13:43:02Z/PT2H"), Value.PERIOD, new ICalParameters());
+		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/invalid", "2013-06-11T13:43:02Z/PT2H"), ICalDataType.PERIOD, new ICalParameters());
 
 		Iterator<Period> it = result.getValue().getValues().iterator();
 
@@ -422,7 +422,7 @@ public class FreeBusyMarshallerTest {
 
 	@Test
 	public void parseJson_invalid_duration() {
-		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/invalid"), Value.PERIOD, new ICalParameters());
+		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/invalid"), ICalDataType.PERIOD, new ICalParameters());
 
 		Iterator<Period> it = result.getValue().getValues().iterator();
 
@@ -438,7 +438,7 @@ public class FreeBusyMarshallerTest {
 
 	@Test
 	public void parseJson_empty() {
-		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi(), Value.PERIOD, new ICalParameters());
+		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi(), ICalDataType.PERIOD, new ICalParameters());
 
 		Iterator<Period> it = result.getValue().getValues().iterator();
 

@@ -9,10 +9,10 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.UtcOffsetProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -80,7 +80,7 @@ public class UtcOffsetPropertyMarshallerTest {
 		String value = "+0130";
 		ICalParameters params = new ICalParameters();
 
-		Result<UtcOffsetPropertyImpl> result = marshaller.parseText(value, Value.UTC_OFFSET, params);
+		Result<UtcOffsetPropertyImpl> result = marshaller.parseText(value, ICalDataType.UTC_OFFSET, params);
 
 		UtcOffsetProperty prop = result.getValue();
 		assertIntEquals(1, prop.getHourOffset());
@@ -93,7 +93,7 @@ public class UtcOffsetPropertyMarshallerTest {
 		String value = "invalid";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, Value.UTC_OFFSET, params);
+		marshaller.parseText(value, ICalDataType.UTC_OFFSET, params);
 	}
 
 	@Test
@@ -151,7 +151,7 @@ public class UtcOffsetPropertyMarshallerTest {
 
 	@Test
 	public void parseJson() {
-		Result<UtcOffsetPropertyImpl> result = marshaller.parseJson(JCalValue.single("+01:30"), Value.UTC_OFFSET, new ICalParameters());
+		Result<UtcOffsetPropertyImpl> result = marshaller.parseJson(JCalValue.single("+01:30"), ICalDataType.UTC_OFFSET, new ICalParameters());
 
 		UtcOffsetPropertyImpl prop = result.getValue();
 		assertIntEquals(1, prop.getHourOffset());
@@ -161,7 +161,7 @@ public class UtcOffsetPropertyMarshallerTest {
 
 	@Test(expected = CannotParseException.class)
 	public void parseJson_invalid() {
-		marshaller.parseJson(JCalValue.single("invalid"), Value.UTC_OFFSET, new ICalParameters());
+		marshaller.parseJson(JCalValue.single("invalid"), ICalDataType.UTC_OFFSET, new ICalParameters());
 	}
 
 	private class UtcOffsetPropertyMarshallerImpl extends UtcOffsetPropertyMarshaller<UtcOffsetPropertyImpl> {

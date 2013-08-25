@@ -18,10 +18,10 @@ import java.util.TimeZone;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.io.json.JsonValue;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.RecurrenceRule;
 import biweekly.property.RecurrenceRule.DayOfWeek;
 import biweekly.property.RecurrenceRule.Frequency;
@@ -170,7 +170,7 @@ public class RecurrenceRuleMarshallerTest {
 		String value = "FREQ=WEEKLY;COUNT=5;INTERVAL=10;UNTIL=20130611T134302Z;BYSECOND=58,59;BYMINUTE=3,4;BYHOUR=1,2;BYDAY=MO,TU,WE,TH,FR,SA,SU,5FR;BYMONTHDAY=1,2;BYYEARDAY=100,101;BYWEEKNO=1,2;BYMONTH=5,6;BYSETPOS=7,8,9;WKST=TU";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceRule> result = marshaller.parseText(value, Value.RECUR, params);
+		Result<RecurrenceRule> result = marshaller.parseText(value, ICalDataType.RECUR, params);
 
 		RecurrenceRule prop = result.getValue();
 		assertEquals(Frequency.WEEKLY, prop.getFrequency());
@@ -195,7 +195,7 @@ public class RecurrenceRuleMarshallerTest {
 		String value = "FREQ=W;COUNT=a;INTERVAL=b;UNTIL=invalid;BYSECOND=58,c,59;BYMINUTE=3,d,4;BYHOUR=1,e,2;BYDAY=f,MO,TU,WE,TH,FR,SA,SU,5FR,fFR;BYMONTHDAY=1,g,2;BYYEARDAY=100,h,101;BYWEEKNO=1,w,2;BYMONTH=5,i,6;BYSETPOS=7,8,j,9;WKST=k";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceRule> result = marshaller.parseText(value, Value.RECUR, params);
+		Result<RecurrenceRule> result = marshaller.parseText(value, ICalDataType.RECUR, params);
 
 		RecurrenceRule prop = result.getValue();
 		assertNull(prop.getFrequency());
@@ -220,7 +220,7 @@ public class RecurrenceRuleMarshallerTest {
 		String value = "FREQ=WEEKLY;no equals;COUNT=5";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceRule> result = marshaller.parseText(value, Value.RECUR, params);
+		Result<RecurrenceRule> result = marshaller.parseText(value, ICalDataType.RECUR, params);
 
 		RecurrenceRule prop = result.getValue();
 		assertEquals(Frequency.WEEKLY, prop.getFrequency());
@@ -542,7 +542,7 @@ public class RecurrenceRuleMarshallerTest {
 		map.put("bysetpos", 8);
 		map.put("bysetpos", 9);
 		map.put("wkst", "TU");
-		Result<RecurrenceRule> result = marshaller.parseJson(JCalValue.object(map), Value.RECUR, new ICalParameters());
+		Result<RecurrenceRule> result = marshaller.parseJson(JCalValue.object(map), ICalDataType.RECUR, new ICalParameters());
 
 		RecurrenceRule prop = result.getValue();
 		assertEquals(Frequency.WEEKLY, prop.getFrequency());
@@ -605,7 +605,7 @@ public class RecurrenceRuleMarshallerTest {
 		map.put("bysetpos", "j");
 		map.put("bysetpos", 9);
 		map.put("wkst", "k");
-		Result<RecurrenceRule> result = marshaller.parseJson(JCalValue.object(map), Value.RECUR, new ICalParameters());
+		Result<RecurrenceRule> result = marshaller.parseJson(JCalValue.object(map), ICalDataType.RECUR, new ICalParameters());
 
 		RecurrenceRule prop = result.getValue();
 		assertNull(prop.getFrequency());

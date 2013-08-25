@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalendar;
+import biweekly.ICalDataType;
 import biweekly.component.ICalComponent;
 import biweekly.component.marshaller.ComponentLibrary;
 import biweekly.component.marshaller.ICalComponentMarshaller;
@@ -25,7 +26,6 @@ import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.io.json.JCalRawReader.JCalDataStreamListener;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
@@ -217,7 +217,7 @@ public class JCalReader implements Closeable {
 	private class JCalDataStreamListenerImpl implements JCalDataStreamListener {
 		private final Map<List<String>, ICalComponent> components = new HashMap<List<String>, ICalComponent>();
 
-		public void readProperty(List<String> componentHierarchy, String propertyName, ICalParameters parameters, Value dataType, JCalValue value) {
+		public void readProperty(List<String> componentHierarchy, String propertyName, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 			//get the component that the property belongs to
 			ICalComponent parent = components.get(componentHierarchy);
 

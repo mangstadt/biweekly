@@ -35,7 +35,6 @@ import biweekly.io.text.ICalRawWriter;
 import biweekly.io.text.ICalReader;
 import biweekly.io.text.ICalWriter;
 import biweekly.io.xml.XCalDocument;
-import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.IOUtils;
@@ -1163,7 +1162,7 @@ public class Biweekly {
 	 */
 	public static class WriterChainXml extends WriterChain<WriterChainXml> {
 		int indent = -1;
-		final Map<String, Value> parameterDataTypes = new HashMap<String, Value>(0);
+		final Map<String, ICalDataType> parameterDataTypes = new HashMap<String, ICalDataType>(0);
 
 		WriterChainXml(Collection<ICalendar> icals) {
 			super(icals);
@@ -1185,7 +1184,7 @@ public class Biweekly {
 		 * @param parameterName the parameter name (e.g. "x-foo")
 		 * @param dataType the data type
 		 */
-		public WriterChainXml register(String parameterName, Value dataType) {
+		public WriterChainXml register(String parameterName, ICalDataType dataType) {
 			parameterDataTypes.put(parameterName, dataType);
 			return this_;
 		}
@@ -1279,7 +1278,7 @@ public class Biweekly {
 			for (ICalComponentMarshaller<? extends ICalComponent> marshaller : componentMarshallers) {
 				document.registerMarshaller(marshaller);
 			}
-			for (Map.Entry<String, Value> entry : parameterDataTypes.entrySet()) {
+			for (Map.Entry<String, ICalDataType> entry : parameterDataTypes.entrySet()) {
 				document.registerParameterDataType(entry.getKey(), entry.getValue());
 			}
 

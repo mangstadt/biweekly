@@ -14,10 +14,10 @@ import java.util.TimeZone;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.ExceptionDates;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -78,13 +78,13 @@ public class ExceptionDatesMarshallerTest {
 	@Test
 	public void getDataType_datetime() {
 		ExceptionDates prop = new ExceptionDates(true);
-		assertEquals(Value.DATE_TIME, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.DATE_TIME, marshaller.getDataType(prop));
 	}
 
 	@Test
 	public void getDataType_date() {
 		ExceptionDates prop = new ExceptionDates(false);
-		assertEquals(Value.DATE, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.DATE, marshaller.getDataType(prop));
 	}
 
 	@Test
@@ -116,7 +116,7 @@ public class ExceptionDatesMarshallerTest {
 		String value = "20130611T134302Z,20130611T134302Z";
 		ICalParameters params = new ICalParameters();
 
-		Result<ExceptionDates> result = marshaller.parseText(value, Value.DATE_TIME, params);
+		Result<ExceptionDates> result = marshaller.parseText(value, ICalDataType.DATE_TIME, params);
 
 		ExceptionDates prop = result.getValue();
 		assertEquals(Arrays.asList(datetime, datetime), prop.getValues());
@@ -129,7 +129,7 @@ public class ExceptionDatesMarshallerTest {
 		String value = "20130611,20130611";
 		ICalParameters params = new ICalParameters();
 
-		Result<ExceptionDates> result = marshaller.parseText(value, Value.DATE, params);
+		Result<ExceptionDates> result = marshaller.parseText(value, ICalDataType.DATE, params);
 
 		ExceptionDates prop = result.getValue();
 		assertEquals(Arrays.asList(date, date), prop.getValues());
@@ -142,7 +142,7 @@ public class ExceptionDatesMarshallerTest {
 		String value = "20130611T134302Z,invalid";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, Value.DATE_TIME, params);
+		marshaller.parseText(value, ICalDataType.DATE_TIME, params);
 	}
 
 	@Test
@@ -218,7 +218,7 @@ public class ExceptionDatesMarshallerTest {
 
 	@Test
 	public void parseJson_datetime() {
-		Result<ExceptionDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z", "2013-06-11T13:43:02Z"), Value.DATE_TIME, new ICalParameters());
+		Result<ExceptionDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z", "2013-06-11T13:43:02Z"), ICalDataType.DATE_TIME, new ICalParameters());
 
 		ExceptionDates prop = result.getValue();
 		assertEquals(Arrays.asList(datetime, datetime), prop.getValues());
@@ -228,7 +228,7 @@ public class ExceptionDatesMarshallerTest {
 
 	@Test
 	public void parseJson_date() {
-		Result<ExceptionDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11", "2013-06-11"), Value.DATE, new ICalParameters());
+		Result<ExceptionDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11", "2013-06-11"), ICalDataType.DATE, new ICalParameters());
 
 		ExceptionDates prop = result.getValue();
 		assertEquals(Arrays.asList(date, date), prop.getValues());
@@ -238,6 +238,6 @@ public class ExceptionDatesMarshallerTest {
 
 	@Test(expected = CannotParseException.class)
 	public void parseJson_invalid() {
-		marshaller.parseJson(JCalValue.multi("2013-06-11", "invalid"), Value.DATE, new ICalParameters());
+		marshaller.parseJson(JCalValue.multi("2013-06-11", "invalid"), ICalDataType.DATE, new ICalParameters());
 	}
 }

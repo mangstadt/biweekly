@@ -14,6 +14,7 @@ import java.util.TimeZone;
 import org.junit.Test;
 
 import biweekly.ICalendar;
+import biweekly.ICalDataType;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.StandardTime;
@@ -29,7 +30,6 @@ import biweekly.parameter.CalendarUserType;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
-import biweekly.parameter.Value;
 import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.Classification;
@@ -663,7 +663,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 			return new TestProperty(value);
 		}
 	}
@@ -679,7 +679,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 			return new TestProperty(value);
 		}
 	}
@@ -695,14 +695,14 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 			return new TestProperty(value);
 		}
 	}
 
 	private class MyVersionMarshaller extends ICalPropertyMarshaller<Version> {
 		public MyVersionMarshaller() {
-			super(Version.class, "VERSION", Value.TEXT);
+			super(Version.class, "VERSION", ICalDataType.TEXT);
 		}
 
 		@Override
@@ -711,7 +711,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected Version _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+		protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 			return new Version(value);
 		}
 	}
@@ -733,15 +733,15 @@ public class ICalWriterTest {
 
 	private class DataTypePropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
 		public DataTypePropertyMarshaller() {
-			super(TestProperty.class, "X-TEST", Value.TEXT);
+			super(TestProperty.class, "X-TEST", ICalDataType.TEXT);
 		}
 
 		@Override
-		protected Value _getDataType(TestProperty property) {
+		protected ICalDataType _getDataType(TestProperty property) {
 			if (property.getValue().matches("\\d+")) {
-				return Value.INTEGER;
+				return ICalDataType.INTEGER;
 			}
-			return Value.TEXT;
+			return ICalDataType.TEXT;
 		}
 
 		@Override
@@ -750,7 +750,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 			return new TestProperty(value);
 		}
 	}

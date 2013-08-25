@@ -8,6 +8,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import biweekly.ICalDataType;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -107,7 +109,7 @@ public class ICalParametersTest {
 		params.put(ICalParameters.RELATED, Related.END.getValue());
 		params.put(ICalParameters.RELTYPE, RelationshipType.CHILD.getValue());
 		params.put(ICalParameters.ROLE, Role.CHAIR.getValue());
-		params.put(ICalParameters.VALUE, Value.BINARY.getValue());
+		params.put(ICalParameters.VALUE, ICalDataType.BINARY.getValue());
 
 		assertWarnings(0, params.validate());
 	}

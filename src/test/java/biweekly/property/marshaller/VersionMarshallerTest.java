@@ -8,9 +8,9 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.Version;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -80,7 +80,7 @@ public class VersionMarshallerTest {
 		String value = "1.0;2.0";
 		ICalParameters params = new ICalParameters();
 
-		Result<Version> result = marshaller.parseText(value, Value.TEXT, params);
+		Result<Version> result = marshaller.parseText(value, ICalDataType.TEXT, params);
 
 		Version prop = result.getValue();
 		assertEquals("1.0", prop.getMinVersion());
@@ -93,7 +93,7 @@ public class VersionMarshallerTest {
 		String value = "2.0";
 		ICalParameters params = new ICalParameters();
 
-		Result<Version> result = marshaller.parseText(value, Value.TEXT, params);
+		Result<Version> result = marshaller.parseText(value, ICalDataType.TEXT, params);
 
 		Version prop = result.getValue();
 		assertNull(prop.getMinVersion());
@@ -127,7 +127,7 @@ public class VersionMarshallerTest {
 
 	@Test
 	public void parseJson() {
-		Result<Version> result = marshaller.parseJson(JCalValue.single("2.0"), Value.TEXT, new ICalParameters());
+		Result<Version> result = marshaller.parseJson(JCalValue.single("2.0"), ICalDataType.TEXT, new ICalParameters());
 
 		Version prop = result.getValue();
 		assertNull(prop.getMinVersion());

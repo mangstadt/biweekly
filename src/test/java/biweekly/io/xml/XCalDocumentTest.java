@@ -32,6 +32,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalendar;
+import biweekly.ICalDataType;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.RawComponent;
@@ -42,7 +43,6 @@ import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.CalendarScale;
 import biweekly.property.DateStart;
 import biweekly.property.ICalProperty;
@@ -376,7 +376,7 @@ public class XCalDocumentTest {
 
 		RawProperty prop = ical.getExperimentalProperty("X-BOSS");
 		assertEquals("John Doe", prop.getValue());
-		assertEquals(Value.TEXT, prop.getDataType());
+		assertEquals(ICalDataType.TEXT, prop.getDataType());
 	}
 
 	@Test
@@ -659,7 +659,7 @@ public class XCalDocumentTest {
 		ical.addProperty(summary);
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.registerParameterDataType("X-ONE", Value.TEXT);
+		xcal.registerParameterDataType("X-ONE", ICalDataType.TEXT);
 		xcal.add(ical);
 
 		Document actual = xcal.getDocument();
@@ -1010,7 +1010,7 @@ public class XCalDocumentTest {
 		}
 
 		@Override
-		protected Company _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 			return new Company(value);
 		}
 

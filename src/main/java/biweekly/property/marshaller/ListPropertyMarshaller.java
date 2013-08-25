@@ -2,10 +2,10 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.ListProperty;
 import biweekly.util.StringUtils;
 import biweekly.util.StringUtils.JoinCallback;
@@ -41,10 +41,10 @@ import biweekly.util.StringUtils.JoinCallback;
  */
 public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> extends ICalPropertyMarshaller<T> {
 	public ListPropertyMarshaller(Class<T> clazz, String propertyName) {
-		this(clazz, propertyName, Value.TEXT);
+		this(clazz, propertyName, ICalDataType.TEXT);
 	}
 
-	public ListPropertyMarshaller(Class<T> clazz, String propertyName, Value dataType) {
+	public ListPropertyMarshaller(Class<T> clazz, String propertyName, ICalDataType dataType) {
 		super(clazz, propertyName, dataType);
 	}
 
@@ -59,7 +59,7 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 	}
 
 	@Override
-	protected T _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		return parse(parseList(value), dataType, parameters, warnings);
 	}
 
@@ -82,11 +82,11 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		return parse(value.getMultivalued(), dataType, parameters, warnings);
 	}
 
-	private T parse(List<String> valueStrs, Value dataType, ICalParameters parameters, List<String> warnings) {
+	private T parse(List<String> valueStrs, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		T property = newInstance(dataType, parameters);
 
 		for (String valueStr : valueStrs) {
@@ -97,9 +97,9 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 		return property;
 	}
 
-	protected abstract T newInstance(Value dataType, ICalParameters parameters);
+	protected abstract T newInstance(ICalDataType dataType, ICalParameters parameters);
 
 	protected abstract String writeValue(T property, V value);
 
-	protected abstract V readValue(String value, Value dataType, ICalParameters parameters, List<String> warnings);
+	protected abstract V readValue(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings);
 }

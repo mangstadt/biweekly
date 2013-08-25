@@ -2,11 +2,11 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
+import biweekly.ICalDataType;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.UtcOffsetProperty;
 import biweekly.util.ICalDateFormatter;
 
@@ -41,7 +41,7 @@ import biweekly.util.ICalDateFormatter;
  */
 public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> extends ICalPropertyMarshaller<T> {
 	public UtcOffsetPropertyMarshaller(Class<T> clazz, String propertyName) {
-		super(clazz, propertyName, Value.UTC_OFFSET);
+		super(clazz, propertyName, ICalDataType.UTC_OFFSET);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 	}
 
 	@Override
-	protected T _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 		return parse(value);
 	}
@@ -102,7 +102,7 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		return parse(value.getSingleValued());
 	}
 

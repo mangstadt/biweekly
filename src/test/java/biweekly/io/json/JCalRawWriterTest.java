@@ -12,8 +12,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -50,10 +50,10 @@ public class JCalRawWriterTest {
 		JCalRawWriter writer = new JCalRawWriter(sw, true);
 
 		writer.writeStartComponent("comp");
-		writer.writeProperty("prop", Value.TEXT, JCalValue.single("value"));
+		writer.writeProperty("prop", ICalDataType.TEXT, JCalValue.single("value"));
 		writer.writeEndComponent();
 		writer.writeStartComponent("comp");
-		writer.writeProperty("prop", Value.TEXT, JCalValue.single("value"));
+		writer.writeProperty("prop", ICalDataType.TEXT, JCalValue.single("value"));
 		writer.writeEndComponent();
 		writer.close();
 
@@ -86,7 +86,7 @@ public class JCalRawWriterTest {
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
 
 		writer.writeStartComponent("comp");
-		writer.writeProperty("prop", Value.TEXT, JCalValue.single("value\nvalue"));
+		writer.writeProperty("prop", ICalDataType.TEXT, JCalValue.single("value\nvalue"));
 		writer.close();
 
 		String actual = sw.toString();
@@ -113,7 +113,7 @@ public class JCalRawWriterTest {
 		parameters.put("a", "value1");
 		parameters.put("b", "value2");
 		parameters.put("b", "value3");
-		writer.writeProperty("prop", parameters, Value.TEXT, JCalValue.single("value"));
+		writer.writeProperty("prop", parameters, ICalDataType.TEXT, JCalValue.single("value"));
 		writer.close();
 
 		String actual = sw.toString();
@@ -145,7 +145,7 @@ public class JCalRawWriterTest {
 		m.put("b", new JsonValue(m2));
 		jsonValues.add(new JsonValue(m));
 		jsonValues.add(new JsonValue("four"));
-		writer.writeProperty("prop", Value.TEXT, new JCalValue(jsonValues));
+		writer.writeProperty("prop", ICalDataType.TEXT, new JCalValue(jsonValues));
 		writer.close();
 
 		String actual = sw.toString();
@@ -197,7 +197,7 @@ public class JCalRawWriterTest {
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
 
 		writer.writeStartComponent("comp");
-		writer.writeProperty("prop", Value.TEXT, JCalValue.multi(false, true, 1.1, 1, null, "text"));
+		writer.writeProperty("prop", ICalDataType.TEXT, JCalValue.multi(false, true, 1.1, 1, null, "text"));
 		writer.close();
 
 		String actual = sw.toString();
@@ -234,7 +234,7 @@ public class JCalRawWriterTest {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
 
-		writer.writeProperty("prop", Value.TEXT, JCalValue.single("value"));
+		writer.writeProperty("prop", ICalDataType.TEXT, JCalValue.single("value"));
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -245,7 +245,7 @@ public class JCalRawWriterTest {
 		writer.writeStartComponent("comp");
 		writer.writeStartComponent("comp");
 		writer.writeEndComponent();
-		writer.writeProperty("prop", Value.TEXT, JCalValue.single("value"));
+		writer.writeProperty("prop", ICalDataType.TEXT, JCalValue.single("value"));
 	}
 
 	@Test
@@ -276,17 +276,17 @@ public class JCalRawWriterTest {
 
 		//@formatter:off
 		writer.writeStartComponent("comp1");
-			writer.writeProperty("prop1", Value.TEXT, JCalValue.single("value1"));
+			writer.writeProperty("prop1", ICalDataType.TEXT, JCalValue.single("value1"));
 			writer.writeStartComponent("comp2");
-				writer.writeProperty("prop2", Value.TEXT, JCalValue.single("value2"));
+				writer.writeProperty("prop2", ICalDataType.TEXT, JCalValue.single("value2"));
 				writer.writeStartComponent("comp3");
-					writer.writeProperty("prop3", Value.TEXT, JCalValue.single("value3"));
+					writer.writeProperty("prop3", ICalDataType.TEXT, JCalValue.single("value3"));
 					writer.writeStartComponent("comp4");
-						writer.writeProperty("prop4", Value.TEXT, JCalValue.single("value4"));
+						writer.writeProperty("prop4", ICalDataType.TEXT, JCalValue.single("value4"));
 					writer.writeEndComponent();
 				writer.writeEndComponent();
 				writer.writeStartComponent("comp5");
-					writer.writeProperty("prop5", Value.TEXT, JCalValue.single("value5"));
+					writer.writeProperty("prop5", ICalDataType.TEXT, JCalValue.single("value5"));
 				writer.writeEndComponent();
 			writer.writeEndComponent();
 		writer.writeEndComponent();
@@ -345,19 +345,19 @@ public class JCalRawWriterTest {
 		writer.writeStartComponent("empty");
 		writer.writeEndComponent();
 		writer.writeStartComponent("comp1");
-			writer.writeProperty("prop1", Value.TEXT, JCalValue.single("value1"));
-			writer.writeProperty("prop2", Value.TEXT, JCalValue.single("value2"));
+			writer.writeProperty("prop1", ICalDataType.TEXT, JCalValue.single("value1"));
+			writer.writeProperty("prop2", ICalDataType.TEXT, JCalValue.single("value2"));
 			writer.writeStartComponent("comp2");
 				writer.writeStartComponent("comp3");
 				writer.writeEndComponent();
 				writer.writeStartComponent("comp4");
-					writer.writeProperty("prop3", Value.TEXT, JCalValue.single("value3"));
+					writer.writeProperty("prop3", ICalDataType.TEXT, JCalValue.single("value3"));
 				writer.writeEndComponent();
 			writer.writeEndComponent();
 		writer.writeEndComponent();
 		writer.writeStartComponent("comp4");
-			writer.writeProperty("prop1", Value.TEXT, JCalValue.single("value1"));
-			writer.writeProperty("prop2", Value.TEXT, JCalValue.single("value2"));
+			writer.writeProperty("prop1", ICalDataType.TEXT, JCalValue.single("value1"));
+			writer.writeProperty("prop2", ICalDataType.TEXT, JCalValue.single("value2"));
 		writer.writeEndComponent();
 		//@formatter:on
 		writer.close();

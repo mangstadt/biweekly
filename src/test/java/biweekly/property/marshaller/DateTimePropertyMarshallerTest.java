@@ -12,10 +12,10 @@ import java.util.TimeZone;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.DateTimeProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -87,7 +87,7 @@ public class DateTimePropertyMarshallerTest {
 		String value = "20130611T134302Z";
 		ICalParameters params = new ICalParameters();
 
-		Result<DateTimePropertyImpl> result = marshaller.parseText(value, Value.DATE_TIME, params);
+		Result<DateTimePropertyImpl> result = marshaller.parseText(value, ICalDataType.DATE_TIME, params);
 
 		DateTimePropertyImpl prop = result.getValue();
 		assertEquals(datetime, prop.getValue());
@@ -99,7 +99,7 @@ public class DateTimePropertyMarshallerTest {
 		String value = "invalid";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, Value.DATE_TIME, params);
+		marshaller.parseText(value, ICalDataType.DATE_TIME, params);
 	}
 
 	@Test
@@ -146,7 +146,7 @@ public class DateTimePropertyMarshallerTest {
 
 	@Test
 	public void parseJson() {
-		Result<DateTimePropertyImpl> result = marshaller.parseJson(JCalValue.single("2013-06-11T13:43:02Z"), Value.DATE_TIME, new ICalParameters());
+		Result<DateTimePropertyImpl> result = marshaller.parseJson(JCalValue.single("2013-06-11T13:43:02Z"), ICalDataType.DATE_TIME, new ICalParameters());
 
 		DateTimePropertyImpl prop = result.getValue();
 		assertEquals(datetime, prop.getValue());
@@ -155,7 +155,7 @@ public class DateTimePropertyMarshallerTest {
 
 	@Test(expected = CannotParseException.class)
 	public void parseJson_invalid() {
-		marshaller.parseJson(JCalValue.single("invalid"), Value.DATE_TIME, new ICalParameters());
+		marshaller.parseJson(JCalValue.single("invalid"), ICalDataType.DATE_TIME, new ICalParameters());
 	}
 
 	private class DateTimePropertyMarshallerImpl extends DateTimePropertyMarshaller<DateTimePropertyImpl> {

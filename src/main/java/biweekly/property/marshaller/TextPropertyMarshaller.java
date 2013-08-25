@@ -2,10 +2,10 @@ package biweekly.property.marshaller;
 
 import java.util.List;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.TextProperty;
 
 /*
@@ -39,10 +39,10 @@ import biweekly.property.TextProperty;
  */
 public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICalPropertyMarshaller<T> {
 	public TextPropertyMarshaller(Class<T> clazz, String propertyName) {
-		this(clazz, propertyName, Value.TEXT);
+		this(clazz, propertyName, ICalDataType.TEXT);
 	}
 
-	public TextPropertyMarshaller(Class<T> clazz, String propertyName, Value dataType) {
+	public TextPropertyMarshaller(Class<T> clazz, String propertyName, ICalDataType dataType) {
 		super(clazz, propertyName, dataType);
 	}
 
@@ -53,7 +53,7 @@ public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICa
 	}
 
 	@Override
-	protected T _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 		return newInstance(value);
 	}
@@ -74,7 +74,7 @@ public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICa
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		return newInstance(value.getSingleValued());
 	}
 

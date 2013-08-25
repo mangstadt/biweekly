@@ -19,6 +19,7 @@ import java.util.TimeZone;
 import org.junit.Test;
 
 import biweekly.ICalendar;
+import biweekly.ICalDataType;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.RawComponent;
@@ -29,7 +30,6 @@ import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceDates;
@@ -363,7 +363,7 @@ public class JCalReaderTest {
 		assertEquals(2, ical.getProperties().size());
 
 		RawProperty company = ical.getExperimentalProperty("x-company");
-		assertEquals(Value.TEXT, company.getDataType());
+		assertEquals(ICalDataType.TEXT, company.getDataType());
 		assertEquals("value", company.getValue());
 
 		company = ical.getExperimentalProperty("x-company2");
@@ -451,7 +451,7 @@ public class JCalReaderTest {
 		assertEquals(1, ical.getProperties().size());
 		assertNull(ical.getProperty(Company.class));
 		RawProperty company = ical.getExperimentalProperty("x-company");
-		assertEquals(Value.TEXT, company.getDataType());
+		assertEquals(ICalDataType.TEXT, company.getDataType());
 		assertEquals("don't-parse-me-bro", company.getValue());
 
 		assertEquals(0, ical.getComponents().size());
@@ -625,12 +625,12 @@ public class JCalReaderTest {
 		}
 
 		@Override
-		protected Company _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 			return new Company(value);
 		}
 
 		@Override
-		protected Company _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+		protected Company _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 			String boss = value.getSingleValued();
 			if (boss.equals("skip-me")) {
 				throw new SkipMeException();

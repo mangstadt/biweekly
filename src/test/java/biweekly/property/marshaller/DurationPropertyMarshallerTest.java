@@ -8,10 +8,10 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.DurationProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 import biweekly.util.Duration;
@@ -73,7 +73,7 @@ public class DurationPropertyMarshallerTest {
 		String value = "PT1H30M";
 		ICalParameters params = new ICalParameters();
 
-		Result<DurationProperty> result = marshaller.parseText(value, Value.DURATION, params);
+		Result<DurationProperty> result = marshaller.parseText(value, ICalDataType.DURATION, params);
 
 		assertEquals(duration, result.getValue().getValue());
 		assertWarnings(0, result.getWarnings());
@@ -84,7 +84,7 @@ public class DurationPropertyMarshallerTest {
 		String value = "invalid";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, Value.DURATION, params);
+		marshaller.parseText(value, ICalDataType.DURATION, params);
 	}
 
 	@Test
@@ -131,7 +131,7 @@ public class DurationPropertyMarshallerTest {
 
 	@Test
 	public void parseJson() {
-		Result<DurationProperty> result = marshaller.parseJson(JCalValue.single("PT1H30M"), Value.DURATION, new ICalParameters());
+		Result<DurationProperty> result = marshaller.parseJson(JCalValue.single("PT1H30M"), ICalDataType.DURATION, new ICalParameters());
 
 		DurationProperty prop = result.getValue();
 		assertEquals(duration, prop.getValue());
@@ -140,6 +140,6 @@ public class DurationPropertyMarshallerTest {
 
 	@Test(expected = CannotParseException.class)
 	public void parseJson_invalid() {
-		marshaller.parseJson(JCalValue.single("invalid"), Value.DURATION, new ICalParameters());
+		marshaller.parseJson(JCalValue.single("invalid"), ICalDataType.DURATION, new ICalParameters());
 	}
 }

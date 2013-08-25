@@ -18,9 +18,9 @@ import java.util.TimeZone;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.RecurrenceDates;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 import biweekly.util.Duration;
@@ -85,7 +85,7 @@ public class RecurrenceDatesMarshallerTest {
 		List<Period> periods = Arrays.asList(new Period(start, end), new Period(start, duration));
 		RecurrenceDates prop = new RecurrenceDates(periods);
 
-		assertEquals(Value.PERIOD, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.PERIOD, marshaller.getDataType(prop));
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class RecurrenceDatesMarshallerTest {
 		List<Date> dates = Arrays.asList(start, end);
 		RecurrenceDates prop = new RecurrenceDates(dates, true);
 
-		assertEquals(Value.DATE_TIME, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.DATE_TIME, marshaller.getDataType(prop));
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class RecurrenceDatesMarshallerTest {
 		List<Date> dates = Arrays.asList(start, end);
 		RecurrenceDates prop = new RecurrenceDates(dates, false);
 
-		assertEquals(Value.DATE, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.DATE, marshaller.getDataType(prop));
 	}
 
 	@Test
@@ -186,7 +186,7 @@ public class RecurrenceDatesMarshallerTest {
 		String value = "20130611T134302Z/20130611T154302Z,20130611T134302Z/PT2H";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceDates> result = marshaller.parseText(value, Value.PERIOD, params);
+		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
 
 		RecurrenceDates prop = result.getValue();
 		Iterator<Period> it = prop.getPeriods().iterator();
@@ -212,7 +212,7 @@ public class RecurrenceDatesMarshallerTest {
 		String value = "20130611T134302Z/20130611T154302Z,invalid/PT2H";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceDates> result = marshaller.parseText(value, Value.PERIOD, params);
+		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
 
 		RecurrenceDates prop = result.getValue();
 		Iterator<Period> it = prop.getPeriods().iterator();
@@ -233,7 +233,7 @@ public class RecurrenceDatesMarshallerTest {
 		String value = "20130611T134302Z/20130611T154302Z,20130611T134302Z/invalid";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceDates> result = marshaller.parseText(value, Value.PERIOD, params);
+		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
 
 		RecurrenceDates prop = result.getValue();
 		Iterator<Period> it = prop.getPeriods().iterator();
@@ -254,7 +254,7 @@ public class RecurrenceDatesMarshallerTest {
 		String value = "20130611T134302Z/20130611T154302Z,20130611T134302Z";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceDates> result = marshaller.parseText(value, Value.PERIOD, params);
+		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
 
 		RecurrenceDates prop = result.getValue();
 		Iterator<Period> it = prop.getPeriods().iterator();
@@ -275,7 +275,7 @@ public class RecurrenceDatesMarshallerTest {
 		String value = "20130611T134302Z,20130611T154302Z";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceDates> result = marshaller.parseText(value, Value.DATE_TIME, params);
+		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.DATE_TIME, params);
 
 		RecurrenceDates prop = result.getValue();
 		Iterator<Date> it = prop.getDates().iterator();
@@ -297,7 +297,7 @@ public class RecurrenceDatesMarshallerTest {
 		String value = "20130611T134302Z,invalid,20130611T154302Z";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceDates> result = marshaller.parseText(value, Value.DATE_TIME, params);
+		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.DATE_TIME, params);
 
 		RecurrenceDates prop = result.getValue();
 		Iterator<Date> it = prop.getDates().iterator();
@@ -319,7 +319,7 @@ public class RecurrenceDatesMarshallerTest {
 		String value = "20130611,20130612";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceDates> result = marshaller.parseText(value, Value.DATE, params);
+		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.DATE, params);
 
 		RecurrenceDates prop = result.getValue();
 		Iterator<Date> it = prop.getDates().iterator();
@@ -341,7 +341,7 @@ public class RecurrenceDatesMarshallerTest {
 		String value = "20130611,invalid,20130612";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceDates> result = marshaller.parseText(value, Value.DATE, params);
+		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.DATE, params);
 
 		RecurrenceDates prop = result.getValue();
 		Iterator<Date> it = prop.getDates().iterator();
@@ -363,7 +363,7 @@ public class RecurrenceDatesMarshallerTest {
 		String value = "";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceDates> result = marshaller.parseText(value, Value.PERIOD, params);
+		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
 		RecurrenceDates prop = result.getValue();
 
 		assertEquals(0, prop.getPeriods().size());
@@ -376,7 +376,7 @@ public class RecurrenceDatesMarshallerTest {
 		String value = "";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceDates> result = marshaller.parseText(value, Value.DATE, params);
+		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.DATE, params);
 		RecurrenceDates prop = result.getValue();
 
 		assertEquals(0, prop.getDates().size());
@@ -574,7 +574,7 @@ public class RecurrenceDatesMarshallerTest {
 
 	@Test
 	public void parseJson_periods() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/PT2H"), Value.PERIOD, new ICalParameters());
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/PT2H"), ICalDataType.PERIOD, new ICalParameters());
 
 		RecurrenceDates prop = result.getValue();
 		assertNull(prop.getDates());
@@ -597,7 +597,7 @@ public class RecurrenceDatesMarshallerTest {
 
 	@Test
 	public void parseJson_invalid_start_date() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "invalid/PT2H"), Value.PERIOD, new ICalParameters());
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "invalid/PT2H"), ICalDataType.PERIOD, new ICalParameters());
 
 		RecurrenceDates prop = result.getValue();
 		Iterator<Period> it = prop.getPeriods().iterator();
@@ -615,7 +615,7 @@ public class RecurrenceDatesMarshallerTest {
 
 	@Test
 	public void parseJson_invalid_end_date() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/invalid"), Value.PERIOD, new ICalParameters());
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/invalid"), ICalDataType.PERIOD, new ICalParameters());
 
 		RecurrenceDates prop = result.getValue();
 		Iterator<Period> it = prop.getPeriods().iterator();
@@ -633,7 +633,7 @@ public class RecurrenceDatesMarshallerTest {
 
 	@Test
 	public void parseJson_invalid_no_end_date() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z"), Value.PERIOD, new ICalParameters());
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z"), ICalDataType.PERIOD, new ICalParameters());
 
 		RecurrenceDates prop = result.getValue();
 		Iterator<Period> it = prop.getPeriods().iterator();
@@ -651,7 +651,7 @@ public class RecurrenceDatesMarshallerTest {
 
 	@Test
 	public void parseJson_datetimes() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z", "2013-06-11T15:43:02Z"), Value.DATE_TIME, new ICalParameters());
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z", "2013-06-11T15:43:02Z"), ICalDataType.DATE_TIME, new ICalParameters());
 
 		RecurrenceDates prop = result.getValue();
 		Iterator<Date> it = prop.getDates().iterator();
@@ -670,7 +670,7 @@ public class RecurrenceDatesMarshallerTest {
 
 	@Test
 	public void parseJson_invalid_datetime() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z", "invalid", "2013-06-11T15:43:02Z"), Value.DATE_TIME, new ICalParameters());
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z", "invalid", "2013-06-11T15:43:02Z"), ICalDataType.DATE_TIME, new ICalParameters());
 
 		RecurrenceDates prop = result.getValue();
 		Iterator<Date> it = prop.getDates().iterator();
@@ -689,7 +689,7 @@ public class RecurrenceDatesMarshallerTest {
 
 	@Test
 	public void parseJson_dates() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11", "2013-06-12"), Value.DATE, new ICalParameters());
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11", "2013-06-12"), ICalDataType.DATE, new ICalParameters());
 
 		RecurrenceDates prop = result.getValue();
 		Iterator<Date> it = prop.getDates().iterator();
@@ -708,7 +708,7 @@ public class RecurrenceDatesMarshallerTest {
 
 	@Test
 	public void parseJson_invalid_dates() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11", "invalid", "2013-06-12"), Value.DATE, new ICalParameters());
+		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11", "invalid", "2013-06-12"), ICalDataType.DATE, new ICalParameters());
 
 		RecurrenceDates prop = result.getValue();
 		Iterator<Date> it = prop.getDates().iterator();

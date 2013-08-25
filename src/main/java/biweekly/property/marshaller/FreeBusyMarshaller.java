@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.FreeBusy;
 import biweekly.util.Duration;
 import biweekly.util.Period;
@@ -45,7 +45,7 @@ import biweekly.util.StringUtils.JoinCallback;
  */
 public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 	public FreeBusyMarshaller() {
-		super(FreeBusy.class, "FREEBUSY", Value.PERIOD);
+		super(FreeBusy.class, "FREEBUSY", ICalDataType.PERIOD);
 	}
 
 	@Override
@@ -75,14 +75,14 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 	}
 
 	@Override
-	protected FreeBusy _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected FreeBusy _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		return parse(parseList(value), parameters, warnings);
 	}
 
 	@Override
 	protected void _writeXml(FreeBusy property, XCalElement element) {
 		for (Period period : property.getValues()) {
-			XCalElement periodElement = element.append(Value.PERIOD);
+			XCalElement periodElement = element.append(ICalDataType.PERIOD);
 
 			Date start = period.getStartDate();
 			if (start != null) {
@@ -105,7 +105,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 	protected FreeBusy _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		FreeBusy prop = new FreeBusy();
 
-		List<XCalElement> periodElements = element.children(Value.PERIOD);
+		List<XCalElement> periodElements = element.children(ICalDataType.PERIOD);
 		for (XCalElement periodElement : periodElements) {
 			Date start = null;
 			String startStr = periodElement.first("start");
@@ -171,7 +171,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 	}
 
 	@Override
-	protected FreeBusy _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected FreeBusy _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		return parse(value.getMultivalued(), parameters, warnings);
 	}
 

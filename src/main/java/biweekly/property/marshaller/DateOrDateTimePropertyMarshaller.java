@@ -3,11 +3,11 @@ package biweekly.property.marshaller;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.ICalDataType;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.DateOrDateTimeProperty;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.ICalDateFormatter;
@@ -43,12 +43,12 @@ import biweekly.util.ICalDateFormatter;
  */
 public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeProperty> extends ICalPropertyMarshaller<T> {
 	public DateOrDateTimePropertyMarshaller(Class<T> clazz, String propertyName) {
-		super(clazz, propertyName, Value.DATE_TIME);
+		super(clazz, propertyName, ICalDataType.DATE_TIME);
 	}
 
 	@Override
-	protected Value _getDataType(T property) {
-		return (property.getRawComponents() != null || property.getValue() == null || property.hasTime()) ? Value.DATE_TIME : Value.DATE;
+	protected ICalDataType _getDataType(T property) {
+		return (property.getRawComponents() != null || property.getValue() == null || property.hasTime()) ? ICalDataType.DATE_TIME : ICalDataType.DATE;
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 	}
 
 	@Override
-	protected T _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
 		return parse(value, parameters, warnings);
@@ -91,9 +91,9 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		String value = element.first(Value.DATE_TIME);
+		String value = element.first(ICalDataType.DATE_TIME);
 		if (value == null) {
-			value = element.first(Value.DATE);
+			value = element.first(ICalDataType.DATE);
 		}
 		return parse(value, parameters, warnings);
 	}
@@ -116,7 +116,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		String valueStr = value.getSingleValued();
 		return parse(valueStr, parameters, warnings);
 	}

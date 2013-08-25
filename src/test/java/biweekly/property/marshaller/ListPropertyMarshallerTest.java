@@ -10,9 +10,9 @@ import java.util.List;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.ListProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -86,7 +86,7 @@ public class ListPropertyMarshallerTest {
 		String value = "one,two,three\\,four";
 		ICalParameters params = new ICalParameters();
 
-		Result<ListPropertyImpl> result = marshaller.parseText(value, Value.TEXT, params);
+		Result<ListPropertyImpl> result = marshaller.parseText(value, ICalDataType.TEXT, params);
 
 		assertEquals(Arrays.asList("one", "two", "three,four"), result.getValue().getValues());
 		assertWarnings(0, result.getWarnings());
@@ -97,7 +97,7 @@ public class ListPropertyMarshallerTest {
 		String value = "";
 		ICalParameters params = new ICalParameters();
 
-		Result<ListPropertyImpl> result = marshaller.parseText(value, Value.TEXT, params);
+		Result<ListPropertyImpl> result = marshaller.parseText(value, ICalDataType.TEXT, params);
 
 		assertEquals(0, result.getValue().getValues().size());
 		assertWarnings(0, result.getWarnings());
@@ -115,7 +115,7 @@ public class ListPropertyMarshallerTest {
 
 	@Test
 	public void writeXml_data_type() {
-		ListPropertyMarshallerImpl marshaller = new ListPropertyMarshallerImpl(Value.INTEGER);
+		ListPropertyMarshallerImpl marshaller = new ListPropertyMarshallerImpl(ICalDataType.INTEGER);
 		ListPropertyImpl prop = new ListPropertyImpl();
 		prop.addValue("1");
 		prop.addValue("2");
@@ -135,7 +135,7 @@ public class ListPropertyMarshallerTest {
 
 	@Test
 	public void parseXml_data_type() {
-		ListPropertyMarshallerImpl marshaller = new ListPropertyMarshallerImpl(Value.INTEGER);
+		ListPropertyMarshallerImpl marshaller = new ListPropertyMarshallerImpl(ICalDataType.INTEGER);
 		Result<ListPropertyImpl> result = parseXCalProperty("<integer>1</integer><integer>2</integer><text>ignore</text><integer>3</integer>", marshaller);
 
 		ListPropertyImpl prop = result.getValue();
@@ -165,7 +165,7 @@ public class ListPropertyMarshallerTest {
 
 	@Test
 	public void parseJson() {
-		Result<ListPropertyImpl> result = marshaller.parseJson(JCalValue.multi("one", "two", "three"), Value.TEXT, new ICalParameters());
+		Result<ListPropertyImpl> result = marshaller.parseJson(JCalValue.multi("one", "two", "three"), ICalDataType.TEXT, new ICalParameters());
 
 		ListPropertyImpl prop = result.getValue();
 		assertEquals(Arrays.asList("one", "two", "three"), prop.getValues());
@@ -177,12 +177,12 @@ public class ListPropertyMarshallerTest {
 			super(ListPropertyImpl.class, "LIST");
 		}
 
-		public ListPropertyMarshallerImpl(Value dataType) {
+		public ListPropertyMarshallerImpl(ICalDataType dataType) {
 			super(ListPropertyImpl.class, "LIST", dataType);
 		}
 
 		@Override
-		protected ListPropertyImpl newInstance(Value dataType, ICalParameters parameters) {
+		protected ListPropertyImpl newInstance(ICalDataType dataType, ICalParameters parameters) {
 			return new ListPropertyImpl();
 		}
 
@@ -192,7 +192,7 @@ public class ListPropertyMarshallerTest {
 		}
 
 		@Override
-		protected String readValue(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+		protected String readValue(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 			return value;
 		}
 	}

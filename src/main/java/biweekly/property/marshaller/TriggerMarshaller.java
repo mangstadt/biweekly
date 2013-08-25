@@ -3,11 +3,11 @@ package biweekly.property.marshaller;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.ICalDataType;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.Trigger;
 import biweekly.util.Duration;
 
@@ -42,12 +42,12 @@ import biweekly.util.Duration;
  */
 public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	public TriggerMarshaller() {
-		super(Trigger.class, "TRIGGER", Value.DURATION);
+		super(Trigger.class, "TRIGGER", ICalDataType.DURATION);
 	}
 
 	@Override
-	protected Value _getDataType(Trigger property) {
-		return (property.getDate() == null) ? Value.DURATION : Value.DATE_TIME;
+	protected ICalDataType _getDataType(Trigger property) {
+		return (property.getDate() == null) ? ICalDataType.DURATION : ICalDataType.DATE_TIME;
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	}
 
 	@Override
-	protected Trigger _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected Trigger _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
 		try {
@@ -84,15 +84,15 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	@Override
 	protected void _writeXml(Trigger property, XCalElement element) {
 		if (property.getDate() != null) {
-			element.append(Value.DATE_TIME, date(property.getDate()).extended(true).write());
+			element.append(ICalDataType.DATE_TIME, date(property.getDate()).extended(true).write());
 		} else if (property.getDuration() != null) {
-			element.append(Value.DURATION, property.getDuration().toString());
+			element.append(ICalDataType.DURATION, property.getDuration().toString());
 		}
 	}
 
 	@Override
 	protected Trigger _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		String value = element.first(Value.DATE_TIME);
+		String value = element.first(ICalDataType.DATE_TIME);
 		if (value != null) {
 			try {
 				Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
@@ -102,7 +102,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 			}
 		}
 
-		value = element.first(Value.DURATION);
+		value = element.first(ICalDataType.DURATION);
 		try {
 			return new Trigger(Duration.parse(value), parameters.getRelated());
 		} catch (IllegalArgumentException e) {
@@ -124,10 +124,10 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	}
 
 	@Override
-	protected Trigger _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected Trigger _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		String valueStr = value.getSingleValued();
 
-		if (dataType == Value.DATE_TIME) {
+		if (dataType == ICalDataType.DATE_TIME) {
 			try {
 				Date date = date(valueStr).tzid(parameters.getTimezoneId(), warnings).parse();
 				return new Trigger(date);

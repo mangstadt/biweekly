@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalendar;
+import biweekly.ICalDataType;
 import biweekly.component.ICalComponent;
 import biweekly.component.marshaller.ComponentLibrary;
 import biweekly.component.marshaller.ICalComponentMarshaller;
@@ -23,7 +24,6 @@ import biweekly.component.marshaller.RawComponentMarshaller;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
@@ -276,7 +276,7 @@ public class ICalReader implements Closeable {
 			ICalPropertyMarshaller<? extends ICalProperty> m = findPropertyMarshaller(name);
 
 			//get the data type
-			Value dataType = parameters.getValue();
+			ICalDataType dataType = parameters.getValue();
 			if (dataType == null) {
 				//use the default data type if there is no VALUE parameter
 				dataType = m.getDefaultDataType();

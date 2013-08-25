@@ -3,11 +3,11 @@ package biweekly.property.marshaller;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.ICalDataType;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.DateTimeProperty;
 
 /*
@@ -41,7 +41,7 @@ import biweekly.property.DateTimeProperty;
  */
 public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> extends ICalPropertyMarshaller<T> {
 	public DateTimePropertyMarshaller(Class<T> clazz, String propertyName) {
-		super(clazz, propertyName, Value.DATE_TIME);
+		super(clazz, propertyName, ICalDataType.DATE_TIME);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 	}
 
 	@Override
-	protected T _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
 		return parse(value, parameters, warnings);
@@ -88,7 +88,7 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		String valueStr = value.getSingleValued();
 
 		return parse(valueStr, parameters, warnings);

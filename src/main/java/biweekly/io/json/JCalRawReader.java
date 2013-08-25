@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalendar;
+import biweekly.ICalDataType;
 import biweekly.component.marshaller.ComponentLibrary;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -166,7 +166,7 @@ public class JCalRawReader implements Closeable {
 			throw new JCalParseException(JsonToken.VALUE_STRING, jp.getCurrentToken());
 		}
 		String dataTypeStr = jp.getText();
-		Value dataType = "unknown".equals(dataTypeStr) ? null : Value.get(dataTypeStr);
+		ICalDataType dataType = "unknown".equals(dataTypeStr) ? null : ICalDataType.get(dataTypeStr);
 
 		//get property value(s)
 		List<JsonValue> values = parseValues();
@@ -293,7 +293,7 @@ public class JCalRawReader implements Closeable {
 		 * @param dataType the data type (e.g. "text")
 		 * @param value the property value
 		 */
-		void readProperty(List<String> componentHierarchy, String propertyName, ICalParameters parameters, Value dataType, JCalValue value);
+		void readProperty(List<String> componentHierarchy, String propertyName, ICalParameters parameters, ICalDataType dataType, JCalValue value);
 	}
 
 	/**

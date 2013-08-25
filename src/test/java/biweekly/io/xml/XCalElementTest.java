@@ -15,7 +15,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import biweekly.parameter.Value;
+import biweekly.ICalDataType;
 import biweekly.util.XmlUtils;
 
 /*
@@ -69,7 +69,7 @@ public class XCalElementTest {
 		"</prop>"
 		);
 		//@formatter:on
-		assertEquals("1", xcalElement.first(Value.TEXT));
+		assertEquals("1", xcalElement.first(ICalDataType.TEXT));
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class XCalElementTest {
 		"</prop>"
 		);
 		//@formatter:on
-		assertEquals("1", xcalElement.first((Value) null));
+		assertEquals("1", xcalElement.first((ICalDataType) null));
 	}
 
 	@Test
@@ -164,7 +164,7 @@ public class XCalElementTest {
 		"</prop>"
 		);
 		//@formatter:on
-		assertEquals(Arrays.asList("2", "", "2-2"), xcalElement.all(Value.TEXT));
+		assertEquals(Arrays.asList("2", "", "2-2"), xcalElement.all(ICalDataType.TEXT));
 	}
 
 	@Test
@@ -206,13 +206,13 @@ public class XCalElementTest {
 		"</prop>"
 		);
 		//@formatter:on
-		Iterator<XCalElement> it = xcalElement.children(Value.TEXT).iterator();
+		Iterator<XCalElement> it = xcalElement.children(ICalDataType.TEXT).iterator();
 
 		XCalElement child = it.next();
-		assertEquals("1", child.first(Value.INTEGER));
+		assertEquals("1", child.first(ICalDataType.INTEGER));
 
 		child = it.next();
-		assertEquals("2", child.first(Value.INTEGER));
+		assertEquals("2", child.first(ICalDataType.INTEGER));
 
 		assertFalse(it.hasNext());
 	}
@@ -231,8 +231,8 @@ public class XCalElementTest {
 		"</prop>"
 		);
 		//@formatter:on
-		XCalElement child = xcalElement.child(Value.TEXT);
-		assertEquals("1", child.first(Value.INTEGER));
+		XCalElement child = xcalElement.child(ICalDataType.TEXT);
+		assertEquals("1", child.first(ICalDataType.INTEGER));
 	}
 
 	@Test
@@ -246,7 +246,7 @@ public class XCalElementTest {
 		"</prop>"
 		);
 		//@formatter:on
-		Iterator<XCalElement> it = xcalElement.children(Value.TEXT).iterator();
+		Iterator<XCalElement> it = xcalElement.children(ICalDataType.TEXT).iterator();
 
 		assertFalse(it.hasNext());
 	}
@@ -275,7 +275,7 @@ public class XCalElementTest {
 	@Test
 	public void append_value_object() {
 		XCalElement xCalElement = build("<prop><one>1</one></prop>");
-		Element appendedElement = xCalElement.append(Value.TEXT, "2");
+		Element appendedElement = xCalElement.append(ICalDataType.TEXT, "2");
 		assertEquals("text", appendedElement.getLocalName());
 		assertEquals(XCAL_NS, appendedElement.getNamespaceURI());
 		assertEquals("2", appendedElement.getTextContent());
@@ -302,7 +302,7 @@ public class XCalElementTest {
 		"</prop>"
 		);
 		//@formatter:on
-		Element appendedElement = xCalElement.append((Value) null, "2");
+		Element appendedElement = xCalElement.append((ICalDataType) null, "2");
 		assertEquals("unknown", appendedElement.getLocalName());
 		assertEquals(XCAL_NS, appendedElement.getNamespaceURI());
 		assertEquals("2", appendedElement.getTextContent());

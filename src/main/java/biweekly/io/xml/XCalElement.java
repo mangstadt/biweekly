@@ -9,7 +9,7 @@ import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import biweekly.parameter.Value;
+import biweekly.ICalDataType;
 import biweekly.util.XmlUtils;
 
 /*
@@ -60,7 +60,7 @@ public class XCalElement {
 	 * type
 	 * @return the value or null if not found
 	 */
-	public String first(Value dataType) {
+	public String first(ICalDataType dataType) {
 		String dataTypeStr = (dataType == null) ? "unknown" : dataType.getValue().toLowerCase();
 		return first(dataTypeStr);
 	}
@@ -84,7 +84,7 @@ public class XCalElement {
 	 * @param dataType the data type to look for
 	 * @return the values
 	 */
-	public List<String> all(Value dataType) {
+	public List<String> all(ICalDataType dataType) {
 		return all(dataType.getValue().toLowerCase());
 	}
 
@@ -110,7 +110,7 @@ public class XCalElement {
 	 * @param value the value
 	 * @return the created element
 	 */
-	public Element append(Value dataType, String value) {
+	public Element append(ICalDataType dataType, String value) {
 		String dataTypeStr = (dataType == null) ? "unknown" : dataType.getValue().toLowerCase();
 		return append(dataTypeStr, value);
 	}
@@ -142,7 +142,7 @@ public class XCalElement {
 	 * @param dataType the data type
 	 * @return the created element
 	 */
-	public XCalElement append(Value dataType) {
+	public XCalElement append(ICalDataType dataType) {
 		return append(dataType.getValue().toLowerCase());
 	}
 
@@ -189,7 +189,7 @@ public class XCalElement {
 	 * @param dataType the data type
 	 * @return the child elements
 	 */
-	public List<XCalElement> children(Value dataType) {
+	public List<XCalElement> children(ICalDataType dataType) {
 		String localName = dataType.getValue().toLowerCase();
 		List<XCalElement> children = new ArrayList<XCalElement>();
 		for (Element child : children()) {
@@ -205,7 +205,7 @@ public class XCalElement {
 	 * @param dataType the data type
 	 * @return the child element or null if not found
 	 */
-	public XCalElement child(Value dataType) {
+	public XCalElement child(ICalDataType dataType) {
 		String localName = dataType.getValue().toLowerCase();
 		for (Element child : children()) {
 			if (localName.equals(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {

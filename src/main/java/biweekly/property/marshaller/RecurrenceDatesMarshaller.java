@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.RecurrenceDates;
 import biweekly.util.Duration;
 import biweekly.util.Period;
@@ -45,16 +45,16 @@ import biweekly.util.StringUtils.JoinCallback;
  */
 public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<RecurrenceDates> {
 	public RecurrenceDatesMarshaller() {
-		super(RecurrenceDates.class, "RDATE", Value.DATE_TIME);
+		super(RecurrenceDates.class, "RDATE", ICalDataType.DATE_TIME);
 	}
 
 	@Override
-	protected Value _getDataType(RecurrenceDates property) {
+	protected ICalDataType _getDataType(RecurrenceDates property) {
 		if (property.getDates() != null) {
-			return property.hasTime() ? Value.DATE_TIME : Value.DATE;
+			return property.hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
 		}
 		if (property.getPeriods() != null) {
-			return Value.PERIOD;
+			return ICalDataType.PERIOD;
 		}
 		return null;
 	}
@@ -91,21 +91,21 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 	}
 
 	@Override
-	protected RecurrenceDates _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected RecurrenceDates _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		return parse(parseList(value), dataType, parameters, warnings);
 	}
 
 	@Override
 	protected void _writeXml(RecurrenceDates property, XCalElement element) {
 		if (property.getDates() != null) {
-			Value dataType = property.hasTime() ? Value.DATE_TIME : Value.DATE;
+			ICalDataType dataType = property.hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
 			for (Date date : property.getDates()) {
 				String dateStr = date(date).time(property.hasTime()).tzid(property.getTimezoneId()).extended(true).write();
 				element.append(dataType, dateStr);
 			}
 		} else if (property.getPeriods() != null) {
 			for (Period period : property.getPeriods()) {
-				XCalElement periodElement = element.append(Value.PERIOD);
+				XCalElement periodElement = element.append(ICalDataType.PERIOD);
 
 				Date start = period.getStartDate();
 				if (start != null) {
@@ -127,7 +127,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 
 	@Override
 	protected RecurrenceDates _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		List<XCalElement> periodElements = element.children(Value.PERIOD);
+		List<XCalElement> periodElements = element.children(ICalDataType.PERIOD);
 		if (!periodElements.isEmpty()) {
 			//parse as periods
 			List<Period> periods = new ArrayList<Period>(periodElements.size());
@@ -170,9 +170,9 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 			//parse as dates
 
 			//be lenient and accept a combination of <date> and <date-time> values
-			List<String> dateStrs = element.all(Value.DATE_TIME);
+			List<String> dateStrs = element.all(ICalDataType.DATE_TIME);
 			boolean hasTime = !dateStrs.isEmpty();
-			dateStrs.addAll(element.all(Value.DATE));
+			dateStrs.addAll(element.all(ICalDataType.DATE));
 
 			List<Date> dates = new ArrayList<Date>(dateStrs.size());
 			for (String dateStr : dateStrs) {
@@ -221,12 +221,12 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 	}
 
 	@Override
-	protected RecurrenceDates _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected RecurrenceDates _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		return parse(value.getMultivalued(), dataType, parameters, warnings);
 	}
 
-	private RecurrenceDates parse(List<String> valueStrs, Value dataType, ICalParameters parameters, List<String> warnings) {
-		if (dataType == Value.PERIOD) {
+	private RecurrenceDates parse(List<String> valueStrs, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+		if (dataType == ICalDataType.PERIOD) {
 			//parse as periods
 			List<Period> periods = new ArrayList<Period>(valueStrs.size());
 			for (String timePeriodStr : valueStrs) {
@@ -264,7 +264,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 			return new RecurrenceDates(periods);
 		} else {
 			//parse as dates
-			boolean hasTime = (dataType == Value.DATE_TIME);
+			boolean hasTime = (dataType == ICalDataType.DATE_TIME);
 			List<Date> dates = new ArrayList<Date>(valueStrs.size());
 			for (String s : valueStrs) {
 				try {

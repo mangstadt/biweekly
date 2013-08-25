@@ -9,10 +9,10 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.Geo;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -86,7 +86,7 @@ public class GeoMarshallerTest {
 		String value = "12.34;56.78";
 		ICalParameters params = new ICalParameters();
 
-		Result<Geo> result = marshaller.parseText(value, Value.FLOAT, params);
+		Result<Geo> result = marshaller.parseText(value, ICalDataType.FLOAT, params);
 
 		Geo prop = result.getValue();
 		assertEquals(12.34, prop.getLatitude(), 0.001);
@@ -99,7 +99,7 @@ public class GeoMarshallerTest {
 		String value = "12.34";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, Value.FLOAT, params);
+		marshaller.parseText(value, ICalDataType.FLOAT, params);
 	}
 
 	@Test(expected = CannotParseException.class)
@@ -107,7 +107,7 @@ public class GeoMarshallerTest {
 		String value = "";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, Value.FLOAT, params);
+		marshaller.parseText(value, ICalDataType.FLOAT, params);
 	}
 
 	@Test(expected = CannotParseException.class)
@@ -115,7 +115,7 @@ public class GeoMarshallerTest {
 		String value = "bad;56.78";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, Value.FLOAT, params);
+		marshaller.parseText(value, ICalDataType.FLOAT, params);
 	}
 
 	@Test(expected = CannotParseException.class)
@@ -123,7 +123,7 @@ public class GeoMarshallerTest {
 		String value = "12.34;bad";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, Value.FLOAT, params);
+		marshaller.parseText(value, ICalDataType.FLOAT, params);
 	}
 
 	@Test
@@ -238,7 +238,7 @@ public class GeoMarshallerTest {
 
 	@Test
 	public void parseJson() {
-		Result<Geo> result = marshaller.parseJson(JCalValue.structured("12.34", "56.78"), Value.FLOAT, new ICalParameters());
+		Result<Geo> result = marshaller.parseJson(JCalValue.structured("12.34", "56.78"), ICalDataType.FLOAT, new ICalParameters());
 
 		Geo prop = result.getValue();
 		assertEquals(12.34, prop.getLatitude(), 0.001);
@@ -248,7 +248,7 @@ public class GeoMarshallerTest {
 
 	@Test
 	public void parseJson_missing_longitude() {
-		Result<Geo> result = marshaller.parseJson(JCalValue.structured("12.34"), Value.FLOAT, new ICalParameters());
+		Result<Geo> result = marshaller.parseJson(JCalValue.structured("12.34"), ICalDataType.FLOAT, new ICalParameters());
 
 		Geo prop = result.getValue();
 		assertEquals(12.34, prop.getLatitude(), 0.001);
@@ -258,7 +258,7 @@ public class GeoMarshallerTest {
 
 	@Test
 	public void parseJson_missing_both() {
-		Result<Geo> result = marshaller.parseJson(JCalValue.structured(), Value.FLOAT, new ICalParameters());
+		Result<Geo> result = marshaller.parseJson(JCalValue.structured(), ICalDataType.FLOAT, new ICalParameters());
 
 		Geo prop = result.getValue();
 		assertNull(prop.getLatitude());
@@ -268,11 +268,11 @@ public class GeoMarshallerTest {
 
 	@Test(expected = CannotParseException.class)
 	public void parseJson_bad_latitude() {
-		marshaller.parseJson(JCalValue.structured("bad", "56.78"), Value.FLOAT, new ICalParameters());
+		marshaller.parseJson(JCalValue.structured("bad", "56.78"), ICalDataType.FLOAT, new ICalParameters());
 	}
 
 	@Test(expected = CannotParseException.class)
 	public void parseJson_bad_longitude() {
-		marshaller.parseJson(JCalValue.structured("12.34", "bad"), Value.FLOAT, new ICalParameters());
+		marshaller.parseJson(JCalValue.structured("12.34", "bad"), ICalDataType.FLOAT, new ICalParameters());
 	}
 }

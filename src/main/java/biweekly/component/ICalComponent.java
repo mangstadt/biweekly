@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import biweekly.ICalendar;
+import biweekly.ICalDataType;
 import biweekly.component.ValidationWarnings.WarningsGroup;
-import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.util.ListMultimap;
@@ -170,7 +170,7 @@ public abstract class ICalComponent {
 	 * @param value the property value
 	 * @return the property object that was created
 	 */
-	public RawProperty addExperimentalProperty(String name, Value dataType, String value) {
+	public RawProperty addExperimentalProperty(String name, ICalDataType dataType, String value) {
 		RawProperty raw = new RawProperty(name, dataType, value);
 		addProperty(raw);
 		return raw;
@@ -195,7 +195,7 @@ public abstract class ICalComponent {
 	 * @param value the property value
 	 * @return the property object that was created
 	 */
-	public RawProperty setExperimentalProperty(String name, Value dataType, String value) {
+	public RawProperty setExperimentalProperty(String name, ICalDataType dataType, String value) {
 		removeExperimentalProperty(name);
 		return addExperimentalProperty(name, dataType, value);
 	}

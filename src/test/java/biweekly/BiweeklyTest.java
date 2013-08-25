@@ -21,7 +21,6 @@ import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.CannotParseException;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.XmlUtils;
@@ -430,7 +429,7 @@ public class BiweeklyTest {
 		);
 		//@formatter:on
 
-		Document actual = Biweekly.writeXml(ical).register(new TestPropertyMarshaller()).register(new PartyMarshaller()).register("X-TEST2", Value.TEXT).dom();
+		Document actual = Biweekly.writeXml(ical).register(new TestPropertyMarshaller()).register(new PartyMarshaller()).register("X-TEST2", ICalDataType.TEXT).dom();
 
 		assertXMLEqual(expected, actual);
 	}
@@ -574,7 +573,7 @@ public class BiweeklyTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 			Integer number;
 			if (value.equals("one")) {
 				number = 1;
@@ -588,7 +587,7 @@ public class BiweeklyTest {
 
 		@Override
 		protected TestProperty _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-			return _parseText(element.first(Value.TEXT), null, parameters, warnings);
+			return _parseText(element.first(ICalDataType.TEXT), null, parameters, warnings);
 		}
 	}
 

@@ -8,10 +8,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.RecurrenceRule;
 import biweekly.property.RecurrenceRule.DayOfWeek;
 import biweekly.property.RecurrenceRule.Frequency;
@@ -51,7 +51,7 @@ import biweekly.util.StringUtils.JoinMapCallback;
  */
 public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceRule> {
 	public RecurrenceRuleMarshaller() {
-		super(RecurrenceRule.class, "RRULE", Value.RECUR);
+		super(RecurrenceRule.class, "RRULE", ICalDataType.RECUR);
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 	}
 
 	@Override
-	protected RecurrenceRule _parseText(String value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected RecurrenceRule _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		ListMultimap<String, String> components = new ListMultimap<String, String>();
 		for (String component : value.split(";")) {
 			String split[] = component.split("=");
@@ -155,7 +155,7 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 	}
 
 	@Override
-	protected RecurrenceRule _parseJson(JCalValue value, Value dataType, ICalParameters parameters, List<String> warnings) {
+	protected RecurrenceRule _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		RecurrenceRule property = new RecurrenceRule(null);
 
 		ListMultimap<String, String> object = value.getObject();

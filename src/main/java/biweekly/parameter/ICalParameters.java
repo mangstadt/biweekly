@@ -3,6 +3,7 @@ package biweekly.parameter;
 import java.util.ArrayList;
 import java.util.List;
 
+import biweekly.ICalDataType;
 import biweekly.component.VTimezone;
 import biweekly.property.FreeBusy;
 import biweekly.property.RecurrenceId;
@@ -571,9 +572,9 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-29">RFC 5545
 	 * p.29-50</a>
 	 */
-	public Value getValue() {
+	public ICalDataType getValue() {
 		String value = first(VALUE);
-		return (value == null) ? null : Value.get(value);
+		return (value == null) ? null : ICalDataType.get(value);
 	}
 
 	/**
@@ -583,7 +584,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-29">RFC 5545
 	 * p.29-50</a>
 	 */
-	public void setValue(Value value) {
+	public void setValue(ICalDataType value) {
 		replace(VALUE, (value == null) ? null : value.getValue());
 	}
 
@@ -644,8 +645,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 		}
 
 		value = first(VALUE);
-		if (value != null && Value.find(value) == null) {
-			warnings.add(String.format(message, VALUE, value, Value.all()));
+		if (value != null && ICalDataType.find(value) == null) {
+			warnings.add(String.format(message, VALUE, value, ICalDataType.all()));
 		}
 
 		return warnings;

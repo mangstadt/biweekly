@@ -1,6 +1,9 @@
-package biweekly.parameter;
+package biweekly;
 
 import java.util.Collection;
+
+import biweekly.parameter.EnumParameterValue;
+import biweekly.parameter.ICalParameterCaseClasses;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -33,25 +36,25 @@ import java.util.Collection;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-29">RFC 5545
  * p.29-50</a>
  */
-public class Value extends EnumParameterValue {
-	private static final ICalParameterCaseClasses<Value> enums = new ICalParameterCaseClasses<Value>(Value.class);
+public class ICalDataType extends EnumParameterValue {
+	private static final ICalParameterCaseClasses<ICalDataType> enums = new ICalParameterCaseClasses<ICalDataType>(ICalDataType.class);
 
-	public static final Value BINARY = new Value("BINARY");
-	public static final Value BOOLEAN = new Value("BOOLEAN");
-	public static final Value CAL_ADDRESS = new Value("CAL-ADDRESS");
-	public static final Value DATE = new Value("DATE");
-	public static final Value DATE_TIME = new Value("DATE-TIME");
-	public static final Value DURATION = new Value("DURATION");
-	public static final Value FLOAT = new Value("FLOAT");
-	public static final Value INTEGER = new Value("INTEGER");
-	public static final Value PERIOD = new Value("PERIOD");
-	public static final Value RECUR = new Value("RECUR");
-	public static final Value TEXT = new Value("TEXT");
-	public static final Value TIME = new Value("TIME");
-	public static final Value URI = new Value("URI");
-	public static final Value UTC_OFFSET = new Value("UTC-OFFSET");
+	public static final ICalDataType BINARY = new ICalDataType("BINARY");
+	public static final ICalDataType BOOLEAN = new ICalDataType("BOOLEAN");
+	public static final ICalDataType CAL_ADDRESS = new ICalDataType("CAL-ADDRESS");
+	public static final ICalDataType DATE = new ICalDataType("DATE");
+	public static final ICalDataType DATE_TIME = new ICalDataType("DATE-TIME");
+	public static final ICalDataType DURATION = new ICalDataType("DURATION");
+	public static final ICalDataType FLOAT = new ICalDataType("FLOAT");
+	public static final ICalDataType INTEGER = new ICalDataType("INTEGER");
+	public static final ICalDataType PERIOD = new ICalDataType("PERIOD");
+	public static final ICalDataType RECUR = new ICalDataType("RECUR");
+	public static final ICalDataType TEXT = new ICalDataType("TEXT");
+	public static final ICalDataType TIME = new ICalDataType("TIME");
+	public static final ICalDataType URI = new ICalDataType("URI");
+	public static final ICalDataType UTC_OFFSET = new ICalDataType("UTC-OFFSET");
 
-	private Value(String value) {
+	private ICalDataType(String value) {
 		super(value);
 	}
 
@@ -61,7 +64,7 @@ public class Value extends EnumParameterValue {
 	 * @param value the parameter value
 	 * @return the object or null if not found
 	 */
-	public static Value find(String value) {
+	public static ICalDataType find(String value) {
 		return enums.find(value);
 	}
 
@@ -72,7 +75,7 @@ public class Value extends EnumParameterValue {
 	 * @param value the parameter value
 	 * @return the object
 	 */
-	public static Value get(String value) {
+	public static ICalDataType get(String value) {
 		return enums.get(value);
 	}
 
@@ -81,7 +84,7 @@ public class Value extends EnumParameterValue {
 	 * this class.
 	 * @return the parameter values
 	 */
-	public static Collection<Value> all() {
+	public static Collection<ICalDataType> all() {
 		return enums.all();
 	}
 }

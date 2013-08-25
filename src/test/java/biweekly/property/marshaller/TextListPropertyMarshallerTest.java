@@ -9,9 +9,9 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.ListProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -85,7 +85,7 @@ public class TextListPropertyMarshallerTest {
 		String value = "one,two,three\\,four";
 		ICalParameters params = new ICalParameters();
 
-		Result<ListPropertyImpl> result = marshaller.parseText(value, Value.TEXT, params);
+		Result<ListPropertyImpl> result = marshaller.parseText(value, ICalDataType.TEXT, params);
 
 		assertEquals(Arrays.asList("one", "two", "three,four"), result.getValue().getValues());
 		assertWarnings(0, result.getWarnings());
@@ -96,7 +96,7 @@ public class TextListPropertyMarshallerTest {
 		String value = "";
 		ICalParameters params = new ICalParameters();
 
-		Result<ListPropertyImpl> result = marshaller.parseText(value, Value.TEXT, params);
+		Result<ListPropertyImpl> result = marshaller.parseText(value, ICalDataType.TEXT, params);
 
 		assertEquals(0, result.getValue().getValues().size());
 		assertWarnings(0, result.getWarnings());
@@ -143,7 +143,7 @@ public class TextListPropertyMarshallerTest {
 
 	@Test
 	public void parseJson() {
-		Result<ListPropertyImpl> result = marshaller.parseJson(JCalValue.multi("one", "two", "three"), Value.TEXT, new ICalParameters());
+		Result<ListPropertyImpl> result = marshaller.parseJson(JCalValue.multi("one", "two", "three"), ICalDataType.TEXT, new ICalParameters());
 
 		ListPropertyImpl prop = result.getValue();
 		assertEquals(Arrays.asList("one", "two", "three"), prop.getValues());
@@ -156,7 +156,7 @@ public class TextListPropertyMarshallerTest {
 		}
 
 		@Override
-		protected ListPropertyImpl newInstance(Value dataType, ICalParameters parameters) {
+		protected ListPropertyImpl newInstance(ICalDataType dataType, ICalParameters parameters) {
 			return new ListPropertyImpl();
 		}
 	}

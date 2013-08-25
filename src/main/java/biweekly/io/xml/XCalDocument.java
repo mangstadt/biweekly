@@ -32,6 +32,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalendar;
+import biweekly.ICalDataType;
 import biweekly.component.ICalComponent;
 import biweekly.component.RawComponent;
 import biweekly.component.marshaller.ComponentLibrary;
@@ -41,7 +42,6 @@ import biweekly.component.marshaller.RawComponentMarshaller;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.Xml;
@@ -139,27 +139,27 @@ public class XCalDocument {
 	 * Defines the names of the XML elements that are used to hold each
 	 * parameter's value.
 	 */
-	private final Map<String, Value> parameterDataTypes = new HashMap<String, Value>();
+	private final Map<String, ICalDataType> parameterDataTypes = new HashMap<String, ICalDataType>();
 	{
-		registerParameterDataType(ICalParameters.CN, Value.TEXT);
-		registerParameterDataType(ICalParameters.ALTREP, Value.URI);
-		registerParameterDataType(ICalParameters.CUTYPE, Value.TEXT);
-		registerParameterDataType(ICalParameters.DELEGATED_FROM, Value.CAL_ADDRESS);
-		registerParameterDataType(ICalParameters.DELEGATED_TO, Value.CAL_ADDRESS);
-		registerParameterDataType(ICalParameters.DIR, Value.URI);
-		registerParameterDataType(ICalParameters.ENCODING, Value.TEXT);
-		registerParameterDataType(ICalParameters.FMTTYPE, Value.TEXT);
-		registerParameterDataType(ICalParameters.FBTYPE, Value.TEXT);
-		registerParameterDataType(ICalParameters.LANGUAGE, Value.TEXT);
-		registerParameterDataType(ICalParameters.MEMBER, Value.CAL_ADDRESS);
-		registerParameterDataType(ICalParameters.PARTSTAT, Value.TEXT);
-		registerParameterDataType(ICalParameters.RANGE, Value.TEXT);
-		registerParameterDataType(ICalParameters.RELATED, Value.TEXT);
-		registerParameterDataType(ICalParameters.RELTYPE, Value.TEXT);
-		registerParameterDataType(ICalParameters.ROLE, Value.TEXT);
-		registerParameterDataType(ICalParameters.RSVP, Value.BOOLEAN);
-		registerParameterDataType(ICalParameters.SENT_BY, Value.CAL_ADDRESS);
-		registerParameterDataType(ICalParameters.TZID, Value.TEXT);
+		registerParameterDataType(ICalParameters.CN, ICalDataType.TEXT);
+		registerParameterDataType(ICalParameters.ALTREP, ICalDataType.URI);
+		registerParameterDataType(ICalParameters.CUTYPE, ICalDataType.TEXT);
+		registerParameterDataType(ICalParameters.DELEGATED_FROM, ICalDataType.CAL_ADDRESS);
+		registerParameterDataType(ICalParameters.DELEGATED_TO, ICalDataType.CAL_ADDRESS);
+		registerParameterDataType(ICalParameters.DIR, ICalDataType.URI);
+		registerParameterDataType(ICalParameters.ENCODING, ICalDataType.TEXT);
+		registerParameterDataType(ICalParameters.FMTTYPE, ICalDataType.TEXT);
+		registerParameterDataType(ICalParameters.FBTYPE, ICalDataType.TEXT);
+		registerParameterDataType(ICalParameters.LANGUAGE, ICalDataType.TEXT);
+		registerParameterDataType(ICalParameters.MEMBER, ICalDataType.CAL_ADDRESS);
+		registerParameterDataType(ICalParameters.PARTSTAT, ICalDataType.TEXT);
+		registerParameterDataType(ICalParameters.RANGE, ICalDataType.TEXT);
+		registerParameterDataType(ICalParameters.RELATED, ICalDataType.TEXT);
+		registerParameterDataType(ICalParameters.RELTYPE, ICalDataType.TEXT);
+		registerParameterDataType(ICalParameters.ROLE, ICalDataType.TEXT);
+		registerParameterDataType(ICalParameters.RSVP, ICalDataType.BOOLEAN);
+		registerParameterDataType(ICalParameters.SENT_BY, ICalDataType.CAL_ADDRESS);
+		registerParameterDataType(ICalParameters.TZID, ICalDataType.TEXT);
 	}
 
 	private final List<List<String>> parseWarnings = new ArrayList<List<String>>();
@@ -272,7 +272,7 @@ public class XCalDocument {
 	 * @param parameterName the parameter name (e.g. "x-foo")
 	 * @param dataType the data type or null to remove
 	 */
-	public void registerParameterDataType(String parameterName, Value dataType) {
+	public void registerParameterDataType(String parameterName, ICalDataType dataType) {
 		parameterName = parameterName.toLowerCase();
 		if (dataType == null) {
 			parameterDataTypes.remove(parameterName);
@@ -548,7 +548,7 @@ public class XCalDocument {
 
 		for (Map.Entry<String, List<String>> parameter : parameters) {
 			String name = parameter.getKey().toLowerCase();
-			Value dataType = parameterDataTypes.get(name);
+			ICalDataType dataType = parameterDataTypes.get(name);
 			String dataTypeStr = (dataType == null) ? "unknown" : dataType.getValue().toLowerCase();
 
 			Element parameterElement = buildAndAppendElement(name, parametersWrapperElement);

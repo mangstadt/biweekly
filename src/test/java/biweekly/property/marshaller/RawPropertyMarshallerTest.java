@@ -7,8 +7,8 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.RawProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -80,7 +80,7 @@ public class RawPropertyMarshallerTest {
 
 		RawProperty prop = result.getValue();
 		assertEquals("text", prop.getValue());
-		assertEquals(Value.TEXT, prop.getDataType());
+		assertEquals(ICalDataType.TEXT, prop.getDataType());
 		assertWarnings(0, result.getWarnings());
 	}
 

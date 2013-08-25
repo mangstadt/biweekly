@@ -10,10 +10,10 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.IntegerProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -73,7 +73,7 @@ public class IntegerPropertyMarshallerTest {
 		String value = "5";
 		ICalParameters params = new ICalParameters();
 
-		Result<IntegerProperty> result = marshaller.parseText(value, Value.INTEGER, params);
+		Result<IntegerProperty> result = marshaller.parseText(value, ICalDataType.INTEGER, params);
 
 		IntegerProperty prop = result.getValue();
 		assertIntEquals(5, prop.getValue());
@@ -85,7 +85,7 @@ public class IntegerPropertyMarshallerTest {
 		String value = "invalid";
 		ICalParameters params = new ICalParameters();
 
-		marshaller.parseText(value, Value.INTEGER, params);
+		marshaller.parseText(value, ICalDataType.INTEGER, params);
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class IntegerPropertyMarshallerTest {
 		String value = "";
 		ICalParameters params = new ICalParameters();
 
-		Result<IntegerProperty> result = marshaller.parseText(value, Value.INTEGER, params);
+		Result<IntegerProperty> result = marshaller.parseText(value, ICalDataType.INTEGER, params);
 
 		IntegerProperty prop = result.getValue();
 		assertNull(prop.getValue());
@@ -153,7 +153,7 @@ public class IntegerPropertyMarshallerTest {
 
 	@Test
 	public void parseJson() {
-		Result<IntegerProperty> result = marshaller.parseJson(JCalValue.single(5), Value.INTEGER, new ICalParameters());
+		Result<IntegerProperty> result = marshaller.parseJson(JCalValue.single(5), ICalDataType.INTEGER, new ICalParameters());
 
 		IntegerProperty prop = result.getValue();
 		assertIntEquals(5, prop.getValue());
@@ -162,7 +162,7 @@ public class IntegerPropertyMarshallerTest {
 
 	@Test(expected = CannotParseException.class)
 	public void parseJson_invalid() {
-		marshaller.parseJson(JCalValue.single("invalid"), Value.INTEGER, new ICalParameters());
+		marshaller.parseJson(JCalValue.single("invalid"), ICalDataType.INTEGER, new ICalParameters());
 	}
 
 	private class IntegerPropertyMarshallerImpl extends IntegerPropertyMarshaller<IntegerProperty> {

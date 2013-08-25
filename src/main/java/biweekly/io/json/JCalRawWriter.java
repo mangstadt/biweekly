@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import biweekly.ICalDataType;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -150,7 +150,7 @@ public class JCalRawWriter implements Closeable {
 	 * method called was {@link #writeEndComponent()}.
 	 * @throws IOException if there's an I/O problem
 	 */
-	public void writeProperty(String propertyName, Value dataType, JCalValue value) throws IOException {
+	public void writeProperty(String propertyName, ICalDataType dataType, JCalValue value) throws IOException {
 		writeProperty(propertyName, new ICalParameters(), dataType, value);
 	}
 
@@ -165,7 +165,7 @@ public class JCalRawWriter implements Closeable {
 	 * method called was {@link #writeEndComponent()}.
 	 * @throws IOException if there's an I/O problem
 	 */
-	public void writeProperty(String propertyName, ICalParameters parameters, Value dataType, JCalValue value) throws IOException {
+	public void writeProperty(String propertyName, ICalParameters parameters, ICalDataType dataType, JCalValue value) throws IOException {
 		if (stack.isEmpty()) {
 			throw new IllegalStateException("Call \"writeStartComponent\" first.");
 		}

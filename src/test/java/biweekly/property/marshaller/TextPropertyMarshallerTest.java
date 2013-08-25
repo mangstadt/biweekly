@@ -8,9 +8,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Value;
 import biweekly.property.TextProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
@@ -70,7 +70,7 @@ public class TextPropertyMarshallerTest {
 		String value = "the\\;text";
 		ICalParameters params = new ICalParameters();
 
-		Result<TextPropertyImpl> result = marshaller.parseText(value, Value.TEXT, params);
+		Result<TextPropertyImpl> result = marshaller.parseText(value, ICalDataType.TEXT, params);
 
 		TextPropertyImpl prop = result.getValue();
 		assertEquals("the;text", prop.getValue());
@@ -91,7 +91,7 @@ public class TextPropertyMarshallerTest {
 
 	@Test
 	public void writeXml_data_type() {
-		TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl(Value.CAL_ADDRESS);
+		TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl(ICalDataType.CAL_ADDRESS);
 		TextPropertyImpl prop = new TextPropertyImpl("mailto:johndoe@example.com");
 		assertWriteXml("<cal-address>mailto:johndoe@example.com</cal-address>", prop, marshaller);
 	}
@@ -107,7 +107,7 @@ public class TextPropertyMarshallerTest {
 
 	@Test
 	public void parseXml_data_type() {
-		TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl(Value.CAL_ADDRESS);
+		TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl(ICalDataType.CAL_ADDRESS);
 		Result<TextPropertyImpl> result = parseXCalProperty("<cal-address>mailto:johndoe@example.com</cal-address>", marshaller);
 
 		TextPropertyImpl prop = result.getValue();
@@ -133,7 +133,7 @@ public class TextPropertyMarshallerTest {
 
 	@Test
 	public void parseJson() {
-		Result<TextPropertyImpl> result = marshaller.parseJson(JCalValue.single("text"), Value.TEXT, new ICalParameters());
+		Result<TextPropertyImpl> result = marshaller.parseJson(JCalValue.single("text"), ICalDataType.TEXT, new ICalParameters());
 
 		TextPropertyImpl prop = result.getValue();
 		assertEquals("text", prop.getValue());
@@ -145,7 +145,7 @@ public class TextPropertyMarshallerTest {
 			super(TextPropertyImpl.class, "TEXT");
 		}
 
-		public TextPropertyMarshallerImpl(Value dataType) {
+		public TextPropertyMarshallerImpl(ICalDataType dataType) {
 			super(TextPropertyImpl.class, "TEXT", dataType);
 		}
 

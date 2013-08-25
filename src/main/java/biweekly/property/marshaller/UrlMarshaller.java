@@ -1,6 +1,6 @@
 package biweekly.property.marshaller;
 
-import biweekly.parameter.Value;
+import biweekly.ICalDataType;
 import biweekly.property.Url;
 
 /*
@@ -34,7 +34,7 @@ import biweekly.property.Url;
  */
 public class UrlMarshaller extends TextPropertyMarshaller<Url> {
 	public UrlMarshaller() {
-		super(Url.class, "URL", Value.URI);
+		super(Url.class, "URL", ICalDataType.URI);
 	}
 
 	@Override
