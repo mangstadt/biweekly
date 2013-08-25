@@ -1103,9 +1103,24 @@ public class Biweekly {
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file) throws IOException {
+			go(file, false);
+		}
+
+		/**
+		 * Writes the iCalendar objects to a file.
+		 * @param file the file to write to
+		 * @param append true to append onto the end of the file, false to
+		 * overwrite it
+		 * @throws IllegalArgumentException if the marshaller class for a
+		 * component or property object cannot be found (only happens when an
+		 * experimental property/component marshaller is not registered with the
+		 * <code>register</code> method.)
+		 * @throws IOException if there's a problem writing to the file
+		 */
+		public void go(File file, boolean append) throws IOException {
 			FileWriter writer = null;
 			try {
-				writer = new FileWriter(file);
+				writer = new FileWriter(file, append);
 				go(writer);
 			} finally {
 				IOUtils.closeQuietly(writer);
