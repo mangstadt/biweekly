@@ -165,6 +165,7 @@ public abstract class CaseClasses<T, V> {
 				} catch (Exception ex) {
 					//reflection error
 					//should never be thrown because we check for "public static" and the correct type
+					throw new RuntimeException(ex);
 				}
 			}
 		}
