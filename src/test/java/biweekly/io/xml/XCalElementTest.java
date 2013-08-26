@@ -168,6 +168,22 @@ public class XCalElementTest {
 	}
 
 	@Test
+	public void all_unknown() {
+		//@formatter:off
+		XCalElement xcalElement = build(
+		"<prop>" +
+			"<one>1</one>" +
+			"<unknown>2</unknown>" +
+			"<unknown />" +
+			"<three>3</three>" +
+			"<unknown>2-2</unknown>" +
+		"</prop>"
+		);
+		//@formatter:on
+		assertEquals(Arrays.asList("2", "", "2-2"), xcalElement.all((ICalDataType) null));
+	}
+
+	@Test
 	public void all_none() {
 		//@formatter:off
 		XCalElement xcalElement = build(

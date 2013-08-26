@@ -61,7 +61,7 @@ public class XCalElement {
 	 * @return the value or null if not found
 	 */
 	public String first(ICalDataType dataType) {
-		String dataTypeStr = (dataType == null) ? "unknown" : dataType.getValue().toLowerCase();
+		String dataTypeStr = toLocalName(dataType);
 		return first(dataTypeStr);
 	}
 
@@ -81,11 +81,13 @@ public class XCalElement {
 
 	/**
 	 * Gets all the values of a given data type.
-	 * @param dataType the data type to look for
+	 * @param dataType the data type to look for or null for the "unknown" data
+	 * type
 	 * @return the values
 	 */
 	public List<String> all(ICalDataType dataType) {
-		return all(dataType.getValue().toLowerCase());
+		String dataTypeStr = toLocalName(dataType);
+		return all(dataTypeStr);
 	}
 
 	/**
@@ -111,7 +113,7 @@ public class XCalElement {
 	 * @return the created element
 	 */
 	public Element append(ICalDataType dataType, String value) {
-		String dataTypeStr = (dataType == null) ? "unknown" : dataType.getValue().toLowerCase();
+		String dataTypeStr = toLocalName(dataType);
 		return append(dataTypeStr, value);
 	}
 
@@ -213,5 +215,9 @@ public class XCalElement {
 			}
 		}
 		return null;
+	}
+
+	private String toLocalName(ICalDataType dataType) {
+		return (dataType == null) ? "unknown" : dataType.getValue().toLowerCase();
 	}
 }
