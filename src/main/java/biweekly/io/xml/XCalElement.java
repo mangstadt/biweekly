@@ -145,7 +145,7 @@ public class XCalElement {
 	 * @return the created element
 	 */
 	public XCalElement append(ICalDataType dataType) {
-		return append(dataType.getValue().toLowerCase());
+		return append(dataType.getName().toLowerCase());
 	}
 
 	/**
@@ -192,7 +192,7 @@ public class XCalElement {
 	 * @return the child elements
 	 */
 	public List<XCalElement> children(ICalDataType dataType) {
-		String localName = dataType.getValue().toLowerCase();
+		String localName = dataType.getName().toLowerCase();
 		List<XCalElement> children = new ArrayList<XCalElement>();
 		for (Element child : children()) {
 			if (localName.equals(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {
@@ -208,7 +208,7 @@ public class XCalElement {
 	 * @return the child element or null if not found
 	 */
 	public XCalElement child(ICalDataType dataType) {
-		String localName = dataType.getValue().toLowerCase();
+		String localName = dataType.getName().toLowerCase();
 		for (Element child : children()) {
 			if (localName.equals(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {
 				return new XCalElement(child);
@@ -218,6 +218,6 @@ public class XCalElement {
 	}
 
 	private String toLocalName(ICalDataType dataType) {
-		return (dataType == null) ? "unknown" : dataType.getValue().toLowerCase();
+		return (dataType == null) ? "unknown" : dataType.getName().toLowerCase();
 	}
 }

@@ -585,7 +585,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * p.29-50</a>
 	 */
 	public void setValue(ICalDataType value) {
-		replace(VALUE, (value == null) ? null : value.getValue());
+		replace(VALUE, (value == null) ? null : value.getName());
 	}
 
 	/**

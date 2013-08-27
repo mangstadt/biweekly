@@ -549,7 +549,7 @@ public class XCalDocument {
 		for (Map.Entry<String, List<String>> parameter : parameters) {
 			String name = parameter.getKey().toLowerCase();
 			ICalDataType dataType = parameterDataTypes.get(name);
-			String dataTypeStr = (dataType == null) ? "unknown" : dataType.getValue().toLowerCase();
+			String dataTypeStr = (dataType == null) ? "unknown" : dataType.getName().toLowerCase();
 
 			Element parameterElement = buildAndAppendElement(name, parametersWrapperElement);
 			for (String parameterValue : parameter.getValue()) {

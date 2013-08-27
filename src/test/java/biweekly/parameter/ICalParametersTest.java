@@ -109,7 +109,7 @@ public class ICalParametersTest {
 		params.put(ICalParameters.RELATED, Related.END.getValue());
 		params.put(ICalParameters.RELTYPE, RelationshipType.CHILD.getValue());
 		params.put(ICalParameters.ROLE, Role.CHAIR.getValue());
-		params.put(ICalParameters.VALUE, ICalDataType.BINARY.getValue());
+		params.put(ICalParameters.VALUE, ICalDataType.BINARY.getName());
 
 		assertWarnings(0, params.validate());
 	}

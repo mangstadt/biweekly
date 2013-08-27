@@ -201,7 +201,7 @@ public class JCalRawWriter implements Closeable {
 		jg.writeEndObject();
 
 		//write data type
-		jg.writeString((dataType == null) ? "unknown" : dataType.getValue().toLowerCase());
+		jg.writeString((dataType == null) ? "unknown" : dataType.getName().toLowerCase());
 
 		//write value
 		for (JsonValue jsonValue : value.getValues()) {

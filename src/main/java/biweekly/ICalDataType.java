@@ -2,8 +2,7 @@ package biweekly;
 
 import java.util.Collection;
 
-import biweekly.parameter.EnumParameterValue;
-import biweekly.parameter.ICalParameterCaseClasses;
+import biweekly.util.CaseClasses;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -36,8 +35,18 @@ import biweekly.parameter.ICalParameterCaseClasses;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-29">RFC 5545
  * p.29-50</a>
  */
-public class ICalDataType extends EnumParameterValue {
-	private static final ICalParameterCaseClasses<ICalDataType> enums = new ICalParameterCaseClasses<ICalDataType>(ICalDataType.class);
+public class ICalDataType {
+	private static final CaseClasses<ICalDataType, String> enums = new CaseClasses<ICalDataType, String>(ICalDataType.class) {
+		@Override
+		protected ICalDataType create(String value) {
+			return new ICalDataType(value);
+		}
+
+		@Override
+		protected boolean matches(ICalDataType dataType, String value) {
+			return dataType.name.equalsIgnoreCase(value);
+		}
+	};
 
 	public static final ICalDataType BINARY = new ICalDataType("BINARY");
 	public static final ICalDataType BOOLEAN = new ICalDataType("BOOLEAN");
@@ -54,8 +63,23 @@ public class ICalDataType extends EnumParameterValue {
 	public static final ICalDataType URI = new ICalDataType("URI");
 	public static final ICalDataType UTC_OFFSET = new ICalDataType("UTC-OFFSET");
 
-	private ICalDataType(String value) {
-		super(value);
+	private final String name;
+
+	private ICalDataType(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Gets the name of the data type.
+	 * @return the name of the data type (e.g. "text")
+	 */
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 
 	/**
