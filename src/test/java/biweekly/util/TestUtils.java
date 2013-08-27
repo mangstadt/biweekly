@@ -71,6 +71,22 @@ public class TestUtils {
 	}
 
 	/**
+	 * Asserts the sizes of each warnings list within a list of warnings lists.
+	 * @param warningsLists the list of warnings lists
+	 * @param expectedSizes the expected sizes of each warnings list
+	 */
+	public static void assertWarningsLists(List<List<String>> warningsLists, int... expectedSizes) {
+		assertEquals(warningsLists.toString(), expectedSizes.length, warningsLists.size());
+
+		for (int i = 0; i < expectedSizes.length; i++) {
+			int expectedSize = expectedSizes[i];
+			List<String> warnings = warningsLists.get(i);
+
+			assertWarnings(expectedSize, warnings);
+		}
+	}
+
+	/**
 	 * Asserts that a validation warnings list is correct.
 	 * @param warnings the warnings list
 	 * @param expectedPropsAndComps the property and component objects that are
