@@ -90,11 +90,6 @@ public class CaseClassesTest {
 		}
 
 		@Override
-		protected Integer valueOf(PrimeNumber object) {
-			return object.value;
-		}
-
-		@Override
 		protected boolean matches(PrimeNumber object, Integer value) {
 			return object.value.equals(value);
 		}

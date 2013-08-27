@@ -53,11 +53,6 @@ public class ICalParameterCaseClasses<T extends EnumParameterValue> extends Case
 	}
 
 	@Override
-	protected String valueOf(T object) {
-		return object.value;
-	}
-
-	@Override
 	protected boolean matches(T object, String value) {
 		return object.value.equalsIgnoreCase(value);
 	}

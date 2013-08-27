@@ -63,13 +63,6 @@ public abstract class CaseClasses<T, V> {
 	protected abstract T create(V value);
 
 	/**
-	 * Gets the value of a case object.
-	 * @param object the object
-	 * @return the object's value
-	 */
-	protected abstract V valueOf(T object);
-
-	/**
 	 * Determines if a value is associated with a case object.
 	 * @param object the object
 	 * @param value the value
