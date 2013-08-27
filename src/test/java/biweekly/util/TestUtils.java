@@ -193,16 +193,6 @@ public class TestUtils {
 	}
 
 	/**
-	 * Builds a xCal property element.
-	 * @param marshaller the property marshaller
-	 * @param body the XML of the element body
-	 * @return the property element
-	 */
-	public static Element xcalPropertyElement(ICalPropertyMarshaller<? extends ICalProperty> marshaller, String body) {
-		return XmlUtils.getRootElement(xcalProperty(marshaller, body));
-	}
-
-	/**
 	 * Tests to see if an xCal property was marshalled correctly.
 	 * @param expectedInnerXml the expected inner XML of the property element
 	 * @param propertyToWrite the property to marshal
@@ -225,9 +215,9 @@ public class TestUtils {
 	 * @return the unmarshal result
 	 */
 	public static <T extends ICalProperty> Result<T> parseXCalProperty(String innerXml, ICalPropertyMarshaller<T> marshaller) {
-		ICalParameters params = new ICalParameters();
-		Element element = xcalPropertyElement(marshaller, innerXml);
-		return marshaller.parseXml(element, params);
+		Document document = xcalProperty(marshaller, innerXml);
+		Element element = XmlUtils.getRootElement(document);
+		return marshaller.parseXml(element, new ICalParameters());
 	}
 
 	/**
