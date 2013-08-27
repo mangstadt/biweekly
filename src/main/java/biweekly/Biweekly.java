@@ -1,8 +1,6 @@
 package biweekly;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -269,11 +267,9 @@ public class Biweekly {
 	/**
 	 * Parses an iCalendar file.
 	 * @return chainer object for completing the parse operation
-	 * @throws FileNotFoundException if the file does not exist or cannot be
-	 * accessed
 	 */
-	public static ParserChainTextReader parse(File file) throws FileNotFoundException {
-		return new ParserChainTextReader(new FileReader(file), true); //close the FileReader, since we created it
+	public static ParserChainTextReader parse(File file) {
+		return new ParserChainTextReader(file);
 	}
 
 	/**
@@ -291,7 +287,7 @@ public class Biweekly {
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ParserChainTextReader parse(Reader reader) {
-		return new ParserChainTextReader(reader, false); //do not close the Reader, since we didn't create it
+		return new ParserChainTextReader(reader);
 	}
 
 	/**
@@ -325,10 +321,8 @@ public class Biweekly {
 	 * Parses an xCal document (XML-encoded iCalendar objects).
 	 * @param file the XML file
 	 * @return chainer object for completing the parse operation
-	 * @throws FileNotFoundException if the file does not exist or cannot be
-	 * accessed
 	 */
-	public static ParserChainXmlReader parseXml(File file) throws FileNotFoundException {
+	public static ParserChainXmlReader parseXml(File file) {
 		return new ParserChainXmlReader(file);
 	}
 
@@ -390,11 +384,9 @@ public class Biweekly {
 	 * Parses a jCal data stream (JSON-encoded iCalendar objects).
 	 * @param file the JSON file
 	 * @return chainer object for completing the parse operation
-	 * @throws FileNotFoundException if the file does not exist or cannot be
-	 * accessed
 	 */
-	public static ParserChainJsonReader parseJson(File file) throws FileNotFoundException {
-		return new ParserChainJsonReader(new FileReader(file), true); //close the FileReader, since we created it
+	public static ParserChainJsonReader parseJson(File file) {
+		return new ParserChainJsonReader(file);
 	}
 
 	/**
@@ -412,7 +404,7 @@ public class Biweekly {
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ParserChainJsonReader parseJson(Reader reader) {
-		return new ParserChainJsonReader(reader, false);
+		return new ParserChainJsonReader(reader);
 	}
 
 	/**
@@ -555,7 +547,7 @@ public class Biweekly {
 			}
 		}
 
-		private ICalReader constructReader() {
+		private ICalReader constructReader() throws IOException {
 			ICalReader parser = _constructReader();
 			for (ICalPropertyMarshaller<? extends ICalProperty> marshaller : propertyMarshallers) {
 				parser.registerMarshaller(marshaller);
@@ -567,7 +559,7 @@ public class Biweekly {
 			return parser;
 		}
 
-		abstract ICalReader _constructReader();
+		abstract ICalReader _constructReader() throws IOException;
 	}
 
 	/**
@@ -578,10 +570,18 @@ public class Biweekly {
 	 */
 	public static class ParserChainTextReader extends ParserChainText<ParserChainTextReader> {
 		private final Reader reader;
+		private final File file;
 
-		private ParserChainTextReader(Reader reader, boolean closeWhenDone) {
-			super(closeWhenDone);
+		private ParserChainTextReader(Reader reader) {
+			super(false);
 			this.reader = reader;
+			this.file = null;
+		}
+
+		private ParserChainTextReader(File file) {
+			super(true);
+			this.reader = null;
+			this.file = file;
 		}
 
 		@Override
@@ -605,8 +605,8 @@ public class Biweekly {
 		}
 
 		@Override
-		ICalReader _constructReader() {
-			return new ICalReader(reader);
+		ICalReader _constructReader() throws IOException {
+			return (reader != null) ? new ICalReader(reader) : new ICalReader(file);
 		}
 	}
 
@@ -630,6 +630,11 @@ public class Biweekly {
 		@Override
 		public ParserChainTextString register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
 			return super.register(marshaller);
+		}
+
+		@Override
+		public ParserChainTextString warnings(List<List<String>> warnings) {
+			return super.warnings(warnings);
 		}
 
 		@Override
@@ -709,7 +714,7 @@ public class Biweekly {
 	public static class ParserChainXmlString extends ParserChainXml<ParserChainXmlString> {
 		private final String xml;
 
-		public ParserChainXmlString(String xml) {
+		private ParserChainXmlString(String xml) {
 			this.xml = xml;
 		}
 
@@ -721,6 +726,11 @@ public class Biweekly {
 		@Override
 		public ParserChainXmlString register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
 			return super.register(marshaller);
+		}
+
+		@Override
+		public ParserChainXmlString warnings(List<List<String>> warnings) {
+			return super.warnings(warnings);
 		}
 
 		@Override
@@ -759,12 +769,12 @@ public class Biweekly {
 		private final Reader reader;
 		private final File file;
 
-		public ParserChainXmlReader(Reader reader) {
+		private ParserChainXmlReader(Reader reader) {
 			this.reader = reader;
 			this.file = null;
 		}
 
-		public ParserChainXmlReader(File file) {
+		private ParserChainXmlReader(File file) {
 			this.reader = null;
 			this.file = file;
 		}
@@ -780,6 +790,11 @@ public class Biweekly {
 		}
 
 		@Override
+		public ParserChainXmlReader warnings(List<List<String>> warnings) {
+			return super.warnings(warnings);
+		}
+
+		@Override
 		XCalDocument _constructDocument() throws IOException, SAXException {
 			return (reader == null) ? new XCalDocument(file) : new XCalDocument(reader);
 		}
@@ -792,7 +807,7 @@ public class Biweekly {
 	public static class ParserChainXmlDocument extends ParserChainXml<ParserChainXmlDocument> {
 		private final Document document;
 
-		public ParserChainXmlDocument(Document document) {
+		private ParserChainXmlDocument(Document document) {
 			this.document = document;
 		}
 
@@ -804,6 +819,11 @@ public class Biweekly {
 		@Override
 		public ParserChainXmlDocument register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
 			return super.register(marshaller);
+		}
+
+		@Override
+		public ParserChainXmlDocument warnings(List<List<String>> warnings) {
+			return super.warnings(warnings);
 		}
 
 		@Override
@@ -895,7 +915,7 @@ public class Biweekly {
 			}
 		}
 
-		private JCalReader constructReader() {
+		private JCalReader constructReader() throws IOException {
 			JCalReader parser = _constructReader();
 			for (ICalPropertyMarshaller<? extends ICalProperty> marshaller : propertyMarshallers) {
 				parser.registerMarshaller(marshaller);
@@ -906,7 +926,7 @@ public class Biweekly {
 			return parser;
 		}
 
-		abstract JCalReader _constructReader();
+		abstract JCalReader _constructReader() throws IOException;
 	}
 
 	/**
@@ -917,10 +937,18 @@ public class Biweekly {
 	 */
 	public static class ParserChainJsonReader extends ParserChainJson<ParserChainJsonReader> {
 		private final Reader reader;
+		private final File file;
 
-		private ParserChainJsonReader(Reader reader, boolean closeWhenDone) {
-			super(closeWhenDone);
+		private ParserChainJsonReader(Reader reader) {
+			super(false);
 			this.reader = reader;
+			this.file = null;
+		}
+
+		private ParserChainJsonReader(File file) {
+			super(true);
+			this.reader = null;
+			this.file = file;
 		}
 
 		@Override
@@ -939,8 +967,8 @@ public class Biweekly {
 		}
 
 		@Override
-		JCalReader _constructReader() {
-			return new JCalReader(reader);
+		JCalReader _constructReader() throws IOException {
+			return (reader != null) ? new JCalReader(reader) : new JCalReader(file);
 		}
 	}
 
@@ -964,6 +992,11 @@ public class Biweekly {
 		@Override
 		public ParserChainJsonString register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
 			return super.register(marshaller);
+		}
+
+		@Override
+		public ParserChainJsonString warnings(List<List<String>> warnings) {
+			return super.warnings(warnings);
 		}
 
 		@Override
