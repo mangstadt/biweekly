@@ -48,7 +48,9 @@ public class ICalFloatFormatter extends DecimalFormat {
 	 */
 	public ICalFloatFormatter(int decimals) {
 		setMaximumFractionDigits(decimals);
-		setMinimumFractionDigits(1);
+		if (decimals > 0) {
+			setMinimumFractionDigits(1);
+		}
 
 		//decimal separator differs by locale (e.g. Germany uses ",")
 		DecimalFormatSymbols symbols = new DecimalFormatSymbols();

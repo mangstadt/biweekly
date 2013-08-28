@@ -7,8 +7,6 @@ import java.util.Locale;
 import org.junit.After;
 import org.junit.Test;
 
-import biweekly.util.ICalFloatFormatter;
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -65,6 +63,9 @@ public class ICalFloatFormatterTest {
 	public void format_different_precision() {
 		ICalFloatFormatter formatter = new ICalFloatFormatter(2);
 		assertEquals("12.89", formatter.format(12.888));
+
+		formatter = new ICalFloatFormatter(0);
+		assertEquals("13", formatter.format(12.888));
 	}
 
 	@Test
