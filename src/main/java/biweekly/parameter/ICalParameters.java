@@ -493,13 +493,25 @@ public class ICalParameters extends ListMultimap<String, String> {
 
 	/**
 	 * Gets whether the organizer requests a response from an attendee.
+	 * @throws IllegalStateException if the parameter value is malformed and
+	 * cannot be parsed
 	 * @return true if an RSVP is requested, false if not, null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-26">RFC 5545
 	 * p.26-7</a>
 	 */
 	public Boolean getRsvp() {
 		String value = first(RSVP);
-		return (value == null) ? null : Boolean.valueOf(value);
+
+		if (value == null) {
+			return null;
+		}
+		if ("true".equalsIgnoreCase(value)) {
+			return true;
+		}
+		if ("false".equalsIgnoreCase(value)) {
+			return false;
+		}
+		throw new IllegalStateException(RSVP + " parameter value is malformed and could not be parsed. Retrieve its raw text value instead.");
 	}
 
 	/**

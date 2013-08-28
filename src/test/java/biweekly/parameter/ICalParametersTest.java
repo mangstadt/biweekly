@@ -2,6 +2,7 @@ package biweekly.parameter;
 
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -58,9 +59,15 @@ public class ICalParametersTest {
 	public void rsvp() {
 		assertNull(params.getRsvp());
 		params.setRsvp(true);
-		assertTrue(Boolean.TRUE.equals(params.getRsvp()));
+		assertTrue(params.getRsvp());
 		params.setRsvp(false);
-		assertTrue(Boolean.FALSE.equals(params.getRsvp()));
+		assertFalse(params.getRsvp());
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void rsvp_malformed() {
+		params.put("RSVP", "invalid");
+		params.getRsvp();
 	}
 
 	@Test
