@@ -1,5 +1,7 @@
 package biweekly.io.json;
 
+import static biweekly.util.StringUtils.NEWLINE;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,8 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import biweekly.ICalendar;
 import biweekly.ICalDataType;
+import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
 import biweekly.component.marshaller.ComponentLibrary;
 import biweekly.component.marshaller.ICalComponentMarshaller;
@@ -242,7 +244,7 @@ public class JCalReader implements Closeable {
 				if (e.getMessage() == null) {
 					addWarning("Property value could not be unmarshalled: " + value, propertyName);
 				} else {
-					addWarning("Property value could not be unmarshalled.\n  Value: " + value + "\n  Reason: " + e.getMessage(), propertyName);
+					addWarning("Property value could not be unmarshalled." + NEWLINE + "  Value: " + value + NEWLINE + "  Reason: " + e.getMessage(), propertyName);
 				}
 
 				Result<? extends ICalProperty> result = new RawPropertyMarshaller(propertyName).parseJson(value, dataType, parameters);
