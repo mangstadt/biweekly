@@ -64,17 +64,30 @@ public class RawPropertyMarshaller extends ICalPropertyMarshaller<RawProperty> {
 
 	@Override
 	protected RawProperty _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		ICalDataType dataType = null;
-		String value = null;
-		for (Element child : XmlUtils.toElementList(element.getElement().getChildNodes())) {
-			if (XCalNamespaceContext.XCAL_NS.equals(child.getNamespaceURI())) {
-				dataType = ICalDataType.find(child.getLocalName());
-				value = child.getTextContent();
-				break;
-			}
+		Element rawElement = element.getElement();
+		String name = rawElement.getLocalName();
+
+		List<Element> children = XmlUtils.toElementList(rawElement.getChildNodes());
+		if (children.isEmpty()) {
+			//get the text content of the property element
+			String value = rawElement.getTextContent();
+			return new RawProperty(name, null, value);
 		}
 
-		return new RawProperty(element.getElement().getLocalName(), dataType, value);
+		//get the text content of the first child element with the xCard namespace
+		for (Element child : children) {
+			if (!XCalNamespaceContext.XCAL_NS.equals(child.getNamespaceURI())) {
+				continue;
+			}
+
+			String value = child.getTextContent();
+			ICalDataType dataType = ICalDataType.get(child.getLocalName());
+			return new RawProperty(name, dataType, value);
+		}
+
+		//get the text content of the first child element
+		String value = XmlUtils.getFirstChildElement(rawElement).getTextContent();
+		return new RawProperty(name, null, value);
 	}
 
 	@Override
