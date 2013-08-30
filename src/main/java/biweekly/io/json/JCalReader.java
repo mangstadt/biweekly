@@ -29,6 +29,7 @@ import biweekly.io.SkipMeException;
 import biweekly.io.json.JCalRawReader.JCalDataStreamListener;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.RawProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 import biweekly.property.marshaller.PropertyLibrary;
@@ -241,17 +242,18 @@ public class JCalReader implements Closeable {
 					addWarning("Property has requested that it be skipped: " + e.getMessage(), propertyName);
 				}
 			} catch (CannotParseException e) {
-				if (e.getMessage() == null) {
-					addWarning("Property value could not be unmarshalled: " + value, propertyName);
-				} else {
-					addWarning("Property value could not be unmarshalled." + NEWLINE + "  Value: " + value + NEWLINE + "  Reason: " + e.getMessage(), propertyName);
-				}
-
 				Result<? extends ICalProperty> result = new RawPropertyMarshaller(propertyName).parseJson(value, dataType, parameters);
 				for (String warning : result.getWarnings()) {
 					addWarning(warning, propertyName);
 				}
 				property = result.getValue();
+
+				String valueStr = ((RawProperty) property).getValue();
+				if (e.getMessage() == null) {
+					addWarning("Property value could not be unmarshalled: " + valueStr, propertyName);
+				} else {
+					addWarning("Property value could not be unmarshalled." + NEWLINE + "  Value: " + valueStr + NEWLINE + "  Reason: " + e.getMessage(), propertyName);
+				}
 			}
 
 			if (property != null) {
