@@ -83,6 +83,10 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		String value = element.first(defaultDataType);
+		if (value == null) {
+			throw missingXmlElements(defaultDataType);
+		}
+
 		return parse(value);
 	}
 

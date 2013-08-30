@@ -73,7 +73,12 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		return parse(element.all(defaultDataType), defaultDataType, parameters, warnings);
+		List<String> values = element.all(defaultDataType);
+		if (values.isEmpty()) {
+			throw missingXmlElements(defaultDataType);
+		}
+
+		return parse(values, defaultDataType, parameters, warnings);
 	}
 
 	@Override

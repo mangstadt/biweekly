@@ -65,7 +65,12 @@ public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> exten
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		return parse(element.first(defaultDataType));
+		String value = element.first(defaultDataType);
+		if (value == null) {
+			throw missingXmlElements(defaultDataType);
+		}
+
+		return parse(value);
 	}
 
 	@Override

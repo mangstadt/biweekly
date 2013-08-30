@@ -103,11 +103,15 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 		}
 
 		value = element.first(ICalDataType.DURATION);
-		try {
-			return new Trigger(Duration.parse(value), parameters.getRelated());
-		} catch (IllegalArgumentException e) {
-			throw new CannotParseException("Could not parse duration: " + value);
+		if (value != null) {
+			try {
+				return new Trigger(Duration.parse(value), parameters.getRelated());
+			} catch (IllegalArgumentException e) {
+				throw new CannotParseException("Could not parse duration: " + value);
+			}
 		}
+
+		throw missingXmlElements(ICalDataType.DATE_TIME, ICalDataType.DURATION);
 	}
 
 	@Override

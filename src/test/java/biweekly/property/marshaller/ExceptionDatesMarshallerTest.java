@@ -196,6 +196,11 @@ public class ExceptionDatesMarshallerTest {
 		parseXCalProperty("<date>2013-06-11</date><date>invalid</date>", marshaller);
 	}
 
+	@Test(expected = CannotParseException.class)
+	public void parseXml_empty() {
+		parseXCalProperty("", marshaller);
+	}
+
 	@Test
 	public void writeJson_datetime() {
 		ExceptionDates prop = new ExceptionDates(true);

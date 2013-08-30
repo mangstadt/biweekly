@@ -128,6 +128,11 @@ public class DateTimePropertyMarshallerTest {
 		parseXCalProperty("<date-time>invalid</date-time>", marshaller);
 	}
 
+	@Test(expected = CannotParseException.class)
+	public void parseXml_empty() {
+		parseXCalProperty("", marshaller);
+	}
+
 	@Test
 	public void writeJson() {
 		DateTimePropertyImpl prop = new DateTimePropertyImpl(datetime);

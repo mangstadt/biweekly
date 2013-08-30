@@ -83,6 +83,9 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 		List<String> values = element.all(ICalDataType.DATE_TIME);
 		ICalDataType dataType = values.isEmpty() ? ICalDataType.DATE : ICalDataType.DATE_TIME;
 		values.addAll(element.all(ICalDataType.DATE));
+		if (values.isEmpty()) {
+			throw missingXmlElements(ICalDataType.DATE_TIME, ICalDataType.DATE);
+		}
 
 		ExceptionDates prop = new ExceptionDates(dataType == ICalDataType.DATE_TIME);
 		for (String value : values) {

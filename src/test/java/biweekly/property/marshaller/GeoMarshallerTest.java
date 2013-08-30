@@ -160,34 +160,19 @@ public class GeoMarshallerTest {
 		assertWarnings(0, result.getWarnings());
 	}
 
-	@Test
+	@Test(expected = CannotParseException.class)
 	public void parseXml_missing_latitude() {
-		Result<Geo> result = parseXCalProperty("<longitude>56.78</longitude>", marshaller);
-
-		Geo prop = result.getValue();
-		assertNull(prop.getLatitude());
-		assertEquals(56.78, prop.getLongitude(), 0.001);
-		assertWarnings(0, result.getWarnings());
+		parseXCalProperty("<longitude>56.78</longitude>", marshaller);
 	}
 
-	@Test
+	@Test(expected = CannotParseException.class)
 	public void parseXml_missing_longitude() {
-		Result<Geo> result = parseXCalProperty("<latitude>12.34</latitude>", marshaller);
-
-		Geo prop = result.getValue();
-		assertEquals(12.34, prop.getLatitude(), 0.001);
-		assertNull(prop.getLongitude());
-		assertWarnings(0, result.getWarnings());
+		parseXCalProperty("<latitude>12.34</latitude>", marshaller);
 	}
 
-	@Test
+	@Test(expected = CannotParseException.class)
 	public void parseXml_missing_both() {
-		Result<Geo> result = parseXCalProperty("", marshaller);
-
-		Geo prop = result.getValue();
-		assertNull(prop.getLatitude());
-		assertNull(prop.getLongitude());
-		assertWarnings(0, result.getWarnings());
+		parseXCalProperty("", marshaller);
 	}
 
 	@Test(expected = CannotParseException.class)

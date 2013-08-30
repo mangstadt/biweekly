@@ -3,6 +3,7 @@ package biweekly.property.marshaller;
 import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -12,8 +13,8 @@ import javax.xml.namespace.QName;
 
 import org.w3c.dom.Element;
 
-import biweekly.ICalendar;
 import biweekly.ICalDataType;
+import biweekly.ICalendar;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.io.json.JCalValue;
@@ -745,6 +746,57 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 
 			return ICalDateFormatter.format(date, format, timezone);
 		}
+	}
+
+	/**
+	 * Creates a {@link CannotParseException}, indicating that the XML elements
+	 * that the parser expected to find are missing from the property's XML
+	 * element.
+	 * @param dataTypes the expected data types (null for "unknown")
+	 */
+	protected static CannotParseException missingXmlElements(ICalDataType... dataTypes) {
+		String[] elements = new String[dataTypes.length];
+		for (int i = 0; i < dataTypes.length; i++) {
+			ICalDataType dataType = dataTypes[i];
+			elements[i] = (dataType == null) ? "unknown" : dataType.getName().toLowerCase();
+		}
+		return missingXmlElements(elements);
+	}
+
+	/**
+	 * Creates a {@link CannotParseException}, indicating that the XML elements
+	 * that the parser expected to find are missing from property's XML element.
+	 * @param elements the names of the expected XML elements.
+	 */
+	protected static CannotParseException missingXmlElements(String... elements) {
+		String message;
+
+		switch (elements.length) {
+		case 0:
+			message = "Property value empty.";
+			break;
+		case 1:
+			message = "Property value empty (no <" + elements[0] + "> element found).";
+			break;
+		case 2:
+			message = "Property value empty (no <" + elements[0] + "> or <" + elements[1] + "> elements found).";
+			break;
+		default:
+			StringBuilder sb = new StringBuilder();
+
+			sb.append("Property value empty (no ");
+			StringUtils.join(Arrays.asList(elements).subList(0, elements.length - 1), ", ", sb, new JoinCallback<String>() {
+				public void handle(StringBuilder sb, String value) {
+					sb.append('<').append(value).append('>');
+				}
+			});
+			sb.append(", or <").append(elements[elements.length - 1]).append("> elements found).");
+
+			message = sb.toString();
+			break;
+		}
+
+		return new CannotParseException(message);
 	}
 
 	/**

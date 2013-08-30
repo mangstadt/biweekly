@@ -99,17 +99,17 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 
 	@Override
 	protected Attachment _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		Attachment attachment = new Attachment(null, (String) null);
-
-		String value = element.first(ICalDataType.BINARY);
-		if (value != null) {
-			attachment.setData(Base64.decode(value));
-		} else {
-			value = element.first(ICalDataType.URI);
-			attachment.setUri(value);
+		String binary = element.first(ICalDataType.BINARY);
+		if (binary != null) {
+			return new Attachment(null, Base64.decode(binary)); //formatType will be set when the parameters are assigned to the property object
 		}
 
-		return attachment;
+		String uri = element.first(ICalDataType.URI);
+		if (uri != null) {
+			return new Attachment(null, uri);
+		}
+
+		throw missingXmlElements(ICalDataType.BINARY, ICalDataType.URI);
 	}
 
 	@Override

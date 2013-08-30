@@ -67,6 +67,10 @@ public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationP
 	@Override
 	protected DurationProperty _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		String value = element.first(defaultDataType);
+		if (value == null) {
+			throw missingXmlElements(defaultDataType);
+		}
+
 		return parse(value);
 	}
 

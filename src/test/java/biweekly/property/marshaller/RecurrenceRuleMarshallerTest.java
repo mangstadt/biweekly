@@ -19,6 +19,7 @@ import java.util.TimeZone;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.json.JsonValue;
 import biweekly.parameter.ICalParameters;
@@ -443,6 +444,11 @@ public class RecurrenceRuleMarshallerTest {
 		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
 		assertNull(prop.getWorkweekStarts());
 		assertWarnings(15, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseXml_empty() {
+		parseXCalProperty("", marshaller);
 	}
 
 	@Test

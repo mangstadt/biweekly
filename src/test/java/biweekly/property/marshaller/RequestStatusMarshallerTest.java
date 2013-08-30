@@ -10,6 +10,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RequestStatus;
@@ -140,6 +141,11 @@ public class RequestStatusMarshallerTest {
 		assertEquals("description", prop.getDescription());
 		assertEquals("data", prop.getExceptionText());
 		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseXml_missing_code() {
+		parseXCalProperty("<description>description</description><data>data</data>", marshaller);
 	}
 
 	@Test

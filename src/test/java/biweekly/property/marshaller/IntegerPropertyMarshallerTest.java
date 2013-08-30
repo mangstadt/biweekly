@@ -126,13 +126,9 @@ public class IntegerPropertyMarshallerTest {
 		parseXCalProperty("<integer>invalid</integer>", marshaller);
 	}
 
-	@Test
+	@Test(expected = CannotParseException.class)
 	public void parseXml_empty() {
-		Result<IntegerProperty> result = parseXCalProperty("", marshaller);
-
-		IntegerProperty prop = result.getValue();
-		assertNull(prop.getValue());
-		assertWarnings(0, result.getWarnings());
+		parseXCalProperty("", marshaller);
 	}
 
 	@Test

@@ -103,9 +103,12 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 
 	@Override
 	protected FreeBusy _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		FreeBusy prop = new FreeBusy();
-
 		List<XCalElement> periodElements = element.children(ICalDataType.PERIOD);
+		if (periodElements.isEmpty()) {
+			throw missingXmlElements(ICalDataType.PERIOD);
+		}
+
+		FreeBusy prop = new FreeBusy();
 		for (XCalElement periodElement : periodElements) {
 			Date start = null;
 			String startStr = periodElement.first("start");
@@ -140,7 +143,6 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 				continue;
 			}
 		}
-
 		return prop;
 	}
 

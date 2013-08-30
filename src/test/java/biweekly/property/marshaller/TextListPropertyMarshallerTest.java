@@ -10,6 +10,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ListProperty;
@@ -121,13 +122,9 @@ public class TextListPropertyMarshallerTest {
 		assertWarnings(0, result.getWarnings());
 	}
 
-	@Test
+	@Test(expected = CannotParseException.class)
 	public void parseXml_empty() {
-		Result<ListPropertyImpl> result = parseXCalProperty("<integer>ignore</integer>", marshaller);
-
-		ListPropertyImpl prop = result.getValue();
-		assertEquals(0, prop.getValues().size());
-		assertWarnings(0, result.getWarnings());
+		parseXCalProperty("<integer>ignore</integer>", marshaller);
 	}
 
 	@Test

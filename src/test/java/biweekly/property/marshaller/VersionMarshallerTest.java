@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Version;
@@ -115,6 +116,11 @@ public class VersionMarshallerTest {
 		assertNull(prop.getMinVersion());
 		assertEquals("2.0", prop.getMaxVersion());
 		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseXml_empty() {
+		parseXCalProperty("", marshaller);
 	}
 
 	@Test

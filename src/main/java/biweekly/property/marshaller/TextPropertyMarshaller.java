@@ -65,7 +65,12 @@ public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICa
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		return newInstance(element.first(defaultDataType));
+		String value = element.first(defaultDataType);
+		if (value == null) {
+			throw missingXmlElements(defaultDataType);
+		}
+
+		return newInstance(value);
 	}
 
 	@Override

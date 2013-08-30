@@ -195,6 +195,11 @@ public class TriggerMarshallerTest {
 		parseXCalProperty("<duration>invalid</duration>", marshaller);
 	}
 
+	@Test(expected = CannotParseException.class)
+	public void parseXml_empty() {
+		parseXCalProperty("", marshaller);
+	}
+
 	@Test
 	public void writeJson_date() {
 		Trigger prop = new Trigger(datetime);

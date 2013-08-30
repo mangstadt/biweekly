@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.TextProperty;
@@ -113,6 +114,11 @@ public class TextPropertyMarshallerTest {
 		TextPropertyImpl prop = result.getValue();
 		assertEquals("mailto:johndoe@example.com", prop.getValue());
 		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseXml_empty() {
+		parseXCalProperty("", marshaller);
 	}
 
 	@Test

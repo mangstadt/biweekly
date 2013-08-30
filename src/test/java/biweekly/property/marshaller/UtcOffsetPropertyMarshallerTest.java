@@ -5,7 +5,6 @@ import static biweekly.util.TestUtils.assertWarnings;
 import static biweekly.util.TestUtils.assertWriteXml;
 import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -123,14 +122,9 @@ public class UtcOffsetPropertyMarshallerTest {
 		parseXCalProperty("<utc-offset>invalid</utc-offset>", marshaller);
 	}
 
-	@Test
+	@Test(expected = CannotParseException.class)
 	public void parseXml_empty() {
-		Result<UtcOffsetPropertyImpl> result = parseXCalProperty("", marshaller);
-
-		UtcOffsetPropertyImpl prop = result.getValue();
-		assertNull(prop.getHourOffset());
-		assertNull(prop.getMinuteOffset());
-		assertWarnings(0, result.getWarnings());
+		parseXCalProperty("", marshaller);
 	}
 
 	@Test

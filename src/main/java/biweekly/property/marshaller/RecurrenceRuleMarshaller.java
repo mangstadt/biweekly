@@ -115,27 +115,27 @@ public class RecurrenceRuleMarshaller extends ICalPropertyMarshaller<RecurrenceR
 
 	@Override
 	protected RecurrenceRule _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		RecurrenceRule property = new RecurrenceRule(null);
-
-		XCalElement recur = element.child(defaultDataType);
-		if (recur == null) {
-			return property;
+		XCalElement value = element.child(defaultDataType);
+		if (value == null) {
+			throw missingXmlElements(defaultDataType);
 		}
 
-		parseFreq(recur.first("freq"), property, warnings);
-		parseUntil(recur.first("until"), property, warnings);
-		parseCount(recur.first("count"), property, warnings);
-		parseInterval(recur.first("interval"), property, warnings);
-		parseBySecond(recur.all("bysecond"), property, warnings);
-		parseByMinute(recur.all("byminute"), property, warnings);
-		parseByHour(recur.all("byhour"), property, warnings);
-		parseByDay(recur.all("byday"), property, warnings);
-		parseByMonthDay(recur.all("bymonthday"), property, warnings);
-		parseByYearDay(recur.all("byyearday"), property, warnings);
-		parseByWeekNo(recur.all("byweekno"), property, warnings);
-		parseByMonth(recur.all("bymonth"), property, warnings);
-		parseBySetPos(recur.all("bysetpos"), property, warnings);
-		parseWkst(recur.first("wkst"), property, warnings);
+		RecurrenceRule property = new RecurrenceRule(null);
+
+		parseFreq(value.first("freq"), property, warnings);
+		parseUntil(value.first("until"), property, warnings);
+		parseCount(value.first("count"), property, warnings);
+		parseInterval(value.first("interval"), property, warnings);
+		parseBySecond(value.all("bysecond"), property, warnings);
+		parseByMinute(value.all("byminute"), property, warnings);
+		parseByHour(value.all("byhour"), property, warnings);
+		parseByDay(value.all("byday"), property, warnings);
+		parseByMonthDay(value.all("bymonthday"), property, warnings);
+		parseByYearDay(value.all("byyearday"), property, warnings);
+		parseByWeekNo(value.all("byweekno"), property, warnings);
+		parseByMonth(value.all("bymonth"), property, warnings);
+		parseBySetPos(value.all("bysetpos"), property, warnings);
+		parseWkst(value.first("wkst"), property, warnings);
 
 		return property;
 	}

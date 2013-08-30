@@ -74,7 +74,7 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		String value = element.first(defaultDataType);
 		if (value == null) {
-			return newInstance(null);
+			throw missingXmlElements(defaultDataType);
 		}
 
 		return parse(value, parameters, warnings);

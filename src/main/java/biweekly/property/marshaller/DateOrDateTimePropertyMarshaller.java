@@ -95,6 +95,11 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 		if (value == null) {
 			value = element.first(ICalDataType.DATE);
 		}
+
+		if (value == null) {
+			throw missingXmlElements(ICalDataType.DATE_TIME, ICalDataType.DATE);
+		}
+
 		return parse(value, parameters, warnings);
 	}
 

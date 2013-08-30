@@ -11,6 +11,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
@@ -180,6 +181,11 @@ public class AttachmentMarshallerTest {
 		assertArrayEquals("data".getBytes(), prop.getData());
 
 		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test(expected = CannotParseException.class)
+	public void parseXml_empty() {
+		parseXCalProperty("", marshaller);
 	}
 
 	@Test

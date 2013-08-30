@@ -226,6 +226,11 @@ public class DateOrDateTimePropertyMarshallerTest {
 		parseXCalProperty("<date-time>invalid</date-time>", marshaller);
 	}
 
+	@Test(expected = CannotParseException.class)
+	public void parseXml_empty() {
+		parseXCalProperty("", marshaller);
+	}
+
 	@Test
 	public void writeJson_datetime() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(datetime, true);

@@ -21,6 +21,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
@@ -412,6 +413,24 @@ public class ICalPropertyMarshallerTest {
 		assertEquals("a=one;b=two,three", prop.getValue());
 		assertEquals(ICalDataType.TEXT, prop.getParameters().getValue());
 		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void missingXmlElements() {
+		CannotParseException e = ICalPropertyMarshaller.missingXmlElements(new String[0]);
+		assertEquals("Property value empty.", e.getMessage());
+
+		e = ICalPropertyMarshaller.missingXmlElements("one");
+		assertEquals("Property value empty (no <one> element found).", e.getMessage());
+
+		e = ICalPropertyMarshaller.missingXmlElements("one", "two");
+		assertEquals("Property value empty (no <one> or <two> elements found).", e.getMessage());
+
+		e = ICalPropertyMarshaller.missingXmlElements("one", "two", "THREE");
+		assertEquals("Property value empty (no <one>, <two>, or <THREE> elements found).", e.getMessage());
+
+		e = ICalPropertyMarshaller.missingXmlElements(ICalDataType.TEXT, null, ICalDataType.DATE);
+		assertEquals("Property value empty (no <text>, <unknown>, or <date> elements found).", e.getMessage());
 	}
 
 	private class ICalPropertyMarshallerImpl extends ICalPropertyMarshaller<TestProperty> {

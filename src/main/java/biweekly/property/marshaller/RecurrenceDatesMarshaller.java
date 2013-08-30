@@ -127,9 +127,9 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 
 	@Override
 	protected RecurrenceDates _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		//parse as periods
 		List<XCalElement> periodElements = element.children(ICalDataType.PERIOD);
 		if (!periodElements.isEmpty()) {
-			//parse as periods
 			List<Period> periods = new ArrayList<Period>(periodElements.size());
 			for (XCalElement periodElement : periodElements) {
 				Date start = null;
@@ -166,14 +166,13 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 				}
 			}
 			return new RecurrenceDates(periods);
-		} else {
-			//parse as dates
+		}
 
-			//be lenient and accept a combination of <date> and <date-time> values
-			List<String> dateStrs = element.all(ICalDataType.DATE_TIME);
-			boolean hasTime = !dateStrs.isEmpty();
-			dateStrs.addAll(element.all(ICalDataType.DATE));
-
+		//parse as dates
+		List<String> dateStrs = element.all(ICalDataType.DATE_TIME);
+		boolean hasTime = !dateStrs.isEmpty();
+		dateStrs.addAll(element.all(ICalDataType.DATE));
+		if (!dateStrs.isEmpty()) {
 			List<Date> dates = new ArrayList<Date>(dateStrs.size());
 			for (String dateStr : dateStrs) {
 				try {
@@ -185,6 +184,8 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 			}
 			return new RecurrenceDates(dates, hasTime);
 		}
+
+		throw missingXmlElements(ICalDataType.PERIOD, ICalDataType.DATE_TIME, ICalDataType.DATE);
 	}
 
 	@Override

@@ -95,9 +95,14 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 
 	@Override
 	protected RequestStatus _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		RequestStatus requestStatus = new RequestStatus(element.first("code"));
-		requestStatus.setDescription(element.first("description"));
-		requestStatus.setExceptionText(element.first("data"));
+		String code = element.first("code");
+		if (code == null) {
+			throw missingXmlElements("code");
+		}
+
+		RequestStatus requestStatus = new RequestStatus(code);
+		requestStatus.setDescription(element.first("description")); //optional field
+		requestStatus.setExceptionText(element.first("data")); //optional field
 		return requestStatus;
 	}
 

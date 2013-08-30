@@ -16,6 +16,7 @@ import java.util.TimeZone;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.FreeBusy;
@@ -338,15 +339,9 @@ public class FreeBusyMarshallerTest {
 		assertWarnings(1, result.getWarnings());
 	}
 
-	@Test
+	@Test(expected = CannotParseException.class)
 	public void parseXml_empty() {
-		Result<FreeBusy> result = parseXCalProperty("", marshaller);
-
-		Iterator<Period> it = result.getValue().getValues().iterator();
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(0, result.getWarnings());
+		parseXCalProperty("", marshaller);
 	}
 
 	@Test

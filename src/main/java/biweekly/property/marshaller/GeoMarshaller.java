@@ -97,6 +97,16 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 	protected Geo _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		String latitudeStr = element.first("latitude");
 		String longitudeStr = element.first("longitude");
+		if (latitudeStr == null && longitudeStr == null) {
+			throw missingXmlElements("latitude", "longitude");
+		}
+		if (latitudeStr == null) {
+			throw missingXmlElements("latitude");
+		}
+		if (longitudeStr == null) {
+			throw missingXmlElements("longitude");
+		}
+
 		return parse(latitudeStr, longitudeStr);
 	}
 

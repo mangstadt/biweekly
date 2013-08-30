@@ -113,6 +113,11 @@ public class DurationPropertyMarshallerTest {
 		parseXCalProperty("<duration>invalid</duration>", marshaller);
 	}
 
+	@Test(expected = CannotParseException.class)
+	public void parseXml_empty() {
+		parseXCalProperty("", marshaller);
+	}
+
 	@Test
 	public void writeJson() {
 		DurationProperty prop = new DurationProperty(duration);
