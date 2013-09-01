@@ -31,24 +31,19 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import biweekly.ICalendar;
 import biweekly.ICalDataType;
+import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
-import biweekly.component.RawComponent;
-import biweekly.component.marshaller.ComponentLibrary;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.component.marshaller.ICalendarMarshaller;
-import biweekly.component.marshaller.RawComponentMarshaller;
 import biweekly.io.CannotParseException;
+import biweekly.io.ICalMarshallerRegistrar;
 import biweekly.io.SkipMeException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.property.RawProperty;
 import biweekly.property.Xml;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
-import biweekly.property.marshaller.PropertyLibrary;
-import biweekly.property.marshaller.RawPropertyMarshaller;
 import biweekly.util.IOUtils;
 import biweekly.util.XmlUtils;
 
@@ -132,7 +127,7 @@ import biweekly.util.XmlUtils;
  */
 //@formatter:on
 public class XCalDocument {
-	private static final ICalendarMarshaller icalMarshaller = (ICalendarMarshaller) ComponentLibrary.getMarshaller(ICalendar.class);
+	private static final ICalendarMarshaller icalMarshaller = ICalMarshallerRegistrar.getICalendarMarshaller();
 	private static final XCalNamespaceContext nsContext = new XCalNamespaceContext("xcal");
 
 	/**
@@ -162,12 +157,8 @@ public class XCalDocument {
 		registerParameterDataType(ICalParameters.TZID, ICalDataType.TEXT);
 	}
 
+	private ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();
 	private final List<List<String>> parseWarnings = new ArrayList<List<String>>();
-	private final Map<QName, ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallersByQName = new HashMap<QName, ICalPropertyMarshaller<? extends ICalProperty>>(0);
-	private final Map<String, ICalComponentMarshaller<? extends ICalComponent>> componentMarshallersByName = new HashMap<String, ICalComponentMarshaller<? extends ICalComponent>>(0);
-	private final Map<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallersByClass = new HashMap<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>>(0);
-	private final Map<Class<? extends ICalComponent>, ICalComponentMarshaller<? extends ICalComponent>> componentMarshallersByClass = new HashMap<Class<? extends ICalComponent>, ICalComponentMarshaller<? extends ICalComponent>>(0);
-
 	private Document document;
 	private Element root;
 
@@ -249,21 +240,49 @@ public class XCalDocument {
 	}
 
 	/**
-	 * Registers a marshaller for an experimental property.
+	 * <p>
+	 * Registers an experimental property marshaller. Can also be used to
+	 * override the marshaller of a standard property (such as DTSTART). Calling
+	 * this method is the same as calling:
+	 * </p>
+	 * <p>
+	 * <code>getRegistrar().register(marshaller)</code>.
+	 * </p>
 	 * @param marshaller the marshaller to register
 	 */
 	public void registerMarshaller(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
-		propertyMarshallersByQName.put(marshaller.getQName(), marshaller);
-		propertyMarshallersByClass.put(marshaller.getPropertyClass(), marshaller);
+		registrar.register(marshaller);
 	}
 
 	/**
-	 * Registers a marshaller for an experimental component.
+	 * <p>
+	 * Registers an experimental component marshaller. Can also be used to
+	 * override the marshaller of a standard component (such as VEVENT). Calling
+	 * this method is the same as calling:
+	 * </p>
+	 * <p>
+	 * <code>getRegistrar().register(marshaller)</code>.
+	 * </p>
 	 * @param marshaller the marshaller to register
 	 */
 	public void registerMarshaller(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
-		componentMarshallersByName.put(marshaller.getComponentName().toLowerCase(), marshaller);
-		componentMarshallersByClass.put(marshaller.getComponentClass(), marshaller);
+		registrar.register(marshaller);
+	}
+
+	/**
+	 * Gets the object that manages the component/property marshaller objects.
+	 * @return the marshaller registrar
+	 */
+	public ICalMarshallerRegistrar getRegistrar() {
+		return registrar;
+	}
+
+	/**
+	 * Sets the object that manages the component/property marshaller objects.
+	 * @param registrar the marshaller registrar
+	 */
+	public void setRegistrar(ICalMarshallerRegistrar registrar) {
+		this.registrar = registrar;
 	}
 
 	/**
@@ -460,7 +479,7 @@ public class XCalDocument {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Element buildComponentElement(ICalComponent component) {
-		ICalComponentMarshaller m = findComponentMarshaller(component);
+		ICalComponentMarshaller m = registrar.getComponentMarshaller(component);
 		if (m == null) {
 			throw new IllegalArgumentException("No marshaller found for component class \"" + component.getClass().getName() + "\".");
 		}
@@ -516,7 +535,7 @@ public class XCalDocument {
 			//get parameters
 			parameters = property.getParameters();
 		} else {
-			ICalPropertyMarshaller pm = findPropertyMarshaller(property);
+			ICalPropertyMarshaller pm = registrar.getPropertyMarshaller(property);
 			if (pm == null) {
 				throw new IllegalArgumentException("No marshaller found for property class \"" + property.getClass().getName() + "\".");
 			}
@@ -577,7 +596,7 @@ public class XCalDocument {
 
 	private ICalComponent parseComponent(Element componentElement, List<String> warnings) {
 		//create the component object
-		ICalComponentMarshaller<? extends ICalComponent> m = findComponentMarshaller(componentElement.getLocalName());
+		ICalComponentMarshaller<? extends ICalComponent> m = registrar.getComponentMarshaller(componentElement.getLocalName());
 		ICalComponent component = m.emptyInstance();
 
 		//parse properties
@@ -610,7 +629,7 @@ public class XCalDocument {
 		String propertyName = propertyElement.getLocalName();
 		QName qname = new QName(propertyElement.getNamespaceURI(), propertyName);
 
-		ICalPropertyMarshaller<? extends ICalProperty> m = findPropertyMarshaller(qname);
+		ICalPropertyMarshaller<? extends ICalProperty> m = registrar.getPropertyMarshaller(qname);
 
 		ICalProperty property = null;
 		try {
@@ -640,7 +659,7 @@ public class XCalDocument {
 
 		//unmarshal as an XML property
 		if (property == null) {
-			m = PropertyLibrary.getMarshaller(Xml.class);
+			m = registrar.getPropertyMarshaller(Xml.class);
 
 			Result<? extends ICalProperty> result = m.parseXml(propertyElement, parameters);
 
@@ -675,80 +694,6 @@ public class XCalDocument {
 		}
 
 		return parameters;
-	}
-
-	/**
-	 * Finds a component marshaller.
-	 * @param componentName the name of the component
-	 * @return the component marshallerd
-	 */
-	private ICalComponentMarshaller<? extends ICalComponent> findComponentMarshaller(String name) {
-		ICalComponentMarshaller<? extends ICalComponent> m = componentMarshallersByName.get(name.toLowerCase());
-		if (m == null) {
-			m = ComponentLibrary.getMarshaller(name);
-			if (m == null) {
-				m = new RawComponentMarshaller(name.toUpperCase());
-			}
-		}
-		return m;
-	}
-
-	/**
-	 * Finds a property marshaller.
-	 * @param propertyName the name of the property
-	 * @return the property marshaller
-	 */
-	private ICalPropertyMarshaller<? extends ICalProperty> findPropertyMarshaller(QName qname) {
-		ICalPropertyMarshaller<? extends ICalProperty> m = propertyMarshallersByQName.get(qname);
-		if (m == null) {
-			m = PropertyLibrary.getMarshaller(qname);
-			if (m == null) {
-				if (XCAL_NS.equals(qname.getNamespaceURI())) {
-					m = new RawPropertyMarshaller(qname.getLocalPart().toUpperCase());
-				} else {
-					m = PropertyLibrary.getMarshaller(Xml.class);
-				}
-			}
-		}
-		return m;
-	}
-
-	/**
-	 * Finds a component marshaller.
-	 * @param component the component being marshalled
-	 * @return the component marshaller or null if not found
-	 */
-	private ICalComponentMarshaller<? extends ICalComponent> findComponentMarshaller(final ICalComponent component) {
-		ICalComponentMarshaller<? extends ICalComponent> m = componentMarshallersByClass.get(component.getClass());
-		if (m == null) {
-			m = ComponentLibrary.getMarshaller(component.getClass());
-			if (m == null) {
-				if (component instanceof RawComponent) {
-					RawComponent raw = (RawComponent) component;
-					m = new RawComponentMarshaller(raw.getName());
-				}
-			}
-		}
-		return m;
-	}
-
-	/**
-	 * Finds a property marshaller.
-	 * @param property the property being marshalled
-	 * @return the property marshaller or null if not found
-	 */
-	private ICalPropertyMarshaller<? extends ICalProperty> findPropertyMarshaller(ICalProperty property) {
-		ICalPropertyMarshaller<? extends ICalProperty> m = propertyMarshallersByClass.get(property.getClass());
-		if (m == null) {
-			m = PropertyLibrary.getMarshaller(property.getClass());
-			if (m == null) {
-				if (property instanceof RawProperty) {
-					RawProperty raw = (RawProperty) property;
-					m = new RawPropertyMarshaller(raw.getName());
-				}
-			}
-		}
-		return m;
 	}
 
 	private Element buildElement(String localName) {

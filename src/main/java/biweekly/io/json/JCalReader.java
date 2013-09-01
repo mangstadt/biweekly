@@ -20,11 +20,10 @@ import java.util.Map;
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
-import biweekly.component.marshaller.ComponentLibrary;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.component.marshaller.ICalendarMarshaller;
-import biweekly.component.marshaller.RawComponentMarshaller;
 import biweekly.io.CannotParseException;
+import biweekly.io.ICalMarshallerRegistrar;
 import biweekly.io.SkipMeException;
 import biweekly.io.json.JCalRawReader.JCalDataStreamListener;
 import biweekly.parameter.ICalParameters;
@@ -32,7 +31,6 @@ import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
-import biweekly.property.marshaller.PropertyLibrary;
 import biweekly.property.marshaller.RawPropertyMarshaller;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -85,11 +83,10 @@ import com.fasterxml.jackson.core.JsonParseException;
  * draft</a>
  */
 public class JCalReader implements Closeable {
-	private static final ICalendarMarshaller icalMarshaller = (ICalendarMarshaller) ComponentLibrary.getMarshaller(ICalendar.class);
+	private static final ICalendarMarshaller icalMarshaller = ICalMarshallerRegistrar.getICalendarMarshaller();
+	private ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();
 	private final JCalRawReader reader;
 	private final List<String> warnings = new ArrayList<String>();
-	private final Map<String, ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new HashMap<String, ICalPropertyMarshaller<? extends ICalProperty>>(0);
-	private final Map<String, ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new HashMap<String, ICalComponentMarshaller<? extends ICalComponent>>(0);
 
 	/**
 	 * Creates a jCard reader.
@@ -134,19 +131,49 @@ public class JCalReader implements Closeable {
 	}
 
 	/**
-	 * Registers a marshaller for an experimental property.
+	 * <p>
+	 * Registers an experimental property marshaller. Can also be used to
+	 * override the marshaller of a standard property (such as DTSTART). Calling
+	 * this method is the same as calling:
+	 * </p>
+	 * <p>
+	 * <code>getRegistrar().register(marshaller)</code>.
+	 * </p>
 	 * @param marshaller the marshaller to register
 	 */
 	public void registerMarshaller(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
-		propertyMarshallers.put(marshaller.getPropertyName().toLowerCase(), marshaller);
+		registrar.register(marshaller);
 	}
 
 	/**
-	 * Registers a marshaller for an experimental component.
+	 * <p>
+	 * Registers an experimental component marshaller. Can also be used to
+	 * override the marshaller of a standard component (such as VEVENT). Calling
+	 * this method is the same as calling:
+	 * </p>
+	 * <p>
+	 * <code>getRegistrar().register(marshaller)</code>.
+	 * </p>
 	 * @param marshaller the marshaller to register
 	 */
 	public void registerMarshaller(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
-		componentMarshallers.put(marshaller.getComponentName().toLowerCase(), marshaller);
+		registrar.register(marshaller);
+	}
+
+	/**
+	 * Gets the object that manages the component/property marshaller objects.
+	 * @return the marshaller registrar
+	 */
+	public ICalMarshallerRegistrar getRegistrar() {
+		return registrar;
+	}
+
+	/**
+	 * Sets the object that manages the component/property marshaller objects.
+	 * @param registrar the marshaller registrar
+	 */
+	public void setRegistrar(ICalMarshallerRegistrar registrar) {
+		this.registrar = registrar;
 	}
 
 	/**
@@ -167,38 +194,6 @@ public class JCalReader implements Closeable {
 		JCalDataStreamListenerImpl listener = new JCalDataStreamListenerImpl();
 		reader.readNext(listener);
 		return listener.getICalendar();
-	}
-
-	/**
-	 * Finds a component marshaller.
-	 * @param componentName the name of the component
-	 * @return the component marshallerd
-	 */
-	private ICalComponentMarshaller<? extends ICalComponent> findComponentMarshaller(String componentName) {
-		ICalComponentMarshaller<? extends ICalComponent> m = componentMarshallers.get(componentName.toLowerCase());
-		if (m == null) {
-			m = ComponentLibrary.getMarshaller(componentName);
-			if (m == null) {
-				m = new RawComponentMarshaller(componentName);
-			}
-		}
-		return m;
-	}
-
-	/**
-	 * Finds a property marshaller.
-	 * @param propertyName the name of the property
-	 * @return the property marshaller
-	 */
-	private ICalPropertyMarshaller<? extends ICalProperty> findPropertyMarshaller(String propertyName) {
-		ICalPropertyMarshaller<? extends ICalProperty> m = propertyMarshallers.get(propertyName.toLowerCase());
-		if (m == null) {
-			m = PropertyLibrary.getMarshaller(propertyName);
-			if (m == null) {
-				m = new RawPropertyMarshaller(propertyName);
-			}
-		}
-		return m;
 	}
 
 	private void addWarning(String message, String propertyName) {
@@ -225,7 +220,7 @@ public class JCalReader implements Closeable {
 			ICalComponent parent = components.get(componentHierarchy);
 
 			//unmarshal the property
-			ICalPropertyMarshaller<? extends ICalProperty> m = findPropertyMarshaller(propertyName);
+			ICalPropertyMarshaller<? extends ICalProperty> m = registrar.getPropertyMarshaller(propertyName);
 			ICalProperty property = null;
 			try {
 				Result<? extends ICalProperty> result = m.parseJson(value, dataType, parameters);
@@ -262,7 +257,7 @@ public class JCalReader implements Closeable {
 		}
 
 		public void readComponent(List<String> parentHierarchy, String componentName) {
-			ICalComponentMarshaller<? extends ICalComponent> m = findComponentMarshaller(componentName);
+			ICalComponentMarshaller<? extends ICalComponent> m = registrar.getComponentMarshaller(componentName);
 			ICalComponent component = m.emptyInstance();
 
 			ICalComponent parent = components.get(parentHierarchy);

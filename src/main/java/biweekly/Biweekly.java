@@ -25,6 +25,7 @@ import org.xml.sax.SAXException;
 
 import biweekly.component.ICalComponent;
 import biweekly.component.marshaller.ICalComponentMarshaller;
+import biweekly.io.ICalMarshallerRegistrar;
 import biweekly.io.json.JCalParseException;
 import biweekly.io.json.JCalReader;
 import biweekly.io.json.JCalWriter;
@@ -427,8 +428,7 @@ public class Biweekly {
 
 	static abstract class ParserChain<T> {
 		//Note: "package" level is used so various fields/methods don't show up in the Javadocs, but are still visible to child classes
-		final List<ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new ArrayList<ICalPropertyMarshaller<? extends ICalProperty>>(0);
-		final List<ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new ArrayList<ICalComponentMarshaller<? extends ICalComponent>>(0);
+		final ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();
 
 		@SuppressWarnings("unchecked")
 		final T this_ = (T) this;
@@ -441,7 +441,7 @@ public class Biweekly {
 		 * @return this
 		 */
 		public T register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
-			propertyMarshallers.add(marshaller);
+			registrar.register(marshaller);
 			return this_;
 		}
 
@@ -451,7 +451,7 @@ public class Biweekly {
 		 * @return this
 		 */
 		public T register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
-			componentMarshallers.add(marshaller);
+			registrar.register(marshaller);
 			return this_;
 		}
 
@@ -549,12 +549,7 @@ public class Biweekly {
 
 		private ICalReader constructReader() throws IOException {
 			ICalReader parser = _constructReader();
-			for (ICalPropertyMarshaller<? extends ICalProperty> marshaller : propertyMarshallers) {
-				parser.registerMarshaller(marshaller);
-			}
-			for (ICalComponentMarshaller<? extends ICalComponent> marshaller : componentMarshallers) {
-				parser.registerMarshaller(marshaller);
-			}
+			parser.setRegistrar(registrar);
 			parser.setCaretDecodingEnabled(caretDecoding);
 			return parser;
 		}
@@ -695,12 +690,7 @@ public class Biweekly {
 
 		private XCalDocument constructDocument() throws SAXException, IOException {
 			XCalDocument parser = _constructDocument();
-			for (ICalPropertyMarshaller<? extends ICalProperty> marshaller : propertyMarshallers) {
-				parser.registerMarshaller(marshaller);
-			}
-			for (ICalComponentMarshaller<? extends ICalComponent> marshaller : componentMarshallers) {
-				parser.registerMarshaller(marshaller);
-			}
+			parser.setRegistrar(registrar);
 			return parser;
 		}
 
@@ -917,12 +907,7 @@ public class Biweekly {
 
 		private JCalReader constructReader() throws IOException {
 			JCalReader parser = _constructReader();
-			for (ICalPropertyMarshaller<? extends ICalProperty> marshaller : propertyMarshallers) {
-				parser.registerMarshaller(marshaller);
-			}
-			for (ICalComponentMarshaller<? extends ICalComponent> marshaller : componentMarshallers) {
-				parser.registerMarshaller(marshaller);
-			}
+			parser.setRegistrar(registrar);
 			return parser;
 		}
 
@@ -1027,8 +1012,7 @@ public class Biweekly {
 
 	static abstract class WriterChain<T> {
 		final Collection<ICalendar> icals;
-		final List<ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new ArrayList<ICalPropertyMarshaller<? extends ICalProperty>>(0);
-		final List<ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new ArrayList<ICalComponentMarshaller<? extends ICalComponent>>(0);
+		final ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();
 
 		@SuppressWarnings("unchecked")
 		final T this_ = (T) this;
@@ -1043,7 +1027,7 @@ public class Biweekly {
 		 * @return this
 		 */
 		public T register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
-			propertyMarshallers.add(marshaller);
+			registrar.register(marshaller);
 			return this_;
 		}
 
@@ -1053,7 +1037,7 @@ public class Biweekly {
 		 * @return this
 		 */
 		public T register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
-			componentMarshallers.add(marshaller);
+			registrar.register(marshaller);
 			return this_;
 		}
 	}
@@ -1170,12 +1154,7 @@ public class Biweekly {
 		 */
 		public void go(Writer writer) throws IOException {
 			ICalWriter icalWriter = new ICalWriter(writer);
-			for (ICalPropertyMarshaller<? extends ICalProperty> marshaller : propertyMarshallers) {
-				icalWriter.registerMarshaller(marshaller);
-			}
-			for (ICalComponentMarshaller<? extends ICalComponent> marshaller : componentMarshallers) {
-				icalWriter.registerMarshaller(marshaller);
-			}
+			icalWriter.setRegistrar(registrar);
 			icalWriter.setCaretEncodingEnabled(caretEncoding);
 
 			for (ICalendar ical : icals) {
@@ -1304,13 +1283,7 @@ public class Biweekly {
 
 		private XCalDocument constructDocument() {
 			XCalDocument document = new XCalDocument();
-
-			for (ICalPropertyMarshaller<? extends ICalProperty> marshaller : propertyMarshallers) {
-				document.registerMarshaller(marshaller);
-			}
-			for (ICalComponentMarshaller<? extends ICalComponent> marshaller : componentMarshallers) {
-				document.registerMarshaller(marshaller);
-			}
+			document.setRegistrar(registrar);
 			for (Map.Entry<String, ICalDataType> entry : parameterDataTypes.entrySet()) {
 				document.registerParameterDataType(entry.getKey(), entry.getValue());
 			}
@@ -1411,12 +1384,7 @@ public class Biweekly {
 		 */
 		public void go(Writer writer) throws IOException {
 			JCalWriter jcalWriter = new JCalWriter(writer, icals.size() > 1);
-			for (ICalPropertyMarshaller<? extends ICalProperty> marshaller : propertyMarshallers) {
-				jcalWriter.registerMarshaller(marshaller);
-			}
-			for (ICalComponentMarshaller<? extends ICalComponent> marshaller : componentMarshallers) {
-				jcalWriter.registerMarshaller(marshaller);
-			}
+			jcalWriter.setRegistrar(registrar);
 			jcalWriter.setIndent(indent);
 
 			for (ICalendar ical : icals) {

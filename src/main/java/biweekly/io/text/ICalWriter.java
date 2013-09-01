@@ -7,23 +7,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
 
-import biweekly.ICalendar;
 import biweekly.ICalDataType;
+import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
-import biweekly.component.RawComponent;
-import biweekly.component.marshaller.ComponentLibrary;
 import biweekly.component.marshaller.ICalComponentMarshaller;
-import biweekly.component.marshaller.RawComponentMarshaller;
+import biweekly.io.ICalMarshallerRegistrar;
 import biweekly.io.SkipMeException;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.property.RawProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
-import biweekly.property.marshaller.PropertyLibrary;
-import biweekly.property.marshaller.RawPropertyMarshaller;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -72,8 +65,7 @@ import biweekly.property.marshaller.RawPropertyMarshaller;
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalWriter implements Closeable {
-	private final Map<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>> propertyMarshallers = new HashMap<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>>(0);
-	private final Map<Class<? extends ICalComponent>, ICalComponentMarshaller<? extends ICalComponent>> componentMarshallers = new HashMap<Class<? extends ICalComponent>, ICalComponentMarshaller<? extends ICalComponent>>(0);
+	private ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();
 	private final ICalRawWriter writer;
 
 	/**
@@ -219,19 +211,49 @@ public class ICalWriter implements Closeable {
 	}
 
 	/**
-	 * Registers a marshaller for an experimental property.
+	 * <p>
+	 * Registers an experimental property marshaller. Can also be used to
+	 * override the marshaller of a standard property (such as DTSTART). Calling
+	 * this method is the same as calling:
+	 * </p>
+	 * <p>
+	 * <code>getRegistrar().register(marshaller)</code>.
+	 * </p>
 	 * @param marshaller the marshaller to register
 	 */
 	public void registerMarshaller(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
-		propertyMarshallers.put(marshaller.getPropertyClass(), marshaller);
+		registrar.register(marshaller);
 	}
 
 	/**
-	 * Registers a marshaller for an experimental component.
+	 * <p>
+	 * Registers an experimental component marshaller. Can also be used to
+	 * override the marshaller of a standard component (such as VEVENT). Calling
+	 * this method is the same as calling:
+	 * </p>
+	 * <p>
+	 * <code>getRegistrar().register(marshaller)</code>.
+	 * </p>
 	 * @param marshaller the marshaller to register
 	 */
 	public void registerMarshaller(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
-		componentMarshallers.put(marshaller.getComponentClass(), marshaller);
+		registrar.register(marshaller);
+	}
+
+	/**
+	 * Gets the object that manages the component/property marshaller objects.
+	 * @return the marshaller registrar
+	 */
+	public ICalMarshallerRegistrar getRegistrar() {
+		return registrar;
+	}
+
+	/**
+	 * Sets the object that manages the component/property marshaller objects.
+	 * @param registrar the marshaller registrar
+	 */
+	public void setRegistrar(ICalMarshallerRegistrar registrar) {
+		this.registrar = registrar;
 	}
 
 	/**
@@ -254,7 +276,7 @@ public class ICalWriter implements Closeable {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeComponent(ICalComponent component) throws IOException {
-		ICalComponentMarshaller m = findComponentMarshaller(component);
+		ICalComponentMarshaller m = registrar.getComponentMarshaller(component);
 		if (m == null) {
 			throw new IllegalArgumentException("No marshaller found for component class \"" + component.getClass().getName() + "\".");
 		}
@@ -263,7 +285,7 @@ public class ICalWriter implements Closeable {
 
 		for (Object obj : m.getProperties(component)) {
 			ICalProperty property = (ICalProperty) obj;
-			ICalPropertyMarshaller pm = findPropertyMarshaller(property);
+			ICalPropertyMarshaller pm = registrar.getPropertyMarshaller(property);
 			if (pm == null) {
 				throw new IllegalArgumentException("No marshaller found for property class \"" + property.getClass().getName() + "\".");
 			}
@@ -295,44 +317,6 @@ public class ICalWriter implements Closeable {
 		}
 
 		writer.writeEndComponent(m.getComponentName());
-	}
-
-	/**
-	 * Finds a component marshaller.
-	 * @param component the component being marshalled
-	 * @return the component marshaller or null if not found
-	 */
-	private ICalComponentMarshaller<? extends ICalComponent> findComponentMarshaller(final ICalComponent component) {
-		ICalComponentMarshaller<? extends ICalComponent> m = componentMarshallers.get(component.getClass());
-		if (m == null) {
-			m = ComponentLibrary.getMarshaller(component.getClass());
-			if (m == null) {
-				if (component instanceof RawComponent) {
-					RawComponent raw = (RawComponent) component;
-					m = new RawComponentMarshaller(raw.getName());
-				}
-			}
-		}
-		return m;
-	}
-
-	/**
-	 * Finds a property marshaller.
-	 * @param property the property being marshalled
-	 * @return the property marshaller or null if not found
-	 */
-	private ICalPropertyMarshaller<? extends ICalProperty> findPropertyMarshaller(ICalProperty property) {
-		ICalPropertyMarshaller<? extends ICalProperty> m = propertyMarshallers.get(property.getClass());
-		if (m == null) {
-			m = PropertyLibrary.getMarshaller(property.getClass());
-			if (m == null) {
-				if (property instanceof RawProperty) {
-					RawProperty raw = (RawProperty) property;
-					m = new RawPropertyMarshaller(raw.getName());
-				}
-			}
-		}
-		return m;
 	}
 
 	/**
