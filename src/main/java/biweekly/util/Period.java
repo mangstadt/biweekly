@@ -31,7 +31,7 @@ import java.util.Date;
  * A period of time.
  * @author Michael Angstadt
  */
-public class Period {
+public final class Period {
 	private final Date startDate;
 	private final Date endDate;
 	private final Duration duration;
@@ -129,5 +129,4 @@ public class Period {
 			return false;
 		return true;
 	}
-
 }

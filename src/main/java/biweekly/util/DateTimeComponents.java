@@ -60,15 +60,15 @@ import java.util.regex.Pattern;
  * </p>
  * @author Michael Angstadt
  */
-public class DateTimeComponents {
+public final class DateTimeComponents {
 	private static final Pattern regex = Pattern.compile("^(\\d{4})-?(\\d{2})-?(\\d{2})(T(\\d{2}):?(\\d{2}):?(\\d{2})(Z?))?.*");
 	private final int year, month, date, hour, minute, second;
 	private final boolean utc;
 
 	/**
 	 * Parses the components out of a date-time string.
-	 * @param dateString the date-time string (e.g. "20130331T020000" or
-	 * "2013-03-31T02:00:00")
+	 * @param dateString the date-time string (basic and extended formats
+	 * supported, e.g. "20130331T020000" or "2013-03-31T02:00:00")
 	 * @return the parsed components
 	 * @throws IllegalArgumentException if the date string cannot be parsed
 	 */

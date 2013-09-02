@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
  * </p>
  * @author Michael Angstadt
  */
-public class Duration {
+public final class Duration {
 	private final Integer weeks, days, hours, minutes, seconds;
 	private final boolean prior;
 
