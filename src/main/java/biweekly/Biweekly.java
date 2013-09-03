@@ -1433,7 +1433,7 @@ public class Biweekly {
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file) throws IOException {
-			JCalWriter jcalWriter = new JCalWriter(file, false, icals.size() > 1);
+			JCalWriter jcalWriter = new JCalWriter(file, icals.size() > 1);
 			try {
 				go(jcalWriter);
 			} finally {

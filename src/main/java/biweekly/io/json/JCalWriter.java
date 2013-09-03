@@ -99,25 +99,12 @@ public class JCalWriter implements Closeable {
 	/**
 	 * Creates a jCal writer that writes to a file.
 	 * @param file the file to write to
-	 * @param append true to append to the end of the file, false to overwrite
-	 * it
-	 * @throws IOException if the file cannot be written to
-	 */
-	public JCalWriter(File file, boolean append) throws IOException {
-		this(utf8Writer(file, append));
-	}
-
-	/**
-	 * Creates a jCal writer that writes to a file.
-	 * @param file the file to write to
-	 * @param append true to append to the end of the file, false to overwrite
-	 * it
 	 * @param wrapInArray true to wrap all iCalendar objects in a parent array,
 	 * false not to (useful when writing more than one iCalendar object)
 	 * @throws IOException if the file cannot be written to
 	 */
-	public JCalWriter(File file, boolean append, boolean wrapInArray) throws IOException {
-		this(utf8Writer(file, append), wrapInArray);
+	public JCalWriter(File file, boolean wrapInArray) throws IOException {
+		this(utf8Writer(file), wrapInArray);
 	}
 
 	/**
