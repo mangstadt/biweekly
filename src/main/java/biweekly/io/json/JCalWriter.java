@@ -1,11 +1,11 @@
 package biweekly.io.json;
 
+import static biweekly.util.IOUtils.utf8Writer;
+
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import biweekly.ICalDataType;
@@ -52,8 +52,8 @@ import biweekly.property.marshaller.ICalPropertyMarshaller;
  * 
  * <pre>
  * List&lt;ICalendar&gt; icals = ... 
- * Writer writer = ...
- * JCalWriter jcalWriter = new JCalWriter(writer);
+ * OutputStream out = ...
+ * JCalWriter jcalWriter = new JCalWriter(out);
  * for (ICalendar ical : icals){
  *   jcalWriter.write(ical);
  * }
@@ -74,7 +74,7 @@ public class JCalWriter implements Closeable {
 	 * @param outputStream the output stream to write to
 	 */
 	public JCalWriter(OutputStream outputStream) {
-		this(new OutputStreamWriter(outputStream));
+		this(utf8Writer(outputStream));
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class JCalWriter implements Closeable {
 	 * false not to (useful when writing more than one iCalendar object)
 	 */
 	public JCalWriter(OutputStream outputStream, boolean wrapInArray) throws IOException {
-		this(new OutputStreamWriter(outputStream), wrapInArray);
+		this(utf8Writer(outputStream), wrapInArray);
 	}
 
 	/**
@@ -93,18 +93,31 @@ public class JCalWriter implements Closeable {
 	 * @throws IOException if the file cannot be written to
 	 */
 	public JCalWriter(File file) throws IOException {
-		this(new FileWriter(file));
+		this(utf8Writer(file));
 	}
 
 	/**
 	 * Creates a jCal writer that writes to a file.
 	 * @param file the file to write to
+	 * @param append true to append to the end of the file, false to overwrite
+	 * it
+	 * @throws IOException if the file cannot be written to
+	 */
+	public JCalWriter(File file, boolean append) throws IOException {
+		this(utf8Writer(file, append));
+	}
+
+	/**
+	 * Creates a jCal writer that writes to a file.
+	 * @param file the file to write to
+	 * @param append true to append to the end of the file, false to overwrite
+	 * it
 	 * @param wrapInArray true to wrap all iCalendar objects in a parent array,
 	 * false not to (useful when writing more than one iCalendar object)
 	 * @throws IOException if the file cannot be written to
 	 */
-	public JCalWriter(File file, boolean wrapInArray) throws IOException {
-		this(new FileWriter(file), wrapInArray);
+	public JCalWriter(File file, boolean append, boolean wrapInArray) throws IOException {
+		this(utf8Writer(file, append), wrapInArray);
 	}
 
 	/**

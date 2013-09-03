@@ -10,7 +10,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.StringReader;
+import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -18,10 +20,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import biweekly.ICalendar;
 import biweekly.ICalDataType;
+import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.StandardTime;
@@ -49,6 +53,7 @@ import biweekly.property.Summary;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
+import biweekly.util.IOUtils;
 import biweekly.util.Period;
 
 /*
@@ -80,6 +85,9 @@ import biweekly.util.Period;
  * @author Michael Angstadt
  */
 public class ICalReaderTest {
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
+
 	private final DateFormat utcFormatter;
 	{
 		utcFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
@@ -717,6 +725,27 @@ public class ICalReaderTest {
 		assertNull(prop.getParameters().getValue());
 
 		assertFalse(it.hasNext());
+
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void utf8() throws Throwable {
+		//@formatter:off
+		String ical =
+		"BEGIN:VCALENDAR\r\n" +
+			"SUMMARY:\u1e66ummary\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+		File file = tempFolder.newFile();
+		Writer writer = IOUtils.utf8Writer(file);
+		writer.write(ical);
+		writer.close();
+
+		ICalReader reader = new ICalReader(file);
+		ICalendar icalendar = reader.readNext();
+		assertEquals("\u1e66ummary", icalendar.getProperty(Summary.class).getValue());
 
 		assertWarnings(0, reader.getWarnings());
 		assertNull(reader.readNext());

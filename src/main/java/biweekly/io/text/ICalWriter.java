@@ -1,11 +1,12 @@
 package biweekly.io.text;
 
+import static biweekly.util.IOUtils.utf8Writer;
+
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import biweekly.ICalDataType;
@@ -52,8 +53,8 @@ import biweekly.property.marshaller.ICalPropertyMarshaller;
  * 
  * <pre>
  * List&lt;ICalendar&gt; icals = ... 
- * Writer writer = ...
- * ICalWriter icalWriter = new ICalWriter(writer);
+ * OutputStream out = ...
+ * ICalWriter icalWriter = new ICalWriter(out);
  * for (ICalendar ical : icals){
  *   icalWriter.write(ical);
  * }
@@ -74,7 +75,7 @@ public class ICalWriter implements Closeable {
 	 * @param outputStream the output stream to write to
 	 */
 	public ICalWriter(OutputStream outputStream) {
-		this(new OutputStreamWriter(outputStream));
+		this(utf8Writer(outputStream));
 	}
 
 	/**
@@ -84,7 +85,7 @@ public class ICalWriter implements Closeable {
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 */
 	public ICalWriter(OutputStream outputStream, FoldingScheme foldingScheme) throws IOException {
-		this(new OutputStreamWriter(outputStream), foldingScheme);
+		this(utf8Writer(outputStream), foldingScheme);
 	}
 
 	/**
@@ -94,39 +95,55 @@ public class ICalWriter implements Closeable {
 	 * @param newline the newline sequence to use
 	 */
 	public ICalWriter(OutputStream outputStream, FoldingScheme foldingScheme, String newline) throws IOException {
-		this(new OutputStreamWriter(outputStream), foldingScheme, newline);
+		this(utf8Writer(outputStream), foldingScheme, newline);
 	}
 
 	/**
 	 * Creates an iCalendar writer that writes to a file. Uses the standard
 	 * folding scheme and newline sequence.
 	 * @param file the file to write to
-	 * @throws IOException if the file cannot be written to
+	 * @throws FileNotFoundException if the file cannot be written to
 	 */
-	public ICalWriter(File file) throws IOException {
-		this(new FileWriter(file));
+	public ICalWriter(File file) throws FileNotFoundException {
+		this(utf8Writer(file));
+	}
+
+	/**
+	 * Creates an iCalendar writer that writes to a file. Uses the standard
+	 * folding scheme and newline sequence.
+	 * @param file the file to write to
+	 * @param append true to append to the end of the file, false to overwrite
+	 * it
+	 * @throws FileNotFoundException if the file cannot be written to
+	 */
+	public ICalWriter(File file, boolean append) throws FileNotFoundException {
+		this(utf8Writer(file, append));
 	}
 
 	/**
 	 * Creates an iCalendar writer that writes to a file. Uses the standard
 	 * newline sequence.
 	 * @param file the file to write to
+	 * @param append true to append to the end of the file, false to overwrite
+	 * it
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
-	 * @throws IOException if the file cannot be written to
+	 * @throws FileNotFoundException if the file cannot be written to
 	 */
-	public ICalWriter(File file, FoldingScheme foldingScheme) throws IOException {
-		this(new FileWriter(file), foldingScheme);
+	public ICalWriter(File file, boolean append, FoldingScheme foldingScheme) throws FileNotFoundException {
+		this(utf8Writer(file, append), foldingScheme);
 	}
 
 	/**
 	 * Creates an iCalendar writer that writes to a file.
 	 * @param file the file to write to
+	 * @param append true to append to the end of the file, false to overwrite
+	 * it
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 * @param newline the newline sequence to use
-	 * @throws IOException if the file cannot be written to
+	 * @throws FileNotFoundException if the file cannot be written to
 	 */
-	public ICalWriter(File file, FoldingScheme foldingScheme, String newline) throws IOException {
-		this(new FileWriter(file), foldingScheme, newline);
+	public ICalWriter(File file, boolean append, FoldingScheme foldingScheme, String newline) throws FileNotFoundException {
+		this(utf8Writer(file, append), foldingScheme, newline);
 	}
 
 	/**

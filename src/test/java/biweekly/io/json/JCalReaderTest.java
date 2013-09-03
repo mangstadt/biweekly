@@ -10,16 +10,20 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import biweekly.ICalendar;
 import biweekly.ICalDataType;
+import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.RawComponent;
@@ -40,6 +44,7 @@ import biweekly.property.Summary;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
+import biweekly.util.IOUtils;
 import biweekly.util.Period;
 
 /*
@@ -75,6 +80,9 @@ import biweekly.util.Period;
  * @author Michael Angstadt
  */
 public class JCalReaderTest {
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
+
 	@Test
 	public void read_single() throws Throwable {
 		//@formatter:off
@@ -469,6 +477,31 @@ public class JCalReaderTest {
 		//@formatter:on
 
 		JCalReader reader = new JCalReader(json);
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void utf8() throws Throwable {
+		//@formatter:off
+		String json =
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"summary\", {}, \"text\", \"\u1e66ummary\"]" +
+			"]," +
+			"[" +
+			"]" +
+		"]";
+		//@formatter:on
+		File file = tempFolder.newFile();
+		Writer writer = IOUtils.utf8Writer(file);
+		writer.write(json);
+		writer.close();
+
+		JCalReader reader = new JCalReader(file);
+		ICalendar icalendar = reader.readNext();
+		assertEquals("\u1e66ummary", icalendar.getProperty(Summary.class).getValue());
+
+		assertWarnings(0, reader.getWarnings());
 		assertNull(reader.readNext());
 	}
 

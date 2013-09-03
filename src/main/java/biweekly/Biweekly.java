@@ -1,12 +1,9 @@
 package biweekly;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -84,7 +81,12 @@ import com.fasterxml.jackson.core.JsonParseException;
  * File file = new File("meeting.ics");
  * Biweekly.write(ical).go(file);
  * 
- * //writer
+ * //output stream
+ * OutputStream out = ...
+ * Biweekly.write(ical).go(out);
+ * out.close();
+ * 
+ * //writer (should be configured to use UTF-8 encoding)
  * Writer writer = ...
  * Biweekly.write(ical).go(writer);
  * writer.close();
@@ -140,7 +142,12 @@ import com.fasterxml.jackson.core.JsonParseException;
  * File file = new File("meeting.ics");
  * ical = Biweekly.parse(file).first();
  * 
- * //reader
+ * //input stream
+ * InputStream in = ...
+ * ical = Biweekly.parse(in).first();
+ * in.close();  
+ * 
+ * //reader (should be configured to read UTF-8)
  * Reader reader = ...
  * ical = Biweekly.parse(reader).first();
  * reader.close();
@@ -267,6 +274,7 @@ public class Biweekly {
 
 	/**
 	 * Parses an iCalendar file.
+	 * @param file the iCalendar file
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ParserChainTextReader parse(File file) {
@@ -279,7 +287,7 @@ public class Biweekly {
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ParserChainTextReader parse(InputStream in) {
-		return parse(new InputStreamReader(in));
+		return new ParserChainTextReader(in);
 	}
 
 	/**
@@ -310,7 +318,7 @@ public class Biweekly {
 	}
 
 	/**
-	 * Parses an xCal document (XML-encoded iCalendar objects).
+	 * Parses an xCal document (XML-encoded iCalendar objects) from a string.
 	 * @param xml the XML string
 	 * @return chainer object for completing the parse operation
 	 */
@@ -319,7 +327,7 @@ public class Biweekly {
 	}
 
 	/**
-	 * Parses an xCal document (XML-encoded iCalendar objects).
+	 * Parses an xCal document (XML-encoded iCalendar objects) from a file.
 	 * @param file the XML file
 	 * @return chainer object for completing the parse operation
 	 */
@@ -328,16 +336,27 @@ public class Biweekly {
 	}
 
 	/**
-	 * Parses an xCal document (XML-encoded iCalendar objects).
+	 * Parses an xCal document (XML-encoded iCalendar objects) from an input
+	 * stream.
 	 * @param in the input stream
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ParserChainXmlReader parseXml(InputStream in) {
-		return parseXml(new InputStreamReader(in));
+		return new ParserChainXmlReader(in);
 	}
 
 	/**
-	 * Parses an xCal document (XML-encoded iCalendar objects).
+	 * <p>
+	 * Parses an xCal document (XML-encoded iCalendar objects) from a reader.
+	 * </p>
+	 * <p>
+	 * Note that use of this method is discouraged. It ignores the character
+	 * encoding that is defined within the XML document itself, and should only
+	 * be used if the encoding is undefined or if the encoding needs to be
+	 * ignored for whatever reason. The {@link #parseXml(InputStream)} method
+	 * should be used instead, since it takes the XML document's character
+	 * encoding into account when parsing.
+	 * </p>
 	 * @param reader the reader
 	 * @return chainer object for completing the parse operation
 	 */
@@ -396,7 +415,7 @@ public class Biweekly {
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ParserChainJsonReader parseJson(InputStream in) {
-		return parseJson(new InputStreamReader(in));
+		return new ParserChainJsonReader(in);
 	}
 
 	/**
@@ -564,19 +583,29 @@ public class Biweekly {
 	 * @see Biweekly#parse(Reader)
 	 */
 	public static class ParserChainTextReader extends ParserChainText<ParserChainTextReader> {
-		private final Reader reader;
+		private final InputStream in;
 		private final File file;
+		private final Reader reader;
 
-		private ParserChainTextReader(Reader reader) {
+		private ParserChainTextReader(InputStream in) {
 			super(false);
-			this.reader = reader;
+			this.in = in;
+			this.reader = null;
 			this.file = null;
 		}
 
 		private ParserChainTextReader(File file) {
 			super(true);
+			this.in = null;
 			this.reader = null;
 			this.file = file;
+		}
+
+		private ParserChainTextReader(Reader reader) {
+			super(false);
+			this.in = null;
+			this.reader = reader;
+			this.file = null;
 		}
 
 		@Override
@@ -601,7 +630,13 @@ public class Biweekly {
 
 		@Override
 		ICalReader _constructReader() throws IOException {
-			return (reader != null) ? new ICalReader(reader) : new ICalReader(file);
+			if (in != null) {
+				return new ICalReader(in);
+			}
+			if (file != null) {
+				return new ICalReader(file);
+			}
+			return new ICalReader(reader);
 		}
 	}
 
@@ -756,17 +791,26 @@ public class Biweekly {
 	 * @see Biweekly#parseXml(Reader)
 	 */
 	public static class ParserChainXmlReader extends ParserChainXml<ParserChainXmlReader> {
-		private final Reader reader;
+		private final InputStream in;
 		private final File file;
+		private final Reader reader;
 
-		private ParserChainXmlReader(Reader reader) {
-			this.reader = reader;
+		private ParserChainXmlReader(InputStream in) {
+			this.in = in;
+			this.reader = null;
 			this.file = null;
 		}
 
 		private ParserChainXmlReader(File file) {
+			this.in = null;
 			this.reader = null;
 			this.file = file;
+		}
+
+		private ParserChainXmlReader(Reader reader) {
+			this.in = null;
+			this.reader = reader;
+			this.file = null;
 		}
 
 		@Override
@@ -786,7 +830,13 @@ public class Biweekly {
 
 		@Override
 		XCalDocument _constructDocument() throws IOException, SAXException {
-			return (reader == null) ? new XCalDocument(file) : new XCalDocument(reader);
+			if (in != null) {
+				return new XCalDocument(in);
+			}
+			if (file != null) {
+				return new XCalDocument(file);
+			}
+			return new XCalDocument(reader);
 		}
 	}
 
@@ -921,19 +971,29 @@ public class Biweekly {
 	 * @see Biweekly#parseJson(Reader)
 	 */
 	public static class ParserChainJsonReader extends ParserChainJson<ParserChainJsonReader> {
-		private final Reader reader;
+		private final InputStream in;
 		private final File file;
+		private final Reader reader;
 
-		private ParserChainJsonReader(Reader reader) {
+		private ParserChainJsonReader(InputStream in) {
 			super(false);
-			this.reader = reader;
+			this.in = in;
+			this.reader = null;
 			this.file = null;
 		}
 
 		private ParserChainJsonReader(File file) {
 			super(true);
+			this.in = null;
 			this.reader = null;
 			this.file = file;
+		}
+
+		private ParserChainJsonReader(Reader reader) {
+			super(false);
+			this.in = null;
+			this.reader = reader;
+			this.file = null;
 		}
 
 		@Override
@@ -953,7 +1013,13 @@ public class Biweekly {
 
 		@Override
 		JCalReader _constructReader() throws IOException {
-			return (reader != null) ? new JCalReader(reader) : new JCalReader(file);
+			if (in != null) {
+				return new JCalReader(in);
+			}
+			if (file != null) {
+				return new JCalReader(file);
+			}
+			return new JCalReader(reader);
 		}
 	}
 
@@ -1106,7 +1172,7 @@ public class Biweekly {
 		 * @throws IOException if there's a problem writing to the output stream
 		 */
 		public void go(OutputStream out) throws IOException {
-			go(new OutputStreamWriter(out));
+			go(new ICalWriter(out));
 		}
 
 		/**
@@ -1125,7 +1191,7 @@ public class Biweekly {
 		/**
 		 * Writes the iCalendar objects to a file.
 		 * @param file the file to write to
-		 * @param append true to append onto the end of the file, false to
+		 * @param append true to append to the end of the file, false to
 		 * overwrite it
 		 * @throws IllegalArgumentException if the marshaller class for a
 		 * component or property object cannot be found (only happens when an
@@ -1134,12 +1200,11 @@ public class Biweekly {
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file, boolean append) throws IOException {
-			FileWriter writer = null;
+			ICalWriter icalWriter = new ICalWriter(file, append);
 			try {
-				writer = new FileWriter(file, append);
-				go(writer);
+				go(icalWriter);
 			} finally {
-				IOUtils.closeQuietly(writer);
+				IOUtils.closeQuietly(icalWriter);
 			}
 		}
 
@@ -1153,7 +1218,10 @@ public class Biweekly {
 		 * @throws IOException if there's a problem writing to the writer
 		 */
 		public void go(Writer writer) throws IOException {
-			ICalWriter icalWriter = new ICalWriter(writer);
+			go(new ICalWriter(writer));
+		}
+
+		private void go(ICalWriter icalWriter) throws IOException {
 			icalWriter.setRegistrar(registrar);
 			icalWriter.setCaretEncodingEnabled(caretEncoding);
 
@@ -1240,7 +1308,8 @@ public class Biweekly {
 		 * @throws TransformerException if there's a problem writing the XML
 		 */
 		public void go(OutputStream out) throws TransformerException {
-			go(new OutputStreamWriter(out));
+			XCalDocument document = constructDocument();
+			document.write(out, indent);
 		}
 
 		/**
@@ -1351,7 +1420,7 @@ public class Biweekly {
 		 * @throws IOException if there's a problem writing to the output stream
 		 */
 		public void go(OutputStream out) throws IOException {
-			go(new OutputStreamWriter(out));
+			go(new JCalWriter(out, icals.size() > 1));
 		}
 
 		/**
@@ -1364,12 +1433,11 @@ public class Biweekly {
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file) throws IOException {
-			FileWriter writer = null;
+			JCalWriter jcalWriter = new JCalWriter(file, false, icals.size() > 1);
 			try {
-				writer = new FileWriter(file);
-				go(writer);
+				go(jcalWriter);
 			} finally {
-				IOUtils.closeQuietly(writer);
+				IOUtils.closeQuietly(jcalWriter);
 			}
 		}
 
@@ -1383,7 +1451,10 @@ public class Biweekly {
 		 * @throws IOException if there's a problem writing to the writer
 		 */
 		public void go(Writer writer) throws IOException {
-			JCalWriter jcalWriter = new JCalWriter(writer, icals.size() > 1);
+			go(new JCalWriter(writer, icals.size() > 1));
+		}
+
+		private void go(JCalWriter jcalWriter) throws IOException {
 			jcalWriter.setRegistrar(registrar);
 			jcalWriter.setIndent(indent);
 

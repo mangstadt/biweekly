@@ -4,6 +4,7 @@ import static biweekly.util.TestUtils.assertRegex;
 import static biweekly.util.TestUtils.assertValidate;
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DateFormat;
@@ -11,10 +12,12 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import biweekly.ICalendar;
 import biweekly.ICalDataType;
+import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.StandardTime;
@@ -36,6 +39,7 @@ import biweekly.property.Classification;
 import biweekly.property.FreeBusy;
 import biweekly.property.ICalProperty;
 import biweekly.property.Status;
+import biweekly.property.Summary;
 import biweekly.property.Trigger;
 import biweekly.property.Version;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
@@ -72,6 +76,9 @@ import biweekly.util.IOUtils;
  * @author Michael Angstadt
  */
 public class ICalWriterTest {
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
+
 	private final DateFormat utcFormatter;
 	{
 		utcFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
@@ -412,6 +419,28 @@ public class ICalWriterTest {
 		//@formatter:on
 
 		String actual = sw.toString();
+		assertRegex(expected, actual);
+	}
+
+	@Test
+	public void utf8() throws Exception {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.addProperty(new Summary("\u1e66ummary"));
+
+		File file = tempFolder.newFile();
+		ICalWriter writer = new ICalWriter(file);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected = 
+		"BEGIN:VCALENDAR\r\n" +
+			"SUMMARY:\u1e66ummary\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		String actual = IOUtils.getFileContents(file, "UTF-8");
 		assertRegex(expected, actual);
 	}
 

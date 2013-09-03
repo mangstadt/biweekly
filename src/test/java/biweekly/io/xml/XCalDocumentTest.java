@@ -13,8 +13,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.File;
+import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -26,13 +26,14 @@ import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
-import biweekly.ICalendar;
 import biweekly.ICalDataType;
+import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.RawComponent;
@@ -90,6 +91,9 @@ import biweekly.util.XmlUtils;
  * @author Michael Angstadt
  */
 public class XCalDocumentTest {
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
+
 	private final DateFormat utcFormatter;
 	{
 		utcFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -541,6 +545,29 @@ public class XCalDocumentTest {
 	}
 
 	@Test
+	public void parse_utf8() throws Exception {
+		//@formatter:off
+		String xml =
+		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
+			"<vcalendar>" +
+				"<properties>" +
+					"<summary><text>\u1e66ummary</text></summary>" +
+				"</properties>" +
+			"</vcalendar>" +
+		"</icalendar>";
+		//@formatter:on
+		File file = tempFolder.newFile();
+		Writer writer = IOUtils.utf8Writer(file);
+		writer.write(xml);
+		writer.close();
+
+		XCalDocument xcal = new XCalDocument(file);
+		ICalendar ical = xcal.parseFirst();
+		Summary prop = ical.getProperty(Summary.class);
+		assertEquals("\u1e66ummary", prop.getValue());
+	}
+
+	@Test
 	public void empty() throws Exception {
 		XCalDocument xcal = new XCalDocument();
 
@@ -756,9 +783,25 @@ public class XCalDocumentTest {
 	}
 
 	@Test
+	public void write_utf8() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.addProperty(new Summary("\u1e66ummary"));
+
+		XCalDocument xcal = new XCalDocument();
+		xcal.add(ical);
+
+		File file = tempFolder.newFile();
+		xcal.write(file);
+
+		String xml = IOUtils.getFileContents(file, "UTF-8");
+		assertTrue(xml.matches("(?i)<\\?xml.*?encoding=\"utf-8\".*?\\?>.*"));
+		assertTrue(xml.matches(".*?<summary><text>\u1e66ummary</text></summary>.*"));
+	}
+
+	@Test
 	public void read_example1() throws Throwable {
-		String xml = new String(IOUtils.toByteArray(getClass().getResourceAsStream("rfc6321-example1.xml")));
-		XCalDocument xcal = new XCalDocument(xml);
+		XCalDocument xcal = new XCalDocument(getClass().getResourceAsStream("rfc6321-example1.xml"));
 
 		List<ICalendar> icals = xcal.parseAll();
 		assertEquals(1, icals.size());
@@ -809,8 +852,7 @@ public class XCalDocumentTest {
 		DateFormat usEastern = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		usEastern.setTimeZone(TimeZone.getTimeZone("US/Eastern"));
 
-		String xml = new String(IOUtils.toByteArray(getClass().getResourceAsStream("rfc6321-example2.xml")));
-		XCalDocument xcal = new XCalDocument(xml);
+		XCalDocument xcal = new XCalDocument(getClass().getResourceAsStream("rfc6321-example2.xml"));
 
 		List<ICalendar> icals = xcal.parseAll();
 		assertEquals(1, icals.size());
@@ -989,14 +1031,17 @@ public class XCalDocumentTest {
 		assertExample(ical, "rfc6321-example2.xml");
 	}
 
-	private void assertExample(ICalendar ical, String exampleFileName) throws IOException, SAXException {
+	private void assertExample(ICalendar ical, String exampleFileName) {
 		XCalDocument xcal = new XCalDocument();
 		xcal.add(ical);
 
-		Document expected = XmlUtils.toDocument(new InputStreamReader(getClass().getResourceAsStream(exampleFileName)));
-		Document actual = xcal.getDocument();
-
-		assertXMLEqual(XmlUtils.toString(actual), expected, actual);
+		try {
+			Document expected = XmlUtils.toDocument(getClass().getResourceAsStream(exampleFileName));
+			Document actual = xcal.getDocument();
+			assertXMLEqual(XmlUtils.toString(actual), expected, actual);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private class CompanyMarshaller extends ICalPropertyMarshaller<Company> {

@@ -1,14 +1,13 @@
 package biweekly.io.text;
 
+import static biweekly.util.IOUtils.utf8Reader;
 import static biweekly.util.StringUtils.NEWLINE;
 
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -61,8 +60,8 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  * <b>Example:</b>
  * 
  * <pre>
- * Reader reader = ...
- * ICalReader icalReader = new ICalReader(reader);
+ * InputStream in = ...
+ * ICalReader icalReader = new ICalReader(in);
  * ICalendar ical;
  * while ((ical = icalReader.readNext()) != null){
  *   ...
@@ -93,7 +92,7 @@ public class ICalReader implements Closeable {
 	 * @param in the input stream
 	 */
 	public ICalReader(InputStream in) {
-		this(new InputStreamReader(in));
+		this(utf8Reader(in));
 	}
 
 	/**
@@ -102,7 +101,7 @@ public class ICalReader implements Closeable {
 	 * @throws FileNotFoundException if the file doesn't exist
 	 */
 	public ICalReader(File file) throws FileNotFoundException {
-		this(new FileReader(file));
+		this(utf8Reader(file));
 	}
 
 	/**

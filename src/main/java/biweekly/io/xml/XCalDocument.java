@@ -1,15 +1,13 @@
 package biweekly.io.xml;
 
 import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
+import static biweekly.util.IOUtils.utf8Writer;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -178,7 +176,7 @@ public class XCalDocument {
 	 * @throws SAXException if there's a problem parsing the XML
 	 */
 	public XCalDocument(InputStream in) throws SAXException, IOException {
-		this(new InputStreamReader(in));
+		this(XmlUtils.toDocument(in));
 	}
 
 	/**
@@ -188,17 +186,26 @@ public class XCalDocument {
 	 * @throws SAXException if there's a problem parsing the XML
 	 */
 	public XCalDocument(File file) throws SAXException, IOException {
-		FileReader reader = null;
+		InputStream in = new FileInputStream(file);
 		try {
-			reader = new FileReader(file);
-			init(XmlUtils.toDocument(reader));
+			init(XmlUtils.toDocument(in));
 		} finally {
-			IOUtils.closeQuietly(reader);
+			IOUtils.closeQuietly(in);
 		}
 	}
 
 	/**
+	 * <p>
 	 * Parses an xCal document from a reader.
+	 * </p>
+	 * <p>
+	 * Note that use of this constructor is discouraged. It ignores the
+	 * character encoding that is defined within the XML document itself, and
+	 * should only be used if the encoding is undefined or if the encoding needs
+	 * to be ignored for whatever reason. The {@link #XCalDocument(InputStream)}
+	 * constructor should be used instead, since it takes the XML document's
+	 * character encoding into account when parsing.
+	 * </p>
 	 * @param reader the reader to read the xCal document from
 	 * @throws IOException if there's a problem reading from the reader
 	 * @throws SAXException if there's a problem parsing the XML
@@ -423,7 +430,7 @@ public class XCalDocument {
 	 * stream
 	 */
 	public void write(OutputStream out, int indent) throws TransformerException {
-		write(new OutputStreamWriter(out), indent);
+		write(utf8Writer(out), indent);
 	}
 
 	/**
@@ -444,9 +451,8 @@ public class XCalDocument {
 	 * @throws TransformerException if there's a problem writing the XML
 	 */
 	public void write(File file, int indent) throws TransformerException, IOException {
-		FileWriter writer = null;
+		Writer writer = utf8Writer(file);
 		try {
-			writer = new FileWriter(file);
 			write(writer, indent);
 		} finally {
 			IOUtils.closeQuietly(writer);

@@ -4,6 +4,7 @@ import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertValidate;
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DateFormat;
@@ -12,10 +13,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import biweekly.ICalendar;
 import biweekly.ICalDataType;
+import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.StandardTime;
@@ -31,6 +34,7 @@ import biweekly.property.RecurrenceDates;
 import biweekly.property.RecurrenceRule;
 import biweekly.property.RecurrenceRule.DayOfWeek;
 import biweekly.property.RecurrenceRule.Frequency;
+import biweekly.property.Summary;
 import biweekly.property.Version;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.DateTimeComponents;
@@ -67,6 +71,9 @@ import biweekly.util.Period;
  * @author Michael Angstadt
  */
 public class JCalWriterTest {
+	@Rule
+	public TemporaryFolder tempFolder = new TemporaryFolder();
+
 	private final DateFormat utcFormatter;
 	{
 		utcFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -476,6 +483,31 @@ public class JCalWriterTest {
 		"    \"summary\",{},\"text\",\"summary\"]],[]]]]";
 		//@formatter:on
 		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void utf8() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.addProperty(new Summary("\u1e66ummary"));
+
+		File file = tempFolder.newFile();
+		JCalWriter writer = new JCalWriter(file);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"summary\",{},\"text\",\"\u1e66ummary\"]" +
+			"]," +
+			"[" +
+			"]" +
+		"]";
+		//@formatter:on
+		String actual = IOUtils.getFileContents(file, "UTF-8");
 		assertEquals(expected, actual);
 	}
 
