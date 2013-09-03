@@ -6,8 +6,6 @@ import java.io.StringWriter;
 
 import org.junit.Test;
 
-import biweekly.io.text.FoldedLineWriter;
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -36,6 +34,7 @@ import biweekly.io.text.FoldedLineWriter;
 /**
  * @author Michael Angstadt
  */
+@SuppressWarnings("resource")
 public class FoldedLineWriterTest {
 	@Test
 	public void write() throws Exception {

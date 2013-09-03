@@ -33,6 +33,7 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
+@SuppressWarnings("resource")
 public class FoldedLineReaderTest {
 	@Test
 	public void readLine_single_spaced_folding_enabled() throws Exception {

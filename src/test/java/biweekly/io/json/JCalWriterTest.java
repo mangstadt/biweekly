@@ -70,6 +70,7 @@ import biweekly.util.Period;
 /**
  * @author Michael Angstadt
  */
+@SuppressWarnings("resource")
 public class JCalWriterTest {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();

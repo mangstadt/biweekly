@@ -47,6 +47,7 @@ import biweekly.parameter.ICalParameters;
 /**
  * @author Michael Angstadt
  */
+@SuppressWarnings("resource")
 public class ICalRawReaderTest {
 	@Test
 	public void basic() throws Throwable {

@@ -84,6 +84,7 @@ import biweekly.util.Period;
 /**
  * @author Michael Angstadt
  */
+@SuppressWarnings("resource")
 public class ICalReaderTest {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();

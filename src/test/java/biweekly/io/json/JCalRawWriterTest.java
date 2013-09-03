@@ -43,6 +43,7 @@ import biweekly.parameter.ICalParameters;
 /**
  * @author Michael Angstadt
  */
+@SuppressWarnings("resource")
 public class JCalRawWriterTest {
 	@Test
 	public void write_multiple() throws Throwable {

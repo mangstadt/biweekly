@@ -8,11 +8,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import biweekly.io.text.FoldingScheme;
-import biweekly.io.text.ICalRawWriter;
 import biweekly.io.text.ICalRawWriter.ParameterValueChangedListener;
 import biweekly.parameter.ICalParameters;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -42,6 +39,7 @@ import biweekly.parameter.ICalParameters;
 /**
  * @author Michael Angstadt
  */
+@SuppressWarnings("resource")
 public class ICalRawWriterTest {
 	@Test
 	public void property() throws Exception {

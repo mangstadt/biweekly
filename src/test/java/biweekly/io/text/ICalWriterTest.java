@@ -75,6 +75,7 @@ import biweekly.util.IOUtils;
 /**
  * @author Michael Angstadt
  */
+@SuppressWarnings("resource")
 public class ICalWriterTest {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();

@@ -49,6 +49,7 @@ import com.fasterxml.jackson.core.JsonToken;
 /**
  * @author Michael Angstadt
  */
+@SuppressWarnings("resource")
 public class JCalRawReaderTest {
 	@Test
 	public void basic() throws Throwable {
