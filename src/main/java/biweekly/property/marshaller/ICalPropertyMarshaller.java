@@ -18,7 +18,7 @@ import biweekly.ICalendar;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.io.json.JCalValue;
-import biweekly.io.text.ICalWriter;
+import biweekly.io.text.ICalRawWriter;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
@@ -388,48 +388,76 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @return the unescaped text
 	 */
 	protected static String unescape(String text) {
-		StringBuilder sb = new StringBuilder(text.length());
+		StringBuilder sb = null;
 		boolean escaped = false;
 		for (int i = 0; i < text.length(); i++) {
 			char ch = text.charAt(i);
+
 			if (escaped) {
-				if (ch == 'n' || ch == 'N') {
-					//newlines appear as "\n" or "\N" (see RFC 2426 p.7)
-					sb.append(StringUtils.NEWLINE);
-				} else {
-					sb.append(ch);
+				if (sb == null) {
+					sb = new StringBuilder(text.length());
+					sb.append(text.substring(0, i - 1));
 				}
+
 				escaped = false;
-			} else if (ch == '\\') {
+
+				if (ch == 'n' || ch == 'N') {
+					//newlines appear as "\n" or "\N" (see RFC 5545 p.46)
+					sb.append(StringUtils.NEWLINE);
+					continue;
+				}
+
+				sb.append(ch);
+				continue;
+			}
+
+			if (ch == '\\') {
 				escaped = true;
-			} else {
+				continue;
+			}
+
+			if (sb != null) {
 				sb.append(ch);
 			}
 		}
-		return sb.toString();
+		return (sb == null) ? text : sb.toString();
 	}
 
 	/**
-	 * Escapes all special characters within a iCalendar value.
 	 * <p>
-	 * These characters are:
+	 * Escapes all special characters within a iCalendar value. These characters
+	 * are:
 	 * </p>
 	 * <ul>
 	 * <li>backslashes (<code>\</code>)</li>
 	 * <li>commas (<code>,</code>)</li>
 	 * <li>semi-colons (<code>;</code>)</li>
-	 * <li>(newlines are escaped by {@link ICalWriter})</li>
 	 * </ul>
+	 * <p>
+	 * Newlines are not escaped by this method. They are escaped when the
+	 * iCalendar object is serialized (in the {@link ICalRawWriter} class).
+	 * </p>
 	 * @param text the text to escape
 	 * @return the escaped text
 	 */
 	protected static String escape(String text) {
 		String chars = "\\,;";
-		for (int i = 0; i < chars.length(); i++) {
-			String ch = chars.substring(i, i + 1);
-			text = text.replace(ch, "\\" + ch);
+		StringBuilder sb = null;
+		for (int i = 0; i < text.length(); i++) {
+			char ch = text.charAt(i);
+			if (chars.indexOf(ch) >= 0) {
+				if (sb == null) {
+					sb = new StringBuilder(text.length());
+					sb.append(text.substring(0, i));
+				}
+				sb.append('\\');
+			}
+
+			if (sb != null) {
+				sb.append(ch);
+			}
 		}
-		return text;
+		return (sb == null) ? text : sb.toString();
 	}
 
 	/**
