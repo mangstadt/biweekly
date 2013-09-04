@@ -3,8 +3,8 @@ package biweekly.component;
 import java.util.ArrayList;
 import java.util.List;
 
-import biweekly.ICalendar;
 import biweekly.ICalDataType;
+import biweekly.ICalendar;
 import biweekly.component.ValidationWarnings.WarningsGroup;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
@@ -48,9 +48,8 @@ public abstract class ICalComponent {
 	 * @param clazz the property class
 	 * @return the property or null if not found
 	 */
-	@SuppressWarnings("unchecked")
 	public <T extends ICalProperty> T getProperty(Class<T> clazz) {
-		return (T) properties.first(clazz);
+		return clazz.cast(properties.first(clazz));
 	}
 
 	/**
@@ -58,14 +57,13 @@ public abstract class ICalComponent {
 	 * @param clazz the property class
 	 * @return the properties
 	 */
-	@SuppressWarnings("unchecked")
 	public <T extends ICalProperty> List<T> getProperties(Class<T> clazz) {
 		List<ICalProperty> props = properties.get(clazz);
 
 		//cast to the requested class
 		List<T> ret = new ArrayList<T>(props.size());
 		for (ICalProperty property : props) {
-			ret.add((T) property);
+			ret.add(clazz.cast(property));
 		}
 		return ret;
 	}
@@ -89,7 +87,7 @@ public abstract class ICalComponent {
 	/**
 	 * Replaces all existing properties of the given class with a single
 	 * property instance.
-	 * @param property the property
+	 * @param property the property (must not be null)
 	 */
 	public void setProperty(ICalProperty property) {
 		properties.replace(property.getClass(), property);
@@ -216,9 +214,8 @@ public abstract class ICalComponent {
 	 * @param clazz the component class
 	 * @return the component or null if not found
 	 */
-	@SuppressWarnings("unchecked")
 	public <T extends ICalComponent> T getComponent(Class<T> clazz) {
-		return (T) components.first(clazz);
+		return clazz.cast(components.first(clazz));
 	}
 
 	/**
@@ -226,14 +223,13 @@ public abstract class ICalComponent {
 	 * @param clazz the component class
 	 * @return the components
 	 */
-	@SuppressWarnings("unchecked")
 	public <T extends ICalComponent> List<T> getComponents(Class<T> clazz) {
 		List<ICalComponent> comp = components.get(clazz);
 
 		//cast to the requested class
 		List<T> ret = new ArrayList<T>(comp.size());
 		for (ICalComponent property : comp) {
-			ret.add((T) property);
+			ret.add(clazz.cast(property));
 		}
 		return ret;
 	}
@@ -256,7 +252,7 @@ public abstract class ICalComponent {
 
 	/**
 	 * Replaces all components of a given class with the given component.
-	 * @param component the component
+	 * @param component the component (must not be null)
 	 */
 	public void setComponent(ICalComponent component) {
 		components.replace(component.getClass(), component);
@@ -317,7 +313,7 @@ public abstract class ICalComponent {
 	 * @return the component object that was created
 	 */
 	public RawComponent addExperimentalComponent(String name) {
-		RawComponent raw = new RawComponent(name); //TODO rename to XComponent
+		RawComponent raw = new RawComponent(name);
 		addComponent(raw);
 		return raw;
 	}
@@ -330,9 +326,7 @@ public abstract class ICalComponent {
 	 */
 	public RawComponent setExperimentalComponents(String name) {
 		removeExperimentalComponents(name);
-		RawComponent raw = new RawComponent(name);
-		addComponent(raw);
-		return raw;
+		return addExperimentalComponent(name);
 	}
 
 	/**
@@ -412,8 +406,12 @@ public abstract class ICalComponent {
 
 			if (props.isEmpty()) {
 				warnings.add(clazz.getSimpleName() + " is not set (it is a required property).");
-			} else if (props.size() > 1) {
+				continue;
+			}
+
+			if (props.size() > 1) {
 				warnings.add("There cannot be more than one instance of " + clazz.getSimpleName() + ".");
+				continue;
 			}
 		}
 	}
@@ -430,6 +428,7 @@ public abstract class ICalComponent {
 
 			if (props.size() > 1) {
 				warnings.add("There cannot be more than one instance of " + clazz.getSimpleName() + ".");
+				continue;
 			}
 		}
 	}
