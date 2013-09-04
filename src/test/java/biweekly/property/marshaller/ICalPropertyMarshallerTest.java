@@ -341,7 +341,7 @@ public class ICalPropertyMarshallerTest {
 	public void writeXml() {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
 		TestProperty prop = new TestProperty("value");
-		assertWriteXml("<unknown>value</unknown>", prop, m);
+		assertWriteXml("<text>value</text>", prop, m);
 	}
 
 	@Test
