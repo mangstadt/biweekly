@@ -377,7 +377,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 			}
 		}
 
-		return value.getSingleValued();
+		return escape(value.getSingleValued());
 	}
 
 	/**
