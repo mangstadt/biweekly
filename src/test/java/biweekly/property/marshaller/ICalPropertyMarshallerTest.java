@@ -374,7 +374,6 @@ public class ICalPropertyMarshallerTest {
 
 		TestProperty prop = result.getValue();
 		assertEquals("value", prop.getValue());
-		assertEquals(ICalDataType.TEXT, prop.getParameters().getValue());
 		assertWarnings(1, result.getWarnings());
 	}
 
@@ -385,7 +384,6 @@ public class ICalPropertyMarshallerTest {
 
 		TestProperty prop = result.getValue();
 		assertEquals("value1,val\\,\\;ue2", prop.getValue());
-		assertEquals(ICalDataType.TEXT, prop.getParameters().getValue());
 		assertWarnings(1, result.getWarnings());
 	}
 
@@ -396,7 +394,6 @@ public class ICalPropertyMarshallerTest {
 
 		TestProperty prop = result.getValue();
 		assertEquals("value1;val\\,\\;ue2", prop.getValue());
-		assertEquals(ICalDataType.TEXT, prop.getParameters().getValue());
 		assertWarnings(1, result.getWarnings());
 	}
 
@@ -411,7 +408,6 @@ public class ICalPropertyMarshallerTest {
 
 		TestProperty prop = result.getValue();
 		assertEquals("a=one;b=two,three", prop.getValue());
-		assertEquals(ICalDataType.TEXT, prop.getParameters().getValue());
 		assertWarnings(1, result.getWarnings());
 	}
 

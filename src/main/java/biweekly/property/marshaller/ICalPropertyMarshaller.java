@@ -339,7 +339,6 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * {@link ICalendar} object
 	 */
 	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		parameters.setValue(dataType);
 		return _parseText(jcalValueToString(value), dataType, parameters, warnings);
 	}
 
