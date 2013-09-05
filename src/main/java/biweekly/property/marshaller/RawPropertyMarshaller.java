@@ -67,14 +67,8 @@ public class RawPropertyMarshaller extends ICalPropertyMarshaller<RawProperty> {
 		Element rawElement = element.getElement();
 		String name = rawElement.getLocalName();
 
-		List<Element> children = XmlUtils.toElementList(rawElement.getChildNodes());
-		if (children.isEmpty()) {
-			//get the text content of the property element
-			String value = rawElement.getTextContent();
-			return new RawProperty(name, null, value);
-		}
-
 		//get the text content of the first child element with the xCard namespace
+		List<Element> children = XmlUtils.toElementList(rawElement.getChildNodes());
 		for (Element child : children) {
 			if (!XCalNamespaceContext.XCAL_NS.equals(child.getNamespaceURI())) {
 				continue;
@@ -85,8 +79,8 @@ public class RawPropertyMarshaller extends ICalPropertyMarshaller<RawProperty> {
 			return new RawProperty(name, dataType, value);
 		}
 
-		//get the text content of the first child element
-		String value = XmlUtils.getFirstChildElement(rawElement).getTextContent();
+		//get the text content of the property element
+		String value = rawElement.getTextContent();
 		return new RawProperty(name, null, value);
 	}
 
