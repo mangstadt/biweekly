@@ -40,6 +40,7 @@ import biweekly.property.marshaller.DateTimeStampMarshaller;
 import biweekly.property.marshaller.DescriptionMarshaller;
 import biweekly.property.marshaller.DurationPropertyMarshaller;
 import biweekly.property.marshaller.ExceptionDatesMarshaller;
+import biweekly.property.marshaller.ExceptionRuleMarshaller;
 import biweekly.property.marshaller.FreeBusyMarshaller;
 import biweekly.property.marshaller.GeoMarshaller;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
@@ -206,6 +207,9 @@ public class ICalMarshallerRegistrar {
 
 		//RFC 6321
 		registerStandard(new XmlMarshaller());
+
+		//RFC 2445
+		registerStandard(new ExceptionRuleMarshaller());
 	}
 
 	private final Map<String, ICalComponentMarshaller<? extends ICalComponent>> experimentalCompByName = new HashMap<String, ICalComponentMarshaller<? extends ICalComponent>>(0);
