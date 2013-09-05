@@ -102,7 +102,7 @@ public final class Recurrence {
 	 * @return the date or null if not set
 	 */
 	public Date getUntil() {
-		return until;
+		return (until == null) ? null : new Date(until.getTime());
 	}
 
 	/**
@@ -462,8 +462,13 @@ public final class Recurrence {
 		 * @return this
 		 */
 		public Builder until(Date until, boolean hasTime) {
-			this.until = until;
-			this.untilHasTime = (until == null) ? false : hasTime;
+			if (until == null){
+				this.until = null;
+				this.untilHasTime = false;
+			} else {
+				this.until = new Date(until.getTime());
+				this.untilHasTime = hasTime;
+			}
 			return this;
 		}
 
