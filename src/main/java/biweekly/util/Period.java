@@ -42,8 +42,8 @@ public final class Period {
 	 * @param endDate the end date
 	 */
 	public Period(Date startDate, Date endDate) {
-		this.startDate = startDate;
-		this.endDate = endDate;
+		this.startDate = copy(startDate);
+		this.endDate = copy(endDate);
 		duration = null;
 	}
 
@@ -53,7 +53,7 @@ public final class Period {
 	 * @param duration the length of time after the start date
 	 */
 	public Period(Date startDate, Duration duration) {
-		this.startDate = startDate;
+		this.startDate = copy(startDate);
 		this.duration = duration;
 		endDate = null;
 	}
@@ -73,7 +73,7 @@ public final class Period {
 	 * @return the start date
 	 */
 	public Date getStartDate() {
-		return startDate;
+		return copy(startDate);
 	}
 
 	/**
@@ -81,7 +81,7 @@ public final class Period {
 	 * @return the end date or null if not set
 	 */
 	public Date getEndDate() {
-		return endDate;
+		return copy(endDate);
 	}
 
 	/**
@@ -128,5 +128,9 @@ public final class Period {
 		} else if (!startDate.equals(other.startDate))
 			return false;
 		return true;
+	}
+
+	private Date copy(Date date) {
+		return (date == null) ? null : new Date(date.getTime());
 	}
 }
