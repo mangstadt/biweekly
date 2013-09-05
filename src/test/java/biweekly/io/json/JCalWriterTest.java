@@ -31,9 +31,6 @@ import biweekly.property.CalendarScale;
 import biweekly.property.DateStart;
 import biweekly.property.ICalProperty;
 import biweekly.property.RecurrenceDates;
-import biweekly.property.RecurrenceRule;
-import biweekly.property.RecurrenceRule.DayOfWeek;
-import biweekly.property.RecurrenceRule.Frequency;
 import biweekly.property.Summary;
 import biweekly.property.Version;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
@@ -41,6 +38,9 @@ import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
 import biweekly.util.Period;
+import biweekly.util.Recurrence;
+import biweekly.util.Recurrence.DayOfWeek;
+import biweekly.util.Recurrence.Frequency;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -552,9 +552,7 @@ public class JCalWriterTest {
 				DaylightSavingsTime daylight = new DaylightSavingsTime();
 				daylight.setDateStart(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false));
 
-				RecurrenceRule rrule = new RecurrenceRule(Frequency.YEARLY);
-				rrule.addByDay(1, DayOfWeek.SUNDAY);
-				rrule.addByMonth(4);
+				Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY).byDay(1, DayOfWeek.SUNDAY).byMonth(4).build();
 				daylight.setRecurrenceRule(rrule);
 
 				daylight.addTimezoneName("EDT");
@@ -567,9 +565,7 @@ public class JCalWriterTest {
 				StandardTime standard = new StandardTime();
 				standard.setDateStart(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false));
 
-				RecurrenceRule rrule = new RecurrenceRule(Frequency.YEARLY);
-				rrule.addByDay(1, DayOfWeek.SUNDAY);
-				rrule.addByMonth(10);
+				Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY).byDay(1, DayOfWeek.SUNDAY).byMonth(10).build();
 				standard.setRecurrenceRule(rrule);
 
 				standard.addTimezoneName("EST");
@@ -586,8 +582,7 @@ public class JCalWriterTest {
 			event.setDateStart(usEasternFormatter.parse("2006-01-02T12:00:00")).setTimezone(usEasternTz);
 			event.setDuration(Duration.builder().hours(1).build());
 
-			RecurrenceRule rrule = new RecurrenceRule(Frequency.DAILY);
-			rrule.setCount(5);
+			Recurrence rrule = new Recurrence.Builder(Frequency.DAILY).count(5).build();
 			event.setRecurrenceRule(rrule);
 
 			RecurrenceDates rdate = new RecurrenceDates(Arrays.asList(new Period(usEasternFormatter.parse("2006-01-02T15:00:00"), Duration.builder().hours(2).build())));

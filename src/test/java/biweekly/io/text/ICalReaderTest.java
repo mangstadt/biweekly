@@ -46,15 +46,15 @@ import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.ICalProperty;
 import biweekly.property.ProductId;
-import biweekly.property.RecurrenceRule;
-import biweekly.property.RecurrenceRule.DayOfWeek;
-import biweekly.property.RecurrenceRule.Frequency;
 import biweekly.property.Summary;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
 import biweekly.util.Period;
+import biweekly.util.Recurrence;
+import biweekly.util.Recurrence.DayOfWeek;
+import biweekly.util.Recurrence.Frequency;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -778,7 +778,7 @@ public class ICalReaderTest {
 				assertEquals(4, standard.getProperties().size());
 				assertDateEquals("16011104T020000", standard.getDateStart().getValue());
 
-				RecurrenceRule rrule = standard.getRecurrenceRule();
+				Recurrence rrule = standard.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
 				assertEquals(Arrays.asList(1), rrule.getByDayPrefixes());
 				assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());
@@ -797,7 +797,7 @@ public class ICalReaderTest {
 				assertEquals(4, daylight.getProperties().size());
 				assertDateEquals("16010311T020000", daylight.getDateStart().getValue());
 
-				RecurrenceRule rrule = daylight.getRecurrenceRule();
+				Recurrence rrule = daylight.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
 				assertEquals(Arrays.asList(2), rrule.getByDayPrefixes());
 				assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());

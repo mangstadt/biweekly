@@ -37,15 +37,15 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceDates;
-import biweekly.property.RecurrenceRule;
-import biweekly.property.RecurrenceRule.DayOfWeek;
-import biweekly.property.RecurrenceRule.Frequency;
 import biweekly.property.Summary;
 import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
 import biweekly.util.Period;
+import biweekly.util.Recurrence;
+import biweekly.util.Recurrence.DayOfWeek;
+import biweekly.util.Recurrence.Frequency;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -564,7 +564,7 @@ public class JCalReaderTest {
 				assertDateEquals("20000404T020000", daylight.getDateStart().getValue());
 				assertEquals(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false), daylight.getDateStart().getRawComponents());
 
-				RecurrenceRule rrule = daylight.getRecurrenceRule();
+				Recurrence rrule = daylight.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
 				assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());
 				assertEquals(Arrays.asList(1), rrule.getByDayPrefixes());
@@ -585,7 +585,7 @@ public class JCalReaderTest {
 				assertDateEquals("20001026T020000", standard.getDateStart().getValue());
 				assertEquals(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false), standard.getDateStart().getRawComponents());
 
-				RecurrenceRule rrule = standard.getRecurrenceRule();
+				Recurrence rrule = standard.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
 				assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());
 				assertEquals(Arrays.asList(1), rrule.getByDayPrefixes());
@@ -610,7 +610,7 @@ public class JCalReaderTest {
 			assertEquals("US/Eastern", event.getDateStart().getTimezoneId());
 			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
 
-			RecurrenceRule rrule = event.getRecurrenceRule();
+			Recurrence rrule = event.getRecurrenceRule().getValue();
 			assertEquals(Frequency.DAILY, rrule.getFrequency());
 			assertIntEquals(5, rrule.getCount());
 

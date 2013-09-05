@@ -23,11 +23,12 @@ import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.json.JsonValue;
 import biweekly.parameter.ICalParameters;
-import biweekly.property.RecurrenceRule;
-import biweekly.property.RecurrenceRule.DayOfWeek;
-import biweekly.property.RecurrenceRule.Frequency;
+import biweekly.property.RecurrenceProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 import biweekly.util.ListMultimap;
+import biweekly.util.Recurrence;
+import biweekly.util.Recurrence.DayOfWeek;
+import biweekly.util.Recurrence.Frequency;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -57,8 +58,68 @@ import biweekly.util.ListMultimap;
 /**
  * @author Michael Angstadt
  */
-public class RecurrenceRuleMarshallerTest {
-	private final RecurrenceRuleMarshaller marshaller = new RecurrenceRuleMarshaller();
+public class RecurrencePropertyMarshallerTest {
+	private final RecurrencePropertyMarshaller<RecurrenceProperty> marshaller = new RecurrencePropertyMarshaller<RecurrenceProperty>(RecurrenceProperty.class, "TEST") {
+		@Override
+		protected RecurrenceProperty newInstance(Recurrence recur) {
+			return new RecurrenceProperty(recur);
+		}
+	};
+
+	private final RecurrenceProperty multipleValues;
+	{
+		//@formatter:off
+		Recurrence.Builder builder = new Recurrence.Builder(Frequency.WEEKLY)
+		.byYearDay(100)
+		.byYearDay(101)
+		.byMonthDay(1)
+		.byMonthDay(2)
+		.byMonth(5)
+		.byMonth(6)
+		.byHour(1)
+		.byHour(2)
+		.byMinute(3)
+		.byMinute(4)
+		.bySecond(58)
+		.bySecond(59)
+		.bySetPos(7)
+		.bySetPos(8)
+		.bySetPos(9)
+		.byWeekNo(1)
+		.byWeekNo(2)
+		.count(5)
+		.interval(10)
+		.workweekStarts(DayOfWeek.TUESDAY);
+		//@formatter:on
+
+		for (DayOfWeek dow : DayOfWeek.values()) {
+			builder.byDay(dow);
+		}
+		builder.byDay(5, DayOfWeek.FRIDAY);
+
+		multipleValues = new RecurrenceProperty(builder.build());
+	}
+
+	private final RecurrenceProperty singleValues;
+	{
+		//@formatter:off
+		Recurrence.Builder builder = new Recurrence.Builder(Frequency.WEEKLY)
+		.byYearDay(100)
+		.byMonthDay(1)
+		.byMonth(5)
+		.byHour(1)
+		.byMinute(3)
+		.bySecond(58)
+		.bySetPos(7)
+		.byWeekNo(1)
+		.count(5)
+		.interval(10)
+		.byDay(DayOfWeek.FRIDAY)
+		.workweekStarts(DayOfWeek.TUESDAY);
+		//@formatter:on
+
+		singleValues = new RecurrenceProperty(builder.build());
+	}
 
 	private final Date datetime;
 	{
@@ -73,26 +134,12 @@ public class RecurrenceRuleMarshallerTest {
 		datetime = c.getTime();
 	}
 
+	private final RecurrenceProperty untilDate = new RecurrenceProperty(new Recurrence.Builder(Frequency.WEEKLY).until(datetime, false).build());
+	private final RecurrenceProperty untilDateTime = new RecurrenceProperty(new Recurrence.Builder(Frequency.WEEKLY).until(datetime).build());
+
 	@Test
 	public void writeText_multiples() {
-		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
-		prop.setByYearDay(Arrays.asList(100, 101));
-		prop.setByMonthDay(Arrays.asList(1, 2));
-		prop.setByMonth(Arrays.asList(5, 6));
-		prop.setByHour(Arrays.asList(1, 2));
-		prop.setByMinute(Arrays.asList(3, 4));
-		prop.setBySecond(Arrays.asList(58, 59));
-		prop.setBySetPos(Arrays.asList(7, 8, 9));
-		prop.setByWeekNo(Arrays.asList(1, 2));
-		prop.setCount(5);
-		prop.setInterval(10);
-		for (DayOfWeek day : DayOfWeek.values()) {
-			prop.addByDay(day);
-		}
-		prop.addByDay(5, DayOfWeek.FRIDAY);
-		prop.setWorkweekStarts(DayOfWeek.TUESDAY);
-
-		String actual = marshaller.writeText(prop);
+		String actual = marshaller.writeText(multipleValues);
 		List<String> split = Arrays.asList(actual.split(";"));
 
 		assertEquals(13, split.size());
@@ -113,21 +160,7 @@ public class RecurrenceRuleMarshallerTest {
 
 	@Test
 	public void writeText_singles() {
-		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
-		prop.setByYearDay(Arrays.asList(100));
-		prop.setByMonthDay(Arrays.asList(1));
-		prop.setByMonth(Arrays.asList(5));
-		prop.setByHour(Arrays.asList(1));
-		prop.setByMinute(Arrays.asList(3));
-		prop.setBySecond(Arrays.asList(58));
-		prop.setBySetPos(Arrays.asList(7));
-		prop.setByWeekNo(Arrays.asList(1));
-		prop.setCount(5);
-		prop.setInterval(10);
-		prop.addByDay(DayOfWeek.FRIDAY);
-		prop.setWorkweekStarts(DayOfWeek.TUESDAY);
-
-		String actual = marshaller.writeText(prop);
+		String actual = marshaller.writeText(singleValues);
 		List<String> split = Arrays.asList(actual.split(";"));
 
 		assertEquals(13, split.size());
@@ -148,20 +181,14 @@ public class RecurrenceRuleMarshallerTest {
 
 	@Test
 	public void writeText_until_datetime() {
-		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
-		prop.setUntil(datetime);
-
-		String actual = marshaller.writeText(prop);
+		String actual = marshaller.writeText(untilDateTime);
 
 		assertEquals("FREQ=WEEKLY;UNTIL=20130611T134302Z", actual);
 	}
 
 	@Test
 	public void writeText_until_date() {
-		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
-		prop.setUntil(datetime, false);
-
-		String actual = marshaller.writeText(prop);
+		String actual = marshaller.writeText(untilDate);
 
 		assertEquals("FREQ=WEEKLY;UNTIL=20130611", actual);
 	}
@@ -171,9 +198,9 @@ public class RecurrenceRuleMarshallerTest {
 		String value = "FREQ=WEEKLY;COUNT=5;INTERVAL=10;UNTIL=20130611T134302Z;BYSECOND=58,59;BYMINUTE=3,4;BYHOUR=1,2;BYDAY=MO,TU,WE,TH,FR,SA,SU,5FR;BYMONTHDAY=1,2;BYYEARDAY=100,101;BYWEEKNO=1,2;BYMONTH=5,6;BYSETPOS=7,8,9;WKST=TU";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceRule> result = marshaller.parseText(value, ICalDataType.RECUR, params);
+		Result<RecurrenceProperty> result = marshaller.parseText(value, ICalDataType.RECUR, params);
 
-		RecurrenceRule prop = result.getValue();
+		Recurrence prop = result.getValue().getValue();
 		assertEquals(Frequency.WEEKLY, prop.getFrequency());
 		assertIntEquals(5, prop.getCount());
 		assertIntEquals(10, prop.getInterval());
@@ -196,9 +223,9 @@ public class RecurrenceRuleMarshallerTest {
 		String value = "FREQ=W;COUNT=a;INTERVAL=b;UNTIL=invalid;BYSECOND=58,c,59;BYMINUTE=3,d,4;BYHOUR=1,e,2;BYDAY=f,MO,TU,WE,TH,FR,SA,SU,5FR,fFR;BYMONTHDAY=1,g,2;BYYEARDAY=100,h,101;BYWEEKNO=1,w,2;BYMONTH=5,i,6;BYSETPOS=7,8,j,9;WKST=k";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceRule> result = marshaller.parseText(value, ICalDataType.RECUR, params);
+		Result<RecurrenceProperty> result = marshaller.parseText(value, ICalDataType.RECUR, params);
 
-		RecurrenceRule prop = result.getValue();
+		Recurrence prop = result.getValue().getValue();
 		assertNull(prop.getFrequency());
 		assertNull(prop.getCount());
 		assertNull(prop.getInterval());
@@ -221,9 +248,9 @@ public class RecurrenceRuleMarshallerTest {
 		String value = "FREQ=WEEKLY;no equals;COUNT=5";
 		ICalParameters params = new ICalParameters();
 
-		Result<RecurrenceRule> result = marshaller.parseText(value, ICalDataType.RECUR, params);
+		Result<RecurrenceProperty> result = marshaller.parseText(value, ICalDataType.RECUR, params);
 
-		RecurrenceRule prop = result.getValue();
+		Recurrence prop = result.getValue().getValue();
 		assertEquals(Frequency.WEEKLY, prop.getFrequency());
 		assertIntEquals(5, prop.getCount());
 		assertNull(prop.getInterval());
@@ -242,24 +269,7 @@ public class RecurrenceRuleMarshallerTest {
 	}
 
 	@Test
-	public void writeXml() {
-		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
-		prop.setByYearDay(Arrays.asList(100, 101));
-		prop.setByMonthDay(Arrays.asList(1, 2));
-		prop.setByMonth(Arrays.asList(5, 6));
-		prop.setByHour(Arrays.asList(1, 2));
-		prop.setByMinute(Arrays.asList(3, 4));
-		prop.setBySecond(Arrays.asList(58, 59));
-		prop.setBySetPos(Arrays.asList(7, 8, 9));
-		prop.setByWeekNo(Arrays.asList(1, 2));
-		prop.setCount(5);
-		prop.setInterval(10);
-		for (DayOfWeek day : DayOfWeek.values()) {
-			prop.addByDay(day);
-		}
-		prop.addByDay(5, DayOfWeek.FRIDAY);
-		prop.setWorkweekStarts(DayOfWeek.TUESDAY);
-
+	public void writeXml_multiples() {
 		//@formatter:off
 		assertWriteXml(
 		"<recur>" +
@@ -292,42 +302,58 @@ public class RecurrenceRuleMarshallerTest {
 			"<bysetpos>8</bysetpos>" +
 			"<bysetpos>9</bysetpos>" +
 			"<wkst>TU</wkst>" +
-		"</recur>", prop, marshaller);
+		"</recur>", multipleValues, marshaller);
+		//@formatter:on
+	}
+
+	@Test
+	public void writeXml_singles() {
+		//@formatter:off
+		assertWriteXml(
+		"<recur>" +
+			"<freq>WEEKLY</freq>" +
+			"<count>5</count>" +
+			"<interval>10</interval>" +
+			"<bysecond>58</bysecond>" +
+			"<byminute>3</byminute>" +
+			"<byhour>1</byhour>" +
+			"<byday>FR</byday>" +
+			"<bymonthday>1</bymonthday>" +
+			"<byyearday>100</byyearday>" +
+			"<byweekno>1</byweekno>" +
+			"<bymonth>5</bymonth>" +
+			"<bysetpos>7</bysetpos>" +
+			"<wkst>TU</wkst>" +
+		"</recur>", singleValues, marshaller);
 		//@formatter:on
 	}
 
 	@Test
 	public void writeXml_until_datetime() {
-		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
-		prop.setUntil(datetime);
-
 		//@formatter:off
 		assertWriteXml(
 		"<recur>" +
 			"<freq>WEEKLY</freq>" +
 			"<until>2013-06-11T13:43:02Z</until>" +
-		"</recur>", prop, marshaller);
+		"</recur>", untilDateTime, marshaller);
 		//@formatter:on
 	}
 
 	@Test
 	public void writeXml_until_date() {
-		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
-		prop.setUntil(datetime, false);
-
 		//@formatter:off
 		assertWriteXml(
 		"<recur>" +
 			"<freq>WEEKLY</freq>" +
 			"<until>2013-06-11</until>" +
-		"</recur>", prop, marshaller);
+		"</recur>", untilDate, marshaller);
 		//@formatter:on
 	}
 
 	@Test
 	public void parseXml() {
 		//@formatter:off
-		Result<RecurrenceRule> result = parseXCalProperty(
+		Result<RecurrenceProperty> result = parseXCalProperty(
 		"<recur>" +
 			"<freq>WEEKLY</freq>" +
 			"<count>5</count>" +
@@ -362,7 +388,7 @@ public class RecurrenceRuleMarshallerTest {
 		"</recur>", marshaller);
 		//@formatter:on
 
-		RecurrenceRule prop = result.getValue();
+		Recurrence prop = result.getValue().getValue();
 		assertEquals(Frequency.WEEKLY, prop.getFrequency());
 		assertIntEquals(5, prop.getCount());
 		assertIntEquals(10, prop.getInterval());
@@ -383,7 +409,7 @@ public class RecurrenceRuleMarshallerTest {
 	@Test
 	public void parseXml_invalid_values() {
 		//@formatter:off
-		Result<RecurrenceRule> result = parseXCalProperty(
+		Result<RecurrenceProperty> result = parseXCalProperty(
 		"<recur>" +
 			"<freq>W</freq>" +
 			"<count>a</count>" +
@@ -428,7 +454,7 @@ public class RecurrenceRuleMarshallerTest {
 		"</recur>", marshaller);
 		//@formatter:on
 
-		RecurrenceRule prop = result.getValue();
+		Recurrence prop = result.getValue().getValue();
 		assertNull(prop.getFrequency());
 		assertNull(prop.getCount());
 		assertNull(prop.getInterval());
@@ -452,24 +478,7 @@ public class RecurrenceRuleMarshallerTest {
 	}
 
 	@Test
-	public void writeJson() {
-		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
-		prop.setByYearDay(Arrays.asList(100, 101));
-		prop.setByMonthDay(Arrays.asList(1, 2));
-		prop.setByMonth(Arrays.asList(5, 6));
-		prop.setByHour(Arrays.asList(1, 2));
-		prop.setByMinute(Arrays.asList(3, 4));
-		prop.setBySecond(Arrays.asList(58, 59));
-		prop.setBySetPos(Arrays.asList(7, 8, 9));
-		prop.setByWeekNo(Arrays.asList(1, 2));
-		prop.setCount(5);
-		prop.setInterval(10);
-		for (DayOfWeek day : DayOfWeek.values()) {
-			prop.addByDay(day);
-		}
-		prop.addByDay(5, DayOfWeek.FRIDAY);
-		prop.setWorkweekStarts(DayOfWeek.TUESDAY);
-
+	public void writeJson_multiples() {
 		Map<String, JsonValue> expected = new LinkedHashMap<String, JsonValue>();
 		expected.put("freq", new JsonValue("WEEKLY"));
 		expected.put("count", new JsonValue(5));
@@ -485,33 +494,48 @@ public class RecurrenceRuleMarshallerTest {
 		expected.put("bysetpos", new JsonValue(Arrays.asList(new JsonValue(7), new JsonValue(8), new JsonValue(9))));
 		expected.put("wkst", new JsonValue("TU"));
 
-		JCalValue actual = marshaller.writeJson(prop);
+		JCalValue actual = marshaller.writeJson(multipleValues);
+		assertEquals(expected, actual.getValues().get(0).getObject());
+	}
+
+	@Test
+	public void writeJson_singles() {
+		Map<String, JsonValue> expected = new LinkedHashMap<String, JsonValue>();
+		expected.put("freq", new JsonValue("WEEKLY"));
+		expected.put("count", new JsonValue(5));
+		expected.put("interval", new JsonValue(10));
+		expected.put("bysecond", new JsonValue(58));
+		expected.put("byminute", new JsonValue(3));
+		expected.put("byhour", new JsonValue(1));
+		expected.put("byday", new JsonValue("FR"));
+		expected.put("bymonthday", new JsonValue(1));
+		expected.put("byyearday", new JsonValue(100));
+		expected.put("byweekno", new JsonValue(1));
+		expected.put("bymonth", new JsonValue(5));
+		expected.put("bysetpos", new JsonValue(7));
+		expected.put("wkst", new JsonValue("TU"));
+
+		JCalValue actual = marshaller.writeJson(singleValues);
 		assertEquals(expected, actual.getValues().get(0).getObject());
 	}
 
 	@Test
 	public void writeJson_until_datetime() {
-		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
-		prop.setUntil(datetime);
-
 		Map<String, JsonValue> expected = new LinkedHashMap<String, JsonValue>();
 		expected.put("freq", new JsonValue("WEEKLY"));
 		expected.put("until", new JsonValue("2013-06-11T13:43:02Z"));
 
-		JCalValue actual = marshaller.writeJson(prop);
+		JCalValue actual = marshaller.writeJson(untilDateTime);
 		assertEquals(expected, actual.getValues().get(0).getObject());
 	}
 
 	@Test
 	public void writeJson_until_date() {
-		RecurrenceRule prop = new RecurrenceRule(Frequency.WEEKLY);
-		prop.setUntil(datetime, false);
-
 		Map<String, JsonValue> expected = new LinkedHashMap<String, JsonValue>();
 		expected.put("freq", new JsonValue("WEEKLY"));
 		expected.put("until", new JsonValue("2013-06-11"));
 
-		JCalValue actual = marshaller.writeJson(prop);
+		JCalValue actual = marshaller.writeJson(untilDate);
 		assertEquals(expected, actual.getValues().get(0).getObject());
 	}
 
@@ -548,9 +572,9 @@ public class RecurrenceRuleMarshallerTest {
 		map.put("bysetpos", 8);
 		map.put("bysetpos", 9);
 		map.put("wkst", "TU");
-		Result<RecurrenceRule> result = marshaller.parseJson(JCalValue.object(map), ICalDataType.RECUR, new ICalParameters());
+		Result<RecurrenceProperty> result = marshaller.parseJson(JCalValue.object(map), ICalDataType.RECUR, new ICalParameters());
 
-		RecurrenceRule prop = result.getValue();
+		Recurrence prop = result.getValue().getValue();
 		assertEquals(Frequency.WEEKLY, prop.getFrequency());
 		assertIntEquals(5, prop.getCount());
 		assertIntEquals(10, prop.getInterval());
@@ -611,9 +635,9 @@ public class RecurrenceRuleMarshallerTest {
 		map.put("bysetpos", "j");
 		map.put("bysetpos", 9);
 		map.put("wkst", "k");
-		Result<RecurrenceRule> result = marshaller.parseJson(JCalValue.object(map), ICalDataType.RECUR, new ICalParameters());
+		Result<RecurrenceProperty> result = marshaller.parseJson(JCalValue.object(map), ICalDataType.RECUR, new ICalParameters());
 
-		RecurrenceRule prop = result.getValue();
+		Recurrence prop = result.getValue().getValue();
 		assertNull(prop.getFrequency());
 		assertNull(prop.getCount());
 		assertNull(prop.getInterval());

@@ -35,6 +35,7 @@ import biweekly.property.Transparency;
 import biweekly.property.Uid;
 import biweekly.property.Url;
 import biweekly.util.Duration;
+import biweekly.util.Recurrence;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -602,6 +603,19 @@ public class VEvent extends ICalComponent {
 	//TODO optional, "SHOULD NOT" occur more than once (p.53)
 	public RecurrenceRule getRecurrenceRule() {
 		return getProperty(RecurrenceRule.class);
+	}
+
+	/**
+	 * Sets how often the event repeats.
+	 * @param recur the recurrence rule or null to remove
+	 * @return the property that was created
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
+	 * p.122-32</a>
+	 */
+	public RecurrenceRule setRecurrenceRule(Recurrence recur) {
+		RecurrenceRule prop = (recur == null) ? null : new RecurrenceRule(recur);
+		setRecurrenceRule(prop);
+		return prop;
 	}
 
 	/**

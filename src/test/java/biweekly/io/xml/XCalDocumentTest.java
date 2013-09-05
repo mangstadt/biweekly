@@ -49,9 +49,6 @@ import biweekly.property.DateStart;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceDates;
-import biweekly.property.RecurrenceRule;
-import biweekly.property.RecurrenceRule.DayOfWeek;
-import biweekly.property.RecurrenceRule.Frequency;
 import biweekly.property.Summary;
 import biweekly.property.Version;
 import biweekly.property.Xml;
@@ -60,6 +57,9 @@ import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
 import biweekly.util.Period;
+import biweekly.util.Recurrence;
+import biweekly.util.Recurrence.DayOfWeek;
+import biweekly.util.Recurrence.Frequency;
 import biweekly.util.XmlUtils;
 
 /*
@@ -877,7 +877,7 @@ public class XCalDocumentTest {
 				assertDateEquals("20000404T020000", daylight.getDateStart().getValue());
 				assertEquals(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false), daylight.getDateStart().getRawComponents());
 
-				RecurrenceRule rrule = daylight.getRecurrenceRule();
+				Recurrence rrule = daylight.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
 				assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());
 				assertEquals(Arrays.asList(1), rrule.getByDayPrefixes());
@@ -896,7 +896,7 @@ public class XCalDocumentTest {
 				assertDateEquals("20001026T020000", standard.getDateStart().getValue());
 				assertEquals(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false), standard.getDateStart().getRawComponents());
 
-				RecurrenceRule rrule = standard.getRecurrenceRule();
+				Recurrence rrule = standard.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
 				assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());
 				assertEquals(Arrays.asList(-1), rrule.getByDayPrefixes());
@@ -919,7 +919,7 @@ public class XCalDocumentTest {
 			assertEquals("US/Eastern", event.getDateStart().getTimezoneId());
 			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
 
-			RecurrenceRule rrule = event.getRecurrenceRule();
+			Recurrence rrule = event.getRecurrenceRule().getValue();
 			assertEquals(Frequency.DAILY, rrule.getFrequency());
 			assertIntEquals(5, rrule.getCount());
 
@@ -967,9 +967,7 @@ public class XCalDocumentTest {
 				DaylightSavingsTime daylight = new DaylightSavingsTime();
 				daylight.setDateStart(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false));
 
-				RecurrenceRule rrule = new RecurrenceRule(Frequency.YEARLY);
-				rrule.addByDay(1, DayOfWeek.SUNDAY);
-				rrule.addByMonth(4);
+				Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY).byDay(1, DayOfWeek.SUNDAY).byMonth(4).build();
 				daylight.setRecurrenceRule(rrule);
 
 				daylight.addTimezoneName("EDT");
@@ -982,9 +980,7 @@ public class XCalDocumentTest {
 				StandardTime standard = new StandardTime();
 				standard.setDateStart(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false));
 
-				RecurrenceRule rrule = new RecurrenceRule(Frequency.YEARLY);
-				rrule.addByDay(-1, DayOfWeek.SUNDAY);
-				rrule.addByMonth(10);
+				Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY).byDay(-1, DayOfWeek.SUNDAY).byMonth(10).build();
 				standard.setRecurrenceRule(rrule);
 
 				standard.addTimezoneName("EST");
@@ -1001,8 +997,7 @@ public class XCalDocumentTest {
 			event.setDateStart(usEasternFormatter.parse("2006-01-02T12:00:00")).setTimezone(usEasternTz);
 			event.setDuration(Duration.builder().hours(1).build());
 
-			RecurrenceRule rrule = new RecurrenceRule(Frequency.DAILY);
-			rrule.setCount(5);
+			Recurrence rrule = new Recurrence.Builder(Frequency.DAILY).count(5).build();
 			event.setRecurrenceRule(rrule);
 
 			RecurrenceDates rdate = new RecurrenceDates(Arrays.asList(new Period(usEasternFormatter.parse("2006-01-02T15:00:00"), Duration.builder().hours(2).build())));

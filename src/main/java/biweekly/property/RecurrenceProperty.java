@@ -1,6 +1,8 @@
-package biweekly.property.marshaller;
+package biweekly.property;
 
-import biweekly.property.RecurrenceRule;
+import java.util.List;
+
+import biweekly.component.ICalComponent;
 import biweekly.util.Recurrence;
 
 /*
@@ -29,16 +31,31 @@ import biweekly.util.Recurrence;
  */
 
 /**
- * Marshals {@link RecurrenceRule} properties.
+ * Defines a property whose value is a recurrence rule.
  * @author Michael Angstadt
  */
-public class RecurrenceRuleMarshaller extends RecurrencePropertyMarshaller<RecurrenceRule> {
-	public RecurrenceRuleMarshaller() {
-		super(RecurrenceRule.class, "RRULE");
+public class RecurrenceProperty extends ValuedProperty<Recurrence> {
+	/**
+	 * Creates a new recurrence property.
+	 * @param recur the recurrence value
+	 */
+	public RecurrenceProperty(Recurrence recur) {
+		super(recur);
 	}
 
 	@Override
-	protected RecurrenceRule newInstance(Recurrence recur) {
-		return new RecurrenceRule(recur);
+	protected void validate(List<ICalComponent> components, List<String> warnings) {
+		super.validate(components, warnings);
+
+		if (value == null) {
+			return;
+		}
+
+		if (value.getFrequency() == null) {
+			warnings.add("Frequency is not set (it is a required field).");
+		}
+		if (value.getUntil() != null && value.getCount() != null) {
+			warnings.add("\"UNTIL\" and \"COUNT\" cannot both be set.");
+		}
 	}
 }
