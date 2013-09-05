@@ -14,6 +14,7 @@ import biweekly.property.DateStart;
 import biweekly.property.DateTimeStamp;
 import biweekly.property.Description;
 import biweekly.property.ExceptionDates;
+import biweekly.property.ExceptionRule;
 import biweekly.property.LastModified;
 import biweekly.property.Method;
 import biweekly.property.Organizer;
@@ -884,6 +885,57 @@ public class VJournal extends ICalComponent {
 	 */
 	public void setRequestStatus(RequestStatus requestStatus) {
 		setProperty(RequestStatus.class, requestStatus);
+	}
+
+	/**
+	 * <p>
+	 * Gets the exceptions for the {@link RecurrenceRule} property.
+	 * </p>
+	 * <p>
+	 * Note that this property has been removed from the latest version of the
+	 * iCal specification. Its use should be avoided.
+	 * </p>
+	 * @return the exception rules
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-114">RFC 2445
+	 * p.114-15</a>
+	 */
+	public List<ExceptionRule> getExceptionRules() {
+		return getProperties(ExceptionRule.class);
+	}
+
+	/**
+	 * <p>
+	 * Adds an exception for the {@link RecurrenceRule} property.
+	 * </p>
+	 * <p>
+	 * Note that this property has been removed from the latest version of the
+	 * iCal specification. Its use should be avoided.
+	 * </p>
+	 * @param recur the exception rule to add
+	 * @return the property that was created
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-114">RFC 2445
+	 * p.114-15</a>
+	 */
+	public ExceptionRule addExceptionRule(Recurrence recur) {
+		ExceptionRule prop = (recur == null) ? null : new ExceptionRule(recur);
+		addExceptionRule(prop);
+		return prop;
+	}
+
+	/**
+	 * <p>
+	 * Adds an exception for the {@link RecurrenceRule} property.
+	 * </p>
+	 * <p>
+	 * Note that this property has been removed from the latest version of the
+	 * iCal specification. Its use should be avoided.
+	 * </p>
+	 * @param exceptionRule the exception rule to add
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-114">RFC 2445
+	 * p.114-15</a>
+	 */
+	public void addExceptionRule(ExceptionRule exceptionRule) {
+		addProperty(exceptionRule);
 	}
 
 	@SuppressWarnings("unchecked")
