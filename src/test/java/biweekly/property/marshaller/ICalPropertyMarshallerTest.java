@@ -344,14 +344,6 @@ public class ICalPropertyMarshallerTest {
 		assertWriteXml("<text>value</text>", prop, m);
 	}
 
-	@Test
-	public void writeXml_with_value_parameter() {
-		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		TestProperty prop = new TestProperty("value");
-		prop.getParameters().setValue(ICalDataType.TEXT);
-		assertWriteXml("<text>value</text>", prop, m);
-	}
-
 	@Test(expected = UnsupportedOperationException.class)
 	public void parseXml() {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
