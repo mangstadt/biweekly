@@ -1,5 +1,6 @@
 package biweekly.component;
 
+import java.util.Date;
 import java.util.List;
 
 import biweekly.property.Comment;
@@ -297,5 +298,18 @@ public abstract class Observance extends ICalComponent {
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
 		checkRequiredCardinality(warnings, DateStart.class, TimezoneOffsetTo.class, TimezoneOffsetFrom.class);
+
+		//RFC 5545 p. 167
+		DateStart dateStart = getDateStart();
+		RecurrenceRule rrule = getRecurrenceRule();
+		if (dateStart != null && rrule != null) {
+			Date start = dateStart.getValue();
+			Recurrence recur = rrule.getValue();
+			if (start != null && recur != null) {
+				if (!dateStart.hasTime() && (!recur.getByHour().isEmpty() || !recur.getByMinute().isEmpty() || !recur.getBySecond().isEmpty())) {
+					warnings.add("The BYHOUR, BYMINUTE, and BYSECOND rule parts cannot be specified in the " + RecurrenceRule.class.getSimpleName() + " property when the " + DateStart.class.getSimpleName() + " property contains a date value (as opposed to a date-time value).");
+				}
+			}
+		}
 	}
 }

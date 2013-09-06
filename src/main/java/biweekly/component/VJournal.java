@@ -954,5 +954,17 @@ public class VJournal extends ICalComponent {
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
 			warnings.add("Both " + DateStart.class.getSimpleName() + " and " + RecurrenceId.class.getSimpleName() + " must have the same data type (they must either both be dates or both be datetimes).");
 		}
+
+		//RFC 5545 p. 167
+		RecurrenceRule rrule = getRecurrenceRule();
+		if (dateStart != null && rrule != null) {
+			Date start = dateStart.getValue();
+			Recurrence recur = rrule.getValue();
+			if (start != null && recur != null) {
+				if (!dateStart.hasTime() && (!recur.getByHour().isEmpty() || !recur.getByMinute().isEmpty() || !recur.getBySecond().isEmpty())) {
+					warnings.add("The BYHOUR, BYMINUTE, and BYSECOND rule parts cannot be specified in the " + RecurrenceRule.class.getSimpleName() + " property when the " + DateStart.class.getSimpleName() + " property contains a date value (as opposed to a date-time value).");
+				}
+			}
+		}
 	}
 }
