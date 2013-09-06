@@ -633,11 +633,18 @@ public final class Recurrence {
 		/**
 		 * Adds a non-standard rule part.
 		 * @param name the name
-		 * @param value the value
+		 * @param value the value or null to remove the rule part
 		 * @return this
 		 */
 		public Builder xrule(String name, String value) {
-			this.xrules.put(name.toUpperCase(), value);
+			name = name.toUpperCase();
+
+			if (value == null) {
+				xrules.removeAll(name);
+			} else {
+				xrules.put(name, value);
+			}
+
 			return this;
 		}
 
