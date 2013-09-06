@@ -7,6 +7,7 @@ import static biweekly.util.TestUtils.buildTimezone;
 import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -344,10 +345,43 @@ public class ICalPropertyMarshallerTest {
 		assertWriteXml("<text>value</text>", prop, m);
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
+	@Test
 	public void parseXml() {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		parseXCalProperty("<text>text</text>", m);
+		//@formatter:off
+		Result<TestProperty> result = parseXCalProperty(
+		"<ignore xmlns=\"http://example.com\">ignore-me</ignore>" +
+		"<integer>value</integer>" +
+		"<text>ignore-me</text>",
+		m);
+		//@formatter:on
+
+		TestProperty prop = result.getProperty();
+		assertEquals("value", prop.value);
+		assertEquals(ICalDataType.INTEGER, prop.parsedDataType);
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_no_xcard_element() {
+		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
+		Result<TestProperty> result = parseXCalProperty("<one xmlns=\"http://example.com\">1</one><two xmlns=\"http://example.com\">2</two>", m);
+
+		TestProperty prop = result.getProperty();
+		assertEquals("12", prop.value);
+		assertNull(prop.parsedDataType);
+		assertWarnings(1, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_no_child_elements() {
+		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
+		Result<TestProperty> result = parseXCalProperty("value", m);
+
+		TestProperty prop = result.getProperty();
+		assertEquals("value", prop.value);
+		assertNull(prop.parsedDataType);
+		assertWarnings(1, result.getWarnings());
 	}
 
 	@Test
@@ -365,7 +399,7 @@ public class ICalPropertyMarshallerTest {
 		Result<TestProperty> result = m.parseJson(JCalValue.single("value"), ICalDataType.TEXT, new ICalParameters());
 
 		TestProperty prop = result.getProperty();
-		assertEquals("value", prop.getValue());
+		assertEquals("value", prop.value);
 		assertWarnings(1, result.getWarnings());
 	}
 
@@ -375,7 +409,7 @@ public class ICalPropertyMarshallerTest {
 		Result<TestProperty> result = m.parseJson(JCalValue.multi("value1", "val,;ue2"), ICalDataType.TEXT, new ICalParameters());
 
 		TestProperty prop = result.getProperty();
-		assertEquals("value1,val\\,\\;ue2", prop.getValue());
+		assertEquals("value1,val\\,\\;ue2", prop.value);
 		assertWarnings(1, result.getWarnings());
 	}
 
@@ -385,7 +419,7 @@ public class ICalPropertyMarshallerTest {
 		Result<TestProperty> result = m.parseJson(JCalValue.structured("value1", "val,;ue2"), ICalDataType.TEXT, new ICalParameters());
 
 		TestProperty prop = result.getProperty();
-		assertEquals("value1;val\\,\\;ue2", prop.getValue());
+		assertEquals("value1;val\\,\\;ue2", prop.value);
 		assertWarnings(1, result.getWarnings());
 	}
 
@@ -399,7 +433,7 @@ public class ICalPropertyMarshallerTest {
 		Result<TestProperty> result = m.parseJson(JCalValue.object(map), ICalDataType.TEXT, new ICalParameters());
 
 		TestProperty prop = result.getProperty();
-		assertEquals("a=one;b=two,three\\,four\\;five\\\\six\\=seven", prop.getValue());
+		assertEquals("a=one;b=two,three\\,four\\;five\\\\six\\=seven", prop.value);
 		assertWarnings(1, result.getWarnings());
 	}
 
@@ -433,25 +467,27 @@ public class ICalPropertyMarshallerTest {
 
 		@Override
 		protected String _writeText(TestProperty property) {
-			return property.getValue();
+			return property.value;
 		}
 
 		@Override
 		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 			warnings.add("parseText");
-			return new TestProperty(value);
+			return new TestProperty(value, dataType);
 		}
 	}
 
 	private class TestProperty extends ICalProperty {
-		private String value;
+		public String value;
+		public ICalDataType parsedDataType;
 
 		public TestProperty(String value) {
 			this.value = value;
 		}
 
-		private String getValue() {
-			return value;
+		public TestProperty(String value, ICalDataType parsedDataType) {
+			this.value = value;
+			this.parsedDataType = parsedDataType;
 		}
 	}
 }

@@ -659,8 +659,6 @@ public class XCalDocument {
 			} else {
 				addWarning("Property could not be unmarshalled.  Unmarshalling as an " + Xml.class.getSimpleName() + " property instead: " + e.getMessage(), propertyName, warnings);
 			}
-		} catch (UnsupportedOperationException e) {
-			addWarning("Property class \"" + m.getPropertyClass().getName() + "\" does not support xCal unmarshalling.  Unmarshalling as an " + Xml.class.getSimpleName() + " property instead.", propertyName, warnings);
 		}
 
 		//unmarshal as an XML property

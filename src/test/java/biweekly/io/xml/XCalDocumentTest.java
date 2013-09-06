@@ -492,35 +492,6 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parse_unsupportedOperationException() throws Exception {
-		//@formatter:off
-		String xml =
-		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
-			"<vcalendar>" +
-				"<properties>" +
-					"<m:company xmlns:m=\"http://example.com\">" +
-						"<m:boss>UnsupportedOperationException</m:boss>" +
-					"</m:company>" +
-				"</properties>" +
-			"</vcalendar>" +
-		"</icalendar>";
-		//@formatter:on
-
-		XCalDocument xcal = new XCalDocument(xml);
-		xcal.registerMarshaller(new CompanyMarshaller());
-		ICalendar ical = xcal.parseFirst();
-
-		assertEquals(1, xcal.getParseWarnings().size());
-		assertWarnings(1, xcal.getParseWarnings().get(0));
-
-		assertNull(ical.getProperty(Company.class));
-
-		Xml prop = ical.getProperty(Xml.class);
-		Document expected = XmlUtils.toDocument("<m:company xmlns:m=\"http://example.com\"><m:boss>UnsupportedOperationException</m:boss></m:company>");
-		assertXMLEqual(expected, prop.getValue());
-	}
-
-	@Test
 	public void parse_icalendar_element_is_not_root() throws Exception {
 		//@formatter:off
 		String xml =
@@ -1072,9 +1043,6 @@ public class XCalDocumentTest {
 			}
 			if (boss.equals("don't-parse-me")) {
 				throw new CannotParseException();
-			}
-			if (boss.equals("UnsupportedOperationException")) {
-				return super._parseXml(element, parameters, warnings);
 			}
 			return new Company(boss);
 		}

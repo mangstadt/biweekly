@@ -28,6 +28,7 @@ import biweekly.util.ListMultimap;
 import biweekly.util.StringUtils;
 import biweekly.util.StringUtils.JoinCallback;
 import biweekly.util.StringUtils.JoinMapCallback;
+import biweekly.util.XmlUtils;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -212,8 +213,6 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * property's value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
-	 * @throws UnsupportedOperationException if the marshaller does not support
-	 * xCal unmarshalling
 	 */
 	public final Result<T> parseXml(Element element, ICalParameters parameters) {
 		List<String> warnings = new ArrayList<String>(0);
@@ -353,6 +352,15 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * <p>
 	 * Unmarshals a property from an XML document (xCal).
 	 * </p>
+	 * <p>
+	 * This method should be overridden by child classes that wish to support
+	 * xCal. The default implementation of this method will find the first child
+	 * element with the xCal namespace. The element's name will be used as the
+	 * property's data type and its text content will be passed into the
+	 * {@link #_parseText} method. If no such child element is found, then the
+	 * parent element's text content will be passed into {@link #_parseText} and
+	 * the data type will be null.
+	 * </p>
 	 * @param element the property's XML element
 	 * @param parameters the parsed parameters. These parameters will be
 	 * assigned to the property object once this method returns. Therefore, do
@@ -366,11 +374,31 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * property's value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
-	 * @throws UnsupportedOperationException if the marshaller does not support
-	 * xCal unmarshalling
 	 */
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		throw new UnsupportedOperationException(); //TODO change implementation
+		String value = null;
+		ICalDataType dataType = null;
+		Element rawElement = element.getElement();
+
+		//get the text content of the first child element with the xCard namespace
+		List<Element> children = XmlUtils.toElementList(rawElement.getChildNodes());
+		for (Element child : children) {
+			if (!XCAL_NS.equals(child.getNamespaceURI())) {
+				continue;
+			}
+
+			dataType = ICalDataType.get(child.getLocalName());
+			value = child.getTextContent();
+			break;
+		}
+
+		if (dataType == null) {
+			//get the text content of the property element
+			value = rawElement.getTextContent();
+		}
+
+		value = escape(value);
+		return _parseText(value, dataType, parameters, warnings);
 	}
 
 	/**
@@ -504,6 +532,10 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @return the unescaped text
 	 */
 	protected static String unescape(String text) {
+		if (text == null) {
+			return text;
+		}
+
 		StringBuilder sb = null;
 		boolean escaped = false;
 		for (int i = 0; i < text.length(); i++) {
@@ -557,6 +589,10 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @return the escaped text
 	 */
 	protected static String escape(String text) {
+		if (text == null) {
+			return text;
+		}
+
 		String chars = "\\,;";
 		StringBuilder sb = null;
 		for (int i = 0; i < text.length(); i++) {
