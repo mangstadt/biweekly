@@ -1278,5 +1278,10 @@ public class VTodo extends ICalComponent {
 				}
 			}
 		}
+
+		//RFC 5545 p. 167
+		if (getProperties(RecurrenceRule.class).size() > 1) {
+			warnings.add("There should be only one instance of the " + RecurrenceRule.class.getSimpleName() + " property.");
+		}
 	}
 }

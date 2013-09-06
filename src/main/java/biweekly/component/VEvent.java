@@ -601,7 +601,6 @@ public class VEvent extends ICalComponent {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
 	 * p.122-32</a>
 	 */
-	//TODO optional, "SHOULD NOT" occur more than once (p.53)
 	public RecurrenceRule getRecurrenceRule() {
 		return getProperty(RecurrenceRule.class);
 	}
@@ -1260,6 +1259,11 @@ public class VEvent extends ICalComponent {
 					warnings.add("The BYHOUR, BYMINUTE, and BYSECOND rule parts cannot be specified in the " + RecurrenceRule.class.getSimpleName() + " property when the " + DateStart.class.getSimpleName() + " property contains a date value (as opposed to a date-time value).");
 				}
 			}
+		}
+
+		//RFC 5545 p. 167
+		if (getProperties(RecurrenceRule.class).size() > 1) {
+			warnings.add("There should be only one instance of the " + RecurrenceRule.class.getSimpleName() + " property.");
 		}
 
 		//TODO check for properties which shouldn't be added to VEVENTs
