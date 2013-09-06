@@ -8,9 +8,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.w3c.dom.Element;
+
 import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
+import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RecurrenceProperty;
 import biweekly.util.ICalDateFormatter;
@@ -20,6 +23,7 @@ import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
 import biweekly.util.StringUtils;
 import biweekly.util.StringUtils.JoinMapCallback;
+import biweekly.util.XmlUtils;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -73,7 +77,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 
 	@Override
 	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		ListMultimap<String, String> components = new ListMultimap<String, String>();
+		ListMultimap<String, String> rules = new ListMultimap<String, String>();
 		for (String component : value.split(";")) {
 			String split[] = component.split("=");
 			if (split.length < 2) {
@@ -81,27 +85,28 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 				continue;
 			}
 
-			String name = split[0];
-			String values[] = split[1].split(",");
-			components.putAll(name.toUpperCase(), Arrays.asList(values));
+			String name = split[0].toUpperCase();
+			List<String> values = Arrays.asList(split[1].split(","));
+			rules.putAll(name, values);
 		}
 
 		Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
 
-		parseFreq(components.first("FREQ"), builder, warnings);
-		parseUntil(components.first("UNTIL"), builder, warnings);
-		parseCount(components.first("COUNT"), builder, warnings);
-		parseInterval(components.first("INTERVAL"), builder, warnings);
-		parseBySecond(components.get("BYSECOND"), builder, warnings);
-		parseByMinute(components.get("BYMINUTE"), builder, warnings);
-		parseByHour(components.get("BYHOUR"), builder, warnings);
-		parseByDay(components.get("BYDAY"), builder, warnings);
-		parseByMonthDay(components.get("BYMONTHDAY"), builder, warnings);
-		parseByYearDay(components.get("BYYEARDAY"), builder, warnings);
-		parseByWeekNo(components.get("BYWEEKNO"), builder, warnings);
-		parseByMonth(components.get("BYMONTH"), builder, warnings);
-		parseBySetPos(components.get("BYSETPOS"), builder, warnings);
-		parseWkst(components.first("WKST"), builder, warnings);
+		parseFreq(rules, builder, warnings);
+		parseUntil(rules, builder, warnings);
+		parseCount(rules, builder, warnings);
+		parseInterval(rules, builder, warnings);
+		parseBySecond(rules, builder, warnings);
+		parseByMinute(rules, builder, warnings);
+		parseByHour(rules, builder, warnings);
+		parseByDay(rules, builder, warnings);
+		parseByMonthDay(rules, builder, warnings);
+		parseByYearDay(rules, builder, warnings);
+		parseByWeekNo(rules, builder, warnings);
+		parseByMonth(rules, builder, warnings);
+		parseBySetPos(rules, builder, warnings);
+		parseWkst(rules, builder, warnings);
+		parseXRules(rules, builder, warnings); //must be called last
 
 		return newInstance(builder.build());
 	}
@@ -131,22 +136,34 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 			throw missingXmlElements(defaultDataType);
 		}
 
+		ListMultimap<String, String> rules = new ListMultimap<String, String>();
+		for (Element child : XmlUtils.toElementList(value.getElement().getChildNodes())) {
+			if (!XCalNamespaceContext.XCAL_NS.equals(child.getNamespaceURI())) {
+				continue;
+			}
+
+			String name = child.getLocalName().toUpperCase();
+			String text = child.getTextContent();
+			rules.put(name, text);
+		}
+
 		Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
 
-		parseFreq(value.first("freq"), builder, warnings);
-		parseUntil(value.first("until"), builder, warnings);
-		parseCount(value.first("count"), builder, warnings);
-		parseInterval(value.first("interval"), builder, warnings);
-		parseBySecond(value.all("bysecond"), builder, warnings);
-		parseByMinute(value.all("byminute"), builder, warnings);
-		parseByHour(value.all("byhour"), builder, warnings);
-		parseByDay(value.all("byday"), builder, warnings);
-		parseByMonthDay(value.all("bymonthday"), builder, warnings);
-		parseByYearDay(value.all("byyearday"), builder, warnings);
-		parseByWeekNo(value.all("byweekno"), builder, warnings);
-		parseByMonth(value.all("bymonth"), builder, warnings);
-		parseBySetPos(value.all("bysetpos"), builder, warnings);
-		parseWkst(value.first("wkst"), builder, warnings);
+		parseFreq(rules, builder, warnings);
+		parseUntil(rules, builder, warnings);
+		parseCount(rules, builder, warnings);
+		parseInterval(rules, builder, warnings);
+		parseBySecond(rules, builder, warnings);
+		parseByMinute(rules, builder, warnings);
+		parseByHour(rules, builder, warnings);
+		parseByDay(rules, builder, warnings);
+		parseByMonthDay(rules, builder, warnings);
+		parseByYearDay(rules, builder, warnings);
+		parseByWeekNo(rules, builder, warnings);
+		parseByMonth(rules, builder, warnings);
+		parseBySetPos(rules, builder, warnings);
+		parseWkst(rules, builder, warnings);
+		parseXRules(rules, builder, warnings); //must be called last
 
 		return newInstance(builder.build());
 	}
@@ -161,7 +178,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		ListMultimap<String, Object> components = buildComponents(recur, true);
 
 		//lower-case all the keys
-		ListMultimap<String, Object> object = new ListMultimap<String, Object>();
+		ListMultimap<String, Object> object = new ListMultimap<String, Object>(components.keySet().size());
 		for (Map.Entry<String, List<Object>> entry : components) {
 			String key = entry.getKey().toLowerCase();
 			object.putAll(key, entry.getValue());
@@ -174,21 +191,29 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
 
+		//upper-case the keys
 		ListMultimap<String, String> object = value.getObject();
-		parseFreq(object.first("freq"), builder, warnings);
-		parseUntil(object.first("until"), builder, warnings);
-		parseCount(object.first("count"), builder, warnings);
-		parseInterval(object.first("interval"), builder, warnings);
-		parseBySecond(object.get("bysecond"), builder, warnings);
-		parseByMinute(object.get("byminute"), builder, warnings);
-		parseByHour(object.get("byhour"), builder, warnings);
-		parseByDay(object.get("byday"), builder, warnings);
-		parseByMonthDay(object.get("bymonthday"), builder, warnings);
-		parseByYearDay(object.get("byyearday"), builder, warnings);
-		parseByWeekNo(object.get("byweekno"), builder, warnings);
-		parseByMonth(object.get("bymonth"), builder, warnings);
-		parseBySetPos(object.get("bysetpos"), builder, warnings);
-		parseWkst(object.first("wkst"), builder, warnings);
+		ListMultimap<String, String> rules = new ListMultimap<String, String>(object.keySet().size());
+		for (Map.Entry<String, List<String>> entry : object) {
+			String key = entry.getKey().toUpperCase();
+			rules.putAll(key, entry.getValue());
+		}
+
+		parseFreq(rules, builder, warnings);
+		parseUntil(rules, builder, warnings);
+		parseCount(rules, builder, warnings);
+		parseInterval(rules, builder, warnings);
+		parseBySecond(rules, builder, warnings);
+		parseByMinute(rules, builder, warnings);
+		parseByHour(rules, builder, warnings);
+		parseByDay(rules, builder, warnings);
+		parseByMonthDay(rules, builder, warnings);
+		parseByYearDay(rules, builder, warnings);
+		parseByWeekNo(rules, builder, warnings);
+		parseByMonth(rules, builder, warnings);
+		parseBySetPos(rules, builder, warnings);
+		parseWkst(rules, builder, warnings);
+		parseXRules(rules, builder, warnings); //must be called last
 
 		return newInstance(builder.build());
 	}
@@ -200,11 +225,13 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 	 */
 	protected abstract T newInstance(Recurrence recur);
 
-	private void parseFreq(String value, Recurrence.Builder builder, List<String> warnings) {
-		if (value == null) {
+	private void parseFreq(ListMultimap<String, String> rules, Recurrence.Builder builder, List<String> warnings) {
+		List<String> values = rules.removeAll("FREQ");
+		if (values.isEmpty()) {
 			return;
 		}
 
+		String value = values.get(0);
 		try {
 			builder.frequency(Frequency.valueOf(value.toUpperCase()));
 		} catch (IllegalArgumentException e) {
@@ -212,11 +239,13 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		}
 	}
 
-	private void parseUntil(String value, Recurrence.Builder builder, List<String> warnings) {
-		if (value == null) {
+	private void parseUntil(ListMultimap<String, String> rules, Recurrence.Builder builder, List<String> warnings) {
+		List<String> values = rules.removeAll("UNTIL");
+		if (values.isEmpty()) {
 			return;
 		}
 
+		String value = values.get(0);
 		try {
 			Date date = date(value).parse();
 			boolean hasTime = ICalDateFormatter.dateHasTime(value);
@@ -226,11 +255,13 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		}
 	}
 
-	private void parseCount(String value, Recurrence.Builder builder, List<String> warnings) {
-		if (value == null) {
+	private void parseCount(ListMultimap<String, String> rules, Recurrence.Builder builder, List<String> warnings) {
+		List<String> values = rules.removeAll("COUNT");
+		if (values.isEmpty()) {
 			return;
 		}
 
+		String value = values.get(0);
 		try {
 			builder.count(Integer.valueOf(value));
 		} catch (NumberFormatException e) {
@@ -238,11 +269,13 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		}
 	}
 
-	private void parseInterval(String value, Recurrence.Builder builder, List<String> warnings) {
-		if (value == null) {
+	private void parseInterval(ListMultimap<String, String> rules, Recurrence.Builder builder, List<String> warnings) {
+		List<String> values = rules.removeAll("INTERVAL");
+		if (values.isEmpty()) {
 			return;
 		}
 
+		String value = values.get(0);
 		try {
 			builder.interval(Integer.valueOf(value));
 		} catch (NumberFormatException e) {
@@ -250,33 +283,33 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		}
 	}
 
-	private void parseBySecond(List<String> values, final Recurrence.Builder builder, List<String> warnings) {
-		parseIntegerList("BYSECOND", values, warnings, new ListHandler() {
+	private void parseBySecond(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+		parseIntegerList("BYSECOND", rules.removeAll("BYSECOND"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.bySecond(value);
 			}
 		});
 	}
 
-	private void parseByMinute(List<String> values, final Recurrence.Builder builder, List<String> warnings) {
-		parseIntegerList("BYMINUTE", values, warnings, new ListHandler() {
+	private void parseByMinute(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+		parseIntegerList("BYMINUTE", rules.removeAll("BYMINUTE"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.byMinute(value);
 			}
 		});
 	}
 
-	private void parseByHour(List<String> values, final Recurrence.Builder builder, List<String> warnings) {
-		parseIntegerList("BYHOUR", values, warnings, new ListHandler() {
+	private void parseByHour(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+		parseIntegerList("BYHOUR", rules.removeAll("BYHOUR"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.byHour(value);
 			}
 		});
 	}
 
-	private void parseByDay(List<String> values, Recurrence.Builder builder, List<String> warnings) {
+	private void parseByDay(ListMultimap<String, String> rules, Recurrence.Builder builder, List<String> warnings) {
 		Pattern p = Pattern.compile("^([-+]?\\d+)?(.*)$");
-		for (String value : values) {
+		for (String value : rules.removeAll("BYDAY")) {
 			Matcher m = p.matcher(value);
 			if (!m.find()) {
 				//this should never happen
@@ -299,51 +332,53 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		}
 	}
 
-	private void parseByMonthDay(List<String> values, final Recurrence.Builder builder, List<String> warnings) {
-		parseIntegerList("BYMONTHDAY", values, warnings, new ListHandler() {
+	private void parseByMonthDay(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+		parseIntegerList("BYMONTHDAY", rules.removeAll("BYMONTHDAY"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.byMonthDay(value);
 			}
 		});
 	}
 
-	private void parseByYearDay(List<String> values, final Recurrence.Builder builder, List<String> warnings) {
-		parseIntegerList("BYYEARDAY", values, warnings, new ListHandler() {
+	private void parseByYearDay(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+		parseIntegerList("BYYEARDAY", rules.removeAll("BYYEARDAY"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.byYearDay(value);
 			}
 		});
 	}
 
-	private void parseByWeekNo(List<String> values, final Recurrence.Builder builder, List<String> warnings) {
-		parseIntegerList("BYWEEKNO", values, warnings, new ListHandler() {
+	private void parseByWeekNo(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+		parseIntegerList("BYWEEKNO", rules.removeAll("BYWEEKNO"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.byWeekNo(value);
 			}
 		});
 	}
 
-	private void parseByMonth(List<String> values, final Recurrence.Builder builder, List<String> warnings) {
-		parseIntegerList("BYMONTH", values, warnings, new ListHandler() {
+	private void parseByMonth(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+		parseIntegerList("BYMONTH", rules.removeAll("BYMONTH"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.byMonth(value);
 			}
 		});
 	}
 
-	private void parseBySetPos(List<String> values, final Recurrence.Builder builder, List<String> warnings) {
-		parseIntegerList("BYSETPOS", values, warnings, new ListHandler() {
+	private void parseBySetPos(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+		parseIntegerList("BYSETPOS", rules.removeAll("BYSETPOS"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.bySetPos(value);
 			}
 		});
 	}
 
-	private void parseWkst(String value, Recurrence.Builder builder, List<String> warnings) {
-		if (value == null) {
+	private void parseWkst(ListMultimap<String, String> rules, Recurrence.Builder builder, List<String> warnings) {
+		List<String> values = rules.removeAll("WKST");
+		if (values.isEmpty()) {
 			return;
 		}
 
+		String value = values.get(0);
 		DayOfWeek day = DayOfWeek.valueOfAbbr(value);
 		if (day == null) {
 			warnings.add("Unable to parse WKST (invalid day of the week): " + value);
@@ -351,6 +386,15 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		}
 
 		builder.workweekStarts(day);
+	}
+
+	private void parseXRules(ListMultimap<String, String> rules, Recurrence.Builder builder, List<String> warnings) {
+		for (Map.Entry<String, List<String>> rule : rules) {
+			String name = rule.getKey();
+			for (String value : rule.getValue()) {
+				builder.xrule(name, value);
+			}
+		}
 	}
 
 	private ListMultimap<String, Object> buildComponents(Recurrence recur, boolean extended) {
@@ -399,6 +443,13 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 
 		if (recur.getWorkweekStarts() != null) {
 			components.put("WKST", recur.getWorkweekStarts().getAbbr());
+		}
+
+		for (Map.Entry<String, List<String>> entry : recur.getXRules().entrySet()) {
+			String name = entry.getKey();
+			for (String value : entry.getValue()) {
+				components.put(name, value);
+			}
 		}
 
 		return components;

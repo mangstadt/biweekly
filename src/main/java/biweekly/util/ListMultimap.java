@@ -65,8 +65,16 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 * @param orig the multimap to copy from
 	 */
 	public ListMultimap(ListMultimap<K, V> orig) {
+		this(orig.map);
+	}
+
+	/**
+	 * Creates a copy of an existing map.
+	 * @param orig the map to copy from
+	 */
+	public ListMultimap(Map<K, List<V>> orig) {
 		this();
-		for (Map.Entry<K, List<V>> entry : orig) {
+		for (Map.Entry<K, List<V>> entry : orig.entrySet()) {
 			List<V> values = new ArrayList<V>(entry.getValue());
 			map.put(entry.getKey(), values);
 		}

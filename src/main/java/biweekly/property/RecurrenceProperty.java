@@ -57,5 +57,9 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 		if (value.getUntil() != null && value.getCount() != null) {
 			warnings.add("\"UNTIL\" and \"COUNT\" cannot both be set.");
 		}
+
+		if (!value.getXRules().isEmpty()) {
+			warnings.add("Non-standard rule parts are not allowed in the latest iCal specification.");
+		}
 	}
 }

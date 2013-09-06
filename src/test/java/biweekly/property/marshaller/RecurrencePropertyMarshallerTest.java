@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +90,10 @@ public class RecurrencePropertyMarshallerTest {
 		.byWeekNo(2)
 		.count(5)
 		.interval(10)
-		.workweekStarts(DayOfWeek.TUESDAY);
+		.workweekStarts(DayOfWeek.TUESDAY)
+		.xrule("X-NAME", "one")
+		.xrule("x-name", "two") //converts name to uppercase
+		.xrule("X-RULE", "three");
 		//@formatter:on
 
 		for (DayOfWeek dow : DayOfWeek.values()) {
@@ -115,7 +119,9 @@ public class RecurrencePropertyMarshallerTest {
 		.count(5)
 		.interval(10)
 		.byDay(DayOfWeek.FRIDAY)
-		.workweekStarts(DayOfWeek.TUESDAY);
+		.workweekStarts(DayOfWeek.TUESDAY)
+		.xrule("X-NAME", "one")
+		.xrule("X-RULE", "three");
 		//@formatter:on
 
 		singleValues = new RecurrenceProperty(builder.build());
@@ -142,7 +148,7 @@ public class RecurrencePropertyMarshallerTest {
 		String actual = marshaller.writeText(multipleValues);
 		List<String> split = Arrays.asList(actual.split(";"));
 
-		assertEquals(13, split.size());
+		assertEquals(15, split.size());
 		assertEquals("FREQ=WEEKLY", split.get(0));
 		assertTrue(actual, split.contains("BYYEARDAY=100,101"));
 		assertTrue(actual, split.contains("BYMONTHDAY=1,2"));
@@ -156,6 +162,8 @@ public class RecurrencePropertyMarshallerTest {
 		assertTrue(actual, split.contains("INTERVAL=10"));
 		assertTrue(actual, split.contains("BYDAY=MO,TU,WE,TH,FR,SA,SU,5FR"));
 		assertTrue(actual, split.contains("WKST=TU"));
+		assertTrue(actual, split.contains("X-NAME=one,two"));
+		assertTrue(actual, split.contains("X-RULE=three"));
 	}
 
 	@Test
@@ -163,7 +171,7 @@ public class RecurrencePropertyMarshallerTest {
 		String actual = marshaller.writeText(singleValues);
 		List<String> split = Arrays.asList(actual.split(";"));
 
-		assertEquals(13, split.size());
+		assertEquals(15, split.size());
 		assertEquals("FREQ=WEEKLY", split.get(0));
 		assertTrue(actual, split.contains("BYYEARDAY=100"));
 		assertTrue(actual, split.contains("BYMONTHDAY=1"));
@@ -177,6 +185,8 @@ public class RecurrencePropertyMarshallerTest {
 		assertTrue(actual, split.contains("INTERVAL=10"));
 		assertTrue(actual, split.contains("BYDAY=FR"));
 		assertTrue(actual, split.contains("WKST=TU"));
+		assertTrue(actual, split.contains("X-NAME=one"));
+		assertTrue(actual, split.contains("X-RULE=three"));
 	}
 
 	@Test
@@ -195,7 +205,7 @@ public class RecurrencePropertyMarshallerTest {
 
 	@Test
 	public void parseText() {
-		String value = "FREQ=WEEKLY;COUNT=5;INTERVAL=10;UNTIL=20130611T134302Z;BYSECOND=58,59;BYMINUTE=3,4;BYHOUR=1,2;BYDAY=MO,TU,WE,TH,FR,SA,SU,5FR;BYMONTHDAY=1,2;BYYEARDAY=100,101;BYWEEKNO=1,2;BYMONTH=5,6;BYSETPOS=7,8,9;WKST=TU";
+		String value = "FREQ=WEEKLY;COUNT=5;INTERVAL=10;UNTIL=20130611T134302Z;BYSECOND=58,59;BYMINUTE=3,4;BYHOUR=1,2;BYDAY=MO,TU,WE,TH,FR,SA,SU,5FR;BYMONTHDAY=1,2;BYYEARDAY=100,101;BYWEEKNO=1,2;BYMONTH=5,6;BYSETPOS=7,8,9;WKST=TU;X-NAME=one,two;X-RULE=three";
 		ICalParameters params = new ICalParameters();
 
 		Result<RecurrenceProperty> result = marshaller.parseText(value, ICalDataType.RECUR, params);
@@ -215,6 +225,12 @@ public class RecurrencePropertyMarshallerTest {
 		assertEquals(Arrays.asList(7, 8, 9), prop.getBySetPos());
 		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
 		assertEquals(DayOfWeek.TUESDAY, prop.getWorkweekStarts());
+
+		Map<String, List<String>> expected = new HashMap<String, List<String>>();
+		expected.put("X-NAME", Arrays.asList("one", "two"));
+		expected.put("X-RULE", Arrays.asList("three"));
+		assertEquals(expected, prop.getXRules());
+
 		assertWarnings(0, result.getWarnings());
 	}
 
@@ -302,6 +318,9 @@ public class RecurrencePropertyMarshallerTest {
 			"<bysetpos>8</bysetpos>" +
 			"<bysetpos>9</bysetpos>" +
 			"<wkst>TU</wkst>" +
+			"<x-name>one</x-name>" +
+			"<x-name>two</x-name>" +
+			"<x-rule>three</x-rule>" +
 		"</recur>", multipleValues, marshaller);
 		//@formatter:on
 	}
@@ -324,6 +343,8 @@ public class RecurrencePropertyMarshallerTest {
 			"<bymonth>5</bymonth>" +
 			"<bysetpos>7</bysetpos>" +
 			"<wkst>TU</wkst>" +
+			"<x-name>one</x-name>" +
+			"<x-rule>three</x-rule>" +
 		"</recur>", singleValues, marshaller);
 		//@formatter:on
 	}
@@ -385,6 +406,9 @@ public class RecurrencePropertyMarshallerTest {
 			"<bysetpos>8</bysetpos>" +
 			"<bysetpos>9</bysetpos>" +
 			"<wkst>TU</wkst>" +
+			"<x-name>one</x-name>" +
+			"<x-name>two</x-name>" +
+			"<x-rule>three</x-rule>" +
 		"</recur>", marshaller);
 		//@formatter:on
 
@@ -403,6 +427,12 @@ public class RecurrencePropertyMarshallerTest {
 		assertEquals(Arrays.asList(7, 8, 9), prop.getBySetPos());
 		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
 		assertEquals(DayOfWeek.TUESDAY, prop.getWorkweekStarts());
+
+		Map<String, List<String>> expected = new HashMap<String, List<String>>();
+		expected.put("X-NAME", Arrays.asList("one", "two"));
+		expected.put("X-RULE", Arrays.asList("three"));
+		assertEquals(expected, prop.getXRules());
+
 		assertWarnings(0, result.getWarnings());
 	}
 
@@ -493,6 +523,8 @@ public class RecurrencePropertyMarshallerTest {
 		expected.put("bymonth", new JsonValue(Arrays.asList(new JsonValue(5), new JsonValue(6))));
 		expected.put("bysetpos", new JsonValue(Arrays.asList(new JsonValue(7), new JsonValue(8), new JsonValue(9))));
 		expected.put("wkst", new JsonValue("TU"));
+		expected.put("x-name", new JsonValue(Arrays.asList(new JsonValue("one"), new JsonValue("two"))));
+		expected.put("x-rule", new JsonValue("three"));
 
 		JCalValue actual = marshaller.writeJson(multipleValues);
 		assertEquals(expected, actual.getValues().get(0).getObject());
@@ -514,6 +546,8 @@ public class RecurrencePropertyMarshallerTest {
 		expected.put("bymonth", new JsonValue(5));
 		expected.put("bysetpos", new JsonValue(7));
 		expected.put("wkst", new JsonValue("TU"));
+		expected.put("x-name", new JsonValue("one"));
+		expected.put("x-rule", new JsonValue("three"));
 
 		JCalValue actual = marshaller.writeJson(singleValues);
 		assertEquals(expected, actual.getValues().get(0).getObject());
@@ -572,6 +606,9 @@ public class RecurrencePropertyMarshallerTest {
 		map.put("bysetpos", 8);
 		map.put("bysetpos", 9);
 		map.put("wkst", "TU");
+		map.put("x-name", "one");
+		map.put("x-name", "two");
+		map.put("x-rule", "three");
 		Result<RecurrenceProperty> result = marshaller.parseJson(JCalValue.object(map), ICalDataType.RECUR, new ICalParameters());
 
 		Recurrence prop = result.getProperty().getValue();
@@ -589,6 +626,12 @@ public class RecurrencePropertyMarshallerTest {
 		assertEquals(Arrays.asList(7, 8, 9), prop.getBySetPos());
 		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
 		assertEquals(DayOfWeek.TUESDAY, prop.getWorkweekStarts());
+
+		Map<String, List<String>> expected = new HashMap<String, List<String>>();
+		expected.put("X-NAME", Arrays.asList("one", "two"));
+		expected.put("X-RULE", Arrays.asList("three"));
+		assertEquals(expected, prop.getXRules());
+
 		assertWarnings(0, result.getWarnings());
 	}
 

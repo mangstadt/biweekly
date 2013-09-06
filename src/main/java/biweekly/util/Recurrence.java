@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -69,6 +70,7 @@ public final class Recurrence {
 	private final List<DayOfWeek> byDay;
 	private final List<Integer> byDayPrefixes;
 	private final DayOfWeek workweekStarts;
+	private final Map<String, List<String>> xrules;
 
 	private Recurrence(Builder builder) {
 		frequency = builder.frequency;
@@ -87,6 +89,13 @@ public final class Recurrence {
 		byDay = Collections.unmodifiableList(builder.byDay);
 		byDayPrefixes = Collections.unmodifiableList(builder.byDayPrefixes);
 		workweekStarts = builder.workweekStarts;
+
+		Map<String, List<String>> map = builder.xrules.getMap();
+		for (String key : map.keySet()) {
+			List<String> value = map.get(key);
+			map.put(key, Collections.unmodifiableList(value));
+		}
+		xrules = Collections.unmodifiableMap(map);
 	}
 
 	/**
@@ -220,6 +229,14 @@ public final class Recurrence {
 		return workweekStarts;
 	}
 
+	/**
+	 * Gets the non-standard rule parts.
+	 * @return the non-standard rule parts
+	 */
+	public Map<String, List<String>> getXRules() {
+		return xrules;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -235,6 +252,7 @@ public final class Recurrence {
 		result = prime * result + ((byWeekNo == null) ? 0 : byWeekNo.hashCode());
 		result = prime * result + ((byYearDay == null) ? 0 : byYearDay.hashCode());
 		result = prime * result + ((count == null) ? 0 : count.hashCode());
+		result = prime * result + ((xrules == null) ? 0 : xrules.hashCode());
 		result = prime * result + ((frequency == null) ? 0 : frequency.hashCode());
 		result = prime * result + ((interval == null) ? 0 : interval.hashCode());
 		result = prime * result + ((until == null) ? 0 : until.hashCode());
@@ -306,6 +324,11 @@ public final class Recurrence {
 			if (other.count != null)
 				return false;
 		} else if (!count.equals(other.count))
+			return false;
+		if (xrules == null) {
+			if (other.xrules != null)
+				return false;
+		} else if (!xrules.equals(other.xrules))
 			return false;
 		if (frequency != other.frequency)
 			return false;
@@ -391,6 +414,7 @@ public final class Recurrence {
 		private List<Integer> byMonth;
 		private List<Integer> bySetPos;
 		private DayOfWeek workweekStarts;
+		private ListMultimap<String, String> xrules;
 
 		/**
 		 * Constructs a new builder.
@@ -408,6 +432,7 @@ public final class Recurrence {
 			byWeekNo = new ArrayList<Integer>(0);
 			byMonth = new ArrayList<Integer>(0);
 			bySetPos = new ArrayList<Integer>(0);
+			xrules = new ListMultimap<String, String>(0);
 		}
 
 		/**
@@ -415,22 +440,23 @@ public final class Recurrence {
 		 * @param recur the recurrence object to copy from
 		 */
 		public Builder(Recurrence recur) {
-			this.frequency = recur.frequency;
-			this.interval = recur.interval;
-			this.count = recur.count;
-			this.until = recur.until;
-			this.untilHasTime = recur.untilHasTime;
-			this.bySecond = new ArrayList<Integer>(recur.bySecond);
-			this.byMinute = new ArrayList<Integer>(recur.byMinute);
-			this.byHour = new ArrayList<Integer>(recur.byHour);
-			this.byDay = new ArrayList<DayOfWeek>(recur.byDay);
-			this.byDayPrefixes = new ArrayList<Integer>(recur.byDayPrefixes);
-			this.byMonthDay = new ArrayList<Integer>(recur.byMonthDay);
-			this.byYearDay = new ArrayList<Integer>(recur.byYearDay);
-			this.byWeekNo = new ArrayList<Integer>(recur.byWeekNo);
-			this.byMonth = new ArrayList<Integer>(recur.byMonth);
-			this.bySetPos = new ArrayList<Integer>(recur.bySetPos);
-			this.workweekStarts = recur.workweekStarts;
+			frequency = recur.frequency;
+			interval = recur.interval;
+			count = recur.count;
+			until = recur.until;
+			untilHasTime = recur.untilHasTime;
+			bySecond = new ArrayList<Integer>(recur.bySecond);
+			byMinute = new ArrayList<Integer>(recur.byMinute);
+			byHour = new ArrayList<Integer>(recur.byHour);
+			byDay = new ArrayList<DayOfWeek>(recur.byDay);
+			byDayPrefixes = new ArrayList<Integer>(recur.byDayPrefixes);
+			byMonthDay = new ArrayList<Integer>(recur.byMonthDay);
+			byYearDay = new ArrayList<Integer>(recur.byYearDay);
+			byWeekNo = new ArrayList<Integer>(recur.byWeekNo);
+			byMonth = new ArrayList<Integer>(recur.byMonth);
+			bySetPos = new ArrayList<Integer>(recur.bySetPos);
+			workweekStarts = recur.workweekStarts;
+			xrules = new ListMultimap<String, String>(recur.xrules);
 		}
 
 		/**
@@ -462,7 +488,7 @@ public final class Recurrence {
 		 * @return this
 		 */
 		public Builder until(Date until, boolean hasTime) {
-			if (until == null){
+			if (until == null) {
 				this.until = null;
 				this.untilHasTime = false;
 			} else {
@@ -601,6 +627,17 @@ public final class Recurrence {
 		 */
 		public Builder workweekStarts(DayOfWeek workweekStarts) {
 			this.workweekStarts = workweekStarts;
+			return this;
+		}
+
+		/**
+		 * Adds a non-standard rule part.
+		 * @param name the name
+		 * @param value the value
+		 * @return this
+		 */
+		public Builder xrule(String name, String value) {
+			this.xrules.put(name.toUpperCase(), value);
 			return this;
 		}
 
