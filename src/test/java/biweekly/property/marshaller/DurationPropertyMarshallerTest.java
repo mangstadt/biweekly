@@ -75,7 +75,7 @@ public class DurationPropertyMarshallerTest {
 
 		Result<DurationProperty> result = marshaller.parseText(value, ICalDataType.DURATION, params);
 
-		assertEquals(duration, result.getValue().getValue());
+		assertEquals(duration, result.getProperty().getValue());
 		assertWarnings(0, result.getWarnings());
 	}
 
@@ -103,7 +103,7 @@ public class DurationPropertyMarshallerTest {
 	public void parseXml() {
 		Result<DurationProperty> result = parseXCalProperty("<duration>PT1H30M</duration>", marshaller);
 
-		DurationProperty prop = result.getValue();
+		DurationProperty prop = result.getProperty();
 		assertEquals(duration, prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -138,7 +138,7 @@ public class DurationPropertyMarshallerTest {
 	public void parseJson() {
 		Result<DurationProperty> result = marshaller.parseJson(JCalValue.single("PT1H30M"), ICalDataType.DURATION, new ICalParameters());
 
-		DurationProperty prop = result.getValue();
+		DurationProperty prop = result.getProperty();
 		assertEquals(duration, prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}

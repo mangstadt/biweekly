@@ -73,7 +73,7 @@ public class TextPropertyMarshallerTest {
 
 		Result<TextPropertyImpl> result = marshaller.parseText(value, ICalDataType.TEXT, params);
 
-		TextPropertyImpl prop = result.getValue();
+		TextPropertyImpl prop = result.getProperty();
 		assertEquals("the;text", prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -101,7 +101,7 @@ public class TextPropertyMarshallerTest {
 	public void parseXml() {
 		Result<TextPropertyImpl> result = parseXCalProperty("<text>text</text>", marshaller);
 
-		TextPropertyImpl prop = result.getValue();
+		TextPropertyImpl prop = result.getProperty();
 		assertEquals("text", prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -111,7 +111,7 @@ public class TextPropertyMarshallerTest {
 		TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl(ICalDataType.CAL_ADDRESS);
 		Result<TextPropertyImpl> result = parseXCalProperty("<cal-address>mailto:johndoe@example.com</cal-address>", marshaller);
 
-		TextPropertyImpl prop = result.getValue();
+		TextPropertyImpl prop = result.getProperty();
 		assertEquals("mailto:johndoe@example.com", prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -141,7 +141,7 @@ public class TextPropertyMarshallerTest {
 	public void parseJson() {
 		Result<TextPropertyImpl> result = marshaller.parseJson(JCalValue.single("text"), ICalDataType.TEXT, new ICalParameters());
 
-		TextPropertyImpl prop = result.getValue();
+		TextPropertyImpl prop = result.getProperty();
 		assertEquals("text", prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}

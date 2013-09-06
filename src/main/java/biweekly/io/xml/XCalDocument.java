@@ -645,7 +645,7 @@ public class XCalDocument {
 				addWarning(warning, propertyName, warnings);
 			}
 
-			property = result.getValue();
+			property = result.getProperty();
 		} catch (SkipMeException e) {
 			if (e.getMessage() == null) {
 				addWarning("Property has requested that it be skipped.", propertyName, warnings);
@@ -673,7 +673,7 @@ public class XCalDocument {
 				addWarning(warning, propertyName, warnings);
 			}
 
-			property = result.getValue();
+			property = result.getProperty();
 		}
 
 		return property;

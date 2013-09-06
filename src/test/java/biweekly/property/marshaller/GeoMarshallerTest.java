@@ -88,7 +88,7 @@ public class GeoMarshallerTest {
 
 		Result<Geo> result = marshaller.parseText(value, ICalDataType.FLOAT, params);
 
-		Geo prop = result.getValue();
+		Geo prop = result.getProperty();
 		assertEquals(12.34, prop.getLatitude(), 0.001);
 		assertEquals(56.78, prop.getLongitude(), 0.001);
 		assertWarnings(0, result.getWarnings());
@@ -154,7 +154,7 @@ public class GeoMarshallerTest {
 	public void parseXml() {
 		Result<Geo> result = parseXCalProperty("<latitude>12.34</latitude><longitude>56.78</longitude>", marshaller);
 
-		Geo prop = result.getValue();
+		Geo prop = result.getProperty();
 		assertEquals(12.34, prop.getLatitude(), 0.001);
 		assertEquals(56.78, prop.getLongitude(), 0.001);
 		assertWarnings(0, result.getWarnings());
@@ -225,7 +225,7 @@ public class GeoMarshallerTest {
 	public void parseJson() {
 		Result<Geo> result = marshaller.parseJson(JCalValue.structured("12.34", "56.78"), ICalDataType.FLOAT, new ICalParameters());
 
-		Geo prop = result.getValue();
+		Geo prop = result.getProperty();
 		assertEquals(12.34, prop.getLatitude(), 0.001);
 		assertEquals(56.78, prop.getLongitude(), 0.001);
 		assertWarnings(0, result.getWarnings());
@@ -235,7 +235,7 @@ public class GeoMarshallerTest {
 	public void parseJson_missing_longitude() {
 		Result<Geo> result = marshaller.parseJson(JCalValue.structured("12.34"), ICalDataType.FLOAT, new ICalParameters());
 
-		Geo prop = result.getValue();
+		Geo prop = result.getProperty();
 		assertEquals(12.34, prop.getLatitude(), 0.001);
 		assertNull(prop.getLongitude());
 		assertWarnings(0, result.getWarnings());
@@ -245,7 +245,7 @@ public class GeoMarshallerTest {
 	public void parseJson_missing_both() {
 		Result<Geo> result = marshaller.parseJson(JCalValue.structured(), ICalDataType.FLOAT, new ICalParameters());
 
-		Geo prop = result.getValue();
+		Geo prop = result.getProperty();
 		assertNull(prop.getLatitude());
 		assertNull(prop.getLongitude());
 		assertWarnings(0, result.getWarnings());

@@ -827,22 +827,21 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	}
 
 	/**
-	 * Represents the result of a marshal or unmarshal operation.
+	 * Represents the result of an unmarshal operation.
 	 * @author Michael Angstadt
-	 * @param <T> the marshalled/unmarshalled value (e.g. "String" if a property
-	 * was marshalled)
+	 * @param <T> the unmarshalled property class
 	 */
-	public static class Result<T> {
-		private final T value;
+	public static class Result<T extends ICalProperty> {
+		private final T property;
 		private final List<String> warnings;
 
 		/**
 		 * Creates a new result.
-		 * @param value the value
+		 * @param property the property object
 		 * @param warnings the warnings
 		 */
-		public Result(T value, List<String> warnings) {
-			this.value = value;
+		public Result(T property, List<String> warnings) {
+			this.property = property;
 			this.warnings = warnings;
 		}
 
@@ -855,11 +854,11 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		}
 
 		/**
-		 * Gets the value.
-		 * @return the value
+		 * Gets the property object.
+		 * @return the property object
 		 */
-		public T getValue() {
-			return value;
+		public T getProperty() {
+			return property;
 		}
 	}
 }

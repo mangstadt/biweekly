@@ -120,7 +120,7 @@ public class TriggerMarshallerTest {
 
 		Result<Trigger> result = marshaller.parseText(value, ICalDataType.DATE_TIME, params);
 
-		Trigger prop = result.getValue();
+		Trigger prop = result.getProperty();
 		assertEquals(datetime, prop.getDate());
 		assertNull(prop.getDuration());
 		assertWarnings(0, result.getWarnings());
@@ -133,7 +133,7 @@ public class TriggerMarshallerTest {
 
 		Result<Trigger> result = marshaller.parseText(value, ICalDataType.DURATION, params);
 
-		Trigger prop = result.getValue();
+		Trigger prop = result.getProperty();
 		assertNull(prop.getDate());
 		assertEquals(duration, prop.getDuration());
 		assertWarnings(0, result.getWarnings());
@@ -169,7 +169,7 @@ public class TriggerMarshallerTest {
 	public void parseXml_date() {
 		Result<Trigger> result = parseXCalProperty("<date-time>2013-06-11T13:43:02Z</date-time>", marshaller);
 
-		Trigger prop = result.getValue();
+		Trigger prop = result.getProperty();
 		assertEquals(datetime, prop.getDate());
 		assertNull(prop.getDuration());
 		assertWarnings(0, result.getWarnings());
@@ -179,7 +179,7 @@ public class TriggerMarshallerTest {
 	public void parseXml_duration() {
 		Result<Trigger> result = parseXCalProperty("<duration>PT2H</duration>", marshaller);
 
-		Trigger prop = result.getValue();
+		Trigger prop = result.getProperty();
 		assertNull(prop.getDate());
 		assertEquals(duration, prop.getDuration());
 		assertWarnings(0, result.getWarnings());
@@ -228,7 +228,7 @@ public class TriggerMarshallerTest {
 	public void parseJson_date() {
 		Result<Trigger> result = marshaller.parseJson(JCalValue.single("2013-06-11T13:43:02Z"), ICalDataType.DATE_TIME, new ICalParameters());
 
-		Trigger prop = result.getValue();
+		Trigger prop = result.getProperty();
 		assertEquals(datetime, prop.getDate());
 		assertNull(prop.getDuration());
 		assertWarnings(0, result.getWarnings());
@@ -238,7 +238,7 @@ public class TriggerMarshallerTest {
 	public void parseJson_duration() {
 		Result<Trigger> result = marshaller.parseJson(JCalValue.single("PT2H"), ICalDataType.DURATION, new ICalParameters());
 
-		Trigger prop = result.getValue();
+		Trigger prop = result.getProperty();
 		assertNull(prop.getDate());
 		assertEquals(duration, prop.getDuration());
 		assertWarnings(0, result.getWarnings());

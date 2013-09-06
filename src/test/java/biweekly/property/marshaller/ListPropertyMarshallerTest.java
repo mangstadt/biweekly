@@ -89,7 +89,7 @@ public class ListPropertyMarshallerTest {
 
 		Result<ListPropertyImpl> result = marshaller.parseText(value, ICalDataType.TEXT, params);
 
-		assertEquals(Arrays.asList("one", "two", "three,four"), result.getValue().getValues());
+		assertEquals(Arrays.asList("one", "two", "three,four"), result.getProperty().getValues());
 		assertWarnings(0, result.getWarnings());
 	}
 
@@ -100,7 +100,7 @@ public class ListPropertyMarshallerTest {
 
 		Result<ListPropertyImpl> result = marshaller.parseText(value, ICalDataType.TEXT, params);
 
-		assertEquals(0, result.getValue().getValues().size());
+		assertEquals(0, result.getProperty().getValues().size());
 		assertWarnings(0, result.getWarnings());
 	}
 
@@ -129,7 +129,7 @@ public class ListPropertyMarshallerTest {
 	public void parseXml() {
 		Result<ListPropertyImpl> result = parseXCalProperty("<text>one</text><text>two</text><text>three</text>", marshaller);
 
-		ListPropertyImpl prop = result.getValue();
+		ListPropertyImpl prop = result.getProperty();
 		assertEquals(Arrays.asList("one", "two", "three"), prop.getValues());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -139,7 +139,7 @@ public class ListPropertyMarshallerTest {
 		ListPropertyMarshallerImpl marshaller = new ListPropertyMarshallerImpl(ICalDataType.INTEGER);
 		Result<ListPropertyImpl> result = parseXCalProperty("<integer>1</integer><integer>2</integer><text>ignore</text><integer>3</integer>", marshaller);
 
-		ListPropertyImpl prop = result.getValue();
+		ListPropertyImpl prop = result.getProperty();
 		assertEquals(Arrays.asList("1", "2", "3"), prop.getValues());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -164,7 +164,7 @@ public class ListPropertyMarshallerTest {
 	public void parseJson() {
 		Result<ListPropertyImpl> result = marshaller.parseJson(JCalValue.multi("one", "two", "three"), ICalDataType.TEXT, new ICalParameters());
 
-		ListPropertyImpl prop = result.getValue();
+		ListPropertyImpl prop = result.getProperty();
 		assertEquals(Arrays.asList("one", "two", "three"), prop.getValues());
 		assertWarnings(0, result.getWarnings());
 	}

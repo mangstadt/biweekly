@@ -118,7 +118,7 @@ public class ExceptionDatesMarshallerTest {
 
 		Result<ExceptionDates> result = marshaller.parseText(value, ICalDataType.DATE_TIME, params);
 
-		ExceptionDates prop = result.getValue();
+		ExceptionDates prop = result.getProperty();
 		assertEquals(Arrays.asList(datetime, datetime), prop.getValues());
 		assertTrue(prop.hasTime());
 		assertWarnings(0, result.getWarnings());
@@ -131,7 +131,7 @@ public class ExceptionDatesMarshallerTest {
 
 		Result<ExceptionDates> result = marshaller.parseText(value, ICalDataType.DATE, params);
 
-		ExceptionDates prop = result.getValue();
+		ExceptionDates prop = result.getProperty();
 		assertEquals(Arrays.asList(date, date), prop.getValues());
 		assertFalse(prop.hasTime());
 		assertWarnings(0, result.getWarnings());
@@ -165,7 +165,7 @@ public class ExceptionDatesMarshallerTest {
 	public void parseXml_datetime() {
 		Result<ExceptionDates> result = parseXCalProperty("<date-time>2013-06-11T13:43:02Z</date-time><date-time>2013-06-11T13:43:02Z</date-time>", marshaller);
 
-		ExceptionDates prop = result.getValue();
+		ExceptionDates prop = result.getProperty();
 		assertEquals(Arrays.asList(datetime, datetime), prop.getValues());
 		assertTrue(prop.hasTime());
 		assertWarnings(0, result.getWarnings());
@@ -175,7 +175,7 @@ public class ExceptionDatesMarshallerTest {
 	public void parseXml_date() {
 		Result<ExceptionDates> result = parseXCalProperty("<date>2013-06-11</date><date>2013-06-11</date>", marshaller);
 
-		ExceptionDates prop = result.getValue();
+		ExceptionDates prop = result.getProperty();
 		assertEquals(Arrays.asList(date, date), prop.getValues());
 		assertFalse(prop.hasTime());
 		assertWarnings(0, result.getWarnings());
@@ -185,7 +185,7 @@ public class ExceptionDatesMarshallerTest {
 	public void parseXml_combination() {
 		Result<ExceptionDates> result = parseXCalProperty("<date-time>2013-06-11T13:43:02Z</date-time><date>2013-06-11</date>", marshaller);
 
-		ExceptionDates prop = result.getValue();
+		ExceptionDates prop = result.getProperty();
 		assertEquals(Arrays.asList(datetime, date), prop.getValues());
 		assertTrue(prop.hasTime());
 		assertWarnings(0, result.getWarnings());
@@ -225,7 +225,7 @@ public class ExceptionDatesMarshallerTest {
 	public void parseJson_datetime() {
 		Result<ExceptionDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z", "2013-06-11T13:43:02Z"), ICalDataType.DATE_TIME, new ICalParameters());
 
-		ExceptionDates prop = result.getValue();
+		ExceptionDates prop = result.getProperty();
 		assertEquals(Arrays.asList(datetime, datetime), prop.getValues());
 		assertTrue(prop.hasTime());
 		assertWarnings(0, result.getWarnings());
@@ -235,7 +235,7 @@ public class ExceptionDatesMarshallerTest {
 	public void parseJson_date() {
 		Result<ExceptionDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11", "2013-06-11"), ICalDataType.DATE, new ICalParameters());
 
-		ExceptionDates prop = result.getValue();
+		ExceptionDates prop = result.getProperty();
 		assertEquals(Arrays.asList(date, date), prop.getValues());
 		assertFalse(prop.hasTime());
 		assertWarnings(0, result.getWarnings());

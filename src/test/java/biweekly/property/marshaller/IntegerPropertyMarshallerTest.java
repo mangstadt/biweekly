@@ -75,7 +75,7 @@ public class IntegerPropertyMarshallerTest {
 
 		Result<IntegerProperty> result = marshaller.parseText(value, ICalDataType.INTEGER, params);
 
-		IntegerProperty prop = result.getValue();
+		IntegerProperty prop = result.getProperty();
 		assertIntEquals(5, prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -95,7 +95,7 @@ public class IntegerPropertyMarshallerTest {
 
 		Result<IntegerProperty> result = marshaller.parseText(value, ICalDataType.INTEGER, params);
 
-		IntegerProperty prop = result.getValue();
+		IntegerProperty prop = result.getProperty();
 		assertNull(prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -116,7 +116,7 @@ public class IntegerPropertyMarshallerTest {
 	public void parseXml() {
 		Result<IntegerProperty> result = parseXCalProperty("<integer>5</integer>", marshaller);
 
-		IntegerProperty prop = result.getValue();
+		IntegerProperty prop = result.getProperty();
 		assertIntEquals(5, prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -151,7 +151,7 @@ public class IntegerPropertyMarshallerTest {
 	public void parseJson() {
 		Result<IntegerProperty> result = marshaller.parseJson(JCalValue.single(5), ICalDataType.INTEGER, new ICalParameters());
 
-		IntegerProperty prop = result.getValue();
+		IntegerProperty prop = result.getProperty();
 		assertIntEquals(5, prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}

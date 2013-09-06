@@ -334,7 +334,7 @@ public class ICalPropertyMarshallerTest {
 		ICalPropertyMarshaller.Result<TestProperty> result = m.parseText("value", ICalDataType.TEXT, params);
 
 		assertEquals(Arrays.asList("parseText"), result.getWarnings());
-		assertTrue(params == result.getValue().getParameters());
+		assertTrue(params == result.getProperty().getParameters());
 	}
 
 	@Test
@@ -364,7 +364,7 @@ public class ICalPropertyMarshallerTest {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
 		Result<TestProperty> result = m.parseJson(JCalValue.single("value"), ICalDataType.TEXT, new ICalParameters());
 
-		TestProperty prop = result.getValue();
+		TestProperty prop = result.getProperty();
 		assertEquals("value", prop.getValue());
 		assertWarnings(1, result.getWarnings());
 	}
@@ -374,7 +374,7 @@ public class ICalPropertyMarshallerTest {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
 		Result<TestProperty> result = m.parseJson(JCalValue.multi("value1", "val,;ue2"), ICalDataType.TEXT, new ICalParameters());
 
-		TestProperty prop = result.getValue();
+		TestProperty prop = result.getProperty();
 		assertEquals("value1,val\\,\\;ue2", prop.getValue());
 		assertWarnings(1, result.getWarnings());
 	}
@@ -384,7 +384,7 @@ public class ICalPropertyMarshallerTest {
 		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
 		Result<TestProperty> result = m.parseJson(JCalValue.structured("value1", "val,;ue2"), ICalDataType.TEXT, new ICalParameters());
 
-		TestProperty prop = result.getValue();
+		TestProperty prop = result.getProperty();
 		assertEquals("value1;val\\,\\;ue2", prop.getValue());
 		assertWarnings(1, result.getWarnings());
 	}
@@ -398,7 +398,7 @@ public class ICalPropertyMarshallerTest {
 		map.put("b", "three");
 		Result<TestProperty> result = m.parseJson(JCalValue.object(map), ICalDataType.TEXT, new ICalParameters());
 
-		TestProperty prop = result.getValue();
+		TestProperty prop = result.getProperty();
 		assertEquals("a=one;b=two,three", prop.getValue());
 		assertWarnings(1, result.getWarnings());
 	}

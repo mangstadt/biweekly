@@ -228,7 +228,7 @@ public class JCalReader implements Closeable {
 					addWarning(warning, propertyName);
 				}
 
-				property = result.getValue();
+				property = result.getProperty();
 			} catch (SkipMeException e) {
 				if (e.getMessage() == null) {
 					addWarning("Property has requested that it be skipped.", propertyName);
@@ -240,7 +240,7 @@ public class JCalReader implements Closeable {
 				for (String warning : result.getWarnings()) {
 					addWarning(warning, propertyName);
 				}
-				property = result.getValue();
+				property = result.getProperty();
 
 				String valueStr = ((RawProperty) property).getValue();
 				if (e.getMessage() == null) {

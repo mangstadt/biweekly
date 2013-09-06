@@ -67,7 +67,7 @@ public class XmlMarshallerTest {
 
 		Document expected = XmlUtils.toDocument(value);
 
-		Xml prop = result.getValue();
+		Xml prop = result.getProperty();
 		assertXMLEqual(expected, prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -102,7 +102,7 @@ public class XmlMarshallerTest {
 		Result<Xml> result = marshaller.parseXml(XmlUtils.getRootElement(doc), parameters);
 
 		Document expected = XmlUtils.toDocument("<element xmlns=\"http://example.com\"/>");
-		Xml prop = result.getValue();
+		Xml prop = result.getProperty();
 		assertXMLEqual(expected, prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -129,7 +129,7 @@ public class XmlMarshallerTest {
 		Result<Xml> result = marshaller.parseJson(JCalValue.single(xml), ICalDataType.TEXT, new ICalParameters());
 
 		Document expected = XmlUtils.toDocument(xml);
-		Xml prop = result.getValue();
+		Xml prop = result.getProperty();
 		assertXMLEqual(expected, prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}

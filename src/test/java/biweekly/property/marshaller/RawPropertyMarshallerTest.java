@@ -70,7 +70,7 @@ public class RawPropertyMarshallerTest {
 
 		Result<RawProperty> result = marshaller.parseText(value, null, params);
 
-		assertEquals("value", result.getValue().getValue());
+		assertEquals("value", result.getProperty().getValue());
 		assertWarnings(0, result.getWarnings());
 	}
 
@@ -78,7 +78,7 @@ public class RawPropertyMarshallerTest {
 	public void parseXml() {
 		Result<RawProperty> result = parseXCalProperty("<text>text</text>", marshaller);
 
-		RawProperty prop = result.getValue();
+		RawProperty prop = result.getProperty();
 		assertEquals("text", prop.getValue());
 		assertEquals(ICalDataType.TEXT, prop.getDataType());
 		assertWarnings(0, result.getWarnings());
@@ -88,7 +88,7 @@ public class RawPropertyMarshallerTest {
 	public void parseXml_unknown_tag() {
 		Result<RawProperty> result = parseXCalProperty("<foo>text</foo>", marshaller);
 
-		RawProperty prop = result.getValue();
+		RawProperty prop = result.getProperty();
 		assertEquals("text", prop.getValue());
 		assertNull(prop.getParameters().getValue());
 		assertWarnings(0, result.getWarnings());

@@ -286,7 +286,7 @@ public class ICalReader implements Closeable {
 					addWarning(warning, name);
 				}
 
-				property = result.getValue();
+				property = result.getProperty();
 			} catch (SkipMeException e) {
 				if (e.getMessage() == null) {
 					addWarning("Property has requested that it be skipped.", name);

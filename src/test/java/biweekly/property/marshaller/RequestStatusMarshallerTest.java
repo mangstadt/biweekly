@@ -93,7 +93,7 @@ public class RequestStatusMarshallerTest {
 
 		String value = "1.2.3;description\\;here;data\\;here";
 		Result<RequestStatus> result = marshaller.parseText(value, ICalDataType.TEXT, params);
-		RequestStatus prop = result.getValue();
+		RequestStatus prop = result.getProperty();
 		assertEquals("1.2.3", prop.getStatusCode());
 		assertEquals("description;here", prop.getDescription());
 		assertEquals("data;here", prop.getExceptionText());
@@ -101,7 +101,7 @@ public class RequestStatusMarshallerTest {
 
 		value = "1.2.3;description\\;here";
 		result = marshaller.parseText(value, ICalDataType.TEXT, params);
-		prop = result.getValue();
+		prop = result.getProperty();
 		assertEquals("1.2.3", prop.getStatusCode());
 		assertEquals("description;here", prop.getDescription());
 		assertEquals(null, prop.getExceptionText());
@@ -109,7 +109,7 @@ public class RequestStatusMarshallerTest {
 
 		value = "1.2.3";
 		result = marshaller.parseText(value, ICalDataType.TEXT, params);
-		prop = result.getValue();
+		prop = result.getProperty();
 		assertEquals("1.2.3", prop.getStatusCode());
 		assertEquals(null, prop.getDescription());
 		assertEquals(null, prop.getExceptionText());
@@ -117,7 +117,7 @@ public class RequestStatusMarshallerTest {
 
 		value = "";
 		result = marshaller.parseText(value, ICalDataType.TEXT, params);
-		prop = result.getValue();
+		prop = result.getProperty();
 		assertEquals("", prop.getStatusCode());
 		assertEquals(null, prop.getDescription());
 		assertEquals(null, prop.getExceptionText());
@@ -136,7 +136,7 @@ public class RequestStatusMarshallerTest {
 	public void parseXml() {
 		Result<RequestStatus> result = parseXCalProperty("<code>1.2.3</code><description>description</description><data>data</data>", marshaller);
 
-		RequestStatus prop = result.getValue();
+		RequestStatus prop = result.getProperty();
 		assertEquals("1.2.3", prop.getStatusCode());
 		assertEquals("description", prop.getDescription());
 		assertEquals("data", prop.getExceptionText());
@@ -180,7 +180,7 @@ public class RequestStatusMarshallerTest {
 	public void parseJson() {
 		Result<RequestStatus> result = marshaller.parseJson(JCalValue.structured("1.2.3", "description", "data"), ICalDataType.TEXT, new ICalParameters());
 
-		RequestStatus prop = result.getValue();
+		RequestStatus prop = result.getProperty();
 		assertEquals("1.2.3", prop.getStatusCode());
 		assertEquals("description", prop.getDescription());
 		assertEquals("data", prop.getExceptionText());

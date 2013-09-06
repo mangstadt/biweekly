@@ -118,7 +118,7 @@ public class FreeBusyMarshallerTest {
 
 		Result<FreeBusy> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
 
-		Iterator<Period> it = result.getValue().getValues().iterator();
+		Iterator<Period> it = result.getProperty().getValues().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -142,7 +142,7 @@ public class FreeBusyMarshallerTest {
 
 		Result<FreeBusy> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
 
-		Iterator<Period> it = result.getValue().getValues().iterator();
+		Iterator<Period> it = result.getProperty().getValues().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -161,7 +161,7 @@ public class FreeBusyMarshallerTest {
 
 		Result<FreeBusy> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
 
-		Iterator<Period> it = result.getValue().getValues().iterator();
+		Iterator<Period> it = result.getProperty().getValues().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -180,7 +180,7 @@ public class FreeBusyMarshallerTest {
 
 		Result<FreeBusy> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
 
-		Iterator<Period> it = result.getValue().getValues().iterator();
+		Iterator<Period> it = result.getProperty().getValues().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -199,7 +199,7 @@ public class FreeBusyMarshallerTest {
 
 		Result<FreeBusy> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
 
-		Iterator<Period> it = result.getValue().getValues().iterator();
+		Iterator<Period> it = result.getProperty().getValues().iterator();
 
 		assertFalse(it.hasNext());
 
@@ -244,7 +244,7 @@ public class FreeBusyMarshallerTest {
 		"</period>", marshaller);
 		//@formatter:on
 
-		Iterator<Period> it = result.getValue().getValues().iterator();
+		Iterator<Period> it = result.getProperty().getValues().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -275,7 +275,7 @@ public class FreeBusyMarshallerTest {
 		"</period>", marshaller);
 		//@formatter:on
 
-		Iterator<Period> it = result.getValue().getValues().iterator();
+		Iterator<Period> it = result.getProperty().getValues().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -301,7 +301,7 @@ public class FreeBusyMarshallerTest {
 		"</period>", marshaller);
 		//@formatter:on
 
-		Iterator<Period> it = result.getValue().getValues().iterator();
+		Iterator<Period> it = result.getProperty().getValues().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -327,7 +327,7 @@ public class FreeBusyMarshallerTest {
 		"</period>", marshaller);
 		//@formatter:on
 
-		Iterator<Period> it = result.getValue().getValues().iterator();
+		Iterator<Period> it = result.getProperty().getValues().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -366,7 +366,7 @@ public class FreeBusyMarshallerTest {
 	public void parseJson() {
 		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/PT2H"), ICalDataType.PERIOD, new ICalParameters());
 
-		Iterator<Period> it = result.getValue().getValues().iterator();
+		Iterator<Period> it = result.getProperty().getValues().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -387,7 +387,7 @@ public class FreeBusyMarshallerTest {
 	public void parseJson_invalid_start_date() {
 		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "invalid/PT2H"), ICalDataType.PERIOD, new ICalParameters());
 
-		Iterator<Period> it = result.getValue().getValues().iterator();
+		Iterator<Period> it = result.getProperty().getValues().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -403,7 +403,7 @@ public class FreeBusyMarshallerTest {
 	public void parseJson_invalid_end_date() {
 		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/invalid", "2013-06-11T13:43:02Z/PT2H"), ICalDataType.PERIOD, new ICalParameters());
 
-		Iterator<Period> it = result.getValue().getValues().iterator();
+		Iterator<Period> it = result.getProperty().getValues().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -419,7 +419,7 @@ public class FreeBusyMarshallerTest {
 	public void parseJson_invalid_duration() {
 		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/invalid"), ICalDataType.PERIOD, new ICalParameters());
 
-		Iterator<Period> it = result.getValue().getValues().iterator();
+		Iterator<Period> it = result.getProperty().getValues().iterator();
 
 		Period period = it.next();
 		assertEquals(start, period.getStartDate());
@@ -435,7 +435,7 @@ public class FreeBusyMarshallerTest {
 	public void parseJson_empty() {
 		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi(), ICalDataType.PERIOD, new ICalParameters());
 
-		Iterator<Period> it = result.getValue().getValues().iterator();
+		Iterator<Period> it = result.getProperty().getValues().iterator();
 
 		assertFalse(it.hasNext());
 

@@ -83,7 +83,7 @@ public class VersionMarshallerTest {
 
 		Result<Version> result = marshaller.parseText(value, ICalDataType.TEXT, params);
 
-		Version prop = result.getValue();
+		Version prop = result.getProperty();
 		assertEquals("1.0", prop.getMinVersion());
 		assertEquals("2.0", prop.getMaxVersion());
 		assertWarnings(0, result.getWarnings());
@@ -96,7 +96,7 @@ public class VersionMarshallerTest {
 
 		Result<Version> result = marshaller.parseText(value, ICalDataType.TEXT, params);
 
-		Version prop = result.getValue();
+		Version prop = result.getProperty();
 		assertNull(prop.getMinVersion());
 		assertEquals("2.0", prop.getMaxVersion());
 		assertWarnings(0, result.getWarnings());
@@ -112,7 +112,7 @@ public class VersionMarshallerTest {
 	public void parseXml() {
 		Result<Version> result = parseXCalProperty("<text>2.0</text>", marshaller);
 
-		Version prop = result.getValue();
+		Version prop = result.getProperty();
 		assertNull(prop.getMinVersion());
 		assertEquals("2.0", prop.getMaxVersion());
 		assertWarnings(0, result.getWarnings());
@@ -135,7 +135,7 @@ public class VersionMarshallerTest {
 	public void parseJson() {
 		Result<Version> result = marshaller.parseJson(JCalValue.single("2.0"), ICalDataType.TEXT, new ICalParameters());
 
-		Version prop = result.getValue();
+		Version prop = result.getProperty();
 		assertNull(prop.getMinVersion());
 		assertEquals("2.0", prop.getMaxVersion());
 		assertWarnings(0, result.getWarnings());

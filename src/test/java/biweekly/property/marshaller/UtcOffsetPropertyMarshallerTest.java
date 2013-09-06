@@ -81,7 +81,7 @@ public class UtcOffsetPropertyMarshallerTest {
 
 		Result<UtcOffsetPropertyImpl> result = marshaller.parseText(value, ICalDataType.UTC_OFFSET, params);
 
-		UtcOffsetProperty prop = result.getValue();
+		UtcOffsetProperty prop = result.getProperty();
 		assertIntEquals(1, prop.getHourOffset());
 		assertIntEquals(30, prop.getMinuteOffset());
 		assertWarnings(0, result.getWarnings());
@@ -111,7 +111,7 @@ public class UtcOffsetPropertyMarshallerTest {
 	public void parseXml() {
 		Result<UtcOffsetPropertyImpl> result = parseXCalProperty("<utc-offset>+01:30</utc-offset>", marshaller);
 
-		UtcOffsetPropertyImpl prop = result.getValue();
+		UtcOffsetPropertyImpl prop = result.getProperty();
 		assertIntEquals(1, prop.getHourOffset());
 		assertIntEquals(30, prop.getMinuteOffset());
 		assertWarnings(0, result.getWarnings());
@@ -147,7 +147,7 @@ public class UtcOffsetPropertyMarshallerTest {
 	public void parseJson() {
 		Result<UtcOffsetPropertyImpl> result = marshaller.parseJson(JCalValue.single("+01:30"), ICalDataType.UTC_OFFSET, new ICalParameters());
 
-		UtcOffsetPropertyImpl prop = result.getValue();
+		UtcOffsetPropertyImpl prop = result.getProperty();
 		assertIntEquals(1, prop.getHourOffset());
 		assertIntEquals(30, prop.getMinuteOffset());
 		assertWarnings(0, result.getWarnings());

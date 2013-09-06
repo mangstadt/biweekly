@@ -89,7 +89,7 @@ public class DateTimePropertyMarshallerTest {
 
 		Result<DateTimePropertyImpl> result = marshaller.parseText(value, ICalDataType.DATE_TIME, params);
 
-		DateTimePropertyImpl prop = result.getValue();
+		DateTimePropertyImpl prop = result.getProperty();
 		assertEquals(datetime, prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -118,7 +118,7 @@ public class DateTimePropertyMarshallerTest {
 	public void parseXml() {
 		Result<DateTimePropertyImpl> result = parseXCalProperty("<date-time>2013-06-11T13:43:02Z</date-time>", marshaller);
 
-		DateTimePropertyImpl prop = result.getValue();
+		DateTimePropertyImpl prop = result.getProperty();
 		assertEquals(datetime, prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}
@@ -153,7 +153,7 @@ public class DateTimePropertyMarshallerTest {
 	public void parseJson() {
 		Result<DateTimePropertyImpl> result = marshaller.parseJson(JCalValue.single("2013-06-11T13:43:02Z"), ICalDataType.DATE_TIME, new ICalParameters());
 
-		DateTimePropertyImpl prop = result.getValue();
+		DateTimePropertyImpl prop = result.getProperty();
 		assertEquals(datetime, prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}

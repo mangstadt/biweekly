@@ -200,7 +200,7 @@ public class RecurrencePropertyMarshallerTest {
 
 		Result<RecurrenceProperty> result = marshaller.parseText(value, ICalDataType.RECUR, params);
 
-		Recurrence prop = result.getValue().getValue();
+		Recurrence prop = result.getProperty().getValue();
 		assertEquals(Frequency.WEEKLY, prop.getFrequency());
 		assertIntEquals(5, prop.getCount());
 		assertIntEquals(10, prop.getInterval());
@@ -225,7 +225,7 @@ public class RecurrencePropertyMarshallerTest {
 
 		Result<RecurrenceProperty> result = marshaller.parseText(value, ICalDataType.RECUR, params);
 
-		Recurrence prop = result.getValue().getValue();
+		Recurrence prop = result.getProperty().getValue();
 		assertNull(prop.getFrequency());
 		assertNull(prop.getCount());
 		assertNull(prop.getInterval());
@@ -250,7 +250,7 @@ public class RecurrencePropertyMarshallerTest {
 
 		Result<RecurrenceProperty> result = marshaller.parseText(value, ICalDataType.RECUR, params);
 
-		Recurrence prop = result.getValue().getValue();
+		Recurrence prop = result.getProperty().getValue();
 		assertEquals(Frequency.WEEKLY, prop.getFrequency());
 		assertIntEquals(5, prop.getCount());
 		assertNull(prop.getInterval());
@@ -388,7 +388,7 @@ public class RecurrencePropertyMarshallerTest {
 		"</recur>", marshaller);
 		//@formatter:on
 
-		Recurrence prop = result.getValue().getValue();
+		Recurrence prop = result.getProperty().getValue();
 		assertEquals(Frequency.WEEKLY, prop.getFrequency());
 		assertIntEquals(5, prop.getCount());
 		assertIntEquals(10, prop.getInterval());
@@ -454,7 +454,7 @@ public class RecurrencePropertyMarshallerTest {
 		"</recur>", marshaller);
 		//@formatter:on
 
-		Recurrence prop = result.getValue().getValue();
+		Recurrence prop = result.getProperty().getValue();
 		assertNull(prop.getFrequency());
 		assertNull(prop.getCount());
 		assertNull(prop.getInterval());
@@ -574,7 +574,7 @@ public class RecurrencePropertyMarshallerTest {
 		map.put("wkst", "TU");
 		Result<RecurrenceProperty> result = marshaller.parseJson(JCalValue.object(map), ICalDataType.RECUR, new ICalParameters());
 
-		Recurrence prop = result.getValue().getValue();
+		Recurrence prop = result.getProperty().getValue();
 		assertEquals(Frequency.WEEKLY, prop.getFrequency());
 		assertIntEquals(5, prop.getCount());
 		assertIntEquals(10, prop.getInterval());
@@ -637,7 +637,7 @@ public class RecurrencePropertyMarshallerTest {
 		map.put("wkst", "k");
 		Result<RecurrenceProperty> result = marshaller.parseJson(JCalValue.object(map), ICalDataType.RECUR, new ICalParameters());
 
-		Recurrence prop = result.getValue().getValue();
+		Recurrence prop = result.getProperty().getValue();
 		assertNull(prop.getFrequency());
 		assertNull(prop.getCount());
 		assertNull(prop.getInterval());
