@@ -78,25 +78,25 @@ public class DateOrDateTimePropertyMarshallerTest {
 	@Test
 	public void getDataType_datetime() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(datetime, true);
-		assertEquals(ICalDataType.DATE_TIME, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.DATE_TIME, marshaller.dataType(prop));
 	}
 
 	@Test
 	public void getDataType_date() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(datetime, false);
-		assertEquals(ICalDataType.DATE, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.DATE, marshaller.dataType(prop));
 	}
 
 	@Test
 	public void getDataType_components() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(components);
-		assertEquals(ICalDataType.DATE_TIME, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.DATE_TIME, marshaller.dataType(prop));
 	}
 
 	@Test
 	public void getDataType_null_value() {
 		DateOrDateTimePropertyImpl prop = new DateOrDateTimePropertyImpl(null, false);
-		assertEquals(ICalDataType.DATE_TIME, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.DATE_TIME, marshaller.dataType(prop));
 	}
 
 	@Test

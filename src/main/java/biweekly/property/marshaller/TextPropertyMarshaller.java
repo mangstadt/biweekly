@@ -60,7 +60,7 @@ public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICa
 
 	@Override
 	protected void _writeXml(T property, XCalElement element) {
-		element.append(getDataType(property), property.getValue());
+		element.append(dataType(property), property.getValue());
 	}
 
 	@Override

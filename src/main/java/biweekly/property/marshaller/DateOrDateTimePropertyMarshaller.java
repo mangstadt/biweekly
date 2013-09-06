@@ -47,7 +47,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 	}
 
 	@Override
-	protected ICalDataType _getDataType(T property) {
+	protected ICalDataType _dataType(T property) {
 		return (property.getRawComponents() != null || property.getValue() == null || property.hasTime()) ? ICalDataType.DATE_TIME : ICalDataType.DATE;
 	}
 
@@ -86,7 +86,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 		} else {
 			dateStr = date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).extended(true).write();
 		}
-		element.append(getDataType(property), dateStr);
+		element.append(dataType(property), dateStr);
 	}
 
 	@Override

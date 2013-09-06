@@ -46,7 +46,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	}
 
 	@Override
-	protected ICalDataType _getDataType(Trigger property) {
+	protected ICalDataType _dataType(Trigger property) {
 		return (property.getDate() == null) ? ICalDataType.DURATION : ICalDataType.DATE_TIME;
 	}
 

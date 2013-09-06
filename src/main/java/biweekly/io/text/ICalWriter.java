@@ -318,7 +318,7 @@ public class ICalWriter implements Closeable {
 			}
 
 			//set the data type
-			ICalDataType dataType = pm.getDataType(property);
+			ICalDataType dataType = pm.dataType(property);
 			if (dataType != null && dataType != pm.getDefaultDataType()) {
 				//only add a VALUE parameter if the data type is (1) not "unknown" and (2) different from the property's default data type
 				parameters.setValue(dataType);

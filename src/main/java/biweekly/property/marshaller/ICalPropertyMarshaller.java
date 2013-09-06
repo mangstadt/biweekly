@@ -141,8 +141,8 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @param property the property
 	 * @return the data type or null if unknown
 	 */
-	public final ICalDataType getDataType(T property) {
-		return _getDataType(property);
+	public final ICalDataType dataType(T property) {
+		return _dataType(property);
 	}
 
 	/**
@@ -251,7 +251,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @param property the property
 	 * @return the data type or null if unknown
 	 */
-	protected ICalDataType _getDataType(T property) {
+	protected ICalDataType _dataType(T property) {
 		return defaultDataType;
 	}
 
@@ -273,7 +273,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 */
 	protected void _writeXml(T property, XCalElement element) {
 		String value = writeText(property);
-		ICalDataType dataType = getDataType(property);
+		ICalDataType dataType = dataType(property);
 		element.append(dataType, value);
 	}
 

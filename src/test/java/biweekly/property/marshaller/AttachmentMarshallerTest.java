@@ -73,13 +73,13 @@ public class AttachmentMarshallerTest {
 	@Test
 	public void getDataType_uri() {
 		Attachment prop = new Attachment("image/png", "http://example.com/image.png");
-		assertEquals(ICalDataType.URI, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.URI, marshaller.dataType(prop));
 	}
 
 	@Test
 	public void getDataType_data() {
 		Attachment prop = new Attachment("image/png", "data".getBytes());
-		assertEquals(ICalDataType.BINARY, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.BINARY, marshaller.dataType(prop));
 	}
 
 	@Test

@@ -74,13 +74,13 @@ public class TriggerMarshallerTest {
 	@Test
 	public void getDataType_date() {
 		Trigger prop = new Trigger(datetime);
-		assertEquals(ICalDataType.DATE_TIME, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.DATE_TIME, marshaller.dataType(prop));
 	}
 
 	@Test
 	public void getDataType_duration() {
 		Trigger prop = new Trigger(duration, Related.START);
-		assertEquals(ICalDataType.DURATION, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.DURATION, marshaller.dataType(prop));
 	}
 
 	@Test

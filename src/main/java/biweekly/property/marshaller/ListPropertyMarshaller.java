@@ -67,7 +67,7 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 	protected void _writeXml(T property, XCalElement element) {
 		for (V value : property.getValues()) {
 			String valueStr = writeValue(property, value);
-			element.append(getDataType(property), valueStr);
+			element.append(dataType(property), valueStr);
 		}
 	}
 

@@ -60,7 +60,7 @@ public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationP
 	protected void _writeXml(DurationProperty property, XCalElement element) {
 		Duration value = property.getValue();
 		if (value != null) {
-			element.append(getDataType(property), value.toString());
+			element.append(dataType(property), value.toString());
 		}
 	}
 

@@ -239,7 +239,7 @@ public class JCalWriter implements Closeable {
 			}
 
 			//get the data type
-			ICalDataType dataType = propMarshaller.getDataType(property);
+			ICalDataType dataType = propMarshaller.dataType(property);
 
 			//write property
 			writer.writeProperty(propertyName, parameters, dataType, value);

@@ -54,7 +54,7 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	}
 
 	@Override
-	protected ICalDataType _getDataType(Attachment property) {
+	protected ICalDataType _dataType(Attachment property) {
 		if (property.getUri() != null) {
 			return ICalDataType.URI;
 		}

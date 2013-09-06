@@ -77,7 +77,7 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 			minute = 0;
 		}
 
-		element.append(getDataType(property), ICalDateFormatter.formatTimeZone(hour, minute, true));
+		element.append(dataType(property), ICalDateFormatter.formatTimeZone(hour, minute, true));
 	}
 
 	@Override

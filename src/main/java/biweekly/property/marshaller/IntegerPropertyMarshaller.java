@@ -59,7 +59,7 @@ public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> exten
 	protected void _writeXml(T property, XCalElement element) {
 		Integer value = property.getValue();
 		if (value != null) {
-			element.append(getDataType(property), value.toString());
+			element.append(dataType(property), value.toString());
 		}
 	}
 

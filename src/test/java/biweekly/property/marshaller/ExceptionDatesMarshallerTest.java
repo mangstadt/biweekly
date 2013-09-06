@@ -78,13 +78,13 @@ public class ExceptionDatesMarshallerTest {
 	@Test
 	public void getDataType_datetime() {
 		ExceptionDates prop = new ExceptionDates(true);
-		assertEquals(ICalDataType.DATE_TIME, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.DATE_TIME, marshaller.dataType(prop));
 	}
 
 	@Test
 	public void getDataType_date() {
 		ExceptionDates prop = new ExceptionDates(false);
-		assertEquals(ICalDataType.DATE, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.DATE, marshaller.dataType(prop));
 	}
 
 	@Test

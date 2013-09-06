@@ -767,7 +767,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected ICalDataType _getDataType(TestProperty property) {
+		protected ICalDataType _dataType(TestProperty property) {
 			if (property.getValue().matches("\\d+")) {
 				return ICalDataType.INTEGER;
 			}

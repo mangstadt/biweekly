@@ -108,7 +108,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 
 	@Override
 	protected void _writeXml(T property, XCalElement element) {
-		XCalElement recurElement = element.append(getDataType(property));
+		XCalElement recurElement = element.append(dataType(property));
 
 		Recurrence recur = property.getValue();
 		if (recur == null) {

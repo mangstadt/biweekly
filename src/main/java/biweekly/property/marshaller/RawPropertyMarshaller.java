@@ -47,7 +47,7 @@ public class RawPropertyMarshaller extends ICalPropertyMarshaller<RawProperty> {
 	}
 
 	@Override
-	protected ICalDataType _getDataType(RawProperty property) {
+	protected ICalDataType _dataType(RawProperty property) {
 		return property.getDataType();
 	}
 

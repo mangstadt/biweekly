@@ -46,7 +46,7 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 	}
 
 	@Override
-	protected ICalDataType _getDataType(ExceptionDates property) {
+	protected ICalDataType _dataType(ExceptionDates property) {
 		return property.hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
 	}
 
@@ -71,7 +71,7 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 
 	@Override
 	protected void _writeXml(ExceptionDates property, XCalElement element) {
-		ICalDataType dataType = getDataType(property);
+		ICalDataType dataType = dataType(property);
 		for (Date value : property.getValues()) {
 			String dateStr = date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).extended(true).write();
 			element.append(dataType, dateStr);

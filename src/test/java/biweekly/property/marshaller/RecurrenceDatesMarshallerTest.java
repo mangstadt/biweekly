@@ -86,7 +86,7 @@ public class RecurrenceDatesMarshallerTest {
 		List<Period> periods = Arrays.asList(new Period(start, end), new Period(start, duration));
 		RecurrenceDates prop = new RecurrenceDates(periods);
 
-		assertEquals(ICalDataType.PERIOD, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.PERIOD, marshaller.dataType(prop));
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class RecurrenceDatesMarshallerTest {
 		List<Date> dates = Arrays.asList(start, end);
 		RecurrenceDates prop = new RecurrenceDates(dates, true);
 
-		assertEquals(ICalDataType.DATE_TIME, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.DATE_TIME, marshaller.dataType(prop));
 	}
 
 	@Test
@@ -102,7 +102,7 @@ public class RecurrenceDatesMarshallerTest {
 		List<Date> dates = Arrays.asList(start, end);
 		RecurrenceDates prop = new RecurrenceDates(dates, false);
 
-		assertEquals(ICalDataType.DATE, marshaller.getDataType(prop));
+		assertEquals(ICalDataType.DATE, marshaller.dataType(prop));
 	}
 
 	@Test

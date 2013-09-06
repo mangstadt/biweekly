@@ -49,7 +49,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 	}
 
 	@Override
-	protected ICalDataType _getDataType(RecurrenceDates property) {
+	protected ICalDataType _dataType(RecurrenceDates property) {
 		if (property.getDates() != null) {
 			return property.hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
 		}
