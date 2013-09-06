@@ -1,5 +1,8 @@
 package biweekly.property;
 
+import java.util.List;
+
+import biweekly.component.ICalComponent;
 import biweekly.util.Recurrence;
 
 /*
@@ -52,5 +55,17 @@ public class RecurrenceRule extends RecurrenceProperty {
 	 */
 	public RecurrenceRule(Recurrence recur) {
 		super(recur);
+	}
+
+	@Override
+	protected void validate(List<ICalComponent> components, List<String> warnings) {
+		super.validate(components, warnings);
+		if (value == null) {
+			return;
+		}
+
+		if (!value.getXRules().isEmpty()) {
+			warnings.add("Non-standard rule parts are not allowed in the latest iCal specification.");
+		}
 	}
 }

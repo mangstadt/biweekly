@@ -971,10 +971,5 @@ public class VJournal extends ICalComponent {
 		if (getProperties(RecurrenceRule.class).size() > 1) {
 			warnings.add("There should be only one instance of the " + RecurrenceRule.class.getSimpleName() + " property.");
 		}
-
-		//RFC 5545 p. 167
-		if (!getExceptionRules().isEmpty()) {
-			warnings.add(ExceptionRule.class.getSimpleName() + " has been removed from the latest iCal specification.  Its use should be avoided.");
-		}
 	}
 }

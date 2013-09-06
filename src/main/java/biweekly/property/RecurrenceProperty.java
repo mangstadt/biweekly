@@ -46,7 +46,6 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
 		super.validate(components, warnings);
-
 		if (value == null) {
 			return;
 		}
@@ -54,12 +53,9 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 		if (value.getFrequency() == null) {
 			warnings.add("Frequency is not set (it is a required field).");
 		}
+
 		if (value.getUntil() != null && value.getCount() != null) {
 			warnings.add("\"UNTIL\" and \"COUNT\" cannot both be set.");
-		}
-
-		if (!value.getXRules().isEmpty()) {
-			warnings.add("Non-standard rule parts are not allowed in the latest iCal specification.");
 		}
 	}
 }

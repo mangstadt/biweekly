@@ -1,5 +1,9 @@
 package biweekly.property;
 
+import java.util.List;
+
+import biweekly.component.ICalComponent;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -54,5 +58,12 @@ public class ExceptionRule extends RecurrenceProperty {
 	 */
 	public ExceptionRule(biweekly.util.Recurrence recur) {
 		super(recur);
+	}
+
+	@Override
+	protected void validate(List<ICalComponent> components, List<String> warnings) {
+		super.validate(components, warnings);
+
+		warnings.add("Property has been removed from the latest iCal specification.  Its use should be avoided.");
 	}
 }
