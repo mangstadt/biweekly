@@ -81,7 +81,9 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @param propertyName the property name (e.g. "VERSION")
 	 * @param defaultDataType the property's default data type (e.g. "text") or
 	 * null if unknown
-	 * @param qname the XML element name and namespace (used for xCal documents)
+	 * @param qname the XML element name and namespace to use for xCal documents
+	 * (by default, the XML element name is set to the lower-cased property
+	 * name, and the element namespace is set to the xCal namespace)
 	 */
 	public ICalPropertyMarshaller(Class<T> clazz, String propertyName, ICalDataType defaultDataType, QName qname) {
 		this.clazz = clazz;
@@ -180,11 +182,15 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	}
 
 	/**
-	 * Unmarshals a property's value.
-	 * @param value the value
-	 * @param dataType the data type
-	 * @param parameters the property's parameters
-	 * @return the unmarshalled property object
+	 * Unmarshals a property from a plain-text iCalendar data stream.
+	 * @param value the value as read off the wire
+	 * @param dataType the data type of the property value. The property's VALUE
+	 * parameter is used to determine the data type. If the property has no
+	 * VALUE parameter, then this parameter will be set to the property's
+	 * default datatype. Note that the VALUE parameter is removed from the
+	 * property's parameter list after it has been read.
+	 * @param parameters the parsed parameters
+	 * @return the unmarshalled property and its warnings
 	 * @throws CannotParseException if the marshaller could not parse the
 	 * property's value
 	 * @throws SkipMeException if the property should not be added to the final
@@ -201,7 +207,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * Unmarshals a property's value from an XML document (xCal).
 	 * @param element the property's XML element
 	 * @param parameters the property's parameters
-	 * @return the unmarshalled property object
+	 * @return the unmarshalled property and its warnings
 	 * @throws CannotParseException if the marshaller could not parse the
 	 * property's value
 	 * @throws SkipMeException if the property should not be added to the final
@@ -220,8 +226,8 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * Unmarshals a property's value from a JSON data stream (jCal).
 	 * @param value the property's JSON value
 	 * @param dataType the data type
-	 * @param parameters the property's parameters
-	 * @return the unmarshalled property object
+	 * @param parameters the parsed parameters
+	 * @return the unmarshalled property and its warnings
 	 * @throws CannotParseException if the marshaller could not parse the
 	 * property's value
 	 * @throws SkipMeException if the property should not be added to the final
@@ -235,8 +241,14 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	}
 
 	/**
-	 * Sanitizes a property's parameters (called before the property is
-	 * written). This should be overridden by child classes when required.
+	 * <p>
+	 * Sanitizes a property's parameters before the property is written.
+	 * </p>
+	 * <p>
+	 * This method should be overridden by child classes that wish to tweak the
+	 * property's parameters before the property is written. The default
+	 * implementation of this method does nothing.
+	 * </p>
 	 * @param property the property
 	 * @param copy the list of parameters to make modifications to (it is a copy
 	 * of the property's parameters)
@@ -246,8 +258,14 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	}
 
 	/**
-	 * Determines the data type of a property instance. If this method is not
-	 * overridden, it will return the property's default data type.
+	 * <p>
+	 * Determines the data type of a property instance.
+	 * </p>
+	 * <p>
+	 * This method should be overridden by child classes if a property's data
+	 * type changes depending on its value. The default implementation of this
+	 * method returns the property's default data type.
+	 * </p>
 	 * @param property the property
 	 * @return the data type or null if unknown
 	 */
@@ -265,9 +283,20 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	protected abstract String _writeText(T property);
 
 	/**
+	 * <p>
 	 * Marshals a property's value to an XML element (xCal).
+	 * <p>
+	 * <p>
+	 * This method should be overridden by child classes that wish to support
+	 * xCal. The default implementation of this method will append one child
+	 * element to the property's XML element. The child element's name will be
+	 * that of the property's data type (retrieved using the {@link #dataType}
+	 * method), and the child element's text content will be set to the
+	 * property's marshalled plain-text value (retrieved using the
+	 * {@link #writeText} method).
+	 * </p>
 	 * @param property the property
-	 * @param element the XML element
+	 * @param element the property's XML element
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
 	 */
@@ -278,7 +307,15 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	}
 
 	/**
+	 * <p>
 	 * Marshals a property's value to a JSON data stream (jCal).
+	 * </p>
+	 * <p>
+	 * This method should be overridden by child classes that wish to support
+	 * jCal. The default implementation of this method will create a jCard
+	 * property that has a single JSON string value (generated by the
+	 * {@link #writeText} method).
+	 * </p>
 	 * @param property the property
 	 * @return the marshalled value
 	 * @throws SkipMeException if the property should not be written to the data
@@ -290,10 +327,17 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	}
 
 	/**
-	 * Unmarshals a property's value.
-	 * @param value the value
-	 * @param dataType the data type
-	 * @param parameters the property's parameters
+	 * Unmarshals a property from a plain-text iCalendar data stream.
+	 * @param value the value as read off the wire
+	 * @param dataType the data type of the property value. The property's VALUE
+	 * parameter is used to determine the data type. If the property has no
+	 * VALUE parameter, then this parameter will be set to the property's
+	 * default datatype. Note that the VALUE parameter is removed from the
+	 * property's parameter list after it has been read.
+	 * @param parameters the parsed parameters. These parameters will be
+	 * assigned to the property object once this method returns. Therefore, do
+	 * not assign any parameters to the property object itself whilst inside of
+	 * this method, or else they will be overwritten.
 	 * @param warnings allows the programmer to alert the user to any
 	 * note-worthy (but non-critical) issues that occurred during the
 	 * unmarshalling process
@@ -306,9 +350,14 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	protected abstract T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings);
 
 	/**
-	 * Unmarshals a property's value from an XML document (xCal).
+	 * <p>
+	 * Unmarshals a property from an XML document (xCal).
+	 * </p>
 	 * @param element the property's XML element
-	 * @param parameters the property's parameters
+	 * @param parameters the parsed parameters. These parameters will be
+	 * assigned to the property object once this method returns. Therefore, do
+	 * not assign any parameters to the property object itself whilst inside of
+	 * this method, or else they will be overwritten.
 	 * @param warnings allows the programmer to alert the user to any
 	 * note-worthy (but non-critical) issues that occurred during the
 	 * unmarshalling process
@@ -321,14 +370,71 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * xCal unmarshalling
 	 */
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException(); //TODO change implementation
 	}
 
 	/**
-	 * Unmarshals a property's value from a JSON data stream (jCal).
+	 * /**
+	 * <p>
+	 * Unmarshals a property from a JSON data stream (jCal).
+	 * </p>
+	 * <p>
+	 * This method should be overridden by child classes that wish to support
+	 * jCal. The default implementation of this method will convert the jCal
+	 * property value to a string and pass it into the {@link #_parseText}
+	 * method.
+	 * </p>
+	 * 
+	 * <hr>
+	 * 
+	 * <p>
+	 * The following paragraphs describe the way in which this method's default
+	 * implementation converts a jCal value to a string:
+	 * </p>
+	 * <p>
+	 * If the jCal value consists of a single, non-array, non-object value, then
+	 * the value is converted to a string. Special characters (backslashes,
+	 * commas, and semicolons) are escaped in order to simulate what the value
+	 * might look like in a plain-text iCalendar object.<br>
+	 * <code>["x-foo", {}, "text", "the;value"] --&gt; "the\;value"</code><br>
+	 * <code>["x-foo", {}, "text", 2] --&gt; "2"</code>
+	 * </p>
+	 * <p>
+	 * If the jCal value consists of multiple, non-array, non-object values,
+	 * then all the values are appended together in a single string, separated
+	 * by commas. Special characters (backslashes, commas, and semicolons) are
+	 * escaped for each value in order to prevent commas from being treated as
+	 * delimiters, and to simulate what the value might look like in a
+	 * plain-text iCalendar object.<br>
+	 * <code>["x-foo", {}, "text", "one", "two,three"] --&gt;
+	 * "one,two\,three"</code>
+	 * </p>
+	 * <p>
+	 * If the jCal value is a single array, then this array is treated as a
+	 * "structured value", and converted its plain-text representation. Special
+	 * characters (backslashes, commas, and semicolons) are escaped for each
+	 * value in order to prevent commas and semicolons from being treated as
+	 * delimiters.<br>
+	 * <code>["x-foo", {}, "text", ["one", ["two", "three"], "four;five"]]
+	 * --&gt; "one;two,three;four\;five"</code>
+	 * </p>
+	 * <p>
+	 * If the jCal value starts with a JSON object, then the object is converted
+	 * to a format identical to the one used in the RRULE and EXRULE properties.
+	 * Special characters (backslashes, commas, semicolons, and equal signs) are
+	 * escaped for each value in order to preserve the syntax of the string
+	 * value.<br>
+	 * <code>["x-foo", {}, "text", {"one": 1, "two": [2, 2.5]}] --&gt; "ONE=1;TWO=2,2.5"</code>
+	 * </p>
+	 * <p>
+	 * For all other cases, behavior is undefined.
+	 * </p>
 	 * @param value the property's JSON value
 	 * @param dataType the data type
-	 * @param parameters the property's parameters
+	 * @param parameters the parsed parameters. These parameters will be
+	 * assigned to the property object once this method returns. Therefore, do
+	 * not assign any parameters to the property object itself whilst inside of
+	 * this method, or else they will be overwritten.
 	 * @param warnings allows the programmer to alert the user to any
 	 * note-worthy (but non-critical) issues that occurred during the
 	 * unmarshalling process
@@ -345,7 +451,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	protected String jcalValueToString(JCalValue value) {
 		if (value.getValues().size() > 1) {
 			List<String> multi = value.getMultivalued();
-			if (multi != null) {
+			if (!multi.isEmpty()) {
 				return StringUtils.join(multi, ",", new JoinCallback<String>() {
 					public void handle(StringBuilder sb, String value) {
 						sb.append(escape(value));
@@ -356,7 +462,9 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 
 		if (value.getValues().get(0).getArray() != null) {
 			List<String> structured = value.getStructured();
-			if (structured != null) {
+			//TODO properly implement a structured value
+			//TODO create helper methods for creating lists, semi-structured, structured values
+			if (!structured.isEmpty()) {
 				return StringUtils.join(structured, ";", new JoinCallback<String>() {
 					public void handle(StringBuilder sb, String value) {
 						sb.append(escape(value));
@@ -367,11 +475,20 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 
 		if (value.getValues().get(0).getObject() != null) {
 			ListMultimap<String, String> object = value.getObject();
-			if (object != null) {
+			if (!object.isEmpty()) {
 				return StringUtils.join(object.getMap(), ";", new JoinMapCallback<String, List<String>>() {
 					public void handle(StringBuilder sb, String key, List<String> value) {
 						sb.append(key).append('=');
-						StringUtils.join(value, ",", sb);
+						StringUtils.join(value, ",", sb, new JoinCallback<String>() {
+							public void handle(StringBuilder sb, String value) {
+								if (value == null) {
+									return;
+								}
+								value = escape(value);
+								value = value.replace("=", "\\=");
+								sb.append(value);
+							}
+						});
 					}
 				});
 			}

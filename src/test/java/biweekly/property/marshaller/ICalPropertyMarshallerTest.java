@@ -395,11 +395,11 @@ public class ICalPropertyMarshallerTest {
 		ListMultimap<String, Object> map = new ListMultimap<String, Object>();
 		map.put("a", "one");
 		map.put("b", "two");
-		map.put("b", "three");
+		map.put("b", "three,four;five\\six=seven");
 		Result<TestProperty> result = m.parseJson(JCalValue.object(map), ICalDataType.TEXT, new ICalParameters());
 
 		TestProperty prop = result.getProperty();
-		assertEquals("a=one;b=two,three", prop.getValue());
+		assertEquals("a=one;b=two,three\\,four\\;five\\\\six\\=seven", prop.getValue());
 		assertWarnings(1, result.getWarnings());
 	}
 
