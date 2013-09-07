@@ -57,8 +57,7 @@ import biweekly.util.ICalDateFormatter;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-118">RFC 5545
- * p.118-20</a>
+ * @rfc 5545 p.118-20
  */
 public class ExceptionDates extends ListProperty<Date> {
 	private boolean hasTime = true;

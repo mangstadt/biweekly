@@ -50,7 +50,7 @@ import biweekly.util.XmlUtils;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc6321#page-17">RFC 6321 p.17-8</a>
+ * @rfc 6321 p.17-8
  */
 public class Xml extends ValuedProperty<Document> {
 	/**

@@ -30,7 +30,7 @@ import java.util.Collection;
 /**
  * Defines the type of user an entity is.
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-16">RFC 5545 p.16</a>
+ * @rfc 5545 p.16
  */
 public class CalendarUserType extends EnumParameterValue {
 	private static final ICalParameterCaseClasses<CalendarUserType> enums = new ICalParameterCaseClasses<CalendarUserType>(CalendarUserType.class);

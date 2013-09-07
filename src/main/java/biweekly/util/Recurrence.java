@@ -50,8 +50,7 @@ import java.util.Map;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-38">RFC 5545
- * p.38-45</a>
+ * @rfc 5545 p.38-45
  */
 public final class Recurrence {
 	private final Frequency frequency;

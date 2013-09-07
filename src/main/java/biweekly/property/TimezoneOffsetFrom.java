@@ -46,8 +46,7 @@ package biweekly.property;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-104">RFC 5545
- * p.104-5</a>
+ * @rfc 5545 p.104-5
  */
 public class TimezoneOffsetFrom extends UtcOffsetProperty {
 	/**

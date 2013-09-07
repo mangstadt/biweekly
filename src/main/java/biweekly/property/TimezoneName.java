@@ -48,8 +48,7 @@ package biweekly.property;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-103">RFC 5545
- * p.103-4</a>
+ * @rfc 5545 p.103-4
  */
 public class TimezoneName extends TextProperty {
 	/**

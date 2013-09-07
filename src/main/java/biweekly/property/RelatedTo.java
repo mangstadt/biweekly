@@ -41,8 +41,7 @@ import biweekly.parameter.RelationshipType;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-115">RFC 5545
- * p.115-6</a>
+ * @rfc 5545 p.115-6
  */
 public class RelatedTo extends TextProperty {
 	/**
@@ -57,8 +56,7 @@ public class RelatedTo extends TextProperty {
 	/**
 	 * Gets the relationship type.
 	 * @return the relationship type (e.g. "child") or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545
-	 * p.25</a>
+	 * @rfc 5545 p.25
 	 */
 	public RelationshipType getRelationshipType() {
 		return parameters.getRelationshipType();
@@ -68,8 +66,7 @@ public class RelatedTo extends TextProperty {
 	 * Sets the relationship type.
 	 * @param relationshipType the relationship type (e.g. "child") or null to
 	 * remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545
-	 * p.25</a>
+	 * @rfc 5545 p.25
 	 */
 	public void setRelationshipType(RelationshipType relationshipType) {
 		parameters.setRelationshipType(relationshipType);

@@ -63,7 +63,7 @@ import biweekly.property.marshaller.ICalPropertyMarshaller;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
+ * @rfc 5545
  */
 public class ICalWriter implements Closeable {
 	private ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();

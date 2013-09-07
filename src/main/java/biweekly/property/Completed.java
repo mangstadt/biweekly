@@ -41,7 +41,7 @@ import java.util.Date;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-94">RFC 5545 p.94-5</a>
+ * @rfc 5545 p.94-5
  */
 public class Completed extends DateTimeProperty {
 	/**

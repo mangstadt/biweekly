@@ -37,7 +37,7 @@ import biweekly.parameter.ICalParameters;
 /**
  * Parses an iCalendar data stream.
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
+ * @rfc 5545
  */
 public class ICalRawReader implements Closeable {
 	private final FoldedLineReader reader;
@@ -208,7 +208,7 @@ public class ICalRawReader implements Closeable {
 	 * </pre>
 	 * 
 	 * @return true if circumflex accent decoding is enabled, false if not
-	 * @see <a href="http://tools.ietf.org/html/rfc6868">RFC 6868</a>
+	 * @rfc 6868
 	 */
 	public boolean isCaretDecodingEnabled() {
 		return caretDecodingEnabled;
@@ -250,7 +250,7 @@ public class ICalRawReader implements Closeable {
 	 * </pre>
 	 * 
 	 * @param enable true to use circumflex accent decoding, false not to
-	 * @see <a href="http://tools.ietf.org/html/rfc6868">RFC 6868</a>
+	 * @rfc 6868
 	 */
 	public void setCaretDecodingEnabled(boolean enable) {
 		caretDecodingEnabled = enable;

@@ -47,7 +47,7 @@ import java.util.Collection;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-92">RFC 5545 p.92-3</a>
+ * @rfc 5545 p.92-3
  */
 public class Status extends EnumProperty {
 	private static final String TENTATIVE = "TENTATIVE";

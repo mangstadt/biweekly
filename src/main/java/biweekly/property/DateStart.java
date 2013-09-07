@@ -63,7 +63,7 @@ import biweekly.util.DateTimeComponents;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545 p.97-8</a>
+ * @rfc 5545 p.97-8
  */
 public class DateStart extends DateOrDateTimeProperty {
 	/**

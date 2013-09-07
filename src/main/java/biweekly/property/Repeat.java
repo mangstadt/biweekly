@@ -44,7 +44,7 @@ package biweekly.property;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-133">RFC 5545 p.133</a>
+ * @rfc 5545 p.133
  */
 public class Repeat extends IntegerProperty {
 	/**

@@ -48,8 +48,7 @@ import biweekly.util.Duration;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-133">RFC 5545
- * p.133-6</a>
+ * @rfc 5545 p.133-6
  */
 public class Trigger extends ICalProperty {
 	private Duration duration;
@@ -112,8 +111,7 @@ public class Trigger extends ICalProperty {
 	/**
 	 * Gets the date-time field that the duration is relative to.
 	 * @return the field or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-24">RFC 5545
-	 * p.24</a>
+	 * @rfc 5545 p.24
 	 */
 	public Related getRelated() {
 		return parameters.getRelated();
@@ -122,8 +120,7 @@ public class Trigger extends ICalProperty {
 	/**
 	 * Sets the date-time field that the duration is relative to.
 	 * @param related the field or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-24">RFC 5545
-	 * p.24</a>
+	 * @rfc 5545 p.24
 	 */
 	public void setRelated(Related related) {
 		parameters.setRelated(related);

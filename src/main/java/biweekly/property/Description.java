@@ -41,7 +41,7 @@ package biweekly.property;
  * </p>
  * 
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545 p.84-5</a>
+ * @rfc 5545 p.84-5
  */
 public class Description extends TextProperty {
 	/**

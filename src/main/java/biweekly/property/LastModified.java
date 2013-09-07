@@ -42,7 +42,7 @@ import java.util.Date;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545 p.138</a>
+ * @rfc 5545 p.138
  */
 public class LastModified extends DateTimeProperty {
 	/**

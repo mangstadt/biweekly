@@ -38,7 +38,7 @@ package biweekly.property;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545 p.83-4</a>
+ * @rfc 5545 p.83-4
  */
 public class Comment extends TextProperty {
 	/**

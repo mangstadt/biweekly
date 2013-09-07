@@ -64,8 +64,7 @@ import biweekly.util.Period;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-120">RFC 5545
- * p.120-2</a>
+ * @rfc 5545 p.120-2
  */
 public class RecurrenceDates extends ICalProperty {
 	private List<Date> dates;

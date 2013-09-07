@@ -43,8 +43,7 @@ package biweekly.property;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
- * p.138-9</a>
+ * @rfc 5545 p.138-9
  */
 public class Sequence extends IntegerProperty {
 	/**

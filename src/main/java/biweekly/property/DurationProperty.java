@@ -53,7 +53,7 @@ import biweekly.util.Duration;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-99">RFC 5545 p.99</a>
+ * @rfc 5545 p.99
  */
 public class DurationProperty extends ValuedProperty<Duration> {
 	/**

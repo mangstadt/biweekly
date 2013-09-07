@@ -45,8 +45,7 @@ package biweekly.property;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-89">RFC 5545
- * p.89-90</a>
+ * @rfc 5545 p.89-90
  */
 public class Priority extends IntegerProperty {
 	/**

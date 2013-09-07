@@ -33,7 +33,7 @@ import biweekly.property.RecurrenceId;
  * Defines the effective range of recurrence instances specified by the
  * {@link RecurrenceId} property. This parameter is essentially deprecated.
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-23">RFC 5545 p.23-4</a>
+ * @rfc 5545 p.23-4
  */
 public class Range extends EnumParameterValue {
 	private static final ICalParameterCaseClasses<Range> enums = new ICalParameterCaseClasses<Range>(Range.class);

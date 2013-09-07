@@ -71,7 +71,7 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
+ * @rfc 5545
  */
 public class ICalReader implements Closeable {
 	private static final ICalendarMarshaller icalMarshaller = ICalMarshallerRegistrar.getICalendarMarshaller();

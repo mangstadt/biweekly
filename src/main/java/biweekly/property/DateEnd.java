@@ -51,7 +51,7 @@ import java.util.Date;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-95">RFC 5545 p.95-6</a>
+ * @rfc 5545 p.95-6
  */
 public class DateEnd extends DateOrDateTimeProperty {
 	/**

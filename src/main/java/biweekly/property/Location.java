@@ -38,7 +38,7 @@ package biweekly.property;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-87">RFC 5545 p.87-8</a>
+ * @rfc 5545 p.87-8
  */
 public class Location extends TextProperty {
 	/**

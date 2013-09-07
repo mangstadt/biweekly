@@ -51,7 +51,7 @@ import java.util.Date;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-96">RFC 5545 p.96-7</a>
+ * @rfc 5545 p.96-7
  */
 public class DateDue extends DateOrDateTimeProperty {
 	/**

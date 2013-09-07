@@ -47,7 +47,7 @@ import java.util.Collection;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-82">RFC 5545 p.82-3</a>
+ * @rfc 5545 p.82-3
  */
 public class Classification extends EnumProperty {
 	private static final String PUBLIC = "PUBLIC";

@@ -32,8 +32,7 @@ import biweekly.util.CaseClasses;
 /**
  * Defines the data type of a property's value.
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-29">RFC 5545
- * p.29-50</a>
+ * @rfc 5545 p.29-50
  */
 public class ICalDataType {
 	private static final CaseClasses<ICalDataType, String> enums = new CaseClasses<ICalDataType, String>(ICalDataType.class) {

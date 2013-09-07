@@ -53,8 +53,7 @@ import java.util.Collection;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-101">RFC 5545
- * p.101-2</a>
+ * @rfc 5545 p.101-2
  */
 public class Transparency extends EnumProperty {
 	private static final String OPAQUE = "OPAQUE";

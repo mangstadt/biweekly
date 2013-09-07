@@ -50,8 +50,7 @@ import biweekly.parameter.Range;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-112">RFC 5545
- * p.112-4</a>
+ * @rfc 5545 p.112-4
  */
 public class RecurrenceId extends DateOrDateTimeProperty {
 	/**
@@ -76,8 +75,7 @@ public class RecurrenceId extends DateOrDateTimeProperty {
 	 * Gets the effective range of recurrence instances from the instance
 	 * specified by this property.
 	 * @return the range or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-23">RFC 5545
-	 * p.23-4</a>
+	 * @rfc 5545 p.23-4
 	 */
 	public Range getRange() {
 		return parameters.getRange();
@@ -87,8 +85,7 @@ public class RecurrenceId extends DateOrDateTimeProperty {
 	 * Sets the effective range of recurrence instances from the instance
 	 * specified by this property.
 	 * @param range the range or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-23">RFC 5545
-	 * p.23-4</a>
+	 * @rfc 5545 p.23-4
 	 */
 	public void setRange(Range range) {
 		parameters.setRange(range);
