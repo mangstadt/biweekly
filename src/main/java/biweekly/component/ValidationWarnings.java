@@ -91,7 +91,7 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 
 	/**
 	 * Gets all validation warnings of a given property.
-	 * @param propertyClass the property (e.g. <code>DateStart.class</code>)
+	 * @param propertyClass the property (e.g. {@code DateStart.class})
 	 * @return the validation warnings
 	 */
 	public List<WarningsGroup> getByProperty(Class<? extends ICalProperty> propertyClass) {
@@ -111,7 +111,7 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 
 	/**
 	 * Gets all validation warnings of a given component.
-	 * @param componentClass the component (e.g. <code>VEvent.class</code>)
+	 * @param componentClass the component (e.g. {@code VEvent.class})
 	 * @return the validation warnings
 	 */
 	public List<WarningsGroup> getByComponent(Class<? extends ICalComponent> componentClass) {
@@ -164,7 +164,7 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 
 	/**
 	 * Iterates over each warning group (same as calling
-	 * <code>getWarnings().iterator()</code>).
+	 * {@code getWarnings().iterator()}).
 	 * @return the iterator
 	 */
 	public Iterator<WarningsGroup> iterator() {

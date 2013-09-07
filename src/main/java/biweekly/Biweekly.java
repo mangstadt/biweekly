@@ -1150,7 +1150,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the marshaller class for a
 		 * component or property object cannot be found (only happens when an
 		 * experimental property/component marshaller is not registered with the
-		 * <code>register</code> method.)
+		 * {@code register} method.)
 		 */
 		public String go() {
 			StringWriter sw = new StringWriter();
@@ -1168,7 +1168,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the marshaller class for a
 		 * component or property object cannot be found (only happens when an
 		 * experimental property/component marshaller is not registered with the
-		 * <code>register</code> method.)
+		 * {@code register} method.)
 		 * @throws IOException if there's a problem writing to the output stream
 		 */
 		public void go(OutputStream out) throws IOException {
@@ -1181,7 +1181,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the marshaller class for a
 		 * component or property object cannot be found (only happens when an
 		 * experimental property/component marshaller is not registered with the
-		 * <code>register</code> method.)
+		 * {@code register} method.)
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file) throws IOException {
@@ -1196,7 +1196,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the marshaller class for a
 		 * component or property object cannot be found (only happens when an
 		 * experimental property/component marshaller is not registered with the
-		 * <code>register</code> method.)
+		 * {@code register} method.)
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file, boolean append) throws IOException {
@@ -1214,7 +1214,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the marshaller class for a
 		 * component or property object cannot be found (only happens when an
 		 * experimental property/component marshaller is not registered with the
-		 * <code>register</code> method.)
+		 * {@code register} method.)
 		 * @throws IOException if there's a problem writing to the writer
 		 */
 		public void go(Writer writer) throws IOException {
@@ -1286,7 +1286,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the marshaller class for a
 		 * component or property object cannot be found (only happens when an
 		 * experimental property/component marshaller is not registered with the
-		 * <code>register</code> method.)
+		 * {@code register} method.)
 		 */
 		public String go() {
 			StringWriter sw = new StringWriter();
@@ -1304,7 +1304,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the marshaller class for a
 		 * component or property object cannot be found (only happens when an
 		 * experimental property/component marshaller is not registered with the
-		 * <code>register</code> method.)
+		 * {@code register} method.)
 		 * @throws TransformerException if there's a problem writing the XML
 		 */
 		public void go(OutputStream out) throws TransformerException {
@@ -1318,7 +1318,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the marshaller class for a
 		 * component or property object cannot be found (only happens when an
 		 * experimental property/component marshaller is not registered with the
-		 * <code>register</code> method.)
+		 * {@code register} method.)
 		 * @throws TransformerException if there's a problem writing the XML
 		 * @throws IOException if there's a problem writing to the file
 		 */
@@ -1333,7 +1333,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the marshaller class for a
 		 * component or property object cannot be found (only happens when an
 		 * experimental property/component marshaller is not registered with the
-		 * <code>register</code> method.)
+		 * {@code register} method.)
 		 * @throws TransformerException if there's a problem writing the XML
 		 */
 		public void go(Writer writer) throws TransformerException {
@@ -1398,7 +1398,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the marshaller class for a
 		 * component or property object cannot be found (only happens when an
 		 * experimental property/component marshaller is not registered with the
-		 * <code>register</code> method.)
+		 * {@code register} method.)
 		 */
 		public String go() {
 			StringWriter sw = new StringWriter();
@@ -1416,7 +1416,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the marshaller class for a
 		 * component or property object cannot be found (only happens when an
 		 * experimental property/component marshaller is not registered with the
-		 * <code>register</code> method.)
+		 * {@code register} method.)
 		 * @throws IOException if there's a problem writing to the output stream
 		 */
 		public void go(OutputStream out) throws IOException {
@@ -1429,7 +1429,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the marshaller class for a
 		 * component or property object cannot be found (only happens when an
 		 * experimental property/component marshaller is not registered with the
-		 * <code>register</code> method.)
+		 * {@code register} method.)
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file) throws IOException {
@@ -1447,7 +1447,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the marshaller class for a
 		 * component or property object cannot be found (only happens when an
 		 * experimental property/component marshaller is not registered with the
-		 * <code>register</code> method.)
+		 * {@code register} method.)
 		 * @throws IOException if there's a problem writing to the writer
 		 */
 		public void go(Writer writer) throws IOException {

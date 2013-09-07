@@ -40,7 +40,7 @@ import biweekly.component.VTimezone;
  * </p>
  * <p>
  * All properties that support timezones will have
- * <code>get/setTimezoneId()</code> methods. If a property has no timezone
+ * {@code get/setTimezoneId()} methods. If a property has no timezone
  * assigned to it, it is written in UTC.
  * </p>
  * <p>

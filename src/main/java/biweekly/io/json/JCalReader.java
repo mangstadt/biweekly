@@ -136,7 +136,7 @@ public class JCalReader implements Closeable {
 	 * this method is the same as calling:
 	 * </p>
 	 * <p>
-	 * <code>getRegistrar().register(marshaller)</code>.
+	 * {@code getRegistrar().register(marshaller)}.
 	 * </p>
 	 * @param marshaller the marshaller to register
 	 */
@@ -151,7 +151,7 @@ public class JCalReader implements Closeable {
 	 * this method is the same as calling:
 	 * </p>
 	 * <p>
-	 * <code>getRegistrar().register(marshaller)</code>.
+	 * {@code getRegistrar().register(marshaller)}.
 	 * </p>
 	 * @param marshaller the marshaller to register
 	 */

@@ -234,7 +234,7 @@ public class ICalWriter implements Closeable {
 	 * this method is the same as calling:
 	 * </p>
 	 * <p>
-	 * <code>getRegistrar().register(marshaller)</code>.
+	 * {@code getRegistrar().register(marshaller)}.
 	 * </p>
 	 * @param marshaller the marshaller to register
 	 */
@@ -249,7 +249,7 @@ public class ICalWriter implements Closeable {
 	 * this method is the same as calling:
 	 * </p>
 	 * <p>
-	 * <code>getRegistrar().register(marshaller)</code>.
+	 * {@code getRegistrar().register(marshaller)}.
 	 * </p>
 	 * @param marshaller the marshaller to register
 	 */
@@ -279,7 +279,7 @@ public class ICalWriter implements Closeable {
 	 * @throws IllegalArgumentException if the marshaller class for a component
 	 * or property object cannot be found (only happens when an experimental
 	 * property/component marshaller is not registered with the
-	 * <code>registerMarshaller</code> method.)
+	 * {@code registerMarshaller} method.)
 	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	public void write(ICalendar ical) throws IOException {

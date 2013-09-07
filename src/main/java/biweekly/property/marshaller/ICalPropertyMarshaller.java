@@ -577,9 +577,9 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * are:
 	 * </p>
 	 * <ul>
-	 * <li>backslashes (<code>\</code>)</li>
-	 * <li>commas (<code>,</code>)</li>
-	 * <li>semi-colons (<code>;</code>)</li>
+	 * <li>backslashes ({@code \})</li>
+	 * <li>commas ({@code ,})</li>
+	 * <li>semi-colons ({@code ;})</li>
 	 * </ul>
 	 * <p>
 	 * Newlines are not escaped by this method. They are escaped when the

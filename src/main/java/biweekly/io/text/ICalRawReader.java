@@ -185,16 +185,16 @@ public class ICalRawReader implements Closeable {
 	 * <th>Encoded Character</th>
 	 * </tr>
 	 * <tr>
-	 * <td><code>"</code></td>
-	 * <td><code>^'</code></td>
+	 * <td>{@code "}</td>
+	 * <td>{@code ^'}</td>
 	 * </tr>
 	 * <tr>
 	 * <td><i>newline</i></td>
-	 * <td><code>^n</code></td>
+	 * <td>{@code ^n}</td>
 	 * </tr>
 	 * <tr>
-	 * <td><code>^</code></td>
-	 * <td><code>^^</code></td>
+	 * <td>{@code ^}</td>
+	 * <td>{@code ^^}</td>
 	 * </tr>
 	 * </table>
 	 * 
@@ -227,16 +227,16 @@ public class ICalRawReader implements Closeable {
 	 * <th>Encoded Character</th>
 	 * </tr>
 	 * <tr>
-	 * <td><code>"</code></td>
-	 * <td><code>^'</code></td>
+	 * <td>{@code "}</td>
+	 * <td>{@code ^'}</td>
 	 * </tr>
 	 * <tr>
 	 * <td><i>newline</i></td>
-	 * <td><code>^n</code></td>
+	 * <td>{@code ^n}</td>
 	 * </tr>
 	 * <tr>
-	 * <td><code>^</code></td>
-	 * <td><code>^^</code></td>
+	 * <td>{@code ^}</td>
+	 * <td>{@code ^^}</td>
 	 * </tr>
 	 * </table>
 	 * 

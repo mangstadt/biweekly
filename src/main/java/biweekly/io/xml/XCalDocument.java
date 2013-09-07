@@ -253,7 +253,7 @@ public class XCalDocument {
 	 * this method is the same as calling:
 	 * </p>
 	 * <p>
-	 * <code>getRegistrar().register(marshaller)</code>.
+	 * {@code getRegistrar().register(marshaller)}.
 	 * </p>
 	 * @param marshaller the marshaller to register
 	 */
@@ -268,7 +268,7 @@ public class XCalDocument {
 	 * this method is the same as calling:
 	 * </p>
 	 * <p>
-	 * <code>getRegistrar().register(marshaller)</code>.
+	 * {@code getRegistrar().register(marshaller)}.
 	 * </p>
 	 * @param marshaller the marshaller to register
 	 */
@@ -378,7 +378,7 @@ public class XCalDocument {
 	 * @throws IllegalArgumentException if the marshaller class for a component
 	 * or property object cannot be found (only happens when an experimental
 	 * property/component marshaller is not registered with the
-	 * <code>registerMarshaller</code> method.)
+	 * {@code registerMarshaller} method.)
 	 */
 	public void add(ICalendar ical) {
 		Element element = buildComponentElement(ical);
