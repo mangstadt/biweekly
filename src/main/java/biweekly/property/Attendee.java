@@ -46,7 +46,7 @@ import biweekly.parameter.Role;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Attendee attendee = Attendee.email("johndoe@example.com")
  * attendee.setCommonName("John Doe");
  * attendee.setRsvp(true);

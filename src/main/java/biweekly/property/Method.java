@@ -33,7 +33,7 @@ package biweekly.property;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Method method = new Method(&quot;value&quot;);
  * </pre>
  * 

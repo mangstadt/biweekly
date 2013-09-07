@@ -37,7 +37,7 @@ import biweekly.util.Recurrence;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //&quot;bi-weekly&quot;
  * Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).interval(2).build();
  * RecurrenceRule rrule = new RecurrenceRule(recur);

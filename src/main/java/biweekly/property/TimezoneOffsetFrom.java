@@ -32,7 +32,7 @@ package biweekly.property;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //creating a new property
  * TimezoneOffsetFrom tzname = new TimezoneOffsetFrom(-5, 0);
  * 

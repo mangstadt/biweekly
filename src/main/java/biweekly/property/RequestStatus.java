@@ -49,7 +49,7 @@ import biweekly.component.ICalComponent;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * RequestStatus requestStatus = new RequestStatus(&quot;2.0&quot;);
  * requestStatus.setDescription(&quot;Success&quot;);
  * </pre>

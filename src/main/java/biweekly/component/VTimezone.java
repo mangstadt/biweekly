@@ -40,7 +40,7 @@ import biweekly.property.TimezoneUrl;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * VTimezone timezone = new VTimezone(&quot;Eastern Standard Time&quot;);
  * 
  * StandardTime standard = new StandardTime();

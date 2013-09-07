@@ -46,7 +46,7 @@ import biweekly.util.Duration;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Duration duration = Duration.builder().hours(2).minutes(30).build();
  * DurationProperty prop = new DurationProperty(duration);
  * </pre>

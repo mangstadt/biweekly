@@ -71,7 +71,7 @@ import biweekly.util.Recurrence;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * VTodo todo = new VTodo();
  * todo.setSummary("Complete report");
  * Date due = ...

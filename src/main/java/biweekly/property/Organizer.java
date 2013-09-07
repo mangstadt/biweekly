@@ -44,7 +44,7 @@ import biweekly.component.VTodo;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Organizer organizer = Organizer.email(&quot;johndoe@example.com&quot;);
  * organizer.setCommonName(&quot;John Doe&quot;);
  * </pre>

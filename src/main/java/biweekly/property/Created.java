@@ -34,7 +34,7 @@ import java.util.Date;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Date datetime = ...
  * Created created = new Created(datetime);
  * </pre>

@@ -34,7 +34,7 @@ package biweekly.property;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Sequence sequence = new Sequence(2);
  * 
  * VEvent event = ...

@@ -62,7 +62,7 @@ import biweekly.util.Recurrence;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * VJournal journal = new VJournal();
  * journal.setSummary("Team Meeting");
  * journal.setDescription("The following items were discussed: ...");

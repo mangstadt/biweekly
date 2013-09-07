@@ -32,7 +32,7 @@ package biweekly.property;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Url url = new Url(&quot;http://example.com&quot;);
  * </pre>
  * 

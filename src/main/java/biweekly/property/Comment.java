@@ -32,7 +32,7 @@ package biweekly.property;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Comment comment = new Comment(&quot;Free text&quot;);
  * </pre>
  * 

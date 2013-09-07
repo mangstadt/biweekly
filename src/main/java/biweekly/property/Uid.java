@@ -34,7 +34,7 @@ import java.util.UUID;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Uid uid = new Uid(&quot;...&quot;);
  * 
  * //random UID

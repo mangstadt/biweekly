@@ -44,7 +44,7 @@ import biweekly.util.Period;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * FreeBusy freebusy = new FreeBusy();
  * freebusy.setType(FreeBusyType.BUSY);
  * 

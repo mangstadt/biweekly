@@ -32,7 +32,7 @@ package biweekly.component;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * VTimezone timezone = new VTimezone(&quot;Eastern Standard Time&quot;);
  * StandardTime standard = new StandardTime();
  * DateTimeComponents components = new DateTimeComponents(1998, 10, 25, 2, 0, 0, false);

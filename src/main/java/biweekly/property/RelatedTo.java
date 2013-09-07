@@ -35,7 +35,7 @@ import biweekly.parameter.RelationshipType;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * RelatedTo relatedTo = new RelatedTo(&quot;uid-value&quot;);
  * </pre>
  * 

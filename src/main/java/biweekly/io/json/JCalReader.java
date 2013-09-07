@@ -66,7 +66,7 @@ import com.fasterxml.jackson.core.JsonParseException;
  * <p>
  * <b>Example:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * InputStream in = ...
  * JCalReader jcalReader = new JCalReader(in);
  * ICalendar ical;

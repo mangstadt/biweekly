@@ -34,7 +34,7 @@ import java.util.Date;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //date and time
  * Date datetime = ...
  * DateEnd dtend = new DateEnd(datetime);

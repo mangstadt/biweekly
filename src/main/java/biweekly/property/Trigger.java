@@ -39,7 +39,7 @@ import biweekly.util.Duration;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //15 minutes before the start time
  * Duration duration = Duration.builder().prior(true).minutes(15).build();
  * Trigger trigger = new Trigger(duration, Related.START);

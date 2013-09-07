@@ -42,7 +42,7 @@ import biweekly.util.StringUtils.JoinCallback;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //validate an iCalendar object
  * ValidationWarnings warnings = ical.validate();
  * 
@@ -151,7 +151,7 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 	 * example:
 	 * </p>
 	 * 
-	 * <pre>
+	 * <pre class="brush:java">
 	 * [ICalendar]: ProductId is not set (it is a required property).
 	 * [ICalendar > VEvent > DateStart]: DateStart must come before DateEnd.
 	 * [ICalendar > VEvent > VAlarm]: The trigger must specify which date field its duration is relative to.
@@ -252,7 +252,7 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 		 * the property/component. For example:
 		 * </p>
 		 * 
-		 * <pre>
+		 * <pre class="brush:java">
 		 * [ICalendar > VEvent > VAlarm]: Email alarms must have at least one attendee.
 		 * [ICalendar > VEvent > VAlarm]: The trigger must specify which date field its duration is relative to.
 		 * </pre>

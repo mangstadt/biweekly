@@ -35,7 +35,7 @@ import java.util.Date;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Date datetime = ...
  * LastModified lastModified = new LastModified(datetime);
  * </pre>

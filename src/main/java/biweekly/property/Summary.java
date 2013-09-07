@@ -34,7 +34,7 @@ package biweekly.property;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Summary summary = new Summary("summary text");
  * 
  * VEvent event = ...;

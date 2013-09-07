@@ -41,7 +41,7 @@ import com.sun.tools.doclets.standard.Standard;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * /**
  *  * @rfc 5545 p.45-47
  *  * @rfc 5545 p.45

@@ -33,7 +33,7 @@ package biweekly.property;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //creating a new property
  * TimezoneUrl tzurl = new TimezoneUrl("http://example.com/tz.ics");
  * 

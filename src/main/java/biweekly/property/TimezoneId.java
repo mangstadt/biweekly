@@ -46,7 +46,7 @@ import biweekly.component.VTimezone;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * VTimezone timezone = new VTimezone(&quot;Eastern&quot;);
  * 
  * Date start = ...;

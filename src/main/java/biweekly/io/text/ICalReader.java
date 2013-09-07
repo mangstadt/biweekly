@@ -59,7 +59,7 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  * <p>
  * <b>Example:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * InputStream in = ...
  * ICalReader icalReader = new ICalReader(in);
  * ICalendar ical;

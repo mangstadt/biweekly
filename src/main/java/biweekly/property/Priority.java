@@ -32,7 +32,7 @@ package biweekly.property;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //highest
  * Priority priority = new Priority(1);
  * 

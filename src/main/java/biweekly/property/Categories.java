@@ -34,7 +34,7 @@ import java.util.List;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //creating a new property (multi-valued)
  * Categories categories = new Categories(&quot;conference&quot;, &quot;meeting&quot;);
  * </pre>

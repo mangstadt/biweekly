@@ -43,7 +43,7 @@ import java.util.Date;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Date datetime = ... 
  * DateTimeStamp dtstamp = new DateTimeStamp(datetime);
  * </pre>

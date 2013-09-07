@@ -71,7 +71,7 @@ import com.fasterxml.jackson.core.JsonParseException;
  * <p>
  * <b>Writing an iCalendar object</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * ICalendar ical = new ICalendar();
  * 
  * //string
@@ -97,7 +97,7 @@ import com.fasterxml.jackson.core.JsonParseException;
  * <p>
  * <b>Writing multiple iCalendar objects</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * ICalendar ical1 = new ICalendar();
  * ICalendar ical2 = new ICalendar();
  * 
@@ -109,7 +109,7 @@ import com.fasterxml.jackson.core.JsonParseException;
  * <p>
  * <b>Writing an XML-encoded iCalendar object (xCal)</b><br>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //Call writeXml() instead of write()
  * ICalendar ical = new ICalendar();
  * String xml = Biweekly.writeXml(ical).indent(2).go();
@@ -120,7 +120,7 @@ import com.fasterxml.jackson.core.JsonParseException;
  * <p>
  * <b>Writing a JSON-encoded iCalendar object (jCal)</b><br>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //Call writeJson() instead of write()
  * ICalendar ical = new ICalendar();
  * String json = Biweekly.writeJson(ical).go();
@@ -131,7 +131,7 @@ import com.fasterxml.jackson.core.JsonParseException;
  * <p>
  * <b>Reading an iCalendar object</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * ICalendar ical;
  * 
  * //string
@@ -158,7 +158,7 @@ import com.fasterxml.jackson.core.JsonParseException;
  * <p>
  * <b>Reading multiple iCalendar objects</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * String icalStr = ...
  * List&lt;ICalendar&gt; icals = Biweekly.parse(icalStr).all();
  * </pre>
@@ -168,7 +168,7 @@ import com.fasterxml.jackson.core.JsonParseException;
  * <p>
  * <b>Reading an XML-encoded iCalendar object (xCal)</b><br>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //Call parseXml() instead of parse()
  * String xml = ...
  * ICalendar ical = Biweekly.parseXml(xml).first();
@@ -179,7 +179,7 @@ import com.fasterxml.jackson.core.JsonParseException;
  * <p>
  * <b>Reading a JSON-encoded iCalendar object (Cal)</b><br>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //Call parseJson() instead of parse()
  * String json = ...
  * ICalendar ical = Biweekly.parseJson(json).first();
@@ -190,7 +190,7 @@ import com.fasterxml.jackson.core.JsonParseException;
  * <p>
  * <b>Retrieving parser warnings</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * String icalStr = ...
  * List&lt;List&lt;String&gt;&gt; warnings = new ArrayList&lt;List&lt;String&gt;&gt;();
  * List&lt;ICalendar&gt; icals = Biweekly.parse(icalStr).warnings(warnings).all();

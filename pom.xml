@@ -153,6 +153,22 @@
 					
 					<!-- Exclude taglet class from Javadocs -->
 					<excludePackageNames>biweekly.javadoc</excludePackageNames>
+					
+					<!-- Add Javascript syntax highlighter -->
+					<top><![CDATA[
+						<script src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js" type="text/javascript"></script>
+						<script src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushJava.js" type="text/javascript"></script>
+					]]></top>
+					<footer><![CDATA[
+						<script type="text/javascript">
+							SyntaxHighlighter.defaults["auto-links"] = false;
+							SyntaxHighlighter.defaults["gutter"] = false;
+							SyntaxHighlighter.defaults["tab-size"] = 2;
+							SyntaxHighlighter.defaults["toolbar"] = false;
+							SyntaxHighlighter.all();
+						</script>
+					]]></footer>
+					<stylesheetfile>src/main/javadoc/syntaxhighlighter.css</stylesheetfile>
 				</configuration>
 				<executions>
 					<execution>

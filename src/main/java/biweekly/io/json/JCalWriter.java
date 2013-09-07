@@ -50,7 +50,7 @@ import biweekly.property.marshaller.ICalPropertyMarshaller;
  * <p>
  * <b>Example:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * List&lt;ICalendar&gt; icals = ... 
  * OutputStream out = ...
  * JCalWriter jcalWriter = new JCalWriter(out);

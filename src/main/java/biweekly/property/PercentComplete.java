@@ -36,7 +36,7 @@ import biweekly.component.ICalComponent;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * PercentComplete percentComplete = new PercentComplete(50); //50%
  * 
  * VTodo todo = new VTodo();

@@ -40,7 +40,7 @@ import biweekly.component.ICalComponent;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //&quot;bi-weekly&quot;
  * Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).interval(2).build();
  * ExceptionRule exrule = new ExceptionRule(recur);

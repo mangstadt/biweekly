@@ -42,7 +42,7 @@ import java.util.Map;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //&quot;bi-weekly&quot;
  * Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY).interval(2).build();
  * Recurrence copy = new Recurrence.Builder(rrule).interval(3).build();

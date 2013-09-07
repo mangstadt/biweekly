@@ -36,7 +36,7 @@ import java.util.Collection;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //creating a new property
  * Classification classification = Classification.public_();
  * 

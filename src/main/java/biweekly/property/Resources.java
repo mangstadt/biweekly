@@ -35,7 +35,7 @@ import java.util.List;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Resources resources = new Resources(&quot;projector&quot;, &quot;DVD player&quot;);
  * </pre>
  * 

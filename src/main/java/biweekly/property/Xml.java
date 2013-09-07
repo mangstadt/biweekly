@@ -40,7 +40,7 @@ import biweekly.util.XmlUtils;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //creating a new property
  * Xml xml = new Xml(&quot;&lt;company xmlns=\&quot;http://example.com\&quot;&gt;&lt;ceo&gt;John Doe&lt;/ceo&gt;&lt;name&gt;Acme Co&lt;/name&gt;&lt;/company&gt;&quot;);
  * 

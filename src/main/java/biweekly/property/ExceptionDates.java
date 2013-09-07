@@ -39,7 +39,7 @@ import biweekly.util.ICalDateFormatter;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //date and times
  * ExceptionDates exdate = new ExceptionDates(true);
  * Date datetime1 = ...;

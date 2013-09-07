@@ -51,7 +51,7 @@ import biweekly.util.Duration;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //audio alarm
  * Trigger trigger = ...
  * Attachment sound = ...

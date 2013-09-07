@@ -37,7 +37,7 @@ import biweekly.util.DateTimeComponents;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //date and time
  * Date datetime = ...
  * DateStart dtstart = new DateStart(datetime);

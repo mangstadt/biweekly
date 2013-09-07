@@ -37,7 +37,7 @@ import biweekly.component.ICalComponent;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //the default iCal version
  * Version version = Version.v2_0();
  * 

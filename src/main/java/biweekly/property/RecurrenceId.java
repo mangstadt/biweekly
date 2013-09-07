@@ -38,7 +38,7 @@ import biweekly.parameter.Range;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //date-time value
  * Date datetime = ...
  * RecurrenceId recurrenceId = new RecurrenceId(datetime);

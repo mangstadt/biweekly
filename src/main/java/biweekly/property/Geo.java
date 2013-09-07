@@ -36,7 +36,7 @@ import biweekly.component.ICalComponent;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Geo geo = new Geo(40.714623, -74.006605);
  * </pre>
  * 

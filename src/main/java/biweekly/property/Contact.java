@@ -33,7 +33,7 @@ package biweekly.property;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Contact contact = new Contact(&quot;Acme Co: (212) 555-1234&quot;);
  * </pre>
  * 

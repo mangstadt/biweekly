@@ -55,7 +55,7 @@ import biweekly.property.Version;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * ICalendar ical = new ICalendar();
  * 
  * VEvent event = new VEvent();

@@ -79,7 +79,7 @@ import biweekly.util.XmlUtils;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * String xml =
  * "&lt;?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
  * "&lt;icalendar xmlns=\"urn:ietf:params:xml:ns:icalendar-2.0\"&gt;" +

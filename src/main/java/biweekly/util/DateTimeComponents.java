@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //July 22, 2013 at 17:25
  * DateTimeComponents components = new DateTimeComponents(2013, 07, 22, 17, 25, 0, false);
  * 

@@ -32,7 +32,7 @@ package biweekly.property;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Location location = new Location(&quot;Room 32B&quot;);
  * </pre>
  * 

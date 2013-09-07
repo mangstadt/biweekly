@@ -42,7 +42,7 @@ import biweekly.util.Period;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //date-time values
  * Date datetime1 = ...
  * Date datetime2 = ...

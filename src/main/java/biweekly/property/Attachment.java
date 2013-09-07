@@ -42,7 +42,7 @@ import biweekly.util.IOUtils;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //from a byte array
  * byte[] data = ...
  * Attachment attach = new Attachment("image/png", data);

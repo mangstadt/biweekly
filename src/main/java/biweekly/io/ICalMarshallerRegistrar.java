@@ -109,7 +109,7 @@ import biweekly.property.marshaller.XmlMarshaller;
  * <p>
  * <b>Example:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * //init the registrar
  * ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();
  * registrar.register(new CustomPropertyMarshaller());

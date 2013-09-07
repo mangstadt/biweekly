@@ -70,7 +70,7 @@ import biweekly.util.Recurrence;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * VEvent event = new VEvent();
  * Date start = ...
  * event.setDateStart(start);

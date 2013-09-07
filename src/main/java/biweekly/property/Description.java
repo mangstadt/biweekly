@@ -34,7 +34,7 @@ package biweekly.property;
  * <p>
  * <b>Examples:</b>
  * 
- * <pre>
+ * <pre class="brush:java">
  * Description description = new Description(&quot;description text&quot;);
  * </pre>
  * 
