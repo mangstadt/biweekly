@@ -1,5 +1,8 @@
 package biweekly.javadoc;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,41 +60,24 @@ import com.sun.tools.doclets.standard.Standard;
  * tutorial</a>
  */
 public class RfcTaglet implements Taglet {
-	/**
-	 * The HTML to write when only a start page is given.
-	 */
-	private static final String startFormat = "<a href=\"http://tools.ietf.org/html/rfc%s#page-%s\">RFC %s p.%s</a>";
+	private static final List<Group> groups;
+	static {
+		List<Group> list = new ArrayList<Group>();
 
-	/**
-	 * The HTML to write when a start and end page is given.
-	 */
-	private static final String startEndFormat = "<a href=\"http://tools.ietf.org/html/rfc%s#page-%s\">RFC %s p.%s-%s</a>";
+		//page range
+		list.add(new Group("^(\\d+) p\\.(\\d+)-(\\d+)?$", "<a href=\"http://tools.ietf.org/html/rfc%s#page-%s\">RFC %s p.%s-%s</a>", 1, 2, 1, 2, 3));
 
-	/**
-	 * The HTML to write when a section is given.
-	 */
-	private static final String sectionFormat = "<a href=\"http://tools.ietf.org/html/rfc%s#section-%s\">RFC %s, Section %s</a>";
+		//single page
+		list.add(new Group("^(\\d+) p\\.(\\d+)?$", "<a href=\"http://tools.ietf.org/html/rfc%s#page-%s\">RFC %s p.%s</a>", 1, 2, 1, 2));
 
-	/**
-	 * The HTML to write when a section is given.
-	 */
-	private static final String numberFormat = "<a href=\"http://tools.ietf.org/html/rfc%s\">RFC %s</a>";
+		//no pages
+		list.add(new Group("^(\\d+)$", "<a href=\"http://tools.ietf.org/html/rfc%s\">RFC %s</a>", 1, 1));
 
-	/**
-	 * Regular expression for parsing a taglet value that contains a page range.
-	 */
-	private static final Pattern pageRegex = Pattern.compile("^(\\d+) p\\.(\\d+)(-(\\d+))?$", Pattern.CASE_INSENSITIVE);
+		//section
+		list.add(new Group("^(\\d+) ([\\.\\d]+)$", "<a href=\"http://tools.ietf.org/html/rfc%s#section-%s\">RFC %s, Section %s</a>", 1, 2, 1, 2));
 
-	/**
-	 * Regular expression for parsing a taglet value that contains a section.
-	 */
-	private static final Pattern sectionRegex = Pattern.compile("^(\\d+) ([\\.\\d]+)$", Pattern.CASE_INSENSITIVE);
-
-	/**
-	 * Regular expression for parsing a taglet value that only contains the RFC
-	 * number.
-	 */
-	private static final Pattern numberRegex = Pattern.compile("^(\\d+)$", Pattern.CASE_INSENSITIVE);
+		groups = Collections.unmodifiableList(list);
+	}
 
 	public String getName() {
 		return "rfc";
@@ -143,93 +129,59 @@ public class RfcTaglet implements Taglet {
 			return "";
 		}
 
-		StringBuilder sb = new StringBuilder();
-
-		sb.append("<dt><b>Specification Reference:</b></dt>");
+		StringBuilder sb = null;
 		for (Tag tag : tags) {
 			String text = tag.text();
 
-			Ref ref = Ref.parse(text);
-			if (ref == null) {
-				Standard.htmlDoclet.configuration().root.printWarning(tag.position(), "Skipping @rfc taglet whose text is incorrectly formatted.");
+			String html = null;
+			for (Group group : groups) {
+				html = group.buildHtml(text);
+				if (html != null) {
+					break;
+				}
+			}
+
+			if (html == null) {
+				logWarning(tag, "Skipping @rfc taglet whose text is incorrectly formatted.");
 				continue;
 			}
 
-			sb.append("<dd>");
-
-			if (ref.section == null && ref.pageStart == null && ref.pageStop == null) {
-				sb.append(String.format(numberFormat, ref.number, ref.number));
-			} else if (ref.section == null) {
-				if (ref.pageStop == null) {
-					sb.append(String.format(startFormat, ref.number, ref.pageStart, ref.number, ref.pageStart));
-				} else {
-					sb.append(String.format(startEndFormat, ref.number, ref.pageStart, ref.number, ref.pageStart, ref.pageStop));
-				}
-			} else {
-				sb.append(String.format(sectionFormat, ref.number, ref.section, ref.number, ref.section));
+			if (sb == null) {
+				sb = new StringBuilder("<dt><b>Specification Reference:</b></dt>");
 			}
-
-			sb.append("</dd>");
+			sb.append("<dd>").append(html).append("</dd>");
 		}
 
-		return sb.toString();
+		return (sb == null) ? "" : sb.toString();
 	}
 
-	private static class Ref {
-		private final String number;
-		private final String section;
-		private final Integer pageStart, pageStop;
+	void logWarning(Tag tag, String message) {
+		Standard.htmlDoclet.configuration().root.printWarning(tag.position(), message);
+	}
 
-		private Ref(String number, String section, Integer pageStart, Integer pageStop) {
-			this.number = number;
-			this.section = section;
-			this.pageStart = pageStart;
-			this.pageStop = pageStop;
+	private static class Group {
+		private final Pattern regex;
+		private final String html;
+		private final int[] groups;
+
+		public Group(String regex, String html, int... groups) {
+			this.regex = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+			this.html = html;
+			this.groups = groups;
 		}
 
-		private static Ref parse(String tagText) {
-			Matcher m = pageRegex.matcher(tagText);
-			if (m.find()) {
-				return parseAsPage(m);
+		public String buildHtml(String tagText) {
+			Matcher m = regex.matcher(tagText);
+			if (!m.find()) {
+				return null;
 			}
 
-			m = sectionRegex.matcher(tagText);
-			if (m.find()) {
-				return parseAsSection(m);
+			Object formatParams[] = new Object[groups.length];
+			for (int i = 0; i < groups.length; i++) {
+				formatParams[i] = m.group(groups[i]);
 			}
 
-			m = numberRegex.matcher(tagText);
-			if (m.find()) {
-				return parseAsNumber(m);
-			}
-
-			return null;
-		}
-
-		private static Ref parseAsPage(Matcher m) {
-			String number = m.group(1);
-
-			String pageStartStr = m.group(2);
-			Integer pageStart = Integer.parseInt(pageStartStr); //NumberFormatException should never be thrown because the regex looks for numbers only
-
-			String pageStopStr = m.group(4);
-			Integer pageStop = null;
-			if (pageStopStr != null) {
-				pageStop = Integer.parseInt(pageStopStr);
-			}
-
-			return new Ref(number, null, pageStart, pageStop);
-		}
-
-		private static Ref parseAsSection(Matcher m) {
-			String number = m.group(1);
-			String section = m.group(2);
-			return new Ref(number, section, null, null);
-		}
-
-		private static Ref parseAsNumber(Matcher m) {
-			String number = m.group(1);
-			return new Ref(number, null, null, null);
+			return String.format(html, formatParams);
 		}
 	}
 }
