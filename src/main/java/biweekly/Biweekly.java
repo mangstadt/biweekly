@@ -683,9 +683,9 @@ public class Biweekly {
 			try {
 				return super.first();
 			} catch (IOException e) {
-				//reading from string
+				//should never been thrown because we're reading from a string
+				throw new RuntimeException(e);
 			}
-			return null;
 		}
 
 		@Override
@@ -693,9 +693,9 @@ public class Biweekly {
 			try {
 				return super.all();
 			} catch (IOException e) {
-				//reading from string
+				//should never been thrown because we're reading from a string
+				throw new RuntimeException(e);
 			}
-			return null;
 		}
 	}
 
@@ -769,9 +769,9 @@ public class Biweekly {
 			try {
 				return super.first();
 			} catch (IOException e) {
-				//reading from string
+				//should never been thrown because we're reading from a string
+				throw new RuntimeException(e);
 			}
-			return null;
 		}
 
 		@Override
@@ -779,9 +779,9 @@ public class Biweekly {
 			try {
 				return super.all();
 			} catch (IOException e) {
-				//reading from string
+				//should never been thrown because we're reading from a string
+				throw new RuntimeException(e);
 			}
-			return null;
 		}
 	}
 
@@ -877,11 +877,12 @@ public class Biweekly {
 			try {
 				return super.first();
 			} catch (IOException e) {
-				//reading from string
+				//should never been thrown because we're reading from a DOM
+				throw new RuntimeException(e);
 			} catch (SAXException e) {
-				//reading from Document
+				//should never been thrown because we're reading from a DOM
+				throw new RuntimeException(e);
 			}
-			return null;
 		}
 
 		@Override
@@ -889,11 +890,12 @@ public class Biweekly {
 			try {
 				return super.all();
 			} catch (IOException e) {
-				//reading from string
+				//should never been thrown because we're reading from a DOM
+				throw new RuntimeException(e);
 			} catch (SAXException e) {
-				//reading from Document
+				//should never been thrown because we're reading from a DOM
+				throw new RuntimeException(e);
 			}
-			return null;
 		}
 	}
 
@@ -1061,9 +1063,9 @@ public class Biweekly {
 			try {
 				return super.first();
 			} catch (IOException e) {
-				//reading from string
+				//should never been thrown because we're reading from a string
+				throw new RuntimeException(e);
 			}
-			return null;
 		}
 
 		@Override
@@ -1071,9 +1073,9 @@ public class Biweekly {
 			try {
 				return super.all();
 			} catch (IOException e) {
-				//reading from string
+				//should never been thrown because we're reading from a string
+				throw new RuntimeException(e);
 			}
-			return null;
 		}
 	}
 
