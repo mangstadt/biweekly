@@ -150,6 +150,7 @@
 							<tagletpath>${project.build.outputDirectory}</tagletpath>
 						</taglet>
 					</taglets>
+					<quiet>true</quiet>
 					
 					<!-- Exclude taglet class from Javadocs -->
 					<excludePackageNames>biweekly.javadoc</excludePackageNames>
