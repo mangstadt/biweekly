@@ -53,15 +53,15 @@ import biweekly.util.Duration;
  * <b>Examples:</b>
  * 
  * <pre class="brush:java">
- * VEvent event = new VEvent();
+ * VFreeBusy freebusy = new VFreeBusy();
+ * 
  * Date start = ...
- * event.setDateStart(start);
  * Date end = ...
- * event.setDateEnd(end);
- * event.setSummary("Team Meeting");
- * event.setLocation("Room 21C");
- * event.setCreated(new Date());
- * event.setRecurrenceRule(new RecurrenceRule(Frequency.WEEKLY));
+ * freebusy.addFreeBusy(FreeBusyType.FREE, start, end);
+ * 
+ * start = ...
+ * Duration duration = Duration.builder().hours(2).build();
+ * freebusy.addFreeBusy(FreeBusyType.BUSY, start, duration);
  * </pre>
  * 
  * </p>

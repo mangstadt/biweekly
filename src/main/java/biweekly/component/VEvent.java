@@ -79,7 +79,7 @@ import biweekly.util.Recurrence;
  * event.setSummary("Team Meeting");
  * event.setLocation("Room 21C");
  * event.setCreated(new Date());
- * event.setRecurrenceRule(new RecurrenceRule(Frequency.WEEKLY));
+ * event.setRecurrenceRule(new Recurrence.Builder(Frequency.WEEKLY).build());
  * </pre>
  * 
  * </p>
