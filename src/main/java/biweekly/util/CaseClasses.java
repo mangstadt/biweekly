@@ -44,7 +44,7 @@ import java.util.Collections;
  */
 public abstract class CaseClasses<T, V> {
 	protected final Class<T> clazz;
-	protected Collection<T> preDefined = null;
+	protected volatile Collection<T> preDefined = null;
 	protected Collection<T> runtimeDefined = null;
 
 	/**
@@ -135,9 +135,11 @@ public abstract class CaseClasses<T, V> {
 	}
 
 	private void checkInit() {
+		Collection<T> preDefined = this.preDefined;
 		if (preDefined == null) {
 			synchronized (this) {
-				if (preDefined == null) { //duplicate if condition needed for concurrency purposes
+				//"double check idiom"
+				if (preDefined == null) {
 					init();
 				}
 			}
