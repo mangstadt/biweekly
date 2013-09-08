@@ -35,6 +35,7 @@ import biweekly.property.TextProperty;
 
 /**
  * Marshals properties that have text values.
+ * @param <T> the property class
  * @author Michael Angstadt
  */
 public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICalPropertyMarshaller<T> {

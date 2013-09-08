@@ -513,6 +513,7 @@ public class VEvent extends ICalComponent {
 	 * and {@link Sequence} properties to uniquely identify a recurrence
 	 * instance.
 	 * @param originalStartDate the original start date or null to remove
+	 * @return the property that was created
 	 * @rfc 5545 p.112-4
 	 */
 	public RecurrenceId setRecurrenceId(Date originalStartDate) {
@@ -640,6 +641,7 @@ public class VEvent extends ICalComponent {
 	 * Sets the duration of the event. This must NOT be set if a {@link DateEnd}
 	 * is defined.
 	 * @param duration the duration or null to remove
+	 * @return the property that was created
 	 * @rfc 5545 p.99
 	 */
 	public DurationProperty setDuration(Duration duration) {

@@ -33,6 +33,7 @@ import biweekly.property.ListProperty;
 
 /**
  * Marshals properties that have a list of text values.
+ * @param <T> the property class
  * @author Michael Angstadt
  */
 public abstract class TextListPropertyMarshaller<T extends ListProperty<String>> extends ListPropertyMarshaller<T, String> {

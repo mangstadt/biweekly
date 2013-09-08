@@ -83,7 +83,7 @@ public class JCalWriter implements Closeable {
 	 * @param wrapInArray true to wrap all iCalendar objects in a parent array,
 	 * false not to (useful when writing more than one iCalendar object)
 	 */
-	public JCalWriter(OutputStream outputStream, boolean wrapInArray) throws IOException {
+	public JCalWriter(OutputStream outputStream, boolean wrapInArray) {
 		this(utf8Writer(outputStream), wrapInArray);
 	}
 

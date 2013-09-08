@@ -36,6 +36,7 @@ import biweekly.property.IntegerProperty;
 
 /**
  * Marshals properties that have integer values.
+ * @param <T> the property class
  * @author Michael Angstadt
  */
 public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> extends ICalPropertyMarshaller<T> {

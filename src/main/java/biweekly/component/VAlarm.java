@@ -349,6 +349,7 @@ public class VAlarm extends ICalComponent {
 	/**
 	 * Sets the length of the pause between alarm repetitions.
 	 * @param duration the duration or null to remove
+	 * @return the property that was created
 	 * @rfc 5545 p.99
 	 */
 	public DurationProperty setDuration(Duration duration) {
@@ -382,6 +383,7 @@ public class VAlarm extends ICalComponent {
 	 * trigger.
 	 * @param count the repeat count (e.g. "2" to repeat it two more times after
 	 * it was initially triggered, for a total of three times) or null to remove
+	 * @return the property that was created
 	 * @rfc 5545 p.133
 	 */
 	public Repeat setRepeat(Integer count) {

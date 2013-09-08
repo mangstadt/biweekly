@@ -37,6 +37,7 @@ import biweekly.property.DateTimeProperty;
 
 /**
  * Marshals properties that have "date-time" values.
+ * @param <T> the property class
  * @author Michael Angstadt
  */
 public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> extends ICalPropertyMarshaller<T> {

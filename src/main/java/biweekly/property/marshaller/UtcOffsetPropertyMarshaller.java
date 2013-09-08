@@ -37,6 +37,7 @@ import biweekly.util.ICalDateFormatter;
 
 /**
  * Marshals properties that have UTC offset values.
+ * @param <T> the property class
  * @author Michael Angstadt
  */
 public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> extends ICalPropertyMarshaller<T> {

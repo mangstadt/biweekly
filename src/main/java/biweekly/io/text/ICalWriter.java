@@ -84,7 +84,7 @@ public class ICalWriter implements Closeable {
 	 * @param outputStream the output stream to write to
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 */
-	public ICalWriter(OutputStream outputStream, FoldingScheme foldingScheme) throws IOException {
+	public ICalWriter(OutputStream outputStream, FoldingScheme foldingScheme) {
 		this(utf8Writer(outputStream), foldingScheme);
 	}
 
@@ -94,7 +94,7 @@ public class ICalWriter implements Closeable {
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 * @param newline the newline sequence to use
 	 */
-	public ICalWriter(OutputStream outputStream, FoldingScheme foldingScheme, String newline) throws IOException {
+	public ICalWriter(OutputStream outputStream, FoldingScheme foldingScheme, String newline) {
 		this(utf8Writer(outputStream), foldingScheme, newline);
 	}
 

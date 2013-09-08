@@ -33,6 +33,7 @@ import biweekly.property.ICalProperty;
 
 /**
  * Base class for iCalendar component marshallers.
+ * @param <T> the component class
  * @author Michael Angstadt
  */
 public abstract class ICalComponentMarshaller<T extends ICalComponent> {

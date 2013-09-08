@@ -37,6 +37,8 @@ import biweekly.util.StringUtils.JoinCallback;
 
 /**
  * Marshals properties that contain a list of values.
+ * @param <T> the property class
+ * @param <V> the value class
  * @author Michael Angstadt
  */
 public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> extends ICalPropertyMarshaller<T> {

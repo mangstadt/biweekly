@@ -93,6 +93,7 @@ public class VTimezone extends ICalComponent {
 	/**
 	 * Sets an ID for this timezone. This is a <b>required</b> property.
 	 * @param timezoneId the timezone ID or null to remove
+	 * @return the property that was created
 	 * @rfc 5545 p.102-3
 	 */
 	public TimezoneId setTimezoneId(String timezoneId) {

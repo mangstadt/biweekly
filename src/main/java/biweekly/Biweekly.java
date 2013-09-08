@@ -521,6 +521,7 @@ public class Biweekly {
 		 * mechanism allows newlines and double quotes to be included in
 		 * parameter values.
 		 * @param enable true to use circumflex accent decoding, false not to
+		 * @return this
 		 * @see ICalRawReader#setCaretDecodingEnabled(boolean)
 		 */
 		public T caretDecoding(boolean enable) {
@@ -1137,6 +1138,7 @@ public class Biweekly {
 		 * double quotes with single quotes.
 		 * </p>
 		 * @param enable true to use circumflex accent encoding, false not to
+		 * @return this
 		 * @see ICalRawWriter#setCaretEncodingEnabled(boolean)
 		 */
 		public WriterChainText caretEncoding(boolean enable) {
@@ -1263,6 +1265,7 @@ public class Biweekly {
 		 * parameters use the "unknown" xCal data type by default.
 		 * @param parameterName the parameter name (e.g. "x-foo")
 		 * @param dataType the data type
+		 * @return this
 		 */
 		public WriterChainXml register(String parameterName, ICalDataType dataType) {
 			parameterDataTypes.put(parameterName, dataType);

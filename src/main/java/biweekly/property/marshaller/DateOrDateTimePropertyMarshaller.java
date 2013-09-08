@@ -39,6 +39,7 @@ import biweekly.util.ICalDateFormatter;
 
 /**
  * Marshals properties that have either "date" or "date-time" values.
+ * @param <T> the property class
  * @author Michael Angstadt
  */
 public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeProperty> extends ICalPropertyMarshaller<T> {

@@ -52,6 +52,7 @@ import biweekly.util.XmlUtils;
 
 /**
  * Marshals properties whose values are {@link Recurrence}.
+ * @param <T> the property class
  * @author Michael Angstadt
  */
 public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty> extends ICalPropertyMarshaller<T> {

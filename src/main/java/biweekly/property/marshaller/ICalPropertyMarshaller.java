@@ -57,6 +57,7 @@ import biweekly.util.XmlUtils;
 
 /**
  * Base class for iCalendar property marshallers.
+ * @param <T> the property class
  * @author Michael Angstadt
  */
 public abstract class ICalPropertyMarshaller<T extends ICalProperty> {

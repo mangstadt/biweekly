@@ -360,6 +360,7 @@ public class VJournal extends ICalComponent {
 	 * {@link Uid} and {@link Sequence} properties to uniquely identify a
 	 * recurrence instance.
 	 * @param originalStartDate the original start date or null to remove
+	 * @return the property that was created
 	 * @rfc 5545 p.112-4
 	 */
 	public RecurrenceId setRecurrenceId(Date originalStartDate) {

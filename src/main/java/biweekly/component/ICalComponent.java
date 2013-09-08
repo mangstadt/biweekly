@@ -262,6 +262,7 @@ public abstract class ICalComponent {
 	 * Replaces all components of a given class with the given component. If the
 	 * component instance is null, then all instances of that component will be
 	 * removed.
+	 * @param clazz the component's class
 	 * @param component the component or null to remove
 	 */
 	public <T extends ICalComponent> void setComponent(Class<T> clazz, T component) {
