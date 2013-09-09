@@ -153,7 +153,7 @@ public class ICalRawWriter implements Closeable {
 	 * Example:
 	 * </p>
 	 * 
-	 * <pre class="brush:java">
+	 * <pre>
 	 * GEO;X-ADDRESS="Pittsburgh Pirates^n115 Federal St^nPitt
 	 *  sburgh, PA 15212":40.446816;80.00566
 	 * </pre>
@@ -206,7 +206,7 @@ public class ICalRawWriter implements Closeable {
 	 * Example:
 	 * </p>
 	 * 
-	 * <pre class="brush:java">
+	 * <pre>
 	 * GEO;X-ADDRESS="Pittsburgh Pirates^n115 Federal St^nPitt
 	 *  sburgh, PA 15212":40.446816;80.00566
 	 * </pre>
