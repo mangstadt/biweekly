@@ -122,7 +122,6 @@ public abstract class CaseClasses<T, V> {
 	}
 
 	private void checkInit() {
-		Collection<T> preDefined = this.preDefined;
 		if (preDefined == null) {
 			synchronized (this) {
 				//"double check idiom" (Bloch p.283)
