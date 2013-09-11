@@ -131,19 +131,17 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	protected Trigger _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		String valueStr = value.getSingleValued();
 
-		if (dataType == ICalDataType.DATE_TIME) {
-			try {
-				Date date = date(valueStr).tzid(parameters.getTimezoneId(), warnings).parse();
-				return new Trigger(date);
-			} catch (IllegalArgumentException e) {
-				throw new CannotParseException("Could not parse value as a date.");
-			}
+		try {
+			Date date = date(valueStr).tzid(parameters.getTimezoneId(), warnings).parse();
+			return new Trigger(date);
+		} catch (IllegalArgumentException e) {
+			//must be a duration
 		}
 
 		try {
 			return new Trigger(Duration.parse(valueStr), parameters.getRelated());
 		} catch (IllegalArgumentException e) {
-			throw new CannotParseException("Could not parse value as a duration.");
+			throw new CannotParseException("Could not parse value as a date or duration.");
 		}
 	}
 }
