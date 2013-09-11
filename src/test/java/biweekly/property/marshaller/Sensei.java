@@ -257,10 +257,10 @@ public class Sensei<T extends ICalProperty> {
 		 * element
 		 */
 		public void run(String expectedInnerXml) {
-			Document actual = createXCardElement();
+			Document actual = createXCalElement();
 			marshaller.writeXml(property, XmlUtils.getRootElement(actual));
 
-			Document expected = createXCardElement(expectedInnerXml);
+			Document expected = createXCalElement(expectedInnerXml);
 
 			assertXMLEqual(XmlUtils.toString(actual), expected, actual);
 		}
@@ -442,7 +442,7 @@ public class Sensei<T extends ICalProperty> {
 		@Override
 		protected void run(Check<T> check, Class<? extends Throwable> exception) {
 			try {
-				Document document = createXCardElement(innerXml);
+				Document document = createXCalElement(innerXml);
 				Element element = XmlUtils.getRootElement(document);
 				Result<T> result = marshaller.parseXml(element, parameters);
 
@@ -522,11 +522,11 @@ public class Sensei<T extends ICalProperty> {
 		void check(T property);
 	}
 
-	private Document createXCardElement() {
-		return createXCardElement("");
+	private Document createXCalElement() {
+		return createXCalElement("");
 	}
 
-	private Document createXCardElement(String innerXml) {
+	private Document createXCalElement(String innerXml) {
 		QName qname = marshaller.getQName();
 		String localName = qname.getLocalPart();
 		String ns = qname.getNamespaceURI();
