@@ -110,15 +110,18 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 
 		FreeBusy prop = new FreeBusy();
 		for (XCalElement periodElement : periodElements) {
-			Date start = null;
 			String startStr = periodElement.first("start");
-			if (startStr != null) {
-				try {
-					start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
-				} catch (IllegalArgumentException e) {
-					warnings.add("Could not parse start date, skipping time period: " + startStr);
-					continue;
-				}
+			if (startStr == null) {
+				warnings.add("No start date found in time period, skipping.");
+				continue;
+			}
+
+			Date start = null;
+			try {
+				start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
+			} catch (IllegalArgumentException e) {
+				warnings.add("Could not parse start date, skipping time period: " + startStr);
+				continue;
 			}
 
 			String endStr = periodElement.first("end");
@@ -142,15 +145,21 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 				}
 				continue;
 			}
+
+			warnings.add("Start date has no accompanying end date or duration, skipping.");
 		}
 		return prop;
 	}
 
 	@Override
 	protected JCalValue _writeJson(FreeBusy property) {
-		List<String> values = new ArrayList<String>();
+		List<Period> values = property.getValues();
+		if (values.isEmpty()) {
+			return JCalValue.single("");
+		}
 
-		for (Period period : property.getValues()) {
+		List<String> valuesStr = new ArrayList<String>();
+		for (Period period : values) {
 			StringBuilder sb = new StringBuilder();
 			if (period.getStartDate() != null) {
 				String date = date(period.getStartDate()).extended(true).write();
@@ -166,10 +175,10 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 				sb.append(period.getDuration());
 			}
 
-			values.add(sb.toString());
+			valuesStr.add(sb.toString());
 		}
 
-		return JCalValue.multi(values);
+		return JCalValue.multi(valuesStr);
 	}
 
 	@Override

@@ -56,7 +56,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 		if (property.getPeriods() != null) {
 			return ICalDataType.PERIOD;
 		}
-		return null;
+		return getDefaultDataType();
 	}
 
 	@Override
@@ -132,15 +132,18 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 		if (!periodElements.isEmpty()) {
 			List<Period> periods = new ArrayList<Period>(periodElements.size());
 			for (XCalElement periodElement : periodElements) {
-				Date start = null;
 				String startStr = periodElement.first("start");
-				if (startStr != null) {
-					try {
-						start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
-					} catch (IllegalArgumentException e) {
-						warnings.add("Could not parse start date, skipping time period: " + startStr);
-						continue;
-					}
+				if (startStr == null) {
+					warnings.add("No start date found in time period, skipping.");
+					continue;
+				}
+
+				Date start = null;
+				try {
+					start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
+				} catch (IllegalArgumentException e) {
+					warnings.add("Could not parse start date, skipping time period: " + startStr);
+					continue;
 				}
 
 				String endStr = periodElement.first("end");
@@ -164,6 +167,8 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 					}
 					continue;
 				}
+
+				warnings.add("Start date has no accompanying end date or duration, skipping.");
 			}
 			return new RecurrenceDates(periods);
 		}
@@ -193,29 +198,41 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 		List<String> values = new ArrayList<String>();
 
 		if (property.getDates() != null) {
-			for (Date date : property.getDates()) {
-				String dateStr = date(date).time(property.hasTime()).tzid(property.getTimezoneId()).extended(true).write();
-				values.add(dateStr);
+			List<Date> dates = property.getDates();
+			if (dates.isEmpty()) {
+				values.add("");
+			} else {
+				for (Date date : dates) {
+					String dateStr = date(date).time(property.hasTime()).tzid(property.getTimezoneId()).extended(true).write();
+					values.add(dateStr);
+				}
 			}
 		} else if (property.getPeriods() != null) {
-			for (Period period : property.getPeriods()) {
-				StringBuilder sb = new StringBuilder();
-				if (period.getStartDate() != null) {
-					String value = date(period.getStartDate()).tzid(property.getTimezoneId()).extended(true).write();
-					sb.append(value);
+			List<Period> periods = property.getPeriods();
+			if (periods.isEmpty()) {
+				values.add("");
+			} else {
+				for (Period period : property.getPeriods()) {
+					StringBuilder sb = new StringBuilder();
+					if (period.getStartDate() != null) {
+						String value = date(period.getStartDate()).tzid(property.getTimezoneId()).extended(true).write();
+						sb.append(value);
+					}
+
+					sb.append('/');
+
+					if (period.getEndDate() != null) {
+						String value = date(period.getEndDate()).tzid(property.getTimezoneId()).extended(true).write();
+						sb.append(value);
+					} else if (period.getDuration() != null) {
+						sb.append(period.getDuration());
+					}
+
+					values.add(sb.toString());
 				}
-
-				sb.append('/');
-
-				if (period.getEndDate() != null) {
-					String value = date(period.getEndDate()).tzid(property.getTimezoneId()).extended(true).write();
-					sb.append(value);
-				} else if (period.getDuration() != null) {
-					sb.append(period.getDuration());
-				}
-
-				values.add(sb.toString());
 			}
+		} else {
+			values.add("");
 		}
 
 		return JCalValue.multi(values);

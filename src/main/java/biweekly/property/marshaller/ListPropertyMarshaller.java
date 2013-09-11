@@ -85,6 +85,9 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 
 	@Override
 	protected JCalValue _writeJson(T property) {
+		if (property.getValues().isEmpty()) {
+			return JCalValue.single("");
+		}
 		return JCalValue.multi(property.getValues());
 	}
 

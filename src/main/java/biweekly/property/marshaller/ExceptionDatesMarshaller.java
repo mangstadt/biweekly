@@ -97,12 +97,17 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 
 	@Override
 	protected JCalValue _writeJson(ExceptionDates property) {
-		List<String> values = new ArrayList<String>();
-		for (Date value : property.getValues()) {
-			String dateStr = date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).extended(true).write();
-			values.add(dateStr);
+		List<Date> values = property.getValues();
+		if (values.isEmpty()) {
+			return JCalValue.single("");
 		}
-		return JCalValue.multi(values);
+
+		List<String> valuesStr = new ArrayList<String>();
+		for (Date value : values) {
+			String dateStr = date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).extended(true).write();
+			valuesStr.add(dateStr);
+		}
+		return JCalValue.multi(valuesStr);
 	}
 
 	@Override
