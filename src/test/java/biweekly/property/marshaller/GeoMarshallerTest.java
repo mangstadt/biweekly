@@ -44,6 +44,7 @@ public class GeoMarshallerTest {
 	private final Geo withBoth = new Geo(12.34, 56.78);
 	private final Geo withLatitude = new Geo(12.34, null);
 	private final Geo withLongitude = new Geo(null, 56.78);
+	private final Geo withManyDecimals = new Geo(12.3444444444, 56.7777777777);
 	private final Geo empty = new Geo(null, null);
 
 	@Test
@@ -51,6 +52,7 @@ public class GeoMarshallerTest {
 		sensei.assertWriteText(withBoth).run("12.34;56.78");
 		sensei.assertWriteText(withLatitude).run("12.34;");
 		sensei.assertWriteText(withLongitude).run(";56.78");
+		sensei.assertWriteText(withManyDecimals).run("12.344444;56.777778");
 		sensei.assertWriteText(empty).run(";");
 	}
 
@@ -68,6 +70,7 @@ public class GeoMarshallerTest {
 		sensei.assertWriteXml(withBoth).run("<latitude>12.34</latitude><longitude>56.78</longitude>");
 		sensei.assertWriteXml(withLatitude).run("<latitude>12.34</latitude>");
 		sensei.assertWriteXml(withLongitude).run("<longitude>56.78</longitude>");
+		sensei.assertWriteXml(withManyDecimals).run("<latitude>12.344444</latitude><longitude>56.777778</longitude>");
 		sensei.assertWriteXml(empty).run("");
 	}
 
@@ -86,6 +89,7 @@ public class GeoMarshallerTest {
 		sensei.assertWriteJson(withBoth).run(JCalValue.structured(12.34, 56.78));
 		sensei.assertWriteJson(withLatitude).run(JCalValue.structured(12.34, null));
 		sensei.assertWriteJson(withLongitude).run(JCalValue.structured(null, 56.78));
+		sensei.assertWriteJson(withManyDecimals).run(JCalValue.structured(12.3444444444, 56.7777777777));
 		sensei.assertWriteJson(empty).run(JCalValue.structured(null, null));
 	}
 
