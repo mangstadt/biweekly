@@ -1,25 +1,18 @@
 package biweekly.property.marshaller;
 
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
-import biweekly.io.json.JCalValue;
-import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Related;
 import biweekly.property.Trigger;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
+import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.Duration;
 
 /*
@@ -51,11 +44,15 @@ import biweekly.util.Duration;
  * @author Michael Angstadt
  */
 public class TriggerMarshallerTest {
+	@ClassRule
+	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
+
 	private final TriggerMarshaller marshaller = new TriggerMarshaller();
+	private final Sensei<Trigger> sensei = new Sensei<Trigger>(marshaller);
 
 	private final Date datetime;
 	{
-		Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar c = Calendar.getInstance();
 		c.clear();
 		c.set(Calendar.YEAR, 2013);
 		c.set(Calendar.MONTH, Calendar.JUNE);
@@ -65,192 +62,79 @@ public class TriggerMarshallerTest {
 		c.set(Calendar.SECOND, 2);
 		datetime = c.getTime();
 	}
+	private final String datetimeStr = "20130611T124302Z";
+	private final String datetimeStrExt = "2013-06-11T12:43:02Z";
 
-	private final Duration duration;
-	{
-		duration = Duration.builder().hours(2).build();
+	private final Duration duration = Duration.builder().hours(2).build();
+	private final String durationStr = duration.toString();
+
+	private final Trigger withDateTime = new Trigger(datetime);
+	private final Trigger withDuration = new Trigger(duration, Related.START);
+	private final Trigger empty = new Trigger(null);
+
+	@Test
+	public void dataType() {
+		sensei.assertDataType(withDateTime).run(ICalDataType.DATE_TIME);
+		sensei.assertDataType(withDuration).run(ICalDataType.DURATION);
+		sensei.assertDataType(empty).run(ICalDataType.DURATION);
 	}
 
 	@Test
-	public void getDataType_date() {
-		Trigger prop = new Trigger(datetime);
-		assertEquals(ICalDataType.DATE_TIME, marshaller.dataType(prop));
+	public void writeText() {
+		sensei.assertWriteText(withDateTime).run(datetimeStr);
+		sensei.assertWriteText(withDuration).run(durationStr);
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void getDataType_duration() {
-		Trigger prop = new Trigger(duration, Related.START);
-		assertEquals(ICalDataType.DURATION, marshaller.dataType(prop));
-	}
-
-	@Test
-	public void writeText_date() {
-		Trigger prop = new Trigger(datetime);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "20130611T134302Z";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_duration() {
-		Trigger prop = new Trigger(duration, Related.START);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "PT2H";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_null() {
-		Trigger prop = new Trigger(null);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void parseText_date() {
-		String value = "20130611T134302Z";
-		ICalParameters params = new ICalParameters();
-
-		Result<Trigger> result = marshaller.parseText(value, ICalDataType.DATE_TIME, params);
-
-		Trigger prop = result.getProperty();
-		assertEquals(datetime, prop.getDate());
-		assertNull(prop.getDuration());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_duration() {
-		String value = "PT2H";
-		ICalParameters params = new ICalParameters();
-
-		Result<Trigger> result = marshaller.parseText(value, ICalDataType.DURATION, params);
-
-		Trigger prop = result.getProperty();
-		assertNull(prop.getDate());
-		assertEquals(duration, prop.getDuration());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseText_invalid() {
-		String value = "invalid";
-		ICalParameters params = new ICalParameters();
-
-		marshaller.parseText(value, ICalDataType.DURATION, params);
+	public void parseText() {
+		sensei.assertParseText(datetimeStr).run(is(withDateTime));
+		sensei.assertParseText(durationStr).run(is(withDuration));
+		sensei.assertParseText("invalid").cannotParse();
+		sensei.assertParseText("").cannotParse();
 	}
 
 	@Test
 	public void writeXml_date() {
-		Trigger prop = new Trigger(datetime);
-		assertWriteXml("<date-time>2013-06-11T13:43:02Z</date-time>", prop, marshaller);
-	}
-
-	@Test
-	public void writeXml_duration() {
-		Trigger prop = new Trigger(duration, Related.START);
-		assertWriteXml("<duration>PT2H</duration>", prop, marshaller);
-	}
-
-	@Test
-	public void writeXml_null() {
-		Trigger prop = new Trigger(null);
-		assertWriteXml("", prop, marshaller);
+		sensei.assertWriteXml(withDateTime).run("<date-time>" + datetimeStrExt + "</date-time>");
+		sensei.assertWriteXml(withDuration).run("<duration>" + durationStr + "</duration>");
+		sensei.assertWriteXml(empty).run("");
 	}
 
 	@Test
 	public void parseXml_date() {
-		Result<Trigger> result = parseXCalProperty("<date-time>2013-06-11T13:43:02Z</date-time>", marshaller);
+		sensei.assertParseXml("<date-time>" + datetimeStrExt + "</date-time>").run(is(withDateTime));
+		sensei.assertParseXml("<duration>" + durationStr + "</duration>").run(is(withDuration));
 
-		Trigger prop = result.getProperty();
-		assertEquals(datetime, prop.getDate());
-		assertNull(prop.getDuration());
-		assertWarnings(0, result.getWarnings());
-	}
+		//prefers <date-time> element if both elements exist
+		sensei.assertParseXml("<duration>" + durationStr + "</duration><date-time>" + datetimeStrExt + "</date-time>").run(is(withDateTime));
 
-	@Test
-	public void parseXml_duration() {
-		Result<Trigger> result = parseXCalProperty("<duration>PT2H</duration>", marshaller);
-
-		Trigger prop = result.getProperty();
-		assertNull(prop.getDate());
-		assertEquals(duration, prop.getDuration());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_date_invalid() {
-		parseXCalProperty("<date-time>invalid</date-time>", marshaller);
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_duration_invalid() {
-		parseXCalProperty("<duration>invalid</duration>", marshaller);
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_empty() {
-		parseXCalProperty("", marshaller);
+		sensei.assertParseXml("<date-time>invalid</date-time>").cannotParse();
+		sensei.assertParseXml("<duration>invalid</duration>").cannotParse();
+		sensei.assertParseXml("").cannotParse();
 	}
 
 	@Test
 	public void writeJson_date() {
-		Trigger prop = new Trigger(datetime);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals("2013-06-11T13:43:02Z", actual.getSingleValued());
-	}
-
-	@Test
-	public void writeJson_duration() {
-		Trigger prop = new Trigger(duration, Related.START);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals("PT2H", actual.getSingleValued());
-	}
-
-	@Test
-	public void writeJson_null() {
-		Trigger prop = new Trigger(null);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertTrue(actual.getValues().get(0).isNull());
+		sensei.assertWriteJson(withDateTime).run(datetimeStrExt);
+		sensei.assertWriteJson(withDuration).run(durationStr);
+		sensei.assertWriteJson(empty).run((String) null);
 	}
 
 	@Test
 	public void parseJson_date() {
-		Result<Trigger> result = marshaller.parseJson(JCalValue.single("2013-06-11T13:43:02Z"), ICalDataType.DATE_TIME, new ICalParameters());
-
-		Trigger prop = result.getProperty();
-		assertEquals(datetime, prop.getDate());
-		assertNull(prop.getDuration());
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseJson(datetimeStrExt).run(is(withDateTime));
+		sensei.assertParseJson(durationStr).run(is(withDuration));
+		sensei.assertParseJson("invalid").cannotParse();
+		sensei.assertParseJson("").cannotParse();
 	}
 
-	@Test
-	public void parseJson_duration() {
-		Result<Trigger> result = marshaller.parseJson(JCalValue.single("PT2H"), ICalDataType.DURATION, new ICalParameters());
-
-		Trigger prop = result.getProperty();
-		assertNull(prop.getDate());
-		assertEquals(duration, prop.getDuration());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseJson_date_invalid() {
-		marshaller.parseJson(JCalValue.single("invalid"), ICalDataType.DATE_TIME, new ICalParameters());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseJson_duration_invalid() {
-		marshaller.parseJson(JCalValue.single("invalid"), ICalDataType.DURATION, new ICalParameters());
+	private Check<Trigger> is(final Trigger expected) {
+		return new Check<Trigger>() {
+			public void check(Trigger actual) {
+				assertEquals(expected.getDate(), actual.getDate());
+				assertEquals(expected.getDuration(), actual.getDuration());
+			}
+		};
 	}
 }

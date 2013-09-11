@@ -1,8 +1,5 @@
 package biweekly.property.marshaller;
 
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -10,11 +7,10 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ListProperty;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -46,105 +42,62 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  */
 public class TextListPropertyMarshallerTest {
 	private final TextListPropertyMarshallerImpl marshaller = new TextListPropertyMarshallerImpl();
+	private final Sensei<ListPropertyImpl> sensei = new Sensei<ListPropertyImpl>(marshaller);
 
-	@Test
-	public void writeText_multiple() {
-		ListPropertyImpl prop = new ListPropertyImpl();
-		prop.addValue("one");
-		prop.addValue("two");
-		prop.addValue("three,four");
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "one,two,three\\,four";
-		assertEquals(expected, actual);
+	private final ListPropertyImpl withMultiple = new ListPropertyImpl();
+	{
+		withMultiple.addValue("one");
+		withMultiple.addValue("two");
+		withMultiple.addValue("three,four");
 	}
-
-	@Test
-	public void writeText_single() {
-		ListPropertyImpl prop = new ListPropertyImpl();
-		prop.addValue("one");
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "one";
-		assertEquals(expected, actual);
+	private final ListPropertyImpl withSingle = new ListPropertyImpl();
+	{
+		withSingle.addValue("one");
 	}
+	private final ListPropertyImpl empty = new ListPropertyImpl();
 
 	@Test
-	public void writeText_empty() {
-		ListPropertyImpl prop = new ListPropertyImpl();
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "";
-		assertEquals(expected, actual);
+	public void writeText() {
+		sensei.assertWriteText(withMultiple).run("one,two,three\\,four");
+		sensei.assertWriteText(withSingle).run("one");
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
 	public void parseText() {
-		String value = "one,two,three\\,four";
-		ICalParameters params = new ICalParameters();
-
-		Result<ListPropertyImpl> result = marshaller.parseText(value, ICalDataType.TEXT, params);
-
-		assertEquals(Arrays.asList("one", "two", "three,four"), result.getProperty().getValues());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_empty() {
-		String value = "";
-		ICalParameters params = new ICalParameters();
-
-		Result<ListPropertyImpl> result = marshaller.parseText(value, ICalDataType.TEXT, params);
-
-		assertEquals(0, result.getProperty().getValues().size());
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseText("one,two,three\\,four").run(is(withMultiple));
+		sensei.assertParseText("one").run(is(withSingle));
+		sensei.assertParseText("").run(is(empty));
 	}
 
 	@Test
 	public void writeXml() {
-		ListPropertyImpl prop = new ListPropertyImpl();
-		prop.addValue("one");
-		prop.addValue("two");
-		prop.addValue("three");
-
-		assertWriteXml("<text>one</text><text>two</text><text>three</text>", prop, marshaller);
+		sensei.assertWriteXml(withMultiple).run("<text>one</text><text>two</text><text>three,four</text>");
+		sensei.assertWriteXml(withSingle).run("<text>one</text>");
+		sensei.assertWriteXml(empty).run("");
 	}
 
 	@Test
 	public void parseXml() {
-		Result<ListPropertyImpl> result = parseXCalProperty("<text>one</text><text>two</text><float>2.5</float><text>three</text>", marshaller);
-
-		ListPropertyImpl prop = result.getProperty();
-		assertEquals(Arrays.asList("one", "two", "three"), prop.getValues());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_empty() {
-		parseXCalProperty("<integer>ignore</integer>", marshaller);
+		sensei.assertParseXml("<text>one</text><text>two</text><float>2.5</float><text>three,four</text>").run(is(withMultiple));
+		sensei.assertParseXml("<text>one</text>").run(is(withSingle));
+		sensei.assertParseXml("<float>2.5</float><text>one</text>").run(is(withSingle));
+		sensei.assertParseXml("<float>2.5</float>").cannotParse();
+		sensei.assertParseXml("").cannotParse();
 	}
 
 	@Test
 	public void writeJson() {
-		ListPropertyImpl prop = new ListPropertyImpl();
-		prop.addValue("one");
-		prop.addValue("two");
-		prop.addValue("three");
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Arrays.asList("one", "two", "three"), actual.getMultivalued());
+		sensei.assertWriteJson(withMultiple).run(JCalValue.multi("one", "two", "three,four"));
+		sensei.assertWriteJson(withSingle).run("one");
+		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
 	public void parseJson() {
-		Result<ListPropertyImpl> result = marshaller.parseJson(JCalValue.multi("one", "two", "three"), ICalDataType.TEXT, new ICalParameters());
-
-		ListPropertyImpl prop = result.getProperty();
-		assertEquals(Arrays.asList("one", "two", "three"), prop.getValues());
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseJson(JCalValue.multi("one", "two", "three,four")).run(is(withMultiple));
+		sensei.assertParseJson("one").run(is(withSingle));
+		sensei.assertParseJson("").run(has(""));
 	}
 
 	private class TextListPropertyMarshallerImpl extends TextListPropertyMarshaller<ListPropertyImpl> {
@@ -160,5 +113,21 @@ public class TextListPropertyMarshallerTest {
 
 	private class ListPropertyImpl extends ListProperty<String> {
 		//empty
+	}
+
+	private Check<ListPropertyImpl> is(final ListPropertyImpl expected) {
+		return new Check<ListPropertyImpl>() {
+			public void check(ListPropertyImpl actual) {
+				assertEquals(expected.getValues(), actual.getValues());
+			}
+		};
+	}
+
+	private Check<ListPropertyImpl> has(final String... values) {
+		return new Check<ListPropertyImpl>() {
+			public void check(ListPropertyImpl actual) {
+				assertEquals(Arrays.asList(values), actual.getValues());
+			}
+		};
 	}
 }

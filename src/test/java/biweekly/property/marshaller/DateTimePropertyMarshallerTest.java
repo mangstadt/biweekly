@@ -1,23 +1,16 @@
 package biweekly.property.marshaller;
 
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 
-import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
-import biweekly.io.json.JCalValue;
-import biweekly.parameter.ICalParameters;
 import biweekly.property.DateTimeProperty;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
+import biweekly.util.DefaultTimezoneRule;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -48,10 +41,15 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  * @author Michael Angstadt
  */
 public class DateTimePropertyMarshallerTest {
+	@ClassRule
+	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
+
 	private final DateTimePropertyMarshallerImpl marshaller = new DateTimePropertyMarshallerImpl();
+	private final Sensei<DateTimePropertyImpl> sensei = new Sensei<DateTimePropertyImpl>(marshaller);
+
 	private final Date datetime;
 	{
-		Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar c = Calendar.getInstance();
 		c.clear();
 		c.set(Calendar.YEAR, 2013);
 		c.set(Calendar.MONTH, Calendar.JUNE);
@@ -61,106 +59,49 @@ public class DateTimePropertyMarshallerTest {
 		c.set(Calendar.SECOND, 2);
 		datetime = c.getTime();
 	}
+	private final String datetimeStr = "20130611T124302Z";
+	private final String datetimeStrExt = "2013-06-11T12:43:02Z";
+
+	private final DateTimePropertyImpl withDateTime = new DateTimePropertyImpl(datetime);
+	private final DateTimePropertyImpl empty = new DateTimePropertyImpl(null);
 
 	@Test
 	public void writeText() {
-		DateTimePropertyImpl prop = new DateTimePropertyImpl(datetime);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "20130611T134302Z";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_null() {
-		DateTimePropertyImpl prop = new DateTimePropertyImpl(null);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "";
-		assertEquals(expected, actual);
+		sensei.assertWriteText(withDateTime).run(datetimeStr);
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
 	public void parseText() {
-		String value = "20130611T134302Z";
-		ICalParameters params = new ICalParameters();
-
-		Result<DateTimePropertyImpl> result = marshaller.parseText(value, ICalDataType.DATE_TIME, params);
-
-		DateTimePropertyImpl prop = result.getProperty();
-		assertEquals(datetime, prop.getValue());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseText_invalid() {
-		String value = "invalid";
-		ICalParameters params = new ICalParameters();
-
-		marshaller.parseText(value, ICalDataType.DATE_TIME, params);
+		sensei.assertParseText(datetimeStr).run(hasDateTime);
+		sensei.assertParseText("invalid").cannotParse();
+		sensei.assertParseText("").cannotParse();
 	}
 
 	@Test
 	public void writeXml() {
-		DateTimePropertyImpl prop = new DateTimePropertyImpl(datetime);
-		assertWriteXml("<date-time>2013-06-11T13:43:02Z</date-time>", prop, marshaller);
-	}
-
-	@Test
-	public void writeXml_null() {
-		DateTimePropertyImpl prop = new DateTimePropertyImpl(null);
-		assertWriteXml("", prop, marshaller);
+		sensei.assertWriteXml(withDateTime).run("<date-time>" + datetimeStrExt + "</date-time>");
+		sensei.assertWriteXml(empty).run("");
 	}
 
 	@Test
 	public void parseXml() {
-		Result<DateTimePropertyImpl> result = parseXCalProperty("<date-time>2013-06-11T13:43:02Z</date-time>", marshaller);
-
-		DateTimePropertyImpl prop = result.getProperty();
-		assertEquals(datetime, prop.getValue());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_invalid() {
-		parseXCalProperty("<date-time>invalid</date-time>", marshaller);
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_empty() {
-		parseXCalProperty("", marshaller);
+		sensei.assertParseXml("<date-time>" + datetimeStrExt + "</date-time>").run(hasDateTime);
+		sensei.assertParseXml("<date-time>invalid</date-time>").cannotParse();
+		sensei.assertParseXml("").cannotParse();
 	}
 
 	@Test
 	public void writeJson() {
-		DateTimePropertyImpl prop = new DateTimePropertyImpl(datetime);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals("2013-06-11T13:43:02Z", actual.getSingleValued());
-	}
-
-	@Test
-	public void writeJson_null() {
-		DateTimePropertyImpl prop = new DateTimePropertyImpl(null);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertTrue(actual.getValues().get(0).isNull());
+		sensei.assertWriteJson(withDateTime).run(datetimeStrExt);
+		sensei.assertWriteJson(empty).run((String) null);
 	}
 
 	@Test
 	public void parseJson() {
-		Result<DateTimePropertyImpl> result = marshaller.parseJson(JCalValue.single("2013-06-11T13:43:02Z"), ICalDataType.DATE_TIME, new ICalParameters());
-
-		DateTimePropertyImpl prop = result.getProperty();
-		assertEquals(datetime, prop.getValue());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseJson_invalid() {
-		marshaller.parseJson(JCalValue.single("invalid"), ICalDataType.DATE_TIME, new ICalParameters());
+		sensei.assertParseJson(datetimeStrExt).run(hasDateTime);
+		sensei.assertParseJson("invalid").cannotParse();
+		sensei.assertParseJson("").cannotParse();
 	}
 
 	private class DateTimePropertyMarshallerImpl extends DateTimePropertyMarshaller<DateTimePropertyImpl> {
@@ -179,4 +120,10 @@ public class DateTimePropertyMarshallerTest {
 			super(value);
 		}
 	}
+
+	private final Check<DateTimePropertyImpl> hasDateTime = new Check<DateTimePropertyImpl>() {
+		public void check(DateTimePropertyImpl property) {
+			assertEquals(datetime, property.getValue());
+		}
+	};
 }

@@ -1,20 +1,13 @@
 package biweekly.property.marshaller;
 
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
-import biweekly.parameter.ICalParameters;
 import biweekly.property.Geo;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -46,218 +39,83 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  */
 public class GeoMarshallerTest {
 	private final GeoMarshaller marshaller = new GeoMarshaller();
+	private final Sensei<Geo> sensei = new Sensei<Geo>(marshaller);
+
+	private final Geo withBoth = new Geo(12.34, 56.78);
+	private final Geo withLatitude = new Geo(12.34, null);
+	private final Geo withLongitude = new Geo(null, 56.78);
+	private final Geo empty = new Geo(null, null);
 
 	@Test
 	public void writeText() {
-		Geo prop = new Geo(12.34, 56.78);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "12.34;56.78";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_missing_latitude() {
-		Geo prop = new Geo(null, 56.78);
-		String actual = marshaller.writeText(prop);
-		String expected = ";56.78";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_missing_longitude() {
-		Geo prop = new Geo(12.34, null);
-		String actual = marshaller.writeText(prop);
-		String expected = "12.34;";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_missing_both() {
-		Geo prop = new Geo(null, null);
-		String actual = marshaller.writeText(prop);
-		String expected = ";";
-		assertEquals(expected, actual);
+		sensei.assertWriteText(withBoth).run("12.34;56.78");
+		sensei.assertWriteText(withLatitude).run("12.34;");
+		sensei.assertWriteText(withLongitude).run(";56.78");
+		sensei.assertWriteText(empty).run(";");
 	}
 
 	@Test
 	public void parseText() {
-		String value = "12.34;56.78";
-		ICalParameters params = new ICalParameters();
-
-		Result<Geo> result = marshaller.parseText(value, ICalDataType.FLOAT, params);
-
-		Geo prop = result.getProperty();
-		assertEquals(12.34, prop.getLatitude(), 0.001);
-		assertEquals(56.78, prop.getLongitude(), 0.001);
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseText_no_longitude() {
-		String value = "12.34";
-		ICalParameters params = new ICalParameters();
-
-		marshaller.parseText(value, ICalDataType.FLOAT, params);
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseText_empty() {
-		String value = "";
-		ICalParameters params = new ICalParameters();
-
-		marshaller.parseText(value, ICalDataType.FLOAT, params);
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseText_bad_latitude() {
-		String value = "bad;56.78";
-		ICalParameters params = new ICalParameters();
-
-		marshaller.parseText(value, ICalDataType.FLOAT, params);
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseText_bad_longitude() {
-		String value = "12.34;bad";
-		ICalParameters params = new ICalParameters();
-
-		marshaller.parseText(value, ICalDataType.FLOAT, params);
+		sensei.assertParseText("12.34;56.78").run(has(12.34, 56.78));
+		sensei.assertParseText("invalid;56.78").cannotParse();
+		sensei.assertParseText("12.34;invalid").cannotParse();
+		sensei.assertParseText("12.34").cannotParse();
+		sensei.assertParseText("").cannotParse();
 	}
 
 	@Test
 	public void writeXml() {
-		Geo prop = new Geo(12.34, 56.78);
-		assertWriteXml("<latitude>12.34</latitude><longitude>56.78</longitude>", prop, marshaller);
-	}
-
-	@Test
-	public void writeXml_missing_latitude() {
-		Geo prop = new Geo(null, 56.78);
-		assertWriteXml("<longitude>56.78</longitude>", prop, marshaller);
-	}
-
-	@Test
-	public void writeXml_missing_longitude() {
-		Geo prop = new Geo(12.34, null);
-		assertWriteXml("<latitude>12.34</latitude>", prop, marshaller);
-	}
-
-	@Test
-	public void writeXml_missing_both() {
-		Geo prop = new Geo(null, null);
-		assertWriteXml("", prop, marshaller);
+		sensei.assertWriteXml(withBoth).run("<latitude>12.34</latitude><longitude>56.78</longitude>");
+		sensei.assertWriteXml(withLatitude).run("<latitude>12.34</latitude>");
+		sensei.assertWriteXml(withLongitude).run("<longitude>56.78</longitude>");
+		sensei.assertWriteXml(empty).run("");
 	}
 
 	@Test
 	public void parseXml() {
-		Result<Geo> result = parseXCalProperty("<latitude>12.34</latitude><longitude>56.78</longitude>", marshaller);
-
-		Geo prop = result.getProperty();
-		assertEquals(12.34, prop.getLatitude(), 0.001);
-		assertEquals(56.78, prop.getLongitude(), 0.001);
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_missing_latitude() {
-		parseXCalProperty("<longitude>56.78</longitude>", marshaller);
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_missing_longitude() {
-		parseXCalProperty("<latitude>12.34</latitude>", marshaller);
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_missing_both() {
-		parseXCalProperty("", marshaller);
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_bad_latitude() {
-		parseXCalProperty("<latitude>bad</latitude><longitude>56.78</longitude>", marshaller);
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_bad_longitude() {
-		parseXCalProperty("<latitude>12.34</latitude><longitude>bad</longitude>", marshaller);
+		sensei.assertParseXml("<latitude>12.34</latitude><longitude>56.78</longitude>").run(has(12.34, 56.78));
+		sensei.assertParseXml("<latitude>invalid</latitude><longitude>56.78</longitude>").cannotParse();
+		sensei.assertParseXml("<latitude>12.34</latitude><longitude>invalid</longitude>").cannotParse();
+		sensei.assertParseXml("<latitude>12.34</latitude>").cannotParse();
+		sensei.assertParseXml("<longitude>56.78</longitude>").cannotParse();
+		sensei.assertParseXml("").cannotParse();
 	}
 
 	@Test
 	public void writeJson() {
-		Geo prop = new Geo(12.34, 56.78);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(12.34, actual.getValues().get(0).getArray().get(0).getValue());
-		assertEquals(56.78, actual.getValues().get(0).getArray().get(1).getValue());
-	}
-
-	@Test
-	public void writeJson_missing_latitude() {
-		Geo prop = new Geo(null, 56.78);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertTrue(actual.getValues().get(0).getArray().get(0).isNull());
-		assertEquals(56.78, actual.getValues().get(0).getArray().get(1).getValue());
-	}
-
-	@Test
-	public void writeJson_missing_longitude() {
-		Geo prop = new Geo(12.34, null);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(12.34, actual.getValues().get(0).getArray().get(0).getValue());
-		assertTrue(actual.getValues().get(0).getArray().get(1).isNull());
-	}
-
-	@Test
-	public void writeJson_missing_both() {
-		Geo prop = new Geo(null, null);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertTrue(actual.getValues().get(0).getArray().get(0).isNull());
-		assertTrue(actual.getValues().get(0).getArray().get(1).isNull());
+		sensei.assertWriteJson(withBoth).run(JCalValue.structured(12.34, 56.78));
+		sensei.assertWriteJson(withLatitude).run(JCalValue.structured(12.34, null));
+		sensei.assertWriteJson(withLongitude).run(JCalValue.structured(null, 56.78));
+		sensei.assertWriteJson(empty).run(JCalValue.structured(null, null));
 	}
 
 	@Test
 	public void parseJson() {
-		Result<Geo> result = marshaller.parseJson(JCalValue.structured("12.34", "56.78"), ICalDataType.FLOAT, new ICalParameters());
+		sensei.assertParseJson(JCalValue.structured(12.34, 56.78)).run(has(12.34, 56.78));
+		sensei.assertParseJson(JCalValue.structured(null, 56.78)).run(has(null, 56.78));
+		sensei.assertParseJson(JCalValue.structured(12.34, null)).run(has(12.34, null));
+		sensei.assertParseJson(JCalValue.structured(null, null)).run(has(null, null));
 
-		Geo prop = result.getProperty();
-		assertEquals(12.34, prop.getLatitude(), 0.001);
-		assertEquals(56.78, prop.getLongitude(), 0.001);
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseJson(JCalValue.structured("invalid", 56.78)).cannotParse();
+		sensei.assertParseJson(JCalValue.structured(12.34, "invalid")).cannotParse();
+		sensei.assertParseJson("").cannotParse();
 	}
 
-	@Test
-	public void parseJson_missing_longitude() {
-		Result<Geo> result = marshaller.parseJson(JCalValue.structured("12.34"), ICalDataType.FLOAT, new ICalParameters());
+	private Check<Geo> has(final Double latitude, final Double longitude) {
+		return new Check<Geo>() {
+			public void check(Geo actual) {
+				if (latitude == null) {
+					assertNull(actual.getLatitude());
+				} else {
+					assertEquals(latitude, actual.getLatitude(), 0.001);
+				}
 
-		Geo prop = result.getProperty();
-		assertEquals(12.34, prop.getLatitude(), 0.001);
-		assertNull(prop.getLongitude());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseJson_missing_both() {
-		Result<Geo> result = marshaller.parseJson(JCalValue.structured(), ICalDataType.FLOAT, new ICalParameters());
-
-		Geo prop = result.getProperty();
-		assertNull(prop.getLatitude());
-		assertNull(prop.getLongitude());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseJson_bad_latitude() {
-		marshaller.parseJson(JCalValue.structured("bad", "56.78"), ICalDataType.FLOAT, new ICalParameters());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseJson_bad_longitude() {
-		marshaller.parseJson(JCalValue.structured("12.34", "bad"), ICalDataType.FLOAT, new ICalParameters());
+				if (longitude == null) {
+					assertNull(actual.getLongitude());
+				} else {
+					assertEquals(longitude, actual.getLongitude(), 0.001);
+				}
+			}
+		};
 	}
 }

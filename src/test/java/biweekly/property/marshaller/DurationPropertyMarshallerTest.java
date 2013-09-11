@@ -1,19 +1,11 @@
 package biweekly.property.marshaller;
 
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
-import biweekly.io.json.JCalValue;
-import biweekly.parameter.ICalParameters;
 import biweekly.property.DurationProperty;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
 import biweekly.util.Duration;
 
 /*
@@ -46,105 +38,56 @@ import biweekly.util.Duration;
  */
 public class DurationPropertyMarshallerTest {
 	private final DurationPropertyMarshaller marshaller = new DurationPropertyMarshaller();
+	private final Sensei<DurationProperty> sensei = new Sensei<DurationProperty>(marshaller);
+
 	private final Duration duration = Duration.builder().hours(1).minutes(30).build();
+	private final String durationStr = duration.toString();
+
+	private final DurationProperty withDuration = new DurationProperty(duration);
+	private final DurationProperty empty = new DurationProperty(null);
 
 	@Test
 	public void writeText() {
-		DurationProperty prop = new DurationProperty(duration);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "PT1H30M";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_null() {
-		DurationProperty prop = new DurationProperty(null);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "";
-		assertEquals(expected, actual);
+		sensei.assertWriteText(withDuration).run(durationStr);
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
 	public void parseText() {
-		String value = "PT1H30M";
-		ICalParameters params = new ICalParameters();
-
-		Result<DurationProperty> result = marshaller.parseText(value, ICalDataType.DURATION, params);
-
-		assertEquals(duration, result.getProperty().getValue());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseText_invalid() {
-		String value = "invalid";
-		ICalParameters params = new ICalParameters();
-
-		marshaller.parseText(value, ICalDataType.DURATION, params);
+		sensei.assertParseText(durationStr).run(hasDuration);
+		sensei.assertParseText("invalid").cannotParse();
+		sensei.assertParseText("").cannotParse();
 	}
 
 	@Test
 	public void writeXml() {
-		DurationProperty prop = new DurationProperty(duration);
-		assertWriteXml("<duration>PT1H30M</duration>", prop, marshaller);
-	}
-
-	@Test
-	public void writeXml_null() {
-		DurationProperty prop = new DurationProperty(null);
-		assertWriteXml("", prop, marshaller);
+		sensei.assertWriteXml(withDuration).run("<duration>" + durationStr + "</duration>");
+		sensei.assertWriteXml(empty).run("");
 	}
 
 	@Test
 	public void parseXml() {
-		Result<DurationProperty> result = parseXCalProperty("<duration>PT1H30M</duration>", marshaller);
-
-		DurationProperty prop = result.getProperty();
-		assertEquals(duration, prop.getValue());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_invalid() {
-		parseXCalProperty("<duration>invalid</duration>", marshaller);
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_empty() {
-		parseXCalProperty("", marshaller);
+		sensei.assertParseXml("<duration>" + durationStr + "</duration>").run(hasDuration);
+		sensei.assertParseXml("<duration>invalid</duration>").cannotParse();
+		sensei.assertParseXml("").cannotParse();
 	}
 
 	@Test
 	public void writeJson() {
-		DurationProperty prop = new DurationProperty(duration);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals("PT1H30M", actual.getSingleValued());
-	}
-
-	@Test
-	public void writeJson_null() {
-		DurationProperty prop = new DurationProperty(null);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertTrue(actual.getValues().get(0).isNull());
+		sensei.assertWriteJson(withDuration).run(durationStr);
+		sensei.assertWriteJson(empty).run((String) null);
 	}
 
 	@Test
 	public void parseJson() {
-		Result<DurationProperty> result = marshaller.parseJson(JCalValue.single("PT1H30M"), ICalDataType.DURATION, new ICalParameters());
-
-		DurationProperty prop = result.getProperty();
-		assertEquals(duration, prop.getValue());
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseJson(durationStr).run(hasDuration);
+		sensei.assertParseJson("invalid").cannotParse();
+		sensei.assertParseJson("").cannotParse();
 	}
 
-	@Test(expected = CannotParseException.class)
-	public void parseJson_invalid() {
-		marshaller.parseJson(JCalValue.single("invalid"), ICalDataType.DURATION, new ICalParameters());
-	}
+	private final Check<DurationProperty> hasDuration = new Check<DurationProperty>() {
+		public void check(DurationProperty property) {
+			assertEquals(duration, property.getValue());
+		}
+	};
 }

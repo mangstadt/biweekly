@@ -1,19 +1,12 @@
 package biweekly.property.marshaller;
 
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
-import biweekly.io.json.JCalValue;
-import biweekly.parameter.ICalParameters;
 import biweekly.property.TextProperty;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -45,105 +38,64 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  */
 public class TextPropertyMarshallerTest {
 	private final TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl();
+	private final Sensei<TextPropertyImpl> sensei = new Sensei<TextPropertyImpl>(marshaller);
+
+	private final String value = "the;text";
+	private final TextPropertyImpl withValue = new TextPropertyImpl(value);
+	private final TextPropertyImpl empty = new TextPropertyImpl(null);
 
 	@Test
 	public void writeText() {
-		TextPropertyImpl prop = new TextPropertyImpl("the;text");
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "the\\;text";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_null() {
-		TextPropertyImpl prop = new TextPropertyImpl(null);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "";
-		assertEquals(expected, actual);
+		sensei.assertWriteText(withValue).run("the\\;text");
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
 	public void parseText() {
-		String value = "the\\;text";
-		ICalParameters params = new ICalParameters();
-
-		Result<TextPropertyImpl> result = marshaller.parseText(value, ICalDataType.TEXT, params);
-
-		TextPropertyImpl prop = result.getProperty();
-		assertEquals("the;text", prop.getValue());
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseText("the\\;text").run(has(value));
+		sensei.assertParseText(value).run(has(value));
+		sensei.assertParseText("").run(has(""));
 	}
 
 	@Test
 	public void writeXml() {
-		TextPropertyImpl prop = new TextPropertyImpl("text");
-		assertWriteXml("<text>text</text>", prop, marshaller);
-	}
-
-	@Test
-	public void writeXml_null() {
-		TextPropertyImpl prop = new TextPropertyImpl(null);
-		assertWriteXml("<text></text>", prop, marshaller);
+		sensei.assertWriteXml(withValue).run("<text>" + value + "</text>");
+		sensei.assertWriteXml(empty).run("<text/>");
 	}
 
 	@Test
 	public void writeXml_data_type() {
 		TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl(ICalDataType.CAL_ADDRESS);
-		TextPropertyImpl prop = new TextPropertyImpl("mailto:johndoe@example.com");
-		assertWriteXml("<cal-address>mailto:johndoe@example.com</cal-address>", prop, marshaller);
+		Sensei<TextPropertyImpl> sensei = new Sensei<TextPropertyImpl>(marshaller);
+
+		sensei.assertWriteXml(withValue).run("<cal-address>" + value + "</cal-address>");
+		sensei.assertWriteXml(empty).run("<cal-address/>");
 	}
 
 	@Test
 	public void parseXml() {
-		Result<TextPropertyImpl> result = parseXCalProperty("<text>text</text>", marshaller);
-
-		TextPropertyImpl prop = result.getProperty();
-		assertEquals("text", prop.getValue());
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseXml("<text>" + value + "</text>").run(has(value));
+		sensei.assertParseXml("").cannotParse();
 	}
 
 	@Test
 	public void parseXml_data_type() {
 		TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl(ICalDataType.CAL_ADDRESS);
-		Result<TextPropertyImpl> result = parseXCalProperty("<cal-address>mailto:johndoe@example.com</cal-address>", marshaller);
+		Sensei<TextPropertyImpl> sensei = new Sensei<TextPropertyImpl>(marshaller);
 
-		TextPropertyImpl prop = result.getProperty();
-		assertEquals("mailto:johndoe@example.com", prop.getValue());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_empty() {
-		parseXCalProperty("", marshaller);
+		sensei.assertParseXml("<cal-address>" + value + "</cal-address>").run(has(value));
 	}
 
 	@Test
 	public void writeJson() {
-		TextPropertyImpl prop = new TextPropertyImpl("text");
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals("text", actual.getSingleValued());
-	}
-
-	@Test
-	public void writeJson_null() {
-		TextPropertyImpl prop = new TextPropertyImpl(null);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertTrue(actual.getValues().get(0).isNull());
+		sensei.assertWriteJson(withValue).run(value);
+		sensei.assertWriteJson(empty).run((String) null);
 	}
 
 	@Test
 	public void parseJson() {
-		Result<TextPropertyImpl> result = marshaller.parseJson(JCalValue.single("text"), ICalDataType.TEXT, new ICalParameters());
-
-		TextPropertyImpl prop = result.getProperty();
-		assertEquals("text", prop.getValue());
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseJson(value).run(has(value));
+		sensei.assertParseJson("").run(has(""));
 	}
 
 	private class TextPropertyMarshallerImpl extends TextPropertyMarshaller<TextPropertyImpl> {
@@ -165,5 +117,13 @@ public class TextPropertyMarshallerTest {
 		public TextPropertyImpl(String value) {
 			super(value);
 		}
+	}
+
+	private Check<TextPropertyImpl> has(final String expected) {
+		return new Check<TextPropertyImpl>() {
+			public void check(TextPropertyImpl actual) {
+				assertEquals(expected, actual.getValue());
+			}
+		};
 	}
 }

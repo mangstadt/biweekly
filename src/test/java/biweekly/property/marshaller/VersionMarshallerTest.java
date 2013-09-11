@@ -1,19 +1,11 @@
 package biweekly.property.marshaller;
 
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
-import biweekly.io.json.JCalValue;
-import biweekly.parameter.ICalParameters;
 import biweekly.property.Version;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -45,99 +37,59 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  */
 public class VersionMarshallerTest {
 	private final VersionMarshaller marshaller = new VersionMarshaller();
+	private final Sensei<Version> sensei = new Sensei<Version>(marshaller);
+
+	private final Version withMinMax = new Version("1.0", "2.0");
+	private final Version withMax = new Version("2.0");
+	private final Version empty = new Version(null);
 
 	@Test
 	public void writeText_min_max() {
-		Version prop = new Version("1.0", "2.0");
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "1.0;2.0";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_max() {
-		Version prop = new Version("2.0");
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "2.0";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_null() {
-		Version prop = new Version(null);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "";
-		assertEquals(expected, actual);
+		sensei.assertWriteText(withMinMax).run("1.0;2.0");
+		sensei.assertWriteText(withMax).run("2.0");
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
 	public void parseText_min_max() {
-		String value = "1.0;2.0";
-		ICalParameters params = new ICalParameters();
-
-		Result<Version> result = marshaller.parseText(value, ICalDataType.TEXT, params);
-
-		Version prop = result.getProperty();
-		assertEquals("1.0", prop.getMinVersion());
-		assertEquals("2.0", prop.getMaxVersion());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_max() {
-		String value = "2.0";
-		ICalParameters params = new ICalParameters();
-
-		Result<Version> result = marshaller.parseText(value, ICalDataType.TEXT, params);
-
-		Version prop = result.getProperty();
-		assertNull(prop.getMinVersion());
-		assertEquals("2.0", prop.getMaxVersion());
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseText("1.0;2.0").run(has("1.0", "2.0"));
+		sensei.assertParseText("2.0").run(has(null, "2.0"));
+		sensei.assertParseText("").run(has(null, ""));
 	}
 
 	@Test
 	public void writeXml() {
-		Version prop = new Version("2.0");
-		assertWriteXml("<text>2.0</text>", prop, marshaller);
+		sensei.assertWriteXml(withMinMax).run("<text>2.0</text>");
+		sensei.assertWriteXml(withMax).run("<text>2.0</text>");
+		sensei.assertWriteXml(empty).run("<text/>");
 	}
 
 	@Test
 	public void parseXml() {
-		Result<Version> result = parseXCalProperty("<text>2.0</text>", marshaller);
-
-		Version prop = result.getProperty();
-		assertNull(prop.getMinVersion());
-		assertEquals("2.0", prop.getMaxVersion());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_empty() {
-		parseXCalProperty("", marshaller);
+		sensei.assertParseXml("<text>2.0</text>").run(has(null, "2.0"));
+		sensei.assertParseXml("<text/>").run(has(null, ""));
+		sensei.assertParseXml("").cannotParse();
 	}
 
 	@Test
 	public void writeJson() {
-		Version prop = new Version("2.0");
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals("2.0", actual.getSingleValued());
+		sensei.assertWriteJson(withMinMax).run("2.0");
+		sensei.assertWriteJson(withMax).run("2.0");
+		sensei.assertWriteJson(empty).run((String) null);
 	}
 
 	@Test
 	public void parseJson() {
-		Result<Version> result = marshaller.parseJson(JCalValue.single("2.0"), ICalDataType.TEXT, new ICalParameters());
+		sensei.assertParseJson("2.0").run(has(null, "2.0"));
+		sensei.assertParseJson("").run(has(null, ""));
+	}
 
-		Version prop = result.getProperty();
-		assertNull(prop.getMinVersion());
-		assertEquals("2.0", prop.getMaxVersion());
-		assertWarnings(0, result.getWarnings());
+	private Check<Version> has(final String min, final String max) {
+		return new Check<Version>() {
+			public void check(Version actual) {
+				assertEquals(min, actual.getMinVersion());
+				assertEquals(max, actual.getMaxVersion());
+			}
+		};
 	}
 }

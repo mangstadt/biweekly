@@ -12,8 +12,7 @@ import java.util.Date;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 /*
@@ -45,18 +44,8 @@ import org.junit.Test;
  * @author Michael Angstadt
  */
 public class ICalDateFormatterTest {
-	private static TimeZone defaultTz;
-
-	@BeforeClass
-	public static void beforeClass() {
-		defaultTz = TimeZone.getDefault();
-		TimeZone.setDefault(buildTimezone(1, 0));
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		TimeZone.setDefault(defaultTz);
-	}
+	@ClassRule
+	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
 
 	@Test
 	public void format() {

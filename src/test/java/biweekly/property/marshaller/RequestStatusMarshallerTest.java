@@ -1,20 +1,12 @@
 package biweekly.property.marshaller;
 
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
 
 import org.junit.Test;
 
-import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
-import biweekly.parameter.ICalParameters;
 import biweekly.property.RequestStatus;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -46,144 +38,125 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  */
 public class RequestStatusMarshallerTest {
 	private final RequestStatusMarshaller marshaller = new RequestStatusMarshaller();
+	private final Sensei<RequestStatus> sensei = new Sensei<RequestStatus>(marshaller);
+
+	private final String code = "1.2.3;", description = "description;", data = "data;";
+
+	private final RequestStatus withAll = new RequestStatus(code);
+	{
+		withAll.setDescription(description);
+		withAll.setExceptionText(data);
+	}
+	private final RequestStatus withCodeDescription = new RequestStatus(code);
+	{
+		withCodeDescription.setDescription(description);
+	}
+	private final RequestStatus withCodeData = new RequestStatus(code);
+	{
+		withCodeData.setExceptionText(data);
+	}
+	private final RequestStatus withDescriptionData = new RequestStatus(null);
+	{
+		withDescriptionData.setDescription(description);
+		withDescriptionData.setExceptionText(data);
+	}
+	private final RequestStatus withCode = new RequestStatus(code);
+	private final RequestStatus withDescription = new RequestStatus(null);
+	{
+		withDescription.setDescription(description);
+	}
+	private final RequestStatus withData = new RequestStatus(null);
+	{
+		withData.setExceptionText(data);
+	}
+	private final RequestStatus empty = new RequestStatus(null);
 
 	@Test
 	public void writeText() {
-		RequestStatus prop = new RequestStatus(null);
-		String actual = marshaller.writeText(prop);
-		String expected = "";
-		assertEquals(expected, actual);
-
-		prop = new RequestStatus("1.2.3");
-		actual = marshaller.writeText(prop);
-		expected = "1.2.3";
-		assertEquals(expected, actual);
-
-		prop = new RequestStatus("1.2.3");
-		prop.setDescription("description;here");
-		actual = marshaller.writeText(prop);
-		expected = "1.2.3;description\\;here";
-		assertEquals(expected, actual);
-
-		prop = new RequestStatus("1.2.3");
-		prop.setDescription("description;here");
-		prop.setExceptionText("data;here");
-		actual = marshaller.writeText(prop);
-		expected = "1.2.3;description\\;here;data\\;here";
-		assertEquals(expected, actual);
-
-		prop = new RequestStatus("1.2.3");
-		prop.setDescription(null);
-		prop.setExceptionText("data;here");
-		actual = marshaller.writeText(prop);
-		expected = "1.2.3;;data\\;here";
-		assertEquals(expected, actual);
-
-		prop = new RequestStatus(null);
-		prop.setDescription("description;here");
-		prop.setExceptionText("data;here");
-		actual = marshaller.writeText(prop);
-		expected = ";description\\;here;data\\;here";
-		assertEquals(expected, actual);
+		sensei.assertWriteText(withAll).run("1.2.3\\;;description\\;;data\\;");
+		sensei.assertWriteText(withCodeDescription).run("1.2.3\\;;description\\;");
+		sensei.assertWriteText(withCodeData).run("1.2.3\\;;;data\\;");
+		sensei.assertWriteText(withDescriptionData).run(";description\\;;data\\;");
+		sensei.assertWriteText(withCode).run("1.2.3\\;");
+		sensei.assertWriteText(withDescription).run(";description\\;");
+		sensei.assertWriteText(withData).run(";;data\\;");
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
 	public void parseText() {
-		ICalParameters params = new ICalParameters();
-
-		String value = "1.2.3;description\\;here;data\\;here";
-		Result<RequestStatus> result = marshaller.parseText(value, ICalDataType.TEXT, params);
-		RequestStatus prop = result.getProperty();
-		assertEquals("1.2.3", prop.getStatusCode());
-		assertEquals("description;here", prop.getDescription());
-		assertEquals("data;here", prop.getExceptionText());
-		assertWarnings(0, result.getWarnings());
-
-		value = "1.2.3;description\\;here";
-		result = marshaller.parseText(value, ICalDataType.TEXT, params);
-		prop = result.getProperty();
-		assertEquals("1.2.3", prop.getStatusCode());
-		assertEquals("description;here", prop.getDescription());
-		assertEquals(null, prop.getExceptionText());
-		assertWarnings(0, result.getWarnings());
-
-		value = "1.2.3";
-		result = marshaller.parseText(value, ICalDataType.TEXT, params);
-		prop = result.getProperty();
-		assertEquals("1.2.3", prop.getStatusCode());
-		assertEquals(null, prop.getDescription());
-		assertEquals(null, prop.getExceptionText());
-		assertWarnings(0, result.getWarnings());
-
-		value = "";
-		result = marshaller.parseText(value, ICalDataType.TEXT, params);
-		prop = result.getProperty();
-		assertEquals("", prop.getStatusCode());
-		assertEquals(null, prop.getDescription());
-		assertEquals(null, prop.getExceptionText());
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseText("1.2.3\\;;description\\;;data\\;").run(is(withAll));
+		sensei.assertParseText("1.2.3\\;;description\\;").run(is(withCodeDescription));
+		sensei.assertParseText("1.2.3\\;;;data\\;").run(is(withCodeData));
+		sensei.assertParseText(";description\\;;data\\;").run(is(withDescriptionData));
+		sensei.assertParseText("1.2.3\\;").run(is(withCode));
+		sensei.assertParseText(";description\\;").run(is(withDescription));
+		sensei.assertParseText(";;data\\;").run(is(withData));
+		sensei.assertParseText(";;").run(is(empty));
+		sensei.assertParseText(";").run(is(empty));
+		sensei.assertParseText("").run(is(empty));
 	}
 
 	@Test
 	public void writeXml() {
-		RequestStatus prop = new RequestStatus("1.2.3");
-		prop.setDescription("description");
-		prop.setExceptionText("data");
-		assertWriteXml("<code>1.2.3</code><description>description</description><data>data</data>", prop, marshaller);
+		sensei.assertWriteXml(withAll).run("<code>" + code + "</code><description>" + description + "</description><data>" + data + "</data>");
+		sensei.assertWriteXml(withCodeDescription).run("<code>" + code + "</code><description>" + description + "</description>");
+		sensei.assertWriteXml(withCodeData).run("<code>" + code + "</code><data>" + data + "</data>");
+		sensei.assertWriteXml(withDescriptionData).run("<description>" + description + "</description><data>" + data + "</data>");
+		sensei.assertWriteXml(withCode).run("<code>" + code + "</code>");
+		sensei.assertWriteXml(withDescription).run("<description>" + description + "</description>");
+		sensei.assertWriteXml(withData).run("<data>" + data + "</data>");
+		sensei.assertWriteXml(empty).run("");
 	}
 
 	@Test
 	public void parseXml() {
-		Result<RequestStatus> result = parseXCalProperty("<code>1.2.3</code><description>description</description><data>data</data>", marshaller);
-
-		RequestStatus prop = result.getProperty();
-		assertEquals("1.2.3", prop.getStatusCode());
-		assertEquals("description", prop.getDescription());
-		assertEquals("data", prop.getExceptionText());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_missing_code() {
-		parseXCalProperty("<description>description</description><data>data</data>", marshaller);
+		sensei.assertParseXml("<code>" + code + "</code><description>" + description + "</description><data>" + data + "</data>").run(is(withAll));
+		sensei.assertParseXml("<code>" + code + "</code><description>" + description + "</description>").run(is(withCodeDescription));
+		sensei.assertParseXml("<code>" + code + "</code><data>" + data + "</data>").run(is(withCodeData));
+		sensei.assertParseXml("<description>" + description + "</description><data>" + data + "</data>").cannotParse();
+		sensei.assertParseXml("<code>" + code + "</code>").run(is(withCode));
+		sensei.assertParseXml("<description>" + description + "</description>").cannotParse();
+		sensei.assertParseXml("<data>" + data + "</data>").cannotParse();
+		sensei.assertParseXml("<code/><description/><data/>").run(is(empty));
+		sensei.assertParseXml("").cannotParse();
 	}
 
 	@Test
 	public void writeJson() {
-		RequestStatus prop = new RequestStatus("1.2.3");
-		prop.setDescription("description");
-		prop.setExceptionText("data");
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Arrays.asList("1.2.3", "description", "data"), actual.getStructured());
-	}
-
-	@Test
-	public void writeJson_missing_data() {
-		RequestStatus prop = new RequestStatus("1.2.3");
-		prop.setDescription("description");
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Arrays.asList("1.2.3", "description"), actual.getStructured());
-	}
-
-	@Test
-	public void writeJson_missing_description() {
-		RequestStatus prop = new RequestStatus("1.2.3");
-		prop.setExceptionText("data");
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Arrays.asList("1.2.3", "", "data"), actual.getStructured());
+		sensei.assertWriteJson(withAll).run(JCalValue.structured(code, description, data));
+		sensei.assertWriteJson(withCodeDescription).run(JCalValue.structured(code, description));
+		sensei.assertWriteJson(withCodeData).run(JCalValue.structured(code, "", data));
+		sensei.assertWriteJson(withDescriptionData).run(JCalValue.structured("", description, data));
+		sensei.assertWriteJson(withCode).run(JCalValue.structured(code));
+		sensei.assertWriteJson(withDescription).run(JCalValue.structured("", description));
+		sensei.assertWriteJson(withData).run(JCalValue.structured("", "", data));
+		sensei.assertWriteJson(empty).run((String) null);
 	}
 
 	@Test
 	public void parseJson() {
-		Result<RequestStatus> result = marshaller.parseJson(JCalValue.structured("1.2.3", "description", "data"), ICalDataType.TEXT, new ICalParameters());
+		sensei.assertParseJson(JCalValue.structured(code, description, data)).run(is(withAll));
+		sensei.assertParseJson(JCalValue.structured(code, description)).run(is(withCodeDescription));
+		sensei.assertParseJson(JCalValue.structured(code, description, "")).run(is(withCodeDescription));
+		sensei.assertParseJson(JCalValue.structured(code, "", data)).run(is(withCodeData));
+		sensei.assertParseJson(JCalValue.structured("", description, data)).run(is(withDescriptionData));
+		sensei.assertParseJson(JCalValue.structured(code)).run(is(withCode));
+		sensei.assertParseJson(JCalValue.structured(code, "")).run(is(withCode));
+		sensei.assertParseJson(JCalValue.structured(code, "", "")).run(is(withCode));
+		sensei.assertParseJson(JCalValue.structured("", description)).run(is(withDescription));
+		sensei.assertParseJson(JCalValue.structured("", description, "")).run(is(withDescription));
+		sensei.assertParseJson(JCalValue.structured("", "", data)).run(is(withData));
+		sensei.assertParseJson("").run(is(empty));
+	}
 
-		RequestStatus prop = result.getProperty();
-		assertEquals("1.2.3", prop.getStatusCode());
-		assertEquals("description", prop.getDescription());
-		assertEquals("data", prop.getExceptionText());
-		assertWarnings(0, result.getWarnings());
+	private Check<RequestStatus> is(final RequestStatus expected) {
+		return new Check<RequestStatus>() {
+			public void check(RequestStatus actual) {
+				assertEquals(expected.getStatusCode(), actual.getStatusCode());
+				assertEquals(expected.getDescription(), actual.getDescription());
+				assertEquals(expected.getExceptionText(), actual.getExceptionText());
+			}
+		};
 	}
 }

@@ -1,26 +1,18 @@
 package biweekly.property.marshaller;
 
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.TimeZone;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 
-import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
-import biweekly.parameter.ICalParameters;
 import biweekly.property.FreeBusy;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
+import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.Duration;
 import biweekly.util.Period;
 
@@ -53,11 +45,15 @@ import biweekly.util.Period;
  * @author Michael Angstadt
  */
 public class FreeBusyMarshallerTest {
+	@ClassRule
+	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
+
 	private final FreeBusyMarshaller marshaller = new FreeBusyMarshaller();
+	private final Sensei<FreeBusy> sensei = new Sensei<FreeBusy>(marshaller);
 
 	private final Date start;
 	{
-		Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar c = Calendar.getInstance();
 		c.clear();
 		c.set(Calendar.YEAR, 2013);
 		c.set(Calendar.MONTH, Calendar.JUNE);
@@ -67,378 +63,197 @@ public class FreeBusyMarshallerTest {
 		c.set(Calendar.SECOND, 2);
 		start = c.getTime();
 	}
+	private final String startStr = "20130611T124302Z";
+	private final String startStrExt = "2013-06-11T12:43:02Z";
 
 	private final Date end;
 	{
-		Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar c = Calendar.getInstance();
 		c.setTime(start);
 		c.add(Calendar.HOUR, 2);
 		end = c.getTime();
 	}
+	private final String endStr = "20130611T144302Z";
+	private final String endStrExt = "2013-06-11T14:43:02Z";
 
 	private final Duration duration = Duration.builder().hours(2).build();
+	private final String durationStr = duration.toString();
+
+	private final FreeBusy withMultiple = new FreeBusy();
+	{
+		withMultiple.addValue(start, end);
+		withMultiple.addValue(start, duration);
+	}
+	private final FreeBusy withSingle = new FreeBusy();
+	{
+		withSingle.addValue(start, end);
+	}
+	private final FreeBusy empty = new FreeBusy();
 
 	@Test
 	public void writeText() {
-		FreeBusy prop = new FreeBusy();
-		prop.addValue(start, end);
-		prop.addValue(start, duration);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "20130611T134302Z/20130611T154302Z,20130611T134302Z/PT2H";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_single() {
-		FreeBusy prop = new FreeBusy();
-		prop.addValue(start, end);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "20130611T134302Z/20130611T154302Z";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_empty() {
-		FreeBusy prop = new FreeBusy();
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "";
-		assertEquals(expected, actual);
+		sensei.assertWriteText(withSingle).run(startStr + "/" + endStr);
+		sensei.assertWriteText(withMultiple).run(startStr + "/" + endStr + "," + startStr + "/" + durationStr);
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
 	public void parseText() {
-		String value = "20130611T134302Z/20130611T154302Z,20130611T134302Z/PT2H";
-		ICalParameters params = new ICalParameters();
-
-		Result<FreeBusy> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
-
-		Iterator<Period> it = result.getProperty().getValues().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertNull(period.getEndDate());
-		assertEquals(duration, period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_invalid_start_date() {
-		String value = "20130611T134302Z/20130611T154302Z,invalid/PT2H";
-		ICalParameters params = new ICalParameters();
-
-		Result<FreeBusy> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
-
-		Iterator<Period> it = result.getProperty().getValues().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_invalid_end_date() {
-		String value = "20130611T134302Z/20130611T154302Z,20130611T134302Z/invalid";
-		ICalParameters params = new ICalParameters();
-
-		Result<FreeBusy> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
-
-		Iterator<Period> it = result.getProperty().getValues().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_invalid_no_end_date() {
-		String value = "20130611T134302Z/20130611T154302Z,20130611T134302Z";
-		ICalParameters params = new ICalParameters();
-
-		Result<FreeBusy> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
-
-		Iterator<Period> it = result.getProperty().getValues().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_empty() {
-		String value = "";
-		ICalParameters params = new ICalParameters();
-
-		Result<FreeBusy> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
-
-		Iterator<Period> it = result.getProperty().getValues().iterator();
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseText(startStr + "/" + endStr).run(hasSingle);
+		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/" + durationStr).run(hasMultiple);
+		sensei.assertParseText(startStr + "/" + endStr + ",invalid/" + durationStr).warnings(1).run(hasSingle);
+		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/invalid").warnings(1).run(hasSingle);
+		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/").warnings(1).run(hasSingle);
+		sensei.assertParseText(startStr + "/" + endStr + "," + startStr).warnings(1).run(hasSingle);
+		sensei.assertParseText("").run(has());
 	}
 
 	@Test
 	public void writeXml() {
-		FreeBusy prop = new FreeBusy();
-		prop.addValue(start, end);
-		prop.addValue(start, duration);
 		//@formatter:off
-		assertWriteXml(
+		sensei.assertWriteXml(withSingle).run(
 		"<period>" +
-			"<start>2013-06-11T13:43:02Z</start>" +
-			"<end>2013-06-11T15:43:02Z</end>" +
+			"<start>" + startStrExt + "</start>" +
+			"<end>" + endStrExt + "</end>" +
+		"</period>");
+		
+		sensei.assertWriteXml(withMultiple).run(
+		"<period>" +
+			"<start>" + startStrExt + "</start>" +
+			"<end>" + endStrExt + "</end>" +
 		"</period>" +
 		"<period>" +
-			"<start>2013-06-11T13:43:02Z</start>" +
-			"<duration>PT2H</duration>" +
-		"</period>", prop, marshaller);
+			"<start>" + startStrExt + "</start>" +
+			"<duration>" + durationStr + "</duration>" +
+		"</period>");
 		//@formatter:on
-	}
 
-	@Test
-	public void writeXml_empty() {
-		FreeBusy prop = new FreeBusy();
-		assertWriteXml("", prop, marshaller);
+		sensei.assertWriteXml(empty).run("");
 	}
 
 	@Test
 	public void parseXml() {
 		//@formatter:off
-		Result<FreeBusy> result = parseXCalProperty(
+		sensei.assertParseXml(
 		"<period>" +
-			"<start>2013-06-11T13:43:02Z</start>" +
-			"<end>2013-06-11T15:43:02Z</end>" +
+			"<start>" + startStrExt + "</start>" +
+			"<end>" + endStrExt + "</end>" +
+		"</period>"
+		).run(hasSingle);
+		
+		sensei.assertParseXml(
+		"<period>" +
+			"<start>" + startStrExt + "</start>" +
+			"<end>" + endStrExt + "</end>" +
 		"</period>" +
 		"<period>" +
-			"<start>2013-06-11T13:43:02Z</start>" +
-			"<duration>PT2H</duration>" +
-		"</period>", marshaller);
-		//@formatter:on
-
-		Iterator<Period> it = result.getProperty().getValues().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertNull(period.getEndDate());
-		assertEquals(duration, period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseXml_invalid_start_date() {
-		//@formatter:off
-		Result<FreeBusy> result = parseXCalProperty(
+			"<start>" + startStrExt + "</start>" +
+			"<duration>" + durationStr + "</duration>" +
+		"</period>"
+		).run(hasMultiple);
+		
+		sensei.assertParseXml(
 		"<period>" +
-			"<start>2013-06-11T13:43:02Z</start>" +
-			"<end>2013-06-11T15:43:02Z</end>" +
+			"<start>" + startStrExt + "</start>" +
+			"<end>" + endStrExt + "</end>" +
 		"</period>" +
 		"<period>" +
 			"<start>invalid</start>" +
-			"<duration>PT2H</duration>" +
-		"</period>", marshaller);
-		//@formatter:on
-
-		Iterator<Period> it = result.getProperty().getValues().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseXml_invalid_end_date() {
-		//@formatter:off
-		Result<FreeBusy> result = parseXCalProperty(
+			"<duration>" + durationStr + "</duration>" +
+		"</period>"
+		).warnings(1).run(hasSingle);
+		
+		sensei.assertParseXml(
 		"<period>" +
-			"<start>2013-06-11T13:43:02Z</start>" +
-			"<end>invalid</end>" +
+			"<start>" + startStrExt + "</start>" +
+			"<end>" + endStrExt + "</end>" +
 		"</period>" +
 		"<period>" +
-			"<start>2013-06-11T13:43:02Z</start>" +
-			"<duration>PT2H</duration>" +
-		"</period>", marshaller);
-		//@formatter:on
-
-		Iterator<Period> it = result.getProperty().getValues().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertNull(period.getEndDate());
-		assertEquals(duration, period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseXml_invalid_duration() {
-		//@formatter:off
-		Result<FreeBusy> result = parseXCalProperty(
-		"<period>" +
-			"<start>2013-06-11T13:43:02Z</start>" +
-			"<end>2013-06-11T15:43:02Z</end>" +
-		"</period>" +
-		"<period>" +
-			"<start>2013-06-11T13:43:02Z</start>" +
+			"<start>" + startStrExt  + "</start>" +
 			"<duration>invalid</duration>" +
-		"</period>", marshaller);
+		"</period>"
+		).warnings(1).run(hasSingle);
+		
+		sensei.assertParseXml(
+		"<period>" +
+			"<start>" + startStrExt + "</start>" +
+			"<end>" + endStrExt + "</end>" +
+		"</period>" +
+		"<period>" +
+			"<start>" + startStrExt  + "</start>" +
+			"<end>invalid</end>" +
+		"</period>"
+		).warnings(1).run(hasSingle);
+		
+		sensei.assertParseXml(
+		"<period>" +
+			"<start>" + startStrExt + "</start>" +
+			"<end>" + endStrExt + "</end>" +
+		"</period>" +
+		"<period>" +
+			"<start>" + startStrExt  + "</start>" +
+		"</period>"
+		).warnings(1).run(hasSingle);
+		
+		sensei.assertParseXml(
+		"<period>" +
+			"<start>" + startStrExt + "</start>" +
+			"<end>" + endStrExt + "</end>" +
+		"</period>" +
+		"<period>" +
+			"<end>" + endStrExt + "</end>" +
+		"</period>"
+		).warnings(1).run(hasSingle);
+		
+		sensei.assertParseXml(
+		"<period>" +
+			"<start>" + startStrExt + "</start>" +
+			"<end>" + endStrExt + "</end>" +
+		"</period>" +
+		"<period>" +
+			"<duration>" + durationStr + "</duration>" +
+		"</period>"
+		).warnings(1).run(hasSingle);
+		
+		sensei.assertParseXml(
+		"<period>" +
+			"<start>" + startStrExt + "</start>" +
+			"<end>" + endStrExt + "</end>" +
+		"</period>" +
+		"<period/>"
+		).warnings(1).run(hasSingle);
+		
+		sensei.assertParseXml("").cannotParse();
 		//@formatter:on
-
-		Iterator<Period> it = result.getProperty().getValues().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_empty() {
-		parseXCalProperty("", marshaller);
 	}
 
 	@Test
 	public void writeJson() {
-		FreeBusy prop = new FreeBusy();
-		prop.addValue(start, end);
-		prop.addValue(start, duration);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Arrays.asList("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/PT2H"), actual.getMultivalued());
-	}
-
-	@Test
-	public void writeJson_empty() {
-		FreeBusy prop = new FreeBusy();
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Arrays.asList(), actual.getMultivalued());
+		sensei.assertWriteJson(withSingle).run(JCalValue.multi(startStrExt + "/" + endStrExt));
+		sensei.assertWriteJson(withMultiple).run(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/" + durationStr));
+		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
 	public void parseJson() {
-		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/PT2H"), ICalDataType.PERIOD, new ICalParameters());
+		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt)).run(hasSingle);
+		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/" + durationStr)).run(hasMultiple);
 
-		Iterator<Period> it = result.getProperty().getValues().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertNull(period.getEndDate());
-		assertEquals(duration, period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, "invalid/" + durationStr)).warnings(1).run(hasSingle);
+		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/invalid")).warnings(1).run(hasSingle);
+		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/")).warnings(1).run(hasSingle);
+		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt)).warnings(1).run(hasSingle);
+		sensei.assertParseJson("").warnings(1).run(has());
 	}
 
-	@Test
-	public void parseJson_invalid_start_date() {
-		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "invalid/PT2H"), ICalDataType.PERIOD, new ICalParameters());
+	private final Check<FreeBusy> hasSingle = has(new Period(start, end));
+	private final Check<FreeBusy> hasMultiple = has(new Period(start, end), new Period(start, duration));
 
-		Iterator<Period> it = result.getProperty().getValues().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseJson_invalid_end_date() {
-		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/invalid", "2013-06-11T13:43:02Z/PT2H"), ICalDataType.PERIOD, new ICalParameters());
-
-		Iterator<Period> it = result.getProperty().getValues().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertNull(period.getEndDate());
-		assertEquals(duration, period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseJson_invalid_duration() {
-		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/invalid"), ICalDataType.PERIOD, new ICalParameters());
-
-		Iterator<Period> it = result.getProperty().getValues().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseJson_empty() {
-		Result<FreeBusy> result = marshaller.parseJson(JCalValue.multi(), ICalDataType.PERIOD, new ICalParameters());
-
-		Iterator<Period> it = result.getProperty().getValues().iterator();
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(0, result.getWarnings());
+	private Check<FreeBusy> has(final Period... periods) {
+		return new Check<FreeBusy>() {
+			public void check(FreeBusy property) {
+				assertEquals(Arrays.asList(periods), property.getValues());
+			}
+		};
 	}
 }

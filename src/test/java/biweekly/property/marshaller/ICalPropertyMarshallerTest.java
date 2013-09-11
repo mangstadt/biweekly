@@ -2,12 +2,8 @@ package biweekly.property.marshaller;
 
 import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.buildTimezone;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -17,8 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
@@ -26,7 +21,8 @@ import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
+import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.ListMultimap;
 
 /*
@@ -58,7 +54,11 @@ import biweekly.util.ListMultimap;
  * @author Michael Angstadt
  */
 public class ICalPropertyMarshallerTest {
-	private static TimeZone defaultTz;
+	@ClassRule
+	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
+
+	private final ICalPropertyMarshallerImpl marshaller = new ICalPropertyMarshallerImpl();
+	private final Sensei<TestProperty> sensei = new Sensei<TestProperty>(marshaller);
 
 	private final Date datetime;
 	{
@@ -71,17 +71,6 @@ public class ICalPropertyMarshallerTest {
 		c.set(Calendar.MINUTE, 43);
 		c.set(Calendar.SECOND, 2);
 		datetime = c.getTime();
-	}
-
-	@BeforeClass
-	public static void beforeClass() {
-		defaultTz = TimeZone.getDefault();
-		TimeZone.setDefault(buildTimezone(1, 0));
-	}
-
-	@AfterClass
-	public static void afterClass() {
-		TimeZone.setDefault(defaultTz);
 	}
 
 	@Test
@@ -310,9 +299,8 @@ public class ICalPropertyMarshallerTest {
 
 	@Test
 	public void prepareParameters() {
-		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
 		TestProperty property = new TestProperty("value");
-		ICalParameters copy = m.prepareParameters(property);
+		ICalParameters copy = marshaller.prepareParameters(property);
 
 		assertFalse(property.getParameters() == copy);
 		assertEquals("value", copy.first("PARAM"));
@@ -320,121 +308,71 @@ public class ICalPropertyMarshallerTest {
 
 	@Test
 	public void writeText() {
-		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
 		TestProperty property = new TestProperty("value");
-		String value = m.writeText(property);
-
-		assertEquals("value", value);
+		sensei.assertWriteText(property).run("value");
 	}
 
 	@Test
 	public void parseText() {
-		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		ICalParameters params = new ICalParameters();
-		params.put("PARAM", "value");
-		ICalPropertyMarshaller.Result<TestProperty> result = m.parseText("value", ICalDataType.TEXT, params);
-
-		assertEquals(Arrays.asList("parseText"), result.getWarnings());
-		assertTrue(params == result.getProperty().getParameters());
+		final ICalParameters params = new ICalParameters();
+		sensei.assertParseText("value").params(params).warnings(1).run(new Check<TestProperty>() {
+			public void check(TestProperty property) {
+				assertTrue(params == property.getParameters());
+				has(ICalDataType.TEXT, "value").check(property);
+			}
+		});
 	}
 
 	@Test
 	public void writeXml() {
-		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
 		TestProperty prop = new TestProperty("value");
-		assertWriteXml("<text>value</text>", prop, m);
+		sensei.assertWriteXml(prop).run("<text>value</text>");
 	}
 
 	@Test
 	public void parseXml() {
-		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
 		//@formatter:off
-		Result<TestProperty> result = parseXCalProperty(
+		sensei.assertParseXml(
 		"<ignore xmlns=\"http://example.com\">ignore-me</ignore>" +
 		"<integer>value</integer>" +
-		"<text>ignore-me</text>",
-		m);
+		"<text>ignore-me</text>"
+		).warnings(1).run(has(ICalDataType.INTEGER, "value"));
+		
+		//no xCal element
+		sensei.assertParseXml(
+		"<one xmlns=\"http://example.com\">1</one>" +
+		"<two xmlns=\"http://example.com\">2</two>"
+		).warnings(1).run(has(null, "12"));
+		
+		//no child elements
+		sensei.assertParseXml("value").warnings(1).run(has(null, "value"));
 		//@formatter:on
-
-		TestProperty prop = result.getProperty();
-		assertEquals("value", prop.value);
-		assertEquals(ICalDataType.INTEGER, prop.parsedDataType);
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseXml_no_xcard_element() {
-		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		Result<TestProperty> result = parseXCalProperty("<one xmlns=\"http://example.com\">1</one><two xmlns=\"http://example.com\">2</two>", m);
-
-		TestProperty prop = result.getProperty();
-		assertEquals("12", prop.value);
-		assertNull(prop.parsedDataType);
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseXml_no_child_elements() {
-		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		Result<TestProperty> result = parseXCalProperty("value", m);
-
-		TestProperty prop = result.getProperty();
-		assertEquals("value", prop.value);
-		assertNull(prop.parsedDataType);
-		assertWarnings(1, result.getWarnings());
 	}
 
 	@Test
 	public void writeJson() {
-		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
 		TestProperty prop = new TestProperty("value");
-
-		JCalValue actual = m.writeJson(prop);
-		assertEquals("value", actual.getSingleValued());
+		sensei.assertWriteJson(prop).run("value");
 	}
 
 	@Test
 	public void parseJson_single() {
-		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		Result<TestProperty> result = m.parseJson(JCalValue.single("value"), ICalDataType.TEXT, new ICalParameters());
-
-		TestProperty prop = result.getProperty();
-		assertEquals("value", prop.value);
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseJson_list() {
-		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		Result<TestProperty> result = m.parseJson(JCalValue.multi("value1", "val,;ue2"), ICalDataType.TEXT, new ICalParameters());
-
-		TestProperty prop = result.getProperty();
-		assertEquals("value1,val\\,\\;ue2", prop.value);
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseJson_structured() {
-		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
-		Result<TestProperty> result = m.parseJson(JCalValue.structured("value1", "val,;ue2"), ICalDataType.TEXT, new ICalParameters());
-
-		TestProperty prop = result.getProperty();
-		assertEquals("value1;val\\,\\;ue2", prop.value);
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseJson_object() {
-		ICalPropertyMarshallerImpl m = new ICalPropertyMarshallerImpl();
+		//@formatter:off
+		sensei.assertParseJson("value").warnings(1).run(has(ICalDataType.TEXT, "value"));
+		
+		//multivalued
+		sensei.assertParseJson(JCalValue.multi("value1", "val,;ue2")).warnings(1).run(has(ICalDataType.TEXT, "value1,val\\,\\;ue2"));
+		
+		//structured
+		sensei.assertParseJson(JCalValue.structured("value1", "val,;ue2")).warnings(1).run(has(ICalDataType.TEXT, "value1;val\\,\\;ue2"));
+		
+		//object
 		ListMultimap<String, Object> map = new ListMultimap<String, Object>();
 		map.put("a", "one");
 		map.put("b", "two");
 		map.put("b", "three,four;five\\six=seven");
-		Result<TestProperty> result = m.parseJson(JCalValue.object(map), ICalDataType.TEXT, new ICalParameters());
-
-		TestProperty prop = result.getProperty();
-		assertEquals("a=one;b=two,three\\,four\\;five\\\\six\\=seven", prop.value);
-		assertWarnings(1, result.getWarnings());
+		sensei.assertParseJson(JCalValue.object(map)).warnings(1).run(has(ICalDataType.TEXT, "a=one;b=two,three\\,four\\;five\\\\six\\=seven"));
+		//@formatter:on
 	}
 
 	@Test
@@ -490,4 +428,14 @@ public class ICalPropertyMarshallerTest {
 			this.parsedDataType = parsedDataType;
 		}
 	}
+
+	private Check<TestProperty> has(final ICalDataType dataType, final String value) {
+		return new Check<TestProperty>() {
+			public void check(TestProperty property) {
+				assertEquals(dataType, property.parsedDataType);
+				assertEquals(value, property.value);
+			}
+		};
+	}
+
 }

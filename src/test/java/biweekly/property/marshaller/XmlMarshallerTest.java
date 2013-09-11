@@ -2,19 +2,16 @@ package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
-import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
-import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Xml;
 import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
 import biweekly.util.XmlUtils;
 
 /*
@@ -47,37 +44,32 @@ import biweekly.util.XmlUtils;
  */
 public class XmlMarshallerTest {
 	private final XmlMarshaller marshaller = new XmlMarshaller();
+	private final Sensei<Xml> sensei = new Sensei<Xml>(marshaller);
+
+	private final String xml = "<element xmlns=\"http://example.com\">text</element>";
+	private final Document value;
+	{
+		try {
+			value = XmlUtils.toDocument(xml);
+		} catch (SAXException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private final Xml withValue = new Xml(value);
+	private final Xml empty = new Xml((Document) null);
 
 	@Test
-	public void writeText() throws Throwable {
-		Xml prop = new Xml("<element xmlns=\"http://example.com\"/>");
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "<element xmlns=\"http://example.com\"/>";
-		assertEquals(expected, actual);
+	public void writeText() {
+		sensei.assertWriteText(withValue).run(xml);
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void parseText() throws Throwable {
-		String value = "<element xmlns=\"http://example.com\"/>";
-		ICalParameters params = new ICalParameters();
-
-		Result<Xml> result = marshaller.parseText(value, ICalDataType.TEXT, params);
-
-		Document expected = XmlUtils.toDocument(value);
-
-		Xml prop = result.getProperty();
-		assertXMLEqual(expected, prop.getValue());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseText_invalid() throws Exception {
-		String value = "invalid";
-		ICalParameters params = new ICalParameters();
-
-		marshaller.parseText(value, ICalDataType.TEXT, params);
+	public void parseText() {
+		sensei.assertParseText(xml).run(has(value));
+		sensei.assertParseText("invalid").cannotParse();
+		sensei.assertParseText("").cannotParse();
 	}
 
 	@Test
@@ -86,9 +78,17 @@ public class XmlMarshallerTest {
 	}
 
 	@Test
-	public void parseXml() throws Throwable {
-		ICalParameters parameters = new ICalParameters();
-		parameters.put("x-foo", "value");
+	public void parseXml() {
+		Result<Xml> result = marshaller.parseXml(XmlUtils.getRootElement(value), new ICalParameters());
+
+		Xml prop = result.getProperty();
+		assertXMLEqual(value, prop.getValue());
+		assertWarnings(0, result.getWarnings());
+	}
+
+	@Test
+	public void parseXml_remove_parameters() throws Throwable {
+		//<parameters> element should be removed
 		//@formatter:off
 		Document doc = XmlUtils.toDocument(
 		"<element xmlns=\"http://example.com\">" +
@@ -97,45 +97,37 @@ public class XmlMarshallerTest {
 					"<xcal:text>value</xcal:text>" +
 				"</xcal:x-foo>" +
 			"</xcal:parameters>" +
+			"text" +
 		"</element>");
 		//@formatter:on
+
+		ICalParameters parameters = new ICalParameters();
+		parameters.put("x-foo", "value");
 		Result<Xml> result = marshaller.parseXml(XmlUtils.getRootElement(doc), parameters);
 
-		Document expected = XmlUtils.toDocument("<element xmlns=\"http://example.com\"/>");
 		Xml prop = result.getProperty();
-		assertXMLEqual(expected, prop.getValue());
+		assertXMLEqual(value, prop.getValue());
 		assertWarnings(0, result.getWarnings());
 	}
 
 	@Test
-	public void writeJson() throws Throwable {
-		Xml prop = new Xml("<element xmlns=\"http://example.com\"/>");
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals("<element xmlns=\"http://example.com\"/>", actual.getSingleValued());
+	public void writeJson() {
+		sensei.assertWriteJson(withValue).run(xml);
+		sensei.assertWriteJson(empty).run((String) null);
 	}
 
 	@Test
-	public void writeJson_null() throws Throwable {
-		Xml prop = new Xml((Document) null);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertTrue(actual.getValues().get(0).isNull());
+	public void parseJson() {
+		sensei.assertParseJson(xml).run(has(value));
+		sensei.assertParseJson("invalid").cannotParse();
+		sensei.assertParseJson("").cannotParse();
 	}
 
-	@Test
-	public void parseJson() throws Throwable {
-		String xml = "<element xmlns=\"http://example.com\"/>";
-		Result<Xml> result = marshaller.parseJson(JCalValue.single(xml), ICalDataType.TEXT, new ICalParameters());
-
-		Document expected = XmlUtils.toDocument(xml);
-		Xml prop = result.getProperty();
-		assertXMLEqual(expected, prop.getValue());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseJson_invalid() throws Throwable {
-		marshaller.parseJson(JCalValue.single("invalid"), ICalDataType.TEXT, new ICalParameters());
+	private Check<Xml> has(final Document expected) {
+		return new Check<Xml>() {
+			public void check(Xml actual) {
+				assertXMLEqual(expected, actual.getValue());
+			}
+		};
 	}
 }

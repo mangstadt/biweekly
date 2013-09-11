@@ -1,8 +1,5 @@
 package biweekly.property.marshaller;
 
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -11,12 +8,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
-import biweekly.io.json.JCalValue;
-import biweekly.parameter.Encoding;
-import biweekly.parameter.ICalParameters;
 import biweekly.property.Attachment;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -48,181 +41,101 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  */
 public class AttachmentMarshallerTest {
 	private final AttachmentMarshaller marshaller = new AttachmentMarshaller();
+	private final Sensei<Attachment> sensei = new Sensei<Attachment>(marshaller);
+
+	private final String formatType = "image/png";
+	private final String url = "http://example.com/image.png";
+	private final byte[] data = "data".getBytes();
+	private final String base64Data = Base64.encodeBase64String(data);
+
+	private final Attachment withUrl = new Attachment(formatType, url);
+	private final Attachment withData = new Attachment(formatType, data);
+	private final Attachment empty = new Attachment(null, (String) null);
 
 	@Test
-	public void prepareParameters_uri() {
-		Attachment prop = new Attachment("image/png", "http://example.com/image.png");
-		prop.getParameters().setEncoding(Encoding.BASE64); //should be cleared
-
-		ICalParameters params = marshaller.prepareParameters(prop);
-
-		assertEquals("image/png", params.getFormatType());
-		assertNull(params.getEncoding());
+	public void prepareParameters() {
+		sensei.assertPrepareParams(withUrl).expected("FMTTYPE", formatType).run();
+		sensei.assertPrepareParams(withData).expected("FMTTYPE", formatType).expected("ENCODING", "BASE64").run();
+		sensei.assertPrepareParams(empty).run();
 	}
 
 	@Test
-	public void prepareParameters_data() {
-		Attachment prop = new Attachment("image/png", "data".getBytes());
-
-		ICalParameters params = marshaller.prepareParameters(prop);
-
-		assertEquals("image/png", params.getFormatType());
-		assertEquals(Encoding.BASE64, params.getEncoding());
+	public void dataType() {
+		sensei.assertDataType(withUrl).run(ICalDataType.URI);
+		sensei.assertDataType(withData).run(ICalDataType.BINARY);
+		sensei.assertDataType(empty).run(null);
 	}
 
 	@Test
-	public void getDataType_uri() {
-		Attachment prop = new Attachment("image/png", "http://example.com/image.png");
-		assertEquals(ICalDataType.URI, marshaller.dataType(prop));
-	}
-
-	@Test
-	public void getDataType_data() {
-		Attachment prop = new Attachment("image/png", "data".getBytes());
-		assertEquals(ICalDataType.BINARY, marshaller.dataType(prop));
-	}
-
-	@Test
-	public void writeText_uri() {
-		Attachment prop = new Attachment("image/png", "http://example.com/image.png");
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "http://example.com/image.png";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_data() {
-		Attachment prop = new Attachment("image/png", "data".getBytes());
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = Base64.encodeBase64String("data".getBytes());
-		assertEquals(expected, actual);
+	public void writeText() {
+		sensei.assertWriteText(withUrl).run(url);
+		sensei.assertWriteText(withData).run(base64Data);
+		sensei.assertWriteText(empty).run((String) null);
 	}
 
 	@Test
 	public void parseText_uri() {
-		String value = "http://example.com/image.png";
-		ICalParameters params = new ICalParameters();
+		sensei.assertParseText(url).dataType(ICalDataType.URI).run(has(url));
 
-		Result<Attachment> result = marshaller.parseText(value, ICalDataType.URI, params);
+		sensei.assertParseText(base64Data).dataType(ICalDataType.BINARY).run(has(data));
+		sensei.assertParseText(base64Data).dataType(ICalDataType.BINARY).param("ENCODING", "BASE64").run(has(data));
+		sensei.assertParseText(base64Data).dataType(ICalDataType.URI).param("ENCODING", "BASE64").run(has(data));
 
-		Attachment prop = result.getProperty();
-		assertEquals("http://example.com/image.png", prop.getUri());
-		assertNull(prop.getData());
-		assertWarnings(0, result.getWarnings());
-	}
+		//if data type is URI and no ENCODING parameter is present, it treats the value as a URI
+		sensei.assertParseText(base64Data).dataType(ICalDataType.URI).run(has(base64Data));
 
-	@Test
-	public void parseText_data() {
-		String value = Base64.encodeBase64String("data".getBytes());
-		ICalParameters params = new ICalParameters();
-
-		params.setEncoding(null);
-		Result<Attachment> result = marshaller.parseText(value, ICalDataType.BINARY, params);
-		Attachment prop = result.getProperty();
-		assertNull(prop.getUri());
-		assertArrayEquals("data".getBytes(), prop.getData());
-		assertWarnings(0, result.getWarnings());
-
-		params.setEncoding(Encoding.BASE64);
-		result = marshaller.parseText(value, ICalDataType.URI, params);
-		prop = result.getProperty();
-		assertNull(prop.getUri());
-		assertArrayEquals("data".getBytes(), prop.getData());
-		assertWarnings(0, result.getWarnings());
-
-		params.setEncoding(Encoding.BASE64);
-		result = marshaller.parseText(value, ICalDataType.BINARY, params);
-		prop = result.getProperty();
-		assertNull(prop.getUri());
-		assertArrayEquals("data".getBytes(), prop.getData());
-		assertWarnings(0, result.getWarnings());
-
-		//treats base64 as a URI if no parameters are set
-		params.setEncoding(null);
-		result = marshaller.parseText(value, ICalDataType.URI, params);
-		prop = result.getProperty();
-		assertEquals(Base64.encodeBase64String("data".getBytes()), prop.getUri());
-		assertNull(prop.getData());
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseText("").dataType(ICalDataType.URI).run(has(""));
+		sensei.assertParseText("").dataType(ICalDataType.BINARY).run(has(new byte[0]));
 	}
 
 	@Test
 	public void writeXml_uri() {
-		Attachment prop = new Attachment("image/png", "http://example.com/image.png");
-		assertWriteXml("<uri>http://example.com/image.png</uri>", prop, marshaller);
-	}
-
-	@Test
-	public void writeXml_data() {
-		Attachment prop = new Attachment("image/png", "data".getBytes());
-		assertWriteXml("<binary>" + Base64.encodeBase64String("data".getBytes()) + "</binary>", prop, marshaller);
+		sensei.assertWriteXml(withUrl).run("<uri>" + url + "</uri>");
+		sensei.assertWriteXml(withData).run("<binary>" + base64Data + "</binary>");
+		sensei.assertWriteXml(empty).run("");
 	}
 
 	@Test
 	public void parseXml_uri() {
-		Result<Attachment> result = parseXCalProperty("<uri>http://example.com/image.png</uri>", marshaller);
+		sensei.assertParseXml("<uri>" + url + "</uri>").run(has(url));
+		sensei.assertParseXml("<binary>" + base64Data + "</binary>").run(has(data));
 
-		Attachment prop = result.getProperty();
-		assertEquals("http://example.com/image.png", prop.getUri());
-		assertNull(prop.getData());
-		assertWarnings(0, result.getWarnings());
-	}
+		//<binary> is preferred
+		sensei.assertParseXml("<uri>" + url + "</uri><binary>" + base64Data + "</binary>").run(has(data));
 
-	@Test
-	public void parseXml_data() {
-		Result<Attachment> result = parseXCalProperty("<binary>" + Base64.encodeBase64String("data".getBytes()) + "</binary>", marshaller);
-
-		Attachment prop = result.getProperty();
-		assertNull(prop.getUri());
-		assertArrayEquals("data".getBytes(), prop.getData());
-
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_empty() {
-		parseXCalProperty("", marshaller);
+		sensei.assertParseXml("").cannotParse();
 	}
 
 	@Test
 	public void writeJson_uri() {
-		Attachment prop = new Attachment("image/png", "http://example.com/image.png");
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals("http://example.com/image.png", actual.getSingleValued());
-	}
-
-	@Test
-	public void writeJson_data() {
-		Attachment prop = new Attachment("image/png", "data".getBytes());
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Base64.encodeBase64String("data".getBytes()), actual.getSingleValued());
+		sensei.assertWriteJson(withUrl).run(url);
+		sensei.assertWriteJson(withData).run(base64Data);
+		sensei.assertWriteJson(empty).run((String) null);
 	}
 
 	@Test
 	public void parseJson_uri() {
-		Result<Attachment> result = marshaller.parseJson(JCalValue.single("http://example.com/image.png"), ICalDataType.URI, new ICalParameters());
-
-		Attachment prop = result.getProperty();
-		assertEquals("http://example.com/image.png", prop.getUri());
-		assertNull(prop.getData());
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseJson(url).dataType(ICalDataType.URI).run(has(url));
+		sensei.assertParseJson("").dataType(ICalDataType.URI).run(has(""));
+		sensei.assertParseJson(base64Data).dataType(ICalDataType.BINARY).run(has(data));
+		sensei.assertParseJson("").dataType(ICalDataType.BINARY).run(has(new byte[0]));
 	}
 
-	@Test
-	public void parseJson_data() {
-		Result<Attachment> result = marshaller.parseJson(JCalValue.single(Base64.encodeBase64String("data".getBytes())), ICalDataType.BINARY, new ICalParameters());
-
-		Attachment prop = result.getProperty();
-		assertNull(prop.getUri());
-		assertArrayEquals("data".getBytes(), prop.getData());
-
-		assertWarnings(0, result.getWarnings());
+	private Check<Attachment> has(final String url) {
+		return new Check<Attachment>() {
+			public void check(Attachment property) {
+				assertEquals(url, property.getUri());
+				assertNull(property.getData());
+			}
+		};
 	}
 
+	private Check<Attachment> has(final byte[] data) {
+		return new Check<Attachment>() {
+			public void check(Attachment property) {
+				assertNull(property.getUri());
+				assertArrayEquals(data, property.getData());
+			}
+		};
+	}
 }

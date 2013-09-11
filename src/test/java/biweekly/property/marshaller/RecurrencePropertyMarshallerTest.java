@@ -1,9 +1,6 @@
 package biweekly.property.marshaller;
 
 import static biweekly.util.TestUtils.assertIntEquals;
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -15,17 +12,15 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 
-import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.json.JsonValue;
-import biweekly.parameter.ICalParameters;
 import biweekly.property.RecurrenceProperty;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
+import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.ListMultimap;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.DayOfWeek;
@@ -60,14 +55,37 @@ import biweekly.util.Recurrence.Frequency;
  * @author Michael Angstadt
  */
 public class RecurrencePropertyMarshallerTest {
-	private final RecurrencePropertyMarshaller<RecurrenceProperty> marshaller = new RecurrencePropertyMarshaller<RecurrenceProperty>(RecurrenceProperty.class, "TEST") {
-		@Override
-		protected RecurrenceProperty newInstance(Recurrence recur) {
-			return new RecurrenceProperty(recur);
-		}
-	};
+	@ClassRule
+	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
 
-	private final RecurrenceProperty multipleValues;
+	private final RecurrencePropertyMarshallerImpl marshaller = new RecurrencePropertyMarshallerImpl();
+	private final Sensei<RecurrenceProperty> sensei = new Sensei<RecurrenceProperty>(marshaller);
+
+	private final Date date;
+	{
+		Calendar c = Calendar.getInstance();
+		c.clear();
+		c.set(Calendar.YEAR, 2013);
+		c.set(Calendar.MONTH, Calendar.JUNE);
+		c.set(Calendar.DATE, 11);
+		date = c.getTime();
+	}
+	private final String dateStr = "20130611";
+	private final String dateStrExt = "2013-06-11";
+
+	private final Date datetime;
+	{
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+		c.set(Calendar.HOUR_OF_DAY, 13);
+		c.set(Calendar.MINUTE, 43);
+		c.set(Calendar.SECOND, 2);
+		datetime = c.getTime();
+	}
+	private final String dateTimeStr = dateStr + "T124302Z";
+	private final String dateTimeStrExt = dateStrExt + "T12:43:02Z";
+
+	private final RecurrenceProperty withMultiple;
 	{
 		//@formatter:off
 		Recurrence.Builder builder = new Recurrence.Builder(Frequency.WEEKLY)
@@ -101,10 +119,9 @@ public class RecurrencePropertyMarshallerTest {
 		}
 		builder.byDay(5, DayOfWeek.FRIDAY);
 
-		multipleValues = new RecurrenceProperty(builder.build());
+		withMultiple = new RecurrenceProperty(builder.build());
 	}
-
-	private final RecurrenceProperty singleValues;
+	private final RecurrenceProperty withSingle;
 	{
 		//@formatter:off
 		Recurrence.Builder builder = new Recurrence.Builder(Frequency.WEEKLY)
@@ -124,28 +141,15 @@ public class RecurrencePropertyMarshallerTest {
 		.xrule("X-RULE", "three");
 		//@formatter:on
 
-		singleValues = new RecurrenceProperty(builder.build());
+		withSingle = new RecurrenceProperty(builder.build());
 	}
-
-	private final Date datetime;
-	{
-		Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		c.clear();
-		c.set(Calendar.YEAR, 2013);
-		c.set(Calendar.MONTH, Calendar.JUNE);
-		c.set(Calendar.DATE, 11);
-		c.set(Calendar.HOUR_OF_DAY, 13);
-		c.set(Calendar.MINUTE, 43);
-		c.set(Calendar.SECOND, 2);
-		datetime = c.getTime();
-	}
-
-	private final RecurrenceProperty untilDate = new RecurrenceProperty(new Recurrence.Builder(Frequency.WEEKLY).until(datetime, false).build());
-	private final RecurrenceProperty untilDateTime = new RecurrenceProperty(new Recurrence.Builder(Frequency.WEEKLY).until(datetime).build());
+	private final RecurrenceProperty withUntilDate = new RecurrenceProperty(new Recurrence.Builder(Frequency.WEEKLY).until(date, false).build());
+	private final RecurrenceProperty withUntilDateTime = new RecurrenceProperty(new Recurrence.Builder(Frequency.WEEKLY).until(datetime).build());
+	private final RecurrenceProperty empty = new RecurrenceProperty(null);
 
 	@Test
 	public void writeText_multiples() {
-		String actual = marshaller.writeText(multipleValues);
+		String actual = sensei.assertWriteText(withMultiple).run();
 		List<String> split = Arrays.asList(actual.split(";"));
 
 		assertEquals(15, split.size());
@@ -168,7 +172,7 @@ public class RecurrencePropertyMarshallerTest {
 
 	@Test
 	public void writeText_singles() {
-		String actual = marshaller.writeText(singleValues);
+		String actual = sensei.assertWriteText(withSingle).run();
 		List<String> split = Arrays.asList(actual.split(";"));
 
 		assertEquals(15, split.size());
@@ -190,104 +194,58 @@ public class RecurrencePropertyMarshallerTest {
 	}
 
 	@Test
-	public void writeText_until_datetime() {
-		String actual = marshaller.writeText(untilDateTime);
-
-		assertEquals("FREQ=WEEKLY;UNTIL=20130611T134302Z", actual);
+	public void writeText_until() {
+		sensei.assertWriteText(withUntilDateTime).run("FREQ=WEEKLY;UNTIL=" + dateTimeStr);
+		sensei.assertWriteText(withUntilDate).run("FREQ=WEEKLY;UNTIL=" + dateStr);
 	}
 
 	@Test
-	public void writeText_until_date() {
-		String actual = marshaller.writeText(untilDate);
-
-		assertEquals("FREQ=WEEKLY;UNTIL=20130611", actual);
+	public void writeText_empty() {
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
 	public void parseText() {
-		String value = "FREQ=WEEKLY;COUNT=5;INTERVAL=10;UNTIL=20130611T134302Z;BYSECOND=58,59;BYMINUTE=3,4;BYHOUR=1,2;BYDAY=MO,TU,WE,TH,FR,SA,SU,5FR;BYMONTHDAY=1,2;BYYEARDAY=100,101;BYWEEKNO=1,2;BYMONTH=5,6;BYSETPOS=7,8,9;WKST=TU;X-NAME=one,two;X-RULE=three";
-		ICalParameters params = new ICalParameters();
-
-		Result<RecurrenceProperty> result = marshaller.parseText(value, ICalDataType.RECUR, params);
-
-		Recurrence prop = result.getProperty().getValue();
-		assertEquals(Frequency.WEEKLY, prop.getFrequency());
-		assertIntEquals(5, prop.getCount());
-		assertIntEquals(10, prop.getInterval());
-		assertEquals(datetime, prop.getUntil());
-		assertEquals(Arrays.asList(3, 4), prop.getByMinute());
-		assertEquals(Arrays.asList(1, 2), prop.getByHour());
-		assertEquals(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.FRIDAY), prop.getByDay());
-		assertEquals(Arrays.asList(null, null, null, null, null, null, null, Integer.valueOf(5)), prop.getByDayPrefixes());
-		assertEquals(Arrays.asList(1, 2), prop.getByMonthDay());
-		assertEquals(Arrays.asList(100, 101), prop.getByYearDay());
-		assertEquals(Arrays.asList(5, 6), prop.getByMonth());
-		assertEquals(Arrays.asList(7, 8, 9), prop.getBySetPos());
-		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
-		assertEquals(DayOfWeek.TUESDAY, prop.getWorkweekStarts());
-
-		Map<String, List<String>> expected = new HashMap<String, List<String>>();
-		expected.put("X-NAME", Arrays.asList("one", "two"));
-		expected.put("X-RULE", Arrays.asList("three"));
-		assertEquals(expected, prop.getXRules());
-
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseText("FREQ=WEEKLY;COUNT=5;INTERVAL=10;UNTIL=" + dateTimeStr + ";BYSECOND=58,59;BYMINUTE=3,4;BYHOUR=1,2;BYDAY=MO,TU,WE,TH,FR,SA,SU,5FR;BYMONTHDAY=1,2;BYYEARDAY=100,101;BYWEEKNO=1,2;BYMONTH=5,6;BYSETPOS=7,8,9;WKST=TU;X-NAME=one,two;X-RULE=three").run(fullCheck);
 	}
 
 	@Test
 	public void parseText_invalid_values() {
-		String value = "FREQ=W;COUNT=a;INTERVAL=b;UNTIL=invalid;BYSECOND=58,c,59;BYMINUTE=3,d,4;BYHOUR=1,e,2;BYDAY=f,MO,TU,WE,TH,FR,SA,SU,5FR,fFR;BYMONTHDAY=1,g,2;BYYEARDAY=100,h,101;BYWEEKNO=1,w,2;BYMONTH=5,i,6;BYSETPOS=7,8,j,9;WKST=k";
-		ICalParameters params = new ICalParameters();
-
-		Result<RecurrenceProperty> result = marshaller.parseText(value, ICalDataType.RECUR, params);
-
-		Recurrence prop = result.getProperty().getValue();
-		assertNull(prop.getFrequency());
-		assertNull(prop.getCount());
-		assertNull(prop.getInterval());
-		assertNull(prop.getUntil());
-		assertEquals(Arrays.asList(3, 4), prop.getByMinute());
-		assertEquals(Arrays.asList(1, 2), prop.getByHour());
-		assertEquals(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.FRIDAY), prop.getByDay());
-		assertEquals(Arrays.asList(null, null, null, null, null, null, null, Integer.valueOf(5)), prop.getByDayPrefixes());
-		assertEquals(Arrays.asList(1, 2), prop.getByMonthDay());
-		assertEquals(Arrays.asList(100, 101), prop.getByYearDay());
-		assertEquals(Arrays.asList(5, 6), prop.getByMonth());
-		assertEquals(Arrays.asList(7, 8, 9), prop.getBySetPos());
-		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
-		assertNull(prop.getWorkweekStarts());
-		assertWarnings(15, result.getWarnings());
+		sensei.assertParseText("FREQ=W;COUNT=a;INTERVAL=b;UNTIL=invalid;BYSECOND=58,c,59;BYMINUTE=3,d,4;BYHOUR=1,e,2;BYDAY=f,MO,TU,WE,TH,FR,SA,SU,5FR,fFR;BYMONTHDAY=1,g,2;BYYEARDAY=100,h,101;BYWEEKNO=1,w,2;BYMONTH=5,i,6;BYSETPOS=7,8,j,9;WKST=k").warnings(15).run(invalidValuesCheck);
 	}
 
 	@Test
 	public void parseText_invalid_component() {
-		String value = "FREQ=WEEKLY;no equals;COUNT=5";
-		ICalParameters params = new ICalParameters();
+		sensei.assertParseText("FREQ=WEEKLY;no equals;COUNT=5").warnings(1).run(new Check<RecurrenceProperty>() {
+			public void check(RecurrenceProperty property) {
+				Recurrence recur = property.getValue();
+				assertEquals(Frequency.WEEKLY, recur.getFrequency());
+				assertIntEquals(5, recur.getCount());
+				assertNull(recur.getInterval());
+				assertNull(recur.getUntil());
+				assertEquals(Arrays.asList(), recur.getByMinute());
+				assertEquals(Arrays.asList(), recur.getByHour());
+				assertEquals(Arrays.asList(), recur.getByDay());
+				assertEquals(Arrays.asList(), recur.getByDayPrefixes());
+				assertEquals(Arrays.asList(), recur.getByMonthDay());
+				assertEquals(Arrays.asList(), recur.getByYearDay());
+				assertEquals(Arrays.asList(), recur.getByMonth());
+				assertEquals(Arrays.asList(), recur.getBySetPos());
+				assertEquals(Arrays.asList(), recur.getByWeekNo());
+				assertNull(recur.getWorkweekStarts());
+			}
+		});
+	}
 
-		Result<RecurrenceProperty> result = marshaller.parseText(value, ICalDataType.RECUR, params);
-
-		Recurrence prop = result.getProperty().getValue();
-		assertEquals(Frequency.WEEKLY, prop.getFrequency());
-		assertIntEquals(5, prop.getCount());
-		assertNull(prop.getInterval());
-		assertNull(prop.getUntil());
-		assertEquals(Arrays.asList(), prop.getByMinute());
-		assertEquals(Arrays.asList(), prop.getByHour());
-		assertEquals(Arrays.asList(), prop.getByDay());
-		assertEquals(Arrays.asList(), prop.getByDayPrefixes());
-		assertEquals(Arrays.asList(), prop.getByMonthDay());
-		assertEquals(Arrays.asList(), prop.getByYearDay());
-		assertEquals(Arrays.asList(), prop.getByMonth());
-		assertEquals(Arrays.asList(), prop.getBySetPos());
-		assertEquals(Arrays.asList(), prop.getByWeekNo());
-		assertNull(prop.getWorkweekStarts());
-		assertWarnings(1, result.getWarnings());
+	@Test
+	public void parseText_empty() {
+		sensei.assertParseText("").warnings(1).run(emptyCheck);
 	}
 
 	@Test
 	public void writeXml_multiples() {
 		//@formatter:off
-		assertWriteXml(
+		sensei.assertWriteXml(withMultiple).run(
 		"<recur>" +
 			"<freq>WEEKLY</freq>" +
 			"<count>5</count>" +
@@ -321,14 +279,14 @@ public class RecurrencePropertyMarshallerTest {
 			"<x-name>one</x-name>" +
 			"<x-name>two</x-name>" +
 			"<x-rule>three</x-rule>" +
-		"</recur>", multipleValues, marshaller);
+		"</recur>");
 		//@formatter:on
 	}
 
 	@Test
 	public void writeXml_singles() {
 		//@formatter:off
-		assertWriteXml(
+		sensei.assertWriteXml(withSingle).run(
 		"<recur>" +
 			"<freq>WEEKLY</freq>" +
 			"<count>5</count>" +
@@ -345,41 +303,41 @@ public class RecurrencePropertyMarshallerTest {
 			"<wkst>TU</wkst>" +
 			"<x-name>one</x-name>" +
 			"<x-rule>three</x-rule>" +
-		"</recur>", singleValues, marshaller);
+		"</recur>");
 		//@formatter:on
 	}
 
 	@Test
 	public void writeXml_until_datetime() {
 		//@formatter:off
-		assertWriteXml(
+		sensei.assertWriteXml(withUntilDateTime).run(
 		"<recur>" +
 			"<freq>WEEKLY</freq>" +
-			"<until>2013-06-11T13:43:02Z</until>" +
-		"</recur>", untilDateTime, marshaller);
+			"<until>" + dateTimeStrExt + "</until>" +
+		"</recur>");
+
+		sensei.assertWriteXml(withUntilDate).run(
+		"<recur>" +
+			"<freq>WEEKLY</freq>" +
+			"<until>" + dateStrExt + "</until>" +
+		"</recur>");
 		//@formatter:on
 	}
 
 	@Test
-	public void writeXml_until_date() {
-		//@formatter:off
-		assertWriteXml(
-		"<recur>" +
-			"<freq>WEEKLY</freq>" +
-			"<until>2013-06-11</until>" +
-		"</recur>", untilDate, marshaller);
-		//@formatter:on
+	public void writeXml_empty() {
+		sensei.assertWriteXml(empty).run("<recur/>");
 	}
 
 	@Test
 	public void parseXml() {
 		//@formatter:off
-		Result<RecurrenceProperty> result = parseXCalProperty(
+		sensei.assertParseXml(
 		"<recur>" +
 			"<freq>WEEKLY</freq>" +
 			"<count>5</count>" +
 			"<interval>10</interval>" +
-			"<until>2013-06-11T13:43:02Z</until>" +
+			"<until>" + dateTimeStrExt + "</until>" +
 			"<bysecond>58</bysecond>" +
 			"<bysecond>59</bysecond>" +
 			"<byminute>3</byminute>" +
@@ -409,37 +367,15 @@ public class RecurrencePropertyMarshallerTest {
 			"<x-name>one</x-name>" +
 			"<x-name>two</x-name>" +
 			"<x-rule>three</x-rule>" +
-		"</recur>", marshaller);
+		"</recur>"
+		).run(fullCheck);
 		//@formatter:on
-
-		Recurrence prop = result.getProperty().getValue();
-		assertEquals(Frequency.WEEKLY, prop.getFrequency());
-		assertIntEquals(5, prop.getCount());
-		assertIntEquals(10, prop.getInterval());
-		assertEquals(datetime, prop.getUntil());
-		assertEquals(Arrays.asList(3, 4), prop.getByMinute());
-		assertEquals(Arrays.asList(1, 2), prop.getByHour());
-		assertEquals(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.FRIDAY), prop.getByDay());
-		assertEquals(Arrays.asList(null, null, null, null, null, null, null, Integer.valueOf(5)), prop.getByDayPrefixes());
-		assertEquals(Arrays.asList(1, 2), prop.getByMonthDay());
-		assertEquals(Arrays.asList(100, 101), prop.getByYearDay());
-		assertEquals(Arrays.asList(5, 6), prop.getByMonth());
-		assertEquals(Arrays.asList(7, 8, 9), prop.getBySetPos());
-		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
-		assertEquals(DayOfWeek.TUESDAY, prop.getWorkweekStarts());
-
-		Map<String, List<String>> expected = new HashMap<String, List<String>>();
-		expected.put("X-NAME", Arrays.asList("one", "two"));
-		expected.put("X-RULE", Arrays.asList("three"));
-		assertEquals(expected, prop.getXRules());
-
-		assertWarnings(0, result.getWarnings());
 	}
 
 	@Test
 	public void parseXml_invalid_values() {
 		//@formatter:off
-		Result<RecurrenceProperty> result = parseXCalProperty(
+		sensei.assertParseXml(
 		"<recur>" +
 			"<freq>W</freq>" +
 			"<count>a</count>" +
@@ -481,34 +417,20 @@ public class RecurrencePropertyMarshallerTest {
 			"<bysetpos>j</bysetpos>" +
 			"<bysetpos>9</bysetpos>" +
 			"<wkst>k</wkst>" +
-		"</recur>", marshaller);
+		"</recur>"
+		).warnings(15).run(invalidValuesCheck);
 		//@formatter:on
-
-		Recurrence prop = result.getProperty().getValue();
-		assertNull(prop.getFrequency());
-		assertNull(prop.getCount());
-		assertNull(prop.getInterval());
-		assertNull(prop.getUntil());
-		assertEquals(Arrays.asList(3, 4), prop.getByMinute());
-		assertEquals(Arrays.asList(1, 2), prop.getByHour());
-		assertEquals(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.FRIDAY), prop.getByDay());
-		assertEquals(Arrays.asList(null, null, null, null, null, null, null, Integer.valueOf(5)), prop.getByDayPrefixes());
-		assertEquals(Arrays.asList(1, 2), prop.getByMonthDay());
-		assertEquals(Arrays.asList(100, 101), prop.getByYearDay());
-		assertEquals(Arrays.asList(5, 6), prop.getByMonth());
-		assertEquals(Arrays.asList(7, 8, 9), prop.getBySetPos());
-		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
-		assertNull(prop.getWorkweekStarts());
-		assertWarnings(15, result.getWarnings());
 	}
 
-	@Test(expected = CannotParseException.class)
+	@Test
 	public void parseXml_empty() {
-		parseXCalProperty("", marshaller);
+		sensei.assertParseXml("").cannotParse();
 	}
 
 	@Test
 	public void writeJson_multiples() {
+		JCalValue actual = sensei.assertWriteJson(withMultiple).run();
+
 		Map<String, JsonValue> expected = new LinkedHashMap<String, JsonValue>();
 		expected.put("freq", new JsonValue("WEEKLY"));
 		expected.put("count", new JsonValue(5));
@@ -526,12 +448,13 @@ public class RecurrencePropertyMarshallerTest {
 		expected.put("x-name", new JsonValue(Arrays.asList(new JsonValue("one"), new JsonValue("two"))));
 		expected.put("x-rule", new JsonValue("three"));
 
-		JCalValue actual = marshaller.writeJson(multipleValues);
 		assertEquals(expected, actual.getValues().get(0).getObject());
 	}
 
 	@Test
 	public void writeJson_singles() {
+		JCalValue actual = sensei.assertWriteJson(withSingle).run();
+
 		Map<String, JsonValue> expected = new LinkedHashMap<String, JsonValue>();
 		expected.put("freq", new JsonValue("WEEKLY"));
 		expected.put("count", new JsonValue(5));
@@ -549,28 +472,34 @@ public class RecurrencePropertyMarshallerTest {
 		expected.put("x-name", new JsonValue("one"));
 		expected.put("x-rule", new JsonValue("three"));
 
-		JCalValue actual = marshaller.writeJson(singleValues);
 		assertEquals(expected, actual.getValues().get(0).getObject());
 	}
 
 	@Test
 	public void writeJson_until_datetime() {
+		JCalValue actual = sensei.assertWriteJson(withUntilDateTime).run();
+
 		Map<String, JsonValue> expected = new LinkedHashMap<String, JsonValue>();
 		expected.put("freq", new JsonValue("WEEKLY"));
-		expected.put("until", new JsonValue("2013-06-11T13:43:02Z"));
+		expected.put("until", new JsonValue(dateTimeStrExt));
 
-		JCalValue actual = marshaller.writeJson(untilDateTime);
 		assertEquals(expected, actual.getValues().get(0).getObject());
 	}
 
 	@Test
 	public void writeJson_until_date() {
+		JCalValue actual = sensei.assertWriteJson(withUntilDate).run();
+
 		Map<String, JsonValue> expected = new LinkedHashMap<String, JsonValue>();
 		expected.put("freq", new JsonValue("WEEKLY"));
-		expected.put("until", new JsonValue("2013-06-11"));
+		expected.put("until", new JsonValue(dateStrExt));
 
-		JCalValue actual = marshaller.writeJson(untilDate);
 		assertEquals(expected, actual.getValues().get(0).getObject());
+	}
+
+	@Test
+	public void writeJson_empty() {
+		sensei.assertWriteJson(empty).run((String) null);
 	}
 
 	@Test
@@ -579,7 +508,7 @@ public class RecurrencePropertyMarshallerTest {
 		map.put("freq", "WEEKLY");
 		map.put("count", 5);
 		map.put("interval", 10);
-		map.put("until", "2013-06-11T13:43:02Z");
+		map.put("until", dateTimeStrExt);
 		map.put("bysecond", 58);
 		map.put("bysecond", 59);
 		map.put("byminute", 3);
@@ -609,30 +538,8 @@ public class RecurrencePropertyMarshallerTest {
 		map.put("x-name", "one");
 		map.put("x-name", "two");
 		map.put("x-rule", "three");
-		Result<RecurrenceProperty> result = marshaller.parseJson(JCalValue.object(map), ICalDataType.RECUR, new ICalParameters());
 
-		Recurrence prop = result.getProperty().getValue();
-		assertEquals(Frequency.WEEKLY, prop.getFrequency());
-		assertIntEquals(5, prop.getCount());
-		assertIntEquals(10, prop.getInterval());
-		assertEquals(datetime, prop.getUntil());
-		assertEquals(Arrays.asList(3, 4), prop.getByMinute());
-		assertEquals(Arrays.asList(1, 2), prop.getByHour());
-		assertEquals(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.FRIDAY), prop.getByDay());
-		assertEquals(Arrays.asList(null, null, null, null, null, null, null, Integer.valueOf(5)), prop.getByDayPrefixes());
-		assertEquals(Arrays.asList(1, 2), prop.getByMonthDay());
-		assertEquals(Arrays.asList(100, 101), prop.getByYearDay());
-		assertEquals(Arrays.asList(5, 6), prop.getByMonth());
-		assertEquals(Arrays.asList(7, 8, 9), prop.getBySetPos());
-		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
-		assertEquals(DayOfWeek.TUESDAY, prop.getWorkweekStarts());
-
-		Map<String, List<String>> expected = new HashMap<String, List<String>>();
-		expected.put("X-NAME", Arrays.asList("one", "two"));
-		expected.put("X-RULE", Arrays.asList("three"));
-		assertEquals(expected, prop.getXRules());
-
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseJson(JCalValue.object(map)).run(fullCheck);
 	}
 
 	@Test
@@ -678,23 +585,88 @@ public class RecurrencePropertyMarshallerTest {
 		map.put("bysetpos", "j");
 		map.put("bysetpos", 9);
 		map.put("wkst", "k");
-		Result<RecurrenceProperty> result = marshaller.parseJson(JCalValue.object(map), ICalDataType.RECUR, new ICalParameters());
 
-		Recurrence prop = result.getProperty().getValue();
-		assertNull(prop.getFrequency());
-		assertNull(prop.getCount());
-		assertNull(prop.getInterval());
-		assertNull(prop.getUntil());
-		assertEquals(Arrays.asList(3, 4), prop.getByMinute());
-		assertEquals(Arrays.asList(1, 2), prop.getByHour());
-		assertEquals(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.FRIDAY), prop.getByDay());
-		assertEquals(Arrays.asList(null, null, null, null, null, null, null, Integer.valueOf(5)), prop.getByDayPrefixes());
-		assertEquals(Arrays.asList(1, 2), prop.getByMonthDay());
-		assertEquals(Arrays.asList(100, 101), prop.getByYearDay());
-		assertEquals(Arrays.asList(5, 6), prop.getByMonth());
-		assertEquals(Arrays.asList(7, 8, 9), prop.getBySetPos());
-		assertEquals(Arrays.asList(1, 2), prop.getByWeekNo());
-		assertNull(prop.getWorkweekStarts());
-		assertWarnings(15, result.getWarnings());
+		sensei.assertParseJson(JCalValue.object(map)).warnings(15).run(invalidValuesCheck);
 	}
+
+	@Test
+	public void parseJson_empty() {
+		sensei.assertParseJson("").run(emptyCheck);
+	}
+
+	private static class RecurrencePropertyMarshallerImpl extends RecurrencePropertyMarshaller<RecurrenceProperty> {
+		public RecurrencePropertyMarshallerImpl() {
+			super(RecurrenceProperty.class, "RECURRENCE");
+		}
+
+		@Override
+		protected RecurrenceProperty newInstance(Recurrence recur) {
+			return new RecurrenceProperty(recur);
+		}
+	}
+
+	private final Check<RecurrenceProperty> fullCheck = new Check<RecurrenceProperty>() {
+		public void check(RecurrenceProperty property) {
+			Recurrence recur = property.getValue();
+			assertEquals(Frequency.WEEKLY, recur.getFrequency());
+			assertIntEquals(5, recur.getCount());
+			assertIntEquals(10, recur.getInterval());
+			assertEquals(datetime, recur.getUntil());
+			assertEquals(Arrays.asList(3, 4), recur.getByMinute());
+			assertEquals(Arrays.asList(1, 2), recur.getByHour());
+			assertEquals(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.FRIDAY), recur.getByDay());
+			assertEquals(Arrays.asList(null, null, null, null, null, null, null, Integer.valueOf(5)), recur.getByDayPrefixes());
+			assertEquals(Arrays.asList(1, 2), recur.getByMonthDay());
+			assertEquals(Arrays.asList(100, 101), recur.getByYearDay());
+			assertEquals(Arrays.asList(5, 6), recur.getByMonth());
+			assertEquals(Arrays.asList(7, 8, 9), recur.getBySetPos());
+			assertEquals(Arrays.asList(1, 2), recur.getByWeekNo());
+			assertEquals(DayOfWeek.TUESDAY, recur.getWorkweekStarts());
+
+			Map<String, List<String>> expected = new HashMap<String, List<String>>();
+			expected.put("X-NAME", Arrays.asList("one", "two"));
+			expected.put("X-RULE", Arrays.asList("three"));
+			assertEquals(expected, recur.getXRules());
+		}
+	};
+
+	private final Check<RecurrenceProperty> invalidValuesCheck = new Check<RecurrenceProperty>() {
+		public void check(RecurrenceProperty property) {
+			Recurrence recur = property.getValue();
+			assertNull(recur.getFrequency());
+			assertNull(recur.getCount());
+			assertNull(recur.getInterval());
+			assertNull(recur.getUntil());
+			assertEquals(Arrays.asList(3, 4), recur.getByMinute());
+			assertEquals(Arrays.asList(1, 2), recur.getByHour());
+			assertEquals(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.FRIDAY), recur.getByDay());
+			assertEquals(Arrays.asList(null, null, null, null, null, null, null, Integer.valueOf(5)), recur.getByDayPrefixes());
+			assertEquals(Arrays.asList(1, 2), recur.getByMonthDay());
+			assertEquals(Arrays.asList(100, 101), recur.getByYearDay());
+			assertEquals(Arrays.asList(5, 6), recur.getByMonth());
+			assertEquals(Arrays.asList(7, 8, 9), recur.getBySetPos());
+			assertEquals(Arrays.asList(1, 2), recur.getByWeekNo());
+			assertNull(recur.getWorkweekStarts());
+		}
+	};
+
+	private final Check<RecurrenceProperty> emptyCheck = new Check<RecurrenceProperty>() {
+		public void check(RecurrenceProperty property) {
+			Recurrence recur = property.getValue();
+			assertNull(recur.getFrequency());
+			assertNull(recur.getCount());
+			assertNull(recur.getInterval());
+			assertNull(recur.getUntil());
+			assertEquals(Arrays.asList(), recur.getByMinute());
+			assertEquals(Arrays.asList(), recur.getByHour());
+			assertEquals(Arrays.asList(), recur.getByDay());
+			assertEquals(Arrays.asList(), recur.getByDayPrefixes());
+			assertEquals(Arrays.asList(), recur.getByMonthDay());
+			assertEquals(Arrays.asList(), recur.getByYearDay());
+			assertEquals(Arrays.asList(), recur.getByMonth());
+			assertEquals(Arrays.asList(), recur.getBySetPos());
+			assertEquals(Arrays.asList(), recur.getByWeekNo());
+			assertNull(recur.getWorkweekStarts());
+		}
+	};
 }

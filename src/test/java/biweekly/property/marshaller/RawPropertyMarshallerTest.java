@@ -1,16 +1,12 @@
 package biweekly.property.marshaller;
 
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.parameter.ICalParameters;
 import biweekly.property.RawProperty;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -42,55 +38,38 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  */
 public class RawPropertyMarshallerTest {
 	private final RawPropertyMarshaller marshaller = new RawPropertyMarshaller("RAW");
+	private final Sensei<RawProperty> sensei = new Sensei<RawProperty>(marshaller);
+
+	private final RawProperty withValue = new RawProperty("RAW", "value");
+	private final RawProperty empty = new RawProperty("RAW", null);
 
 	@Test
 	public void writeText() {
-		RawProperty prop = new RawProperty("RAW", "value");
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "value";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_null() {
-		RawProperty prop = new RawProperty("RAW", null);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "";
-		assertEquals(expected, actual);
+		sensei.assertWriteText(withValue).run("value");
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
 	public void parseText() {
-		String value = "value";
-		ICalParameters params = new ICalParameters();
-
-		Result<RawProperty> result = marshaller.parseText(value, null, params);
-
-		assertEquals("value", result.getProperty().getValue());
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseText("value").run(has("RAW", "value", null));
+		sensei.assertParseText("value").dataType(ICalDataType.TEXT).run(has("RAW", "value", ICalDataType.TEXT));
+		sensei.assertParseText("").run(has("RAW", "", null));
+		sensei.assertParseText("").dataType(ICalDataType.TEXT).run(has("RAW", "", ICalDataType.TEXT));
 	}
 
 	@Test
 	public void parseXml() {
-		Result<RawProperty> result = parseXCalProperty("<text>text</text>", marshaller);
-
-		RawProperty prop = result.getProperty();
-		assertEquals("text", prop.getValue());
-		assertEquals(ICalDataType.TEXT, prop.getDataType());
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseXml("<integer>value</integer>").run(has("raw", "value", ICalDataType.INTEGER));
+		sensei.assertParseXml("<foo>value</foo>").run(has("raw", "value", ICalDataType.get("foo")));
 	}
 
-	@Test
-	public void parseXml_unknown_tag() {
-		Result<RawProperty> result = parseXCalProperty("<foo>text</foo>", marshaller);
-
-		RawProperty prop = result.getProperty();
-		assertEquals("text", prop.getValue());
-		assertNull(prop.getParameters().getValue());
-		assertWarnings(0, result.getWarnings());
+	private Check<RawProperty> has(final String name, final String value, final ICalDataType dataType) {
+		return new Check<RawProperty>() {
+			public void check(RawProperty property) {
+				assertEquals(name, property.getName());
+				assertEquals(value, property.getValue());
+				assertEquals(dataType, property.getDataType());
+			}
+		};
 	}
 }

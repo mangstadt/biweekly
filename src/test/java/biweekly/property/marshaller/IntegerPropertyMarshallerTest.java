@@ -1,21 +1,15 @@
 package biweekly.property.marshaller;
 
-import static biweekly.util.TestUtils.assertIntEquals;
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
-import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
-import biweekly.parameter.ICalParameters;
+import biweekly.io.json.JsonValue;
 import biweekly.property.IntegerProperty;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -47,118 +41,49 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  */
 public class IntegerPropertyMarshallerTest {
 	private final IntegerPropertyMarshallerImpl marshaller = new IntegerPropertyMarshallerImpl();
+	private final Sensei<IntegerProperty> sensei = new Sensei<IntegerProperty>(marshaller);
+
+	private final IntegerProperty withValue = new IntegerProperty(5);
+	private final IntegerProperty empty = new IntegerProperty(null);
 
 	@Test
 	public void writeText() {
-		IntegerProperty prop = new IntegerProperty(5);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "5";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_null() {
-		IntegerProperty prop = new IntegerProperty(null);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "";
-		assertEquals(expected, actual);
+		sensei.assertWriteText(withValue).run("5");
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
 	public void parseText() {
-		String value = "5";
-		ICalParameters params = new ICalParameters();
-
-		Result<IntegerProperty> result = marshaller.parseText(value, ICalDataType.INTEGER, params);
-
-		IntegerProperty prop = result.getProperty();
-		assertIntEquals(5, prop.getValue());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseText_invalid() {
-		String value = "invalid";
-		ICalParameters params = new ICalParameters();
-
-		marshaller.parseText(value, ICalDataType.INTEGER, params);
-	}
-
-	@Test
-	public void parseText_empty() {
-		String value = "";
-		ICalParameters params = new ICalParameters();
-
-		Result<IntegerProperty> result = marshaller.parseText(value, ICalDataType.INTEGER, params);
-
-		IntegerProperty prop = result.getProperty();
-		assertNull(prop.getValue());
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseText("5").run(has(5));
+		sensei.assertParseText("invalid").cannotParse();
+		sensei.assertParseText("").run(has(null));
 	}
 
 	@Test
 	public void writeXml() {
-		IntegerProperty prop = new IntegerProperty(5);
-		assertWriteXml("<integer>5</integer>", prop, marshaller);
-	}
-
-	@Test
-	public void writeXml_null() {
-		IntegerProperty prop = new IntegerProperty(null);
-		assertWriteXml("", prop, marshaller);
+		sensei.assertWriteXml(withValue).run("<integer>5</integer>");
+		sensei.assertWriteXml(empty).run("");
 	}
 
 	@Test
 	public void parseXml() {
-		Result<IntegerProperty> result = parseXCalProperty("<integer>5</integer>", marshaller);
-
-		IntegerProperty prop = result.getProperty();
-		assertIntEquals(5, prop.getValue());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_invalid() {
-		parseXCalProperty("<integer>invalid</integer>", marshaller);
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_empty() {
-		parseXCalProperty("", marshaller);
+		sensei.assertParseXml("<integer>5</integer>").run(has(5));
+		sensei.assertParseXml("<integer>invalid</integer>").cannotParse();
+		sensei.assertParseXml("").cannotParse();
 	}
 
 	@Test
 	public void writeJson() {
-		IntegerProperty prop = new IntegerProperty(5);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(5, actual.getValues().get(0).getValue());
-	}
-
-	@Test
-	public void writeJson_null() {
-		IntegerProperty prop = new IntegerProperty(null);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertTrue(actual.getValues().get(0).isNull());
+		sensei.assertWriteJson(withValue).run(new JCalValue(Arrays.asList(new JsonValue(5))));
+		sensei.assertWriteJson(empty).run((String) null);
 	}
 
 	@Test
 	public void parseJson() {
-		Result<IntegerProperty> result = marshaller.parseJson(JCalValue.single(5), ICalDataType.INTEGER, new ICalParameters());
-
-		IntegerProperty prop = result.getProperty();
-		assertIntEquals(5, prop.getValue());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseJson_invalid() {
-		marshaller.parseJson(JCalValue.single("invalid"), ICalDataType.INTEGER, new ICalParameters());
+		sensei.assertParseJson(new JCalValue(Arrays.asList(new JsonValue(5)))).run(has(5));
+		sensei.assertParseJson("5").run(has(5));
+		sensei.assertParseJson("invalid").cannotParse();
+		sensei.assertParseJson("").run(has(null));
 	}
 
 	private class IntegerPropertyMarshallerImpl extends IntegerPropertyMarshaller<IntegerProperty> {
@@ -170,5 +95,13 @@ public class IntegerPropertyMarshallerTest {
 		protected IntegerProperty newInstance(Integer value) {
 			return new IntegerProperty(value);
 		}
+	}
+
+	private Check<IntegerProperty> has(final Integer value) {
+		return new Check<IntegerProperty>() {
+			public void check(IntegerProperty actual) {
+				assertEquals(value, actual.getValue());
+			}
+		};
 	}
 }

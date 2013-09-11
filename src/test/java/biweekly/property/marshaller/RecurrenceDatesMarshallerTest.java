@@ -1,29 +1,19 @@
 package biweekly.property.marshaller;
 
-import static biweekly.util.TestUtils.assertDateEquals;
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TimeZone;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
-import biweekly.parameter.ICalParameters;
 import biweekly.property.RecurrenceDates;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
+import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.Duration;
 import biweekly.util.Period;
 
@@ -56,678 +46,327 @@ import biweekly.util.Period;
  * @author Michael Angstadt
  */
 public class RecurrenceDatesMarshallerTest {
-	private final RecurrenceDatesMarshaller marshaller = new RecurrenceDatesMarshaller();
+	@ClassRule
+	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
 
-	private final Date start;
+	private final RecurrenceDatesMarshaller marshaller = new RecurrenceDatesMarshaller();
+	private final Sensei<RecurrenceDates> sensei = new Sensei<RecurrenceDates>(marshaller);
+
+	private final Date startDate;
 	{
-		Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar c = Calendar.getInstance();
 		c.clear();
 		c.set(Calendar.YEAR, 2013);
 		c.set(Calendar.MONTH, Calendar.JUNE);
 		c.set(Calendar.DATE, 11);
+		startDate = c.getTime();
+	}
+	private final String startDateStr = "20130611";
+	private final String startDateStrExt = "2013-06-11";
+
+	private final Date startDateTime;
+	{
+		Calendar c = Calendar.getInstance();
+		c.setTime(startDate);
 		c.set(Calendar.HOUR_OF_DAY, 13);
 		c.set(Calendar.MINUTE, 43);
 		c.set(Calendar.SECOND, 2);
-		start = c.getTime();
+		startDateTime = c.getTime();
 	}
+	private final String startDateTimeStr = startDateStr + "T124302Z";
+	private final String startDateTimeStrExt = startDateStrExt + "T12:43:02Z";
 
-	private final Date end;
+	private final Date endDate = startDate;
+	private final String endDateStr = startDateStr;
+	private final String endDateStrExt = startDateStrExt;
+
+	private final Date endDateTime;
 	{
-		Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		c.setTime(start);
+		Calendar c = Calendar.getInstance();
+		c.setTime(startDateTime);
 		c.add(Calendar.HOUR, 2);
-		end = c.getTime();
+		endDateTime = c.getTime();
 	}
+	private final String endDateTimeStr = endDateStr + "T144302Z";
+	private final String endDateTimeStrExt = endDateStrExt + "T14:43:02Z";
 
 	private final Duration duration = Duration.builder().hours(2).build();
+	private final String durationStr = duration.toString();
+
+	private final Period period1 = new Period(startDateTime, endDateTime);
+	private final Period period2 = new Period(startDateTime, duration);
+
+	private final RecurrenceDates withMultiplePeriods = new RecurrenceDates(Arrays.asList(period1, period2));
+	private final RecurrenceDates withMultipleDates = new RecurrenceDates(Arrays.asList(startDate, endDate), false);
+	private final RecurrenceDates withMultipleDateTimes = new RecurrenceDates(Arrays.asList(startDateTime, endDateTime), true);
+
+	private final RecurrenceDates withSinglePeriod = new RecurrenceDates(Arrays.asList(period1));
+	private final RecurrenceDates withSingleDate = new RecurrenceDates(Arrays.asList(startDate), false);
+	private final RecurrenceDates withSingleDateTime = new RecurrenceDates(Arrays.asList(startDateTime), true);
+
+	private final RecurrenceDates emptyPeriods = new RecurrenceDates(Arrays.<Period> asList());
+	private final RecurrenceDates emptyDates = new RecurrenceDates(Arrays.<Date> asList(), false);
+	private final RecurrenceDates emptyDateTimes = new RecurrenceDates(Arrays.<Date> asList(), true);
+	private final RecurrenceDates empty = new RecurrenceDates(null);
 
 	@Test
-	public void getDataType_periods() {
-		List<Period> periods = Arrays.asList(new Period(start, end), new Period(start, duration));
-		RecurrenceDates prop = new RecurrenceDates(periods);
+	public void dataType() {
+		sensei.assertDataType(withMultiplePeriods).run(ICalDataType.PERIOD);
+		sensei.assertDataType(withMultipleDates).run(ICalDataType.DATE);
+		sensei.assertDataType(withMultipleDateTimes).run(ICalDataType.DATE_TIME);
 
-		assertEquals(ICalDataType.PERIOD, marshaller.dataType(prop));
+		sensei.assertDataType(withSinglePeriod).run(ICalDataType.PERIOD);
+		sensei.assertDataType(withSingleDate).run(ICalDataType.DATE);
+		sensei.assertDataType(withSingleDateTime).run(ICalDataType.DATE_TIME);
+
+		sensei.assertDataType(emptyPeriods).run(ICalDataType.PERIOD);
+		sensei.assertDataType(emptyDates).run(ICalDataType.DATE);
+		sensei.assertDataType(emptyDateTimes).run(ICalDataType.DATE_TIME);
+		sensei.assertDataType(empty).run(ICalDataType.DATE_TIME);
 	}
 
 	@Test
-	public void getDataType_dates_with_time() {
-		List<Date> dates = Arrays.asList(start, end);
-		RecurrenceDates prop = new RecurrenceDates(dates, true);
+	public void writeText() {
+		sensei.assertWriteText(withMultiplePeriods).run(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/" + durationStr);
+		sensei.assertWriteText(withMultipleDates).run(startDateStr + "," + endDateStr);
+		sensei.assertWriteText(withMultipleDateTimes).run(startDateTimeStr + "," + endDateTimeStr);
 
-		assertEquals(ICalDataType.DATE_TIME, marshaller.dataType(prop));
+		sensei.assertWriteText(withSinglePeriod).run(startDateTimeStr + "/" + endDateTimeStr);
+		sensei.assertWriteText(withSingleDate).run(startDateStr);
+		sensei.assertWriteText(withSingleDateTime).run(startDateTimeStr);
+
+		sensei.assertWriteText(emptyPeriods).run("");
+		sensei.assertWriteText(emptyDates).run("");
+		sensei.assertWriteText(emptyDateTimes).run("");
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void getDataType_dates_without_time() {
-		List<Date> dates = Arrays.asList(start, end);
-		RecurrenceDates prop = new RecurrenceDates(dates, false);
+	public void parseText() {
+		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/" + durationStr).dataType(ICalDataType.PERIOD).run(is(withMultiplePeriods));
+		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + "invalid/" + durationStr).dataType(ICalDataType.PERIOD).warnings(1).run(is(withSinglePeriod));
+		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/invalid").dataType(ICalDataType.PERIOD).warnings(1).run(is(withSinglePeriod));
+		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/").dataType(ICalDataType.PERIOD).warnings(1).run(is(withSinglePeriod));
+		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr).dataType(ICalDataType.PERIOD).warnings(1).run(is(withSinglePeriod));
 
-		assertEquals(ICalDataType.DATE, marshaller.dataType(prop));
+		sensei.assertParseText(startDateStr + "," + endDateStr).dataType(ICalDataType.DATE).run(is(withMultipleDates));
+		sensei.assertParseText(startDateStr + ",invalid").dataType(ICalDataType.DATE).warnings(1).run(is(withSingleDate));
+
+		sensei.assertParseText(startDateTimeStr + "," + endDateTimeStr).dataType(ICalDataType.DATE_TIME).run(is(withMultipleDateTimes));
+		sensei.assertParseText(startDateTimeStr + ",invalid").dataType(ICalDataType.DATE_TIME).warnings(1).run(is(withSingleDateTime));
+
+		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr).dataType(ICalDataType.PERIOD).run(is(withSinglePeriod));
+		sensei.assertParseText(startDateStr).dataType(ICalDataType.DATE).run(is(withSingleDate));
+		sensei.assertParseText(startDateTimeStr).dataType(ICalDataType.DATE_TIME).run(is(withSingleDateTime));
+
+		sensei.assertParseText("").dataType(ICalDataType.PERIOD).run(is(emptyPeriods));
+		sensei.assertParseText("").dataType(ICalDataType.DATE).run(is(emptyDates));
+		sensei.assertParseText("").dataType(ICalDataType.DATE_TIME).run(is(emptyDateTimes));
+		sensei.assertParseText("").run(is(emptyDateTimes));
 	}
 
 	@Test
-	public void writeText_multiple_periods() {
-		List<Period> periods = Arrays.asList(new Period(start, end), new Period(start, duration));
-		RecurrenceDates prop = new RecurrenceDates(periods);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "20130611T134302Z/20130611T154302Z,20130611T134302Z/PT2H";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_one_period() {
-		List<Period> periods = Arrays.asList(new Period(start, end));
-		RecurrenceDates prop = new RecurrenceDates(periods);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "20130611T134302Z/20130611T154302Z";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_multiple_datetimes() {
-		List<Date> dates = Arrays.asList(start, end);
-		RecurrenceDates prop = new RecurrenceDates(dates, true);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "20130611T134302Z,20130611T154302Z";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_one_datetime() {
-		List<Date> dates = Arrays.asList(start);
-		RecurrenceDates prop = new RecurrenceDates(dates, true);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "20130611T134302Z";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_multiple_dates() {
-		List<Date> dates = Arrays.asList(start, end);
-		RecurrenceDates prop = new RecurrenceDates(dates, false);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "20130611,20130611";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_one_date() {
-		List<Date> dates = Arrays.asList(start);
-		RecurrenceDates prop = new RecurrenceDates(dates, false);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "20130611";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_empty() {
-		List<Date> dates = Arrays.asList();
-		RecurrenceDates prop = new RecurrenceDates(dates, false);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void parseText_periods() {
-		String value = "20130611T134302Z/20130611T154302Z,20130611T134302Z/PT2H";
-		ICalParameters params = new ICalParameters();
-
-		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
-
-		RecurrenceDates prop = result.getProperty();
-		Iterator<Period> it = prop.getPeriods().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertNull(period.getEndDate());
-		assertEquals(duration, period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertNull(prop.getDates());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_invalid_start_date() {
-		String value = "20130611T134302Z/20130611T154302Z,invalid/PT2H";
-		ICalParameters params = new ICalParameters();
-
-		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
-
-		RecurrenceDates prop = result.getProperty();
-		Iterator<Period> it = prop.getPeriods().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertNull(prop.getDates());
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_invalid_end_date() {
-		String value = "20130611T134302Z/20130611T154302Z,20130611T134302Z/invalid";
-		ICalParameters params = new ICalParameters();
-
-		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
-
-		RecurrenceDates prop = result.getProperty();
-		Iterator<Period> it = prop.getPeriods().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertNull(prop.getDates());
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_invalid_no_end_date() {
-		String value = "20130611T134302Z/20130611T154302Z,20130611T134302Z";
-		ICalParameters params = new ICalParameters();
-
-		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
-
-		RecurrenceDates prop = result.getProperty();
-		Iterator<Period> it = prop.getPeriods().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertNull(prop.getDates());
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_datetimes() {
-		String value = "20130611T134302Z,20130611T154302Z";
-		ICalParameters params = new ICalParameters();
-
-		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.DATE_TIME, params);
-
-		RecurrenceDates prop = result.getProperty();
-		Iterator<Date> it = prop.getDates().iterator();
-
-		Date date = it.next();
-		assertEquals(start, date);
-
-		date = it.next();
-		assertEquals(end, date);
-
-		assertFalse(it.hasNext());
-
-		assertNull(prop.getPeriods());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_invalid_datetime() {
-		String value = "20130611T134302Z,invalid,20130611T154302Z";
-		ICalParameters params = new ICalParameters();
-
-		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.DATE_TIME, params);
-
-		RecurrenceDates prop = result.getProperty();
-		Iterator<Date> it = prop.getDates().iterator();
-
-		Date date = it.next();
-		assertEquals(start, date);
-
-		date = it.next();
-		assertEquals(end, date);
-
-		assertFalse(it.hasNext());
-
-		assertNull(prop.getPeriods());
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_dates() {
-		String value = "20130611,20130612";
-		ICalParameters params = new ICalParameters();
-
-		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.DATE, params);
-
-		RecurrenceDates prop = result.getProperty();
-		Iterator<Date> it = prop.getDates().iterator();
-
-		Date date = it.next();
-		assertDateEquals("20130611", date);
-
-		date = it.next();
-		assertDateEquals("20130612", date);
-
-		assertFalse(it.hasNext());
-
-		assertNull(prop.getPeriods());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_invalid_dates() {
-		String value = "20130611,invalid,20130612";
-		ICalParameters params = new ICalParameters();
-
-		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.DATE, params);
-
-		RecurrenceDates prop = result.getProperty();
-		Iterator<Date> it = prop.getDates().iterator();
-
-		Date date = it.next();
-		assertDateEquals("20130611", date);
-
-		date = it.next();
-		assertDateEquals("20130612", date);
-
-		assertFalse(it.hasNext());
-
-		assertNull(prop.getPeriods());
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_empty_periods() {
-		String value = "";
-		ICalParameters params = new ICalParameters();
-
-		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.PERIOD, params);
-		RecurrenceDates prop = result.getProperty();
-
-		assertEquals(0, prop.getPeriods().size());
-		assertNull(prop.getDates());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_empty_dates() {
-		String value = "";
-		ICalParameters params = new ICalParameters();
-
-		Result<RecurrenceDates> result = marshaller.parseText(value, ICalDataType.DATE, params);
-		RecurrenceDates prop = result.getProperty();
-
-		assertEquals(0, prop.getDates().size());
-		assertNull(prop.getPeriods());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void writeXml_periods() {
-		List<Period> periods = Arrays.asList(new Period(start, end), new Period(start, duration));
-		RecurrenceDates prop = new RecurrenceDates(periods);
+	public void writeXml() {
 		//@formatter:off
-		assertWriteXml(
+		sensei.assertWriteXml(withMultiplePeriods).run(
 		"<period>" +
-			"<start>2013-06-11T13:43:02Z</start>" +
-			"<end>2013-06-11T15:43:02Z</end>" +
+			"<start>" + startDateTimeStrExt + "</start>" +
+			"<end>" + endDateTimeStrExt + "</end>" +
 		"</period>" +
 		"<period>" +
-			"<start>2013-06-11T13:43:02Z</start>" +
-			"<duration>PT2H</duration>" +
-		"</period>", prop, marshaller);
-		//@formatter:on
-	}
-
-	@Test
-	public void writeXml_datetimes() {
-		List<Date> dates = Arrays.asList(start, end);
-		RecurrenceDates prop = new RecurrenceDates(dates, true);
-		//@formatter:off
-		assertWriteXml(
-		"<date-time>2013-06-11T13:43:02Z</date-time>" +
-		"<date-time>2013-06-11T15:43:02Z</date-time>", prop, marshaller);
-		//@formatter:on
-	}
-
-	@Test
-	public void writeXml_dates() {
-		List<Date> dates = Arrays.asList(start, end);
-		RecurrenceDates prop = new RecurrenceDates(dates, false);
-		//@formatter:off
-		assertWriteXml(
-		"<date>2013-06-11</date>" +
-		"<date>2013-06-11</date>", prop, marshaller);
-		//@formatter:on
-	}
-
-	@Test
-	public void writeXml_empty() {
-		List<Date> dates = Arrays.asList();
-		RecurrenceDates prop = new RecurrenceDates(dates, false);
-		assertWriteXml("", prop, marshaller);
-	}
-
-	@Test
-	public void parseXml_periods() {
-		//@formatter:off
-		Result<RecurrenceDates> result = parseXCalProperty(
+			"<start>" + startDateTimeStrExt + "</start>" +
+			"<duration>" + durationStr + "</duration>" +
+		"</period>"
+		);
+		
+		sensei.assertWriteXml(withMultipleDates).run(
+		"<date>" + startDateStrExt + "</date>" +
+		"<date>" + endDateStrExt + "</date>"
+		);
+		
+		sensei.assertWriteXml(withMultipleDateTimes).run(
+		"<date-time>" + startDateTimeStrExt + "</date-time>" +
+		"<date-time>" + endDateTimeStrExt + "</date-time>"
+		);
+		
+		sensei.assertWriteXml(withSinglePeriod).run(
 		"<period>" +
-			"<start>2013-06-11T13:43:02Z</start>" +
-			"<end>2013-06-11T15:43:02Z</end>" +
+			"<start>" + startDateTimeStrExt + "</start>" +
+			"<end>" + endDateTimeStrExt + "</end>" +
+		"</period>"
+		);
+		
+		sensei.assertWriteXml(withSingleDate).run(
+		"<date>" + startDateStrExt + "</date>"
+		);
+		
+		sensei.assertWriteXml(withSingleDateTime).run(
+		"<date-time>" + startDateTimeStrExt + "</date-time>"
+		);
+		
+		sensei.assertWriteXml(emptyPeriods).run("");
+		sensei.assertWriteXml(emptyDates).run("");
+		sensei.assertWriteXml(emptyDateTimes).run("");
+		sensei.assertWriteXml(empty).run("");
+		//@formatter:on
+	}
+
+	@Test
+	public void parseXml() {
+		//@formatter:off
+		sensei.assertParseXml(
+		"<period>" +
+			"<start>" + startDateTimeStrExt + "</start>" +
+			"<end>" + endDateTimeStrExt + "</end>" +
 		"</period>" +
 		"<period>" +
-			"<start>2013-06-11T13:43:02Z</start>" +
-			"<duration>PT2H</duration>" +
-		"</period>", marshaller);
-		//@formatter:on
-
-		RecurrenceDates prop = result.getProperty();
-		assertNull(prop.getDates());
-		Iterator<Period> it = prop.getPeriods().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertNull(period.getEndDate());
-		assertEquals(duration, period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseXml_dates() {
-		//marshaller is lenient in accepting a combination of both
-		//@formatter:off
-		Result<RecurrenceDates> result = parseXCalProperty(
-		"<date-time>2013-06-11T13:43:02Z</date-time>" +
-		"<date>2013-06-12</date>", marshaller);
-		//@formatter:on
-
-		Date date;
-		{
-			Calendar c = Calendar.getInstance();
-			c.clear();
-			c.set(Calendar.YEAR, 2013);
-			c.set(Calendar.MONTH, Calendar.JUNE);
-			c.set(Calendar.DATE, 12);
-			date = c.getTime();
-		}
-
-		RecurrenceDates prop = result.getProperty();
-		assertNull(prop.getPeriods());
-		assertTrue(prop.hasTime());
-		assertEquals(2, prop.getDates().size());
-		assertTrue(prop.getDates().contains(start));
-		assertTrue(prop.getDates().contains(date));
-
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseXml_dates_invalid() {
-		//marshaller is lenient in accepting a combination of both
-		//@formatter:off
-		Result<RecurrenceDates> result = parseXCalProperty(
-		"<date-time>2013-06-11T13:43:02Z</date-time>" +
-		"<date>invalid</date>", marshaller);
-		//@formatter:on
-
-		RecurrenceDates prop = result.getProperty();
-		assertNull(prop.getPeriods());
-		assertTrue(prop.hasTime());
-		assertEquals(1, prop.getDates().size());
-		assertTrue(prop.getDates().contains(start));
-
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseXml_periods_invalid() {
-		//@formatter:off
-		Result<RecurrenceDates> result = parseXCalProperty(
+			"<start>" + startDateTimeStrExt + "</start>" +
+			"<duration>" + durationStr + "</duration>" +
+		"</period>"
+		).run(is(withMultiplePeriods));
+		
+		//invalid start date
+		sensei.assertParseXml(
+		"<period>" +
+			"<start>" + startDateTimeStrExt + "</start>" +
+			"<end>" + endDateTimeStrExt + "</end>" +
+		"</period>" +
 		"<period>" +
 			"<start>invalid</start>" +
-			"<end>2013-06-11T15:43:02Z</end>" +
+			"<duration>" + durationStr + "</duration>" +
+		"</period>"
+		).warnings(1).run(is(withSinglePeriod));
+		
+		//invalid duration
+		sensei.assertParseXml(
+		"<period>" +
+			"<start>" + startDateTimeStrExt + "</start>" +
+			"<end>" + endDateTimeStrExt + "</end>" +
 		"</period>" +
 		"<period>" +
-			"<start>2013-06-11T13:43:02Z</start>" +
-			"<end>invalid</end>" +
-		"</period>" +
-		"<period>" +
-			"<start>2013-06-11T13:43:02Z</start>" +
+			"<start>" + startDateTimeStrExt + "</start>" +
 			"<duration>invalid</duration>" +
-		"</period>", marshaller);
+		"</period>"
+		).warnings(1).run(is(withSinglePeriod));
+		
+		//missing start date
+		sensei.assertParseXml(
+		"<period>" +
+			"<start>" + startDateTimeStrExt + "</start>" +
+			"<end>" + endDateTimeStrExt + "</end>" +
+		"</period>" +
+		"<period>" +
+			"<duration>" + durationStr + "</duration>" +
+		"</period>"
+		).warnings(1).run(is(withSinglePeriod));
+		
+		//missing duration
+		sensei.assertParseXml(
+		"<period>" +
+			"<start>" + startDateTimeStrExt + "</start>" +
+			"<end>" + endDateTimeStrExt + "</end>" +
+		"</period>" +
+		"<period>" +
+			"<start>" + startDateTimeStrExt + "</start>" +
+		"</period>"
+		).warnings(1).run(is(withSinglePeriod));
+		
+		//empty <period> element
+		sensei.assertParseXml(
+		"<period>" +
+			"<start>" + startDateTimeStrExt + "</start>" +
+			"<end>" + endDateTimeStrExt + "</end>" +
+		"</period>" +
+		"<period/>"
+		).warnings(1).run(is(withSinglePeriod));
+		
+		sensei.assertParseXml(
+		"<date>" + startDateStrExt + "</date>" +
+		"<date>" + endDateStrExt + "</date>"
+		).run(is(withMultipleDates));
+		
+		//invalid date
+		sensei.assertParseXml(
+		"<date>" + startDateStrExt + "</date>" +
+		"<date>invalid</date>"
+		).warnings(1).run(is(withSingleDate));
+		
+		sensei.assertParseXml(
+		"<date-time>" + startDateTimeStrExt + "</date-time>" +
+		"<date-time>" + endDateTimeStrExt + "</date-time>"
+		).run(is(withMultipleDateTimes));
+		
+		//invalid date-time
+		sensei.assertParseXml(
+		"<date-time>" + startDateTimeStrExt + "</date-time>" +
+		"<date-time>invalid</date-time>"
+		).warnings(1).run(is(withSingleDateTime));
+		
+		sensei.assertParseXml(
+		"<period>" +
+			"<start>" + startDateTimeStrExt + "</start>" +
+			"<end>" + endDateTimeStrExt + "</end>" +
+		"</period>"
+		).run(is(withSinglePeriod));
+		
+		sensei.assertParseXml(
+		"<date>" + startDateStrExt + "</date>"
+		).run(is(withSingleDate));
+		
+		sensei.assertParseXml(
+		"<date-time>" + startDateTimeStrExt + "</date-time>"
+		).run(is(withSingleDateTime));
+		
+		sensei.assertParseXml("").cannotParse();
 		//@formatter:on
-
-		RecurrenceDates prop = result.getProperty();
-		assertNull(prop.getDates());
-		Iterator<Period> it = prop.getPeriods().iterator();
-		assertFalse(it.hasNext());
-
-		assertWarnings(3, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_empty() {
-		parseXCalProperty("", marshaller);
 	}
 
 	@Test
-	public void writeJson_periods() {
-		List<Period> periods = Arrays.asList(new Period(start, end), new Period(start, duration));
-		RecurrenceDates prop = new RecurrenceDates(periods);
+	public void writeJson() {
+		sensei.assertWriteJson(withMultiplePeriods).run(JCalValue.multi(startDateTimeStrExt + "/" + endDateTimeStrExt, startDateTimeStrExt + "/" + durationStr));
+		sensei.assertWriteJson(withMultipleDates).run(JCalValue.multi(startDateStrExt, endDateStrExt));
+		sensei.assertWriteJson(withMultipleDateTimes).run(JCalValue.multi(startDateTimeStrExt, endDateTimeStrExt));
 
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Arrays.asList("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/PT2H"), actual.getMultivalued());
+		sensei.assertWriteJson(withSinglePeriod).run(startDateTimeStrExt + "/" + endDateTimeStrExt);
+		sensei.assertWriteJson(withSingleDate).run(startDateStrExt);
+		sensei.assertWriteJson(withSingleDateTime).run(startDateTimeStrExt);
+
+		sensei.assertWriteJson(emptyPeriods).run("");
+		sensei.assertWriteJson(emptyDates).run("");
+		sensei.assertWriteJson(emptyDateTimes).run("");
+		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
-	public void writeJson_datetimes() {
-		List<Date> dates = Arrays.asList(start, end);
-		RecurrenceDates prop = new RecurrenceDates(dates, true);
+	public void parseJson() {
+		sensei.assertParseJson(JCalValue.multi(startDateTimeStrExt + "/" + endDateTimeStrExt, startDateTimeStrExt + "/" + durationStr)).dataType(ICalDataType.PERIOD).run(is(withMultiplePeriods));
+		sensei.assertParseJson(JCalValue.multi(startDateTimeStrExt + "/" + endDateTimeStrExt, "invalid/" + durationStr)).dataType(ICalDataType.PERIOD).warnings(1).run(is(withSinglePeriod));
+		sensei.assertParseJson(JCalValue.multi(startDateTimeStrExt + "/" + endDateTimeStrExt, startDateTimeStrExt + "/invalid")).dataType(ICalDataType.PERIOD).warnings(1).run(is(withSinglePeriod));
+		sensei.assertParseJson(JCalValue.multi(startDateTimeStrExt + "/" + endDateTimeStrExt, startDateTimeStrExt + "/")).dataType(ICalDataType.PERIOD).warnings(1).run(is(withSinglePeriod));
+		sensei.assertParseJson(JCalValue.multi(startDateTimeStrExt + "/" + endDateTimeStrExt, startDateTimeStrExt)).dataType(ICalDataType.PERIOD).warnings(1).run(is(withSinglePeriod));
 
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Arrays.asList("2013-06-11T13:43:02Z", "2013-06-11T15:43:02Z"), actual.getMultivalued());
+		sensei.assertParseJson(JCalValue.multi(startDateStrExt, endDateStrExt)).dataType(ICalDataType.DATE).run(is(withMultipleDates));
+		sensei.assertParseJson(JCalValue.multi(startDateStrExt, "invalid")).dataType(ICalDataType.DATE).warnings(1).run(is(withSingleDate));
+
+		sensei.assertParseJson(JCalValue.multi(startDateTimeStrExt, endDateTimeStrExt)).dataType(ICalDataType.DATE_TIME).run(is(withMultipleDateTimes));
+		sensei.assertParseJson(JCalValue.multi(startDateTimeStrExt, "invalid")).dataType(ICalDataType.DATE_TIME).warnings(1).run(is(withSingleDateTime));
+
+		sensei.assertParseJson(JCalValue.multi(startDateTimeStrExt + "/" + endDateTimeStrExt)).dataType(ICalDataType.PERIOD).run(is(withSinglePeriod));
+		sensei.assertParseJson(JCalValue.multi(startDateStrExt)).dataType(ICalDataType.DATE).run(is(withSingleDate));
+		sensei.assertParseJson(JCalValue.multi(startDateTimeStrExt)).dataType(ICalDataType.DATE_TIME).run(is(withSingleDateTime));
+
+		sensei.assertParseJson("").warnings(1).dataType(ICalDataType.PERIOD).run(is(emptyPeriods));
+		sensei.assertParseJson("").warnings(1).dataType(ICalDataType.DATE).run(is(emptyDates));
+		sensei.assertParseJson("").warnings(1).dataType(ICalDataType.DATE_TIME).run(is(emptyDateTimes));
 	}
 
-	@Test
-	public void writeJson_dates() {
-		List<Date> dates = Arrays.asList(start, end);
-		RecurrenceDates prop = new RecurrenceDates(dates, false);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Arrays.asList("2013-06-11", "2013-06-11"), actual.getMultivalued());
-	}
-
-	@Test
-	public void writeJson_empty() {
-		List<Date> dates = Arrays.asList();
-		RecurrenceDates prop = new RecurrenceDates(dates, false);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Arrays.asList(), actual.getMultivalued());
-	}
-
-	@Test
-	public void parseJson_periods() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/PT2H"), ICalDataType.PERIOD, new ICalParameters());
-
-		RecurrenceDates prop = result.getProperty();
-		assertNull(prop.getDates());
-		Iterator<Period> it = prop.getPeriods().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertNull(period.getEndDate());
-		assertEquals(duration, period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseJson_invalid_start_date() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "invalid/PT2H"), ICalDataType.PERIOD, new ICalParameters());
-
-		RecurrenceDates prop = result.getProperty();
-		Iterator<Period> it = prop.getPeriods().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertNull(prop.getDates());
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseJson_invalid_end_date() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z/invalid"), ICalDataType.PERIOD, new ICalParameters());
-
-		RecurrenceDates prop = result.getProperty();
-		Iterator<Period> it = prop.getPeriods().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertNull(prop.getDates());
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseJson_invalid_no_end_date() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z/2013-06-11T15:43:02Z", "2013-06-11T13:43:02Z"), ICalDataType.PERIOD, new ICalParameters());
-
-		RecurrenceDates prop = result.getProperty();
-		Iterator<Period> it = prop.getPeriods().iterator();
-
-		Period period = it.next();
-		assertEquals(start, period.getStartDate());
-		assertEquals(end, period.getEndDate());
-		assertNull(period.getDuration());
-
-		assertFalse(it.hasNext());
-
-		assertNull(prop.getDates());
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseJson_datetimes() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z", "2013-06-11T15:43:02Z"), ICalDataType.DATE_TIME, new ICalParameters());
-
-		RecurrenceDates prop = result.getProperty();
-		Iterator<Date> it = prop.getDates().iterator();
-
-		Date date = it.next();
-		assertEquals(start, date);
-
-		date = it.next();
-		assertEquals(end, date);
-
-		assertFalse(it.hasNext());
-
-		assertNull(prop.getPeriods());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseJson_invalid_datetime() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z", "invalid", "2013-06-11T15:43:02Z"), ICalDataType.DATE_TIME, new ICalParameters());
-
-		RecurrenceDates prop = result.getProperty();
-		Iterator<Date> it = prop.getDates().iterator();
-
-		Date date = it.next();
-		assertEquals(start, date);
-
-		date = it.next();
-		assertEquals(end, date);
-
-		assertFalse(it.hasNext());
-
-		assertNull(prop.getPeriods());
-		assertWarnings(1, result.getWarnings());
-	}
-
-	@Test
-	public void parseJson_dates() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11", "2013-06-12"), ICalDataType.DATE, new ICalParameters());
-
-		RecurrenceDates prop = result.getProperty();
-		Iterator<Date> it = prop.getDates().iterator();
-
-		Date date = it.next();
-		assertDateEquals("20130611", date);
-
-		date = it.next();
-		assertDateEquals("20130612", date);
-
-		assertFalse(it.hasNext());
-
-		assertNull(prop.getPeriods());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseJson_invalid_dates() {
-		Result<RecurrenceDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11", "invalid", "2013-06-12"), ICalDataType.DATE, new ICalParameters());
-
-		RecurrenceDates prop = result.getProperty();
-		Iterator<Date> it = prop.getDates().iterator();
-
-		Date date = it.next();
-		assertDateEquals("20130611", date);
-
-		date = it.next();
-		assertDateEquals("20130612", date);
-
-		assertFalse(it.hasNext());
-
-		assertNull(prop.getPeriods());
-		assertWarnings(1, result.getWarnings());
+	private Check<RecurrenceDates> is(final RecurrenceDates expected) {
+		return new Check<RecurrenceDates>() {
+			public void check(RecurrenceDates actual) {
+				assertEquals(expected.getPeriods(), actual.getPeriods());
+				assertEquals(expected.getDates(), actual.getDates());
+				assertEquals(expected.hasTime(), actual.hasTime());
+			}
+		};
 	}
 }

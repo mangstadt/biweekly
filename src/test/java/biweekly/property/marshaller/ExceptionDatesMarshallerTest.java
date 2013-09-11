@@ -1,25 +1,19 @@
 package biweekly.property.marshaller;
 
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
-import biweekly.parameter.ICalParameters;
 import biweekly.property.ExceptionDates;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
+import biweekly.util.DefaultTimezoneRule;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -50,199 +44,161 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  * @author Michael Angstadt
  */
 public class ExceptionDatesMarshallerTest {
+	@ClassRule
+	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
+
 	private final ExceptionDatesMarshaller marshaller = new ExceptionDatesMarshaller();
+	private final Sensei<ExceptionDates> sensei = new Sensei<ExceptionDates>(marshaller);
 
-	private final Date datetime;
-	{
-		Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-		c.clear();
-		c.set(Calendar.YEAR, 2013);
-		c.set(Calendar.MONTH, Calendar.JUNE);
-		c.set(Calendar.DATE, 11);
-		c.set(Calendar.HOUR_OF_DAY, 13);
-		c.set(Calendar.MINUTE, 43);
-		c.set(Calendar.SECOND, 2);
-		datetime = c.getTime();
-	}
-
-	private final Date date;
+	private final Date date1;
 	{
 		Calendar c = Calendar.getInstance();
 		c.clear();
 		c.set(Calendar.YEAR, 2013);
 		c.set(Calendar.MONTH, Calendar.JUNE);
 		c.set(Calendar.DATE, 11);
-		date = c.getTime();
+		date1 = c.getTime();
+	}
+	private final String date1Str = "20130611";
+	private final String date1StrExt = "2013-06-11";
+
+	private final Date datetime1;
+	{
+		Calendar c = Calendar.getInstance();
+		c.setTime(date1);
+		c.set(Calendar.HOUR_OF_DAY, 13);
+		c.set(Calendar.MINUTE, 43);
+		c.set(Calendar.SECOND, 2);
+		datetime1 = c.getTime();
+	}
+	private final String datetime1Str = date1Str + "T124302Z";
+	private final String datetime1StrExt = date1StrExt + "T12:43:02Z";
+
+	private final Date date2;
+	{
+		Calendar c = Calendar.getInstance();
+		c.clear();
+		c.set(Calendar.YEAR, 2000);
+		c.set(Calendar.MONTH, Calendar.NOVEMBER);
+		c.set(Calendar.DATE, 2);
+		date2 = c.getTime();
+	}
+	private final String date2Str = "20001102";
+	private final String date2StrExt = "2000-11-02";
+
+	private final Date datetime2;
+	{
+		Calendar c = Calendar.getInstance();
+		c.setTime(date2);
+		c.set(Calendar.HOUR_OF_DAY, 6);
+		c.set(Calendar.MINUTE, 2);
+		c.set(Calendar.SECOND, 11);
+		datetime2 = c.getTime();
+	}
+	private final String datetime2Str = date2Str + "T050211Z";
+	private final String datetime2StrExt = date2StrExt + "T05:02:11Z";
+
+	private final ExceptionDates withDateTimes = new ExceptionDates(true);
+	{
+		withDateTimes.addValue(datetime1);
+		withDateTimes.addValue(datetime2);
+	}
+	private final ExceptionDates withDates = new ExceptionDates(false);
+	{
+		withDates.addValue(date1);
+		withDates.addValue(date2);
+	}
+	private final ExceptionDates empty = new ExceptionDates(true);
+
+	@Test
+	public void dataType() {
+		sensei.assertDataType(withDates).run(ICalDataType.DATE);
+		sensei.assertDataType(withDateTimes).run(ICalDataType.DATE_TIME);
+		sensei.assertDataType(empty).run(ICalDataType.DATE_TIME);
 	}
 
 	@Test
-	public void getDataType_datetime() {
-		ExceptionDates prop = new ExceptionDates(true);
-		assertEquals(ICalDataType.DATE_TIME, marshaller.dataType(prop));
+	public void writeText() {
+		sensei.assertWriteText(withDates).run(date1Str + "," + date2Str);
+		sensei.assertWriteText(withDateTimes).run(datetime1Str + "," + datetime2Str);
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void getDataType_date() {
-		ExceptionDates prop = new ExceptionDates(false);
-		assertEquals(ICalDataType.DATE, marshaller.dataType(prop));
-	}
+	public void parseText() {
+		sensei.assertParseText(date1Str + "," + date2Str).run(has(true, date1, date2));
+		sensei.assertParseText(date1Str + "," + date2Str).dataType(ICalDataType.DATE).run(is(withDates));
+		sensei.assertParseText(date1Str + "," + date2Str).dataType(ICalDataType.DATE_TIME).run(has(true, date1, date2));
 
-	@Test
-	public void writeText_datetime() {
-		ExceptionDates prop = new ExceptionDates(true);
-		prop.addValue(datetime);
-		prop.addValue(datetime);
+		sensei.assertParseText(datetime1Str + "," + datetime2Str).run(is(withDateTimes));
+		sensei.assertParseText(datetime1Str + "," + datetime2Str).dataType(ICalDataType.DATE).run(has(false, datetime1, datetime2));
+		sensei.assertParseText(datetime1Str + "," + datetime2Str).dataType(ICalDataType.DATE_TIME).run(is(withDateTimes));
 
-		String actual = marshaller.writeText(prop);
+		sensei.assertParseText(datetime1Str + ",invalid").cannotParse();
 
-		String expected = "20130611T134302Z,20130611T134302Z";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_date() {
-		ExceptionDates prop = new ExceptionDates(false);
-		prop.addValue(datetime);
-		prop.addValue(datetime);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "20130611,20130611";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void parseText_datetime() {
-		String value = "20130611T134302Z,20130611T134302Z";
-		ICalParameters params = new ICalParameters();
-
-		Result<ExceptionDates> result = marshaller.parseText(value, ICalDataType.DATE_TIME, params);
-
-		ExceptionDates prop = result.getProperty();
-		assertEquals(Arrays.asList(datetime, datetime), prop.getValues());
-		assertTrue(prop.hasTime());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseText_date() {
-		String value = "20130611,20130611";
-		ICalParameters params = new ICalParameters();
-
-		Result<ExceptionDates> result = marshaller.parseText(value, ICalDataType.DATE, params);
-
-		ExceptionDates prop = result.getProperty();
-		assertEquals(Arrays.asList(date, date), prop.getValues());
-		assertFalse(prop.hasTime());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseText_invalid() {
-		String value = "20130611T134302Z,invalid";
-		ICalParameters params = new ICalParameters();
-
-		marshaller.parseText(value, ICalDataType.DATE_TIME, params);
+		sensei.assertParseText("").run(has(true));
+		sensei.assertParseText("").dataType(ICalDataType.DATE).run(has(false));
+		sensei.assertParseText("").dataType(ICalDataType.DATE_TIME).run(has(true));
 	}
 
 	@Test
 	public void writeXml_datetime() {
-		ExceptionDates prop = new ExceptionDates(true);
-		prop.addValue(datetime);
-		prop.addValue(datetime);
-		assertWriteXml("<date-time>2013-06-11T13:43:02Z</date-time><date-time>2013-06-11T13:43:02Z</date-time>", prop, marshaller);
-	}
-
-	@Test
-	public void writeXml_date() {
-		ExceptionDates prop = new ExceptionDates(false);
-		prop.addValue(datetime);
-		prop.addValue(datetime);
-		assertWriteXml("<date>2013-06-11</date><date>2013-06-11</date>", prop, marshaller);
+		sensei.assertWriteXml(withDates).run("<date>" + date1StrExt + "</date><date>" + date2StrExt + "</date>");
+		sensei.assertWriteXml(withDateTimes).run("<date-time>" + datetime1StrExt + "</date-time><date-time>" + datetime2StrExt + "</date-time>");
+		sensei.assertWriteXml(empty).run("");
 	}
 
 	@Test
 	public void parseXml_datetime() {
-		Result<ExceptionDates> result = parseXCalProperty("<date-time>2013-06-11T13:43:02Z</date-time><date-time>2013-06-11T13:43:02Z</date-time>", marshaller);
+		sensei.assertParseXml("<date>" + date1Str + "</date><date>" + date2Str + "</date>").run(is(withDates));
+		sensei.assertParseXml("<date-time>" + datetime1Str + "</date-time><date-time>" + datetime2Str + "</date-time>").run(is(withDateTimes));
 
-		ExceptionDates prop = result.getProperty();
-		assertEquals(Arrays.asList(datetime, datetime), prop.getValues());
-		assertTrue(prop.hasTime());
-		assertWarnings(0, result.getWarnings());
+		//combination of <date> and <date-time> elements
+		sensei.assertParseXml("<date-time>" + datetime1Str + "</date-time><date>" + date2Str + "</date>").run(has(true, datetime1, date2));
+
+		sensei.assertParseXml("<date>" + date1Str + "</date><date>invalid</date>").cannotParse();
+		sensei.assertParseXml("").cannotParse();
 	}
 
 	@Test
-	public void parseXml_date() {
-		Result<ExceptionDates> result = parseXCalProperty("<date>2013-06-11</date><date>2013-06-11</date>", marshaller);
-
-		ExceptionDates prop = result.getProperty();
-		assertEquals(Arrays.asList(date, date), prop.getValues());
-		assertFalse(prop.hasTime());
-		assertWarnings(0, result.getWarnings());
+	public void writeJson() {
+		sensei.assertWriteJson(withDates).run(JCalValue.multi(date1StrExt, date2StrExt));
+		sensei.assertWriteJson(withDateTimes).run(JCalValue.multi(datetime1StrExt, datetime2StrExt));
+		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
-	public void parseXml_combination() {
-		Result<ExceptionDates> result = parseXCalProperty("<date-time>2013-06-11T13:43:02Z</date-time><date>2013-06-11</date>", marshaller);
+	public void parseJson() {
+		sensei.assertParseJson(JCalValue.multi(date1StrExt, date2StrExt)).run(has(true, date1, date2));
+		sensei.assertParseJson(JCalValue.multi(date1StrExt, date2StrExt)).dataType(ICalDataType.DATE).run(is(withDates));
+		sensei.assertParseJson(JCalValue.multi(date1StrExt, date2StrExt)).dataType(ICalDataType.DATE_TIME).run(has(true, date1, date2));
 
-		ExceptionDates prop = result.getProperty();
-		assertEquals(Arrays.asList(datetime, date), prop.getValues());
-		assertTrue(prop.hasTime());
-		assertWarnings(0, result.getWarnings());
+		sensei.assertParseJson(JCalValue.multi(datetime1StrExt, datetime2StrExt)).run(is(withDateTimes));
+		sensei.assertParseJson(JCalValue.multi(datetime1StrExt, datetime2StrExt)).dataType(ICalDataType.DATE).run(has(false, datetime1, datetime2));
+		sensei.assertParseJson(JCalValue.multi(datetime1StrExt, datetime2StrExt)).dataType(ICalDataType.DATE_TIME).run(is(withDateTimes));
+
+		sensei.assertParseJson(JCalValue.multi(date1Str, "invalid")).cannotParse();
+		sensei.assertParseJson("").cannotParse();
+
+		sensei.assertParseJson(JCalValue.multi()).run(has(true));
+		sensei.assertParseJson(JCalValue.multi()).dataType(ICalDataType.DATE).run(has(false));
 	}
 
-	@Test(expected = CannotParseException.class)
-	public void parseXml_invalid() {
-		parseXCalProperty("<date>2013-06-11</date><date>invalid</date>", marshaller);
+	private final Check<ExceptionDates> has(final boolean hasTime, final Date... dates) {
+		return new Check<ExceptionDates>() {
+			public void check(ExceptionDates actual) {
+				assertEquals(Arrays.asList(dates), actual.getValues());
+				assertEquals(hasTime, actual.hasTime());
+			}
+		};
 	}
 
-	@Test(expected = CannotParseException.class)
-	public void parseXml_empty() {
-		parseXCalProperty("", marshaller);
-	}
-
-	@Test
-	public void writeJson_datetime() {
-		ExceptionDates prop = new ExceptionDates(true);
-		prop.addValue(datetime);
-		prop.addValue(datetime);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Arrays.asList("2013-06-11T13:43:02Z", "2013-06-11T13:43:02Z"), actual.getMultivalued());
-	}
-
-	@Test
-	public void writeJson_date() {
-		ExceptionDates prop = new ExceptionDates(false);
-		prop.addValue(datetime);
-		prop.addValue(datetime);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals(Arrays.asList("2013-06-11", "2013-06-11"), actual.getMultivalued());
-	}
-
-	@Test
-	public void parseJson_datetime() {
-		Result<ExceptionDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11T13:43:02Z", "2013-06-11T13:43:02Z"), ICalDataType.DATE_TIME, new ICalParameters());
-
-		ExceptionDates prop = result.getProperty();
-		assertEquals(Arrays.asList(datetime, datetime), prop.getValues());
-		assertTrue(prop.hasTime());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test
-	public void parseJson_date() {
-		Result<ExceptionDates> result = marshaller.parseJson(JCalValue.multi("2013-06-11", "2013-06-11"), ICalDataType.DATE, new ICalParameters());
-
-		ExceptionDates prop = result.getProperty();
-		assertEquals(Arrays.asList(date, date), prop.getValues());
-		assertFalse(prop.hasTime());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseJson_invalid() {
-		marshaller.parseJson(JCalValue.multi("2013-06-11", "invalid"), ICalDataType.DATE, new ICalParameters());
+	private final Check<ExceptionDates> is(final ExceptionDates expected) {
+		return new Check<ExceptionDates>() {
+			public void check(ExceptionDates actual) {
+				assertEquals(expected.getValues(), actual.getValues());
+				assertEquals(expected.hasTime(), actual.hasTime());
+			}
+		};
 	}
 }

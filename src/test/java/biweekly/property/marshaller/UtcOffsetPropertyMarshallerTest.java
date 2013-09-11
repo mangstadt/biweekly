@@ -1,19 +1,11 @@
 package biweekly.property.marshaller;
 
-import static biweekly.util.TestUtils.assertIntEquals;
-import static biweekly.util.TestUtils.assertWarnings;
-import static biweekly.util.TestUtils.assertWriteXml;
-import static biweekly.util.TestUtils.parseXCalProperty;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import biweekly.ICalDataType;
-import biweekly.io.CannotParseException;
-import biweekly.io.json.JCalValue;
-import biweekly.parameter.ICalParameters;
 import biweekly.property.UtcOffsetProperty;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
+import biweekly.property.marshaller.Sensei.Check;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -45,117 +37,64 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  */
 public class UtcOffsetPropertyMarshallerTest {
 	private final UtcOffsetPropertyMarshallerImpl marshaller = new UtcOffsetPropertyMarshallerImpl();
+	private final Sensei<UtcOffsetPropertyImpl> sensei = new Sensei<UtcOffsetPropertyImpl>(marshaller);
+
+	private final UtcOffsetPropertyImpl withHourMinute = new UtcOffsetPropertyImpl(1, 30);
+	private final UtcOffsetPropertyImpl withHour = new UtcOffsetPropertyImpl(1, null);
+	private final UtcOffsetPropertyImpl withMinute = new UtcOffsetPropertyImpl(null, 30);
+	private final UtcOffsetPropertyImpl empty = new UtcOffsetPropertyImpl(null, null);
 
 	@Test
 	public void writeText() {
-		UtcOffsetPropertyImpl prop = new UtcOffsetPropertyImpl(1, 30);
-
-		String actual = marshaller.writeText(prop);
-
-		String expected = "+0130";
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void writeText_null() {
-		UtcOffsetPropertyImpl prop = new UtcOffsetPropertyImpl(null, 30);
-		String actual = marshaller.writeText(prop);
-		String expected = "+0030";
-		assertEquals(expected, actual);
-
-		prop = new UtcOffsetPropertyImpl(1, null);
-		actual = marshaller.writeText(prop);
-		expected = "+0100";
-		assertEquals(expected, actual);
-
-		prop = new UtcOffsetPropertyImpl(null, null);
-		actual = marshaller.writeText(prop);
-		expected = "+0000";
-		assertEquals(expected, actual);
+		sensei.assertWriteText(withHourMinute).run("+0130");
+		sensei.assertWriteText(withHour).run("+0100");
+		sensei.assertWriteText(withMinute).run("+0030");
+		sensei.assertWriteText(empty).run("+0000");
 	}
 
 	@Test
 	public void parseText() {
-		String value = "+0130";
-		ICalParameters params = new ICalParameters();
-
-		Result<UtcOffsetPropertyImpl> result = marshaller.parseText(value, ICalDataType.UTC_OFFSET, params);
-
-		UtcOffsetProperty prop = result.getProperty();
-		assertIntEquals(1, prop.getHourOffset());
-		assertIntEquals(30, prop.getMinuteOffset());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseText_invalid() {
-		String value = "invalid";
-		ICalParameters params = new ICalParameters();
-
-		marshaller.parseText(value, ICalDataType.UTC_OFFSET, params);
+		sensei.assertParseText("+0130").run(has(1, 30));
+		sensei.assertParseText("+0100").run(has(1, 0));
+		sensei.assertParseText("+0030").run(has(0, 30));
+		sensei.assertParseText("+0000").run(has(0, 0));
+		sensei.assertParseText("invalid").cannotParse();
 	}
 
 	@Test
 	public void writeXml() {
-		UtcOffsetPropertyImpl prop = new UtcOffsetPropertyImpl(1, 30);
-		assertWriteXml("<utc-offset>+01:30</utc-offset>", prop, marshaller);
-	}
-
-	@Test
-	public void writeXml_null() {
-		UtcOffsetPropertyImpl prop = new UtcOffsetPropertyImpl(null, null);
-		assertWriteXml("<utc-offset>+00:00</utc-offset>", prop, marshaller);
+		sensei.assertWriteXml(withHourMinute).run("<utc-offset>+01:30</utc-offset>");
+		sensei.assertWriteXml(withHour).run("<utc-offset>+01:00</utc-offset>");
+		sensei.assertWriteXml(withMinute).run("<utc-offset>+00:30</utc-offset>");
+		sensei.assertWriteXml(empty).run("<utc-offset>+00:00</utc-offset>");
 	}
 
 	@Test
 	public void parseXml() {
-		Result<UtcOffsetPropertyImpl> result = parseXCalProperty("<utc-offset>+01:30</utc-offset>", marshaller);
-
-		UtcOffsetPropertyImpl prop = result.getProperty();
-		assertIntEquals(1, prop.getHourOffset());
-		assertIntEquals(30, prop.getMinuteOffset());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_invalid() {
-		parseXCalProperty("<utc-offset>invalid</utc-offset>", marshaller);
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseXml_empty() {
-		parseXCalProperty("", marshaller);
+		sensei.assertParseXml("<utc-offset>+01:30</utc-offset>").run(has(1, 30));
+		sensei.assertParseXml("<utc-offset>+01:00</utc-offset>").run(has(1, 0));
+		sensei.assertParseXml("<utc-offset>+00:30</utc-offset>").run(has(0, 30));
+		sensei.assertParseXml("<utc-offset>+00:00</utc-offset>").run(has(0, 0));
+		sensei.assertParseXml("<utc-offset>invalid</utc-offset>").cannotParse();
+		sensei.assertParseXml("").cannotParse();
 	}
 
 	@Test
 	public void writeJson() {
-		UtcOffsetPropertyImpl prop = new UtcOffsetPropertyImpl(1, 30);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals("+01:30", actual.getSingleValued());
-	}
-
-	@Test
-	public void writeJson_null() {
-		UtcOffsetPropertyImpl prop = new UtcOffsetPropertyImpl(null, null);
-
-		JCalValue actual = marshaller.writeJson(prop);
-		assertEquals("+00:00", actual.getSingleValued());
+		sensei.assertWriteJson(withHourMinute).run("+01:30");
+		sensei.assertWriteJson(withHour).run("+01:00");
+		sensei.assertWriteJson(withMinute).run("+00:30");
+		sensei.assertWriteJson(empty).run("+00:00");
 	}
 
 	@Test
 	public void parseJson() {
-		Result<UtcOffsetPropertyImpl> result = marshaller.parseJson(JCalValue.single("+01:30"), ICalDataType.UTC_OFFSET, new ICalParameters());
-
-		UtcOffsetPropertyImpl prop = result.getProperty();
-		assertIntEquals(1, prop.getHourOffset());
-		assertIntEquals(30, prop.getMinuteOffset());
-		assertWarnings(0, result.getWarnings());
-	}
-
-	@Test(expected = CannotParseException.class)
-	public void parseJson_invalid() {
-		marshaller.parseJson(JCalValue.single("invalid"), ICalDataType.UTC_OFFSET, new ICalParameters());
+		sensei.assertParseJson("+01:30").run(has(1, 30));
+		sensei.assertParseJson("+01:00").run(has(1, 0));
+		sensei.assertParseJson("+00:30").run(has(0, 30));
+		sensei.assertParseJson("+00:00").run(has(0, 0));
+		sensei.assertParseJson("invalid").cannotParse();
+		sensei.assertParseJson("").cannotParse();
 	}
 
 	private class UtcOffsetPropertyMarshallerImpl extends UtcOffsetPropertyMarshaller<UtcOffsetPropertyImpl> {
@@ -173,5 +112,14 @@ public class UtcOffsetPropertyMarshallerTest {
 		public UtcOffsetPropertyImpl(Integer hourOffset, Integer minuteOffset) {
 			super(hourOffset, minuteOffset);
 		}
+	}
+
+	private Check<UtcOffsetPropertyImpl> has(final Integer hour, final Integer minute) {
+		return new Check<UtcOffsetPropertyImpl>() {
+			public void check(UtcOffsetPropertyImpl actual) {
+				assertEquals(hour, actual.getHourOffset());
+				assertEquals(minute, actual.getMinuteOffset());
+			}
+		};
 	}
 }
