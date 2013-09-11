@@ -100,9 +100,9 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 			throw missingXmlElements("code");
 		}
 
-		RequestStatus requestStatus = new RequestStatus(code);
-		requestStatus.setDescription(element.first("description")); //optional field
-		requestStatus.setExceptionText(element.first("data")); //optional field
+		RequestStatus requestStatus = new RequestStatus(s(code));
+		requestStatus.setDescription(s(element.first("description"))); //optional field
+		requestStatus.setExceptionText(s(element.first("data"))); //optional field
 		return requestStatus;
 	}
 
@@ -124,15 +124,26 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 	}
 
 	private RequestStatus parse(List<String> values) {
-		RequestStatus requestStatus = new RequestStatus(values.isEmpty() ? null : values.get(0));
+		RequestStatus requestStatus = new RequestStatus(null);
+
+		if (values.size() > 0) {
+			String code = values.isEmpty() ? null : s(values.get(0));
+			requestStatus.setStatusCode(code);
+		}
 
 		if (values.size() > 1) {
-			requestStatus.setDescription(values.get(1));
+			String description = s(values.get(1));
+			requestStatus.setDescription(description);
 		}
 		if (values.size() > 2) {
-			requestStatus.setExceptionText(values.get(2));
+			String data = s(values.get(2));
+			requestStatus.setExceptionText(data);
 		}
 
 		return requestStatus;
+	}
+
+	private String s(String str) {
+		return (str == null || str.length() == 0) ? null : str;
 	}
 }
