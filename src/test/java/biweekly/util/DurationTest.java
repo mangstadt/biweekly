@@ -6,6 +6,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.junit.Test;
 
 /*
@@ -62,6 +66,40 @@ public class DurationTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void parse_invalid() {
 		Duration.parse("not valid");
+	}
+
+	@Test
+	public void fromMillis() {
+		Duration expected = Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(5).prior(false).build();
+		Duration actual = Duration.fromMillis(788645000);
+		assertEquals(expected, actual);
+
+		expected = Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(5).prior(false).build();
+		actual = Duration.fromMillis(788645123); //(millis % 1000) is not 0
+		assertEquals(expected, actual);
+
+		expected = Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(5).prior(true).build();
+		actual = Duration.fromMillis(-788645000);
+		assertEquals(expected, actual);
+
+		expected = Duration.builder().prior(false).build();
+		actual = Duration.fromMillis(0);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void diff() throws Throwable {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date1 = df.parse("2013-09-12 09:49:21");
+		Date date2 = df.parse("2013-09-13 09:49:21");
+
+		Duration expected = Duration.builder().days(1).prior(false).build();
+		Duration actual = Duration.diff(date1, date2);
+		assertEquals(expected, actual);
+
+		expected = Duration.builder().days(1).prior(true).build();
+		actual = Duration.diff(date2, date1);
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -128,5 +166,41 @@ public class DurationTest {
 		duration2 = Duration.builder().weeks(2).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
 		assertFalse(duration1.equals(duration2));
 		assertFalse(duration2.equals(duration1));
+	}
+
+	@Test
+	public void toMillis() {
+		Duration duration = Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(5).prior(false).build();
+		assertEquals(788645000, duration.toMillis());
+
+		duration = Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(5).prior(true).build();
+		assertEquals(-788645000, duration.toMillis());
+
+		duration = Duration.builder().prior(false).build();
+		assertEquals(0, duration.toMillis());
+
+		duration = Duration.builder().prior(true).build();
+		assertEquals(0, duration.toMillis());
+
+	}
+
+	@Test
+	public void add() throws Throwable {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date date = df.parse("2013-09-12 09:49:21");
+
+		assertAdd(date, Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(5).prior(false), "2013-09-21 12:53:26");
+		assertAdd(date, Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(5).prior(true), "2013-09-03 06:45:16");
+		assertAdd(date, Duration.builder().prior(false), "2013-09-12 09:49:21");
+		assertAdd(date, Duration.builder().prior(true), "2013-09-12 09:49:21");
+	}
+
+	private void assertAdd(Date input, Duration.Builder builder, String expectedStr) throws Throwable {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Duration duration = builder.build();
+
+		Date expected = df.parse(expectedStr);
+		Date actual = duration.add(input);
+		assertEquals(expected, actual);
 	}
 }

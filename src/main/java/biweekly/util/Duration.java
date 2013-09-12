@@ -1,5 +1,7 @@
 package biweekly.util;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,6 +45,10 @@ import java.util.regex.Pattern;
  * <pre class="brush:java">
  * Duration duration = Duration.builder().hours(2).minutes(30).build();
  * Duration duration = Duration.parse(&quot;PT2H30M&quot;);
+ * 
+ * //add a duration value to a Date
+ * Date start = ...
+ * Date end = duration.add(start);
  * </pre>
  * 
  * </p>
@@ -73,7 +79,7 @@ public final class Duration {
 		}
 
 		//@formatter:off
-		return Duration.builder()
+		return builder()
 		.prior(value.startsWith("-"))
 		.weeks(parseComponent(value, 'W'))
 		.days(parseComponent(value, 'D'))
@@ -82,6 +88,62 @@ public final class Duration {
 		.seconds(parseComponent(value, 'S'))
 		.build();
 		//@formatter:on
+	}
+
+	/**
+	 * Builds a duration based on the difference between two dates.
+	 * @param start the start date
+	 * @param end the end date
+	 * @return the duration
+	 */
+	public static Duration diff(Date start, Date end) {
+		return fromMillis(end.getTime() - start.getTime());
+	}
+
+	/**
+	 * Builds a duration from a number of milliseconds.
+	 * @param milliseconds the number of milliseconds
+	 * @return the duration
+	 */
+	public static Duration fromMillis(long milliseconds) {
+		Duration.Builder builder = builder();
+
+		if (milliseconds < 0) {
+			builder.prior(true);
+			milliseconds *= -1;
+		}
+
+		int seconds = (int) (milliseconds / 1000);
+
+		Integer weeks = seconds / (60 * 60 * 24 * 7);
+		if (weeks > 0) {
+			builder.weeks(weeks);
+		}
+		seconds %= 60 * 60 * 24 * 7;
+
+		Integer days = seconds / (60 * 60 * 24);
+		if (days > 0) {
+			builder.days(days);
+		}
+		seconds %= 60 * 60 * 24;
+
+		Integer hours = seconds / (60 * 60);
+		if (hours > 0) {
+			builder.hours(hours);
+		}
+		seconds %= 60 * 60;
+
+		Integer minutes = seconds / (60);
+		if (minutes > 0) {
+			builder.minutes(minutes);
+		}
+		seconds %= 60;
+
+		if (seconds > 0) {
+			builder.seconds(seconds);
+		}
+
+		return builder.build();
 	}
 
 	/**
@@ -144,6 +206,69 @@ public final class Duration {
 	 */
 	public Integer getSeconds() {
 		return seconds;
+	}
+
+	/**
+	 * Adds this duration value to a {@link Date} object.
+	 * @param date the date to add to
+	 * @return the new date value
+	 */
+	public Date add(Date date) {
+		Calendar c = Calendar.getInstance();
+		c.setTime(date);
+
+		if (weeks != null) {
+			int weeks = this.weeks * (prior ? -1 : 1);
+			c.add(Calendar.DATE, weeks * 7);
+		}
+		if (days != null) {
+			int days = this.days * (prior ? -1 : 1);
+			c.add(Calendar.DATE, days);
+		}
+		if (hours != null) {
+			int hours = this.hours * (prior ? -1 : 1);
+			c.add(Calendar.HOUR_OF_DAY, hours);
+		}
+		if (minutes != null) {
+			int minutes = this.minutes * (prior ? -1 : 1);
+			c.add(Calendar.MINUTE, minutes);
+		}
+		if (seconds != null) {
+			int seconds = this.seconds * (prior ? -1 : 1);
+			c.add(Calendar.SECOND, seconds);
+		}
+
+		return c.getTime();
+	}
+
+	/**
+	 * Converts the duration value to milliseconds.
+	 * @return the duration value in milliseconds (will be negative if
+	 * {@link #isPrior} is true)
+	 */
+	public long toMillis() {
+		long totalSeconds = 0;
+
+		if (weeks != null) {
+			totalSeconds += 60 * 60 * 24 * 7 * weeks;
+		}
+		if (days != null) {
+			totalSeconds += 60 * 60 * 24 * days;
+		}
+		if (hours != null) {
+			totalSeconds += 60 * 60 * hours;
+		}
+		if (minutes != null) {
+			totalSeconds += 60 * minutes;
+		}
+		if (seconds != null) {
+			totalSeconds += seconds;
+		}
+		if (prior) {
+			totalSeconds *= -1;
+		}
+
+		return totalSeconds * 1000;
 	}
 
 	/**
