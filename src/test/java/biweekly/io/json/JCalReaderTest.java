@@ -665,7 +665,7 @@ public class JCalReaderTest {
 
 		@Override
 		protected Company _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-			String boss = value.getSingleValued();
+			String boss = value.asSingle();
 			if (boss.equals("skip-me")) {
 				throw new SkipMeException();
 			}

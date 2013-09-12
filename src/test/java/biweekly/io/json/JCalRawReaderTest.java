@@ -84,28 +84,28 @@ public class JCalRawReaderTest {
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN", value.getSingleValued());
+					assertEquals("-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN", value.asSingle());
 					break;
 				case 2:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("version", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("2.0", value.getSingleValued());
+					assertEquals("2.0", value.asSingle());
 					break;
 				case 3:
 					assertEquals(Arrays.asList("vcalendar", "vevent"), componentHierarchy);
 					assertEquals("summary", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("Networld+Interop Conference", value.getSingleValued());
+					assertEquals("Networld+Interop Conference", value.asSingle());
 					break;
 				case 4:
 					assertEquals(Arrays.asList("vcalendar", "vevent"), componentHierarchy);
 					assertEquals("description", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("Networld+Interop Conference" + NEWLINE + "and Exhibit" + NEWLINE + "Atlanta World Congress Center" + NEWLINE + "Atlanta, Georgia", value.getSingleValued());
+					assertEquals("Networld+Interop Conference" + NEWLINE + "and Exhibit" + NEWLINE + "Atlanta World Congress Center" + NEWLINE + "Atlanta, Georgia", value.asSingle());
 					break;
 				}
 
@@ -163,7 +163,7 @@ public class JCalRawReaderTest {
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("prodid1", value.getSingleValued());
+					assertEquals("prodid1", value.asSingle());
 					break;
 				}
 			}
@@ -194,7 +194,7 @@ public class JCalRawReaderTest {
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("prodid2", value.getSingleValued());
+					assertEquals("prodid2", value.asSingle());
 					break;
 				}
 			}
@@ -242,7 +242,7 @@ public class JCalRawReaderTest {
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("prodid", value.getSingleValued());
+					assertEquals("prodid", value.asSingle());
 					break;
 				}
 			}
@@ -298,7 +298,7 @@ public class JCalRawReaderTest {
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("prodid", value.getSingleValued());
+					assertEquals("prodid", value.asSingle());
 					break;
 				}
 			}
@@ -335,14 +335,14 @@ public class JCalRawReaderTest {
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("prodid", value.getSingleValued());
+					assertEquals("prodid", value.asSingle());
 					break;
 				case 2:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("version", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("2.0", value.getSingleValued());
+					assertEquals("2.0", value.asSingle());
 					break;
 				}
 			}
@@ -392,7 +392,7 @@ public class JCalRawReaderTest {
 					assertEquals("summary", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("summary-value", value.getSingleValued());
+					assertEquals("summary-value", value.asSingle());
 					break;
 				}
 			}
@@ -451,7 +451,7 @@ public class JCalRawReaderTest {
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("prodid1", value.getSingleValued());
+					assertEquals("prodid1", value.asSingle());
 					break;
 				}
 			}
@@ -479,7 +479,7 @@ public class JCalRawReaderTest {
 					assertEquals("prodid", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("prodid2", value.getSingleValued());
+					assertEquals("prodid2", value.asSingle());
 					break;
 				}
 			}
@@ -616,35 +616,35 @@ public class JCalRawReaderTest {
 					assertEquals("prop1", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("value1", value.getSingleValued());
+					assertEquals("value1", value.asSingle());
 					break;
 				case 2:
 					assertEquals(Arrays.asList("vcalendar", "comp1"), componentHierarchy);
 					assertEquals("prop2", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("value2", value.getSingleValued());
+					assertEquals("value2", value.asSingle());
 					break;
 				case 3:
 					assertEquals(Arrays.asList("vcalendar", "comp1", "comp2"), componentHierarchy);
 					assertEquals("prop3", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("value3", value.getSingleValued());
+					assertEquals("value3", value.asSingle());
 					break;
 				case 4:
 					assertEquals(Arrays.asList("vcalendar", "comp1", "comp2", "comp3"), componentHierarchy);
 					assertEquals("prop4", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("value4", value.getSingleValued());
+					assertEquals("value4", value.asSingle());
 					break;
 				case 5:
 					assertEquals(Arrays.asList("vcalendar", "comp1", "comp4"), componentHierarchy);
 					assertEquals("prop5", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("value5", value.getSingleValued());
+					assertEquals("value5", value.asSingle());
 					break;
 				}
 
@@ -706,14 +706,14 @@ public class JCalRawReaderTest {
 					assertEquals("request-status", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals(Arrays.asList("3.7", "Invalid Calendar User", "ATTENDEE:mailto:jsmith@example.org"), value.getStructured());
+					assertEquals(Arrays.asList("3.7", "Invalid Calendar User", "ATTENDEE:mailto:jsmith@example.org"), value.asStructured());
 					break;
 				case 2:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("request-status", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals(Arrays.asList(), value.getStructured());
+					assertEquals(Arrays.asList(), value.asStructured());
 					break;
 				}
 			}
@@ -760,14 +760,14 @@ public class JCalRawReaderTest {
 					assertEquals("categories", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals(Arrays.asList("one", "two", "three"), value.getMultivalued());
+					assertEquals(Arrays.asList("one", "two", "three"), value.asMulti());
 					break;
 				case 2:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
 					assertEquals("categories", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals(Arrays.asList("one"), value.getMultivalued());
+					assertEquals(Arrays.asList("one"), value.asMulti());
 					break;
 				}
 			}
@@ -820,7 +820,7 @@ public class JCalRawReaderTest {
 					expected.put("count", "5");
 					expected.put("byday", "-1SU");
 					expected.put("byday", "2MO");
-					assertEquals(expected, value.getObject());
+					assertEquals(expected, value.asObject());
 					break;
 				case 2:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);
@@ -829,7 +829,7 @@ public class JCalRawReaderTest {
 					assertEquals(ICalDataType.TEXT, dataType);
 
 					expected = new ListMultimap<String, String>();
-					assertEquals(expected, value.getObject());
+					assertEquals(expected, value.asObject());
 					break;
 				}
 			}
@@ -992,7 +992,7 @@ public class JCalRawReaderTest {
 					assertEquals("prop", name);
 					assertTrue(parameters.isEmpty());
 					assertNull(dataType);
-					assertEquals("value", value.getSingleValued());
+					assertEquals("value", value.asSingle());
 					break;
 				}
 			}
@@ -1036,7 +1036,7 @@ public class JCalRawReaderTest {
 					assertEquals("prop", name);
 					assertTrue(parameters.isEmpty());
 					assertTrue(ICalDataType.get("foo") == dataType);
-					assertEquals("value", value.getSingleValued());
+					assertEquals("value", value.asSingle());
 					break;
 				}
 			}
@@ -1135,7 +1135,7 @@ public class JCalRawReaderTest {
 					assertEquals(Arrays.asList("two"), parameters.get("b"));
 					assertEquals(Arrays.asList("three", "four"), parameters.get("c"));
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("value", value.getSingleValued());
+					assertEquals("value", value.asSingle());
 					break;
 				}
 			}

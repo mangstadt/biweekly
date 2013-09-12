@@ -240,7 +240,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 
 	@Override
 	protected RecurrenceDates _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		return parse(value.getMultivalued(), dataType, parameters, warnings);
+		return parse(value.asMulti(), dataType, parameters, warnings);
 	}
 
 	private RecurrenceDates parse(List<String> valueStrs, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {

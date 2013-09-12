@@ -81,7 +81,7 @@ public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICa
 
 	@Override
 	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		return newInstance(value.getSingleValued());
+		return newInstance(value.asSingle());
 	}
 
 	protected abstract T newInstance(String value);

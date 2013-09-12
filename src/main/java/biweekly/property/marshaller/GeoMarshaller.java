@@ -119,7 +119,7 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 
 	@Override
 	protected Geo _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		List<String> values = value.getStructured();
+		List<String> values = value.asStructured();
 		String latitudeStr = (values.size() > 0) ? values.get(0) : null;
 		String longitudeStr = (values.size() > 1) ? values.get(1) : null;
 		return parse(latitudeStr, longitudeStr);

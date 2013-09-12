@@ -90,7 +90,7 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 
 	@Override
 	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		String valueStr = value.getSingleValued();
+		String valueStr = value.asSingle();
 
 		return parse(valueStr, parameters, warnings);
 	}

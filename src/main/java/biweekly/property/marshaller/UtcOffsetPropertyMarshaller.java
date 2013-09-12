@@ -108,7 +108,7 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 
 	@Override
 	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		return parse(value.getSingleValued());
+		return parse(value.asSingle());
 	}
 
 	protected abstract T newInstance(Integer hourOffset, Integer minuteOffset);

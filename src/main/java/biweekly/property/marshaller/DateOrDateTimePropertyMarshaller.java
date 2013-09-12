@@ -123,7 +123,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 
 	@Override
 	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		String valueStr = value.getSingleValued();
+		String valueStr = value.asSingle();
 		return parse(valueStr, parameters, warnings);
 	}
 

@@ -124,7 +124,7 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	protected Attachment _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		Attachment attachment = new Attachment(null, (String) null);
 
-		String valueStr = value.getSingleValued();
+		String valueStr = value.asSingle();
 		if (dataType == ICalDataType.BINARY) {
 			attachment.setData(Base64.decode(valueStr));
 		} else {

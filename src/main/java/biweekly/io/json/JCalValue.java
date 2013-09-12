@@ -7,10 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import biweekly.property.Categories;
-import biweekly.property.RecurrenceRule;
-import biweekly.property.RequestStatus;
-import biweekly.property.Summary;
 import biweekly.util.ListMultimap;
 
 /**
@@ -117,7 +113,8 @@ public class JCalValue {
 	}
 
 	/**
-	 * Gets all the JSON values.
+	 * Gets the raw JSON values. Use one of the "{@code as*}" methods to parse
+	 * the values as one of the standard jCal values.
 	 * @return the JSON values
 	 */
 	public List<JsonValue> getValues() {
@@ -125,10 +122,10 @@ public class JCalValue {
 	}
 
 	/**
-	 * Gets the value of a single-valued property (such as {@link Summary}).
+	 * Parses this jCal value as a single-valued property value.
 	 * @return the value or null if not found
 	 */
-	public String getSingleValued() {
+	public String asSingle() {
 		if (values.isEmpty()) {
 			return null;
 		}
@@ -157,10 +154,10 @@ public class JCalValue {
 	}
 
 	/**
-	 * Gets the value of a structured property (such as {@link RequestStatus}).
-	 * @return the values or empty list if not found
+	 * Parses this jCal value as a structured property value.
+	 * @return the structured values or empty list if not found
 	 */
-	public List<String> getStructured() {
+	public List<String> asStructured() {
 		//TODO this should return a "list of lists"
 		if (values.isEmpty()) {
 			return Collections.emptyList();
@@ -206,10 +203,10 @@ public class JCalValue {
 	}
 
 	/**
-	 * Gets the value of a multi-valued property (such as {@link Categories}).
+	 * Parses this jCal value as a multi-valued property value.
 	 * @return the values or empty list if not found
 	 */
-	public List<String> getMultivalued() {
+	public List<String> asMulti() {
 		if (values.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -230,11 +227,10 @@ public class JCalValue {
 	}
 
 	/**
-	 * Gets the value of a property whose value is an object (such as the
-	 * {@link RecurrenceRule} property).
+	 * Parses this jCal value as an object property value.
 	 * @return the object or an empty map if not found
 	 */
-	public ListMultimap<String, String> getObject() {
+	public ListMultimap<String, String> asObject() {
 		if (values.isEmpty()) {
 			return new ListMultimap<String, String>(0);
 		}

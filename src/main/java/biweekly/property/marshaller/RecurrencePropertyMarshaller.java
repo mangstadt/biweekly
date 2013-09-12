@@ -193,7 +193,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
 
 		//upper-case the keys
-		ListMultimap<String, String> object = value.getObject();
+		ListMultimap<String, String> object = value.asObject();
 		ListMultimap<String, String> rules = new ListMultimap<String, String>(object.keySet().size());
 		for (Map.Entry<String, List<String>> entry : object) {
 			String key = entry.getKey().toUpperCase();

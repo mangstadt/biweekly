@@ -183,7 +183,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 
 	@Override
 	protected FreeBusy _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		return parse(value.getMultivalued(), parameters, warnings);
+		return parse(value.asMulti(), parameters, warnings);
 	}
 
 	private FreeBusy parse(List<String> periods, ICalParameters parameters, List<String> warnings) {

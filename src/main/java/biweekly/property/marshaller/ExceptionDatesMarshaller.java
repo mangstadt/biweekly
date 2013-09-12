@@ -112,7 +112,7 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 
 	@Override
 	protected ExceptionDates _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		List<String> valueStrs = value.getMultivalued();
+		List<String> valueStrs = value.asMulti();
 
 		ExceptionDates prop = new ExceptionDates(dataType == ICalDataType.DATE_TIME);
 		for (String valueStr : valueStrs) {

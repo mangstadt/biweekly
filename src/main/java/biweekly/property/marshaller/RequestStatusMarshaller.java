@@ -119,7 +119,7 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 
 	@Override
 	protected RequestStatus _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		List<String> values = value.getStructured();
+		List<String> values = value.asStructured();
 		return parse(values);
 	}
 

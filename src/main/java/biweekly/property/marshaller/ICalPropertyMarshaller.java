@@ -479,7 +479,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 
 	protected String jcalValueToString(JCalValue value) {
 		if (value.getValues().size() > 1) {
-			List<String> multi = value.getMultivalued();
+			List<String> multi = value.asMulti();
 			if (!multi.isEmpty()) {
 				return StringUtils.join(multi, ",", new JoinCallback<String>() {
 					public void handle(StringBuilder sb, String value) {
@@ -490,7 +490,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		}
 
 		if (value.getValues().get(0).getArray() != null) {
-			List<String> structured = value.getStructured();
+			List<String> structured = value.asStructured();
 			//TODO properly implement a structured value
 			//TODO create helper methods for creating lists, semi-structured, structured values
 			if (!structured.isEmpty()) {
@@ -503,7 +503,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		}
 
 		if (value.getValues().get(0).getObject() != null) {
-			ListMultimap<String, String> object = value.getObject();
+			ListMultimap<String, String> object = value.asObject();
 			if (!object.isEmpty()) {
 				return StringUtils.join(object.getMap(), ";", new JoinMapCallback<String, List<String>>() {
 					public void handle(StringBuilder sb, String key, List<String> value) {
@@ -523,7 +523,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 			}
 		}
 
-		return escape(value.getSingleValued());
+		return escape(value.asSingle());
 	}
 
 	/**

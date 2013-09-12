@@ -92,6 +92,6 @@ public class VersionMarshaller extends ICalPropertyMarshaller<Version> {
 
 	@Override
 	protected Version _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		return new Version(value.getSingleValued());
+		return new Version(value.asSingle());
 	}
 }

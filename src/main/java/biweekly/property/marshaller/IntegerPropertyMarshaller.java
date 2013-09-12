@@ -81,7 +81,7 @@ public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> exten
 
 	@Override
 	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		return parse(value.getSingleValued());
+		return parse(value.asSingle());
 	}
 
 	private T parse(String value) {

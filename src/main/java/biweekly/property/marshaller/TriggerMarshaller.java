@@ -129,7 +129,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 
 	@Override
 	protected Trigger _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		String valueStr = value.getSingleValued();
+		String valueStr = value.asSingle();
 
 		try {
 			Date date = date(valueStr).tzid(parameters.getTimezoneId(), warnings).parse();

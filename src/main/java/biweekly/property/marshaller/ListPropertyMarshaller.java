@@ -93,7 +93,7 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 
 	@Override
 	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		return parse(value.getMultivalued(), dataType, parameters, warnings);
+		return parse(value.asMulti(), dataType, parameters, warnings);
 	}
 
 	private T parse(List<String> valueStrs, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {

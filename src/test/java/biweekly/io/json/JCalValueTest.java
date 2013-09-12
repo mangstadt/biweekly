@@ -69,35 +69,35 @@ public class JCalValueTest {
 	}
 
 	@Test
-	public void getSingleValued() {
+	public void asSingle() {
 		JCalValue value = new JCalValue(new JsonValue("value1"), new JsonValue("value2"));
-		assertEquals("value1", value.getSingleValued());
+		assertEquals("value1", value.asSingle());
 	}
 
 	@Test
-	public void getSingleValued_non_string() {
+	public void asSingle_non_string() {
 		JCalValue value = new JCalValue(new JsonValue(false));
-		assertEquals("false", value.getSingleValued());
+		assertEquals("false", value.asSingle());
 	}
 
 	@Test
-	public void getSingleValued_null() {
+	public void asSingle_null() {
 		JCalValue value = new JCalValue(new JsonValue((Object) null));
-		assertEquals(null, value.getSingleValued());
+		assertEquals(null, value.asSingle());
 	}
 
 	@Test
-	public void getSingleValued_array() {
+	public void asSingle_array() {
 		JCalValue value = new JCalValue(new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue("value1"))));
-		assertEquals("value1", value.getSingleValued());
+		assertEquals("value1", value.asSingle());
 	}
 
 	@Test
-	public void getSingleValued_object() {
+	public void asSingle_object() {
 		Map<String, JsonValue> object = new HashMap<String, JsonValue>();
 		object.put("a", new JsonValue("one"));
 		JCalValue value = new JCalValue(new JsonValue(object));
-		assertEquals(null, value.getSingleValued());
+		assertEquals(null, value.asSingle());
 	}
 
 	@Test
@@ -117,23 +117,23 @@ public class JCalValueTest {
 	}
 
 	@Test
-	public void getMultivalued() {
+	public void asMulti() {
 		JCalValue value = new JCalValue(new JsonValue("value1"), new JsonValue(false), new JsonValue((Object) null));
-		assertEquals(Arrays.asList("value1", "false", null), value.getMultivalued());
+		assertEquals(Arrays.asList("value1", "false", null), value.asMulti());
 	}
 
 	@Test
-	public void getMultivalued_array() {
+	public void asMulti_array() {
 		JCalValue value = new JCalValue(new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue(false))));
-		assertEquals(Arrays.asList(), value.getMultivalued());
+		assertEquals(Arrays.asList(), value.asMulti());
 	}
 
 	@Test
-	public void getMultivalued_object() {
+	public void asMulti_object() {
 		Map<String, JsonValue> object = new HashMap<String, JsonValue>();
 		object.put("a", new JsonValue("one"));
 		JCalValue value = new JCalValue(new JsonValue(object));
-		assertEquals(Arrays.asList(), value.getMultivalued());
+		assertEquals(Arrays.asList(), value.asMulti());
 	}
 
 	@Test
@@ -152,23 +152,23 @@ public class JCalValueTest {
 	}
 
 	@Test
-	public void getStructured() {
+	public void asStructured() {
 		JCalValue value = new JCalValue(new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue(false), new JsonValue((Object) null))));
-		assertEquals(Arrays.asList("value1", "false", null), value.getStructured());
+		assertEquals(Arrays.asList("value1", "false", null), value.asStructured());
 	}
 
 	@Test
-	public void getStructured_single_value() {
+	public void asStructured_single_value() {
 		JCalValue value = new JCalValue(new JsonValue("value1"));
-		assertEquals(Arrays.asList("value1"), value.getStructured());
+		assertEquals(Arrays.asList("value1"), value.asStructured());
 	}
 
 	@Test
-	public void getStructured_object() {
+	public void asStructured_object() {
 		Map<String, JsonValue> object = new HashMap<String, JsonValue>();
 		object.put("a", new JsonValue("one"));
 		JCalValue value = new JCalValue(new JsonValue(object));
-		assertEquals(Arrays.asList(), value.getStructured());
+		assertEquals(Arrays.asList(), value.asStructured());
 	}
 
 	@Test
@@ -193,7 +193,7 @@ public class JCalValueTest {
 	}
 
 	@Test
-	public void getObject() {
+	public void asObject() {
 		Map<String, JsonValue> object = new LinkedHashMap<String, JsonValue>();
 		object.put("a", new JsonValue("one"));
 		object.put("b", new JsonValue(Arrays.asList(new JsonValue(2), new JsonValue(3.0), new JsonValue((Object) null))));
@@ -206,18 +206,18 @@ public class JCalValueTest {
 		expected.put("b", "3.0");
 		expected.put("b", null);
 		expected.put("c", null);
-		assertEquals(expected, value.getObject());
+		assertEquals(expected, value.asObject());
 	}
 
 	@Test
-	public void getObject_single_value() {
+	public void asObject_single_value() {
 		JCalValue value = new JCalValue(new JsonValue("value1"));
-		assertTrue(value.getObject().isEmpty());
+		assertTrue(value.asObject().isEmpty());
 	}
 
 	@Test
-	public void getObject_array() {
+	public void asObject_array() {
 		JCalValue value = new JCalValue(new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue(false))));
-		assertTrue(value.getObject().isEmpty());
+		assertTrue(value.asObject().isEmpty());
 	}
 }
