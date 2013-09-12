@@ -375,7 +375,7 @@ public class Sensei<T extends ICalProperty> {
 		 * @param exception the exception that is expected to be thrown or null
 		 * if no exception is expected
 		 */
-		protected abstract void run(Check<T> check, Class<? extends Throwable> exception);
+		protected abstract void run(Check<T> check, Class<? extends RuntimeException> exception);
 	}
 
 	/**
@@ -404,7 +404,7 @@ public class Sensei<T extends ICalProperty> {
 		}
 
 		@Override
-		protected void run(Check<T> check, Class<? extends Throwable> exception) {
+		protected void run(Check<T> check, Class<? extends RuntimeException> exception) {
 			try {
 				Result<T> result = marshaller.parseText(value, dataType, parameters);
 
@@ -440,7 +440,7 @@ public class Sensei<T extends ICalProperty> {
 		}
 
 		@Override
-		protected void run(Check<T> check, Class<? extends Throwable> exception) {
+		protected void run(Check<T> check, Class<? extends RuntimeException> exception) {
 			try {
 				Document document = createXCalElement(innerXml);
 				Element element = XmlUtils.getRootElement(document);
@@ -489,7 +489,7 @@ public class Sensei<T extends ICalProperty> {
 		}
 
 		@Override
-		protected void run(Check<T> check, Class<? extends Throwable> exception) {
+		protected void run(Check<T> check, Class<? extends RuntimeException> exception) {
 			try {
 				Result<T> result = marshaller.parseJson(value, dataType, parameters);
 
