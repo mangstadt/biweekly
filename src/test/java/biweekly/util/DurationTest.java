@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import static biweekly.util.TestUtils.assertIntEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -127,9 +128,5 @@ public class DurationTest {
 		duration2 = Duration.builder().weeks(2).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
 		assertFalse(duration1.equals(duration2));
 		assertFalse(duration2.equals(duration1));
-	}
-
-	private static void assertIntEquals(int expected, Integer actual) {
-		assertEquals(Integer.valueOf(expected), actual);
 	}
 }
