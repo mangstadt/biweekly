@@ -83,7 +83,7 @@ public class JCalValueTest {
 	@Test
 	public void asSingle_null() {
 		JCalValue value = new JCalValue(new JsonValue((Object) null));
-		assertEquals(null, value.asSingle());
+		assertEquals("", value.asSingle());
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class JCalValueTest {
 		Map<String, JsonValue> object = new HashMap<String, JsonValue>();
 		object.put("a", new JsonValue("one"));
 		JCalValue value = new JCalValue(new JsonValue(object));
-		assertEquals(null, value.asSingle());
+		assertEquals("", value.asSingle());
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class JCalValueTest {
 	@Test
 	public void asMulti() {
 		JCalValue value = new JCalValue(new JsonValue("value1"), new JsonValue(false), new JsonValue((Object) null));
-		assertEquals(Arrays.asList("value1", "false", null), value.asMulti());
+		assertEquals(Arrays.asList("value1", "false", ""), value.asMulti());
 	}
 
 	@Test
@@ -138,12 +138,19 @@ public class JCalValueTest {
 
 	@Test
 	public void structured() {
-		JCalValue value = JCalValue.structured("value", 42, false, null);
+		JCalValue value = JCalValue.structured("value", 42, false, null, Arrays.asList("one", "two"));
 
 		//@formatter:off
 		List<JsonValue> expected = Arrays.asList(
 			new JsonValue(Arrays.asList(
-				new JsonValue("value"), new JsonValue(42), new JsonValue(false), new JsonValue((Object)null)
+				new JsonValue("value"),
+				new JsonValue(42),
+				new JsonValue(false),
+				new JsonValue(""),
+				new JsonValue(Arrays.asList(
+					new JsonValue("one"),
+					new JsonValue("two")
+				))
 			))
 		);
 		//@formatter:on
@@ -151,16 +158,18 @@ public class JCalValueTest {
 		assertEquals(expected, actual);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void asStructured() {
 		JCalValue value = new JCalValue(new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue(false), new JsonValue((Object) null))));
-		assertEquals(Arrays.asList("value1", "false", null), value.asStructured());
+		assertEquals(Arrays.asList(Arrays.asList("value1"), Arrays.asList("false"), Arrays.asList("")), value.asStructured());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void asStructured_single_value() {
 		JCalValue value = new JCalValue(new JsonValue("value1"));
-		assertEquals(Arrays.asList("value1"), value.asStructured());
+		assertEquals(Arrays.asList(Arrays.asList("value1")), value.asStructured());
 	}
 
 	@Test
@@ -204,8 +213,8 @@ public class JCalValueTest {
 		expected.put("a", "one");
 		expected.put("b", "2");
 		expected.put("b", "3.0");
-		expected.put("b", null);
-		expected.put("c", null);
+		expected.put("b", "");
+		expected.put("c", "");
 		assertEquals(expected, value.asObject());
 	}
 

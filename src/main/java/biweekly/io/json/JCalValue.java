@@ -9,6 +9,31 @@ import java.util.Map;
 
 import biweekly.util.ListMultimap;
 
+/*
+ Copyright (c) 2013, Michael Angstadt
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met: 
+
+ 1. Redistributions of source code must retain the above copyright notice, this
+ list of conditions and the following disclaimer. 
+ 2. Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution. 
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 /**
  * Holds the value of a jCal property.
  * @author Michael Angstadt
@@ -64,12 +89,24 @@ public class JCalValue {
 	}
 
 	/**
+	 * <p>
 	 * Creates a structured value.
+	 * </p>
+	 * <p>
+	 * This method accepts a vararg of {@link Object} instances. {@link List}
+	 * objects will be treated as multi-valued components. All other objects.
+	 * Null values will be treated as empty components.
+	 * </p>
 	 * @param values the values
 	 * @return the jCal value
 	 */
 	public static JCalValue structured(Object... values) {
-		return structured(Arrays.asList(values));
+		List<List<?>> valuesList = new ArrayList<List<?>>(values.length);
+		for (Object value : values) {
+			List<?> list = (value instanceof List) ? (List<?>) value : Arrays.asList(value);
+			valuesList.add(list);
+		}
+		return structured(valuesList);
 	}
 
 	/**
@@ -77,12 +114,34 @@ public class JCalValue {
 	 * @param values the values
 	 * @return the jCal value
 	 */
-	public static JCalValue structured(List<?> values) {
-		//TODO this should accept a "list of lists"
+	public static JCalValue structured(List<List<?>> values) {
 		List<JsonValue> array = new ArrayList<JsonValue>(values.size());
-		for (Object value : values) {
-			array.add(new JsonValue(value));
+
+		for (List<?> list : values) {
+			if (list.isEmpty()) {
+				array.add(new JsonValue(""));
+				continue;
+			}
+
+			if (list.size() == 1) {
+				Object value = list.get(0);
+				if (value == null) {
+					value = "";
+				}
+				array.add(new JsonValue(value));
+				continue;
+			}
+
+			List<JsonValue> subArray = new ArrayList<JsonValue>(list.size());
+			for (Object value : list) {
+				if (value == null) {
+					value = "";
+				}
+				subArray.add(new JsonValue(value));
+			}
+			array.add(new JsonValue(subArray));
 		}
+
 		return new JCalValue(new JsonValue(array));
 	}
 
@@ -123,17 +182,16 @@ public class JCalValue {
 
 	/**
 	 * Parses this jCal value as a single-valued property value.
-	 * @return the value or null if not found
+	 * @return the value or empty string if not found
 	 */
 	public String asSingle() {
 		if (values.isEmpty()) {
-			return null;
+			return "";
 		}
 
 		JsonValue first = values.get(0);
-
 		if (first.isNull()) {
-			return null;
+			return "";
 		}
 
 		Object obj = first.getValue();
@@ -150,15 +208,14 @@ public class JCalValue {
 			}
 		}
 
-		return null;
+		return "";
 	}
 
 	/**
 	 * Parses this jCal value as a structured property value.
 	 * @return the structured values or empty list if not found
 	 */
-	public List<String> asStructured() {
-		//TODO this should return a "list of lists"
+	public List<List<String>> asStructured() {
 		if (values.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -168,34 +225,53 @@ public class JCalValue {
 		//["request-status", {}, "text", ["2.0", "Success"] ]
 		List<JsonValue> array = first.getArray();
 		if (array != null) {
-			List<String> values = new ArrayList<String>(array.size());
+			List<List<String>> valuesStr = new ArrayList<List<String>>(array.size());
 			for (JsonValue value : array) {
 				if (value.isNull()) {
-					values.add(null);
+					valuesStr.add(Arrays.asList(""));
 					continue;
 				}
 
 				Object obj = value.getValue();
 				if (obj != null) {
-					values.add(obj.toString());
+					valuesStr.add(Arrays.asList(obj.toString()));
+					continue;
+				}
+
+				List<JsonValue> subArray = value.getArray();
+				if (subArray != null) {
+					List<String> subValuesStr = new ArrayList<String>(subArray.size());
+					for (JsonValue subArrayValue : subArray) {
+						if (subArrayValue.isNull()) {
+							subValuesStr.add("");
+							continue;
+						}
+
+						obj = subArrayValue.getValue();
+						if (obj != null) {
+							subValuesStr.add(obj.toString());
+							continue;
+						}
+					}
+					valuesStr.add(subValuesStr);
 				}
 			}
-			return values;
+			return valuesStr;
 		}
 
 		//get the first value if it's not enclosed in an array
 		//["request-status", {}, "text", "2.0"]
 		Object obj = first.getValue();
 		if (obj != null) {
-			List<String> values = new ArrayList<String>(1);
-			values.add(obj.toString());
+			List<List<String>> values = new ArrayList<List<String>>(1);
+			values.add(Arrays.asList(obj.toString()));
 			return values;
 		}
 
 		//["request-status", {}, "text", null]
 		if (first.isNull()) {
-			List<String> values = new ArrayList<String>(1);
-			values.add(null);
+			List<List<String>> values = new ArrayList<List<String>>(1);
+			values.add(Arrays.asList(""));
 			return values;
 		}
 
@@ -214,13 +290,14 @@ public class JCalValue {
 		List<String> multi = new ArrayList<String>(values.size());
 		for (JsonValue value : values) {
 			if (value.isNull()) {
-				multi.add(null);
+				multi.add("");
 				continue;
 			}
 
 			Object obj = value.getValue();
 			if (obj != null) {
 				multi.add(obj.toString());
+				continue;
 			}
 		}
 		return multi;
@@ -246,7 +323,7 @@ public class JCalValue {
 			JsonValue value = entry.getValue();
 
 			if (value.isNull()) {
-				values.put(key, null);
+				values.put(key, "");
 				continue;
 			}
 
@@ -260,7 +337,7 @@ public class JCalValue {
 			if (array != null) {
 				for (JsonValue element : array) {
 					if (element.isNull()) {
-						values.put(key, null);
+						values.put(key, "");
 						continue;
 					}
 

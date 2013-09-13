@@ -1,11 +1,15 @@
 package biweekly.property.marshaller;
 
 import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
+import static biweekly.util.StringUtils.join;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
@@ -477,49 +481,25 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		return _parseText(jcalValueToString(value), dataType, parameters, warnings);
 	}
 
-	protected String jcalValueToString(JCalValue value) {
+	private String jcalValueToString(JCalValue value) {
 		if (value.getValues().size() > 1) {
 			List<String> multi = value.asMulti();
 			if (!multi.isEmpty()) {
-				return StringUtils.join(multi, ",", new JoinCallback<String>() {
-					public void handle(StringBuilder sb, String value) {
-						sb.append(escape(value));
-					}
-				});
+				return list(multi);
 			}
 		}
 
-		if (value.getValues().get(0).getArray() != null) {
-			List<String> structured = value.asStructured();
-			//TODO properly implement a structured value
-			//TODO create helper methods for creating lists, semi-structured, structured values
+		if (!value.getValues().isEmpty() && value.getValues().get(0).getArray() != null) {
+			List<List<String>> structured = value.asStructured();
 			if (!structured.isEmpty()) {
-				return StringUtils.join(structured, ";", new JoinCallback<String>() {
-					public void handle(StringBuilder sb, String value) {
-						sb.append(escape(value));
-					}
-				});
+				return structured(structured.toArray());
 			}
 		}
 
 		if (value.getValues().get(0).getObject() != null) {
 			ListMultimap<String, String> object = value.asObject();
 			if (!object.isEmpty()) {
-				return StringUtils.join(object.getMap(), ";", new JoinMapCallback<String, List<String>>() {
-					public void handle(StringBuilder sb, String key, List<String> value) {
-						sb.append(key).append('=');
-						StringUtils.join(value, ",", sb, new JoinCallback<String>() {
-							public void handle(StringBuilder sb, String value) {
-								if (value == null) {
-									return;
-								}
-								value = escape(value);
-								value = value.replace("=", "\\=");
-								sb.append(value);
-							}
-						});
-					}
-				});
+				return object(object.getMap());
 			}
 		}
 
@@ -614,7 +594,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	}
 
 	/**
-	 * Splits a string by a delimiter.
+	 * Splits a string by a delimiter, taking escaped characters into account.
 	 * @param string the string to split (e.g. "one,two,three")
 	 * @param delimiter the delimiter (e.g. ",")
 	 * @return the factory object
@@ -631,6 +611,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		private String delimiter;
 		private boolean removeEmpties = false;
 		private boolean unescape = false;
+		private int limit = -1;
 
 		/**
 		 * Creates a new splitter object.
@@ -664,12 +645,22 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		}
 
 		/**
+		 * Sets the max number of split strings it should parse.
+		 * @param limit the max number of split strings
+		 * @return this
+		 */
+		public Splitter limit(int limit) {
+			this.limit = limit;
+			return this;
+		}
+
+		/**
 		 * Performs the split operation.
 		 * @return the split string
 		 */
 		public List<String> split() {
 			//from: http://stackoverflow.com/q/820172">http://stackoverflow.com/q/820172
-			String split[] = string.split("\\s*(?<!\\\\)" + Pattern.quote(delimiter) + "\\s*", -1);
+			String split[] = string.split("\\s*(?<!\\\\)" + Pattern.quote(delimiter) + "\\s*", limit);
 
 			List<String> list = new ArrayList<String>(split.length);
 			for (String s : split) {
@@ -689,26 +680,281 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 
 	/**
 	 * Parses a comma-separated list of values.
-	 * @param str the string to parse (e.g. "one,two,th\,ree")
+	 * @param value the string to parse (e.g. "one,two,th\,ree")
 	 * @return the parsed values
 	 */
-	protected static List<String> parseList(String str) {
-		return split(str, ",").removeEmpties(true).unescape(true).split();
+	protected static List<String> list(String value) {
+		if (value.length() == 0) {
+			return new ArrayList<String>(0);
+		}
+		return split(value, ",").unescape(true).split();
 	}
 
 	/**
-	 * Parses a component value.
-	 * @param str the string to parse (e.g. "one;two,three;four")
+	 * Writes a comma-separated list of values.
+	 * @param values the values to write
+	 * @return the list
+	 */
+	protected static String list(Object... values) {
+		return list(Arrays.asList(values));
+	}
+
+	/**
+	 * Writes a comma-separated list of values.
+	 * @param values the values to write
+	 * @return the list
+	 */
+	protected static <T> String list(Collection<T> values) {
+		return list(values, new ListCallback<T>() {
+			public String asString(T value) {
+				return value.toString();
+			}
+		});
+	}
+
+	/**
+	 * Writes a comma-separated list of values.
+	 * @param values the values to write
+	 * @param callback callback function used for converting each value to a
+	 * string
+	 * @return the list
+	 */
+	protected static <T> String list(Collection<T> values, final ListCallback<T> callback) {
+		return join(values, ",", new JoinCallback<T>() {
+			public void handle(StringBuilder sb, T value) {
+				if (value == null) {
+					return;
+				}
+
+				String valueStr = callback.asString(value);
+				sb.append(escape(valueStr));
+			}
+		});
+	}
+
+	/**
+	 * Callback function used in conjunction with the
+	 * {@link ICalPropertyMarshaller#list(Collection, ListCallback) list} method
+	 * @param <T> the value class
+	 */
+	protected static interface ListCallback<T> {
+		/**
+		 * Converts a value to a string.
+		 * @param value the value (null values are not passed to this method, so
+		 * this parameter will never be null)
+		 * @return the string
+		 */
+		String asString(T value);
+	}
+
+	/**
+	 * Parses a list of values that are delimited by semicolons. Unlike
+	 * structured value components, semi-structured components cannot be
+	 * multi-valued.
+	 * @param value the string to parse (e.g. "one;two;three")
 	 * @return the parsed values
 	 */
-	protected static List<List<String>> parseComponent(String str) {
-		List<String> split = split(str, ";").split();
-		List<List<String>> ret = new ArrayList<List<String>>(split.size());
+	protected static SemiStructuredIterator semistructured(String value) {
+		return semistructured(value, -1);
+	}
+
+	/**
+	 * Parses a list of values that are delimited by semicolons. Unlike
+	 * structured value components, semi-structured components cannot be
+	 * multi-valued.
+	 * @param value the string to parse (e.g. "one;two;three")
+	 * @param limit the max number of components to parse
+	 * @return the parsed values
+	 */
+	protected static SemiStructuredIterator semistructured(String value, int limit) {
+		List<String> split = split(value, ";").unescape(true).limit(limit).split();
+		return new SemiStructuredIterator(split.iterator());
+	}
+
+	/**
+	 * Parses a structured value.
+	 * @param value the string to parse (e.g. "one;two,three;four")
+	 * @return the parsed values
+	 */
+	protected static StructuredIterator structured(String value) {
+		List<String> split = split(value, ";").split();
+		List<List<String>> components = new ArrayList<List<String>>(split.size());
 		for (String s : split) {
-			List<String> split2 = parseList(s);
-			ret.add(split2);
+			components.add(list(s));
 		}
-		return ret;
+		return new StructuredIterator(components.iterator());
+	}
+
+	/**
+	 * Provides an iterator for a jCard structured value.
+	 * @param value the jCard value
+	 * @return the parsed values
+	 */
+	protected static StructuredIterator structured(JCalValue value) {
+		return new StructuredIterator(value.asStructured().iterator());
+	}
+
+	/**
+	 * <p>
+	 * Writes a structured value.
+	 * </p>
+	 * <p>
+	 * This method accepts a list of {@link Object} instances.
+	 * {@link Collection} objects will be treated as multi-valued components.
+	 * Null objects will be treated as empty components. All other objects will
+	 * have their {@code toString()} method invoked to generate the string
+	 * value.
+	 * </p>
+	 * @param values the values to write
+	 * @return the structured value string
+	 */
+	protected static String structured(Object... values) {
+		return join(Arrays.asList(values), ";", new JoinCallback<Object>() {
+			public void handle(StringBuilder sb, Object value) {
+				if (value == null) {
+					return;
+				}
+
+				if (value instanceof Collection) {
+					Collection<?> list = (Collection<?>) value;
+					sb.append(list(list));
+					return;
+				}
+
+				sb.append(escape(value.toString()));
+			}
+		});
+	}
+
+	/**
+	 * Iterates over the fields in a structured value.
+	 */
+	protected static class StructuredIterator {
+		private final Iterator<List<String>> it;
+
+		/**
+		 * Constructs a new structured iterator.
+		 * @param it the iterator to wrap
+		 */
+		public StructuredIterator(Iterator<List<String>> it) {
+			this.it = it;
+		}
+
+		/**
+		 * Gets the first value of the next component.
+		 * @return the first value, null if the value is an empty string, or
+		 * null if there are no more components
+		 */
+		public String nextString() {
+			if (!hasNext()) {
+				return null;
+			}
+
+			List<String> list = it.next();
+			if (list.isEmpty()) {
+				return null;
+			}
+
+			String value = list.get(0);
+			return (value.length() == 0) ? null : value;
+		}
+
+		/**
+		 * Gets the next component.
+		 * @return the next component, an empty list if the component is empty,
+		 * or an empty list of there are no more components
+		 */
+		public List<String> nextComponent() {
+			if (!hasNext()) {
+				return new ArrayList<String>(0); //the lists should be mutable so they can be directly assigned to the property object's fields
+			}
+
+			List<String> list = it.next();
+			if (list.size() == 1 && list.get(0).length() == 0) {
+				return new ArrayList<String>(0);
+			}
+
+			return list;
+		}
+
+		/**
+		 * Determines if there are any elements left in the value.
+		 * @return true if there are elements left, false if not
+		 */
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+	}
+
+	/**
+	 * Iterates over the fields in a semi-structured value (a structured value
+	 * whose components cannot be multi-valued).
+	 */
+	protected static class SemiStructuredIterator {
+		private final Iterator<String> it;
+
+		/**
+		 * Constructs a new structured iterator.
+		 * @param it the iterator to wrap
+		 */
+		public SemiStructuredIterator(Iterator<String> it) {
+			this.it = it;
+		}
+
+		/**
+		 * Gets the next value.
+		 * @return the next value, null if the value is an empty string, or null
+		 * if there are no more values
+		 */
+		public String next() {
+			if (!hasNext()) {
+				return null;
+			}
+
+			String value = it.next();
+			return (value.length() == 0) ? null : value;
+		}
+
+		/**
+		 * Determines if there are any elements left in the value.
+		 * @return true if there are elements left, false if not
+		 */
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+	}
+
+	/**
+	 * Writes an object property value to a string.
+	 * @param value the value
+	 * @return the string
+	 */
+	protected static <T> String object(Map<String, List<T>> value) {
+		return join(value, ";", new JoinMapCallback<String, List<T>>() {
+			public void handle(StringBuilder sb, String key, List<T> value) {
+				sb.append(key.toUpperCase()).append('=').append(list(value));
+			}
+		});
+	}
+
+	/**
+	 * Parses an object property value.
+	 * @param value the value to parse
+	 * @return the parsed value
+	 */
+	protected static ListMultimap<String, String> object(String value) {
+		ListMultimap<String, String> map = new ListMultimap<String, String>();
+
+		for (String component : split(value, ";").unescape(false).removeEmpties(true).split()) {
+			String[] split = component.split("=", 2);
+
+			String name = unescape(split[0].toUpperCase());
+			List<String> values = (split.length > 1) ? list(split[1]) : Arrays.asList("");
+
+			map.putAll(name, values);
+		}
+
+		return map;
 	}
 
 	/**
@@ -966,7 +1212,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 			StringBuilder sb = new StringBuilder();
 
 			sb.append("Property value empty (no ");
-			StringUtils.join(Arrays.asList(elements).subList(0, elements.length - 1), ", ", sb, new JoinCallback<String>() {
+			join(Arrays.asList(elements).subList(0, elements.length - 1), ", ", sb, new JoinCallback<String>() {
 				public void handle(StringBuilder sb, String value) {
 					sb.append('<').append(value).append('>');
 				}

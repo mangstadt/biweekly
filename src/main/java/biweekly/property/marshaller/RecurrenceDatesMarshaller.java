@@ -11,8 +11,6 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.RecurrenceDates;
 import biweekly.util.Duration;
 import biweekly.util.Period;
-import biweekly.util.StringUtils;
-import biweekly.util.StringUtils.JoinCallback;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -62,37 +60,43 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 	@Override
 	protected String _writeText(final RecurrenceDates property) {
 		if (property.getDates() != null) {
-			return StringUtils.join(property.getDates(), ",", new JoinCallback<Date>() {
-				public void handle(StringBuilder sb, Date date) {
-					String value = date(date).time(property.hasTime()).tzid(property.getTimezoneId()).write();
-					sb.append(value);
+			return list(property.getDates(), new ListCallback<Date>() {
+				public String asString(Date date) {
+					return date(date).time(property.hasTime()).tzid(property.getTimezoneId()).write();
 				}
 			});
-		} else if (property.getPeriods() != null) {
-			return StringUtils.join(property.getPeriods(), ",", new JoinCallback<Period>() {
-				public void handle(StringBuilder sb, Period period) {
+		}
+
+		if (property.getPeriods() != null) {
+			return list(property.getPeriods(), new ListCallback<Period>() {
+				public String asString(Period period) {
+					StringBuilder sb = new StringBuilder();
+
 					if (period.getStartDate() != null) {
-						String value = date(period.getStartDate()).tzid(property.getTimezoneId()).write();
-						sb.append(value);
+						String date = date(period.getStartDate()).tzid(property.getTimezoneId()).write();
+						sb.append(date);
 					}
 
 					sb.append('/');
 
 					if (period.getEndDate() != null) {
-						String value = date(period.getEndDate()).tzid(property.getTimezoneId()).write();
-						sb.append(value);
+						String date = date(period.getEndDate()).tzid(property.getTimezoneId()).write();
+						sb.append(date);
 					} else if (period.getDuration() != null) {
 						sb.append(period.getDuration());
 					}
+
+					return sb.toString();
 				}
 			});
 		}
+
 		return "";
 	}
 
 	@Override
 	protected RecurrenceDates _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		return parse(parseList(value), dataType, parameters, warnings);
+		return parse(list(value), dataType, parameters, warnings);
 	}
 
 	@Override

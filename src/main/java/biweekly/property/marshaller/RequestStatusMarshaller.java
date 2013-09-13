@@ -1,7 +1,5 @@
 package biweekly.property.marshaller;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import biweekly.ICalDataType;
@@ -9,8 +7,6 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RequestStatus;
-import biweekly.util.StringUtils;
-import biweekly.util.StringUtils.JoinCallback;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -48,31 +44,17 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 
 	@Override
 	protected String _writeText(RequestStatus property) {
-		List<String> components = new ArrayList<String>();
-		addComponent(property.getExceptionText(), components);
-		addComponent(property.getDescription(), components);
-		addComponent(property.getStatusCode(), components);
-		Collections.reverse(components);
-
-		return StringUtils.join(components, ";", new JoinCallback<String>() {
-			public void handle(StringBuilder sb, String component) {
-				sb.append(escape(component));
-			}
-		});
-	}
-
-	private void addComponent(String component, List<String> components) {
-		if (component != null) {
-			components.add(component);
-		} else if (!components.isEmpty()) {
-			components.add("");
-		}
+		return structured(property.getStatusCode(), property.getDescription(), property.getExceptionText());
 	}
 
 	@Override
 	protected RequestStatus _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		List<String> split = split(value, ";").unescape(true).split();
-		return parse(split);
+		SemiStructuredIterator it = semistructured(value);
+
+		RequestStatus requestStatus = new RequestStatus(it.next());
+		requestStatus.setDescription(it.next());
+		requestStatus.setExceptionText(it.next());
+		return requestStatus;
 	}
 
 	@Override
@@ -108,38 +90,16 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 
 	@Override
 	protected JCalValue _writeJson(RequestStatus property) {
-		List<String> components = new ArrayList<String>();
-		addComponent(property.getExceptionText(), components);
-		addComponent(property.getDescription(), components);
-		addComponent(property.getStatusCode(), components);
-		Collections.reverse(components);
-
-		return JCalValue.structured(components);
+		return JCalValue.structured(property.getStatusCode(), property.getDescription(), property.getExceptionText());
 	}
 
 	@Override
 	protected RequestStatus _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		List<String> values = value.asStructured();
-		return parse(values);
-	}
+		StructuredIterator it = structured(value);
 
-	private RequestStatus parse(List<String> values) {
-		RequestStatus requestStatus = new RequestStatus(null);
-
-		if (values.size() > 0) {
-			String code = values.isEmpty() ? null : s(values.get(0));
-			requestStatus.setStatusCode(code);
-		}
-
-		if (values.size() > 1) {
-			String description = s(values.get(1));
-			requestStatus.setDescription(description);
-		}
-		if (values.size() > 2) {
-			String data = s(values.get(2));
-			requestStatus.setExceptionText(data);
-		}
-
+		RequestStatus requestStatus = new RequestStatus(it.nextString());
+		requestStatus.setDescription(it.nextString());
+		requestStatus.setExceptionText(it.nextString());
 		return requestStatus;
 	}
 

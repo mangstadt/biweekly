@@ -5,7 +5,6 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 import biweekly.ICalDataType;
-import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
@@ -82,10 +81,5 @@ public class RawPropertyMarshaller extends ICalPropertyMarshaller<RawProperty> {
 		//get the text content of the property element
 		String value = rawElement.getTextContent();
 		return new RawProperty(name, null, value);
-	}
-
-	@Override
-	protected RawProperty _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		return _parseText(jcalValueToString(value), dataType, parameters, warnings);
 	}
 }

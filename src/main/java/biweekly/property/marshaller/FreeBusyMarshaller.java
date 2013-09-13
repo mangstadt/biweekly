@@ -11,8 +11,6 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.FreeBusy;
 import biweekly.util.Duration;
 import biweekly.util.Period;
-import biweekly.util.StringUtils;
-import biweekly.util.StringUtils.JoinCallback;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -55,8 +53,10 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 			return "";
 		}
 
-		return StringUtils.join(values, ",", new JoinCallback<Period>() {
-			public void handle(StringBuilder sb, Period period) {
+		return list(values, new ListCallback<Period>() {
+			public String asString(Period period) {
+				StringBuilder sb = new StringBuilder();
+
 				if (period.getStartDate() != null) {
 					String date = date(period.getStartDate()).write();
 					sb.append(date);
@@ -70,13 +70,15 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 				} else if (period.getDuration() != null) {
 					sb.append(period.getDuration());
 				}
+
+				return sb.toString();
 			}
 		});
 	}
 
 	@Override
 	protected FreeBusy _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		return parse(parseList(value), parameters, warnings);
+		return parse(list(value), parameters, warnings);
 	}
 
 	@Override

@@ -7,8 +7,6 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ListProperty;
-import biweekly.util.StringUtils;
-import biweekly.util.StringUtils.JoinCallback;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -52,17 +50,16 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 
 	@Override
 	protected String _writeText(final T property) {
-		return StringUtils.join(property.getValues(), ",", new JoinCallback<V>() {
-			public void handle(StringBuilder sb, V value) {
-				String valueStr = writeValue(property, value);
-				sb.append(escape(valueStr));
+		return list(property.getValues(), new ListCallback<V>() {
+			public String asString(V value) {
+				return writeValue(property, value);
 			}
 		});
 	}
 
 	@Override
 	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		return parse(parseList(value), dataType, parameters, warnings);
+		return parse(list(value), dataType, parameters, warnings);
 	}
 
 	@Override

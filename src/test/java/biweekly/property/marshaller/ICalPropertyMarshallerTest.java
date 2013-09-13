@@ -21,6 +21,8 @@ import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.marshaller.ICalPropertyMarshaller.SemiStructuredIterator;
+import biweekly.property.marshaller.ICalPropertyMarshaller.StructuredIterator;
 import biweekly.property.marshaller.Sensei.Check;
 import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.ListMultimap;
@@ -276,24 +278,130 @@ public class ICalPropertyMarshallerTest {
 	}
 
 	@Test
-	public void parseList() {
-		List<String> actual = ICalPropertyMarshaller.parseList("one , two,three\\,four");
-		List<String> expected = Arrays.asList("one", "two", "three,four");
+	public void list_parse() {
+		List<String> actual = ICalPropertyMarshaller.list("one ,, two,three\\,four");
+		List<String> expected = Arrays.asList("one", "", "two", "three,four");
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void parseComponents() {
-		List<List<String>> actual = ICalPropertyMarshaller.parseComponent("one ; two,three\\,four;; ;five\\;six");
-		//@formatter:off
-		List<List<?>> expected = Arrays.<List<?>>asList(
-			Arrays.asList("one"),
-			Arrays.asList("two", "three,four"),
-			Arrays.asList(),
-			Arrays.asList(),
-			Arrays.asList("five;six")
-		);
-		//@formatter:on
+	public void list_parse_empty() {
+		List<String> actual = ICalPropertyMarshaller.list("");
+		List<String> expected = Arrays.asList();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void list_write() {
+		String actual = ICalPropertyMarshaller.list("one", null, "two", "three,four");
+		String expected = "one,,two,three\\,four";
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void semistructured_parse() {
+		String input = "one;two,three\\,four;;;five\\;six";
+
+		SemiStructuredIterator it = ICalPropertyMarshaller.semistructured(input);
+		assertEquals("one", it.next());
+		assertEquals("two,three,four", it.next());
+		assertEquals(null, it.next());
+		assertEquals(null, it.next());
+		assertEquals("five;six", it.next());
+		assertEquals(null, it.next());
+	}
+
+	@Test
+	public void semistructured_parse_limit() {
+		String input = "one;two,three\\,four;;;five\\;six";
+
+		SemiStructuredIterator it = ICalPropertyMarshaller.semistructured(input, 2);
+		assertEquals("one", it.next());
+		assertEquals("two,three,four;;;five;six", it.next());
+		assertEquals(null, it.next());
+		assertEquals(null, it.next());
+		assertEquals(null, it.next());
+		assertEquals(null, it.next());
+	}
+
+	@Test
+	public void structured_parse_string() {
+		String input = "one;two,three\\,four;;;five\\;six";
+
+		//using "nextComponent()"
+		StructuredIterator it = ICalPropertyMarshaller.structured(input);
+		assertEquals(Arrays.asList("one"), it.nextComponent());
+		assertEquals(Arrays.asList("two", "three,four"), it.nextComponent());
+		assertEquals(Arrays.asList(), it.nextComponent());
+		assertEquals(Arrays.asList(), it.nextComponent());
+		assertEquals(Arrays.asList("five;six"), it.nextComponent());
+		assertEquals(Arrays.asList(), it.nextComponent());
+
+		//using "nextString()"
+		it = ICalPropertyMarshaller.structured(input);
+		assertEquals("one", it.nextString());
+		assertEquals("two", it.nextString());
+		assertEquals(null, it.nextString());
+		assertEquals(null, it.nextString());
+		assertEquals("five;six", it.nextString());
+		assertEquals(null, it.nextString());
+	}
+
+	@Test
+	public void structured_parse_jcal_value() {
+		JCalValue input = JCalValue.structured("one", Arrays.asList("two", "three,four"), null, "", "five;six");
+
+		//using "nextComponent()"
+		StructuredIterator it = ICalPropertyMarshaller.structured(input);
+		assertEquals(Arrays.asList("one"), it.nextComponent());
+		assertEquals(Arrays.asList("two", "three,four"), it.nextComponent());
+		assertEquals(Arrays.asList(), it.nextComponent());
+		assertEquals(Arrays.asList(), it.nextComponent());
+		assertEquals(Arrays.asList("five;six"), it.nextComponent());
+		assertEquals(Arrays.asList(), it.nextComponent());
+
+		//using "nextString()"
+		it = ICalPropertyMarshaller.structured(input);
+		assertEquals("one", it.nextString());
+		assertEquals("two", it.nextString());
+		assertEquals(null, it.nextString());
+		assertEquals(null, it.nextString());
+		assertEquals("five;six", it.nextString());
+		assertEquals(null, it.nextString());
+	}
+
+	@Test
+	public void structured_write() {
+		String actual = ICalPropertyMarshaller.structured("one", 2, null, "four;five,six\\seven", Arrays.asList("eight"), Arrays.asList("nine", null, "ten;eleven,twelve\\thirteen"));
+		assertEquals("one;2;;four\\;five\\,six\\\\seven;eight;nine,,ten\\;eleven\\,twelve\\\\thirteen", actual);
+	}
+
+	@Test
+	public void object_parse() {
+		String input = "a=one;b=two,three\\,four\\;five;c;d=six=seven";
+
+		ListMultimap<String, String> expected = new ListMultimap<String, String>();
+		expected.put("A", "one");
+		expected.put("B", "two");
+		expected.put("B", "three,four;five");
+		expected.put("C", "");
+		expected.put("D", "six=seven");
+
+		ListMultimap<String, String> actual = ICalPropertyMarshaller.object(input);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void object_write() {
+		ListMultimap<String, String> input = new ListMultimap<String, String>();
+		input.put("A", "one");
+		input.put("B", "two");
+		input.put("B", "three,four;five");
+		input.put("C", "");
+		input.put("d", "six=seven");
+
+		String expected = "A=one;B=two,three\\,four\\;five;C=;D=six=seven";
+		String actual = ICalPropertyMarshaller.object(input.getMap());
 		assertEquals(expected, actual);
 	}
 
@@ -356,7 +464,7 @@ public class ICalPropertyMarshallerTest {
 	}
 
 	@Test
-	public void parseJson_single() {
+	public void parseJson() {
 		//@formatter:off
 		sensei.assertParseJson("value").warnings(1).run(has(ICalDataType.TEXT, "value"));
 		
@@ -371,7 +479,7 @@ public class ICalPropertyMarshallerTest {
 		map.put("a", "one");
 		map.put("b", "two");
 		map.put("b", "three,four;five\\six=seven");
-		sensei.assertParseJson(JCalValue.object(map)).warnings(1).run(has(ICalDataType.TEXT, "a=one;b=two,three\\,four\\;five\\\\six\\=seven"));
+		sensei.assertParseJson(JCalValue.object(map)).warnings(1).run(has(ICalDataType.TEXT, "A=one;B=two,three\\,four\\;five\\\\six=seven"));
 		//@formatter:on
 	}
 

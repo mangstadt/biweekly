@@ -706,7 +706,12 @@ public class JCalRawReaderTest {
 					assertEquals("request-status", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals(Arrays.asList("3.7", "Invalid Calendar User", "ATTENDEE:mailto:jsmith@example.org"), value.asStructured());
+
+					List<List<String>> expected = new ArrayList<List<String>>();
+					expected.add(Arrays.asList("3.7"));
+					expected.add(Arrays.asList("Invalid Calendar User"));
+					expected.add(Arrays.asList("ATTENDEE:mailto:jsmith@example.org"));
+					assertEquals(expected, value.asStructured());
 					break;
 				case 2:
 					assertEquals(Arrays.asList("vcalendar"), componentHierarchy);

@@ -102,7 +102,7 @@ public class GeoMarshallerTest {
 
 		sensei.assertParseJson(JCalValue.structured("invalid", 56.78)).cannotParse();
 		sensei.assertParseJson(JCalValue.structured(12.34, "invalid")).cannotParse();
-		sensei.assertParseJson("").cannotParse();
+		sensei.assertParseJson("").run(has(null, null));
 	}
 
 	private Check<Geo> has(final Double latitude, final Double longitude) {

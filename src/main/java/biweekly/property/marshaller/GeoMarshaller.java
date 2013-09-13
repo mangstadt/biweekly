@@ -66,14 +66,13 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 
 	@Override
 	protected Geo _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		String split[] = value.split(";");
+		SemiStructuredIterator it = semistructured(value);
+		String latitudeStr = it.next();
+		String longitudeStr = it.next();
 
-		if (split.length < 2) {
+		if (latitudeStr == null || longitudeStr == null) {
 			throw new CannotParseException("Could not parse value.");
 		}
-
-		String latitudeStr = split[0];
-		String longitudeStr = split[1];
 
 		return parse(latitudeStr, longitudeStr);
 	}
@@ -119,9 +118,9 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 
 	@Override
 	protected Geo _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		List<String> values = value.asStructured();
-		String latitudeStr = (values.size() > 0) ? values.get(0) : null;
-		String longitudeStr = (values.size() > 1) ? values.get(1) : null;
+		StructuredIterator it = structured(value);
+		String latitudeStr = it.nextString();
+		String longitudeStr = it.nextString();
 		return parse(latitudeStr, longitudeStr);
 	}
 

@@ -216,7 +216,7 @@ public class RecurrencePropertyMarshallerTest {
 
 	@Test
 	public void parseText_invalid_component() {
-		sensei.assertParseText("FREQ=WEEKLY;no equals;COUNT=5").warnings(1).run(new Check<RecurrenceProperty>() {
+		sensei.assertParseText("FREQ=WEEKLY;no equals;COUNT=5").run(new Check<RecurrenceProperty>() {
 			public void check(RecurrenceProperty property) {
 				Recurrence recur = property.getValue();
 				assertEquals(Frequency.WEEKLY, recur.getFrequency());
@@ -233,13 +233,17 @@ public class RecurrencePropertyMarshallerTest {
 				assertEquals(Arrays.asList(), recur.getBySetPos());
 				assertEquals(Arrays.asList(), recur.getByWeekNo());
 				assertNull(recur.getWorkweekStarts());
+
+				ListMultimap<String, String> expected = new ListMultimap<String, String>();
+				expected.put("NO EQUALS", "");
+				assertEquals(expected.getMap(), recur.getXRules());
 			}
 		});
 	}
 
 	@Test
 	public void parseText_empty() {
-		sensei.assertParseText("").warnings(1).run(emptyCheck);
+		sensei.assertParseText("").run(emptyCheck);
 	}
 
 	@Test
@@ -647,6 +651,7 @@ public class RecurrencePropertyMarshallerTest {
 			assertEquals(Arrays.asList(7, 8, 9), recur.getBySetPos());
 			assertEquals(Arrays.asList(1, 2), recur.getByWeekNo());
 			assertNull(recur.getWorkweekStarts());
+			assertTrue(recur.getXRules().isEmpty());
 		}
 	};
 
@@ -667,6 +672,7 @@ public class RecurrencePropertyMarshallerTest {
 			assertEquals(Arrays.asList(), recur.getBySetPos());
 			assertEquals(Arrays.asList(), recur.getByWeekNo());
 			assertNull(recur.getWorkweekStarts());
+			assertTrue(recur.getXRules().isEmpty());
 		}
 	};
 }

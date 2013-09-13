@@ -1,6 +1,5 @@
 package biweekly.property.marshaller;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -21,8 +20,6 @@ import biweekly.util.ListMultimap;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
-import biweekly.util.StringUtils;
-import biweekly.util.StringUtils.JoinMapCallback;
 import biweekly.util.XmlUtils;
 
 /*
@@ -68,30 +65,13 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		}
 
 		ListMultimap<String, Object> components = buildComponents(recur, false);
-		return StringUtils.join(components.getMap(), ";", new JoinMapCallback<String, List<Object>>() {
-			public void handle(StringBuilder sb, String key, List<Object> values) {
-				sb.append(key).append('=');
-				StringUtils.join(values, ",", sb);
-			}
-		});
+		return object(components.getMap());
 	}
 
 	@Override
 	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		ListMultimap<String, String> rules = new ListMultimap<String, String>();
-		for (String component : value.split(";")) {
-			String split[] = component.split("=");
-			if (split.length < 2) {
-				warnings.add("Skipping invalid recurrence rule component: " + component);
-				continue;
-			}
-
-			String name = split[0].toUpperCase();
-			List<String> values = Arrays.asList(split[1].split(","));
-			rules.putAll(name, values);
-		}
-
 		Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
+		ListMultimap<String, String> rules = object(value);
 
 		parseFreq(rules, builder, warnings);
 		parseUntil(rules, builder, warnings);

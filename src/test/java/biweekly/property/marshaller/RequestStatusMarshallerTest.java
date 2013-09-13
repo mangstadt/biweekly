@@ -74,13 +74,13 @@ public class RequestStatusMarshallerTest {
 	@Test
 	public void writeText() {
 		sensei.assertWriteText(withAll).run("1.2.3\\;;description\\;;data\\;");
-		sensei.assertWriteText(withCodeDescription).run("1.2.3\\;;description\\;");
+		sensei.assertWriteText(withCodeDescription).run("1.2.3\\;;description\\;;");
 		sensei.assertWriteText(withCodeData).run("1.2.3\\;;;data\\;");
 		sensei.assertWriteText(withDescriptionData).run(";description\\;;data\\;");
-		sensei.assertWriteText(withCode).run("1.2.3\\;");
-		sensei.assertWriteText(withDescription).run(";description\\;");
+		sensei.assertWriteText(withCode).run("1.2.3\\;;;");
+		sensei.assertWriteText(withDescription).run(";description\\;;");
 		sensei.assertWriteText(withData).run(";;data\\;");
-		sensei.assertWriteText(empty).run("");
+		sensei.assertWriteText(empty).run(";;");
 	}
 
 	@Test
@@ -125,11 +125,11 @@ public class RequestStatusMarshallerTest {
 	@Test
 	public void writeJson() {
 		sensei.assertWriteJson(withAll).run(JCalValue.structured(code, description, data));
-		sensei.assertWriteJson(withCodeDescription).run(JCalValue.structured(code, description));
+		sensei.assertWriteJson(withCodeDescription).run(JCalValue.structured(code, description, ""));
 		sensei.assertWriteJson(withCodeData).run(JCalValue.structured(code, "", data));
 		sensei.assertWriteJson(withDescriptionData).run(JCalValue.structured("", description, data));
-		sensei.assertWriteJson(withCode).run(JCalValue.structured(code));
-		sensei.assertWriteJson(withDescription).run(JCalValue.structured("", description));
+		sensei.assertWriteJson(withCode).run(JCalValue.structured(code, "", ""));
+		sensei.assertWriteJson(withDescription).run(JCalValue.structured("", description, ""));
 		sensei.assertWriteJson(withData).run(JCalValue.structured("", "", data));
 		sensei.assertWriteJson(empty).run((String) null);
 	}
