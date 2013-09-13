@@ -46,11 +46,11 @@ public class UtcOffsetProperty extends ICalProperty {
 	}
 
 	public int getHourOffset() {
-		return offset.getHour();
+		return (offset == null) ? null : offset.getHour();
 	}
 
 	public int getMinuteOffset() {
-		return offset.getMinute();
+		return (offset == null) ? null : offset.getMinute();
 	}
 
 	public UtcOffset getOffset() {
