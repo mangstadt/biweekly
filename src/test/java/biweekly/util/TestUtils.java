@@ -23,9 +23,9 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import biweekly.ValidationWarnings;
+import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.component.ICalComponent;
-import biweekly.component.ValidationWarnings;
-import biweekly.component.ValidationWarnings.WarningsGroup;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.marshaller.ICalPropertyMarshaller;

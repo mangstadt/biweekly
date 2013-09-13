@@ -1,4 +1,4 @@
-package biweekly.component;
+package biweekly;
 
 import static biweekly.util.StringUtils.NEWLINE;
 import static org.junit.Assert.assertEquals;
@@ -11,7 +11,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import biweekly.component.ValidationWarnings.WarningsGroup;
+import biweekly.ValidationWarnings.WarningsGroup;
+import biweekly.component.ICalComponent;
 import biweekly.property.ICalProperty;
 
 /*

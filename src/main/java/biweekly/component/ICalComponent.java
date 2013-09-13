@@ -5,7 +5,7 @@ import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
-import biweekly.component.ValidationWarnings.WarningsGroup;
+import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.util.ListMultimap;

@@ -9,14 +9,13 @@ import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
+import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.component.ICalComponent;
 import biweekly.component.VEvent;
 import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
 import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
-import biweekly.component.ValidationWarnings;
-import biweekly.component.ValidationWarnings.WarningsGroup;
 import biweekly.property.CalendarScale;
 import biweekly.property.Method;
 import biweekly.property.ProductId;

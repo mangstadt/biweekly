@@ -1,11 +1,11 @@
-package biweekly.component;
+package biweekly;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import biweekly.ICalendar;
-import biweekly.component.ValidationWarnings.WarningsGroup;
+import biweekly.ValidationWarnings.WarningsGroup;
+import biweekly.component.ICalComponent;
 import biweekly.property.ICalProperty;
 import biweekly.util.StringUtils;
 import biweekly.util.StringUtils.JoinCallback;
