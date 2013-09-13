@@ -222,7 +222,8 @@ public class ICalMarshallerRegistrar {
 	/**
 	 * Gets a component marshaller by name.
 	 * @param componentName the component name (e.g. "VEVENT")
-	 * @return the component marshaller or null if not found
+	 * @return the component marshaller or a {@link RawComponentMarshaller} if
+	 * not found
 	 */
 	public ICalComponentMarshaller<? extends ICalComponent> getComponentMarshaller(String componentName) {
 		componentName = componentName.toUpperCase();
@@ -242,8 +243,9 @@ public class ICalMarshallerRegistrar {
 
 	/**
 	 * Gets a property marshaller by name.
-	 * @param propertyName the component name (e.g. "VERSION")
-	 * @return the property marshaller or null if not found
+	 * @param propertyName the property name (e.g. "VERSION")
+	 * @return the property marshaller or a {@link RawPropertyMarshaller} if not
+	 * found
 	 */
 	public ICalPropertyMarshaller<? extends ICalProperty> getPropertyMarshaller(String propertyName) {
 		propertyName = propertyName.toUpperCase();
@@ -320,7 +322,7 @@ public class ICalMarshallerRegistrar {
 	/**
 	 * Gets a property marshaller by XML local name and namespace.
 	 * @param qname the XML local name and namespace
-	 * @return the property marshaller or null if not found
+	 * @return the property marshaller or a {@link XmlMarshaller} if not found
 	 */
 	public ICalPropertyMarshaller<? extends ICalProperty> getPropertyMarshaller(QName qname) {
 		ICalPropertyMarshaller<? extends ICalProperty> marshaller = experimentalPropByQName.get(qname);
