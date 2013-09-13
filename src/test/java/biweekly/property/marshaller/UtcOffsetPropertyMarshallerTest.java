@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import biweekly.property.UtcOffsetProperty;
 import biweekly.property.marshaller.Sensei.Check;
+import biweekly.util.UtcOffset;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -39,60 +40,43 @@ public class UtcOffsetPropertyMarshallerTest {
 	private final UtcOffsetPropertyMarshallerImpl marshaller = new UtcOffsetPropertyMarshallerImpl();
 	private final Sensei<UtcOffsetPropertyImpl> sensei = new Sensei<UtcOffsetPropertyImpl>(marshaller);
 
-	private final UtcOffsetPropertyImpl withHourMinute = new UtcOffsetPropertyImpl(1, 30);
-	private final UtcOffsetPropertyImpl withHour = new UtcOffsetPropertyImpl(1, null);
-	private final UtcOffsetPropertyImpl withMinute = new UtcOffsetPropertyImpl(null, 30);
-	private final UtcOffsetPropertyImpl empty = new UtcOffsetPropertyImpl(null, null);
+	private final UtcOffsetPropertyImpl withValue = new UtcOffsetPropertyImpl(new UtcOffset(1, 30));
+	private final UtcOffsetPropertyImpl empty = new UtcOffsetPropertyImpl(null);
 
 	@Test
 	public void writeText() {
-		sensei.assertWriteText(withHourMinute).run("+0130");
-		sensei.assertWriteText(withHour).run("+0100");
-		sensei.assertWriteText(withMinute).run("+0030");
-		sensei.assertWriteText(empty).run("+0000");
+		sensei.assertWriteText(withValue).run("+0130");
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
 	public void parseText() {
-		sensei.assertParseText("+0130").run(has(1, 30));
-		sensei.assertParseText("+0100").run(has(1, 0));
-		sensei.assertParseText("+0030").run(has(0, 30));
-		sensei.assertParseText("+0000").run(has(0, 0));
+		sensei.assertParseText("+0130").run(is(withValue));
 		sensei.assertParseText("invalid").cannotParse();
 	}
 
 	@Test
 	public void writeXml() {
-		sensei.assertWriteXml(withHourMinute).run("<utc-offset>+01:30</utc-offset>");
-		sensei.assertWriteXml(withHour).run("<utc-offset>+01:00</utc-offset>");
-		sensei.assertWriteXml(withMinute).run("<utc-offset>+00:30</utc-offset>");
-		sensei.assertWriteXml(empty).run("<utc-offset>+00:00</utc-offset>");
+		sensei.assertWriteXml(withValue).run("<utc-offset>+01:30</utc-offset>");
+		sensei.assertWriteXml(empty).run("");
 	}
 
 	@Test
 	public void parseXml() {
-		sensei.assertParseXml("<utc-offset>+01:30</utc-offset>").run(has(1, 30));
-		sensei.assertParseXml("<utc-offset>+01:00</utc-offset>").run(has(1, 0));
-		sensei.assertParseXml("<utc-offset>+00:30</utc-offset>").run(has(0, 30));
-		sensei.assertParseXml("<utc-offset>+00:00</utc-offset>").run(has(0, 0));
+		sensei.assertParseXml("<utc-offset>+01:30</utc-offset>").run(is(withValue));
 		sensei.assertParseXml("<utc-offset>invalid</utc-offset>").cannotParse();
 		sensei.assertParseXml("").cannotParse();
 	}
 
 	@Test
 	public void writeJson() {
-		sensei.assertWriteJson(withHourMinute).run("+01:30");
-		sensei.assertWriteJson(withHour).run("+01:00");
-		sensei.assertWriteJson(withMinute).run("+00:30");
-		sensei.assertWriteJson(empty).run("+00:00");
+		sensei.assertWriteJson(withValue).run("+01:30");
+		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
 	public void parseJson() {
-		sensei.assertParseJson("+01:30").run(has(1, 30));
-		sensei.assertParseJson("+01:00").run(has(1, 0));
-		sensei.assertParseJson("+00:30").run(has(0, 30));
-		sensei.assertParseJson("+00:00").run(has(0, 0));
+		sensei.assertParseJson("+01:30").run(is(withValue));
 		sensei.assertParseJson("invalid").cannotParse();
 		sensei.assertParseJson("").cannotParse();
 	}
@@ -103,22 +87,21 @@ public class UtcOffsetPropertyMarshallerTest {
 		}
 
 		@Override
-		protected UtcOffsetPropertyImpl newInstance(Integer hourOffset, Integer minuteOffset) {
-			return new UtcOffsetPropertyImpl(hourOffset, minuteOffset);
+		protected UtcOffsetPropertyImpl newInstance(UtcOffset offset) {
+			return new UtcOffsetPropertyImpl(offset);
 		}
 	}
 
 	private class UtcOffsetPropertyImpl extends UtcOffsetProperty {
-		public UtcOffsetPropertyImpl(Integer hourOffset, Integer minuteOffset) {
-			super(hourOffset, minuteOffset);
+		public UtcOffsetPropertyImpl(UtcOffset offset) {
+			super(offset);
 		}
 	}
 
-	private Check<UtcOffsetPropertyImpl> has(final Integer hour, final Integer minute) {
+	private Check<UtcOffsetPropertyImpl> is(final UtcOffsetPropertyImpl expected) {
 		return new Check<UtcOffsetPropertyImpl>() {
 			public void check(UtcOffsetPropertyImpl actual) {
-				assertEquals(hour, actual.getHourOffset());
-				assertEquals(minute, actual.getMinuteOffset());
+				assertEquals(expected.getOffset(), actual.getOffset());
 			}
 		};
 	}

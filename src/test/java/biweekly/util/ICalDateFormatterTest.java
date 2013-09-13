@@ -1,7 +1,6 @@
 package biweekly.util;
 
 import static biweekly.util.TestUtils.buildTimezone;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -104,40 +103,6 @@ public class ICalDateFormatterTest {
 		
 		String actual = ICalDateFormatter.format(datetime, ISOFormat.TIME_BASIC, timezone);
 		assertEquals("20060102T072030-0200", actual);
-	}
-
-	@Test
-	public void formatTimeZone() {
-		//@formatter:off
-		Object[][] tests = new Object[][]{
-			//positive
-			new Object[]{"+0200", "+02:00", buildTimezone(2, 0)},
-			
-			//negative
-			new Object[]{"-0500", "-05:00", buildTimezone(-5, 0)},
-			
-			//with minutes
-			new Object[]{"-0530", "-05:30", buildTimezone(-5, 30)},
-			
-			//hour >= 10
-			new Object[]{"+1000", "+10:00", buildTimezone(10, 0)},
-			
-			//zero hour
-			new Object[]{"+0000", "+00:00", buildTimezone(0, 0)},
-		};
-		//@formatter:off
-		
-		for (Object[] test : tests){
-			String expectedBasic = (String)test[0];
-			String expectedExtended = (String)test[1];
-			TimeZone timezone = (TimeZone)test[2];
-			
-			String actualBasic = ICalDateFormatter.formatTimeZone(timezone, false);
-			assertEquals(expectedBasic, actualBasic);
-			
-			String actualExtended = ICalDateFormatter.formatTimeZone(timezone, true);
-			assertEquals(expectedExtended, actualExtended);
-		}
 	}
 
 	@Test
@@ -247,77 +212,6 @@ public class ICalDateFormatterTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void parse_invalid() {
 		ICalDateFormatter.parse("invalid");
-	}
-
-	@Test
-	public void parseTimeZone() {
-		//@formatter:off
-		Object[][] tests = new Object[][]{	
-			new Object[]{"5", 5, 0},
-			new Object[]{"10", 10, 0},
-			new Object[]{"+5", 5, 0},
-			new Object[]{"+10", 10, 0},
-			new Object[]{"-5", -5, 0},
-			new Object[]{"-10", -10, 0},
-			new Object[]{"05", 5, 0},
-			new Object[]{"+05", 5, 0},
-			new Object[]{"-05", -5, 0},
-			new Object[]{"500", 5, 0},
-			new Object[]{"+500", 5, 0},
-			new Object[]{"-500", -5, 0},
-			new Object[]{"530", 5, 30},
-			new Object[]{"+530", 5, 30},
-			new Object[]{"-530", -5, 30},
-			new Object[]{"5:00", 5, 0},
-			new Object[]{"10:00", 10, 0},
-			new Object[]{"+5:00", 5, 0},
-			new Object[]{"+10:00", 10, 0},
-			new Object[]{"-5:00", -5, 0},
-			new Object[]{"-10:00", -10, 0},
-			new Object[]{"5:30", 5, 30},
-			new Object[]{"10:30", 10, 30},
-			new Object[]{"+5:30", 5, 30},
-			new Object[]{"+10:30", 10, 30},
-			new Object[]{"-5:30", -5, 30},
-			new Object[]{"-10:30", -10, 30},
-			new Object[]{"0500", 5, 0},
-			new Object[]{"1000", 10, 0},
-			new Object[]{"+0500", 5, 0},
-			new Object[]{"+1000", 10, 0},
-			new Object[]{"-0500", -5, 0},
-			new Object[]{"-1000", -10, 0},
-			new Object[]{"0530", 5, 30},
-			new Object[]{"1030", 10, 30},
-			new Object[]{"+0530", 5, 30},
-			new Object[]{"+1030", 10, 30},
-			new Object[]{"-0530", -5, 30},
-			new Object[]{"-1030", -10, 30},
-			new Object[]{"05:00", 5, 0},
-			new Object[]{"10:00", 10, 0},
-			new Object[]{"+05:00", 5, 0},
-			new Object[]{"+10:00", 10, 0},
-			new Object[]{"-05:00", -5, 0},
-			new Object[]{"-10:00", -10, 0},
-			new Object[]{"05:30", 5, 30},
-			new Object[]{"10:30", 10, 30},
-			new Object[]{"+05:30", 5, 30},
-			new Object[]{"+10:30", 10, 30},
-			new Object[]{"-05:30", -5, 30},
-			new Object[]{"-10:30", -10, 30},
-		};
-		//@formatter:on
-
-		for (Object test[] : tests) {
-			String input = (String) test[0];
-			int[] expected = new int[] { (Integer) test[1], (Integer) test[2] };
-			int[] actual = ICalDateFormatter.parseTimeZone(input);
-			assertArrayEquals(expected, actual);
-		}
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void parseTimeZone_invalid() {
-		ICalDateFormatter.parseTimeZone("invalid");
 	}
 
 	@Test

@@ -8,7 +8,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.UtcOffsetProperty;
-import biweekly.util.ICalDateFormatter;
+import biweekly.util.UtcOffset;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -47,17 +47,12 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 
 	@Override
 	protected String _writeText(T property) {
-		Integer hour = property.getHourOffset();
-		if (hour == null) {
-			hour = 0;
+		UtcOffset offset = property.getOffset();
+		if (offset != null) {
+			return offset.toString(false);
 		}
 
-		Integer minute = property.getMinuteOffset();
-		if (minute == null) {
-			minute = 0;
-		}
-
-		return ICalDateFormatter.formatTimeZone(hour, minute, false);
+		return "";
 	}
 
 	@Override
@@ -68,17 +63,10 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 
 	@Override
 	protected void _writeXml(T property, XCalElement element) {
-		Integer hour = property.getHourOffset();
-		if (hour == null) {
-			hour = 0;
+		UtcOffset offset = property.getOffset();
+		if (offset != null) {
+			element.append(dataType(property), offset.toString(true));
 		}
-
-		Integer minute = property.getMinuteOffset();
-		if (minute == null) {
-			minute = 0;
-		}
-
-		element.append(dataType(property), ICalDateFormatter.formatTimeZone(hour, minute, true));
 	}
 
 	@Override
@@ -93,17 +81,12 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 
 	@Override
 	protected JCalValue _writeJson(T property) {
-		Integer hour = property.getHourOffset();
-		if (hour == null) {
-			hour = 0;
+		UtcOffset offset = property.getOffset();
+		if (offset != null) {
+			return JCalValue.single(offset.toString(true));
 		}
 
-		Integer minute = property.getMinuteOffset();
-		if (minute == null) {
-			minute = 0;
-		}
-
-		return JCalValue.single(ICalDateFormatter.formatTimeZone(hour, minute, true));
+		return JCalValue.single("");
 	}
 
 	@Override
@@ -111,18 +94,15 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 		return parse(value.asSingle());
 	}
 
-	protected abstract T newInstance(Integer hourOffset, Integer minuteOffset);
+	protected abstract T newInstance(UtcOffset offset);
 
 	private T parse(String value) {
 		if (value == null) {
-			return newInstance(null, null);
+			return newInstance(null);
 		}
 
 		try {
-			int[] offset = ICalDateFormatter.parseTimeZone(value);
-			Integer hourOffset = offset[0];
-			Integer minuteOffset = offset[1];
-			return newInstance(hourOffset, minuteOffset);
+			return newInstance(UtcOffset.parse(value));
 		} catch (IllegalArgumentException e) {
 			throw new CannotParseException("Could not parse offset string.");
 		}

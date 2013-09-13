@@ -1,5 +1,7 @@
 package biweekly.property;
 
+import biweekly.util.UtcOffset;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -57,5 +59,13 @@ public class TimezoneOffsetTo extends UtcOffsetProperty {
 	 */
 	public TimezoneOffsetTo(int hourOffset, int minuteOffset) {
 		super(hourOffset, minuteOffset);
+	}
+
+	/**
+	 * Creates a new timezone offset to property.
+	 * @param offset the UTC offset
+	 */
+	public TimezoneOffsetTo(UtcOffset offset) {
+		super(offset);
 	}
 }

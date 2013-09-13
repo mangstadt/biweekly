@@ -1,6 +1,7 @@
 package biweekly.property.marshaller;
 
 import biweekly.property.TimezoneOffsetFrom;
+import biweekly.util.UtcOffset;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -37,7 +38,7 @@ public class TimezoneOffsetFromMarshaller extends UtcOffsetPropertyMarshaller<Ti
 	}
 
 	@Override
-	protected TimezoneOffsetFrom newInstance(Integer hourOffset, Integer minuteOffset) {
-		return new TimezoneOffsetFrom(hourOffset, minuteOffset);
+	protected TimezoneOffsetFrom newInstance(UtcOffset offset) {
+		return new TimezoneOffsetFrom(offset);
 	}
 }

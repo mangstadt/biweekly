@@ -3,7 +3,7 @@ package biweekly.property;
 import java.util.List;
 
 import biweekly.component.ICalComponent;
-
+import biweekly.util.UtcOffset;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -35,32 +35,42 @@ import biweekly.component.ICalComponent;
  * @author Michael Angstadt
  */
 public class UtcOffsetProperty extends ICalProperty {
-	protected Integer hourOffset, minuteOffset;
+	protected UtcOffset offset;
 
-	public UtcOffsetProperty(Integer hourOffset, Integer minuteOffset) {
-		this.hourOffset = hourOffset;
-		this.minuteOffset = minuteOffset;
+	public UtcOffsetProperty(int hourOffset, int minuteOffset) {
+		this(new UtcOffset(hourOffset, minuteOffset));
 	}
 
-	public Integer getHourOffset() {
-		return hourOffset;
+	public UtcOffsetProperty(UtcOffset offset) {
+		this.offset = offset;
 	}
 
-	public Integer getMinuteOffset() {
-		return minuteOffset;
+	public int getHourOffset() {
+		return offset.getHour();
 	}
 
-	public void setOffset(Integer hourOffset, Integer minuteOffset) {
-		this.hourOffset = hourOffset;
-		this.minuteOffset = minuteOffset;
+	public int getMinuteOffset() {
+		return offset.getMinute();
+	}
+
+	public UtcOffset getOffset() {
+		return offset;
+	}
+
+	public void setOffset(int hourOffset, int minuteOffset) {
+		setOffset(new UtcOffset(hourOffset, minuteOffset));
+	}
+
+	public void setOffset(UtcOffset offset) {
+		this.offset = offset;
 	}
 
 	@Override
 	protected void validate(List<ICalComponent> components, List<String> warnings) {
-		if (hourOffset == null) {
-			warnings.add("No hour offset defined.");
+		if (offset == null) {
+			warnings.add("Value is null.");
 		}
-		if (minuteOffset != null && (minuteOffset < 0 || minuteOffset > 59)) {
+		if (offset != null && (offset.getMinute() < 0 || offset.getMinute() > 59)) {
 			warnings.add("Minute offset must be between 0 and 59 inclusive.");
 		}
 	}
