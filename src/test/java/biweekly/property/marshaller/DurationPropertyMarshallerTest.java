@@ -62,7 +62,7 @@ public class DurationPropertyMarshallerTest {
 	@Test
 	public void writeXml() {
 		sensei.assertWriteXml(withDuration).run("<duration>" + durationStr + "</duration>");
-		sensei.assertWriteXml(empty).run("");
+		sensei.assertWriteXml(empty).run("<duration/>");
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class DurationPropertyMarshallerTest {
 	@Test
 	public void writeJson() {
 		sensei.assertWriteJson(withDuration).run(durationStr);
-		sensei.assertWriteJson(empty).run((String) null);
+		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test

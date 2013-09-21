@@ -54,39 +54,37 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 
 	@Override
 	protected String _writeText(T property) {
-		Date value = property.getValue();
 		DateTimeComponents components = property.getRawComponents();
-		if (value == null && components == null) {
-			return "";
-		}
-
 		if (components != null) {
 			return components.toString(false);
 		}
-		return date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).write();
+
+		Date value = property.getValue();
+		if (value != null) {
+			return date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).write();
+		}
+
+		return "";
 	}
 
 	@Override
 	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
-
 		return parse(value, parameters, warnings);
 	}
 
 	@Override
 	protected void _writeXml(T property, XCalElement element) {
+		String dateStr = null;
+
 		Date value = property.getValue();
 		DateTimeComponents components = property.getRawComponents();
-		if (value == null && components == null) {
-			return;
-		}
-
-		String dateStr;
 		if (components != null) {
 			dateStr = components.toString(true);
-		} else {
+		} else if (value != null) {
 			dateStr = date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).extended(true).write();
 		}
+
 		element.append(dataType(property), dateStr);
 	}
 
@@ -97,28 +95,26 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 			value = element.first(ICalDataType.DATE);
 		}
 
-		if (value == null) {
-			throw missingXmlElements(ICalDataType.DATE_TIME, ICalDataType.DATE);
+		if (value != null) {
+			return parse(value, parameters, warnings);
 		}
 
-		return parse(value, parameters, warnings);
+		throw missingXmlElements(ICalDataType.DATE_TIME, ICalDataType.DATE);
 	}
 
 	@Override
 	protected JCalValue _writeJson(T property) {
-		Date value = property.getValue();
 		DateTimeComponents components = property.getRawComponents();
-		if (value == null && components == null) {
-			return JCalValue.single(null);
+		if (components != null) {
+			return JCalValue.single(components.toString(true));
 		}
 
-		String dateStr;
-		if (components != null) {
-			dateStr = components.toString(true);
-		} else {
-			dateStr = date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).extended(true).write();
+		Date value = property.getValue();
+		if (value != null) {
+			return JCalValue.single(date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).extended(true).write());
 		}
-		return JCalValue.single(dateStr);
+
+		return JCalValue.single("");
 	}
 
 	@Override

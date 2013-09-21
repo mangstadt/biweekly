@@ -60,14 +60,10 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 	@Override
 	protected void _writeXml(RequestStatus property, XCalElement element) {
 		String code = property.getStatusCode();
-		if (code != null) {
-			element.append("code", code);
-		}
+		element.append("code", code);
 
 		String description = property.getDescription();
-		if (description != null) {
-			element.append("description", description);
-		}
+		element.append("description", description);
 
 		String data = property.getExceptionText();
 		if (data != null) {

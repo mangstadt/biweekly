@@ -63,20 +63,24 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 
 	@Override
 	protected void _writeXml(T property, XCalElement element) {
+		String offsetStr = null;
+
 		UtcOffset offset = property.getOffset();
 		if (offset != null) {
-			element.append(dataType(property), offset.toString(true));
+			offsetStr = offset.toString(true);
 		}
+
+		element.append(dataType(property), offsetStr);
 	}
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		String value = element.first(defaultDataType);
-		if (value == null) {
-			throw missingXmlElements(defaultDataType);
+		if (value != null) {
+			return parse(value);
 		}
 
-		return parse(value);
+		throw missingXmlElements(defaultDataType);
 	}
 
 	@Override

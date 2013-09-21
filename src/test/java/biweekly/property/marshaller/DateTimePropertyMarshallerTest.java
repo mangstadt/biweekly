@@ -81,7 +81,7 @@ public class DateTimePropertyMarshallerTest {
 	@Test
 	public void writeXml() {
 		sensei.assertWriteXml(withDateTime).run("<date-time>" + datetimeStrExt + "</date-time>");
-		sensei.assertWriteXml(empty).run("");
+		sensei.assertWriteXml(empty).run("<date-time/>");
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class DateTimePropertyMarshallerTest {
 	@Test
 	public void writeJson() {
 		sensei.assertWriteJson(withDateTime).run(datetimeStrExt);
-		sensei.assertWriteJson(empty).run((String) null);
+		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test

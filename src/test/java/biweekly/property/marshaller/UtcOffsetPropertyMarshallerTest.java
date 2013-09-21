@@ -58,7 +58,7 @@ public class UtcOffsetPropertyMarshallerTest {
 	@Test
 	public void writeXml() {
 		sensei.assertWriteXml(withValue).run("<utc-offset>+01:30</utc-offset>");
-		sensei.assertWriteXml(empty).run("");
+		sensei.assertWriteXml(empty).run("<utc-offset/>");
 	}
 
 	@Test

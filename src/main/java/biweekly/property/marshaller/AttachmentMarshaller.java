@@ -61,76 +61,88 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 		if (property.getData() != null) {
 			return ICalDataType.BINARY;
 		}
-		return null;
+		return defaultDataType;
 	}
 
 	@Override
 	protected String _writeText(Attachment property) {
-		if (property.getUri() != null) {
-			return property.getUri();
+		String uri = property.getUri();
+		if (uri != null) {
+			return uri;
 		}
-		if (property.getData() != null) {
-			return Base64.encode(property.getData());
+
+		byte data[] = property.getData();
+		if (data != null) {
+			return Base64.encode(data);
 		}
-		return null;
+
+		return "";
 	}
 
 	@Override
 	protected Attachment _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
 
-		Attachment attachment = new Attachment(null, (String) null);
 		if (dataType == ICalDataType.BINARY || parameters.getEncoding() == Encoding.BASE64) {
-			attachment.setData(Base64.decode(value));
-		} else {
-			attachment.setUri(value);
+			return new Attachment(null, Base64.decode(value));
 		}
-		return attachment;
+		return new Attachment(null, value);
 	}
 
 	@Override
 	protected void _writeXml(Attachment property, XCalElement element) {
-		if (property.getUri() != null) {
-			element.append(ICalDataType.URI, property.getUri());
-		} else if (property.getData() != null) {
-			element.append(ICalDataType.BINARY, Base64.encode(property.getData()));
+		String uri = property.getUri();
+		if (uri != null) {
+			element.append(ICalDataType.URI, uri);
+			return;
 		}
+
+		byte data[] = property.getData();
+		if (data != null) {
+			element.append(ICalDataType.BINARY, Base64.encode(data));
+			return;
+		}
+
+		element.append(defaultDataType, "");
 	}
 
 	@Override
 	protected Attachment _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		String binary = element.first(ICalDataType.BINARY);
-		if (binary != null) {
-			return new Attachment(null, Base64.decode(binary)); //formatType will be set when the parameters are assigned to the property object
-		}
-
 		String uri = element.first(ICalDataType.URI);
 		if (uri != null) {
 			return new Attachment(null, uri);
 		}
 
-		throw missingXmlElements(ICalDataType.BINARY, ICalDataType.URI);
+		String base64Data = element.first(ICalDataType.BINARY);
+		if (base64Data != null) {
+			return new Attachment(null, Base64.decode(base64Data)); //formatType will be set when the parameters are assigned to the property object
+		}
+
+		throw missingXmlElements(ICalDataType.URI, ICalDataType.BINARY);
 	}
 
 	@Override
 	protected JCalValue _writeJson(Attachment property) {
-		if (property.getData() != null) {
-			return JCalValue.single(Base64.encode(property.getData()));
+		String uri = property.getUri();
+		if (uri != null) {
+			return JCalValue.single(uri);
 		}
-		return JCalValue.single(property.getUri());
+
+		byte data[] = property.getData();
+		if (data != null) {
+			return JCalValue.single(Base64.encode(data));
+		}
+
+		return JCalValue.single("");
 	}
 
 	@Override
 	protected Attachment _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-		Attachment attachment = new Attachment(null, (String) null);
-
 		String valueStr = value.asSingle();
-		if (dataType == ICalDataType.BINARY) {
-			attachment.setData(Base64.decode(valueStr));
-		} else {
-			attachment.setUri(valueStr);
-		}
 
-		return attachment;
+		if (dataType == ICalDataType.BINARY) {
+			return new Attachment(null, Base64.decode(valueStr));
+		}
+		return new Attachment(null, valueStr);
 	}
 }

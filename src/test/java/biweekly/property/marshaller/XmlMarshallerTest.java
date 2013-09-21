@@ -113,7 +113,7 @@ public class XmlMarshallerTest {
 	@Test
 	public void writeJson() {
 		sensei.assertWriteJson(withValue).run(xml);
-		sensei.assertWriteJson(empty).run((String) null);
+		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test

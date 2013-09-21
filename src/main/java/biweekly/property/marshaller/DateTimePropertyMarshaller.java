@@ -48,50 +48,54 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 	@Override
 	protected String _writeText(T property) {
 		Date value = property.getValue();
-		if (value == null) {
-			return "";
+		if (value != null) {
+			return date(value).write(); //should always be in UTC time
 		}
-		return date(value).write(); //should always be in UTC time
+
+		return "";
 	}
 
 	@Override
 	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		value = unescape(value);
-
 		return parse(value, parameters, warnings);
 	}
 
 	@Override
 	protected void _writeXml(T property, XCalElement element) {
+		String dateStr = null;
+
 		Date value = property.getValue();
-		if (value == null) {
-			return;
+		if (value != null) {
+			dateStr = date(value).extended(true).write(); //should always be in UTC time
 		}
 
-		element.append(defaultDataType, date(value).extended(true).write()); //should always be in UTC time
+		element.append(dataType(property), dateStr);
 	}
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		String value = element.first(defaultDataType);
-		if (value == null) {
-			throw missingXmlElements(defaultDataType);
+		if (value != null) {
+			return parse(value, parameters, warnings);
 		}
 
-		return parse(value, parameters, warnings);
+		throw missingXmlElements(defaultDataType);
 	}
 
 	@Override
 	protected JCalValue _writeJson(T property) {
 		Date value = property.getValue();
-		String dateStr = (value == null) ? null : date(value).extended(true).write();
-		return JCalValue.single(dateStr);
+		if (value != null) {
+			return JCalValue.single(date(value).extended(true).write());
+		}
+
+		return JCalValue.single("");
 	}
 
 	@Override
 	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
 		String valueStr = value.asSingle();
-
 		return parse(valueStr, parameters, warnings);
 	}
 

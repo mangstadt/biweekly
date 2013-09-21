@@ -73,19 +73,21 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		List<String> values = element.all(defaultDataType);
-		if (values.isEmpty()) {
-			throw missingXmlElements(defaultDataType);
+		if (!values.isEmpty()) {
+			return parse(values, defaultDataType, parameters, warnings);
 		}
 
-		return parse(values, defaultDataType, parameters, warnings);
+		throw missingXmlElements(defaultDataType);
 	}
 
 	@Override
 	protected JCalValue _writeJson(T property) {
-		if (property.getValues().isEmpty()) {
-			return JCalValue.single("");
+		List<V> values = property.getValues();
+		if (!values.isEmpty()) {
+			return JCalValue.multi(property.getValues());
 		}
-		return JCalValue.multi(property.getValues());
+
+		return JCalValue.single("");
 	}
 
 	@Override

@@ -47,7 +47,11 @@ public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationP
 	@Override
 	protected String _writeText(DurationProperty property) {
 		Duration duration = property.getValue();
-		return (duration == null) ? "" : duration.toString();
+		if (duration != null) {
+			return duration.toString();
+		}
+
+		return "";
 	}
 
 	@Override
@@ -58,27 +62,34 @@ public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationP
 
 	@Override
 	protected void _writeXml(DurationProperty property, XCalElement element) {
-		Duration value = property.getValue();
-		if (value != null) {
-			element.append(dataType(property), value.toString());
+		String durationStr = null;
+
+		Duration duration = property.getValue();
+		if (duration != null) {
+			durationStr = duration.toString();
 		}
+
+		element.append(dataType(property), durationStr);
 	}
 
 	@Override
 	protected DurationProperty _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		String value = element.first(defaultDataType);
-		if (value == null) {
-			throw missingXmlElements(defaultDataType);
+		if (value != null) {
+			return parse(value);
 		}
 
-		return parse(value);
+		throw missingXmlElements(defaultDataType);
 	}
 
 	@Override
 	protected JCalValue _writeJson(DurationProperty property) {
 		Duration value = property.getValue();
-		String valueStr = (value == null) ? null : value.toString();
-		return JCalValue.single(valueStr);
+		if (value != null) {
+			return JCalValue.single(value.toString());
+		}
+
+		return JCalValue.single("");
 	}
 
 	@Override

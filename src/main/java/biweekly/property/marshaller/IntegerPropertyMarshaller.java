@@ -47,7 +47,11 @@ public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> exten
 	@Override
 	protected String _writeText(T property) {
 		Integer value = property.getValue();
-		return (value == null) ? "" : value.toString();
+		if (value != null) {
+			return value.toString();
+		}
+
+		return "";
 	}
 
 	@Override
@@ -58,20 +62,24 @@ public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> exten
 
 	@Override
 	protected void _writeXml(T property, XCalElement element) {
+		String valueStr = null;
+
 		Integer value = property.getValue();
 		if (value != null) {
-			element.append(dataType(property), value.toString());
+			valueStr = value.toString();
 		}
+
+		element.append(dataType(property), valueStr);
 	}
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		String value = element.first(defaultDataType);
-		if (value == null) {
-			throw missingXmlElements(defaultDataType);
+		if (value != null) {
+			return parse(value);
 		}
 
-		return parse(value);
+		throw missingXmlElements(defaultDataType);
 	}
 
 	@Override

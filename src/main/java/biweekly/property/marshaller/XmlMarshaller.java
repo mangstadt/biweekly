@@ -57,12 +57,12 @@ public class XmlMarshaller extends ICalPropertyMarshaller<Xml> {
 	@Override
 	protected String _writeText(Xml property) {
 		Document value = property.getValue();
-		if (value == null) {
-			return "";
+		if (value != null) {
+			String xml = valueToString(value);
+			return escape(xml);
 		}
 
-		String xml = valueToString(value);
-		return escape(xml);
+		return "";
 	}
 
 	@Override
@@ -98,13 +98,13 @@ public class XmlMarshaller extends ICalPropertyMarshaller<Xml> {
 
 	@Override
 	protected JCalValue _writeJson(Xml property) {
-		String xml = null;
 		Document value = property.getValue();
 		if (value != null) {
-			xml = valueToString(value);
+			String xml = valueToString(value);
+			return JCalValue.single(xml);
 		}
 
-		return JCalValue.single(xml);
+		return JCalValue.single("");
 	}
 
 	@Override

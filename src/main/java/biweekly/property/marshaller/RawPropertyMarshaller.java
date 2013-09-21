@@ -53,7 +53,11 @@ public class RawPropertyMarshaller extends ICalPropertyMarshaller<RawProperty> {
 	@Override
 	protected String _writeText(RawProperty property) {
 		String value = property.getValue();
-		return (value == null) ? "" : value;
+		if (value != null) {
+			return value;
+		}
+
+		return "";
 	}
 
 	@Override

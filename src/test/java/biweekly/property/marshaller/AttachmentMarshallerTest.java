@@ -63,14 +63,14 @@ public class AttachmentMarshallerTest {
 	public void dataType() {
 		sensei.assertDataType(withUrl).run(ICalDataType.URI);
 		sensei.assertDataType(withData).run(ICalDataType.BINARY);
-		sensei.assertDataType(empty).run(null);
+		sensei.assertDataType(empty).run(ICalDataType.URI);
 	}
 
 	@Test
 	public void writeText() {
 		sensei.assertWriteText(withUrl).run(url);
 		sensei.assertWriteText(withData).run(base64Data);
-		sensei.assertWriteText(empty).run((String) null);
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
@@ -92,7 +92,7 @@ public class AttachmentMarshallerTest {
 	public void writeXml_uri() {
 		sensei.assertWriteXml(withUrl).run("<uri>" + url + "</uri>");
 		sensei.assertWriteXml(withData).run("<binary>" + base64Data + "</binary>");
-		sensei.assertWriteXml(empty).run("");
+		sensei.assertWriteXml(empty).run("<uri/>");
 	}
 
 	@Test
@@ -100,8 +100,8 @@ public class AttachmentMarshallerTest {
 		sensei.assertParseXml("<uri>" + url + "</uri>").run(has(url));
 		sensei.assertParseXml("<binary>" + base64Data + "</binary>").run(has(data));
 
-		//<binary> is preferred
-		sensei.assertParseXml("<uri>" + url + "</uri><binary>" + base64Data + "</binary>").run(has(data));
+		//<uri> is preferred
+		sensei.assertParseXml("<uri>" + url + "</uri><binary>" + base64Data + "</binary>").run(has(url));
 
 		sensei.assertParseXml("").cannotParse();
 	}
@@ -110,7 +110,7 @@ public class AttachmentMarshallerTest {
 	public void writeJson_uri() {
 		sensei.assertWriteJson(withUrl).run(url);
 		sensei.assertWriteJson(withData).run(base64Data);
-		sensei.assertWriteJson(empty).run((String) null);
+		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test

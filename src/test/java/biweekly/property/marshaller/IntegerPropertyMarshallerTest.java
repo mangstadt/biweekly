@@ -62,7 +62,7 @@ public class IntegerPropertyMarshallerTest {
 	@Test
 	public void writeXml() {
 		sensei.assertWriteXml(withValue).run("<integer>5</integer>");
-		sensei.assertWriteXml(empty).run("");
+		sensei.assertWriteXml(empty).run("<integer/>");
 	}
 
 	@Test

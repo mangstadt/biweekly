@@ -59,16 +59,18 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 
 	@Override
 	protected String _writeText(final RecurrenceDates property) {
-		if (property.getDates() != null) {
-			return list(property.getDates(), new ListCallback<Date>() {
+		List<Date> dates = property.getDates();
+		if (dates != null) {
+			return list(dates, new ListCallback<Date>() {
 				public String asString(Date date) {
 					return date(date).time(property.hasTime()).tzid(property.getTimezoneId()).write();
 				}
 			});
 		}
 
-		if (property.getPeriods() != null) {
-			return list(property.getPeriods(), new ListCallback<Period>() {
+		List<Period> periods = property.getPeriods();
+		if (periods != null) {
+			return list(periods, new ListCallback<Period>() {
 				public String asString(Period period) {
 					StringBuilder sb = new StringBuilder();
 
@@ -101,32 +103,48 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 
 	@Override
 	protected void _writeXml(RecurrenceDates property, XCalElement element) {
-		if (property.getDates() != null) {
+		List<Date> dates = property.getDates();
+		if (dates != null) {
 			ICalDataType dataType = property.hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
-			for (Date date : property.getDates()) {
-				String dateStr = date(date).time(property.hasTime()).tzid(property.getTimezoneId()).extended(true).write();
-				element.append(dataType, dateStr);
-			}
-		} else if (property.getPeriods() != null) {
-			for (Period period : property.getPeriods()) {
-				XCalElement periodElement = element.append(ICalDataType.PERIOD);
-
-				Date start = period.getStartDate();
-				if (start != null) {
-					periodElement.append("start", date(start).tzid(property.getTimezoneId()).extended(true).write());
-				}
-
-				Date end = period.getEndDate();
-				if (end != null) {
-					periodElement.append("end", date(end).tzid(property.getTimezoneId()).extended(true).write());
-				}
-
-				Duration duration = period.getDuration();
-				if (duration != null) {
-					periodElement.append("duration", duration.toString());
+			if (dates.isEmpty()) {
+				element.append(dataType, "");
+			} else {
+				for (Date date : dates) {
+					String dateStr = date(date).time(property.hasTime()).tzid(property.getTimezoneId()).extended(true).write();
+					element.append(dataType, dateStr);
 				}
 			}
+			return;
 		}
+
+		List<Period> periods = property.getPeriods();
+		if (periods != null) {
+			if (periods.isEmpty()) {
+				element.append(ICalDataType.PERIOD, "");
+			} else {
+				for (Period period : periods) {
+					XCalElement periodElement = element.append(ICalDataType.PERIOD);
+
+					Date start = period.getStartDate();
+					if (start != null) {
+						periodElement.append("start", date(start).tzid(property.getTimezoneId()).extended(true).write());
+					}
+
+					Date end = period.getEndDate();
+					if (end != null) {
+						periodElement.append("end", date(end).tzid(property.getTimezoneId()).extended(true).write());
+					}
+
+					Duration duration = period.getDuration();
+					if (duration != null) {
+						periodElement.append("duration", duration.toString());
+					}
+				}
+			}
+			return;
+		}
+
+		element.append(defaultDataType, "");
 	}
 
 	@Override
@@ -201,44 +219,37 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 	protected JCalValue _writeJson(RecurrenceDates property) {
 		List<String> values = new ArrayList<String>();
 
-		if (property.getDates() != null) {
-			List<Date> dates = property.getDates();
-			if (dates.isEmpty()) {
-				values.add("");
-			} else {
-				for (Date date : dates) {
-					String dateStr = date(date).time(property.hasTime()).tzid(property.getTimezoneId()).extended(true).write();
-					values.add(dateStr);
-				}
+		List<Date> dates = property.getDates();
+		List<Period> periods = property.getPeriods();
+		if (dates != null) {
+			for (Date date : dates) {
+				String dateStr = date(date).time(property.hasTime()).tzid(property.getTimezoneId()).extended(true).write();
+				values.add(dateStr);
 			}
-		} else if (property.getPeriods() != null) {
-			List<Period> periods = property.getPeriods();
-			if (periods.isEmpty()) {
-				values.add("");
-			} else {
-				for (Period period : property.getPeriods()) {
-					StringBuilder sb = new StringBuilder();
-					if (period.getStartDate() != null) {
-						String value = date(period.getStartDate()).tzid(property.getTimezoneId()).extended(true).write();
-						sb.append(value);
-					}
-
-					sb.append('/');
-
-					if (period.getEndDate() != null) {
-						String value = date(period.getEndDate()).tzid(property.getTimezoneId()).extended(true).write();
-						sb.append(value);
-					} else if (period.getDuration() != null) {
-						sb.append(period.getDuration());
-					}
-
-					values.add(sb.toString());
+		} else if (periods != null) {
+			for (Period period : property.getPeriods()) {
+				StringBuilder sb = new StringBuilder();
+				if (period.getStartDate() != null) {
+					String value = date(period.getStartDate()).tzid(property.getTimezoneId()).extended(true).write();
+					sb.append(value);
 				}
+
+				sb.append('/');
+
+				if (period.getEndDate() != null) {
+					String value = date(period.getEndDate()).tzid(property.getTimezoneId()).extended(true).write();
+					sb.append(value);
+				} else if (period.getDuration() != null) {
+					sb.append(period.getDuration());
+				}
+
+				values.add(sb.toString());
 			}
-		} else {
-			values.add("");
 		}
 
+		if (values.isEmpty()) {
+			values.add("");
+		}
 		return JCalValue.multi(values);
 	}
 
@@ -284,19 +295,19 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 				}
 			}
 			return new RecurrenceDates(periods);
-		} else {
-			//parse as dates
-			boolean hasTime = (dataType == ICalDataType.DATE_TIME);
-			List<Date> dates = new ArrayList<Date>(valueStrs.size());
-			for (String s : valueStrs) {
-				try {
-					Date date = date(s).tzid(parameters.getTimezoneId(), warnings).parse();
-					dates.add(date);
-				} catch (IllegalArgumentException e) {
-					warnings.add("Skipping unparsable date: " + s);
-				}
-			}
-			return new RecurrenceDates(dates, hasTime);
 		}
+
+		//parse as dates
+		boolean hasTime = (dataType == ICalDataType.DATE_TIME);
+		List<Date> dates = new ArrayList<Date>(valueStrs.size());
+		for (String s : valueStrs) {
+			try {
+				Date date = date(s).tzid(parameters.getTimezoneId(), warnings).parse();
+				dates.add(date);
+			} catch (IllegalArgumentException e) {
+				warnings.add("Skipping unparsable date: " + s);
+			}
+		}
+		return new RecurrenceDates(dates, hasTime);
 	}
 }

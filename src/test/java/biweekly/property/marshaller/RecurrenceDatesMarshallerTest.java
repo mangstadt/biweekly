@@ -204,10 +204,10 @@ public class RecurrenceDatesMarshallerTest {
 		"<date-time>" + startDateTimeStrExt + "</date-time>"
 		);
 		
-		sensei.assertWriteXml(emptyPeriods).run("");
-		sensei.assertWriteXml(emptyDates).run("");
-		sensei.assertWriteXml(emptyDateTimes).run("");
-		sensei.assertWriteXml(empty).run("");
+		sensei.assertWriteXml(emptyPeriods).run("<period/>");
+		sensei.assertWriteXml(emptyDates).run("<date/>");
+		sensei.assertWriteXml(emptyDateTimes).run("<date-time/>");
+		sensei.assertWriteXml(empty).run("<date-time/>");
 		//@formatter:on
 	}
 

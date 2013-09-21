@@ -50,7 +50,11 @@ public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICa
 	@Override
 	protected String _writeText(T property) {
 		String value = property.getValue();
-		return (value == null) ? "" : escape(value);
+		if (value != null) {
+			return escape(value);
+		}
+
+		return "";
 	}
 
 	@Override
@@ -67,11 +71,11 @@ public abstract class TextPropertyMarshaller<T extends TextProperty> extends ICa
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		String value = element.first(defaultDataType);
-		if (value == null) {
-			throw missingXmlElements(defaultDataType);
+		if (value != null) {
+			return newInstance(value);
 		}
 
-		return newInstance(value);
+		throw missingXmlElements(defaultDataType);
 	}
 
 	@Override

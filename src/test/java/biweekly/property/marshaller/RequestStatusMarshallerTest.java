@@ -101,12 +101,12 @@ public class RequestStatusMarshallerTest {
 	public void writeXml() {
 		sensei.assertWriteXml(withAll).run("<code>" + code + "</code><description>" + description + "</description><data>" + data + "</data>");
 		sensei.assertWriteXml(withCodeDescription).run("<code>" + code + "</code><description>" + description + "</description>");
-		sensei.assertWriteXml(withCodeData).run("<code>" + code + "</code><data>" + data + "</data>");
-		sensei.assertWriteXml(withDescriptionData).run("<description>" + description + "</description><data>" + data + "</data>");
-		sensei.assertWriteXml(withCode).run("<code>" + code + "</code>");
-		sensei.assertWriteXml(withDescription).run("<description>" + description + "</description>");
-		sensei.assertWriteXml(withData).run("<data>" + data + "</data>");
-		sensei.assertWriteXml(empty).run("");
+		sensei.assertWriteXml(withCodeData).run("<code>" + code + "</code><description/><data>" + data + "</data>");
+		sensei.assertWriteXml(withDescriptionData).run("<code/><description>" + description + "</description><data>" + data + "</data>");
+		sensei.assertWriteXml(withCode).run("<code>" + code + "</code><description/>");
+		sensei.assertWriteXml(withDescription).run("<code/><description>" + description + "</description>");
+		sensei.assertWriteXml(withData).run("<code/><description/><data>" + data + "</data>");
+		sensei.assertWriteXml(empty).run("<code/><description/>");
 	}
 
 	@Test

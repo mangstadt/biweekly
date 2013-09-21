@@ -78,11 +78,11 @@ public class VersionMarshaller extends ICalPropertyMarshaller<Version> {
 	@Override
 	protected Version _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
 		String value = element.first(defaultDataType);
-		if (value == null) {
-			throw missingXmlElements(defaultDataType);
+		if (value != null) {
+			return new Version(value);
 		}
 
-		return new Version(value);
+		throw missingXmlElements(defaultDataType);
 	}
 
 	@Override

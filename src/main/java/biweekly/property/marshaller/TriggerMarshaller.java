@@ -52,12 +52,16 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 
 	@Override
 	protected String _writeText(Trigger property) {
-		if (property.getDate() != null) {
-			return date(property.getDate()).write();
+		Duration duration = property.getDuration();
+		if (duration != null) {
+			return duration.toString();
 		}
-		if (property.getDuration() != null) {
-			return property.getDuration().toString();
+
+		Date date = property.getDate();
+		if (date != null) {
+			return date(date).write();
 		}
+
 		return "";
 	}
 
@@ -83,16 +87,33 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 
 	@Override
 	protected void _writeXml(Trigger property, XCalElement element) {
-		if (property.getDate() != null) {
-			element.append(ICalDataType.DATE_TIME, date(property.getDate()).extended(true).write());
-		} else if (property.getDuration() != null) {
-			element.append(ICalDataType.DURATION, property.getDuration().toString());
+		Duration duration = property.getDuration();
+		if (duration != null) {
+			element.append(ICalDataType.DURATION, duration.toString());
+			return;
 		}
+
+		Date date = property.getDate();
+		if (date != null) {
+			element.append(ICalDataType.DATE_TIME, date(date).extended(true).write());
+			return;
+		}
+
+		element.append(defaultDataType, "");
 	}
 
 	@Override
 	protected Trigger _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
-		String value = element.first(ICalDataType.DATE_TIME);
+		String value = element.first(ICalDataType.DURATION);
+		if (value != null) {
+			try {
+				return new Trigger(Duration.parse(value), parameters.getRelated());
+			} catch (IllegalArgumentException e) {
+				throw new CannotParseException("Could not parse duration: " + value);
+			}
+		}
+
+		value = element.first(ICalDataType.DATE_TIME);
 		if (value != null) {
 			try {
 				Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
@@ -102,29 +123,22 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 			}
 		}
 
-		value = element.first(ICalDataType.DURATION);
-		if (value != null) {
-			try {
-				return new Trigger(Duration.parse(value), parameters.getRelated());
-			} catch (IllegalArgumentException e) {
-				throw new CannotParseException("Could not parse duration: " + value);
-			}
-		}
-
-		throw missingXmlElements(ICalDataType.DATE_TIME, ICalDataType.DURATION);
+		throw missingXmlElements(ICalDataType.DURATION, ICalDataType.DATE_TIME);
 	}
 
 	@Override
 	protected JCalValue _writeJson(Trigger property) {
-		String value = null;
-
-		if (property.getDate() != null) {
-			value = date(property.getDate()).extended(true).write();
-		} else if (property.getDuration() != null) {
-			value = property.getDuration().toString();
+		Duration duration = property.getDuration();
+		if (duration != null) {
+			return JCalValue.single(duration.toString());
 		}
 
-		return JCalValue.single(value);
+		Date date = property.getDate();
+		if (date != null) {
+			return JCalValue.single(date(date).extended(true).write());
+		}
+
+		return JCalValue.single("");
 	}
 
 	@Override

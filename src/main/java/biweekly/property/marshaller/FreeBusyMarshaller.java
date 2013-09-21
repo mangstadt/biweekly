@@ -49,9 +49,6 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 	@Override
 	protected String _writeText(FreeBusy property) {
 		List<Period> values = property.getValues();
-		if (values.isEmpty()) {
-			return "";
-		}
 
 		return list(values, new ListCallback<Period>() {
 			public String asString(Period period) {

@@ -98,7 +98,7 @@ public class TriggerMarshallerTest {
 	public void writeXml_date() {
 		sensei.assertWriteXml(withDateTime).run("<date-time>" + datetimeStrExt + "</date-time>");
 		sensei.assertWriteXml(withDuration).run("<duration>" + durationStr + "</duration>");
-		sensei.assertWriteXml(empty).run("");
+		sensei.assertWriteXml(empty).run("<duration/>");
 	}
 
 	@Test
@@ -106,8 +106,8 @@ public class TriggerMarshallerTest {
 		sensei.assertParseXml("<date-time>" + datetimeStrExt + "</date-time>").run(is(withDateTime));
 		sensei.assertParseXml("<duration>" + durationStr + "</duration>").run(is(withDuration));
 
-		//prefers <date-time> element if both elements exist
-		sensei.assertParseXml("<duration>" + durationStr + "</duration><date-time>" + datetimeStrExt + "</date-time>").run(is(withDateTime));
+		//prefers <duration> element if both elements exist
+		sensei.assertParseXml("<duration>" + durationStr + "</duration><date-time>" + datetimeStrExt + "</date-time>").run(is(withDuration));
 
 		sensei.assertParseXml("<date-time>invalid</date-time>").cannotParse();
 		sensei.assertParseXml("<duration>invalid</duration>").cannotParse();
@@ -118,7 +118,7 @@ public class TriggerMarshallerTest {
 	public void writeJson_date() {
 		sensei.assertWriteJson(withDateTime).run(datetimeStrExt);
 		sensei.assertWriteJson(withDuration).run(durationStr);
-		sensei.assertWriteJson(empty).run((String) null);
+		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
