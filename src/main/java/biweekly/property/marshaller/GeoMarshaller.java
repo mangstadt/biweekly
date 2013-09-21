@@ -50,16 +50,18 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 		StringBuilder sb = new StringBuilder();
 
 		Double latitude = property.getLatitude();
-		if (latitude != null) {
-			sb.append(formatter.format(latitude));
+		if (latitude == null) {
+			latitude = 0.0;
 		}
+		sb.append(formatter.format(latitude));
 
 		sb.append(';');
 
 		Double longitude = property.getLongitude();
-		if (longitude != null) {
-			sb.append(formatter.format(longitude));
+		if (longitude == null) {
+			longitude = 0.0;
 		}
+		sb.append(formatter.format(longitude));
 
 		return sb.toString();
 	}
@@ -82,14 +84,16 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 		ICalFloatFormatter formatter = new ICalFloatFormatter();
 
 		Double latitude = property.getLatitude();
-		if (latitude != null) {
-			element.append("latitude", formatter.format(latitude));
+		if (latitude == null) {
+			latitude = 0.0;
 		}
+		element.append("latitude", formatter.format(latitude));
 
 		Double longitude = property.getLongitude();
-		if (longitude != null) {
-			element.append("longitude", formatter.format(longitude));
+		if (longitude == null) {
+			longitude = 0.0;
 		}
+		element.append("longitude", formatter.format(longitude));
 	}
 
 	@Override
@@ -112,7 +116,15 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 	@Override
 	protected JCalValue _writeJson(Geo property) {
 		Double latitude = property.getLatitude();
+		if (latitude == null) {
+			latitude = 0.0;
+		}
+
 		Double longitude = property.getLongitude();
+		if (longitude == null) {
+			longitude = 0.0;
+		}
+
 		return JCalValue.structured(latitude, longitude);
 	}
 

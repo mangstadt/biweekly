@@ -50,10 +50,10 @@ public class GeoMarshallerTest {
 	@Test
 	public void writeText() {
 		sensei.assertWriteText(withBoth).run("12.34;56.78");
-		sensei.assertWriteText(withLatitude).run("12.34;");
-		sensei.assertWriteText(withLongitude).run(";56.78");
+		sensei.assertWriteText(withLatitude).run("12.34;0.0");
+		sensei.assertWriteText(withLongitude).run("0.0;56.78");
 		sensei.assertWriteText(withManyDecimals).run("12.344444;56.777778");
-		sensei.assertWriteText(empty).run(";");
+		sensei.assertWriteText(empty).run("0.0;0.0");
 	}
 
 	@Test
@@ -68,10 +68,10 @@ public class GeoMarshallerTest {
 	@Test
 	public void writeXml() {
 		sensei.assertWriteXml(withBoth).run("<latitude>12.34</latitude><longitude>56.78</longitude>");
-		sensei.assertWriteXml(withLatitude).run("<latitude>12.34</latitude>");
-		sensei.assertWriteXml(withLongitude).run("<longitude>56.78</longitude>");
+		sensei.assertWriteXml(withLatitude).run("<latitude>12.34</latitude><longitude>0.0</longitude>");
+		sensei.assertWriteXml(withLongitude).run("<latitude>0.0</latitude><longitude>56.78</longitude>");
 		sensei.assertWriteXml(withManyDecimals).run("<latitude>12.344444</latitude><longitude>56.777778</longitude>");
-		sensei.assertWriteXml(empty).run("");
+		sensei.assertWriteXml(empty).run("<latitude>0.0</latitude><longitude>0.0</longitude>");
 	}
 
 	@Test
@@ -87,10 +87,10 @@ public class GeoMarshallerTest {
 	@Test
 	public void writeJson() {
 		sensei.assertWriteJson(withBoth).run(JCalValue.structured(12.34, 56.78));
-		sensei.assertWriteJson(withLatitude).run(JCalValue.structured(12.34, null));
-		sensei.assertWriteJson(withLongitude).run(JCalValue.structured(null, 56.78));
+		sensei.assertWriteJson(withLatitude).run(JCalValue.structured(12.34, 0.0));
+		sensei.assertWriteJson(withLongitude).run(JCalValue.structured(0.0, 56.78));
 		sensei.assertWriteJson(withManyDecimals).run(JCalValue.structured(12.3444444444, 56.7777777777));
-		sensei.assertWriteJson(empty).run(JCalValue.structured(null, null));
+		sensei.assertWriteJson(empty).run(JCalValue.structured(0.0, 0.0));
 	}
 
 	@Test
