@@ -255,8 +255,16 @@ public class JCalWriter implements Closeable {
 	}
 
 	/**
+	 * Flushes the stream.
+	 * @throws IOException if there's a problem flushing the stream
+	 */
+	public void flush() throws IOException {
+		writer.flush();
+	}
+
+	/**
 	 * Finishes writing the JSON document and closes the underlying
-	 * {@link Writer}.
+	 * {@link Writer} object.
 	 * @throws IOException if there's a problem closing the stream
 	 */
 	public void close() throws IOException {

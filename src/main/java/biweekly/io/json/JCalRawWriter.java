@@ -277,6 +277,18 @@ public class JCalRawWriter implements Closeable {
 	}
 
 	/**
+	 * Flushes the JSON stream.
+	 * @throws IOException if there's a problem flushing the stream
+	 */
+	public void flush() throws IOException {
+		if (jg == null) {
+			return;
+		}
+
+		jg.flush();
+	}
+
+	/**
 	 * Finishes writing the JSON document so that it is syntactically correct.
 	 * No more data can be written once this method is called.
 	 * @throws IOException if there's a problem closing the stream

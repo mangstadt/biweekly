@@ -425,6 +425,14 @@ public class ICalRawWriter implements Closeable {
 	}
 
 	/**
+	 * Flushes the underlying {@link Writer} object.
+	 * @throws IOException if there's a problem flushing the writer
+	 */
+	public void flush() throws IOException {
+		writer.flush();
+	}
+
+	/**
 	 * Closes the underlying {@link Writer} object.
 	 */
 	public void close() throws IOException {

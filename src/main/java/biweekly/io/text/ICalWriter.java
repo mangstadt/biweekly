@@ -337,6 +337,14 @@ public class ICalWriter implements Closeable {
 	}
 
 	/**
+	 * Flushes the stream.
+	 * @throws IOException if there's a problem flushing the stream
+	 */
+	public void flush() throws IOException {
+		writer.flush();
+	}
+
+	/**
 	 * Closes the underlying {@link Writer} object.
 	 */
 	public void close() throws IOException {

@@ -1231,6 +1231,7 @@ public class Biweekly {
 
 			for (ICalendar ical : icals) {
 				icalWriter.write(ical);
+				icalWriter.flush();
 			}
 		}
 	}
@@ -1465,6 +1466,7 @@ public class Biweekly {
 
 			for (ICalendar ical : icals) {
 				jcalWriter.write(ical);
+				jcalWriter.flush();
 			}
 			jcalWriter.closeJsonStream();
 		}
