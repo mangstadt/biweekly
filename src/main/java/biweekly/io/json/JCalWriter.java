@@ -4,6 +4,7 @@ import static biweekly.util.IOUtils.utf8Writer;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -65,7 +66,7 @@ import biweekly.property.marshaller.ICalPropertyMarshaller;
  * @see <a href="http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05">jCal
  * draft</a>
  */
-public class JCalWriter implements Closeable {
+public class JCalWriter implements Closeable, Flushable {
 	private ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();
 	private final JCalRawWriter writer;
 

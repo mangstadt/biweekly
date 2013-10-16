@@ -3,6 +3,7 @@ package biweekly.io.json;
 import static biweekly.util.StringUtils.NEWLINE;
 
 import java.io.Closeable;
+import java.io.Flushable;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.LinkedList;
@@ -47,7 +48,7 @@ import com.fasterxml.jackson.core.JsonGenerator.Feature;
  * @see <a href="http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05">jCal
  * draft</a>
  */
-public class JCalRawWriter implements Closeable {
+public class JCalRawWriter implements Closeable, Flushable {
 	private final Writer writer;
 	private final boolean wrapInArray;
 	private final LinkedList<Info> stack = new LinkedList<Info>();

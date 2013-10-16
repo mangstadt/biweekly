@@ -1,6 +1,7 @@
 package biweekly.io.text;
 
 import java.io.Closeable;
+import java.io.Flushable;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.BitSet;
@@ -40,7 +41,7 @@ import biweekly.parameter.ICalParameters;
  * @author Michael Angstadt
  * @rfc 5545
  */
-public class ICalRawWriter implements Closeable {
+public class ICalRawWriter implements Closeable, Flushable {
 	/**
 	 * Regular expression used to determine if a parameter value needs to be
 	 * quoted.

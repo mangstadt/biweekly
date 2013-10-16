@@ -5,6 +5,7 @@ import static biweekly.util.IOUtils.utf8Writer;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -65,7 +66,7 @@ import biweekly.property.marshaller.ICalPropertyMarshaller;
  * @author Michael Angstadt
  * @rfc 5545
  */
-public class ICalWriter implements Closeable {
+public class ICalWriter implements Closeable, Flushable {
 	private ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();
 	private final ICalRawWriter writer;
 
