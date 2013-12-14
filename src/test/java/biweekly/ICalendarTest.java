@@ -79,15 +79,15 @@ public class ICalendarTest {
 
 	private class TestComponent extends ICalComponent {
 		@Override
-		protected void validate(List<ICalComponent> components, List<String> warnings) {
-			warnings.add("");
+		protected void validate(List<ICalComponent> components, List<Warning> warnings) {
+			warnings.add(new Warning(""));
 		}
 	}
 
 	private class TestProperty extends ICalProperty {
 		@Override
-		protected void validate(List<ICalComponent> components, List<String> warnings) {
-			warnings.add("");
+		protected void validate(List<ICalComponent> components, List<Warning> warnings) {
+			warnings.add(new Warning(""));
 		}
 	}
 }

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.util.IOUtils;
 
@@ -141,9 +142,9 @@ public class Attachment extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (uri == null && data == null) {
-			warnings.add("No URI or data specified.");
+			warnings.add(new Warning(26));
 		}
 	}
 }

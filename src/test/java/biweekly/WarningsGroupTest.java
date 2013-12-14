@@ -47,29 +47,29 @@ public class WarningsGroupTest {
 		Tests tests = new Tests();
 		tests.add(
 			"[Grandparent > Parent > TestComponent]: one",
-			new WarningsGroup(new TestComponent(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList("one"))
+			new WarningsGroup(new TestComponent(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new Warning("one")))
 		);
 		tests.add(
 			"[Grandparent > Parent > TestComponent]: one" + NEWLINE + 
 			"[Grandparent > Parent > TestComponent]: two",
-			new WarningsGroup(new TestComponent(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList("one", "two"))
+			new WarningsGroup(new TestComponent(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new Warning("one"), new Warning("two")))
 		);
 		tests.add(
 			"[TestComponent]: one",
-			new WarningsGroup(new TestComponent(), Arrays.asList(new ICalComponent[0]), Arrays.asList("one"))
+			new WarningsGroup(new TestComponent(), Arrays.asList(new ICalComponent[0]), Arrays.asList(new Warning("one")))
 		);
 		tests.add(
 			"[Grandparent > Parent > TestProperty]: one",
-			new WarningsGroup(new TestProperty(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList("one"))
+			new WarningsGroup(new TestProperty(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new Warning("one")))
 		);
 		tests.add(
 			"[Grandparent > Parent > TestProperty]: one" + NEWLINE + 
 			"[Grandparent > Parent > TestProperty]: two",
-			new WarningsGroup(new TestProperty(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList("one", "two"))
+			new WarningsGroup(new TestProperty(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new Warning("one"), new Warning("two")))
 		);
 		tests.add(
 			"[TestProperty]: one",
-			new WarningsGroup(new TestProperty(), Arrays.asList(new ICalComponent[0]), Arrays.asList("one"))
+			new WarningsGroup(new TestProperty(), Arrays.asList(new ICalComponent[0]), Arrays.asList(new Warning("one")))
 		);
 		//@formatter:on
 

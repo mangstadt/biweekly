@@ -2,6 +2,7 @@ package biweekly.property;
 
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 
 /*
@@ -57,10 +58,10 @@ public class PercentComplete extends IntegerProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		super.validate(components, warnings);
 		if (value != null && (value < 0 || value > 100)) {
-			warnings.add("Value should be between 1 and 100 inclusive: " + value);
+			warnings.add(new Warning(29, value));
 		}
 	}
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
 import biweekly.ValidationWarnings.WarningsGroup;
+import biweekly.Warning;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.util.ListMultimap;
@@ -357,7 +358,7 @@ public abstract class ICalComponent {
 		List<WarningsGroup> warnings = new ArrayList<WarningsGroup>();
 
 		//validate this component
-		List<String> warningsBuf = new ArrayList<String>(0);
+		List<Warning> warningsBuf = new ArrayList<Warning>(0);
 		validate(hierarchy, warningsBuf);
 		if (!warningsBuf.isEmpty()) {
 			warnings.add(new WarningsGroup(this, hierarchy, warningsBuf));
@@ -370,7 +371,7 @@ public abstract class ICalComponent {
 
 		//validate properties
 		for (ICalProperty property : properties.values()) {
-			List<String> propWarnings = property.validate(hierarchy);
+			List<Warning> propWarnings = property.validate(hierarchy);
 			if (!propWarnings.isEmpty()) {
 				warnings.add(new WarningsGroup(property, hierarchy, propWarnings));
 			}
@@ -391,7 +392,7 @@ public abstract class ICalComponent {
 	 * to
 	 * @param warnings the list to add the warnings to
 	 */
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		//do nothing
 	}
 
@@ -401,17 +402,17 @@ public abstract class ICalComponent {
 	 * @param warnings the list to add the warnings to
 	 * @param classes the properties to check
 	 */
-	protected void checkRequiredCardinality(List<String> warnings, Class<? extends ICalProperty>... classes) {
+	protected void checkRequiredCardinality(List<Warning> warnings, Class<? extends ICalProperty>... classes) {
 		for (Class<? extends ICalProperty> clazz : classes) {
 			List<? extends ICalProperty> props = getProperties(clazz);
 
 			if (props.isEmpty()) {
-				warnings.add(clazz.getSimpleName() + " is not set (it is a required property).");
+				warnings.add(new Warning(2, clazz.getSimpleName()));
 				continue;
 			}
 
 			if (props.size() > 1) {
-				warnings.add("There cannot be more than one instance of " + clazz.getSimpleName() + ".");
+				warnings.add(new Warning(3, clazz.getSimpleName()));
 				continue;
 			}
 		}
@@ -423,12 +424,12 @@ public abstract class ICalComponent {
 	 * @param warnings the list to add the warnings to
 	 * @param classes the properties to check
 	 */
-	protected void checkOptionalCardinality(List<String> warnings, Class<? extends ICalProperty>... classes) {
+	protected void checkOptionalCardinality(List<Warning> warnings, Class<? extends ICalProperty>... classes) {
 		for (Class<? extends ICalProperty> clazz : classes) {
 			List<? extends ICalProperty> props = getProperties(clazz);
 
 			if (props.size() > 1) {
-				warnings.add("There cannot be more than one instance of " + clazz.getSimpleName() + ".");
+				warnings.add(new Warning(3, clazz.getSimpleName()));
 				continue;
 			}
 		}

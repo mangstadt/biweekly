@@ -3,6 +3,7 @@ package biweekly.component;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.property.LastModified;
 import biweekly.property.TimezoneId;
 import biweekly.property.TimezoneUrl;
@@ -200,12 +201,12 @@ public class VTimezone extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		checkRequiredCardinality(warnings, TimezoneId.class);
 		checkOptionalCardinality(warnings, LastModified.class, TimezoneUrl.class);
 
 		if (getStandardTimes().isEmpty() && getDaylightSavingsTime().isEmpty()) {
-			warnings.add("At least one " + StandardTime.class.getSimpleName() + " or one " + DaylightSavingsTime.class.getSimpleName() + " must be specified.");
+			warnings.add(new Warning(21));
 		}
 	}
 }

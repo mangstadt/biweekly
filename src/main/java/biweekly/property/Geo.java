@@ -2,6 +2,7 @@ package biweekly.property;
 
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 
 /*
@@ -103,12 +104,12 @@ public class Geo extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (latitude == null) {
-			warnings.add("Latitude is not set.");
+			warnings.add(new Warning(41));
 		}
 		if (longitude == null) {
-			warnings.add("Longitude is not set.");
+			warnings.add(new Warning(42));
 		}
 	}
 }

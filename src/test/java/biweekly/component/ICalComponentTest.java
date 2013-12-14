@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import biweekly.Warning;
 import biweekly.property.Description;
 import biweekly.property.Location;
 import biweekly.property.Summary;
@@ -48,7 +49,7 @@ public class ICalComponentTest {
 		comp.addProperty(new Description(""));
 		comp.addProperty(new Description(""));
 
-		List<String> warnings = new ArrayList<String>();
+		List<Warning> warnings = new ArrayList<Warning>();
 		comp.checkRequiredCardinality(warnings, Summary.class, Description.class, Location.class);
 
 		//too many instances of Description and no instances of Location
@@ -64,7 +65,7 @@ public class ICalComponentTest {
 		comp.addProperty(new Description(""));
 		comp.addProperty(new Description(""));
 
-		List<String> warnings = new ArrayList<String>();
+		List<Warning> warnings = new ArrayList<Warning>();
 		comp.checkOptionalCardinality(warnings, Summary.class, Description.class, Location.class);
 
 		//too many instances of Description

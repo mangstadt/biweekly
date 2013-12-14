@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.component.VTimezone;
 import biweekly.property.FreeBusy;
 import biweekly.property.RecurrenceId;
@@ -561,58 +562,59 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * correctly by the consuming application.
 	 * @return a list of warnings or an empty list if no problems were found
 	 */
-	public List<String> validate() {
-		List<String> warnings = new ArrayList<String>(0);
-		String message = "%s parameter has a non-standard value (\"%s\").  Standard values are: %s";
+	public List<Warning> validate() {
+		List<Warning> warnings = new ArrayList<Warning>(0);
+
+		final int nonStandardCode = 1;
 
 		String value = first(RSVP);
 		if (value != null && !value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("false")) {
-			warnings.add(String.format(message, RSVP, value, "[TRUE, FALSE]"));
+			warnings.add(new Warning(nonStandardCode, RSVP, value, "[TRUE, FALSE]"));
 		}
 
 		value = first(CUTYPE);
 		if (value != null && CalendarUserType.find(value) == null) {
-			warnings.add(String.format(message, CUTYPE, value, CalendarUserType.all()));
+			warnings.add(new Warning(nonStandardCode, CUTYPE, value, CalendarUserType.all()));
 		}
 
 		value = first(ENCODING);
 		if (value != null && Encoding.find(value) == null) {
-			warnings.add(String.format(message, ENCODING, value, Encoding.all()));
+			warnings.add(new Warning(nonStandardCode, ENCODING, value, Encoding.all()));
 		}
 
 		value = first(FBTYPE);
 		if (value != null && FreeBusyType.find(value) == null) {
-			warnings.add(String.format(message, FBTYPE, value, FreeBusyType.all()));
+			warnings.add(new Warning(nonStandardCode, FBTYPE, value, FreeBusyType.all()));
 		}
 
 		value = first(PARTSTAT);
 		if (value != null && ParticipationStatus.find(value) == null) {
-			warnings.add(String.format(message, PARTSTAT, value, ParticipationStatus.all()));
+			warnings.add(new Warning(nonStandardCode, PARTSTAT, value, ParticipationStatus.all()));
 		}
 
 		value = first(RANGE);
 		if (value != null && Range.find(value) == null) {
-			warnings.add(String.format(message, RANGE, value, Range.all()));
+			warnings.add(new Warning(nonStandardCode, RANGE, value, Range.all()));
 		}
 
 		value = first(RELATED);
 		if (value != null && Related.find(value) == null) {
-			warnings.add(String.format(message, RELATED, value, Related.all()));
+			warnings.add(new Warning(nonStandardCode, RELATED, value, Related.all()));
 		}
 
 		value = first(RELTYPE);
 		if (value != null && RelationshipType.find(value) == null) {
-			warnings.add(String.format(message, RELTYPE, value, RelationshipType.all()));
+			warnings.add(new Warning(nonStandardCode, RELTYPE, value, RelationshipType.all()));
 		}
 
 		value = first(ROLE);
 		if (value != null && Role.find(value) == null) {
-			warnings.add(String.format(message, ROLE, value, Role.all()));
+			warnings.add(new Warning(nonStandardCode, ROLE, value, Role.all()));
 		}
 
 		value = first(VALUE);
 		if (value != null && ICalDataType.find(value) == null) {
-			warnings.add(String.format(message, VALUE, value, ICalDataType.all()));
+			warnings.add(new Warning(nonStandardCode, VALUE, value, ICalDataType.all()));
 		}
 
 		return warnings;

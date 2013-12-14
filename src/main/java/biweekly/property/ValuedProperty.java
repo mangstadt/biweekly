@@ -2,6 +2,7 @@ package biweekly.property;
 
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 
 /*
@@ -63,9 +64,9 @@ public class ValuedProperty<T> extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (value == null) {
-			warnings.add("Value is null.");
+			warnings.add(new Warning(26));
 		}
 	}
 }

@@ -1,8 +1,10 @@
 package biweekly.component;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.Categories;
@@ -1117,13 +1119,13 @@ public class VEvent extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
 		checkOptionalCardinality(warnings, Classification.class, Created.class, Description.class, Geo.class, LastModified.class, Location.class, Organizer.class, Priority.class, Priority.class, Status.class, Summary.class, Transparency.class, Url.class, RecurrenceId.class);
 
 		Status status = getStatus();
 		if (status != null && (status.isNeedsAction() || status.isCompleted() || status.isInProgress() || status.isDraft() || status.isFinal())) {
-			warnings.add("Invalid status value of \"" + status.getValue() + "\".  Valid status values for events are \"tentative\", \"confirmed\", and \"cancelled\".");
+			warnings.add(new Warning(13, status.getValue(), Arrays.asList(Status.tentative().getValue(), Status.confirmed().getValue(), Status.cancelled().getValue())));
 		}
 
 		DateStart dateStart = getDateStart();
@@ -1131,32 +1133,32 @@ public class VEvent extends ICalComponent {
 
 		ICalComponent ical = components.get(0);
 		if (dateStart == null && ical.getProperty(Method.class) == null) {
-			warnings.add("A " + DateStart.class.getSimpleName() + " property is required if no " + Method.class.getSimpleName() + " property is set at the top level of the iCalendar object.");
+			warnings.add(new Warning(14));
 		}
 
 		if (dateEnd != null && dateStart == null) {
-			warnings.add("A " + DateStart.class.getSimpleName() + " property must be defined if a " + DateEnd.class.getSimpleName() + " property is defined.");
+			warnings.add(new Warning(15));
 		}
 
 		if (dateStart != null && dateEnd != null) {
 			Date start = dateStart.getValue();
 			Date end = dateEnd.getValue();
 			if (start != null && end != null && start.compareTo(end) > 0) {
-				warnings.add(DateStart.class.getSimpleName() + " must come before " + DateEnd.class.getSimpleName() + ".");
+				warnings.add(new Warning(16));
 			}
 
 			if (dateStart.hasTime() != dateEnd.hasTime()) {
-				warnings.add("Both " + DateStart.class.getSimpleName() + " and " + DateEnd.class.getSimpleName() + " must have the same data type (they must either both be dates or both be date-times).");
+				warnings.add(new Warning(17));
 			}
 		}
 
 		if (dateEnd != null && getDuration() != null) {
-			warnings.add("A DateEnd and a Duration cannot both be defined in the same event.");
+			warnings.add(new Warning(18));
 		}
 
 		RecurrenceId recurrenceId = getRecurrenceId();
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
-			warnings.add("Both " + DateStart.class.getSimpleName() + " and " + RecurrenceId.class.getSimpleName() + " must have the same data type (they must either both be dates or both be date-times).");
+			warnings.add(new Warning(19));
 		}
 
 		//RFC 5545 p. 167
@@ -1166,14 +1168,14 @@ public class VEvent extends ICalComponent {
 			Recurrence recur = rrule.getValue();
 			if (start != null && recur != null) {
 				if (!dateStart.hasTime() && (!recur.getByHour().isEmpty() || !recur.getByMinute().isEmpty() || !recur.getBySecond().isEmpty())) {
-					warnings.add("The BYHOUR, BYMINUTE, and BYSECOND rule parts cannot be specified in the " + RecurrenceRule.class.getSimpleName() + " property when the " + DateStart.class.getSimpleName() + " property contains a date value (as opposed to a date-time value).");
+					warnings.add(new Warning(5));
 				}
 			}
 		}
 
 		//RFC 5545 p. 167
 		if (getProperties(RecurrenceRule.class).size() > 1) {
-			warnings.add("There should be only one instance of the " + RecurrenceRule.class.getSimpleName() + " property.");
+			warnings.add(new Warning(6));
 		}
 
 		//TODO check for properties which shouldn't be added to VEVENTs

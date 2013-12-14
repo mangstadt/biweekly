@@ -2,6 +2,7 @@ package biweekly.property;
 
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 
 /*
@@ -130,9 +131,9 @@ public class Version extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (maxVersion == null) {
-			warnings.add("A maximum version must be specified.");
+			warnings.add(new Warning(35));
 		}
 	}
 }

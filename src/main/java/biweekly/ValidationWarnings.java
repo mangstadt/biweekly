@@ -179,17 +179,17 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 		private final ICalProperty property;
 		private final ICalComponent component;
 		private final List<ICalComponent> componentHierarchy;
-		private final List<String> messages;
+		private final List<Warning> warnings;
 
 		/**
 		 * Creates a new set of validation warnings for a property.
 		 * @param property the property that caused the warnings
 		 * @param componentHierarchy the hierarchy of components that the
 		 * property belongs to
-		 * @param messages the warning messages
+		 * @param warning the warnings
 		 */
-		public WarningsGroup(ICalProperty property, List<ICalComponent> componentHierarchy, List<String> messages) {
-			this(null, property, componentHierarchy, messages);
+		public WarningsGroup(ICalProperty property, List<ICalComponent> componentHierarchy, List<Warning> warning) {
+			this(null, property, componentHierarchy, warning);
 		}
 
 		/**
@@ -197,17 +197,17 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 		 * @param component the component that caused the warnings
 		 * @param componentHierarchy the hierarchy of components that the
 		 * component belongs to
-		 * @param messages the warning messages
+		 * @param warning the warnings
 		 */
-		public WarningsGroup(ICalComponent component, List<ICalComponent> componentHierarchy, List<String> messages) {
-			this(component, null, componentHierarchy, messages);
+		public WarningsGroup(ICalComponent component, List<ICalComponent> componentHierarchy, List<Warning> warning) {
+			this(component, null, componentHierarchy, warning);
 		}
 
-		private WarningsGroup(ICalComponent component, ICalProperty property, List<ICalComponent> componentHierarchy, List<String> messages) {
+		private WarningsGroup(ICalComponent component, ICalProperty property, List<ICalComponent> componentHierarchy, List<Warning> warning) {
 			this.component = component;
 			this.property = property;
 			this.componentHierarchy = componentHierarchy;
-			this.messages = messages;
+			this.warnings = warning;
 		}
 
 		/**
@@ -238,11 +238,11 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 		}
 
 		/**
-		 * Gets the warning messages.
-		 * @return the warning messages
+		 * Gets the warnings.
+		 * @return the warnings
 		 */
-		public List<String> getMessages() {
-			return messages;
+		public List<Warning> getWarnings() {
+			return warnings;
 		}
 
 		/**
@@ -260,9 +260,9 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 		@Override
 		public String toString() {
 			final String prefix = "[" + buildPath() + "]: ";
-			return StringUtils.join(messages, StringUtils.NEWLINE, new JoinCallback<String>() {
-				public void handle(StringBuilder sb, String message) {
-					sb.append(prefix).append(message);
+			return StringUtils.join(warnings, StringUtils.NEWLINE, new JoinCallback<Warning>() {
+				public void handle(StringBuilder sb, Warning warning) {
+					sb.append(prefix).append(warning);
 				}
 			});
 		}
@@ -281,11 +281,8 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 				sb.append(delimitor);
 			}
 
-			if (property != null) {
-				sb.append(property.getClass().getSimpleName());
-			} else {
-				sb.append(component.getClass().getSimpleName());
-			}
+			Object obj = (property == null) ? component : property;
+			sb.append(obj.getClass().getSimpleName());
 
 			return sb.toString();
 		}

@@ -66,7 +66,7 @@ public class TestUtils {
 	 * @param expectedSize the expected size of the warnings list
 	 * @param warnings the warnings list
 	 */
-	public static void assertWarnings(int expectedSize, List<String> warnings) {
+	public static void assertWarnings(int expectedSize, List<?> warnings) {
 		assertEquals(warnings.toString(), expectedSize, warnings.size());
 	}
 
@@ -105,8 +105,8 @@ public class TestUtils {
 
 		Counts<Object> actualCounts = new Counts<Object>();
 		for (WarningsGroup warning : warnings) {
-			assertTrue(warning.getMessages().size() > 0);
-			for (int i = 0; i < warning.getMessages().size(); i++) {
+			assertTrue(warning.getWarnings().size() > 0);
+			for (int i = 0; i < warning.getWarnings().size(); i++) {
 				Object obj = (warning.getProperty() == null) ? warning.getComponent() : warning.getProperty();
 				actualCounts.increment(obj);
 			}

@@ -1,8 +1,10 @@
 package biweekly.component;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.Categories;
@@ -1138,13 +1140,13 @@ public class VTodo extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
 		checkOptionalCardinality(warnings, Classification.class, Completed.class, Created.class, Description.class, DateStart.class, Geo.class, LastModified.class, Location.class, Organizer.class, PercentComplete.class, Priority.class, RecurrenceId.class, Sequence.class, Status.class, Summary.class, Url.class);
 
 		Status status = getStatus();
 		if (status != null && (status.isTentative() || status.isConfirmed() || status.isDraft() || status.isFinal())) {
-			warnings.add("Invalid status value of \"" + status.getValue() + "\".  Valid status values for to-do tasks are \"needs-action\", \"completed\", \"in-progress\", and \"cancelled\".");
+			warnings.add(new Warning(13, status.getValue(), Arrays.asList(Status.needsAction().getValue(), Status.completed().getValue(), Status.inProgress().getValue(), Status.cancelled().getValue())));
 		}
 
 		DateStart dateStart = getDateStart();
@@ -1153,25 +1155,25 @@ public class VTodo extends ICalComponent {
 			Date start = dateStart.getValue();
 			Date due = dateDue.getValue();
 			if (start != null && due != null && start.compareTo(due) > 0) {
-				warnings.add("" + DateStart.class.getSimpleName() + " must come before " + DateDue.class.getSimpleName() + ".");
+				warnings.add(new Warning(22));
 			}
 
 			if (dateStart.hasTime() != dateDue.hasTime()) {
-				warnings.add("Both " + DateStart.class.getSimpleName() + " and " + DateDue.class.getSimpleName() + " must have the same data type (they must either both be dates or both be date-times).");
+				warnings.add(new Warning(23));
 			}
 		}
 
 		DurationProperty duration = getDuration();
 		if (dateDue != null && duration != null) {
-			warnings.add("A " + DateDue.class.getSimpleName() + " and a " + DurationProperty.class.getSimpleName() + " cannot both be defined in the same to-do.");
+			warnings.add(new Warning(24));
 		}
 		if (dateStart == null && duration != null) {
-			warnings.add("A " + DateStart.class.getSimpleName() + " must be defined if a " + DurationProperty.class.getSimpleName() + " is defined.");
+			warnings.add(new Warning(25));
 		}
 
 		RecurrenceId recurrenceId = getRecurrenceId();
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
-			warnings.add("Both " + DateStart.class.getSimpleName() + " and " + RecurrenceId.class.getSimpleName() + " must have the same data type (they must either both be dates or both be date-times).");
+			warnings.add(new Warning(19));
 		}
 
 		//RFC 5545 p. 167
@@ -1181,14 +1183,14 @@ public class VTodo extends ICalComponent {
 			Recurrence recur = rrule.getValue();
 			if (start != null && recur != null) {
 				if (!dateStart.hasTime() && (!recur.getByHour().isEmpty() || !recur.getByMinute().isEmpty() || !recur.getBySecond().isEmpty())) {
-					warnings.add("The BYHOUR, BYMINUTE, and BYSECOND rule parts cannot be specified in the " + RecurrenceRule.class.getSimpleName() + " property when the " + DateStart.class.getSimpleName() + " property contains a date value (as opposed to a date-time value).");
+					warnings.add(new Warning(5));
 				}
 			}
 		}
 
 		//RFC 5545 p. 167
 		if (getProperties(RecurrenceRule.class).size() > 1) {
-			warnings.add("There should be only one instance of the " + RecurrenceRule.class.getSimpleName() + " property.");
+			warnings.add(new Warning(6));
 		}
 	}
 }

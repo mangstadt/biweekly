@@ -3,6 +3,7 @@ package biweekly.property;
 import java.util.Collection;
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 
 /*
@@ -60,7 +61,7 @@ public abstract class EnumProperty extends TextProperty {
 	protected abstract Collection<String> getStandardValues();
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		super.validate(components, warnings);
 		if (value == null) {
 			return;
@@ -74,6 +75,6 @@ public abstract class EnumProperty extends TextProperty {
 			}
 		}
 
-		warnings.add("Non-standard value \"" + value + "\".  Standard values are: " + standardValues);
+		warnings.add(new Warning(28, value, standardValues));
 	}
 }

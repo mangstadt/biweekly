@@ -3,6 +3,7 @@ package biweekly.component;
 import java.util.Arrays;
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.parameter.Related;
 import biweekly.property.Action;
 import biweekly.property.Attachment;
@@ -426,7 +427,7 @@ public class VAlarm extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		//all alarm types require Action and Trigger
 		checkRequiredCardinality(warnings, Action.class, Trigger.class);
 
@@ -434,7 +435,7 @@ public class VAlarm extends ICalComponent {
 		if (action != null) {
 			if (action.isAudio()) {
 				if (getAttachments().size() > 1) {
-					warnings.add("Audio alarms should have no more than 1 attachment.");
+					warnings.add(new Warning(7));
 				}
 			}
 
@@ -445,11 +446,11 @@ public class VAlarm extends ICalComponent {
 			if (action.isEmail()) {
 				checkRequiredCardinality(warnings, Summary.class, Description.class);
 				if (getAttendees().isEmpty()) {
-					warnings.add("Email alarms must have at least one attendee.");
+					warnings.add(new Warning(8));
 				}
 			} else {
 				if (!getAttendees().isEmpty()) {
-					warnings.add("Only email alarms can have attendees.");
+					warnings.add(new Warning(9));
 				}
 			}
 		}
@@ -459,13 +460,13 @@ public class VAlarm extends ICalComponent {
 			Related related = trigger.getRelated();
 
 			if (related == null && trigger.getDuration() != null) {
-				warnings.add("The trigger must specify which date field its duration is relative to.");
+				warnings.add(new Warning(10));
 			}
 
 			if (related != null) {
 				ICalComponent parent = components.get(components.size() - 1);
 				if (related == Related.START && parent.getProperty(DateStart.class) == null) {
-					warnings.add("The trigger is settings its duration relative to the start date, but the parent component has no start date property.");
+					warnings.add(new Warning(11));
 				}
 				if (related == Related.END) {
 					boolean noEndDate = false;
@@ -477,7 +478,7 @@ public class VAlarm extends ICalComponent {
 					}
 
 					if (noEndDate) {
-						warnings.add("The trigger is settings its duration relative to the end date, but the parent component has no end date or equivalent set.");
+						warnings.add(new Warning(12));
 					}
 				}
 			}

@@ -2,6 +2,7 @@ package biweekly.property;
 
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.util.Recurrence;
 
@@ -44,18 +45,18 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		super.validate(components, warnings);
 		if (value == null) {
 			return;
 		}
 
 		if (value.getFrequency() == null) {
-			warnings.add("Frequency is not set (it is a required field).");
+			warnings.add(new Warning(30));
 		}
 
 		if (value.getUntil() != null && value.getCount() != null) {
-			warnings.add("\"UNTIL\" and \"COUNT\" cannot both be set.");
+			warnings.add(new Warning(31));
 		}
 	}
 }

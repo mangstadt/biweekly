@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import biweekly.ICalendar;
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
 import biweekly.parameter.ICalParameters;
@@ -287,9 +288,9 @@ public abstract class ICalProperty {
 	 * @see ICalendar#validate
 	 * @return a list of warnings or an empty list if no problems were found
 	 */
-	public final List<String> validate(List<ICalComponent> components) {
+	public final List<Warning> validate(List<ICalComponent> components) {
 		//validate property value
-		List<String> warnings = new ArrayList<String>(0);
+		List<Warning> warnings = new ArrayList<Warning>(0);
 		validate(components, warnings);
 
 		//validate parameters
@@ -306,7 +307,7 @@ public abstract class ICalProperty {
 	 * to
 	 * @param warnings the list to add the warnings to
 	 */
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		//do nothing
 	}
 }

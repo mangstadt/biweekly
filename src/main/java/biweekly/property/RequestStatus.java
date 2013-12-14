@@ -2,6 +2,7 @@ package biweekly.property;
 
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 
 /*
@@ -144,9 +145,9 @@ public class RequestStatus extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (statusCode == null) {
-			warnings.add("No status code is set.");
+			warnings.add(new Warning(36));
 		}
 	}
 }

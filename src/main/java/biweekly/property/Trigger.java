@@ -3,6 +3,7 @@ package biweekly.property;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.parameter.Related;
 import biweekly.util.Duration;
@@ -127,9 +128,9 @@ public class Trigger extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (duration == null && date == null) {
-			warnings.add("No duration or date defined.");
+			warnings.add(new Warning(33));
 		}
 	}
 }

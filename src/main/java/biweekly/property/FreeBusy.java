@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.parameter.FreeBusyType;
 import biweekly.util.Duration;
@@ -113,20 +114,20 @@ public class FreeBusy extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (values.isEmpty()) {
-			warnings.add("No time periods are defined.");
+			warnings.add(new Warning(38));
 		} else {
 			for (Period timePeriod : values) {
 				if (timePeriod.getStartDate() == null) {
-					warnings.add("One or more time periods do not have start dates.");
+					warnings.add(new Warning(39));
 					break;
 				}
 			}
 
 			for (Period timePeriod : values) {
 				if (timePeriod.getEndDate() == null && timePeriod.getDuration() == null) {
-					warnings.add("One or more time periods do not have either an end date or a duration.");
+					warnings.add(new Warning(40));
 					break;
 				}
 			}

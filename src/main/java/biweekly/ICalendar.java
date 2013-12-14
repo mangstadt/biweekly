@@ -301,11 +301,11 @@ public class ICalendar extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		checkRequiredCardinality(warnings, ProductId.class, Version.class);
 
 		if (this.components.isEmpty()) {
-			warnings.add("An iCalendar object must have at least one component.");
+			warnings.add(new Warning(4));
 		}
 	}
 

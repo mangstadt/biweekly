@@ -1,8 +1,10 @@
 package biweekly.component;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.Categories;
@@ -872,19 +874,19 @@ public class VJournal extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
 		checkOptionalCardinality(warnings, Classification.class, Created.class, DateStart.class, LastModified.class, Organizer.class, RecurrenceId.class, Sequence.class, Status.class, Summary.class, Url.class);
 
 		Status status = getStatus();
 		if (status != null && (status.isTentative() || status.isConfirmed() || status.isNeedsAction() || status.isCompleted() || status.isInProgress())) {
-			warnings.add("Invalid status value (\"" + status.getValue() + "\").  Valid status values are \"draft\", \"final\", and \"cancelled\".");
+			warnings.add(new Warning(13, status.getValue(), Arrays.asList(Status.draft().getValue(), Status.final_().getValue(), Status.cancelled().getValue())));
 		}
 
 		RecurrenceId recurrenceId = getRecurrenceId();
 		DateStart dateStart = getDateStart();
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
-			warnings.add("Both " + DateStart.class.getSimpleName() + " and " + RecurrenceId.class.getSimpleName() + " must have the same data type (they must either both be dates or both be datetimes).");
+			warnings.add(new Warning(19));
 		}
 
 		//RFC 5545 p. 167
@@ -894,14 +896,14 @@ public class VJournal extends ICalComponent {
 			Recurrence recur = rrule.getValue();
 			if (start != null && recur != null) {
 				if (!dateStart.hasTime() && (!recur.getByHour().isEmpty() || !recur.getByMinute().isEmpty() || !recur.getBySecond().isEmpty())) {
-					warnings.add("The BYHOUR, BYMINUTE, and BYSECOND rule parts cannot be specified in the " + RecurrenceRule.class.getSimpleName() + " property when the " + DateStart.class.getSimpleName() + " property contains a date value (as opposed to a date-time value).");
+					warnings.add(new Warning(5));
 				}
 			}
 		}
 
 		//RFC 5545 p. 167
 		if (getProperties(RecurrenceRule.class).size() > 1) {
-			warnings.add("There should be only one instance of the " + RecurrenceRule.class.getSimpleName() + " property.");
+			warnings.add(new Warning(6));
 		}
 	}
 }

@@ -3,6 +3,7 @@ package biweekly.component;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.parameter.FreeBusyType;
 import biweekly.property.Attendee;
 import biweekly.property.Comment;
@@ -474,7 +475,7 @@ public class VFreeBusy extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
 		checkOptionalCardinality(warnings, Contact.class, DateStart.class, DateEnd.class, Organizer.class, Url.class);
 
@@ -482,22 +483,22 @@ public class VFreeBusy extends ICalComponent {
 		DateEnd dateEnd = getDateEnd();
 
 		if (dateEnd != null && dateStart == null) {
-			warnings.add("A " + DateStart.class.getSimpleName() + " property must be defined if a " + DateEnd.class.getSimpleName() + " property is defined.");
+			warnings.add(new Warning(15));
 		}
 
 		if (dateStart != null && dateStart.getValue() != null && !dateStart.hasTime()) {
-			warnings.add(DateStart.class.getSimpleName() + " properties in free/busy components must always have a time component.");
+			warnings.add(new Warning(20, DateStart.class.getSimpleName()));
 		}
 
 		if (dateEnd != null && dateEnd.getValue() != null && !dateEnd.hasTime()) {
-			warnings.add(DateEnd.class.getSimpleName() + " properties in free/busy components must always have a time component.");
+			warnings.add(new Warning(20, DateEnd.class.getSimpleName()));
 		}
 
 		if (dateStart != null && dateEnd != null) {
 			Date start = dateStart.getValue();
 			Date end = dateEnd.getValue();
 			if (start != null && end != null && start.compareTo(end) >= 0) {
-				warnings.add(DateStart.class.getSimpleName() + " must come before " + DateEnd.class.getSimpleName() + ".");
+				warnings.add(new Warning(16));
 			}
 		}
 	}

@@ -2,6 +2,7 @@ package biweekly.property;
 
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.util.UtcOffset;
 
@@ -66,12 +67,12 @@ public class UtcOffsetProperty extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (offset == null) {
-			warnings.add("Value is null.");
+			warnings.add(new Warning(26));
 		}
 		if (offset != null && (offset.getMinute() < 0 || offset.getMinute() > 59)) {
-			warnings.add("Minute offset must be between 0 and 59 inclusive.");
+			warnings.add(new Warning(34));
 		}
 	}
 }

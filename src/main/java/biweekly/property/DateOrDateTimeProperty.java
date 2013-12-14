@@ -3,6 +3,7 @@ package biweekly.property;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
 import biweekly.util.DateTimeComponents;
@@ -145,14 +146,14 @@ public class DateOrDateTimeProperty extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<String> warnings) {
+	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (value == null && components == null) {
-			warnings.add("No value set.");
+			warnings.add(new Warning(26));
 		}
 
 		String tzid = getTimezoneId();
 		if (tzid != null && tzid.contains("/") && ICalDateFormatter.parseTimeZoneId(tzid) == null) {
-			warnings.add("Unrecognized timezone ID: " + tzid);
+			warnings.add(new Warning(27, tzid));
 		}
 	}
 }

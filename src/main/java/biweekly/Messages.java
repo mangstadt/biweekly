@@ -1,9 +1,8 @@
-package biweekly.property;
+package biweekly;
 
-import java.util.List;
-
-import biweekly.Warning;
-import biweekly.component.ICalComponent;
+import java.text.MessageFormat;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -31,39 +30,50 @@ import biweekly.component.ICalComponent;
  */
 
 /**
- * <p>
- * Defines an exception to a {@link RecurrenceRule}.
- * </p>
- * <p>
- * Note that this property has been removed from the latest version of the iCal
- * specification. Its use should be avoided.
- * </p>
- * <p>
- * <b>Examples:</b>
- * 
- * <pre class="brush:java">
- * //&quot;bi-weekly&quot;
- * Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).interval(2).build();
- * ExceptionRule exrule = new ExceptionRule(recur);
- * </pre>
- * 
- * </p>
+ * Singleton for accessing the i18n resource bundle.
  * @author Michael Angstadt
- * @rfc 2445 p.114-15
  */
-public class ExceptionRule extends RecurrenceProperty {
-	/**
-	 * Creates a new exception rule property.
-	 * @param recur the recurrence rule
-	 */
-	public ExceptionRule(biweekly.util.Recurrence recur) {
-		super(recur);
+public enum Messages {
+	INSTANCE;
+
+	private final ResourceBundle messages;
+
+	private Messages() {
+		messages = ResourceBundle.getBundle("biweekly/messages");
 	}
 
-	@Override
-	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
-		super.validate(components, warnings);
+	/**
+	 * Gets a validation warning message.
+	 * @param code the message code
+	 * @param args the message arguments
+	 * @return the message
+	 */
+	public String getValidationWarning(int code, Object... args) {
+		return getMessage("validate." + code, args);
+	}
 
-		warnings.add(new Warning(37));
+	/**
+	 * Gets a parser warning message.
+	 * @param code the message code
+	 * @param args the message arguments
+	 * @return the message
+	 */
+	public String getParseMessage(int code, Object... args) {
+		return getMessage("parse." + code, args);
+	}
+
+	/**
+	 * Gets a message.
+	 * @param key the message key
+	 * @param args the message arguments
+	 * @return the message or null if not found
+	 */
+	public String getMessage(String key, Object... args) {
+		try {
+			String message = messages.getString(key);
+			return MessageFormat.format(message, args);
+		} catch (MissingResourceException e) {
+			return null;
+		}
 	}
 }

@@ -1,9 +1,4 @@
-package biweekly.property;
-
-import java.util.List;
-
-import biweekly.Warning;
-import biweekly.component.ICalComponent;
+package biweekly;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -31,39 +26,62 @@ import biweekly.component.ICalComponent;
  */
 
 /**
- * <p>
- * Defines an exception to a {@link RecurrenceRule}.
- * </p>
- * <p>
- * Note that this property has been removed from the latest version of the iCal
- * specification. Its use should be avoided.
- * </p>
- * <p>
- * <b>Examples:</b>
- * 
- * <pre class="brush:java">
- * //&quot;bi-weekly&quot;
- * Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).interval(2).build();
- * ExceptionRule exrule = new ExceptionRule(recur);
- * </pre>
- * 
- * </p>
+ * Represents a warning.
  * @author Michael Angstadt
- * @rfc 2445 p.114-15
  */
-public class ExceptionRule extends RecurrenceProperty {
+public class Warning {
+	private final Integer code;
+	private final String message;
+
 	/**
-	 * Creates a new exception rule property.
-	 * @param recur the recurrence rule
+	 * Creates a new warning.
+	 * @param message the warning message
 	 */
-	public ExceptionRule(biweekly.util.Recurrence recur) {
-		super(recur);
+	public Warning(String message) {
+		this(message, null);
+	}
+
+	/**
+	 * Creates a new warning whose message text is defined in the resource
+	 * bundle.
+	 * @param code the message code
+	 * @param args the message arguments
+	 */
+	public Warning(int code, Object... args) {
+		this(Messages.INSTANCE.getValidationWarning(code, args), code);
+	}
+
+	/**
+	 * Creates a new warning.
+	 * @param message the warning message
+	 * @param code the message code
+	 */
+	public Warning(String message, Integer code) {
+		this.code = code;
+		this.message = message;
+	}
+
+	/**
+	 * Gets the warning code.
+	 * @return the warning code or null if no code was specified
+	 */
+	public Integer getCode() {
+		return code;
+	}
+
+	/**
+	 * Gets the warning message
+	 * @return the warning message
+	 */
+	public String getMessage() {
+		return message;
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
-		super.validate(components, warnings);
-
-		warnings.add(new Warning(37));
+	public String toString() {
+		if (code == null) {
+			return message;
+		}
+		return "(" + code + ") " + message;
 	}
 }
