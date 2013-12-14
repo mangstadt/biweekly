@@ -2,6 +2,8 @@ package biweekly.property;
 
 import java.util.Date;
 
+import biweekly.util.DateTimeComponents;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -39,14 +41,18 @@ import java.util.Date;
  * Date datetime = ...
  * DateEnd dtend = new DateEnd(datetime);
  * 
- * //date
+ * //date (without time component)
  * Date date = ...
  * DateEnd dtend = new DateEnd(date, false);
  * 
- * //with timezone 
+ * //with timezone (will output the Date object in the specified timezone)
  * Date datetime = ... 
  * DateEnd dtend = new DateEnd(datetime); 
  * dtend.setTimezoneId("America/New_York");
+ * 
+ * //raw components 
+ * DateTimeComponents components = new DateTimeComponents(1999, 4, 4, 2, 0, 0, false);
+ * DateEnd dtend = new DateEnd(components);
  * </pre>
  * 
  * </p>
@@ -55,7 +61,7 @@ import java.util.Date;
  */
 public class DateEnd extends DateOrDateTimeProperty {
 	/**
-	 * Creates a date end property.
+	 * Creates an end date property.
 	 * @param endDate the end date
 	 */
 	public DateEnd(Date endDate) {
@@ -63,12 +69,20 @@ public class DateEnd extends DateOrDateTimeProperty {
 	}
 
 	/**
-	 * Creates a date end property.
+	 * Creates an end date property.
 	 * @param endDate the end date
 	 * @param hasTime true to include the time component of the date, false not
 	 * to
 	 */
 	public DateEnd(Date endDate, boolean hasTime) {
 		super(endDate, hasTime);
+	}
+
+	/**
+	 * Creates an end date property.
+	 * @param components the raw components of the date-time value
+	 */
+	public DateEnd(DateTimeComponents components) {
+		super(components);
 	}
 }

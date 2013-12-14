@@ -42,7 +42,7 @@ import biweekly.util.DateTimeComponents;
  * Date datetime = ...
  * DateStart dtstart = new DateStart(datetime);
  * 
- * //date
+ * //date (without time component)
  * Date date = ...
  * DateStart dtstart = new DateStart(date, false);
  * 
@@ -51,7 +51,7 @@ import biweekly.util.DateTimeComponents;
  * DateStart dtstart = new DateStart(datetime);
  * dtstart.setLocalTime(true);
  * 
- * //with timezone 
+ * //with timezone (will output the Date object in the specified timezone)
  * Date datetime = ... 
  * DateStart dtstart = new DateStart(datetime); 
  * dtstart.setTimezoneId("America/New_York");
