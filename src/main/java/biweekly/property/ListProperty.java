@@ -84,7 +84,7 @@ public class ListProperty<T> extends ICalProperty {
 	@Override
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (values.isEmpty()) {
-			warnings.add(new Warning(26));
+			warnings.add(Warning.validate(26));
 		}
 	}
 }

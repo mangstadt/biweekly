@@ -435,7 +435,7 @@ public class VAlarm extends ICalComponent {
 		if (action != null) {
 			if (action.isAudio()) {
 				if (getAttachments().size() > 1) {
-					warnings.add(new Warning(7));
+					warnings.add(Warning.validate(7));
 				}
 			}
 
@@ -446,11 +446,11 @@ public class VAlarm extends ICalComponent {
 			if (action.isEmail()) {
 				checkRequiredCardinality(warnings, Summary.class, Description.class);
 				if (getAttendees().isEmpty()) {
-					warnings.add(new Warning(8));
+					warnings.add(Warning.validate(8));
 				}
 			} else {
 				if (!getAttendees().isEmpty()) {
-					warnings.add(new Warning(9));
+					warnings.add(Warning.validate(9));
 				}
 			}
 		}
@@ -460,13 +460,13 @@ public class VAlarm extends ICalComponent {
 			Related related = trigger.getRelated();
 
 			if (related == null && trigger.getDuration() != null) {
-				warnings.add(new Warning(10));
+				warnings.add(Warning.validate(10));
 			}
 
 			if (related != null) {
 				ICalComponent parent = components.get(components.size() - 1);
 				if (related == Related.START && parent.getProperty(DateStart.class) == null) {
-					warnings.add(new Warning(11));
+					warnings.add(Warning.validate(11));
 				}
 				if (related == Related.END) {
 					boolean noEndDate = false;
@@ -478,7 +478,7 @@ public class VAlarm extends ICalComponent {
 					}
 
 					if (noEndDate) {
-						warnings.add(new Warning(12));
+						warnings.add(Warning.validate(12));
 					}
 				}
 			}

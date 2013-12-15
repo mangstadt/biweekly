@@ -52,11 +52,11 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 		}
 
 		if (value.getFrequency() == null) {
-			warnings.add(new Warning(30));
+			warnings.add(Warning.validate(30));
 		}
 
 		if (value.getUntil() != null && value.getCount() != null) {
-			warnings.add(new Warning(31));
+			warnings.add(Warning.validate(31));
 		}
 	}
 }

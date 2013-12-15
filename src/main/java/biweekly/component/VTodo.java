@@ -1146,7 +1146,7 @@ public class VTodo extends ICalComponent {
 
 		Status status = getStatus();
 		if (status != null && (status.isTentative() || status.isConfirmed() || status.isDraft() || status.isFinal())) {
-			warnings.add(new Warning(13, status.getValue(), Arrays.asList(Status.needsAction().getValue(), Status.completed().getValue(), Status.inProgress().getValue(), Status.cancelled().getValue())));
+			warnings.add(Warning.validate(13, status.getValue(), Arrays.asList(Status.needsAction().getValue(), Status.completed().getValue(), Status.inProgress().getValue(), Status.cancelled().getValue())));
 		}
 
 		DateStart dateStart = getDateStart();
@@ -1155,25 +1155,25 @@ public class VTodo extends ICalComponent {
 			Date start = dateStart.getValue();
 			Date due = dateDue.getValue();
 			if (start != null && due != null && start.compareTo(due) > 0) {
-				warnings.add(new Warning(22));
+				warnings.add(Warning.validate(22));
 			}
 
 			if (dateStart.hasTime() != dateDue.hasTime()) {
-				warnings.add(new Warning(23));
+				warnings.add(Warning.validate(23));
 			}
 		}
 
 		DurationProperty duration = getDuration();
 		if (dateDue != null && duration != null) {
-			warnings.add(new Warning(24));
+			warnings.add(Warning.validate(24));
 		}
 		if (dateStart == null && duration != null) {
-			warnings.add(new Warning(25));
+			warnings.add(Warning.validate(25));
 		}
 
 		RecurrenceId recurrenceId = getRecurrenceId();
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
-			warnings.add(new Warning(19));
+			warnings.add(Warning.validate(19));
 		}
 
 		//RFC 5545 p. 167
@@ -1183,14 +1183,14 @@ public class VTodo extends ICalComponent {
 			Recurrence recur = rrule.getValue();
 			if (start != null && recur != null) {
 				if (!dateStart.hasTime() && (!recur.getByHour().isEmpty() || !recur.getByMinute().isEmpty() || !recur.getBySecond().isEmpty())) {
-					warnings.add(new Warning(5));
+					warnings.add(Warning.validate(5));
 				}
 			}
 		}
 
 		//RFC 5545 p. 167
 		if (getProperties(RecurrenceRule.class).size() > 1) {
-			warnings.add(new Warning(6));
+			warnings.add(Warning.validate(6));
 		}
 	}
 }

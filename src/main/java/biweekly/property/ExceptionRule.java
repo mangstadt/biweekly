@@ -64,6 +64,6 @@ public class ExceptionRule extends RecurrenceProperty {
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		super.validate(components, warnings);
 
-		warnings.add(new Warning(37));
+		warnings.add(Warning.validate(37));
 	}
 }

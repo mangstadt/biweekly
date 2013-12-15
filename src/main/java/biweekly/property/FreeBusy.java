@@ -116,18 +116,18 @@ public class FreeBusy extends ICalProperty {
 	@Override
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (values.isEmpty()) {
-			warnings.add(new Warning(38));
+			warnings.add(Warning.validate(38));
 		} else {
 			for (Period timePeriod : values) {
 				if (timePeriod.getStartDate() == null) {
-					warnings.add(new Warning(39));
+					warnings.add(Warning.validate(39));
 					break;
 				}
 			}
 
 			for (Period timePeriod : values) {
 				if (timePeriod.getEndDate() == null && timePeriod.getDuration() == null) {
-					warnings.add(new Warning(40));
+					warnings.add(Warning.validate(40));
 					break;
 				}
 			}

@@ -407,12 +407,12 @@ public abstract class ICalComponent {
 			List<? extends ICalProperty> props = getProperties(clazz);
 
 			if (props.isEmpty()) {
-				warnings.add(new Warning(2, clazz.getSimpleName()));
+				warnings.add(Warning.validate(2, clazz.getSimpleName()));
 				continue;
 			}
 
 			if (props.size() > 1) {
-				warnings.add(new Warning(3, clazz.getSimpleName()));
+				warnings.add(Warning.validate(3, clazz.getSimpleName()));
 				continue;
 			}
 		}
@@ -429,7 +429,7 @@ public abstract class ICalComponent {
 			List<? extends ICalProperty> props = getProperties(clazz);
 
 			if (props.size() > 1) {
-				warnings.add(new Warning(3, clazz.getSimpleName()));
+				warnings.add(Warning.validate(3, clazz.getSimpleName()));
 				continue;
 			}
 		}

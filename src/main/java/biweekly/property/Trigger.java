@@ -130,7 +130,7 @@ public class Trigger extends ICalProperty {
 	@Override
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (duration == null && date == null) {
-			warnings.add(new Warning(33));
+			warnings.add(Warning.validate(33));
 		}
 	}
 }

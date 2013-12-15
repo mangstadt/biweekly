@@ -148,12 +148,12 @@ public class DateOrDateTimeProperty extends ICalProperty {
 	@Override
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (value == null && components == null) {
-			warnings.add(new Warning(26));
+			warnings.add(Warning.validate(26));
 		}
 
 		String tzid = getTimezoneId();
 		if (tzid != null && tzid.contains("/") && ICalDateFormatter.parseTimeZoneId(tzid) == null) {
-			warnings.add(new Warning(27, tzid));
+			warnings.add(Warning.validate(27, tzid));
 		}
 	}
 }

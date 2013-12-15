@@ -65,7 +65,7 @@ public class RecurrenceRule extends RecurrenceProperty {
 		}
 
 		if (!value.getXRules().isEmpty()) {
-			warnings.add(new Warning(32));
+			warnings.add(Warning.validate(32));
 		}
 	}
 }

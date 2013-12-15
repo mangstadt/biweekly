@@ -69,10 +69,10 @@ public class UtcOffsetProperty extends ICalProperty {
 	@Override
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (offset == null) {
-			warnings.add(new Warning(26));
+			warnings.add(Warning.validate(26));
 		}
 		if (offset != null && (offset.getMinute() < 0 || offset.getMinute() > 59)) {
-			warnings.add(new Warning(34));
+			warnings.add(Warning.validate(34));
 		}
 	}
 }

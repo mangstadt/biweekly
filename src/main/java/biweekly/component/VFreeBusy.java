@@ -483,22 +483,22 @@ public class VFreeBusy extends ICalComponent {
 		DateEnd dateEnd = getDateEnd();
 
 		if (dateEnd != null && dateStart == null) {
-			warnings.add(new Warning(15));
+			warnings.add(Warning.validate(15));
 		}
 
 		if (dateStart != null && dateStart.getValue() != null && !dateStart.hasTime()) {
-			warnings.add(new Warning(20, DateStart.class.getSimpleName()));
+			warnings.add(Warning.validate(20, DateStart.class.getSimpleName()));
 		}
 
 		if (dateEnd != null && dateEnd.getValue() != null && !dateEnd.hasTime()) {
-			warnings.add(new Warning(20, DateEnd.class.getSimpleName()));
+			warnings.add(Warning.validate(20, DateEnd.class.getSimpleName()));
 		}
 
 		if (dateStart != null && dateEnd != null) {
 			Date start = dateStart.getValue();
 			Date end = dateEnd.getValue();
 			if (start != null && end != null && start.compareTo(end) >= 0) {
-				warnings.add(new Warning(16));
+				warnings.add(Warning.validate(16));
 			}
 		}
 	}

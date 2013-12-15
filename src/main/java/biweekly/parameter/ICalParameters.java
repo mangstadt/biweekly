@@ -569,52 +569,52 @@ public class ICalParameters extends ListMultimap<String, String> {
 
 		String value = first(RSVP);
 		if (value != null && !value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("false")) {
-			warnings.add(new Warning(nonStandardCode, RSVP, value, "[TRUE, FALSE]"));
+			warnings.add(Warning.validate(nonStandardCode, RSVP, value, "[TRUE, FALSE]"));
 		}
 
 		value = first(CUTYPE);
 		if (value != null && CalendarUserType.find(value) == null) {
-			warnings.add(new Warning(nonStandardCode, CUTYPE, value, CalendarUserType.all()));
+			warnings.add(Warning.validate(nonStandardCode, CUTYPE, value, CalendarUserType.all()));
 		}
 
 		value = first(ENCODING);
 		if (value != null && Encoding.find(value) == null) {
-			warnings.add(new Warning(nonStandardCode, ENCODING, value, Encoding.all()));
+			warnings.add(Warning.validate(nonStandardCode, ENCODING, value, Encoding.all()));
 		}
 
 		value = first(FBTYPE);
 		if (value != null && FreeBusyType.find(value) == null) {
-			warnings.add(new Warning(nonStandardCode, FBTYPE, value, FreeBusyType.all()));
+			warnings.add(Warning.validate(nonStandardCode, FBTYPE, value, FreeBusyType.all()));
 		}
 
 		value = first(PARTSTAT);
 		if (value != null && ParticipationStatus.find(value) == null) {
-			warnings.add(new Warning(nonStandardCode, PARTSTAT, value, ParticipationStatus.all()));
+			warnings.add(Warning.validate(nonStandardCode, PARTSTAT, value, ParticipationStatus.all()));
 		}
 
 		value = first(RANGE);
 		if (value != null && Range.find(value) == null) {
-			warnings.add(new Warning(nonStandardCode, RANGE, value, Range.all()));
+			warnings.add(Warning.validate(nonStandardCode, RANGE, value, Range.all()));
 		}
 
 		value = first(RELATED);
 		if (value != null && Related.find(value) == null) {
-			warnings.add(new Warning(nonStandardCode, RELATED, value, Related.all()));
+			warnings.add(Warning.validate(nonStandardCode, RELATED, value, Related.all()));
 		}
 
 		value = first(RELTYPE);
 		if (value != null && RelationshipType.find(value) == null) {
-			warnings.add(new Warning(nonStandardCode, RELTYPE, value, RelationshipType.all()));
+			warnings.add(Warning.validate(nonStandardCode, RELTYPE, value, RelationshipType.all()));
 		}
 
 		value = first(ROLE);
 		if (value != null && Role.find(value) == null) {
-			warnings.add(new Warning(nonStandardCode, ROLE, value, Role.all()));
+			warnings.add(Warning.validate(nonStandardCode, ROLE, value, Role.all()));
 		}
 
 		value = first(VALUE);
 		if (value != null && ICalDataType.find(value) == null) {
-			warnings.add(new Warning(nonStandardCode, VALUE, value, ICalDataType.all()));
+			warnings.add(Warning.validate(nonStandardCode, VALUE, value, ICalDataType.all()));
 		}
 
 		return warnings;

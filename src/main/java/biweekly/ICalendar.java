@@ -305,7 +305,7 @@ public class ICalendar extends ICalComponent {
 		checkRequiredCardinality(warnings, ProductId.class, Version.class);
 
 		if (this.components.isEmpty()) {
-			warnings.add(new Warning(4));
+			warnings.add(Warning.validate(4));
 		}
 	}
 

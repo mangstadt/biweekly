@@ -147,7 +147,7 @@ public class RequestStatus extends ICalProperty {
 	@Override
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (statusCode == null) {
-			warnings.add(new Warning(36));
+			warnings.add(Warning.validate(36));
 		}
 	}
 }

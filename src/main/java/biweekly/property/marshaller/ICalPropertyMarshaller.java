@@ -1028,7 +1028,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 				if (timezone == null) {
 					timezone = TimeZone.getDefault();
 					if (warnings != null) {
-						warnings.add(new Warning(5, timezoneId, timezone.getID()));
+						warnings.add(Warning.parse(5, timezoneId, timezone.getID()));
 					}
 				}
 				return tz(timezone);

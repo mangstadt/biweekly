@@ -880,13 +880,13 @@ public class VJournal extends ICalComponent {
 
 		Status status = getStatus();
 		if (status != null && (status.isTentative() || status.isConfirmed() || status.isNeedsAction() || status.isCompleted() || status.isInProgress())) {
-			warnings.add(new Warning(13, status.getValue(), Arrays.asList(Status.draft().getValue(), Status.final_().getValue(), Status.cancelled().getValue())));
+			warnings.add(Warning.validate(13, status.getValue(), Arrays.asList(Status.draft().getValue(), Status.final_().getValue(), Status.cancelled().getValue())));
 		}
 
 		RecurrenceId recurrenceId = getRecurrenceId();
 		DateStart dateStart = getDateStart();
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
-			warnings.add(new Warning(19));
+			warnings.add(Warning.validate(19));
 		}
 
 		//RFC 5545 p. 167
@@ -896,14 +896,14 @@ public class VJournal extends ICalComponent {
 			Recurrence recur = rrule.getValue();
 			if (start != null && recur != null) {
 				if (!dateStart.hasTime() && (!recur.getByHour().isEmpty() || !recur.getByMinute().isEmpty() || !recur.getBySecond().isEmpty())) {
-					warnings.add(new Warning(5));
+					warnings.add(Warning.validate(5));
 				}
 			}
 		}
 
 		//RFC 5545 p. 167
 		if (getProperties(RecurrenceRule.class).size() > 1) {
-			warnings.add(new Warning(6));
+			warnings.add(Warning.validate(6));
 		}
 	}
 }

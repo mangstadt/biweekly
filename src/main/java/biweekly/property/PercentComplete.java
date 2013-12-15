@@ -61,7 +61,7 @@ public class PercentComplete extends IntegerProperty {
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		super.validate(components, warnings);
 		if (value != null && (value < 0 || value > 100)) {
-			warnings.add(new Warning(29, value));
+			warnings.add(Warning.validate(29, value));
 		}
 	}
 }

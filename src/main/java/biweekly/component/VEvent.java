@@ -1125,7 +1125,7 @@ public class VEvent extends ICalComponent {
 
 		Status status = getStatus();
 		if (status != null && (status.isNeedsAction() || status.isCompleted() || status.isInProgress() || status.isDraft() || status.isFinal())) {
-			warnings.add(new Warning(13, status.getValue(), Arrays.asList(Status.tentative().getValue(), Status.confirmed().getValue(), Status.cancelled().getValue())));
+			warnings.add(Warning.validate(13, status.getValue(), Arrays.asList(Status.tentative().getValue(), Status.confirmed().getValue(), Status.cancelled().getValue())));
 		}
 
 		DateStart dateStart = getDateStart();
@@ -1133,32 +1133,32 @@ public class VEvent extends ICalComponent {
 
 		ICalComponent ical = components.get(0);
 		if (dateStart == null && ical.getProperty(Method.class) == null) {
-			warnings.add(new Warning(14));
+			warnings.add(Warning.validate(14));
 		}
 
 		if (dateEnd != null && dateStart == null) {
-			warnings.add(new Warning(15));
+			warnings.add(Warning.validate(15));
 		}
 
 		if (dateStart != null && dateEnd != null) {
 			Date start = dateStart.getValue();
 			Date end = dateEnd.getValue();
 			if (start != null && end != null && start.compareTo(end) > 0) {
-				warnings.add(new Warning(16));
+				warnings.add(Warning.validate(16));
 			}
 
 			if (dateStart.hasTime() != dateEnd.hasTime()) {
-				warnings.add(new Warning(17));
+				warnings.add(Warning.validate(17));
 			}
 		}
 
 		if (dateEnd != null && getDuration() != null) {
-			warnings.add(new Warning(18));
+			warnings.add(Warning.validate(18));
 		}
 
 		RecurrenceId recurrenceId = getRecurrenceId();
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
-			warnings.add(new Warning(19));
+			warnings.add(Warning.validate(19));
 		}
 
 		//RFC 5545 p. 167
@@ -1168,14 +1168,14 @@ public class VEvent extends ICalComponent {
 			Recurrence recur = rrule.getValue();
 			if (start != null && recur != null) {
 				if (!dateStart.hasTime() && (!recur.getByHour().isEmpty() || !recur.getByMinute().isEmpty() || !recur.getBySecond().isEmpty())) {
-					warnings.add(new Warning(5));
+					warnings.add(Warning.validate(5));
 				}
 			}
 		}
 
 		//RFC 5545 p. 167
 		if (getProperties(RecurrenceRule.class).size() > 1) {
-			warnings.add(new Warning(6));
+			warnings.add(Warning.validate(6));
 		}
 
 		//TODO check for properties which shouldn't be added to VEVENTs

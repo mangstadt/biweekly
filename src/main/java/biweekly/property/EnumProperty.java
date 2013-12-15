@@ -75,6 +75,6 @@ public abstract class EnumProperty extends TextProperty {
 			}
 		}
 
-		warnings.add(new Warning(28, value, standardValues));
+		warnings.add(Warning.validate(28, value, standardValues));
 	}
 }

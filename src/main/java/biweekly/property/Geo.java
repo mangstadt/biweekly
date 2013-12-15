@@ -106,10 +106,10 @@ public class Geo extends ICalProperty {
 	@Override
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (latitude == null) {
-			warnings.add(new Warning(41));
+			warnings.add(Warning.validate(41));
 		}
 		if (longitude == null) {
-			warnings.add(new Warning(42));
+			warnings.add(Warning.validate(42));
 		}
 	}
 }

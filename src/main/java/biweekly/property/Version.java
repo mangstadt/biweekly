@@ -133,7 +133,7 @@ public class Version extends ICalProperty {
 	@Override
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (maxVersion == null) {
-			warnings.add(new Warning(35));
+			warnings.add(Warning.validate(35));
 		}
 	}
 }

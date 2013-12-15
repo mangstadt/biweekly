@@ -109,7 +109,7 @@ public class ExceptionDates extends ListProperty<Date> {
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		String tzid = getTimezoneId();
 		if (tzid != null && tzid.contains("/") && ICalDateFormatter.parseTimeZoneId(tzid) == null) {
-			warnings.add(new Warning(27, tzid));
+			warnings.add(Warning.validate(27, tzid));
 		}
 	}
 }

@@ -60,16 +60,6 @@ public class Warning {
 	}
 
 	/**
-	 * Creates a new warning whose message text is defined in the resource
-	 * bundle.
-	 * @param code the message code
-	 * @param args the message arguments
-	 */
-	public Warning(int code, Object... args) {
-		this(Messages.INSTANCE.getValidationWarning(code, args), code);
-	}
-
-	/**
 	 * Creates a new warning.
 	 * @param message the warning message
 	 * @param code the message code

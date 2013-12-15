@@ -66,7 +66,7 @@ public class ValuedProperty<T> extends ICalProperty {
 	@Override
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (value == null) {
-			warnings.add(new Warning(26));
+			warnings.add(Warning.validate(26));
 		}
 	}
 }
