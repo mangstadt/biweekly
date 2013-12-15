@@ -3,6 +3,7 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -56,7 +57,7 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		value = unescape(value);
 		return parse(value);
 	}
@@ -74,7 +75,7 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 	}
 
 	@Override
-	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected T _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		String value = element.first(defaultDataType);
 		if (value != null) {
 			return parse(value);
@@ -94,7 +95,7 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		return parse(value.asSingle());
 	}
 

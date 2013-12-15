@@ -3,6 +3,7 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -67,7 +68,7 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 	}
 
 	@Override
-	protected Geo _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected Geo _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		SemiStructuredIterator it = semistructured(value);
 		String latitudeStr = it.next();
 		String longitudeStr = it.next();
@@ -97,7 +98,7 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 	}
 
 	@Override
-	protected Geo _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected Geo _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		String latitudeStr = element.first("latitude");
 		String longitudeStr = element.first("longitude");
 		if (latitudeStr == null && longitudeStr == null) {
@@ -129,7 +130,7 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 	}
 
 	@Override
-	protected Geo _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected Geo _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		StructuredIterator it = structured(value);
 		String latitudeStr = it.nextString();
 		String longitudeStr = it.nextString();

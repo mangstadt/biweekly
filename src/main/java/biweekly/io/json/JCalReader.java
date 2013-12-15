@@ -1,7 +1,6 @@
 package biweekly.io.json;
 
 import static biweekly.util.IOUtils.utf8Reader;
-import static biweekly.util.StringUtils.NEWLINE;
 
 import java.io.Closeable;
 import java.io.File;
@@ -18,6 +17,8 @@ import java.util.Map;
 
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
+import biweekly.Messages;
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.component.marshaller.ICalendarMarshaller;
@@ -195,15 +196,12 @@ public class JCalReader implements Closeable {
 		return listener.getICalendar();
 	}
 
-	private void addWarning(String message, String propertyName) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Line ").append(reader.getLineNum());
-		if (propertyName != null) {
-			sb.append(" (").append(propertyName).append(" property)");
-		}
-		sb.append(": ").append(message);
+	private void addWarning(String propertyName, Warning warning) {
+		String key = (propertyName == null) ? "parse.line" : "parse.lineWithProp";
+		int line = reader.getLineNum();
 
-		warnings.add(sb.toString());
+		String message = Messages.INSTANCE.getMessage(key, line, warning, propertyName);
+		warnings.add(message);
 	}
 
 	//@Override
@@ -224,30 +222,22 @@ public class JCalReader implements Closeable {
 			try {
 				Result<? extends ICalProperty> result = m.parseJson(value, dataType, parameters);
 
-				for (String warning : result.getWarnings()) {
-					addWarning(warning, propertyName);
+				for (Warning warning : result.getWarnings()) {
+					addWarning(propertyName, warning);
 				}
 
 				property = result.getProperty();
 			} catch (SkipMeException e) {
-				if (e.getMessage() == null) {
-					addWarning("Property has requested that it be skipped.", propertyName);
-				} else {
-					addWarning("Property has requested that it be skipped: " + e.getMessage(), propertyName);
-				}
+				addWarning(propertyName, Warning.parse(0, e.getMessage()));
 			} catch (CannotParseException e) {
 				Result<? extends ICalProperty> result = new RawPropertyMarshaller(propertyName).parseJson(value, dataType, parameters);
-				for (String warning : result.getWarnings()) {
-					addWarning(warning, propertyName);
+				for (Warning warning : result.getWarnings()) {
+					addWarning(propertyName, warning);
 				}
 				property = result.getProperty();
 
 				String valueStr = ((RawProperty) property).getValue();
-				if (e.getMessage() == null) {
-					addWarning("Property value could not be unmarshalled: " + valueStr, propertyName);
-				} else {
-					addWarning("Property value could not be unmarshalled." + NEWLINE + "  Value: " + valueStr + NEWLINE + "  Reason: " + e.getMessage(), propertyName);
-				}
+				addWarning(propertyName, Warning.parse(1, valueStr, e.getMessage()));
 			}
 
 			if (property != null) {

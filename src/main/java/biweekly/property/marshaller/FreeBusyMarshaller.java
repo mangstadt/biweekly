@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -74,7 +75,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 	}
 
 	@Override
-	protected FreeBusy _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected FreeBusy _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		return parse(list(value), parameters, warnings);
 	}
 
@@ -101,7 +102,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 	}
 
 	@Override
-	protected FreeBusy _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected FreeBusy _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		List<XCalElement> periodElements = element.children(ICalDataType.PERIOD);
 		if (periodElements.isEmpty()) {
 			throw missingXmlElements(ICalDataType.PERIOD);
@@ -111,7 +112,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 		for (XCalElement periodElement : periodElements) {
 			String startStr = periodElement.first("start");
 			if (startStr == null) {
-				warnings.add("No start date found in time period, skipping.");
+				warnings.add(Warning.parse(9));
 				continue;
 			}
 
@@ -119,7 +120,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 			try {
 				start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
 			} catch (IllegalArgumentException e) {
-				warnings.add("Could not parse start date, skipping time period: " + startStr);
+				warnings.add(Warning.parse(10, startStr));
 				continue;
 			}
 
@@ -129,7 +130,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 					Date end = date(endStr).tzid(parameters.getTimezoneId(), warnings).parse();
 					prop.addValue(start, end);
 				} catch (IllegalArgumentException e) {
-					warnings.add("Could not parse end date, skipping time period: " + endStr);
+					warnings.add(Warning.parse(11, endStr));
 				}
 				continue;
 			}
@@ -140,12 +141,12 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 					Duration duration = Duration.parse(durationStr);
 					prop.addValue(start, duration);
 				} catch (IllegalArgumentException e) {
-					warnings.add("Could not parse duration, skipping time period: " + durationStr);
+					warnings.add(Warning.parse(12, durationStr));
 				}
 				continue;
 			}
 
-			warnings.add("Start date has no accompanying end date or duration, skipping.");
+			warnings.add(Warning.parse(13));
 		}
 		return prop;
 	}
@@ -181,18 +182,18 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 	}
 
 	@Override
-	protected FreeBusy _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected FreeBusy _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		return parse(value.asMulti(), parameters, warnings);
 	}
 
-	private FreeBusy parse(List<String> periods, ICalParameters parameters, List<String> warnings) {
+	private FreeBusy parse(List<String> periods, ICalParameters parameters, List<Warning> warnings) {
 		FreeBusy freebusy = new FreeBusy();
 
 		for (String period : periods) {
 			String periodSplit[] = period.split("/");
 
 			if (periodSplit.length < 2) {
-				warnings.add("No end date or duration found, skipping time period: " + period);
+				warnings.add(Warning.parse(13));
 				continue;
 			}
 
@@ -201,7 +202,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 			try {
 				start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
 			} catch (IllegalArgumentException e) {
-				warnings.add("Could not parse start date, skipping time period: " + period);
+				warnings.add(Warning.parse(10, startStr));
 				continue;
 			}
 
@@ -215,7 +216,7 @@ public class FreeBusyMarshaller extends ICalPropertyMarshaller<FreeBusy> {
 					Duration duration = Duration.parse(endStr);
 					freebusy.addValue(start, duration);
 				} catch (IllegalArgumentException e2) {
-					warnings.add("Could not parse end date or duration value, skipping time period: " + period);
+					warnings.add(Warning.parse(14, endStr));
 					continue;
 				}
 			}

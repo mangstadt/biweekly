@@ -3,6 +3,7 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -57,7 +58,7 @@ public class VersionMarshaller extends ICalPropertyMarshaller<Version> {
 	}
 
 	@Override
-	protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		List<String> split = split(value, ";").unescape(true).split();
 
 		String min = null, max = null;
@@ -76,7 +77,7 @@ public class VersionMarshaller extends ICalPropertyMarshaller<Version> {
 	}
 
 	@Override
-	protected Version _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected Version _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		String value = element.first(defaultDataType);
 		if (value != null) {
 			return new Version(value);
@@ -91,7 +92,7 @@ public class VersionMarshaller extends ICalPropertyMarshaller<Version> {
 	}
 
 	@Override
-	protected Version _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected Version _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		return new Version(value.asSingle());
 	}
 }

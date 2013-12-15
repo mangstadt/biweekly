@@ -574,7 +574,7 @@ public class BiweeklyTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 			Integer number;
 			if (value.equals("one")) {
 				number = 1;
@@ -587,7 +587,7 @@ public class BiweeklyTest {
 		}
 
 		@Override
-		protected TestProperty _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 			return _parseText(element.first(ICalDataType.TEXT), null, parameters, warnings);
 		}
 	}

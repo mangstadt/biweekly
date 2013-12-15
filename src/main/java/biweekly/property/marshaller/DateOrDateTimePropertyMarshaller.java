@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -68,7 +69,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		value = unescape(value);
 		return parse(value, parameters, warnings);
 	}
@@ -89,7 +90,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 	}
 
 	@Override
-	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected T _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		String value = element.first(ICalDataType.DATE_TIME);
 		if (value == null) {
 			value = element.first(ICalDataType.DATE);
@@ -118,14 +119,14 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		String valueStr = value.asSingle();
 		return parse(valueStr, parameters, warnings);
 	}
 
 	protected abstract T newInstance(Date date, boolean hasTime);
 
-	private T parse(String value, ICalParameters parameters, List<String> warnings) {
+	private T parse(String value, ICalParameters parameters, List<Warning> warnings) {
 		if (value == null) {
 			return newInstance(null, true);
 		}
@@ -141,7 +142,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 		try {
 			components = DateTimeComponents.parse(value);
 		} catch (IllegalArgumentException e) {
-			warnings.add("Could not parse the raw date-time components: " + value);
+			warnings.add(Warning.parse(6, value));
 			components = null;
 		}
 

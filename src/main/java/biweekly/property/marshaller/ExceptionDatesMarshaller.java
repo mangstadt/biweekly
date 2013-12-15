@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -61,7 +62,7 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 	}
 
 	@Override
-	protected Date readValue(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected Date readValue(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		try {
 			return date(value).tzid(parameters.getTimezoneId(), warnings).parse();
 		} catch (IllegalArgumentException e) {
@@ -79,7 +80,7 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 	}
 
 	@Override
-	protected ExceptionDates _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected ExceptionDates _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		List<String> values = element.all(ICalDataType.DATE_TIME);
 		ICalDataType dataType = values.isEmpty() ? ICalDataType.DATE : ICalDataType.DATE_TIME;
 		values.addAll(element.all(ICalDataType.DATE));
@@ -111,7 +112,7 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 	}
 
 	@Override
-	protected ExceptionDates _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected ExceptionDates _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		List<String> valueStrs = value.asMulti();
 
 		ExceptionDates prop = new ExceptionDates(dataType == ICalDataType.DATE_TIME);

@@ -3,6 +3,7 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.io.json.JCalValue;
@@ -74,7 +75,7 @@ public class ImportanceMarshaller extends ICalPropertyMarshaller<Importance> {
 	//required
 	//parses the property from a plain-text iCal
 	@Override
-	protected Importance _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected Importance _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		value = unescape(value);
 		return parse(value, dataType);
 	}
@@ -102,7 +103,7 @@ public class ImportanceMarshaller extends ICalPropertyMarshaller<Importance> {
 	//optional
 	//reads the property from an XML document (xCal)
 	@Override
-	protected Importance _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected Importance _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		String text = element.first(ICalDataType.TEXT);
 		if (text != null) {
 			return new Importance(text);
@@ -130,7 +131,7 @@ public class ImportanceMarshaller extends ICalPropertyMarshaller<Importance> {
 	//optional
 	//reads the property from a JSON document (jCal)
 	@Override
-	protected Importance _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected Importance _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		String valueStr = value.asSingle();
 		return parse(valueStr, dataType);
 	}

@@ -3,6 +3,7 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -58,7 +59,7 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		return parse(list(value), dataType, parameters, warnings);
 	}
 
@@ -71,7 +72,7 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 	}
 
 	@Override
-	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected T _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		List<String> values = element.all(defaultDataType);
 		if (!values.isEmpty()) {
 			return parse(values, defaultDataType, parameters, warnings);
@@ -91,11 +92,11 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		return parse(value.asMulti(), dataType, parameters, warnings);
 	}
 
-	private T parse(List<String> valueStrs, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	private T parse(List<String> valueStrs, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		T property = newInstance(dataType, parameters);
 
 		for (String valueStr : valueStrs) {
@@ -110,5 +111,5 @@ public abstract class ListPropertyMarshaller<T extends ListProperty<V>, V> exten
 
 	protected abstract String writeValue(T property, V value);
 
-	protected abstract V readValue(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings);
+	protected abstract V readValue(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings);
 }

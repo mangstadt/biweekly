@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -66,7 +67,7 @@ public class XmlMarshaller extends ICalPropertyMarshaller<Xml> {
 	}
 
 	@Override
-	protected Xml _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected Xml _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		value = unescape(value);
 		try {
 			return new Xml(value);
@@ -82,7 +83,7 @@ public class XmlMarshaller extends ICalPropertyMarshaller<Xml> {
 	}
 
 	@Override
-	protected Xml _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected Xml _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		Xml xml = new Xml(element.getElement());
 
 		//remove the <parameters> element
@@ -108,7 +109,7 @@ public class XmlMarshaller extends ICalPropertyMarshaller<Xml> {
 	}
 
 	@Override
-	protected Xml _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected Xml _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		try {
 			String xml = value.asSingle();
 			return (xml == null) ? new Xml((Document) null) : new Xml(xml);

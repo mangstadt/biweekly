@@ -19,6 +19,7 @@ import org.w3c.dom.Element;
 
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
+import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.io.json.JCalValue;
@@ -203,7 +204,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * {@link ICalendar} object
 	 */
 	public final Result<T> parseText(String value, ICalDataType dataType, ICalParameters parameters) {
-		List<String> warnings = new ArrayList<String>(0);
+		List<Warning> warnings = new ArrayList<Warning>(0);
 		T property = _parseText(value, dataType, parameters, warnings);
 		property.setParameters(parameters);
 		return new Result<T>(property, warnings);
@@ -220,7 +221,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * {@link ICalendar} object
 	 */
 	public final Result<T> parseXml(Element element, ICalParameters parameters) {
-		List<String> warnings = new ArrayList<String>(0);
+		List<Warning> warnings = new ArrayList<Warning>(0);
 		T property = _parseXml(new XCalElement(element), parameters, warnings);
 		property.setParameters(parameters);
 		return new Result<T>(property, warnings);
@@ -238,7 +239,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * {@link ICalendar} object
 	 */
 	public final Result<T> parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters) {
-		List<String> warnings = new ArrayList<String>(0);
+		List<Warning> warnings = new ArrayList<Warning>(0);
 		T property = _parseJson(value, dataType, parameters, warnings);
 		property.setParameters(parameters);
 		return new Result<T>(property, warnings);
@@ -351,7 +352,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	protected abstract T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings);
+	protected abstract T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings);
 
 	/**
 	 * <p>
@@ -380,7 +381,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected T _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		String value = null;
 		ICalDataType dataType = null;
 		Element rawElement = element.getElement();
@@ -477,7 +478,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		return _parseText(jcalValueToString(value), dataType, parameters, warnings);
 	}
 
@@ -1017,7 +1018,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		 * message will be added to this list
 		 * @return this
 		 */
-		public DateParser tzid(String timezoneId, List<String> warnings) {
+		public DateParser tzid(String timezoneId, List<Warning> warnings) {
 			if (timezoneId == null) {
 				return tz(null);
 			}
@@ -1027,7 +1028,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 				if (timezone == null) {
 					timezone = TimeZone.getDefault();
 					if (warnings != null) {
-						warnings.add("Timezone ID not recognized, parsing with default timezone instead: " + timezoneId);
+						warnings.add(new Warning(5, timezoneId, timezone.getID()));
 					}
 				}
 				return tz(timezone);
@@ -1233,14 +1234,14 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 	 */
 	public static class Result<T extends ICalProperty> {
 		private final T property;
-		private final List<String> warnings;
+		private final List<Warning> warnings;
 
 		/**
 		 * Creates a new result.
 		 * @param property the property object
 		 * @param warnings the warnings
 		 */
-		public Result(T property, List<String> warnings) {
+		public Result(T property, List<Warning> warnings) {
 			this.property = property;
 			this.warnings = warnings;
 		}
@@ -1249,7 +1250,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		 * Gets the warnings.
 		 * @return the warnings
 		 */
-		public List<String> getWarnings() {
+		public List<Warning> getWarnings() {
 			return warnings;
 		}
 

@@ -3,6 +3,7 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -48,7 +49,7 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 	}
 
 	@Override
-	protected RequestStatus _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected RequestStatus _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		SemiStructuredIterator it = semistructured(value);
 
 		RequestStatus requestStatus = new RequestStatus(it.next());
@@ -72,7 +73,7 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 	}
 
 	@Override
-	protected RequestStatus _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected RequestStatus _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		String code = element.first("code");
 		if (code == null) {
 			throw missingXmlElements("code");
@@ -90,7 +91,7 @@ public class RequestStatusMarshaller extends ICalPropertyMarshaller<RequestStatu
 	}
 
 	@Override
-	protected RequestStatus _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected RequestStatus _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		StructuredIterator it = structured(value);
 
 		RequestStatus requestStatus = new RequestStatus(it.nextString());

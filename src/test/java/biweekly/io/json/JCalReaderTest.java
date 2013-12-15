@@ -24,6 +24,7 @@ import org.junit.rules.TemporaryFolder;
 
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
+import biweekly.Warning;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.RawComponent;
@@ -659,12 +660,12 @@ public class JCalReaderTest {
 		}
 
 		@Override
-		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 			return new Company(value);
 		}
 
 		@Override
-		protected Company _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+		protected Company _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 			String boss = value.asSingle();
 			if (boss.equals("skip-me")) {
 				throw new SkipMeException();

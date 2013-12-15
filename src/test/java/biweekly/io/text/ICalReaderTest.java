@@ -26,6 +26,7 @@ import org.junit.rules.TemporaryFolder;
 
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
+import biweekly.Warning;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.StandardTime;
@@ -1162,7 +1163,7 @@ public class ICalReaderTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 			TestProperty prop = new TestProperty();
 			Integer number = null;
 			if (value.equals("one")) {
@@ -1173,7 +1174,7 @@ public class ICalReaderTest {
 				number = 3;
 			} else if (value.equals("four")) {
 				number = 4;
-				warnings.add("too high");
+				warnings.add(new Warning("too high"));
 			} else if (value.equals("one hundred")) {
 				throw new SkipMeException("really too high");
 			} else {
@@ -1229,7 +1230,7 @@ public class ICalReaderTest {
 		}
 
 		@Override
-		protected ProductId _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+		protected ProductId _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 			return new ProductId(value.toUpperCase());
 		}
 	}

@@ -1,7 +1,6 @@
 package biweekly.io.text;
 
 import static biweekly.util.IOUtils.utf8Reader;
-import static biweekly.util.StringUtils.NEWLINE;
 
 import java.io.Closeable;
 import java.io.File;
@@ -15,6 +14,8 @@ import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
+import biweekly.Messages;
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.component.marshaller.ICalendarMarshaller;
@@ -282,23 +283,15 @@ public class ICalReader implements Closeable {
 			try {
 				Result<? extends ICalProperty> result = m.parseText(value, dataType, parameters);
 
-				for (String warning : result.getWarnings()) {
-					addWarning(warning, name);
+				for (Warning warning : result.getWarnings()) {
+					addWarning(name, warning);
 				}
 
 				property = result.getProperty();
 			} catch (SkipMeException e) {
-				if (e.getMessage() == null) {
-					addWarning("Property has requested that it be skipped.", name);
-				} else {
-					addWarning("Property has requested that it be skipped: " + e.getMessage(), name);
-				}
+				addWarning(name, Warning.parse(0, e.getMessage()));
 			} catch (CannotParseException e) {
-				if (e.getMessage() == null) {
-					addWarning("Property value could not be unmarshalled: " + value, name);
-				} else {
-					addWarning("Property value could not be unmarshalled." + NEWLINE + "  Value: " + value + NEWLINE + "  Reason: " + e.getMessage(), name);
-				}
+				addWarning(name, Warning.parse(1, value, e.getMessage()));
 				property = new RawProperty(name, dataType, value);
 			}
 
@@ -329,7 +322,7 @@ public class ICalReader implements Closeable {
 			}
 			if (popIndex == -1) {
 				//END property does not match up with any BEGIN properties, so ignore
-				addWarning("Ignoring END property that does not match up with any BEGIN properties: " + name, "END");
+				addWarning("END", Warning.parse(2));
 				return;
 			}
 
@@ -338,11 +331,11 @@ public class ICalReader implements Closeable {
 		}
 
 		public void invalidLine(String line) {
-			addWarning("Skipping malformed line: \"" + line + "\"");
+			addWarning(null, Warning.parse(3, line));
 		}
 
 		public void valuelessParameter(String propertyName, String parameterName) {
-			addWarning("Value-less parameter encountered: " + parameterName, propertyName);
+			addWarning(propertyName, Warning.parse(4, parameterName));
 		}
 
 		private ICalComponent getCurrentComponent() {
@@ -353,23 +346,12 @@ public class ICalReader implements Closeable {
 		}
 	}
 
-	private void addWarning(String message) {
-		addWarning(message, null);
-	}
+	private void addWarning(String propertyName, Warning warning) {
+		String key = (propertyName == null) ? "parse.line" : "parse.lineWithProp";
+		int line = reader.getLineNum();
 
-	private void addWarning(String message, String propertyName) {
-		addWarning(message, propertyName, reader.getLineNum());
-	}
-
-	private void addWarning(String message, String propertyName, int lineNum) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Line ").append(lineNum);
-		if (propertyName != null) {
-			sb.append(" (").append(propertyName).append(" property)");
-		}
-		sb.append(": ").append(message);
-
-		warnings.add(sb.toString());
+		String message = Messages.INSTANCE.getMessage(key, line, warning, propertyName);
+		warnings.add(message);
 	}
 
 	/**

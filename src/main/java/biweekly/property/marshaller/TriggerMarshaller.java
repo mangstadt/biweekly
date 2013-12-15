@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -66,7 +67,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	}
 
 	@Override
-	protected Trigger _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected Trigger _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		value = unescape(value);
 
 		try {
@@ -103,7 +104,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	}
 
 	@Override
-	protected Trigger _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected Trigger _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		String value = element.first(ICalDataType.DURATION);
 		if (value != null) {
 			try {
@@ -142,7 +143,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 	}
 
 	@Override
-	protected Trigger _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected Trigger _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		String valueStr = value.asSingle();
 
 		try {

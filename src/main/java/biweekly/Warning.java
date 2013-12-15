@@ -34,6 +34,24 @@ public class Warning {
 	private final String message;
 
 	/**
+	 * Creates a parser warning.
+	 * @param code the message code
+	 * @param args the message arguments
+	 */
+	public static Warning parse(int code, Object... args) {
+		return new Warning(Messages.INSTANCE.getParseMessage(code, args), code);
+	}
+
+	/**
+	 * Creates a validation warning.
+	 * @param code the message code
+	 * @param args the message arguments
+	 */
+	public static Warning validate(int code, Object... args) {
+		return new Warning(Messages.INSTANCE.getValidationWarning(code, args), code);
+	}
+
+	/**
 	 * Creates a new warning.
 	 * @param message the warning message
 	 */

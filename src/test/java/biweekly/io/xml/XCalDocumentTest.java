@@ -34,6 +34,7 @@ import org.w3c.dom.Element;
 
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
+import biweekly.Warning;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.RawComponent;
@@ -1021,7 +1022,7 @@ public class XCalDocumentTest {
 		}
 
 		@Override
-		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 			return new Company(value);
 		}
 
@@ -1036,7 +1037,7 @@ public class XCalDocumentTest {
 		}
 
 		@Override
-		protected Company _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+		protected Company _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 			String boss = XmlUtils.getFirstChildElement(element.getElement()).getTextContent();
 			if (boss.equals("skip-me")) {
 				throw new SkipMeException();

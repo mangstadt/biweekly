@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ListProperty;
@@ -143,7 +144,7 @@ public class ListPropertyMarshallerTest {
 		}
 
 		@Override
-		protected String readValue(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+		protected String readValue(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 			return value;
 		}
 	}

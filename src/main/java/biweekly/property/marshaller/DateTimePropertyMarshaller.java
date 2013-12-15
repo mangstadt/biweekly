@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -56,7 +57,7 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		value = unescape(value);
 		return parse(value, parameters, warnings);
 	}
@@ -74,7 +75,7 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 	}
 
 	@Override
-	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected T _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		String value = element.first(defaultDataType);
 		if (value != null) {
 			return parse(value, parameters, warnings);
@@ -94,12 +95,12 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		String valueStr = value.asSingle();
 		return parse(valueStr, parameters, warnings);
 	}
 
-	private T parse(String value, ICalParameters parameters, List<String> warnings) {
+	private T parse(String value, ICalParameters parameters, List<Warning> warnings) {
 		try {
 			Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
 			return newInstance(date);

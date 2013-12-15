@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -97,7 +98,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 	}
 
 	@Override
-	protected RecurrenceDates _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected RecurrenceDates _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		return parse(list(value), dataType, parameters, warnings);
 	}
 
@@ -148,7 +149,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 	}
 
 	@Override
-	protected RecurrenceDates _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected RecurrenceDates _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		//parse as periods
 		List<XCalElement> periodElements = element.children(ICalDataType.PERIOD);
 		if (!periodElements.isEmpty()) {
@@ -156,7 +157,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 			for (XCalElement periodElement : periodElements) {
 				String startStr = periodElement.first("start");
 				if (startStr == null) {
-					warnings.add("No start date found in time period, skipping.");
+					warnings.add(Warning.parse(9));
 					continue;
 				}
 
@@ -164,7 +165,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 				try {
 					start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
 				} catch (IllegalArgumentException e) {
-					warnings.add("Could not parse start date, skipping time period: " + startStr);
+					warnings.add(Warning.parse(10, startStr));
 					continue;
 				}
 
@@ -174,7 +175,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 						Date end = date(endStr).tzid(parameters.getTimezoneId(), warnings).parse();
 						periods.add(new Period(start, end));
 					} catch (IllegalArgumentException e) {
-						warnings.add("Could not parse end date, skipping time period: " + endStr);
+						warnings.add(Warning.parse(11, endStr));
 					}
 					continue;
 				}
@@ -185,12 +186,12 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 						Duration duration = Duration.parse(durationStr);
 						periods.add(new Period(start, duration));
 					} catch (IllegalArgumentException e) {
-						warnings.add("Could not parse duration, skipping time period: " + durationStr);
+						warnings.add(Warning.parse(12, durationStr));
 					}
 					continue;
 				}
 
-				warnings.add("Start date has no accompanying end date or duration, skipping.");
+				warnings.add(Warning.parse(13));
 			}
 			return new RecurrenceDates(periods);
 		}
@@ -206,7 +207,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 					Date date = date(dateStr).tzid(parameters.getTimezoneId(), warnings).parse();
 					dates.add(date);
 				} catch (IllegalArgumentException e) {
-					warnings.add("Skipping unparsable date: " + dateStr);
+					warnings.add(Warning.parse(15, dateStr));
 				}
 			}
 			return new RecurrenceDates(dates, hasTime);
@@ -254,11 +255,11 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 	}
 
 	@Override
-	protected RecurrenceDates _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected RecurrenceDates _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		return parse(value.asMulti(), dataType, parameters, warnings);
 	}
 
-	private RecurrenceDates parse(List<String> valueStrs, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	private RecurrenceDates parse(List<String> valueStrs, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		if (dataType == ICalDataType.PERIOD) {
 			//parse as periods
 			List<Period> periods = new ArrayList<Period>(valueStrs.size());
@@ -266,7 +267,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 				String timePeriodStrSplit[] = timePeriodStr.split("/");
 
 				if (timePeriodStrSplit.length < 2) {
-					warnings.add("No end date or duration found, skipping time period: " + timePeriodStr);
+					warnings.add(Warning.parse(13));
 					continue;
 				}
 
@@ -275,7 +276,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 				try {
 					start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
 				} catch (IllegalArgumentException e) {
-					warnings.add("Could not parse start date, skipping time period: " + timePeriodStr);
+					warnings.add(Warning.parse(10, startStr));
 					continue;
 				}
 
@@ -289,7 +290,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 						Duration duration = Duration.parse(endStr);
 						periods.add(new Period(start, duration));
 					} catch (IllegalArgumentException e2) {
-						warnings.add("Could not parse end date or duration value, skipping time period: " + timePeriodStr);
+						warnings.add(Warning.parse(14, endStr));
 						continue;
 					}
 				}
@@ -305,7 +306,7 @@ public class RecurrenceDatesMarshaller extends ICalPropertyMarshaller<Recurrence
 				Date date = date(s).tzid(parameters.getTimezoneId(), warnings).parse();
 				dates.add(date);
 			} catch (IllegalArgumentException e) {
-				warnings.add("Skipping unparsable date: " + s);
+				warnings.add(Warning.parse(15, s));
 			}
 		}
 		return new RecurrenceDates(dates, hasTime);

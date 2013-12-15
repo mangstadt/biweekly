@@ -5,6 +5,7 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
@@ -61,12 +62,12 @@ public class RawPropertyMarshaller extends ICalPropertyMarshaller<RawProperty> {
 	}
 
 	@Override
-	protected RawProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected RawProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		return new RawProperty(propertyName, dataType, value);
 	}
 
 	@Override
-	protected RawProperty _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected RawProperty _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		Element rawElement = element.getElement();
 		String name = rawElement.getLocalName();
 

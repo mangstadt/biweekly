@@ -31,6 +31,8 @@ import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
+import biweekly.Messages;
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.component.marshaller.ICalendarMarshaller;
@@ -641,24 +643,16 @@ public class XCalDocument {
 		try {
 			Result<? extends ICalProperty> result = m.parseXml(propertyElement, parameters);
 
-			for (String warning : result.getWarnings()) {
-				addWarning(warning, propertyName, warnings);
+			for (Warning warning : result.getWarnings()) {
+				addWarning(propertyName, warnings, warning);
 			}
 
 			property = result.getProperty();
 		} catch (SkipMeException e) {
-			if (e.getMessage() == null) {
-				addWarning("Property has requested that it be skipped.", propertyName, warnings);
-			} else {
-				addWarning("Property has requested that it be skipped: " + e.getMessage(), propertyName, warnings);
-			}
+			addWarning(propertyName, warnings, Warning.parse(0, e.getMessage()));
 			return null;
 		} catch (CannotParseException e) {
-			if (e.getMessage() == null) {
-				addWarning("Property could not be unmarshalled.  Unmarshalling as an " + Xml.class.getSimpleName() + " property instead.", propertyName, warnings);
-			} else {
-				addWarning("Property could not be unmarshalled.  Unmarshalling as an " + Xml.class.getSimpleName() + " property instead: " + e.getMessage(), propertyName, warnings);
-			}
+			addWarning(propertyName, warnings, Warning.parse(16, e.getMessage()));
 		}
 
 		//unmarshal as an XML property
@@ -667,8 +661,8 @@ public class XCalDocument {
 
 			Result<? extends ICalProperty> result = m.parseXml(propertyElement, parameters);
 
-			for (String warning : result.getWarnings()) {
-				addWarning(warning, propertyName, warnings);
+			for (Warning warning : result.getWarnings()) {
+				addWarning(propertyName, warnings, warning);
 			}
 
 			property = result.getProperty();
@@ -732,8 +726,9 @@ public class XCalDocument {
 		return elements;
 	}
 
-	private void addWarning(String message, String propertyName, List<String> warnings) {
-		warnings.add("<" + propertyName + "> property: " + message);
+	private void addWarning(String propertyName, List<String> warnings, Warning warning) {
+		String message = Messages.INSTANCE.getMessage("parse.xml", propertyName, warning);
+		warnings.add(message);
 	}
 
 	@Override

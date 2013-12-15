@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import org.w3c.dom.Element;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
@@ -69,7 +70,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
 		ListMultimap<String, String> rules = object(value);
 
@@ -111,7 +112,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 	}
 
 	@Override
-	protected T _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected T _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		XCalElement value = element.child(defaultDataType);
 		if (value == null) {
 			throw missingXmlElements(defaultDataType);
@@ -169,7 +170,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
 
 		//upper-case the keys
@@ -206,7 +207,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 	 */
 	protected abstract T newInstance(Recurrence recur);
 
-	private void parseFreq(ListMultimap<String, String> rules, Recurrence.Builder builder, List<String> warnings) {
+	private void parseFreq(ListMultimap<String, String> rules, Recurrence.Builder builder, List<Warning> warnings) {
 		List<String> values = rules.removeAll("FREQ");
 		if (values.isEmpty()) {
 			return;
@@ -216,11 +217,11 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		try {
 			builder.frequency(Frequency.valueOf(value.toUpperCase()));
 		} catch (IllegalArgumentException e) {
-			warnings.add("Unable to parse FREQ value: " + value);
+			warnings.add(Warning.parse(7, "FREQ", value));
 		}
 	}
 
-	private void parseUntil(ListMultimap<String, String> rules, Recurrence.Builder builder, List<String> warnings) {
+	private void parseUntil(ListMultimap<String, String> rules, Recurrence.Builder builder, List<Warning> warnings) {
 		List<String> values = rules.removeAll("UNTIL");
 		if (values.isEmpty()) {
 			return;
@@ -232,11 +233,11 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 			boolean hasTime = ICalDateFormatter.dateHasTime(value);
 			builder.until(date, hasTime);
 		} catch (IllegalArgumentException e) {
-			warnings.add("Unable to parse UNTIL value: " + value);
+			warnings.add(Warning.parse(7, "UNTIL", value));
 		}
 	}
 
-	private void parseCount(ListMultimap<String, String> rules, Recurrence.Builder builder, List<String> warnings) {
+	private void parseCount(ListMultimap<String, String> rules, Recurrence.Builder builder, List<Warning> warnings) {
 		List<String> values = rules.removeAll("COUNT");
 		if (values.isEmpty()) {
 			return;
@@ -246,11 +247,11 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		try {
 			builder.count(Integer.valueOf(value));
 		} catch (NumberFormatException e) {
-			warnings.add("Unable to parse COUNT value: " + value);
+			warnings.add(Warning.parse(7, "COUNT", value));
 		}
 	}
 
-	private void parseInterval(ListMultimap<String, String> rules, Recurrence.Builder builder, List<String> warnings) {
+	private void parseInterval(ListMultimap<String, String> rules, Recurrence.Builder builder, List<Warning> warnings) {
 		List<String> values = rules.removeAll("INTERVAL");
 		if (values.isEmpty()) {
 			return;
@@ -260,11 +261,11 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		try {
 			builder.interval(Integer.valueOf(value));
 		} catch (NumberFormatException e) {
-			warnings.add("Unable to parse INTERVAL value: " + value);
+			warnings.add(Warning.parse(7, "INTERVAL", value));
 		}
 	}
 
-	private void parseBySecond(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+	private void parseBySecond(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
 		parseIntegerList("BYSECOND", rules.removeAll("BYSECOND"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.bySecond(value);
@@ -272,7 +273,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		});
 	}
 
-	private void parseByMinute(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+	private void parseByMinute(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
 		parseIntegerList("BYMINUTE", rules.removeAll("BYMINUTE"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.byMinute(value);
@@ -280,7 +281,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		});
 	}
 
-	private void parseByHour(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+	private void parseByHour(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
 		parseIntegerList("BYHOUR", rules.removeAll("BYHOUR"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.byHour(value);
@@ -288,21 +289,21 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		});
 	}
 
-	private void parseByDay(ListMultimap<String, String> rules, Recurrence.Builder builder, List<String> warnings) {
+	private void parseByDay(ListMultimap<String, String> rules, Recurrence.Builder builder, List<Warning> warnings) {
 		Pattern p = Pattern.compile("^([-+]?\\d+)?(.*)$");
 		for (String value : rules.removeAll("BYDAY")) {
 			Matcher m = p.matcher(value);
 			if (!m.find()) {
 				//this should never happen
 				//the regex contains a "match-all" pattern and should never not find anything
-				warnings.add("Unable to parse BYDAY value (invalid format): " + value);
+				warnings.add(Warning.parse(7, "BYDAY", value));
 				continue;
 			}
 
 			String dayStr = m.group(2);
 			DayOfWeek day = DayOfWeek.valueOfAbbr(dayStr);
 			if (day == null) {
-				warnings.add("Unable to parse BYDAY value (invalid day of the week): " + value);
+				warnings.add(Warning.parse(7, "BYDAY", value));
 				continue;
 			}
 
@@ -313,7 +314,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		}
 	}
 
-	private void parseByMonthDay(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+	private void parseByMonthDay(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
 		parseIntegerList("BYMONTHDAY", rules.removeAll("BYMONTHDAY"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.byMonthDay(value);
@@ -321,7 +322,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		});
 	}
 
-	private void parseByYearDay(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+	private void parseByYearDay(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
 		parseIntegerList("BYYEARDAY", rules.removeAll("BYYEARDAY"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.byYearDay(value);
@@ -329,7 +330,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		});
 	}
 
-	private void parseByWeekNo(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+	private void parseByWeekNo(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
 		parseIntegerList("BYWEEKNO", rules.removeAll("BYWEEKNO"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.byWeekNo(value);
@@ -337,7 +338,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		});
 	}
 
-	private void parseByMonth(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+	private void parseByMonth(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
 		parseIntegerList("BYMONTH", rules.removeAll("BYMONTH"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.byMonth(value);
@@ -345,7 +346,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		});
 	}
 
-	private void parseBySetPos(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<String> warnings) {
+	private void parseBySetPos(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
 		parseIntegerList("BYSETPOS", rules.removeAll("BYSETPOS"), warnings, new ListHandler() {
 			public void handle(Integer value) {
 				builder.bySetPos(value);
@@ -353,7 +354,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		});
 	}
 
-	private void parseWkst(ListMultimap<String, String> rules, Recurrence.Builder builder, List<String> warnings) {
+	private void parseWkst(ListMultimap<String, String> rules, Recurrence.Builder builder, List<Warning> warnings) {
 		List<String> values = rules.removeAll("WKST");
 		if (values.isEmpty()) {
 			return;
@@ -362,14 +363,14 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		String value = values.get(0);
 		DayOfWeek day = DayOfWeek.valueOfAbbr(value);
 		if (day == null) {
-			warnings.add("Unable to parse WKST (invalid day of the week): " + value);
+			warnings.add(Warning.parse(7, "WKST", value));
 			return;
 		}
 
 		builder.workweekStarts(day);
 	}
 
-	private void parseXRules(ListMultimap<String, String> rules, Recurrence.Builder builder, List<String> warnings) {
+	private void parseXRules(ListMultimap<String, String> rules, Recurrence.Builder builder, List<Warning> warnings) {
 		for (Map.Entry<String, List<String>> rule : rules) {
 			String name = rule.getKey();
 			for (String value : rule.getValue()) {
@@ -442,12 +443,12 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		}
 	}
 
-	private void parseIntegerList(String name, List<String> values, List<String> warnings, ListHandler handler) {
+	private void parseIntegerList(String name, List<String> values, List<Warning> warnings, ListHandler handler) {
 		for (String value : values) {
 			try {
 				handler.handle(Integer.valueOf(value));
 			} catch (NumberFormatException e) {
-				warnings.add("Ignoring non-numeric value found in " + name + ": " + value);
+				warnings.add(Warning.parse(8, name, value));
 			}
 		}
 	}

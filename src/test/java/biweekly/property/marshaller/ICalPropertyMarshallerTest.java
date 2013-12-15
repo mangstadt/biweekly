@@ -17,6 +17,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.parameter.ICalParameters;
@@ -135,7 +136,7 @@ public class ICalPropertyMarshallerTest {
 	@Test
 	public void DateParser_tzid() {
 		String value = "20130611T144302";
-		List<String> warnings = new ArrayList<String>();
+		List<Warning> warnings = new ArrayList<Warning>();
 
 		Date actual = ICalPropertyMarshaller.date(value).tzid("some ID", warnings).parse();
 
@@ -147,7 +148,7 @@ public class ICalPropertyMarshallerTest {
 	@Test
 	public void DateParser_tzid_null() {
 		String value = "20130611T144302";
-		List<String> warnings = new ArrayList<String>();
+		List<Warning> warnings = new ArrayList<Warning>();
 
 		Date actual = ICalPropertyMarshaller.date(value).tzid(null, warnings).parse();
 
@@ -160,7 +161,7 @@ public class ICalPropertyMarshallerTest {
 	public void DateParser_global_tzid() {
 		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
 		String value = "20130611T154302";
-		List<String> warnings = new ArrayList<String>();
+		List<Warning> warnings = new ArrayList<Warning>();
 
 		Date actual = ICalPropertyMarshaller.date(value).tzid(timezone.getID(), warnings).parse();
 
@@ -181,7 +182,7 @@ public class ICalPropertyMarshallerTest {
 	@Test
 	public void DateParser_invalid_global_tzid() {
 		String value = "20130611T144302";
-		List<String> warnings = new ArrayList<String>();
+		List<Warning> warnings = new ArrayList<Warning>();
 
 		Date actual = ICalPropertyMarshaller.date(value).tzid("invalid/timezone", warnings).parse();
 
@@ -517,8 +518,8 @@ public class ICalPropertyMarshallerTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
-			warnings.add("parseText");
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+			warnings.add(new Warning("parseText"));
 			return new TestProperty(value, dataType);
 		}
 	}

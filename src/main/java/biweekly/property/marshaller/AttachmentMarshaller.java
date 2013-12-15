@@ -3,6 +3,7 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.Encoding;
@@ -80,7 +81,7 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	}
 
 	@Override
-	protected Attachment _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected Attachment _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		value = unescape(value);
 
 		if (dataType == ICalDataType.BINARY || parameters.getEncoding() == Encoding.BASE64) {
@@ -107,7 +108,7 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	}
 
 	@Override
-	protected Attachment _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected Attachment _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		String uri = element.first(ICalDataType.URI);
 		if (uri != null) {
 			return new Attachment(null, uri);
@@ -137,7 +138,7 @@ public class AttachmentMarshaller extends ICalPropertyMarshaller<Attachment> {
 	}
 
 	@Override
-	protected Attachment _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected Attachment _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		String valueStr = value.asSingle();
 
 		if (dataType == ICalDataType.BINARY) {

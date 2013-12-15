@@ -3,6 +3,7 @@ package biweekly.property.marshaller;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -55,7 +56,7 @@ public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationP
 	}
 
 	@Override
-	protected DurationProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected DurationProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		value = unescape(value);
 		return parse(value);
 	}
@@ -73,7 +74,7 @@ public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationP
 	}
 
 	@Override
-	protected DurationProperty _parseXml(XCalElement element, ICalParameters parameters, List<String> warnings) {
+	protected DurationProperty _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		String value = element.first(defaultDataType);
 		if (value != null) {
 			return parse(value);
@@ -93,7 +94,7 @@ public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationP
 	}
 
 	@Override
-	protected DurationProperty _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+	protected DurationProperty _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		String valueStr = value.asSingle();
 		return parse(valueStr);
 	}

@@ -18,6 +18,7 @@ import org.junit.rules.TemporaryFolder;
 
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
+import biweekly.Warning;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.StandardTime;
@@ -693,7 +694,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 			return new TestProperty(value);
 		}
 	}
@@ -709,7 +710,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 			return new TestProperty(value);
 		}
 	}
@@ -725,7 +726,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 			return new TestProperty(value);
 		}
 	}
@@ -741,7 +742,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+		protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 			return new Version(value);
 		}
 	}
@@ -780,7 +781,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<String> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 			return new TestProperty(value);
 		}
 	}
