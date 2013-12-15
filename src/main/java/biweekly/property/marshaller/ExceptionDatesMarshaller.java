@@ -66,7 +66,7 @@ public class ExceptionDatesMarshaller extends ListPropertyMarshaller<ExceptionDa
 		try {
 			return date(value).tzid(parameters.getTimezoneId(), warnings).parse();
 		} catch (IllegalArgumentException e) {
-			throw new CannotParseException("Could not parse date value.");
+			throw new CannotParseException(19);
 		}
 	}
 

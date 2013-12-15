@@ -2,6 +2,7 @@ package biweekly.io;
 
 import biweekly.ICalException;
 import biweekly.ICalendar;
+import biweekly.Warning;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -36,18 +37,31 @@ import biweekly.ICalendar;
  */
 @SuppressWarnings("serial")
 public class SkipMeException extends ICalException {
+	private final Warning warning;
+
 	/**
-	 * Creates a new skip-me exception.
+	 * Creates a new "skip me" exception.
+	 * @param code the warning message code
+	 * @param args the warning message arguments
 	 */
-	public SkipMeException() {
-		super();
+	public SkipMeException(int code, Object... args) {
+		this(Warning.parse(code, args));
 	}
 
 	/**
-	 * Creates a new skip-me exception.
-	 * @param msg the reason why this property is being skipped
+	 * Creates a new "skip me" exception.
+	 * @param reason the reason why the property value cannot be parsed
 	 */
-	public SkipMeException(String msg) {
-		super(msg);
+	public SkipMeException(String reason) {
+		this(new Warning(reason));
+	}
+
+	private SkipMeException(Warning warning) {
+		super(warning.toString());
+		this.warning = warning;
+	}
+
+	public Warning getWarning() {
+		return warning;
 	}
 }

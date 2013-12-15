@@ -102,7 +102,7 @@ public abstract class IntegerPropertyMarshaller<T extends IntegerProperty> exten
 			Integer intValue = Integer.valueOf(value);
 			return newInstance(intValue);
 		} catch (NumberFormatException e) {
-			throw new CannotParseException("Could not parse integer value.");
+			throw new CannotParseException(24);
 		}
 	}
 

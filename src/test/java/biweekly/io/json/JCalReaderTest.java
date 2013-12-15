@@ -668,10 +668,10 @@ public class JCalReaderTest {
 		protected Company _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 			String boss = value.asSingle();
 			if (boss.equals("skip-me")) {
-				throw new SkipMeException();
+				throw new SkipMeException("");
 			}
 			if (boss.equals("don't-parse-me-bro")) {
-				throw new CannotParseException();
+				throw new CannotParseException("");
 			}
 			return new Company(boss);
 		}

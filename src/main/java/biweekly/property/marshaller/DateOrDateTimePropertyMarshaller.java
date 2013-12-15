@@ -135,7 +135,7 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 		try {
 			date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
 		} catch (IllegalArgumentException e) {
-			throw new CannotParseException("Could not parse date-time value.");
+			throw new CannotParseException(17);
 		}
 
 		DateTimeComponents components;

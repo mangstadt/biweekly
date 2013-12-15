@@ -74,7 +74,7 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 		String longitudeStr = it.next();
 
 		if (latitudeStr == null || longitudeStr == null) {
-			throw new CannotParseException("Could not parse value.");
+			throw new CannotParseException(20);
 		}
 
 		return parse(latitudeStr, longitudeStr);
@@ -143,7 +143,7 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 			try {
 				latitude = Double.valueOf(latitudeStr);
 			} catch (NumberFormatException e) {
-				throw new CannotParseException("Could not parse latitude: " + latitudeStr);
+				throw new CannotParseException(21, latitudeStr);
 			}
 		}
 
@@ -152,7 +152,7 @@ public class GeoMarshaller extends ICalPropertyMarshaller<Geo> {
 			try {
 				longitude = Double.valueOf(longitudeStr);
 			} catch (NumberFormatException e) {
-				throw new CannotParseException("Could not parse longitude: " + longitudeStr);
+				throw new CannotParseException(22, longitudeStr);
 			}
 		}
 

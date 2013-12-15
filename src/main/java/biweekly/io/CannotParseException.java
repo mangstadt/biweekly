@@ -1,6 +1,7 @@
 package biweekly.io;
 
 import biweekly.ICalException;
+import biweekly.Warning;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -35,11 +36,15 @@ import biweekly.ICalException;
  */
 @SuppressWarnings("serial")
 public class CannotParseException extends ICalException {
+	private final Warning warning;
+
 	/**
 	 * Creates a new "cannot parse" exception.
+	 * @param code the warning message code
+	 * @param args the warning message arguments
 	 */
-	public CannotParseException() {
-		super();
+	public CannotParseException(int code, Object... args) {
+		this(Warning.parse(code, args));
 	}
 
 	/**
@@ -47,6 +52,15 @@ public class CannotParseException extends ICalException {
 	 * @param reason the reason why the property value cannot be parsed
 	 */
 	public CannotParseException(String reason) {
-		super(reason);
+		this(new Warning(reason));
+	}
+
+	private CannotParseException(Warning warning) {
+		super(warning.toString());
+		this.warning = warning;
+	}
+
+	public Warning getWarning() {
+		return warning;
 	}
 }

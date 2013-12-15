@@ -105,7 +105,7 @@ public abstract class DateTimePropertyMarshaller<T extends DateTimeProperty> ext
 			Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
 			return newInstance(date);
 		} catch (IllegalArgumentException e) {
-			throw new CannotParseException("Could not parse date-time value.");
+			throw new CannotParseException(17);
 		}
 	}
 

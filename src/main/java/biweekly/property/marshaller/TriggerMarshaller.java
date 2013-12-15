@@ -83,7 +83,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 			//unable to parse duration
 		}
 
-		throw new CannotParseException("Could not parse value as a date or duration.");
+		throw new CannotParseException(25);
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 			try {
 				return new Trigger(Duration.parse(value), parameters.getRelated());
 			} catch (IllegalArgumentException e) {
-				throw new CannotParseException("Could not parse duration: " + value);
+				throw new CannotParseException(26, value);
 			}
 		}
 
@@ -120,7 +120,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 				Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
 				return new Trigger(date);
 			} catch (IllegalArgumentException e) {
-				throw new CannotParseException("Could not parse date: " + value);
+				throw new CannotParseException(27, value);
 			}
 		}
 
@@ -156,7 +156,7 @@ public class TriggerMarshaller extends ICalPropertyMarshaller<Trigger> {
 		try {
 			return new Trigger(Duration.parse(valueStr), parameters.getRelated());
 		} catch (IllegalArgumentException e) {
-			throw new CannotParseException("Could not parse value as a date or duration.");
+			throw new CannotParseException(25);
 		}
 	}
 }

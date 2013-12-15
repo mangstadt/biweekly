@@ -1029,7 +1029,7 @@ public class XCalDocumentTest {
 		@Override
 		protected void _writeXml(Company property, XCalElement element) {
 			if (property.getBoss().equals("skip-me")) {
-				throw new SkipMeException();
+				throw new SkipMeException("");
 			}
 			Element boss = element.getElement().getOwnerDocument().createElementNS(getQName().getNamespaceURI(), "boss");
 			boss.setTextContent(property.getBoss());
@@ -1040,10 +1040,10 @@ public class XCalDocumentTest {
 		protected Company _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 			String boss = XmlUtils.getFirstChildElement(element.getElement()).getTextContent();
 			if (boss.equals("skip-me")) {
-				throw new SkipMeException();
+				throw new SkipMeException("");
 			}
 			if (boss.equals("don't-parse-me")) {
-				throw new CannotParseException();
+				throw new CannotParseException("");
 			}
 			return new Company(boss);
 		}

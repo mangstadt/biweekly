@@ -109,7 +109,7 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 		try {
 			return newInstance(UtcOffset.parse(value));
 		} catch (IllegalArgumentException e) {
-			throw new CannotParseException("Could not parse offset string.");
+			throw new CannotParseException(28);
 		}
 	}
 }

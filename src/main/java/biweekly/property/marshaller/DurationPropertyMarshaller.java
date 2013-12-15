@@ -108,7 +108,7 @@ public class DurationPropertyMarshaller extends ICalPropertyMarshaller<DurationP
 			Duration duration = Duration.parse(value);
 			return new DurationProperty(duration);
 		} catch (IllegalArgumentException e) {
-			throw new CannotParseException("Could not parse duration value.");
+			throw new CannotParseException(18);
 		}
 	}
 }
