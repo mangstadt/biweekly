@@ -1152,6 +1152,23 @@ public class ICalReaderTest {
 		assertNull(reader.readNext());
 	}
 
+	//see: http://stackoverflow.com/questions/33901/best-icalendar-library-for-java/17325369?noredirect=1#comment31110671_17325369
+	@Test
+	public void large_ical_file_stackoverflow_fix() throws Throwable {
+		StringBuilder sb = new StringBuilder();
+		sb.append("BEGIN:VCALENDAR\r\n");
+		for (int i = 0; i < 100000; i++) {
+			sb.append("BEGIN:VEVENT\r\nDESCRIPTION:test\r\n");
+		}
+		for (int i = 0; i < 100000; i++) {
+			sb.append("END:VEVENT\r\n");
+		}
+		sb.append("END:VCALENDAR\r\n");
+
+		ICalReader reader = new ICalReader(sb.toString());
+		reader.readNext();
+	}
+
 	private class TestPropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
 		public TestPropertyMarshaller() {
 			super(TestProperty.class, "X-TEST", ICalDataType.TEXT);

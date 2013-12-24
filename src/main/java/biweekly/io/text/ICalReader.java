@@ -326,8 +326,8 @@ public class ICalReader implements Closeable {
 				return;
 			}
 
-			componentStack = componentStack.subList(0, popIndex);
-			componentNamesStack = componentNamesStack.subList(0, popIndex);
+			componentStack.subList(popIndex, componentStack.size()).clear();
+			componentNamesStack.subList(popIndex, componentNamesStack.size()).clear();
 		}
 
 		public void invalidLine(String line) {
