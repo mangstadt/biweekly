@@ -3,7 +3,7 @@
 	<groupId>net.sf.biweekly</groupId>
 	<artifactId>biweekly</artifactId>
 	<packaging>bundle</packaging> <!-- "bundle" used for OSGi support -->
-	<version>0.3.2-SNAPSHOT</version>
+	<version>0.3.2</version>
 	<name>biweekly</name>
 	<url>http://sourceforge.net/p/biweekly</url>
 	<inceptionYear>2013</inceptionYear>
@@ -41,9 +41,9 @@
 	</issueManagement>
 
 	<scm>
-		<connection>scm:svn:http://svn.code.sf.net/p/biweekly/code/trunk</connection>
-		<developerConnection>scm:svn:https://svn.code.sf.net/p/biweekly/code/trunk</developerConnection>
-		<url>https://sourceforge.net/p/biweekly/code/HEAD/tree/</url>
+		<connection>scm:svn:http://svn.code.sf.net/p/biweekly/code/tags/0.3.2</connection>
+		<developerConnection>scm:svn:https://svn.code.sf.net/p/biweekly/code/tags/0.3.2</developerConnection>
+		<url>https://sourceforge.net/p/biweekly/code/HEAD/tree/tags/0.3.2</url>
 	</scm>
 	
 	<properties>
