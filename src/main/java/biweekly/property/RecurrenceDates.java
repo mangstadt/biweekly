@@ -36,31 +36,36 @@ import biweekly.util.Period;
 
 /**
  * <p>
- * Defines a list of dates or periods that help define a recurrence rule. It
- * must contain either dates or time periods. It cannot contain a combination of
- * both.
+ * Defines a list of dates or time periods that help define a recurrence rule.
+ * It must contain either dates or time periods. It cannot contain a combination
+ * of both.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * //date-time values
  * Date datetime1 = ...
  * Date datetime2 = ...
  * List&lt;Date&gt; datetimes = Arrays.asList(datetime1, datetime2);
- * RecurrenceDates prop = new RecurrenceDates(datetimes, true);
+ * RecurrenceDates rdate = new RecurrenceDates(datetimes, true);
+ * event.addRecurrenceDates(rdate);
  * 
  * //date values
  * Date date1 = ...
  * Date date2 = ...
  * List&lt;Date&gt; dates = Arrays.asList(date1, date2);
- * RecurrenceDates prop = new RecurrenceDates(dates, false);
+ * rdate = new RecurrenceDates(dates, false);
+ * event.addRecurrenceDates(rdate);
  * 
  * //periods
  * Period period1 = ...
  * Period period2 = ...
  * List&lt;Period&gt; periods = Arrays.asList(period1, period2);
- * RecurrenceDates prop = new RecurrenceDates(periods, true);
+ * rdate = new RecurrenceDates(periods, true);
+ * event.addRecurrenceDates(rdate);
  * </pre>
  * 
  * </p>

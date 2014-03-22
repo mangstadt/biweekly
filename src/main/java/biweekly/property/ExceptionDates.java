@@ -35,25 +35,30 @@ import biweekly.util.ICalDateFormatter;
 
 /**
  * <p>
- * Defines a list of exceptions to the recurrence rule defined in a component.
+ * Defines a list of exceptions to the dates specified in the
+ * {@link RecurrenceRule} property.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * //date and times
+ * VEvent event = new VEvent();
+ * 
+ * //dates with time components
  * ExceptionDates exdate = new ExceptionDates(true);
  * Date datetime1 = ...;
  * exdate.addValue(datetime1);
  * Date datetime2 = ...;
  * exdate.addValue(datetime2);
+ * event.addExceptionDates(exdate);
  * 
- * //dates
- * ExceptionDates exdate = new ExceptionDates(false);
+ * //dates without time components
+ * exdate = new ExceptionDates(false);
  * Date date1 = ...;
  * exdate.addValue(date1);
  * Date date2 = ...;
  * exdate.addValue(date2);
+ * event.addExceptionDates(exdate);
  * </pre>
  * 
  * </p>

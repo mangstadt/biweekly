@@ -31,34 +31,71 @@ import biweekly.util.DateTimeComponents;
 
 /**
  * <p>
- * Defines the date that an event, free/busy component, or timezone component
- * starts.
+ * Defines the start date of an event, free/busy component, or timezone
+ * component.
  * </p>
+ * 
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample (creating):</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * //date and time
  * Date datetime = ...
  * DateStart dtstart = new DateStart(datetime);
+ * event.setDateStart(dtstart);
  * 
  * //date (without time component)
  * Date date = ...
- * DateStart dtstart = new DateStart(date, false);
+ * dtstart = new DateStart(date, false);
+ * event.setDateStart(dtstart);
  * 
- * //local date and time (don't print a timezone)
- * Date datetime = ...
- * DateStart dtstart = new DateStart(datetime);
- * dtstart.setLocalTime(true);
- * 
- * //with timezone (will output the Date object in the specified timezone)
+ * //date and time with timezone (Date object converted to the specified timezone when writing the iCalendar object)
  * Date datetime = ... 
- * DateStart dtstart = new DateStart(datetime); 
+ * dtstart = new DateStart(datetime); 
  * dtstart.setTimezoneId("America/New_York");
+ * event.setDateStart(dtstart);
  * 
- * //raw components 
+ * //raw date/time components 
  * DateTimeComponents components = new DateTimeComponents(1999, 4, 4, 2, 0, 0, false);
- * DateStart dtstart = new DateStart(components);
+ * dtstart = new DateStart(components);
+ * event.setDateStart(dtstart);
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <b>Code sample (retrieving):</b>
+ * 
+ * <pre class="brush:java">
+ * ICalendar ical = ...
+ * for (VEvent event : ical.getEvents()){
+ *   DateStart dtstart = event.getDateStart();
+ *   
+ *   //get the raw date/time components from the date string
+ *   DateTimeComponents components = dtstart.getRawComponents();
+ *   int year = components.getYear();
+ *   int month = components.getMonth();
+ *   //etc.
+ *   
+ *   //get the Java Date object that was generated based on the provided timezone
+ *   Date value = dtstart.getValue();
+ *   
+ *   if (dtstart.hasTime()){
+ *     //the value includes a time component
+ *     
+ *     if (dtstart.isLocalTime()){
+ *       //timezone information was not provided
+ *       //Java Date object was parsed under the local computer's default timezone
+ *     } else {
+ *       //timezone information was provided
+ *       //Java Date object was parsed under the provided timezone (if recognized)
+ *     }
+ *   } else {
+ *     //the value is just a date
+ *     //Java Date object's time is set to "00:00:00" under the local computer's default timezone
+ *   }
+ * }
  * </pre>
  * 
  * </p>

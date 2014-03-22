@@ -67,7 +67,7 @@ import biweekly.util.Recurrence;
 
 /**
  * <p>
- * Defines a scheduled activity, such as a meeting that's two hours long.
+ * Defines a scheduled activity, such as a two hour meeting.
  * </p>
  * <p>
  * <b>Examples:</b>

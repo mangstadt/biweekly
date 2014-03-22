@@ -32,13 +32,13 @@ package biweekly.property;
  * {@link Description} property.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * Summary summary = new Summary("summary text");
+ * VEvent event = new VEvent();
  * 
- * VEvent event = ...;
- * event.setSummary("summary text");
+ * Summary summary = new Summary(&quot;Team Meeting&quot;);
+ * event.setSummary(summary);
  * </pre>
  * 
  * </p>

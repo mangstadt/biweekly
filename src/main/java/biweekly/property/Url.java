@@ -27,13 +27,16 @@ package biweekly.property;
 
 /**
  * <p>
- * Points to a resource that contains additional information about a component.
+ * Defines a website that contains additional information about a component.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * Url url = new Url(&quot;http://example.com&quot;);
+ * event.setUrl(url);
  * </pre>
  * 
  * </p>

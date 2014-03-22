@@ -30,10 +30,13 @@ package biweekly.property;
  * Defines the physical location of an event.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * Location location = new Location(&quot;Room 32B&quot;);
+ * event.setLocation(location);
  * </pre>
  * 
  * </p>

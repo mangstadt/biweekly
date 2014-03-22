@@ -35,10 +35,10 @@ import biweekly.util.Duration;
 
 /**
  * <p>
- * Defines when an alarm will be triggered.
+ * Defines when to trigger an alarm.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
  * //15 minutes before the start time

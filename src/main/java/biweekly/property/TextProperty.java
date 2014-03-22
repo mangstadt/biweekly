@@ -26,8 +26,8 @@ package biweekly.property;
  */
 
 /**
- * Represents a property whose value is a plain-text string. Note that this does
- * not always mean that the property has a data type of "text".
+ * Represents a property whose value is a plain-text string. Note that this
+ * includes both text and URI values.
  * @author Michael Angstadt
  */
 public class TextProperty extends ValuedProperty<String> {

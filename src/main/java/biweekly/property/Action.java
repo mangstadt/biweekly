@@ -34,14 +34,28 @@ import java.util.Collection;
  * </p>
  * 
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample (creating):</b>
  * 
  * <pre class="brush:java">
- * //creating a new property
  * Action action = Action.audio();
+ * </pre>
  * 
- * if (action.isAudio()) {
- * 	//it's an &quot;AUDIO&quot; alarm
+ * </p>
+ * 
+ * <p>
+ * <b>Code sample (retrieving):</b>
+ * 
+ * <pre class="brush:java">
+ * ICalendar ical = ...
+ * for (VAlarm alarm : ical.getAlarms()){
+ *   Action action = alarm.getAction();
+ *   if (action.isAudio()) {
+ * 	   ...
+ *   } else if (action.isEmail()){
+ *     ...
+ *   } else if (action.isDisplay()){
+ *     ...
+ *   }
  * }
  * </pre>
  * 

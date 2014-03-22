@@ -32,8 +32,8 @@ import biweekly.component.ICalComponent;
  */
 
 /**
- * Parent class for properties that have a defined set of acceptable values (for
- * example, {@link Action}).
+ * Represents a property that has a defined set of acceptable values (for
+ * example, the {@link Action} property).
  * @author Michael Angstadt
  */
 public abstract class EnumProperty extends TextProperty {

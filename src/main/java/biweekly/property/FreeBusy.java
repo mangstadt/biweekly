@@ -43,9 +43,11 @@ import biweekly.util.Period;
  * "busy" or "free").
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VFreeBusy fb = new VFreeBusy();
+ * 
  * FreeBusy freebusy = new FreeBusy();
  * freebusy.setType(FreeBusyType.BUSY);
  * 
@@ -56,6 +58,8 @@ import biweekly.util.Period;
  * Date fourPM = ...
  * Duration oneHour = Duration.builder().hours(1).build();
  * freeBusy.addValue(fourPM, oneHour);
+ * 
+ * fb.addFreeBusy(freebusy);
  * </pre>
  * 
  * </p>

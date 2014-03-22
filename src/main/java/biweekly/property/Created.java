@@ -29,14 +29,17 @@ import java.util.Date;
 
 /**
  * <p>
- * Defines the date-time that the calendar information was initially created.
+ * Defines the time that the calendar information was initially created.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * Date datetime = ...
  * Created created = new Created(datetime);
+ * event.setCreated(created);
  * </pre>
  * 
  * </p>

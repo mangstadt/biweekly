@@ -30,9 +30,41 @@ import java.util.Collection;
 
 /**
  * <p>
- * Specifies the calendar system that this iCalendar object uses. If none is
- * specified, then the calendar is assumed to be in "gregorian" format.
+ * Defines the calendar system that this iCalendar object uses for all its date
+ * values. If none is specified, then the calendar is assumed to be in
+ * "gregorian" format.
  * </p>
+ * 
+ * <p>
+ * <b>Code sample (creating):</b>
+ * 
+ * <pre class="brush:java">
+ * ICalendar ical = new ICalendar();
+ * ical.setCalendarScale(CalendarScale.gregorian());
+ * 
+ * ical = new ICalendar();
+ * ical.setCalendarScale(new CalendarScale(&quot;another-calendar-system&quot;));
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <p>
+ * <b>Code sample (retrieving):</b>
+ * 
+ * <pre class="brush:java">
+ * ICalendar ical = ...
+ * CalendarScale calscale = ical.getCalendarscale();
+ * 
+ * if (calscale.isGregorian()) {
+ * 	 ...
+ * } else {
+ *   String value = calscale.getValue();
+ *   ...
+ * }
+ * </pre>
+ * 
+ * </p>
+ * 
  * <p>
  * <b>Examples:</b>
  * 

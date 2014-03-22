@@ -32,20 +32,24 @@ import biweekly.parameter.Range;
 /**
  * <p>
  * Records the original value of the {@link DateStart} property if a recurrence
- * instance has been modified. Used in conjunction with the {@link Uid} and
- * {@link Sequence} properties to uniquely identify a recurrence instance.
+ * instance has been modified. It is used in conjunction with the {@link Uid}
+ * and {@link Sequence} properties to uniquely identify a recurrence instance.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * //date-time value
  * Date datetime = ...
  * RecurrenceId recurrenceId = new RecurrenceId(datetime);
+ * event.setRecurrenceId(recurrenceId);
  * 
- * //datevalue
+ * //date value
  * Date date = ...
  * RecurrenceId recurrenceId = new RecurrenceId(date, false);
+ * event.setRecurrenceId(recurrenceId);
  * </pre>
  * 
  * </p>

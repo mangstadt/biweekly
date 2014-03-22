@@ -33,10 +33,13 @@ import biweekly.parameter.RelationshipType;
  * and another component.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code samples:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * RelatedTo relatedTo = new RelatedTo(&quot;uid-value&quot;);
+ * event.addRelatedTo(relatedTo);
  * </pre>
  * 
  * </p>

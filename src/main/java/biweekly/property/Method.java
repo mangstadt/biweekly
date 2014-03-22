@@ -27,14 +27,17 @@ package biweekly.property;
 
 /**
  * <p>
- * Specifies the value of the Content-Type "method" parameter if the iCalendar
- * object is defined as a MIME message entity.
+ * Specifies the value of the "Content-Type" header's "method" parameter if the
+ * iCalendar object is defined as a MIME message entity.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * ICalendar ical = new ICalendar();
+ * 
  * Method method = new Method(&quot;value&quot;);
+ * ical.setMethod(method);
  * </pre>
  * 
  * </p>

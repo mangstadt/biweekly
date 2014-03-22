@@ -29,16 +29,18 @@ import java.util.UUID;
 
 /**
  * <p>
- * Defines a unique identifier for a component.
+ * Defines a unique identifier for a component. Note that all components are
+ * automatically given random UIDs on creation.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * Uid uid = new Uid(&quot;...&quot;);
+ * VEvent event = new VEvent();
+ * //all components are given random UIDs on creation
  * 
- * //random UID
- * Uid uid = Uid.random();
+ * Uid uid = new Uid(&quot;...&quot;);
+ * event.setUid(uid);
  * </pre>
  * 
  * </p>

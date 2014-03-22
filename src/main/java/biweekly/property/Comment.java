@@ -27,13 +27,16 @@ package biweekly.property;
 
 /**
  * <p>
- * Defines a free-text comment to be read by the user.
+ * Defines a free-text comment.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * Comment comment = new Comment(&quot;Free text&quot;);
+ * event.addComment(comment);
  * </pre>
  * 
  * </p>

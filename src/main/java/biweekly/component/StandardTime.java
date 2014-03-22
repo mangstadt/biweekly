@@ -27,7 +27,7 @@ package biweekly.component;
 
 /**
  * <p>
- * Defines a standard time range within a {@link VTimezone}.
+ * Defines the date range of a timezone's standard time.
  * </p>
  * <p>
  * <b>Examples:</b>

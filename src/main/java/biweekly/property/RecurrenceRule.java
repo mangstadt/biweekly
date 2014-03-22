@@ -36,12 +36,14 @@ import biweekly.util.Recurrence;
  * Defines how often a component repeats.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * //&quot;bi-weekly&quot;
+ * VEvent event = new VEvent();
+ * 
  * Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).interval(2).build();
  * RecurrenceRule rrule = new RecurrenceRule(recur);
+ * event.setRecurrenceRule(rruel);
  * </pre>
  * 
  * </p>

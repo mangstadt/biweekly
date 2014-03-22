@@ -31,15 +31,11 @@ package biweekly.property;
  * information on a timezone.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * //creating a new property
- * TimezoneUrl tzurl = new TimezoneUrl("http://example.com/tz.ics");
- * 
- * //usage in a VTIMEZONE component
  * VTimezone timezone = ...
- * timezone.getTimezoneUrl("http://example.com/tz.ics");
+ * timezone.setTimezoneUrl("http://example.com/tz.ics");
  * </pre>
  * 
  * </p>

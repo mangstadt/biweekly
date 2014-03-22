@@ -32,19 +32,12 @@ import biweekly.component.VTimezone;
  * Defines a unique identifier for a {@link VTimezone} component. The identifier
  * must be unique within the scope of the iCalendar object.
  * </p>
+ * 
  * <p>
  * Date-time properties that support timezones (such as {@link DateStart}) can
- * format their date-time values according to the rules defined in the
- * {@link VTimezone} component, and then use this ID to reference the component
- * by assigning the ID to a TZID parameter.
+ * use this ID to reference the {@link VTimezone} component that their value
+ * adheres to.
  * </p>
- * <p>
- * All properties that support timezones will have
- * {@code get/setTimezoneId()} methods. If a property has no timezone
- * assigned to it, it is written in UTC.
- * </p>
- * <p>
- * <b>Examples:</b>
  * 
  * <pre class="brush:java">
  * VTimezone timezone = new VTimezone(&quot;Eastern&quot;);
@@ -54,7 +47,12 @@ import biweekly.component.VTimezone;
  * dtStart.setTimezoneId(&quot;Eastern&quot;);
  * </pre>
  * 
+ * <p>
+ * All properties that support timezones will have {@code get/setTimezoneId()}
+ * methods. If a property has no timezone assigned to it, it is written in UTC
+ * by default.
  * </p>
+ * 
  * @author Michael Angstadt
  * @rfc 5545 p.102-3
  */

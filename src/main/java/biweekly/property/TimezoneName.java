@@ -27,17 +27,14 @@ package biweekly.property;
 
 /**
  * <p>
- * Defines a traditional, non-standard name for a timezone observance (for
- * example, "Eastern Standard Time" for standard time on the US east coast).
+ * Defines a traditional, human-readable, non-standard name for a timezone
+ * observance (for example, "Eastern Standard Time" for standard time on the US
+ * east coast).
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * //creating a new property
- * TimezoneName tzname = new TimezoneName("Eastern Standard Time");
- * 
- * //usage in a VTIMEZONE component
  * VTimezone timezone = new VTimezone("East Coast");
  * 
  * StandardTime standard = new StandardTime();

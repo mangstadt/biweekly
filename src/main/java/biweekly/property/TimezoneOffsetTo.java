@@ -29,17 +29,12 @@ import biweekly.util.UtcOffset;
 
 /**
  * <p>
- * Defines the timezone offset that is currently in use in a timezone
- * observance.
+ * Defines the timezone offset that a timezone observance uses.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * //creating a new property
- * TimezoneOffsetTo tzname = new TimezoneOffsetTo(-4, 0);
- * 
- * //usage in a VTIMEZONE component
  * VTimezone timezone = ...
  * StandardTime standard = new StandardTime();
  * standard.setTimezoneOffsetTo(-4, 0);

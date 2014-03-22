@@ -30,25 +30,39 @@ import java.util.Collection;
 
 /**
  * <p>
- * Defines whether an event is visible to free/busy time searches. If an event
- * does not have this property, the event should be considered visible
- * ("opaque").
+ * Defines whether an event is visible to free/busy time searches or not. If an
+ * event does not have this property, the event should be considered opaque
+ * (visible) to searches.
  * </p>
+ * 
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample (creating):</b>
  * 
  * <pre class="brush:java">
- * //creating a new property
+ * VEvent event = new VEvent();
+ * 
  * Transparency transp = Transparency.opaque();
+ * event.setTransparency(transp);
  * 
- * if (transp.isOpaque()) {
- *   //its value is "OPAQUE"
+ * event.setTransparency(true); //hidden from searches
+ * event.setTransparency(false); //visible to searches
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <p>
+ * <b>Code sample (retrieving):</b>
+ * 
+ * <pre class="brush:java">
+ * ICalendar ical = ...
+ * for (VEvent event : ical.getEvents()){
+ *   Transparency transp = event.getTransparency();
+ *   if (transp.isOpaque()) {
+ * 	   ...
+ *   } else if (transp.isTransparent()){
+ *     ...
+ *   }
  * }
- * 
- * //usage in a VEVENT component
- * VEvent event = ...
- * event.setTransparency(true); //hidden from searches ("TRANSPARENT")
- * event.setTransparency(false); //visible to searches ("OPAQUE")
  * </pre>
  * 
  * </p>

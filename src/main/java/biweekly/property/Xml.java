@@ -33,22 +33,8 @@ import biweekly.util.XmlUtils;
  */
 
 /**
- * <p>
- * Used for storing properties parsed from xCal documents whose XML namespaces
- * are not part of the xCal XML namespace.
- * </p>
- * <p>
- * <b>Examples:</b>
- * 
- * <pre class="brush:java">
- * //creating a new property
- * Xml xml = new Xml(&quot;&lt;company xmlns=\&quot;http://example.com\&quot;&gt;&lt;ceo&gt;John Doe&lt;/ceo&gt;&lt;name&gt;Acme Co&lt;/name&gt;&lt;/company&gt;&quot;);
- * 
- * //getting the parsed DOM
- * org.w3c.dom.Document document = xml.getValue();
- * </pre>
- * 
- * </p>
+ * Stores a property that was parsed from an xCal document (XML-encoded
+ * iCalendar object) whose XML namespace was not part of the xCal XML namespace.
  * @author Michael Angstadt
  * @rfc 6321 p.17-8
  */

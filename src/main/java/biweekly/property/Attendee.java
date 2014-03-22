@@ -44,14 +44,17 @@ import biweekly.parameter.Role;
  * </p>
  * 
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * Attendee attendee = Attendee.email("johndoe@example.com")
  * attendee.setCommonName("John Doe");
  * attendee.setRsvp(true);
  * attendee.setRole(Role.CHAIR);
  * attendee.setParticipationStatus(ParticipationStatus.ACCEPTED);
+ * event.addAttendee(attendee);
  * </pre>
  * 
  * </p>

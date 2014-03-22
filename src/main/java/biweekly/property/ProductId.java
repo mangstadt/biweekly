@@ -32,13 +32,13 @@ import biweekly.Biweekly;
  * Identifies the application that created the iCalendar object.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * ProductId prodid = new ProductId(&quot;-//Company//Application Name//EN&quot;);
- * 
  * ICalendar ical = new ICalendar();
- * ical.setProductId(&quot;-//Company//Application Name//EN&quot;);
+ * 
+ * ProductId prodid = new ProductId(&quot;-//Company//Application Name//EN&quot;);
+ * ical.setProductId(prodid);
  * </pre>
  * 
  * </p>

@@ -59,7 +59,7 @@ import biweekly.util.Recurrence;
 
 /**
  * <p>
- * Defines descriptive text associated with the calendar data.
+ * Defines a journal entry.
  * </p>
  * <p>
  * <b>Examples:</b>

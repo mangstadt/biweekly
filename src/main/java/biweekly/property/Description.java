@@ -27,15 +27,18 @@ package biweekly.property;
 
 /**
  * <p>
- * A detailed description of the component that this property belongs to. The
- * description should be a more detailed version of the text provided by the
- * {@link Summary} property.
+ * Defines a detailed description of the component that this property belongs
+ * to. The description should be a more detailed version of the text provided by
+ * the {@link Summary} property.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * Description description = new Description(&quot;description text&quot;);
+ * VEvent event = new VEvent();
+ * 
+ * Description description = new Description(&quot;During this meeting, we will discuss...&quot;);
+ * event.setDescription(description);
  * </pre>
  * 
  * </p>

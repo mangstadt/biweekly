@@ -41,7 +41,8 @@ import biweekly.util.Recurrence;
  */
 
 /**
- * Parent class for the "daylight" and "standard" timezone observances.
+ * Represents a timezone observance (i.e. "daylight savings" and "standard"
+ * times).
  * @author Michael Angstadt
  * @see DaylightSavingsTime
  * @see StandardTime

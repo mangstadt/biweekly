@@ -32,19 +32,23 @@ import biweekly.component.ICalComponent;
 
 /**
  * <p>
- * Defines an exception to a {@link RecurrenceRule}.
+ * Defines a list of exceptions to the dates specified in the
+ * {@link RecurrenceRule} property.
  * </p>
  * <p>
  * Note that this property has been removed from the latest version of the iCal
  * specification. Its use should be avoided.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * //&quot;bi-weekly&quot;
  * Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).interval(2).build();
  * ExceptionRule exrule = new ExceptionRule(recur);
+ * event.addExceptionRule(exrule);
  * </pre>
  * 
  * </p>

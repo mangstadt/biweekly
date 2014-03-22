@@ -29,16 +29,13 @@ import biweekly.util.UtcOffset;
 
 /**
  * <p>
- * Defines the timezone offset that was in use before a timezone observance.
+ * Defines the timezone offset that was in affect before the timezone observance
+ * began.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * //creating a new property
- * TimezoneOffsetFrom tzname = new TimezoneOffsetFrom(-5, 0);
- * 
- * //usage in a VTIMEZONE component
  * VTimezone timezone = ...
  * StandardTime standard = new StandardTime();
  * standard.setTimezoneOffsetFrom(-5, 0);

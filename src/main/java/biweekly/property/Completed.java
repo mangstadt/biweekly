@@ -32,11 +32,14 @@ import java.util.Date;
  * Defines the date and time that a to-do task was completed.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VTodo todo = new VTodo();
+ * 
  * Date datetime = ...
  * Completed completed = new Completed(datetime);
+ * todo.setCompleted(completed);
  * </pre>
  * 
  * </p>

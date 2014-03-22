@@ -31,8 +31,8 @@ import biweekly.component.ICalComponent;
  */
 
 /**
- * Represents a property whose data model consists of a single object (such as a
- * String).
+ * Represents a property whose data model consists of a single Java object (such
+ * as a String).
  * @author Michael Angstadt
  * @param <T> the value type (e.g. String)
  */

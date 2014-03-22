@@ -32,11 +32,9 @@ package biweekly.property;
  * component.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * Sequence sequence = new Sequence(2);
- * 
  * VEvent event = ...
  * event.setSequence(2);
  * </pre>

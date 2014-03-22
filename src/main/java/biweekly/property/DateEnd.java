@@ -31,28 +31,70 @@ import biweekly.util.DateTimeComponents;
 
 /**
  * <p>
- * Defines the date that an event or free/busy component ends.
+ * Defines the end date of an event or free/busy component.
  * </p>
+ * 
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample (creating):</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * //date and time
  * Date datetime = ...
  * DateEnd dtend = new DateEnd(datetime);
+ * event.setDateEnd(dtend);
  * 
  * //date (without time component)
  * Date date = ...
- * DateEnd dtend = new DateEnd(date, false);
+ * dtend = new DateEnd(date, false);
+ * event.setDateEnd(dtend);
  * 
- * //with timezone (will output the Date object in the specified timezone)
+ * //date and time with timezone (Date object converted to the specified timezone when writing the iCalendar object)
  * Date datetime = ... 
- * DateEnd dtend = new DateEnd(datetime); 
+ * dtend = new DateEnd(datetime); 
  * dtend.setTimezoneId("America/New_York");
+ * event.setDateEnd(dtend);
  * 
- * //raw components 
+ * //raw date/time components 
  * DateTimeComponents components = new DateTimeComponents(1999, 4, 4, 2, 0, 0, false);
- * DateEnd dtend = new DateEnd(components);
+ * dtend = new DateEnd(components);
+ * event.setDateEnd(dtend);
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <b>Code sample (retrieving):</b>
+ * 
+ * <pre class="brush:java">
+ * ICalendar ical = ...
+ * for (VEvent event : ical.getEvents()){
+ *   DateEnd dtend = event.getDateEnd();
+ *   
+ *   //get the raw date/time components from the date string
+ *   DateTimeComponents components = dtend.getRawComponents();
+ *   int year = components.getYear();
+ *   int month = components.getMonth();
+ *   //etc.
+ *   
+ *   //get the Java Date object that was generated based on the provided timezone
+ *   Date value = dtend.getValue();
+ *   
+ *   if (dtend.hasTime()){
+ *     //the value includes a time component
+ *     
+ *     if (dtend.isLocalTime()){
+ *       //timezone information was not provided
+ *       //Java Date object was parsed under the local computer's default timezone
+ *     } else {
+ *       //timezone information was provided
+ *       //Java Date object was parsed under the provided timezone (if recognized)
+ *     }
+ *   } else {
+ *     //the value is just a date
+ *     //Java Date object's time is set to "00:00:00" under the local computer's default timezone
+ *   }
+ * }
  * </pre>
  * 
  * </p>

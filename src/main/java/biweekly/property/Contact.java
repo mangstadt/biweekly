@@ -27,14 +27,17 @@ package biweekly.property;
 
 /**
  * <p>
- * Defines contact information for a person or other entity (for example, the
- * name of a business and its phone number).
+ * Defines the contact information for a person or other entity (for example,
+ * the name of a business and its phone number).
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * Contact contact = new Contact(&quot;Acme Co: (212) 555-1234&quot;);
+ * event.addContact(contact);
  * </pre>
  * 
  * </p>

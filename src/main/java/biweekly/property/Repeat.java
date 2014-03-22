@@ -32,12 +32,10 @@ package biweekly.property;
  * length of the pause between repeats.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
  * //repeat 5 more times after the first time
- * Repeat relatedTo = new Repeat(5);
- * 
  * VAlarm alarm = ...;
  * alarm.setRepeat(5);
  * </pre>

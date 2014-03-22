@@ -47,8 +47,8 @@ import biweekly.util.Duration;
 
 /**
  * <p>
- * Defines a collection of time ranges that describe when the person is
- * available or unavailable.
+ * Defines a collection of time ranges that describe when a person is available
+ * and unavailable.
  * </p>
  * <p>
  * <b>Examples:</b>

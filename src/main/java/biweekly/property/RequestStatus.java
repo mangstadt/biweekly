@@ -32,12 +32,11 @@ import biweekly.component.ICalComponent;
 
 /**
  * <p>
- * Represents a response to a scheduling request, describing whether the request
- * was successfully processed or not.
+ * Represents a response to a scheduling request.
  * </p>
  * <p>
- * Each property instance has a status code. The following status code families
- * are defined:
+ * This property must have a status code defined. The following status code
+ * families are defined:
  * <ul>
  * <li><b>1.x</b> - The request has been received, but is still being processed.
  * </li>
@@ -48,11 +47,14 @@ import biweekly.component.ICalComponent;
  * </ul>
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * RequestStatus requestStatus = new RequestStatus(&quot;2.0&quot;);
  * requestStatus.setDescription(&quot;Success&quot;);
+ * event.setRequestStatus(requestStatus);
  * </pre>
  * 
  * </p>

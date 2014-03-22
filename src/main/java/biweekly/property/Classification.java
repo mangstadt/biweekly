@@ -33,15 +33,31 @@ import java.util.Collection;
  * Defines the level of sensitivity of the iCalendar data. If not specified, the
  * data should be considered "public".
  * </p>
+ * 
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample (creating):</b>
  * 
  * <pre class="brush:java">
- * //creating a new property
- * Classification classification = Classification.public_();
+ * VEvent event = new VEvent();
+ * event.setClassification(Classification.public_());
+ * </pre>
  * 
+ * </p>
+ * 
+ * <p>
+ * <b>Code sample (retrieving):</b>
+ * 
+ * <pre class="brush:java">
+ * ICalendar ical = ...
+ * VEvent event = ical.getEvents().get(0);
+ * 
+ * Classification classification = event.getClassification();
  * if (classification.isPublic()) {
- * 	//its value is &quot;PUBLIC&quot;
+ * 	 ...
+ * } else if (classification.isPrivate()){
+ *   ...
+ * } else if (classification.isConfidential()){
+ *   ...
  * }
  * </pre>
  * 

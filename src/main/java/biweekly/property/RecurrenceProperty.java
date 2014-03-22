@@ -32,7 +32,7 @@ import biweekly.util.Recurrence;
  */
 
 /**
- * Defines a property whose value is a recurrence rule.
+ * Represents a property whose value is a recurrence rule.
  * @author Michael Angstadt
  */
 public class RecurrenceProperty extends ValuedProperty<Recurrence> {

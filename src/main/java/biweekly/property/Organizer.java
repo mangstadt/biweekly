@@ -32,8 +32,8 @@ import biweekly.component.VTodo;
 
 /**
  * <p>
- * Defines an organizer. This property has different meanings depending on the
- * component it belongs to:
+ * This property has different meanings depending on the component it belongs
+ * to:
  * <ul>
  * <li>{@link VEvent} - The organizer of the event.</li>
  * <li>{@link VTodo} - The creator of the to-do task.</li>
@@ -42,11 +42,14 @@ import biweekly.component.VTodo;
  * </ul>
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * Organizer organizer = Organizer.email(&quot;johndoe@example.com&quot;);
  * organizer.setCommonName(&quot;John Doe&quot;);
+ * event.setOrganizer(organizer);
  * </pre>
  * 
  * </p>

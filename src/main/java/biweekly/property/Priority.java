@@ -30,17 +30,13 @@ package biweekly.property;
  * Defines the priority of an event or to-do task.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * //highest
- * Priority priority = new Priority(1);
+ * VEvent event = new VEvent();
  * 
- * //lowest
- * Priority priority = new Priority(9);
- * 
- * VTodo todo = new VTodo();
- * todo.setPriority(1);
+ * event.setPriority(1); //highest
+ * event.setPriority(9); //lowest
  * </pre>
  * 
  * </p>

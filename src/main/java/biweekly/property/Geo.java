@@ -35,10 +35,13 @@ import biweekly.component.ICalComponent;
  * Defines a set of geographical coordinates.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * Geo geo = new Geo(40.714623, -74.006605);
+ * event.setGeo(geo);
  * </pre>
  * 
  * </p>

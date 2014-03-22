@@ -29,14 +29,17 @@ import java.util.List;
 
 /**
  * <p>
- * Defines a list of resources that are needed for an event or to-do task (for
- * example a projector or DVD player).
+ * Defines a list of physical resources that are needed for an event or to-do
+ * task (for example, a "projector" or "DVD player").
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * Resources resources = new Resources(&quot;projector&quot;, &quot;DVD player&quot;);
+ * event.addResources(resources);
  * </pre>
  * 
  * </p>

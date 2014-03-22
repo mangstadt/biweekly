@@ -2,6 +2,8 @@ package biweekly.property;
 
 import java.util.Date;
 
+import biweekly.util.DateTimeComponents;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -29,24 +31,70 @@ import java.util.Date;
 
 /**
  * <p>
- * Defines the date that a to-do task is due by.
+ * Defines the due date of a to-do task.
  * </p>
+ * 
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample (creating):</b>
  * 
  * <pre class="brush:java">
+ * VTodo todo = new VTodo();
+ * 
  * //date and time
  * Date datetime = ...
  * DateDue due = new DateDue(datetime);
+ * todo.setDateDue(due);
  * 
- * //date
+ * //date (without time component)
  * Date date = ...
- * DateDue due = new DateDue(date, false);
+ * due = new DateDue(date, false);
+ * todo.setDateDue(due);
  * 
- * //with timezone 
+ * //date and time with timezone (Date object converted to the specified timezone when writing the iCalendar object)
  * Date datetime = ... 
- * DateDue due = new DateDue(datetime); 
+ * due = new DateDue(datetime); 
  * due.setTimezoneId("America/New_York");
+ * todo.setDateDue(due);
+ * 
+ * //raw date/time components 
+ * DateTimeComponents components = new DateTimeComponents(1999, 4, 4, 2, 0, 0, false);
+ * due = new DateDue(components);
+ * todo.setDateDue(due);
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <b>Code sample (retrieving):</b>
+ * 
+ * <pre class="brush:java">
+ * ICalendar ical = ...
+ * for (VTodo todo : ical.getTodos()){
+ *   DateDue due = todo.getDateDue();
+ *   
+ *   //get the raw date/time components from the date string
+ *   DateTimeComponents components = due.getRawComponents();
+ *   int year = components.getYear();
+ *   int month = components.getMonth();
+ *   //etc.
+ *   
+ *   //get the Java Date object that was generated based on the provided timezone
+ *   Date value = due.getValue();
+ *   
+ *   if (due.hasTime()){
+ *     //the value includes a time component
+ *     
+ *     if (due.isLocalTime()){
+ *       //timezone information was not provided
+ *       //Java Date object was parsed under the local computer's default timezone
+ *     } else {
+ *       //timezone information was provided
+ *       //Java Date object was parsed under the provided timezone (if recognized)
+ *     }
+ *   } else {
+ *     //the value is just a date
+ *     //Java Date object's time is set to "00:00:00" under the local computer's default timezone
+ *   }
+ * }
  * </pre>
  * 
  * </p>
@@ -70,5 +118,13 @@ public class DateDue extends DateOrDateTimeProperty {
 	 */
 	public DateDue(Date dueDate, boolean hasTime) {
 		super(dueDate, hasTime);
+	}
+
+	/**
+	 * Creates an due date property.
+	 * @param components the raw components of the date-time value
+	 */
+	public DateDue(DateTimeComponents components) {
+		super(components);
 	}
 }

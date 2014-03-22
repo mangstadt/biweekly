@@ -27,7 +27,7 @@ package biweekly.component;
 
 /**
  * <p>
- * Defines a daylight savings time range within a {@link VTimezone}.
+ * Defines the date range of a timezone's daylight savings time.
  * </p>
  * <p>
  * <b>Examples:</b>

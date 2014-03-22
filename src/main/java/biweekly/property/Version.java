@@ -32,19 +32,21 @@ import biweekly.component.ICalComponent;
 
 /**
  * <p>
- * Specifies the min/max versions a consumer must support in order to
+ * Defines the min/max iCalendar versions a consumer must support in order to
  * successfully parse the iCalendar object.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * //the default iCal version
- * Version version = Version.v2_0();
+ * ICalendar ical = new ICalendar();
  * 
- * if (verison.isV2_0()) {
- * 	//version is &quot;2.0&quot;
- * }
+ * //all ICalendar objects are given a VERSION property on creation
+ * ical.getVersion(); //&quot;2.0&quot;
+ * 
+ * //get the default iCal version
+ * Version version = Version.v2_0();
+ * ical.setVersion(version);
  * </pre>
  * 
  * </p>

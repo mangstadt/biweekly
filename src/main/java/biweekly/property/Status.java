@@ -31,17 +31,34 @@ import java.util.Collection;
 /**
  * <p>
  * Defines the status of the component that this property belongs to, such as a
- * to-do task being in a "completed" state.
+ * to-do task being "completed".
  * </p>
+ * 
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample (creating):</b>
  * 
  * <pre class="brush:java">
- * //creating a new property
- * Status status = Status.completed();
+ * VTodo todo = new VTodo();
  * 
- * if (status.isCompleted()) {
- * 	//its value is &quot;COMPLETED&quot;
+ * Status status = Status.completed();
+ * todo.setStatus(status);
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <p>
+ * <b>Code sample (retrieving):</b>
+ * 
+ * <pre class="brush:java">
+ * ICalendar ical = ...
+ * for (VTodo todo : ical.getTodos()){
+ *   Status status = todo.getStatus();
+ *   if (action.isCompleted()) {
+ * 	   ...
+ *   } else if (action.isDraft()){
+ *     ...
+ *   }
+ *   //etc.
  * }
  * </pre>
  * 

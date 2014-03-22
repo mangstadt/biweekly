@@ -26,7 +26,7 @@ package biweekly.component;
  */
 
 /**
- * A component that does not have a marshaller associated with it.
+ * Represents a component that does not have a marshaller associated with it.
  * @author Michael Angstadt
  */
 public class RawComponent extends ICalComponent {

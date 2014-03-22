@@ -29,14 +29,16 @@ import java.util.List;
 
 /**
  * <p>
- * Defines a list of "tags" or "keywords" that describe the component.
+ * Defines a list of keywords that describe the component to which it belongs.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * //creating a new property (multi-valued)
+ * VEvent event = new VEvent();
+ * 
  * Categories categories = new Categories(&quot;conference&quot;, &quot;meeting&quot;);
+ * event.addCategories(categories);
  * </pre>
  * 
  * </p>

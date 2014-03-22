@@ -37,7 +37,7 @@ import biweekly.util.ListMultimap;
  */
 
 /**
- * The base class for iCalendar components.
+ * Base class for all iCalendar components.
  * @author Michael Angstadt
  */
 public abstract class ICalComponent {

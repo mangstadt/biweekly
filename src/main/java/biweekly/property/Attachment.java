@@ -36,23 +36,29 @@ import biweekly.util.IOUtils;
 
 /**
  * <p>
- * Represents a binary resource that is associated with an event, to-do, journal
- * entry, or alarm.
+ * Defines a binary resource that is associated with the component to which it
+ * belongs (such as an image or document).
  * </p>
  * 
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * //from a byte array
  * byte[] data = ...
- * Attachment attach = new Attachment("image/png", data);
+ * Attachment attach = new Attachment(&quot;image/png&quot;, data);
+ * event.addAttachment(attach);
  * 
- * //reading from a file 
- * Attachment attach = new Attachment(&quot;image/png&quot;, new File(&quot;image.png&quot;));
+ * //from a file 
+ * File file = new File(&quot;image.png&quot;);
+ * attach = new Attachment(&quot;image/png&quot;, file);
+ * event.addAttachment(attach);
  * 
  * //referencing a URL
- * Attachment attach = new Attachment(&quot;image/png&quot;, &quot;http://example.com/image.png&quot;);
+ * attach = new Attachment(&quot;image/png&quot;, &quot;http://example.com/image.png&quot;);
+ * event.addAttachment(attach);
  * </pre>
  * 
  * </p>

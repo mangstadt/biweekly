@@ -32,8 +32,8 @@ import biweekly.util.Duration;
 
 /**
  * <p>
- * Defines a duration of time (for example, "2 hours and 30 minutes"). It has
- * different meanings depending on the component it belongs to:
+ * Defines a duration of time (for example, "2 hours and 30 minutes"). This
+ * property has different meanings depending on the component it belongs to:
  * <ul>
  * <li>{@link VEvent} - The duration of the event (used in place of a
  * {@link DateEnd} property).</li>
@@ -44,11 +44,14 @@ import biweekly.util.Duration;
  * </p>
  * 
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * Duration duration = Duration.builder().hours(2).minutes(30).build();
  * DurationProperty prop = new DurationProperty(duration);
+ * event.setDuration(prop);
  * </pre>
  * 
  * </p>

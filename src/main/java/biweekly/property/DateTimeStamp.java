@@ -32,20 +32,24 @@ import java.util.Date;
  * The meaning of this property varies depending on the state of the iCalendar
  * object:
  * <ul>
- * <li><b>If a {@link Method} property exists</b>: Defines the creation date of
- * the iCalendar object (not the creation date of the actual calendar data). Use
- * the {@link Created} property to define the date that the calendar data was
- * last created.</li>
- * <li><b>Otherwise</b> - Defines the date that the calendar data was last
- * modified (the {@link LastModified} property also holds this information).</li>
+ * <li><b>If a {@link Method} property exists</b>, this property defines the
+ * creation date of the iCalendar object (not the creation date of the actual
+ * calendar data). Use the {@link Created} property to define the date that the
+ * calendar data was last created.</li>
+ * <li><b>Otherwise</b>, this property defines the date that the calendar data
+ * was last modified (the {@link LastModified} property also holds this
+ * information).</li>
  * </ul>
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * Date datetime = ... 
  * DateTimeStamp dtstamp = new DateTimeStamp(datetime);
+ * event.setDateTimeStamp(dtstamp);
  * </pre>
  * 
  * </p>

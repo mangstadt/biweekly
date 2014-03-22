@@ -29,15 +29,17 @@ import java.util.Date;
 
 /**
  * <p>
- * Defines the date and time that the calendar data in a component was last
- * changed.
+ * Defines the time that the calendar data in a component was last changed.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
+ * VEvent event = new VEvent();
+ * 
  * Date datetime = ...
  * LastModified lastModified = new LastModified(datetime);
+ * event.setLastModified(lastModified);
  * </pre>
  * 
  * </p>

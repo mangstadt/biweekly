@@ -35,13 +35,13 @@ import biweekly.component.ICalComponent;
  * Defines a to-do task's level of completion.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * PercentComplete percentComplete = new PercentComplete(50); //50%
- * 
  * VTodo todo = new VTodo();
- * todo.setPercentComplete(50);
+ * 
+ * PercentComplete percentComplete = new PercentComplete(50); //50%
+ * todo.setPercentComplete(percentComplete);
  * </pre>
  * 
  * </p>
