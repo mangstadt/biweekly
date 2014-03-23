@@ -1054,7 +1054,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		 * @throws IllegalArgumentException if the date string is invalid
 		 */
 		public Date parse() {
-			return ICalDateFormatter.parse(value, timezone);
+			return ISOFormat.parse(value, timezone);
 		}
 	}
 
@@ -1165,14 +1165,14 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 				if (timezone == null) {
 					format = extended ? ISOFormat.UTC_TIME_EXTENDED : ISOFormat.UTC_TIME_BASIC;
 				} else {
-					format = extended ? ISOFormat.TIME_EXTENDED_WITHOUT_TZ : ISOFormat.TIME_BASIC_WITHOUT_TZ;
+					format = extended ? ISOFormat.DATE_TIME_EXTENDED_WITHOUT_TZ : ISOFormat.DATE_TIME_BASIC_WITHOUT_TZ;
 				}
 			} else {
 				format = extended ? ISOFormat.DATE_EXTENDED : ISOFormat.DATE_BASIC;
 				timezone = null;
 			}
 
-			return ICalDateFormatter.format(date, format, timezone);
+			return format.format(date, timezone);
 		}
 	}
 

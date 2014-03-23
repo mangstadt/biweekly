@@ -1,7 +1,11 @@
 package biweekly.util;
 
 import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 /*
@@ -39,47 +43,103 @@ public enum ISOFormat {
 	/**
 	 * Example: 20120701
 	 */
-	DATE_BASIC("\\d{8}","yyyyMMdd"),
+	DATE_BASIC(
+	"\\d{8}",
+	"yyyyMMdd"),
 	
 	/**
 	 * Example: 2012-07-01
 	 */
-	DATE_EXTENDED("\\d{4}-\\d{2}-\\d{2}", "yyyy-MM-dd"),
+	DATE_EXTENDED(
+	"\\d{4}-\\d{2}-\\d{2}",
+	"yyyy-MM-dd"),
 	
 	/**
 	 * Example: 20120701T142110-0500
 	 */
-	TIME_BASIC("\\d{8}T\\d{6}[-\\+]\\d{4}", "yyyyMMdd'T'HHmmssZ"),
+	DATE_TIME_BASIC(
+	"\\d{8}T\\d{6}[-\\+]\\d{4}",
+	"yyyyMMdd'T'HHmmssZ"),
 	
 	/**
 	 * Example: 20120701T142110
 	 */
-	TIME_BASIC_WITHOUT_TZ("\\d{8}T\\d{6}", "yyyyMMdd'T'HHmmss"),
+	DATE_TIME_BASIC_WITHOUT_TZ(
+	"\\d{8}T\\d{6}",
+	"yyyyMMdd'T'HHmmss"),
 	
 	/**
 	 * Example: 2012-07-01T14:21:10-05:00
 	 */
-	TIME_EXTENDED("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-\\+]\\d{2}:\\d{2}", "yyyy-MM-dd'T'HH:mm:ssZ"),
+	DATE_TIME_EXTENDED(
+	"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-\\+]\\d{2}:\\d{2}",
+	"yyyy-MM-dd'T'HH:mm:ssZ"){
+		@SuppressWarnings("serial")
+		@Override
+		public DateFormat getDateFormat(TimeZone timezone) {
+			DateFormat df = new SimpleDateFormat(formatStr){
+				@Override
+				public Date parse(String str) throws ParseException {
+					//SimpleDateFormat doesn't recognize timezone offsets that have colons
+					//so remove the colon from the timezone offset
+					str = str.replaceAll("([-\\+]\\d{2}):(\\d{2})$", "$1$2");
+					
+					return super.parse(str);
+				}
+				
+				@Override
+				public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition){
+					StringBuffer sb = super.format(date, toAppendTo, fieldPosition);
+					
+					//add a colon between the hour and minute offsets
+					sb.insert(sb.length()-2, ':');
+					
+					return sb;
+				}
+			};
+			
+			if (timezone != null){
+				df.setTimeZone(timezone);
+			}
+			
+			return df;
+		}
+	},
 	
 	/**
 	 * Example: 2012-07-01T14:21:10
 	 */
-	TIME_EXTENDED_WITHOUT_TZ("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}", "yyyy-MM-dd'T'HH:mm:ss"),
+	DATE_TIME_EXTENDED_WITHOUT_TZ(
+	"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}",
+	"yyyy-MM-dd'T'HH:mm:ss"),
 	
 	/**
 	 * Example: 20120701T192110Z
 	 */
-	UTC_TIME_BASIC("\\d{8}T\\d{6}Z", "yyyyMMdd'T'HHmmssZ", "yyyyMMdd'T'HHmmss'Z'"),
+	UTC_TIME_BASIC(
+	"\\d{8}T\\d{6}Z",
+	"yyyyMMdd'T'HHmmss'Z'"){
+		@Override
+		public DateFormat getDateFormat(TimeZone timezone) {
+			//always use the UTC timezone
+			timezone = TimeZone.getTimeZone("UTC");
+			return super.getDateFormat(timezone);
+		}
+	},
 	
 	/**
 	 * Example: 2012-07-01T19:21:10Z
 	 */
-	UTC_TIME_EXTENDED("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z", "yyyy-MM-dd'T'HH:mm:ssZ", "yyyy-MM-dd'T'HH:mm:ss'Z'"),
-	
-	/**
-	 * Example: 2012-07-01T14:21:10-0500
-	 */
-	HCARD_TIME_TAG("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-\\+]\\d{2}:?\\d{2}", "yyyy-MM-dd'T'HH:mm:ssZ");
+	UTC_TIME_EXTENDED(
+	"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z",
+	"yyyy-MM-dd'T'HH:mm:ss'Z'"){
+		@Override
+		public DateFormat getDateFormat(TimeZone timezone) {
+			//always use the UTC timezone
+			timezone = TimeZone.getTimeZone("UTC");
+			return super.getDateFormat(timezone);
+		}
+	};
 	//@formatter:on
 
 	/**
@@ -90,33 +150,16 @@ public enum ISOFormat {
 	/**
 	 * The {@link SimpleDateFormat} format string used for parsing dates.
 	 */
-	private final String parseFormat;
-
-	/**
-	 * The {@link SimpleDateFormat} format string used for formatting dates.
-	 */
-	private final String formatFormat;
+	protected final String formatStr;
 
 	/**
 	 * @param regex the regular expression for the date format
-	 * @param format the {@link SimpleDateFormat} format string used for parsing
-	 * and formatting dates.
-	 */
-	private ISOFormat(String regex, String format) {
-		this(regex, format, format);
-	}
-
-	/**
-	 * @param regex the regular expression for the date format
-	 * @param parseFormat the {@link SimpleDateFormat} format string used for
+	 * @param formatStr the {@link SimpleDateFormat} format string used for
 	 * parsing dates.
-	 * @param formatFormat the {@link SimpleDateFormat} format string used for
-	 * formatting dates.
 	 */
-	private ISOFormat(String regex, String parseFormat, String formatFormat) {
+	private ISOFormat(String regex, String formatStr) {
 		pattern = Pattern.compile(regex);
-		this.parseFormat = parseFormat;
-		this.formatFormat = formatFormat;
+		this.formatStr = formatStr;
 	}
 
 	/**
@@ -129,19 +172,103 @@ public enum ISOFormat {
 	}
 
 	/**
-	 * Builds a {@link DateFormat} object for parsing dates in this ISO format.
+	 * Builds a {@link DateFormat} object for parsing and formating dates in
+	 * this ISO format.
 	 * @return the {@link DateFormat} object
 	 */
-	public DateFormat getParseDateFormat() {
-		return new SimpleDateFormat(parseFormat);
+	public DateFormat getDateFormat() {
+		return getDateFormat(null);
 	}
 
 	/**
-	 * Builds a {@link DateFormat} object for formatting dates in this ISO
-	 * format.
+	 * Builds a {@link DateFormat} object for parsing and formating dates in
+	 * this ISO format.
+	 * @param timezone the timezone the date is in or null for the default
+	 * timezone
 	 * @return the {@link DateFormat} object
 	 */
-	public DateFormat getFormatDateFormat() {
-		return new SimpleDateFormat(formatFormat);
+	public DateFormat getDateFormat(TimeZone timezone) {
+		DateFormat df = new SimpleDateFormat(formatStr);
+		if (timezone != null) {
+			df.setTimeZone(timezone);
+		}
+		return df;
+	}
+
+	/**
+	 * Formats a date in this ISO format.
+	 * @param date the date to format
+	 * @return the date string
+	 */
+	public String format(Date date) {
+		return format(date, null);
+	}
+
+	/**
+	 * Formats a date in this ISO format.
+	 * @param date the date to format
+	 * @param timezone the timezone to format the date in or null for the
+	 * default timezone
+	 * @return the date string
+	 */
+	public String format(Date date, TimeZone timezone) {
+		DateFormat df = getDateFormat(timezone);
+		return df.format(date);
+	}
+
+	/**
+	 * Determines the ISO format a date string is in.
+	 * @param dateStr the date string (e.g. "20140322T120000Z")
+	 * @return the ISO format (e.g. DATETIME_BASIC) or null if not found
+	 */
+	public static ISOFormat find(String dateStr) {
+		for (ISOFormat format : values()) {
+			if (format.matches(dateStr)) {
+				return format;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Parses an iCalendar date.
+	 * @param dateStr the date string to parse (e.g. "20130609T181023Z")
+	 * @return the parsed date
+	 * @throws IllegalArgumentException if the date string isn't in one of the
+	 * accepted ISO8601 formats
+	 */
+	public static Date parse(String dateStr) {
+		return parse(dateStr, null);
+	}
+
+	/**
+	 * Parses an iCalendar date.
+	 * @param dateStr the date string to parse (e.g. "20130609T181023Z")
+	 * @param timezone the timezone to parse the date as or null to use the
+	 * JVM's default timezone (if the date string contains its own timezone,
+	 * then that timezone will be used instead)
+	 * @return the parsed date
+	 * @throws IllegalArgumentException if the date string isn't in one of the
+	 * accepted ISO8601 formats
+	 */
+	public static Date parse(String dateStr, TimeZone timezone) {
+		//determine which ISOFormat the date is in
+		ISOFormat format = find(dateStr);
+		if (format == null) {
+			throw parseException(dateStr);
+		}
+
+		//parse the date
+		DateFormat df = format.getDateFormat(timezone);
+		try {
+			return df.parse(dateStr);
+		} catch (ParseException e) {
+			//should never be thrown because the string is checked against a regex before being parsed
+			throw parseException(dateStr);
+		}
+	}
+
+	private static IllegalArgumentException parseException(String dateStr) {
+		return new IllegalArgumentException("Date string \"" + dateStr + "\" is not in a valid ISO-8601 format.");
 	}
 }
