@@ -36,14 +36,13 @@ import java.util.Map;
  * Represents a recurrence rule value.
  * </p>
  * <p>
- * This class is immutable. Use the {@link Builder} object to construct a new
- * instance.
+ * This class is immutable. Use the inner class {@link Builder} to construct a
+ * new instance.
  * </p>
  * <p>
- * <b>Examples:</b>
+ * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * //&quot;bi-weekly&quot;
  * Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY).interval(2).build();
  * Recurrence copy = new Recurrence.Builder(rrule).interval(3).build();
  * </pre>
@@ -90,8 +89,10 @@ public final class Recurrence {
 		workweekStarts = builder.workweekStarts;
 
 		Map<String, List<String>> map = builder.xrules.getMap();
-		for (String key : map.keySet()) {
-			List<String> value = map.get(key);
+		for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+			String key = entry.getKey();
+			List<String> value = entry.getValue();
+
 			map.put(key, Collections.unmodifiableList(value));
 		}
 		xrules = Collections.unmodifiableMap(map);
