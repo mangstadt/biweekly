@@ -48,7 +48,7 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 
 	@Override
 	protected String _writeText(T property) {
-		UtcOffset offset = property.getOffset();
+		UtcOffset offset = property.getValue();
 		if (offset != null) {
 			return offset.toString(false);
 		}
@@ -66,7 +66,7 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 	protected void _writeXml(T property, XCalElement element) {
 		String offsetStr = null;
 
-		UtcOffset offset = property.getOffset();
+		UtcOffset offset = property.getValue();
 		if (offset != null) {
 			offsetStr = offset.toString(true);
 		}
@@ -86,7 +86,7 @@ public abstract class UtcOffsetPropertyMarshaller<T extends UtcOffsetProperty> e
 
 	@Override
 	protected JCalValue _writeJson(T property) {
-		UtcOffset offset = property.getOffset();
+		UtcOffset offset = property.getValue();
 		if (offset != null) {
 			return JCalValue.single(offset.toString(true));
 		}

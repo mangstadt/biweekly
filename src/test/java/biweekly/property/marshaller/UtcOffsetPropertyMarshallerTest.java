@@ -101,7 +101,7 @@ public class UtcOffsetPropertyMarshallerTest {
 	private Check<UtcOffsetPropertyImpl> is(final UtcOffsetPropertyImpl expected) {
 		return new Check<UtcOffsetPropertyImpl>() {
 			public void check(UtcOffsetPropertyImpl actual) {
-				assertEquals(expected.getOffset(), actual.getOffset());
+				assertEquals(expected.getValue(), actual.getValue());
 			}
 		};
 	}

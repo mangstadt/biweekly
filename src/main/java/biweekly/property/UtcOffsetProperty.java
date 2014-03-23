@@ -35,43 +35,31 @@ import biweekly.util.UtcOffset;
  * Represents a property whose value is a timezone offset.
  * @author Michael Angstadt
  */
-public class UtcOffsetProperty extends ICalProperty {
-	protected UtcOffset offset;
-
+public class UtcOffsetProperty extends ValuedProperty<UtcOffset> {
 	public UtcOffsetProperty(int hourOffset, int minuteOffset) {
 		this(new UtcOffset(hourOffset, minuteOffset));
 	}
 
 	public UtcOffsetProperty(UtcOffset offset) {
-		this.offset = offset;
+		super(offset);
 	}
 
-	public int getHourOffset() {
-		return (offset == null) ? null : offset.getHour();
+	public Integer getHourOffset() {
+		return (value == null) ? null : value.getHour();
 	}
 
-	public int getMinuteOffset() {
-		return (offset == null) ? null : offset.getMinute();
+	public Integer getMinuteOffset() {
+		return (value == null) ? null : value.getMinute();
 	}
 
-	public UtcOffset getOffset() {
-		return offset;
-	}
-
-	public void setOffset(int hourOffset, int minuteOffset) {
-		setOffset(new UtcOffset(hourOffset, minuteOffset));
-	}
-
-	public void setOffset(UtcOffset offset) {
-		this.offset = offset;
+	public void setValue(int hourOffset, int minuteOffset) {
+		setValue(new UtcOffset(hourOffset, minuteOffset));
 	}
 
 	@Override
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
-		if (offset == null) {
-			warnings.add(Warning.validate(26));
-		}
-		if (offset != null && (offset.getMinute() < 0 || offset.getMinute() > 59)) {
+		super.validate(components, warnings);
+		if (value != null && (value.getMinute() < 0 || value.getMinute() > 59)) {
 			warnings.add(Warning.validate(34));
 		}
 	}
