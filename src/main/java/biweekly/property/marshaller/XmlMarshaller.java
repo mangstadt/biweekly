@@ -112,7 +112,7 @@ public class XmlMarshaller extends ICalPropertyMarshaller<Xml> {
 	protected Xml _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 		try {
 			String xml = value.asSingle();
-			return (xml.length() == 0) ? new Xml((Document) null) : new Xml(xml);
+			return new Xml(xml);
 		} catch (SAXException e) {
 			throw new CannotParseException(29);
 		}
