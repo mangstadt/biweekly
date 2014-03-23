@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
 import org.junit.ClassRule;
@@ -58,32 +57,20 @@ public class ISOFormatTest {
 			datetime = cal.getTime();
 		}
 
-		//@formatter:off
-		Object[][] tests = new Object[][]{
-			new Object[]{"20060102", ISOFormat.DATE_BASIC},
-			new Object[]{"2006-01-02", ISOFormat.DATE_EXTENDED},
-			new Object[]{"20060102T102030+0100", ISOFormat.DATE_TIME_BASIC},
-			new Object[]{"2006-01-02T10:20:30+01:00", ISOFormat.DATE_TIME_EXTENDED},
-			new Object[]{"20060102T102030", ISOFormat.DATE_TIME_BASIC_WITHOUT_TZ},
-			new Object[]{"2006-01-02T10:20:30", ISOFormat.DATE_TIME_EXTENDED_WITHOUT_TZ},
-			new Object[]{"20060102T092030Z", ISOFormat.UTC_TIME_BASIC},
-			new Object[]{"2006-01-02T09:20:30Z", ISOFormat.UTC_TIME_EXTENDED},
-		};
-		//@formatter:off
-		
-		for (Object[] test : tests){
-			String expected = (String)test[0];
-			ISOFormat format = (ISOFormat)test[1];
-			
-			String actual = format.getDateFormat().format(datetime);
-			assertEquals(expected, actual);
-		}
+		assertEquals("20060102", ISOFormat.DATE_BASIC.format(datetime));
+		assertEquals("2006-01-02", ISOFormat.DATE_EXTENDED.format(datetime));
+		assertEquals("20060102T102030+0100", ISOFormat.DATE_TIME_BASIC.format(datetime));
+		assertEquals("2006-01-02T10:20:30+01:00", ISOFormat.DATE_TIME_EXTENDED.format(datetime));
+		assertEquals("20060102T102030", ISOFormat.DATE_TIME_BASIC_WITHOUT_TZ.format(datetime));
+		assertEquals("2006-01-02T10:20:30", ISOFormat.DATE_TIME_EXTENDED_WITHOUT_TZ.format(datetime));
+		assertEquals("20060102T092030Z", ISOFormat.UTC_TIME_BASIC.format(datetime));
+		assertEquals("2006-01-02T09:20:30Z", ISOFormat.UTC_TIME_EXTENDED.format(datetime));
 	}
-	
+
 	@Test
-	public void format_timezone(){
+	public void format_timezone() {
 		TimeZone timezone = buildTimezone(-2, 0);
-		
+
 		Date datetime;
 		{
 			Calendar cal = Calendar.getInstance();
@@ -96,9 +83,8 @@ public class ISOFormatTest {
 			cal.set(Calendar.SECOND, 30);
 			datetime = cal.getTime();
 		}
-		
-		String actual = ISOFormat.DATE_TIME_BASIC.getDateFormat(timezone).format(datetime);
-		assertEquals("20060102T072030-0200", actual);
+
+		assertEquals("20060102T072030-0200", ISOFormat.DATE_TIME_BASIC.format(datetime, timezone));
 	}
 
 	@Test
@@ -126,47 +112,34 @@ public class ISOFormatTest {
 			datetime = c.getTime();
 		}
 
-		//@formatter:off
-		Object[][] tests = new Object[][]{
-			//basic, date
-			new Object[]{"20120701", date},
-			
-			//extended, date
-			new Object[]{"2012-07-01", date},
-			
-			//basic, datetime, GMT
-			new Object[]{"20120701T070130Z", datetime},
-			
-			//extended, datetime, GMT
-			new Object[]{"2012-07-01T07:01:30Z", datetime},
-			
-			//basic, datetime, timezone
-			new Object[]{"20120701T100130+0300", datetime},
-			
-			//extended, datetime, timezone
-			new Object[]{"2012-07-01T10:01:30+03:00", datetime},
-			
-			//basic, datetime (should use local timezone)
-			new Object[]{"20120701T080130", datetime},
-			
-			//extended, datetime (should use local timezone)
-			new Object[]{"2012-07-01T08:01:30", datetime},
-		};
-		//@formatter:on
+		//basic, date
+		assertEquals(date, ISOFormat.parse("20120701"));
 
-		for (Object[] test : tests) {
-			String input = (String) test[0];
-			Date expected = (Date) test[1];
+		//extended, date
+		assertEquals(date, ISOFormat.parse("2012-07-01"));
 
-			Date actual = ISOFormat.parse(input);
+		//basic, datetime, GMT
+		assertEquals(datetime, ISOFormat.parse("20120701T070130Z"));
 
-			assertEquals(expected, actual);
-		}
+		//extended, datetime, GMT
+		assertEquals(datetime, ISOFormat.parse("2012-07-01T07:01:30Z"));
+
+		//basic, datetime, timezone
+		assertEquals(datetime, ISOFormat.parse("20120701T100130+0300"));
+
+		//extended, datetime, timezone
+		assertEquals(datetime, ISOFormat.parse("2012-07-01T10:01:30+03:00"));
+
+		//basic, datetime (should use local timezone)
+		assertEquals(datetime, ISOFormat.parse("20120701T080130"));
+
+		//extended, datetime (should use local timezone)
+		assertEquals(datetime, ISOFormat.parse("2012-07-01T08:01:30"));
 	}
 
 	@Test
 	public void parse_timezone() {
-		TimeZone timezone = new SimpleTimeZone(-1000 * 60 * 60 * 2, "");
+		TimeZone timezone = buildTimezone(-2, 0);
 
 		Date expected;
 		{
