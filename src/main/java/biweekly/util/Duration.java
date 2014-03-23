@@ -250,16 +250,16 @@ public final class Duration {
 		long totalSeconds = 0;
 
 		if (weeks != null) {
-			totalSeconds += 60 * 60 * 24 * 7 * weeks;
+			totalSeconds += 60L * 60 * 24 * 7 * weeks;
 		}
 		if (days != null) {
-			totalSeconds += 60 * 60 * 24 * days;
+			totalSeconds += 60L * 60 * 24 * days;
 		}
 		if (hours != null) {
-			totalSeconds += 60 * 60 * hours;
+			totalSeconds += 60L * 60 * hours;
 		}
 		if (minutes != null) {
-			totalSeconds += 60 * minutes;
+			totalSeconds += 60L * minutes;
 		}
 		if (seconds != null) {
 			totalSeconds += seconds;
