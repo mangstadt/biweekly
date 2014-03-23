@@ -80,10 +80,11 @@ public enum ISOFormat {
 			DateFormat df = new SimpleDateFormat(formatStr){
 				@Override
 				public Date parse(String str) throws ParseException {
+					//remove the colon from the timezone offset
 					//SimpleDateFormat doesn't recognize timezone offsets that have colons
-					//so remove the colon from the timezone offset
-					str = str.replaceAll("([-\\+]\\d{2}):(\\d{2})$", "$1$2");
-					
+					int index = str.lastIndexOf(':');
+					str = str.substring(0, index) + str.substring(index+1);
+
 					return super.parse(str);
 				}
 				
