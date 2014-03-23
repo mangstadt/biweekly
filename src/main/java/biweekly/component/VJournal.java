@@ -852,7 +852,7 @@ public class VJournal extends ICalComponent {
 	 * @rfc 2445 p.114-15
 	 */
 	public ExceptionRule addExceptionRule(Recurrence recur) {
-		ExceptionRule prop = (recur == null) ? null : new ExceptionRule(recur);
+		ExceptionRule prop = new ExceptionRule(recur);
 		addExceptionRule(prop);
 		return prop;
 	}
