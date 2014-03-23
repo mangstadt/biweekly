@@ -6,7 +6,7 @@ import java.util.List;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
-import biweekly.util.ICalDateFormatter;
+import biweekly.util.ISOFormat;
 import biweekly.util.Period;
 
 /*
@@ -139,7 +139,7 @@ public class RecurrenceDates extends ICalProperty {
 	@Override
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		String tzid = getTimezoneId();
-		if (tzid != null && tzid.contains("/") && ICalDateFormatter.parseTimeZoneId(tzid) == null) {
+		if (tzid != null && tzid.contains("/") && ISOFormat.parseTimeZoneId(tzid) == null) {
 			warnings.add(Warning.validate(27, tzid));
 		}
 	}

@@ -27,7 +27,6 @@ import biweekly.io.text.ICalRawWriter;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.util.ICalDateFormatter;
 import biweekly.util.ISOFormat;
 import biweekly.util.ListMultimap;
 import biweekly.util.StringUtils;
@@ -1024,7 +1023,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 			}
 
 			if (timezoneId.contains("/")) {
-				TimeZone timezone = ICalDateFormatter.parseTimeZoneId(timezoneId);
+				TimeZone timezone = ISOFormat.parseTimeZoneId(timezoneId);
 				if (timezone == null) {
 					timezone = TimeZone.getDefault();
 					if (warnings != null) {
@@ -1104,7 +1103,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 			}
 
 			if (timezoneId.contains("/")) {
-				return tz(ICalDateFormatter.parseTimeZoneId(timezoneId));
+				return tz(ISOFormat.parseTimeZoneId(timezoneId));
 			}
 
 			//TODO format according to the associated VTIMEZONE component

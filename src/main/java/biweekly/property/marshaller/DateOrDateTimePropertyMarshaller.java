@@ -11,7 +11,7 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DateOrDateTimeProperty;
 import biweekly.util.DateTimeComponents;
-import biweekly.util.ICalDateFormatter;
+import biweekly.util.ISOFormat;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -146,8 +146,8 @@ public abstract class DateOrDateTimePropertyMarshaller<T extends DateOrDateTimeP
 			components = null;
 		}
 
-		boolean hasTime = ICalDateFormatter.dateHasTime(value);
-		boolean localTz = !ICalDateFormatter.dateHasTimezone(value) && parameters.getTimezoneId() == null;
+		boolean hasTime = ISOFormat.dateHasTime(value);
+		boolean localTz = !ISOFormat.dateHasTimezone(value) && parameters.getTimezoneId() == null;
 
 		T prop = newInstance(date, hasTime);
 		prop.setRawComponents(components);

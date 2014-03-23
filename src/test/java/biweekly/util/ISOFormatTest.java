@@ -2,6 +2,9 @@ package biweekly.util;
 
 import static biweekly.util.TestUtils.buildTimezone;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -165,5 +168,30 @@ public class ISOFormatTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void parse_invalid() {
 		ISOFormat.parse("invalid");
+	}
+
+	@Test
+	public void dateHasTime() {
+		assertFalse(ISOFormat.dateHasTime("20130601"));
+		assertTrue(ISOFormat.dateHasTime("20130601T120000"));
+	}
+
+	@Test
+	public void dateHasTimezone() {
+		assertFalse(ISOFormat.dateHasTimezone("20130601T120000"));
+		assertTrue(ISOFormat.dateHasTimezone("20130601T120000Z"));
+		assertTrue(ISOFormat.dateHasTimezone("20130601T120000+0100"));
+		assertTrue(ISOFormat.dateHasTimezone("20130601T120000-0100"));
+		assertTrue(ISOFormat.dateHasTimezone("2013-06-01T12:00:00+01:00"));
+		assertTrue(ISOFormat.dateHasTimezone("2013-06-01T12:00:00-01:00"));
+	}
+
+	@Test
+	public void parseTimezoneId() {
+		TimeZone tz = ISOFormat.parseTimeZoneId("America/New_York");
+		assertEquals(tz.getID(), "America/New_York");
+
+		tz = ISOFormat.parseTimeZoneId("Bogus/Timezone");
+		assertNull(tz);
 	}
 }

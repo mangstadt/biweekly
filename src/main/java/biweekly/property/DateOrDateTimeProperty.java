@@ -7,7 +7,7 @@ import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
 import biweekly.util.DateTimeComponents;
-import biweekly.util.ICalDateFormatter;
+import biweekly.util.ISOFormat;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -152,7 +152,7 @@ public class DateOrDateTimeProperty extends ICalProperty {
 		}
 
 		String tzid = getTimezoneId();
-		if (tzid != null && tzid.contains("/") && ICalDateFormatter.parseTimeZoneId(tzid) == null) {
+		if (tzid != null && tzid.contains("/") && ISOFormat.parseTimeZoneId(tzid) == null) {
 			warnings.add(Warning.validate(27, tzid));
 		}
 	}

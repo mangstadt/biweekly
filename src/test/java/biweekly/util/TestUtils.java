@@ -137,7 +137,7 @@ public class TestUtils {
 		}
 
 		SimpleDateFormat df;
-		if (ICalDateFormatter.dateHasTime(expected)) {
+		if (ISOFormat.dateHasTime(expected)) {
 			if (expected.contains("-") || expected.contains("+")) {
 				df = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
 			} else {

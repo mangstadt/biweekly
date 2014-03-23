@@ -268,6 +268,35 @@ public enum ISOFormat {
 		}
 	}
 
+	/**
+	 * Determines whether a date string has a time component.
+	 * @param dateStr the date string (e.g. "20130601T120000")
+	 * @return true if it has a time component, false if not
+	 */
+	public static boolean dateHasTime(String dateStr) {
+		return dateStr.contains("T");
+	}
+
+	/**
+	 * Determines whether a date string is in UTC time or has a timezone offset.
+	 * @param dateStr the date string (e.g. "20130601T120000Z",
+	 * "20130601T120000-0400")
+	 * @return true if it has a timezone, false if not
+	 */
+	public static boolean dateHasTimezone(String dateStr) {
+		return dateStr.endsWith("Z") || dateStr.matches(".*?[-+]\\d\\d:?\\d\\d");
+	}
+
+	/**
+	 * Gets the {@link TimeZone} object that corresponds to the given ID.
+	 * @param timezoneId the timezone ID (e.g. "America/New_York")
+	 * @return the timezone object or null if not found
+	 */
+	public static TimeZone parseTimeZoneId(String timezoneId) {
+		TimeZone timezone = TimeZone.getTimeZone(timezoneId);
+		return "GMT".equals(timezone.getID()) ? null : timezone;
+	}
+
 	private static IllegalArgumentException parseException(String dateStr) {
 		return new IllegalArgumentException("Date string \"" + dateStr + "\" is not in a valid ISO-8601 format.");
 	}
