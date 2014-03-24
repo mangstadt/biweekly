@@ -27,7 +27,7 @@ import biweekly.io.text.ICalRawWriter;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.util.ISOFormat;
+import biweekly.util.ICalDateFormat;
 import biweekly.util.ListMultimap;
 import biweekly.util.StringUtils;
 import biweekly.util.StringUtils.JoinCallback;
@@ -1023,7 +1023,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 			}
 
 			if (timezoneId.contains("/")) {
-				TimeZone timezone = ISOFormat.parseTimeZoneId(timezoneId);
+				TimeZone timezone = ICalDateFormat.parseTimeZoneId(timezoneId);
 				if (timezone == null) {
 					timezone = TimeZone.getDefault();
 					if (warnings != null) {
@@ -1053,7 +1053,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		 * @throws IllegalArgumentException if the date string is invalid
 		 */
 		public Date parse() {
-			return ISOFormat.parse(value, timezone);
+			return ICalDateFormat.parse(value, timezone);
 		}
 	}
 
@@ -1103,7 +1103,7 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 			}
 
 			if (timezoneId.contains("/")) {
-				return tz(ISOFormat.parseTimeZoneId(timezoneId));
+				return tz(ICalDateFormat.parseTimeZoneId(timezoneId));
 			}
 
 			//TODO format according to the associated VTIMEZONE component
@@ -1158,16 +1158,16 @@ public abstract class ICalPropertyMarshaller<T extends ICalProperty> {
 		 * @return the date string
 		 */
 		public String write() {
-			ISOFormat format;
+			ICalDateFormat format;
 			TimeZone timezone = this.timezone;
 			if (hasTime) {
 				if (timezone == null) {
-					format = extended ? ISOFormat.UTC_TIME_EXTENDED : ISOFormat.UTC_TIME_BASIC;
+					format = extended ? ICalDateFormat.UTC_TIME_EXTENDED : ICalDateFormat.UTC_TIME_BASIC;
 				} else {
-					format = extended ? ISOFormat.DATE_TIME_EXTENDED_WITHOUT_TZ : ISOFormat.DATE_TIME_BASIC_WITHOUT_TZ;
+					format = extended ? ICalDateFormat.DATE_TIME_EXTENDED_WITHOUT_TZ : ICalDateFormat.DATE_TIME_BASIC_WITHOUT_TZ;
 				}
 			} else {
-				format = extended ? ISOFormat.DATE_EXTENDED : ISOFormat.DATE_BASIC;
+				format = extended ? ICalDateFormat.DATE_EXTENDED : ICalDateFormat.DATE_BASIC;
 				timezone = null;
 			}
 

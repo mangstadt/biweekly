@@ -16,7 +16,7 @@ import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RecurrenceProperty;
-import biweekly.util.ISOFormat;
+import biweekly.util.ICalDateFormat;
 import biweekly.util.ListMultimap;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.DayOfWeek;
@@ -230,7 +230,7 @@ public abstract class RecurrencePropertyMarshaller<T extends RecurrenceProperty>
 		String value = values.get(0);
 		try {
 			Date date = date(value).parse();
-			boolean hasTime = ISOFormat.dateHasTime(value);
+			boolean hasTime = ICalDateFormat.dateHasTime(value);
 			builder.until(date, hasTime);
 		} catch (IllegalArgumentException e) {
 			warnings.add(Warning.parse(7, "UNTIL", value));

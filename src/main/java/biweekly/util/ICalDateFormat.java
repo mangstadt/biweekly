@@ -34,11 +34,12 @@ import java.util.regex.Pattern;
  */
 
 /**
- * Represents the various ISO8601 date-time formats that iCalendar dates can be
- * represented as.
+ * Defines all of the date formats that are used in iCalendar objects, and also
+ * parses/formats iCalendar dates. These date formats are defined in the ISO8601
+ * specification.
  * @author Michael Angstadt
  */
-public enum ISOFormat {
+public enum ICalDateFormat {
 	//@formatter:off
 	/**
 	 * Example: 20120701
@@ -158,7 +159,7 @@ public enum ISOFormat {
 	 * @param formatStr the {@link SimpleDateFormat} format string used for
 	 * parsing dates.
 	 */
-	private ISOFormat(String regex, String formatStr) {
+	private ICalDateFormat(String regex, String formatStr) {
 		pattern = Pattern.compile(regex);
 		this.formatStr = formatStr;
 	}
@@ -222,8 +223,8 @@ public enum ISOFormat {
 	 * @param dateStr the date string (e.g. "20140322T120000Z")
 	 * @return the ISO format (e.g. DATETIME_BASIC) or null if not found
 	 */
-	public static ISOFormat find(String dateStr) {
-		for (ISOFormat format : values()) {
+	public static ICalDateFormat find(String dateStr) {
+		for (ICalDateFormat format : values()) {
 			if (format.matches(dateStr)) {
 				return format;
 			}
@@ -254,7 +255,7 @@ public enum ISOFormat {
 	 */
 	public static Date parse(String dateStr, TimeZone timezone) {
 		//determine which ISOFormat the date is in
-		ISOFormat format = find(dateStr);
+		ICalDateFormat format = find(dateStr);
 		if (format == null) {
 			throw parseException(dateStr);
 		}

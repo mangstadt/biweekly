@@ -41,7 +41,7 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class ISOFormatTest {
+public class ICalDateFormatTest {
 	@ClassRule
 	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
 
@@ -60,14 +60,14 @@ public class ISOFormatTest {
 			datetime = cal.getTime();
 		}
 
-		assertEquals("20060102", ISOFormat.DATE_BASIC.format(datetime));
-		assertEquals("2006-01-02", ISOFormat.DATE_EXTENDED.format(datetime));
-		assertEquals("20060102T102030+0100", ISOFormat.DATE_TIME_BASIC.format(datetime));
-		assertEquals("2006-01-02T10:20:30+01:00", ISOFormat.DATE_TIME_EXTENDED.format(datetime));
-		assertEquals("20060102T102030", ISOFormat.DATE_TIME_BASIC_WITHOUT_TZ.format(datetime));
-		assertEquals("2006-01-02T10:20:30", ISOFormat.DATE_TIME_EXTENDED_WITHOUT_TZ.format(datetime));
-		assertEquals("20060102T092030Z", ISOFormat.UTC_TIME_BASIC.format(datetime));
-		assertEquals("2006-01-02T09:20:30Z", ISOFormat.UTC_TIME_EXTENDED.format(datetime));
+		assertEquals("20060102", ICalDateFormat.DATE_BASIC.format(datetime));
+		assertEquals("2006-01-02", ICalDateFormat.DATE_EXTENDED.format(datetime));
+		assertEquals("20060102T102030+0100", ICalDateFormat.DATE_TIME_BASIC.format(datetime));
+		assertEquals("2006-01-02T10:20:30+01:00", ICalDateFormat.DATE_TIME_EXTENDED.format(datetime));
+		assertEquals("20060102T102030", ICalDateFormat.DATE_TIME_BASIC_WITHOUT_TZ.format(datetime));
+		assertEquals("2006-01-02T10:20:30", ICalDateFormat.DATE_TIME_EXTENDED_WITHOUT_TZ.format(datetime));
+		assertEquals("20060102T092030Z", ICalDateFormat.UTC_TIME_BASIC.format(datetime));
+		assertEquals("2006-01-02T09:20:30Z", ICalDateFormat.UTC_TIME_EXTENDED.format(datetime));
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class ISOFormatTest {
 			datetime = cal.getTime();
 		}
 
-		assertEquals("20060102T072030-0200", ISOFormat.DATE_TIME_BASIC.format(datetime, timezone));
+		assertEquals("20060102T072030-0200", ICalDateFormat.DATE_TIME_BASIC.format(datetime, timezone));
 	}
 
 	@Test
@@ -116,28 +116,28 @@ public class ISOFormatTest {
 		}
 
 		//basic, date
-		assertEquals(date, ISOFormat.parse("20120701"));
+		assertEquals(date, ICalDateFormat.parse("20120701"));
 
 		//extended, date
-		assertEquals(date, ISOFormat.parse("2012-07-01"));
+		assertEquals(date, ICalDateFormat.parse("2012-07-01"));
 
 		//basic, datetime, GMT
-		assertEquals(datetime, ISOFormat.parse("20120701T070130Z"));
+		assertEquals(datetime, ICalDateFormat.parse("20120701T070130Z"));
 
 		//extended, datetime, GMT
-		assertEquals(datetime, ISOFormat.parse("2012-07-01T07:01:30Z"));
+		assertEquals(datetime, ICalDateFormat.parse("2012-07-01T07:01:30Z"));
 
 		//basic, datetime, timezone
-		assertEquals(datetime, ISOFormat.parse("20120701T100130+0300"));
+		assertEquals(datetime, ICalDateFormat.parse("20120701T100130+0300"));
 
 		//extended, datetime, timezone
-		assertEquals(datetime, ISOFormat.parse("2012-07-01T10:01:30+03:00"));
+		assertEquals(datetime, ICalDateFormat.parse("2012-07-01T10:01:30+03:00"));
 
 		//basic, datetime (should use local timezone)
-		assertEquals(datetime, ISOFormat.parse("20120701T080130"));
+		assertEquals(datetime, ICalDateFormat.parse("20120701T080130"));
 
 		//extended, datetime (should use local timezone)
-		assertEquals(datetime, ISOFormat.parse("2012-07-01T08:01:30"));
+		assertEquals(datetime, ICalDateFormat.parse("2012-07-01T08:01:30"));
 	}
 
 	@Test
@@ -157,41 +157,41 @@ public class ISOFormatTest {
 			expected = c.getTime();
 		}
 
-		Date actual = ISOFormat.parse("20120701T060130", timezone);
+		Date actual = ICalDateFormat.parse("20120701T060130", timezone);
 		assertEquals(actual, expected);
 
 		//timezone in date string takes presidence
-		actual = ISOFormat.parse("20120701T080130Z", timezone);
+		actual = ICalDateFormat.parse("20120701T080130Z", timezone);
 		assertEquals(actual, expected);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void parse_invalid() {
-		ISOFormat.parse("invalid");
+		ICalDateFormat.parse("invalid");
 	}
 
 	@Test
 	public void dateHasTime() {
-		assertFalse(ISOFormat.dateHasTime("20130601"));
-		assertTrue(ISOFormat.dateHasTime("20130601T120000"));
+		assertFalse(ICalDateFormat.dateHasTime("20130601"));
+		assertTrue(ICalDateFormat.dateHasTime("20130601T120000"));
 	}
 
 	@Test
 	public void dateHasTimezone() {
-		assertFalse(ISOFormat.dateHasTimezone("20130601T120000"));
-		assertTrue(ISOFormat.dateHasTimezone("20130601T120000Z"));
-		assertTrue(ISOFormat.dateHasTimezone("20130601T120000+0100"));
-		assertTrue(ISOFormat.dateHasTimezone("20130601T120000-0100"));
-		assertTrue(ISOFormat.dateHasTimezone("2013-06-01T12:00:00+01:00"));
-		assertTrue(ISOFormat.dateHasTimezone("2013-06-01T12:00:00-01:00"));
+		assertFalse(ICalDateFormat.dateHasTimezone("20130601T120000"));
+		assertTrue(ICalDateFormat.dateHasTimezone("20130601T120000Z"));
+		assertTrue(ICalDateFormat.dateHasTimezone("20130601T120000+0100"));
+		assertTrue(ICalDateFormat.dateHasTimezone("20130601T120000-0100"));
+		assertTrue(ICalDateFormat.dateHasTimezone("2013-06-01T12:00:00+01:00"));
+		assertTrue(ICalDateFormat.dateHasTimezone("2013-06-01T12:00:00-01:00"));
 	}
 
 	@Test
 	public void parseTimezoneId() {
-		TimeZone tz = ISOFormat.parseTimeZoneId("America/New_York");
+		TimeZone tz = ICalDateFormat.parseTimeZoneId("America/New_York");
 		assertEquals(tz.getID(), "America/New_York");
 
-		tz = ISOFormat.parseTimeZoneId("Bogus/Timezone");
+		tz = ICalDateFormat.parseTimeZoneId("Bogus/Timezone");
 		assertNull(tz);
 	}
 }
