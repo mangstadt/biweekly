@@ -428,27 +428,32 @@ public class VAlarm extends ICalComponent {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
-		//all alarm types require Action and Trigger
 		checkRequiredCardinality(warnings, Action.class, Trigger.class);
 
 		Action action = getAction();
 		if (action != null) {
+			//AUDIO alarms should not have more than 1 attachment
 			if (action.isAudio()) {
 				if (getAttachments().size() > 1) {
 					warnings.add(Warning.validate(7));
 				}
 			}
 
+			//DESCRIPTION is required for DISPLAY alarms 
 			if (action.isDisplay()) {
 				checkRequiredCardinality(warnings, Description.class);
 			}
 
 			if (action.isEmail()) {
+				//SUMMARY and DESCRIPTION is required for EMAIL alarms
 				checkRequiredCardinality(warnings, Summary.class, Description.class);
+
+				//EMAIL alarms must have at least 1 ATTENDEE
 				if (getAttendees().isEmpty()) {
 					warnings.add(Warning.validate(8));
 				}
 			} else {
+				//only EMAIL alarms can have ATTENDEEs
 				if (!getAttendees().isEmpty()) {
 					warnings.add(Warning.validate(9));
 				}
@@ -459,15 +464,20 @@ public class VAlarm extends ICalComponent {
 		if (trigger != null) {
 			Related related = trigger.getRelated();
 
+			//if DURATION exists, the property that the TRIGGER is relative to must be specified
 			if (related == null && trigger.getDuration() != null) {
 				warnings.add(Warning.validate(10));
 			}
 
 			if (related != null) {
 				ICalComponent parent = components.get(components.size() - 1);
+
+				//if the TRIGGER is relative to DTSTART, confirm that DTSTART exists
 				if (related == Related.START && parent.getProperty(DateStart.class) == null) {
 					warnings.add(Warning.validate(11));
 				}
+
+				//if the TRIGGER is relative to DTEND, confirm that DTEND (or DUE) exists
 				if (related == Related.END) {
 					boolean noEndDate = false;
 

@@ -1123,6 +1123,7 @@ public class VEvent extends ICalComponent {
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
 		checkOptionalCardinality(warnings, Classification.class, Created.class, Description.class, Geo.class, LastModified.class, Location.class, Organizer.class, Priority.class, Priority.class, Status.class, Summary.class, Transparency.class, Url.class, RecurrenceId.class);
 
+		//STATUS must be: tentative, confirmed, or cancelled
 		Status status = getStatus();
 		if (status != null && (status.isNeedsAction() || status.isCompleted() || status.isInProgress() || status.isDraft() || status.isFinal())) {
 			warnings.add(Warning.validate(13, status.getValue(), Arrays.asList(Status.tentative().getValue(), Status.confirmed().getValue(), Status.cancelled().getValue())));
@@ -1131,11 +1132,13 @@ public class VEvent extends ICalComponent {
 		DateStart dateStart = getDateStart();
 		DateEnd dateEnd = getDateEnd();
 
+		//DTSTART is always required, unless there is a METHOD property at the iCal root
 		ICalComponent ical = components.get(0);
 		if (dateStart == null && ical.getProperty(Method.class) == null) {
 			warnings.add(Warning.validate(14));
 		}
 
+		//DTSTART is required if DTEND exists
 		if (dateEnd != null && dateStart == null) {
 			warnings.add(Warning.validate(15));
 		}
@@ -1143,24 +1146,30 @@ public class VEvent extends ICalComponent {
 		if (dateStart != null && dateEnd != null) {
 			Date start = dateStart.getValue();
 			Date end = dateEnd.getValue();
+
+			//DTSTART must come before DTEND
 			if (start != null && end != null && start.compareTo(end) > 0) {
 				warnings.add(Warning.validate(16));
 			}
 
+			//DTSTART and DTEND must have the same data type
 			if (dateStart.hasTime() != dateEnd.hasTime()) {
 				warnings.add(Warning.validate(17));
 			}
 		}
 
+		//DTEND and DURATION cannot both exist
 		if (dateEnd != null && getDuration() != null) {
 			warnings.add(Warning.validate(18));
 		}
 
+		//DTSTART and RECURRENCE-ID must have the same data type
 		RecurrenceId recurrenceId = getRecurrenceId();
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
 			warnings.add(Warning.validate(19));
 		}
 
+		//BYHOUR, BYMINUTE, and BYSECOND cannot be specified in RRULE if DTSTART's data type is "date"
 		//RFC 5545 p. 167
 		RecurrenceRule rrule = getRecurrenceRule();
 		if (dateStart != null && rrule != null) {
@@ -1173,6 +1182,7 @@ public class VEvent extends ICalComponent {
 			}
 		}
 
+		//there *should* be only 1 instance of RRULE
 		//RFC 5545 p. 167
 		if (getProperties(RecurrenceRule.class).size() > 1) {
 			warnings.add(Warning.validate(6));

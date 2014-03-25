@@ -205,6 +205,7 @@ public class VTimezone extends ICalComponent {
 		checkRequiredCardinality(warnings, TimezoneId.class);
 		checkOptionalCardinality(warnings, LastModified.class, TimezoneUrl.class);
 
+		//STANDARD or DAYLIGHT must be defined
 		if (getStandardTimes().isEmpty() && getDaylightSavingsTime().isEmpty()) {
 			warnings.add(Warning.validate(21));
 		}

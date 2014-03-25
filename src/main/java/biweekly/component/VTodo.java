@@ -1144,6 +1144,7 @@ public class VTodo extends ICalComponent {
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
 		checkOptionalCardinality(warnings, Classification.class, Completed.class, Created.class, Description.class, DateStart.class, Geo.class, LastModified.class, Location.class, Organizer.class, PercentComplete.class, Priority.class, RecurrenceId.class, Sequence.class, Status.class, Summary.class, Url.class);
 
+		//STATUS must be: needsaction, completed, inprogress, or cancelled
 		Status status = getStatus();
 		if (status != null && (status.isTentative() || status.isConfirmed() || status.isDraft() || status.isFinal())) {
 			warnings.add(Warning.validate(13, status.getValue(), Arrays.asList(Status.needsAction().getValue(), Status.completed().getValue(), Status.inProgress().getValue(), Status.cancelled().getValue())));
@@ -1154,28 +1155,36 @@ public class VTodo extends ICalComponent {
 		if (dateStart != null && dateDue != null) {
 			Date start = dateStart.getValue();
 			Date due = dateDue.getValue();
+
+			//DTSTART must come before DUE
 			if (start != null && due != null && start.compareTo(due) > 0) {
 				warnings.add(Warning.validate(22));
 			}
 
+			//DTSTART and DUE must have the same data type
 			if (dateStart.hasTime() != dateDue.hasTime()) {
 				warnings.add(Warning.validate(23));
 			}
 		}
 
+		//DUE and DURATION cannot both exist
 		DurationProperty duration = getDuration();
 		if (dateDue != null && duration != null) {
 			warnings.add(Warning.validate(24));
 		}
+
+		//DTSTART is required if DUE exists
 		if (dateStart == null && duration != null) {
 			warnings.add(Warning.validate(25));
 		}
 
+		//DTSTART and RECURRENCE-ID must have the same data type
 		RecurrenceId recurrenceId = getRecurrenceId();
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
 			warnings.add(Warning.validate(19));
 		}
 
+		//BYHOUR, BYMINUTE, and BYSECOND cannot be specified in RRULE if DTSTART's data type is "date"
 		//RFC 5545 p. 167
 		RecurrenceRule rrule = getRecurrenceRule();
 		if (dateStart != null && rrule != null) {
@@ -1188,6 +1197,7 @@ public class VTodo extends ICalComponent {
 			}
 		}
 
+		//there *should* be only 1 instance of RRULE
 		//RFC 5545 p. 167
 		if (getProperties(RecurrenceRule.class).size() > 1) {
 			warnings.add(Warning.validate(6));

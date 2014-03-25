@@ -482,18 +482,20 @@ public class VFreeBusy extends ICalComponent {
 		DateStart dateStart = getDateStart();
 		DateEnd dateEnd = getDateEnd();
 
+		//DTSTART is required if DTEND exists
 		if (dateEnd != null && dateStart == null) {
 			warnings.add(Warning.validate(15));
 		}
 
+		//DTSTART and DTEND must contain a time component
 		if (dateStart != null && dateStart.getValue() != null && !dateStart.hasTime()) {
 			warnings.add(Warning.validate(20, DateStart.class.getSimpleName()));
 		}
-
 		if (dateEnd != null && dateEnd.getValue() != null && !dateEnd.hasTime()) {
 			warnings.add(Warning.validate(20, DateEnd.class.getSimpleName()));
 		}
 
+		//DTSTART must come before DTEND
 		if (dateStart != null && dateEnd != null) {
 			Date start = dateStart.getValue();
 			Date end = dateEnd.getValue();

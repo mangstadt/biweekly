@@ -878,17 +878,20 @@ public class VJournal extends ICalComponent {
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
 		checkOptionalCardinality(warnings, Classification.class, Created.class, DateStart.class, LastModified.class, Organizer.class, RecurrenceId.class, Sequence.class, Status.class, Summary.class, Url.class);
 
+		//STATUS must be: draft, final, cancelled
 		Status status = getStatus();
 		if (status != null && (status.isTentative() || status.isConfirmed() || status.isNeedsAction() || status.isCompleted() || status.isInProgress())) {
 			warnings.add(Warning.validate(13, status.getValue(), Arrays.asList(Status.draft().getValue(), Status.final_().getValue(), Status.cancelled().getValue())));
 		}
 
+		//DTSTART and RECURRENCE-ID must have the same data type
 		RecurrenceId recurrenceId = getRecurrenceId();
 		DateStart dateStart = getDateStart();
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
 			warnings.add(Warning.validate(19));
 		}
 
+		//BYHOUR, BYMINUTE, and BYSECOND cannot be specified in RRULE if DTSTART's data type is "date"
 		//RFC 5545 p. 167
 		RecurrenceRule rrule = getRecurrenceRule();
 		if (dateStart != null && rrule != null) {
@@ -901,6 +904,7 @@ public class VJournal extends ICalComponent {
 			}
 		}
 
+		//there *should* be only 1 instance of RRULE
 		//RFC 5545 p. 167
 		if (getProperties(RecurrenceRule.class).size() > 1) {
 			warnings.add(Warning.validate(6));

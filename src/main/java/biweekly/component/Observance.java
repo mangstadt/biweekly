@@ -278,6 +278,7 @@ public abstract class Observance extends ICalComponent {
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		checkRequiredCardinality(warnings, DateStart.class, TimezoneOffsetTo.class, TimezoneOffsetFrom.class);
 
+		//BYHOUR, BYMINUTE, and BYSECOND cannot be specified in RRULE if DTSTART's data type is "date"
 		//RFC 5545 p. 167
 		DateStart dateStart = getDateStart();
 		RecurrenceRule rrule = getRecurrenceRule();
@@ -291,6 +292,7 @@ public abstract class Observance extends ICalComponent {
 			}
 		}
 
+		//there *should* be only 1 instance of RRULE
 		//RFC 5545 p. 167
 		if (getProperties(RecurrenceRule.class).size() > 1) {
 			warnings.add(Warning.validate(6));
