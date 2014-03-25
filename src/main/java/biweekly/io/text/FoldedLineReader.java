@@ -119,20 +119,21 @@ public class FoldedLineReader extends BufferedReader {
 			String line = readNonEmptyLine();
 			if (line == null) {
 				break;
-			} else if (line.length() > 0 && Character.isWhitespace(line.charAt(0))) {
-				//the line was folded
+			}
 
-				int lastWhitespace = 1;
-				if (!singleSpaceFolding) {
-					while (lastWhitespace < line.length() && Character.isWhitespace(line.charAt(lastWhitespace))) {
-						lastWhitespace++;
-					}
-				}
-				wholeLineSb.append(line.substring(lastWhitespace));
-			} else {
+			if (!Character.isWhitespace(line.charAt(0))) {
 				lastLine = line;
 				break;
 			}
+
+			//the line was folded
+			int lastWhitespace = 1;
+			if (!singleSpaceFolding) {
+				while (lastWhitespace < line.length() && Character.isWhitespace(line.charAt(lastWhitespace))) {
+					lastWhitespace++;
+				}
+			}
+			wholeLineSb.append(line.substring(lastWhitespace));
 		}
 		return wholeLineSb.toString();
 	}
