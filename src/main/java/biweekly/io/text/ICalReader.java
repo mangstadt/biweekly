@@ -11,6 +11,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
@@ -76,6 +77,7 @@ import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
  */
 public class ICalReader implements Closeable {
 	private static final ICalendarMarshaller icalMarshaller = ICalMarshallerRegistrar.getICalendarMarshaller();
+	private static final String icalComponentName = icalMarshaller.getComponentName();
 	private final List<String> warnings = new ArrayList<String>();
 	private ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();
 	private final ICalRawReader reader;
@@ -196,154 +198,165 @@ public class ICalReader implements Closeable {
 	 * @throws IOException if there's a problem reading from the stream
 	 */
 	public ICalendar readNext() throws IOException {
-		if (reader.eof()) {
-			return null;
-		}
-
 		warnings.clear();
 
-		ICalDataStreamListenerImpl listener = new ICalDataStreamListenerImpl();
-		reader.start(listener);
+		boolean dataWasRead = false;
 
-		if (!listener.dataWasRead) {
+		List<ICalProperty> orphanedProperties = new ArrayList<ICalProperty>();
+		List<ICalComponent> orphanedComponents = new ArrayList<ICalComponent>();
+
+		List<ICalComponent> componentStack = new ArrayList<ICalComponent>();
+		List<String> componentNamesStack = new ArrayList<String>();
+
+		while (true) {
+			//read next line
+			ICalRawLine line;
+			try {
+				line = reader.readLine();
+			} catch (ICalParseException e) {
+				addWarning(null, Warning.parse(3, e.getLine()));
+				continue;
+			}
+
+			//EOF
+			if (line == null) {
+				break;
+			}
+
+			String propertyName = line.getName();
+
+			if ("BEGIN".equalsIgnoreCase(propertyName)) {
+				String componentName = line.getValue();
+				dataWasRead = true;
+
+				ICalComponent parentComponent = componentStack.isEmpty() ? null : componentStack.get(componentStack.size() - 1);
+
+				ICalComponentMarshaller<? extends ICalComponent> marshaller = registrar.getComponentMarshaller(componentName);
+				ICalComponent component = marshaller.emptyInstance();
+				componentStack.add(component);
+				componentNamesStack.add(componentName);
+
+				if (parentComponent == null) {
+					orphanedComponents.add(component);
+				} else {
+					parentComponent.addComponent(component);
+				}
+
+				continue;
+			}
+
+			if ("END".equalsIgnoreCase(propertyName)) {
+				String componentName = line.getValue();
+
+				//stop reading when "END:VCALENDAR" is reached
+				if (icalComponentName.equalsIgnoreCase(componentName)) {
+					break;
+				}
+
+				//find the component that this END property matches up with
+				int popIndex = -1;
+				for (int i = componentStack.size() - 1; i >= 0; i--) {
+					String name = componentNamesStack.get(i);
+					if (name.equalsIgnoreCase(componentName)) {
+						popIndex = i;
+						break;
+					}
+				}
+				if (popIndex == -1) {
+					//END property does not match up with any BEGIN properties, so ignore
+					addWarning("END", Warning.parse(2));
+				} else {
+					componentStack.subList(popIndex, componentStack.size()).clear();
+					componentNamesStack.subList(popIndex, componentNamesStack.size()).clear();
+				}
+
+				continue;
+			}
+
+			dataWasRead = true;
+
+			//check for value-less parameters
+			ICalParameters parameters = line.getParameters();
+			for (Map.Entry<String, List<String>> entry : parameters) {
+				List<String> paramValues = entry.getValue();
+				for (String value : paramValues) {
+					if (value == null) {
+						String paramName = entry.getKey();
+						addWarning(propertyName, Warning.parse(4, paramName));
+						break;
+					}
+				}
+			}
+
+			ICalPropertyMarshaller<? extends ICalProperty> marshaller = registrar.getPropertyMarshaller(propertyName);
+
+			//get the data type
+			ICalDataType dataType = parameters.getValue();
+			if (dataType == null) {
+				//use the default data type if there is no VALUE parameter
+				dataType = marshaller.getDefaultDataType();
+			} else {
+				//remove VALUE parameter if it is set
+				parameters.setValue(null);
+			}
+
+			//marshal the property
+			ICalProperty property = null;
+			String value = line.getValue();
+			try {
+				Result<? extends ICalProperty> result = marshaller.parseText(value, dataType, parameters);
+
+				for (Warning warning : result.getWarnings()) {
+					addWarning(propertyName, warning);
+				}
+
+				property = result.getProperty();
+			} catch (SkipMeException e) {
+				addWarning(propertyName, Warning.parse(0, e.getMessage()));
+			} catch (CannotParseException e) {
+				addWarning(propertyName, Warning.parse(1, value, e.getMessage()));
+				property = new RawProperty(propertyName, dataType, value);
+			}
+
+			//add the property to its component
+			if (property != null) {
+				if (componentStack.isEmpty()) {
+					orphanedProperties.add(property);
+				} else {
+					ICalComponent parentComponent = componentStack.get(componentStack.size() - 1);
+					parentComponent.addProperty(property);
+				}
+			}
+		}
+
+		if (!dataWasRead) {
 			//EOF was reached without reading anything
 			return null;
 		}
 
 		ICalendar ical;
-		if (listener.orphanedComponents.isEmpty()) {
+		if (orphanedComponents.isEmpty()) {
 			//there were no components in the iCalendar object
 			ical = icalMarshaller.emptyInstance();
 		} else {
-			ICalComponent first = listener.orphanedComponents.get(0);
+			ICalComponent first = orphanedComponents.get(0);
 			if (first instanceof ICalendar) {
 				//this is the code-path that valid iCalendar objects should reach
 				ical = (ICalendar) first;
 			} else {
 				ical = icalMarshaller.emptyInstance();
-				for (ICalComponent component : listener.orphanedComponents) {
+				for (ICalComponent component : orphanedComponents) {
 					ical.addComponent(component);
 				}
 			}
 		}
 
 		//add any properties that were not part of a component (will never happen if the iCalendar object is valid)
-		for (ICalProperty property : listener.orphanedProperties) {
+		for (ICalProperty property : orphanedProperties) {
 			ical.addProperty(property);
 		}
 
 		return ical;
-	}
-
-	//TODO how to unmarshal the alarm components (a different class should be created, depending on the ACTION property)
-	//TODO buffer properties in a list before the component class is created
-	private class ICalDataStreamListenerImpl implements ICalRawReader.ICalDataStreamListener {
-		private final String icalComponentName = icalMarshaller.getComponentName();
-
-		private List<ICalProperty> orphanedProperties = new ArrayList<ICalProperty>();
-		private List<ICalComponent> orphanedComponents = new ArrayList<ICalComponent>();
-
-		private List<ICalComponent> componentStack = new ArrayList<ICalComponent>();
-		private List<String> componentNamesStack = new ArrayList<String>();
-		private boolean dataWasRead = false;
-
-		public void beginComponent(String name) {
-			dataWasRead = true;
-
-			ICalComponent parentComponent = getCurrentComponent();
-
-			ICalComponentMarshaller<? extends ICalComponent> m = registrar.getComponentMarshaller(name);
-			ICalComponent component = m.emptyInstance();
-			componentStack.add(component);
-			componentNamesStack.add(name);
-
-			if (parentComponent == null) {
-				orphanedComponents.add(component);
-			} else {
-				parentComponent.addComponent(component);
-			}
-		}
-
-		public void readProperty(String name, ICalParameters parameters, String value) {
-			dataWasRead = true;
-
-			ICalPropertyMarshaller<? extends ICalProperty> m = registrar.getPropertyMarshaller(name);
-
-			//get the data type
-			ICalDataType dataType = parameters.getValue();
-			if (dataType == null) {
-				//use the default data type if there is no VALUE parameter
-				dataType = m.getDefaultDataType();
-			} else {
-				//remove VALUE parameter if it is set
-				parameters.setValue(null);
-			}
-
-			ICalProperty property = null;
-			try {
-				Result<? extends ICalProperty> result = m.parseText(value, dataType, parameters);
-
-				for (Warning warning : result.getWarnings()) {
-					addWarning(name, warning);
-				}
-
-				property = result.getProperty();
-			} catch (SkipMeException e) {
-				addWarning(name, Warning.parse(0, e.getMessage()));
-			} catch (CannotParseException e) {
-				addWarning(name, Warning.parse(1, value, e.getMessage()));
-				property = new RawProperty(name, dataType, value);
-			}
-
-			if (property != null) {
-				ICalComponent parentComponent = getCurrentComponent();
-				if (parentComponent == null) {
-					orphanedProperties.add(property);
-				} else {
-					parentComponent.addProperty(property);
-				}
-			}
-		}
-
-		public void endComponent(String name) {
-			//stop reading when "END:VCALENDAR" is reached
-			if (icalComponentName.equalsIgnoreCase(name)) {
-				throw new ICalRawReader.StopReadingException();
-			}
-
-			//find the component that this END property matches up with
-			int popIndex = -1;
-			for (int i = componentStack.size() - 1; i >= 0; i--) {
-				String n = componentNamesStack.get(i);
-				if (n.equalsIgnoreCase(name)) {
-					popIndex = i;
-					break;
-				}
-			}
-			if (popIndex == -1) {
-				//END property does not match up with any BEGIN properties, so ignore
-				addWarning("END", Warning.parse(2));
-				return;
-			}
-
-			componentStack.subList(popIndex, componentStack.size()).clear();
-			componentNamesStack.subList(popIndex, componentNamesStack.size()).clear();
-		}
-
-		public void invalidLine(String line) {
-			addWarning(null, Warning.parse(3, line));
-		}
-
-		public void valuelessParameter(String propertyName, String parameterName) {
-			addWarning(propertyName, Warning.parse(4, parameterName));
-		}
-
-		private ICalComponent getCurrentComponent() {
-			if (componentStack.isEmpty()) {
-				return null;
-			}
-			return componentStack.get(componentStack.size() - 1);
-		}
 	}
 
 	private void addWarning(String propertyName, Warning warning) {
@@ -357,7 +370,6 @@ public class ICalReader implements Closeable {
 	/**
 	 * Closes the underlying {@link Reader} object.
 	 */
-	//@Override
 	public void close() throws IOException {
 		reader.close();
 	}

@@ -6,7 +6,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 
-import biweekly.ICalException;
 import biweekly.parameter.ICalParameters;
 
 /*
@@ -42,7 +41,6 @@ import biweekly.parameter.ICalParameters;
 public class ICalRawReader implements Closeable {
 	private final FoldedLineReader reader;
 	private boolean caretDecodingEnabled = true;
-	private boolean eof = false;
 
 	/**
 	 * Creates a new reader.
@@ -61,23 +59,17 @@ public class ICalRawReader implements Closeable {
 	}
 
 	/**
-	 * Starts or continues reading from the iCalendar data stream.
-	 * @param listener handles the iCalendar data as it is read off the wire
-	 * @throws IOException if there is an I/O problem
+	 * Parses the next line of the iCalendar file.
+	 * @return the next line or null if there are no more lines
+	 * @throws ICalParseException if a line cannot be parsed
+	 * @throws IOException if there's a problem reading from the input stream
 	 */
-	public void start(ICalDataStreamListener listener) throws IOException {
-		String line;
-		while ((line = reader.readLine()) != null) {
-			try {
-				parseLine(line, listener);
-			} catch (StopReadingException e) {
-				return;
-			}
+	public ICalRawLine readLine() throws IOException {
+		String line = reader.readLine();
+		if (line == null) {
+			return null;
 		}
-		eof = true;
-	}
 
-	private void parseLine(String line, ICalDataStreamListener listener) {
 		String propertyName = null;
 		ICalParameters parameters = new ICalParameters();
 		String value = null;
@@ -88,7 +80,9 @@ public class ICalRawReader implements Closeable {
 		String curParamName = null;
 		for (int i = 0; i < line.length(); i++) {
 			char ch = line.charAt(i);
+
 			if (escapeChar != 0) {
+				//this character was escaped
 				if (escapeChar == '\\') {
 					//backslash escaping in parameter values is not part of the standard
 					if (ch == '\\') {
@@ -116,15 +110,22 @@ public class ICalRawReader implements Closeable {
 					}
 				}
 				escapeChar = 0;
-			} else if (ch == '\\' || (ch == '^' && caretDecodingEnabled)) {
+				continue;
+			}
+
+			if (ch == '\\' || (ch == '^' && caretDecodingEnabled)) {
+				//an escape character was read
 				escapeChar = ch;
-			} else if ((ch == ';' || ch == ':') && !inQuotes) {
+				continue;
+			}
+
+			if ((ch == ';' || ch == ':') && !inQuotes) {
 				if (propertyName == null) {
+					//property name
 					propertyName = buffer.toString();
 				} else if (curParamName == null) {
 					//value-less parameter (bad iCal syntax)
 					String parameterName = buffer.toString();
-					listener.valuelessParameter(propertyName, parameterName);
 					parameters.put(parameterName, null);
 				} else {
 					//parameter value
@@ -135,6 +136,7 @@ public class ICalRawReader implements Closeable {
 				buffer.setLength(0);
 
 				if (ch == ':') {
+					//the rest of the line is the property value
 					if (i < line.length() - 1) {
 						value = line.substring(i + 1);
 					} else {
@@ -142,34 +144,36 @@ public class ICalRawReader implements Closeable {
 					}
 					break;
 				}
-			} else if (ch == ',' && !inQuotes) {
+				continue;
+			}
+
+			if (ch == ',' && !inQuotes) {
 				//multi-valued parameter
 				parameters.put(curParamName, buffer.toString());
 				buffer.setLength(0);
-			} else if (ch == '=' && curParamName == null) {
+				continue;
+			}
+
+			if (ch == '=' && curParamName == null) {
 				//parameter name
 				curParamName = buffer.toString();
 				buffer.setLength(0);
-			} else if (ch == '"') {
-				inQuotes = !inQuotes;
-			} else {
-				buffer.append(ch);
+				continue;
 			}
+
+			if (ch == '"') {
+				inQuotes = !inQuotes;
+				continue;
+			}
+
+			buffer.append(ch);
 		}
 
 		if (propertyName == null || value == null) {
-			listener.invalidLine(line);
-			return;
+			throw new ICalParseException(line);
 		}
-		if ("BEGIN".equalsIgnoreCase(propertyName)) {
-			listener.beginComponent(value);
-			return;
-		}
-		if ("END".equalsIgnoreCase(propertyName)) {
-			listener.endComponent(value);
-			return;
-		}
-		listener.readProperty(propertyName, parameters, value);
+
+		return new ICalRawLine(propertyName, parameters, value);
 	}
 
 	/**
@@ -254,77 +258,6 @@ public class ICalRawReader implements Closeable {
 	 */
 	public void setCaretDecodingEnabled(boolean enable) {
 		caretDecodingEnabled = enable;
-	}
-
-	/**
-	 * Determines whether the end of the data stream has been reached.
-	 * @return true if the end has been reached, false if not
-	 */
-	public boolean eof() {
-		return eof;
-	}
-
-	/**
-	 * Handles the iCalendar data as it is read off the data stream. Each one of
-	 * this interface's methods may throw a {@link StopReadingException} at any
-	 * time to force the parser to stop reading from the data stream. This will
-	 * cause the reader to return from the {@link ICalRawReader#start} method.
-	 * To continue reading from the data stream, simply call the
-	 * {@link ICalRawReader#start} method again.
-	 * @author Michael Angstadt
-	 */
-	public static interface ICalDataStreamListener {
-		/**
-		 * Called when a component begins (when a "BEGIN:NAME" property is
-		 * reached).
-		 * @param name the component name (e.g. "VEVENT")
-		 * @throws StopReadingException to force the reader to stop reading from
-		 * the data stream
-		 */
-		void beginComponent(String name);
-
-		/**
-		 * Called when a property is read.
-		 * @param name the property name (e.g. "VERSION")
-		 * @param parameters the parameters
-		 * @param value the property value
-		 * @throws StopReadingException to force the reader to stop reading from
-		 * the data stream
-		 */
-		void readProperty(String name, ICalParameters parameters, String value);
-
-		/**
-		 * Called when a component ends (when a "END:NAME" property is reached).
-		 * @param name the component name (e.g. "VEVENT")
-		 * @throws StopReadingException to force the reader to stop reading from
-		 * the data stream
-		 */
-		void endComponent(String name);
-
-		/**
-		 * Called when a line cannot be parsed.
-		 * @param line the unparseable line
-		 * @throws StopReadingException to force the reader to stop reading from
-		 * the data stream
-		 */
-		void invalidLine(String line);
-
-		/**
-		 * Called when a value-less parameter is read.
-		 * @param propertyName the property name (e.g. "VERSION")
-		 * @param parameterName the parameter name (e.g. "FMTTYPE")
-		 */
-		void valuelessParameter(String propertyName, String parameterName);
-	}
-
-	/**
-	 * Instructs an {@link ICalRawReader} to stop reading from the data stream
-	 * when thrown from an {@link ICalDataStreamListener} implementation.
-	 * @author Michael Angstadt
-	 */
-	@SuppressWarnings("serial")
-	public static class StopReadingException extends ICalException {
-		//empty
 	}
 
 	/**
