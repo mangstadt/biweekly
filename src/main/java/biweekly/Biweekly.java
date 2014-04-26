@@ -21,18 +21,18 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import biweekly.component.ICalComponent;
-import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.ICalMarshallerRegistrar;
 import biweekly.io.json.JCalParseException;
 import biweekly.io.json.JCalReader;
 import biweekly.io.json.JCalWriter;
+import biweekly.io.scribe.component.ICalComponentScribe;
+import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.text.ICalRawReader;
 import biweekly.io.text.ICalRawWriter;
 import biweekly.io.text.ICalReader;
 import biweekly.io.text.ICalWriter;
 import biweekly.io.xml.XCalDocument;
 import biweekly.property.ICalProperty;
-import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.IOUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -459,7 +459,7 @@ public class Biweekly {
 		 * @param marshaller the marshaller
 		 * @return this
 		 */
-		public T register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+		public T register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 			registrar.register(marshaller);
 			return this_;
 		}
@@ -469,7 +469,7 @@ public class Biweekly {
 		 * @param marshaller the marshaller
 		 * @return this
 		 */
-		public T register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+		public T register(ICalComponentScribe<? extends ICalComponent> marshaller) {
 			registrar.register(marshaller);
 			return this_;
 		}
@@ -610,12 +610,12 @@ public class Biweekly {
 		}
 
 		@Override
-		public ParserChainTextReader register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+		public ParserChainTextReader register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 			return super.register(marshaller);
 		}
 
 		@Override
-		public ParserChainTextReader register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+		public ParserChainTextReader register(ICalComponentScribe<? extends ICalComponent> marshaller) {
 			return super.register(marshaller);
 		}
 
@@ -654,12 +654,12 @@ public class Biweekly {
 		}
 
 		@Override
-		public ParserChainTextString register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+		public ParserChainTextString register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 			return super.register(marshaller);
 		}
 
 		@Override
-		public ParserChainTextString register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+		public ParserChainTextString register(ICalComponentScribe<? extends ICalComponent> marshaller) {
 			return super.register(marshaller);
 		}
 
@@ -745,12 +745,12 @@ public class Biweekly {
 		}
 
 		@Override
-		public ParserChainXmlString register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+		public ParserChainXmlString register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 			return super.register(marshaller);
 		}
 
 		@Override
-		public ParserChainXmlString register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+		public ParserChainXmlString register(ICalComponentScribe<? extends ICalComponent> marshaller) {
 			return super.register(marshaller);
 		}
 
@@ -815,12 +815,12 @@ public class Biweekly {
 		}
 
 		@Override
-		public ParserChainXmlReader register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+		public ParserChainXmlReader register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 			return super.register(marshaller);
 		}
 
 		@Override
-		public ParserChainXmlReader register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+		public ParserChainXmlReader register(ICalComponentScribe<? extends ICalComponent> marshaller) {
 			return super.register(marshaller);
 		}
 
@@ -853,12 +853,12 @@ public class Biweekly {
 		}
 
 		@Override
-		public ParserChainXmlDocument register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+		public ParserChainXmlDocument register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 			return super.register(marshaller);
 		}
 
 		@Override
-		public ParserChainXmlDocument register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+		public ParserChainXmlDocument register(ICalComponentScribe<? extends ICalComponent> marshaller) {
 			return super.register(marshaller);
 		}
 
@@ -1000,12 +1000,12 @@ public class Biweekly {
 		}
 
 		@Override
-		public ParserChainJsonReader register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+		public ParserChainJsonReader register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 			return super.register(marshaller);
 		}
 
 		@Override
-		public ParserChainJsonReader register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+		public ParserChainJsonReader register(ICalComponentScribe<? extends ICalComponent> marshaller) {
 			return super.register(marshaller);
 		}
 
@@ -1039,12 +1039,12 @@ public class Biweekly {
 		}
 
 		@Override
-		public ParserChainJsonString register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+		public ParserChainJsonString register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 			return super.register(marshaller);
 		}
 
 		@Override
-		public ParserChainJsonString register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+		public ParserChainJsonString register(ICalComponentScribe<? extends ICalComponent> marshaller) {
 			return super.register(marshaller);
 		}
 
@@ -1095,7 +1095,7 @@ public class Biweekly {
 		 * @param marshaller the marshaller
 		 * @return this
 		 */
-		public T register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+		public T register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 			registrar.register(marshaller);
 			return this_;
 		}
@@ -1105,7 +1105,7 @@ public class Biweekly {
 		 * @param marshaller the marshaller
 		 * @return this
 		 */
-		public T register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+		public T register(ICalComponentScribe<? extends ICalComponent> marshaller) {
 			registrar.register(marshaller);
 			return this_;
 		}
@@ -1254,12 +1254,12 @@ public class Biweekly {
 		}
 
 		@Override
-		public WriterChainXml register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+		public WriterChainXml register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 			return super.register(marshaller);
 		}
 
 		@Override
-		public WriterChainXml register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+		public WriterChainXml register(ICalComponentScribe<? extends ICalComponent> marshaller) {
 			return super.register(marshaller);
 		}
 

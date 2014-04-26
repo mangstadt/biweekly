@@ -8,71 +8,71 @@ import javax.xml.namespace.QName;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
 import biweekly.component.RawComponent;
-import biweekly.component.marshaller.DaylightSavingsTimeMarshaller;
-import biweekly.component.marshaller.ICalComponentMarshaller;
-import biweekly.component.marshaller.ICalendarMarshaller;
-import biweekly.component.marshaller.RawComponentMarshaller;
-import biweekly.component.marshaller.StandardTimeMarshaller;
-import biweekly.component.marshaller.VAlarmMarshaller;
-import biweekly.component.marshaller.VEventMarshaller;
-import biweekly.component.marshaller.VFreeBusyMarshaller;
-import biweekly.component.marshaller.VJournalMarshaller;
-import biweekly.component.marshaller.VTimezoneMarshaller;
-import biweekly.component.marshaller.VTodoMarshaller;
+import biweekly.io.scribe.component.DaylightSavingsTimeScribe;
+import biweekly.io.scribe.component.ICalComponentScribe;
+import biweekly.io.scribe.component.ICalendarScribe;
+import biweekly.io.scribe.component.RawComponentScribe;
+import biweekly.io.scribe.component.StandardTimeScribe;
+import biweekly.io.scribe.component.VAlarmScribe;
+import biweekly.io.scribe.component.VEventScribe;
+import biweekly.io.scribe.component.VFreeBusyScribe;
+import biweekly.io.scribe.component.VJournalScribe;
+import biweekly.io.scribe.component.VTimezoneScribe;
+import biweekly.io.scribe.component.VTodoScribe;
+import biweekly.io.scribe.property.ActionScribe;
+import biweekly.io.scribe.property.AttachmentScribe;
+import biweekly.io.scribe.property.AttendeeScribe;
+import biweekly.io.scribe.property.CalendarScaleScribe;
+import biweekly.io.scribe.property.CategoriesScribe;
+import biweekly.io.scribe.property.ClassificationScribe;
+import biweekly.io.scribe.property.CommentScribe;
+import biweekly.io.scribe.property.CompletedScribe;
+import biweekly.io.scribe.property.ContactScribe;
+import biweekly.io.scribe.property.CreatedScribe;
+import biweekly.io.scribe.property.DateDueScribe;
+import biweekly.io.scribe.property.DateEndScribe;
+import biweekly.io.scribe.property.DateStartScribe;
+import biweekly.io.scribe.property.DateTimeStampScribe;
+import biweekly.io.scribe.property.DescriptionScribe;
+import biweekly.io.scribe.property.DurationPropertyScribe;
+import biweekly.io.scribe.property.ExceptionDatesScribe;
+import biweekly.io.scribe.property.ExceptionRuleScribe;
+import biweekly.io.scribe.property.FreeBusyScribe;
+import biweekly.io.scribe.property.GeoScribe;
+import biweekly.io.scribe.property.ICalPropertyScribe;
+import biweekly.io.scribe.property.LastModifiedScribe;
+import biweekly.io.scribe.property.LocationScribe;
+import biweekly.io.scribe.property.MethodScribe;
+import biweekly.io.scribe.property.OrganizerScribe;
+import biweekly.io.scribe.property.PercentCompleteScribe;
+import biweekly.io.scribe.property.PriorityScribe;
+import biweekly.io.scribe.property.ProductIdScribe;
+import biweekly.io.scribe.property.RawPropertyScribe;
+import biweekly.io.scribe.property.RecurrenceDatesScribe;
+import biweekly.io.scribe.property.RecurrenceIdScribe;
+import biweekly.io.scribe.property.RecurrenceRuleScribe;
+import biweekly.io.scribe.property.RelatedToScribe;
+import biweekly.io.scribe.property.RepeatScribe;
+import biweekly.io.scribe.property.RequestStatusScribe;
+import biweekly.io.scribe.property.ResourcesScribe;
+import biweekly.io.scribe.property.SequenceScribe;
+import biweekly.io.scribe.property.StatusScribe;
+import biweekly.io.scribe.property.SummaryScribe;
+import biweekly.io.scribe.property.TimezoneIdScribe;
+import biweekly.io.scribe.property.TimezoneNameScribe;
+import biweekly.io.scribe.property.TimezoneOffsetFromScribe;
+import biweekly.io.scribe.property.TimezoneOffsetToScribe;
+import biweekly.io.scribe.property.TimezoneUrlScribe;
+import biweekly.io.scribe.property.TransparencyScribe;
+import biweekly.io.scribe.property.TriggerScribe;
+import biweekly.io.scribe.property.UidScribe;
+import biweekly.io.scribe.property.UrlScribe;
+import biweekly.io.scribe.property.VersionScribe;
+import biweekly.io.scribe.property.XmlScribe;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.Xml;
-import biweekly.property.marshaller.ActionMarshaller;
-import biweekly.property.marshaller.AttachmentMarshaller;
-import biweekly.property.marshaller.AttendeeMarshaller;
-import biweekly.property.marshaller.CalendarScaleMarshaller;
-import biweekly.property.marshaller.CategoriesMarshaller;
-import biweekly.property.marshaller.ClassificationMarshaller;
-import biweekly.property.marshaller.CommentMarshaller;
-import biweekly.property.marshaller.CompletedMarshaller;
-import biweekly.property.marshaller.ContactMarshaller;
-import biweekly.property.marshaller.CreatedMarshaller;
-import biweekly.property.marshaller.DateDueMarshaller;
-import biweekly.property.marshaller.DateEndMarshaller;
-import biweekly.property.marshaller.DateStartMarshaller;
-import biweekly.property.marshaller.DateTimeStampMarshaller;
-import biweekly.property.marshaller.DescriptionMarshaller;
-import biweekly.property.marshaller.DurationPropertyMarshaller;
-import biweekly.property.marshaller.ExceptionDatesMarshaller;
-import biweekly.property.marshaller.ExceptionRuleMarshaller;
-import biweekly.property.marshaller.FreeBusyMarshaller;
-import biweekly.property.marshaller.GeoMarshaller;
-import biweekly.property.marshaller.ICalPropertyMarshaller;
-import biweekly.property.marshaller.LastModifiedMarshaller;
-import biweekly.property.marshaller.LocationMarshaller;
-import biweekly.property.marshaller.MethodMarshaller;
-import biweekly.property.marshaller.OrganizerMarshaller;
-import biweekly.property.marshaller.PercentCompleteMarshaller;
-import biweekly.property.marshaller.PriorityMarshaller;
-import biweekly.property.marshaller.ProductIdMarshaller;
-import biweekly.property.marshaller.RawPropertyMarshaller;
-import biweekly.property.marshaller.RecurrenceDatesMarshaller;
-import biweekly.property.marshaller.RecurrenceIdMarshaller;
-import biweekly.property.marshaller.RecurrenceRuleMarshaller;
-import biweekly.property.marshaller.RelatedToMarshaller;
-import biweekly.property.marshaller.RepeatMarshaller;
-import biweekly.property.marshaller.RequestStatusMarshaller;
-import biweekly.property.marshaller.ResourcesMarshaller;
-import biweekly.property.marshaller.SequenceMarshaller;
-import biweekly.property.marshaller.StatusMarshaller;
-import biweekly.property.marshaller.SummaryMarshaller;
-import biweekly.property.marshaller.TimezoneIdMarshaller;
-import biweekly.property.marshaller.TimezoneNameMarshaller;
-import biweekly.property.marshaller.TimezoneOffsetFromMarshaller;
-import biweekly.property.marshaller.TimezoneOffsetToMarshaller;
-import biweekly.property.marshaller.TimezoneUrlMarshaller;
-import biweekly.property.marshaller.TransparencyMarshaller;
-import biweekly.property.marshaller.TriggerMarshaller;
-import biweekly.property.marshaller.UidMarshaller;
-import biweekly.property.marshaller.UrlMarshaller;
-import biweekly.property.marshaller.VersionMarshaller;
-import biweekly.property.marshaller.XmlMarshaller;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -138,97 +138,97 @@ import biweekly.property.marshaller.XmlMarshaller;
  */
 public class ICalMarshallerRegistrar {
 	//define standard component marshallers
-	private static final Map<String, ICalComponentMarshaller<? extends ICalComponent>> standardCompByName = new HashMap<String, ICalComponentMarshaller<? extends ICalComponent>>();
-	private static final Map<Class<? extends ICalComponent>, ICalComponentMarshaller<? extends ICalComponent>> standardCompByClass = new HashMap<Class<? extends ICalComponent>, ICalComponentMarshaller<? extends ICalComponent>>();
+	private static final Map<String, ICalComponentScribe<? extends ICalComponent>> standardCompByName = new HashMap<String, ICalComponentScribe<? extends ICalComponent>>();
+	private static final Map<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>> standardCompByClass = new HashMap<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>>();
 	static {
-		registerStandard(new ICalendarMarshaller());
-		registerStandard(new VAlarmMarshaller());
-		registerStandard(new VEventMarshaller());
-		registerStandard(new VFreeBusyMarshaller());
-		registerStandard(new VJournalMarshaller());
-		registerStandard(new VTodoMarshaller());
-		registerStandard(new VTimezoneMarshaller());
-		registerStandard(new StandardTimeMarshaller());
-		registerStandard(new DaylightSavingsTimeMarshaller());
+		registerStandard(new ICalendarScribe());
+		registerStandard(new VAlarmScribe());
+		registerStandard(new VEventScribe());
+		registerStandard(new VFreeBusyScribe());
+		registerStandard(new VJournalScribe());
+		registerStandard(new VTodoScribe());
+		registerStandard(new VTimezoneScribe());
+		registerStandard(new StandardTimeScribe());
+		registerStandard(new DaylightSavingsTimeScribe());
 	}
 
 	//define standard property marshallers
-	private static final Map<String, ICalPropertyMarshaller<? extends ICalProperty>> standardPropByName = new HashMap<String, ICalPropertyMarshaller<? extends ICalProperty>>();
-	private static final Map<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>> standardPropByClass = new HashMap<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>>();
-	private static final Map<QName, ICalPropertyMarshaller<? extends ICalProperty>> standardPropByQName = new HashMap<QName, ICalPropertyMarshaller<? extends ICalProperty>>();
+	private static final Map<String, ICalPropertyScribe<? extends ICalProperty>> standardPropByName = new HashMap<String, ICalPropertyScribe<? extends ICalProperty>>();
+	private static final Map<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>> standardPropByClass = new HashMap<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>>();
+	private static final Map<QName, ICalPropertyScribe<? extends ICalProperty>> standardPropByQName = new HashMap<QName, ICalPropertyScribe<? extends ICalProperty>>();
 	static {
 		//RFC 5545
-		registerStandard(new ActionMarshaller());
-		registerStandard(new AttachmentMarshaller());
-		registerStandard(new AttendeeMarshaller());
-		registerStandard(new CalendarScaleMarshaller());
-		registerStandard(new CategoriesMarshaller());
-		registerStandard(new ClassificationMarshaller());
-		registerStandard(new CommentMarshaller());
-		registerStandard(new CompletedMarshaller());
-		registerStandard(new ContactMarshaller());
-		registerStandard(new CreatedMarshaller());
-		registerStandard(new DateDueMarshaller());
-		registerStandard(new DateEndMarshaller());
-		registerStandard(new DateStartMarshaller());
-		registerStandard(new DateTimeStampMarshaller());
-		registerStandard(new DescriptionMarshaller());
-		registerStandard(new DurationPropertyMarshaller());
-		registerStandard(new ExceptionDatesMarshaller());
-		registerStandard(new FreeBusyMarshaller());
-		registerStandard(new GeoMarshaller());
-		registerStandard(new LastModifiedMarshaller());
-		registerStandard(new LocationMarshaller());
-		registerStandard(new MethodMarshaller());
-		registerStandard(new OrganizerMarshaller());
-		registerStandard(new PercentCompleteMarshaller());
-		registerStandard(new PriorityMarshaller());
-		registerStandard(new ProductIdMarshaller());
-		registerStandard(new RecurrenceDatesMarshaller());
-		registerStandard(new RecurrenceIdMarshaller());
-		registerStandard(new RecurrenceRuleMarshaller());
-		registerStandard(new RelatedToMarshaller());
-		registerStandard(new RepeatMarshaller());
-		registerStandard(new RequestStatusMarshaller());
-		registerStandard(new ResourcesMarshaller());
-		registerStandard(new SequenceMarshaller());
-		registerStandard(new StatusMarshaller());
-		registerStandard(new SummaryMarshaller());
-		registerStandard(new TimezoneIdMarshaller());
-		registerStandard(new TimezoneNameMarshaller());
-		registerStandard(new TimezoneOffsetFromMarshaller());
-		registerStandard(new TimezoneOffsetToMarshaller());
-		registerStandard(new TimezoneUrlMarshaller());
-		registerStandard(new TransparencyMarshaller());
-		registerStandard(new TriggerMarshaller());
-		registerStandard(new UidMarshaller());
-		registerStandard(new UrlMarshaller());
-		registerStandard(new VersionMarshaller());
+		registerStandard(new ActionScribe());
+		registerStandard(new AttachmentScribe());
+		registerStandard(new AttendeeScribe());
+		registerStandard(new CalendarScaleScribe());
+		registerStandard(new CategoriesScribe());
+		registerStandard(new ClassificationScribe());
+		registerStandard(new CommentScribe());
+		registerStandard(new CompletedScribe());
+		registerStandard(new ContactScribe());
+		registerStandard(new CreatedScribe());
+		registerStandard(new DateDueScribe());
+		registerStandard(new DateEndScribe());
+		registerStandard(new DateStartScribe());
+		registerStandard(new DateTimeStampScribe());
+		registerStandard(new DescriptionScribe());
+		registerStandard(new DurationPropertyScribe());
+		registerStandard(new ExceptionDatesScribe());
+		registerStandard(new FreeBusyScribe());
+		registerStandard(new GeoScribe());
+		registerStandard(new LastModifiedScribe());
+		registerStandard(new LocationScribe());
+		registerStandard(new MethodScribe());
+		registerStandard(new OrganizerScribe());
+		registerStandard(new PercentCompleteScribe());
+		registerStandard(new PriorityScribe());
+		registerStandard(new ProductIdScribe());
+		registerStandard(new RecurrenceDatesScribe());
+		registerStandard(new RecurrenceIdScribe());
+		registerStandard(new RecurrenceRuleScribe());
+		registerStandard(new RelatedToScribe());
+		registerStandard(new RepeatScribe());
+		registerStandard(new RequestStatusScribe());
+		registerStandard(new ResourcesScribe());
+		registerStandard(new SequenceScribe());
+		registerStandard(new StatusScribe());
+		registerStandard(new SummaryScribe());
+		registerStandard(new TimezoneIdScribe());
+		registerStandard(new TimezoneNameScribe());
+		registerStandard(new TimezoneOffsetFromScribe());
+		registerStandard(new TimezoneOffsetToScribe());
+		registerStandard(new TimezoneUrlScribe());
+		registerStandard(new TransparencyScribe());
+		registerStandard(new TriggerScribe());
+		registerStandard(new UidScribe());
+		registerStandard(new UrlScribe());
+		registerStandard(new VersionScribe());
 
 		//RFC 6321
-		registerStandard(new XmlMarshaller());
+		registerStandard(new XmlScribe());
 
 		//RFC 2445
-		registerStandard(new ExceptionRuleMarshaller());
+		registerStandard(new ExceptionRuleScribe());
 	}
 
-	private final Map<String, ICalComponentMarshaller<? extends ICalComponent>> experimentalCompByName = new HashMap<String, ICalComponentMarshaller<? extends ICalComponent>>(0);
-	private final Map<Class<? extends ICalComponent>, ICalComponentMarshaller<? extends ICalComponent>> experimentalCompByClass = new HashMap<Class<? extends ICalComponent>, ICalComponentMarshaller<? extends ICalComponent>>(0);
+	private final Map<String, ICalComponentScribe<? extends ICalComponent>> experimentalCompByName = new HashMap<String, ICalComponentScribe<? extends ICalComponent>>(0);
+	private final Map<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>> experimentalCompByClass = new HashMap<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>>(0);
 
-	private final Map<String, ICalPropertyMarshaller<? extends ICalProperty>> experimentalPropByName = new HashMap<String, ICalPropertyMarshaller<? extends ICalProperty>>(0);
-	private final Map<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>> experimentalPropByClass = new HashMap<Class<? extends ICalProperty>, ICalPropertyMarshaller<? extends ICalProperty>>(0);
-	private final Map<QName, ICalPropertyMarshaller<? extends ICalProperty>> experimentalPropByQName = new HashMap<QName, ICalPropertyMarshaller<? extends ICalProperty>>(0);
+	private final Map<String, ICalPropertyScribe<? extends ICalProperty>> experimentalPropByName = new HashMap<String, ICalPropertyScribe<? extends ICalProperty>>(0);
+	private final Map<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>> experimentalPropByClass = new HashMap<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>>(0);
+	private final Map<QName, ICalPropertyScribe<? extends ICalProperty>> experimentalPropByQName = new HashMap<QName, ICalPropertyScribe<? extends ICalProperty>>(0);
 
 	/**
 	 * Gets a component marshaller by name.
 	 * @param componentName the component name (e.g. "VEVENT")
-	 * @return the component marshaller or a {@link RawComponentMarshaller} if
+	 * @return the component marshaller or a {@link RawComponentScribe} if
 	 * not found
 	 */
-	public ICalComponentMarshaller<? extends ICalComponent> getComponentMarshaller(String componentName) {
+	public ICalComponentScribe<? extends ICalComponent> getComponentMarshaller(String componentName) {
 		componentName = componentName.toUpperCase();
 
-		ICalComponentMarshaller<? extends ICalComponent> marshaller = experimentalCompByName.get(componentName);
+		ICalComponentScribe<? extends ICalComponent> marshaller = experimentalCompByName.get(componentName);
 		if (marshaller != null) {
 			return marshaller;
 		}
@@ -238,19 +238,19 @@ public class ICalMarshallerRegistrar {
 			return marshaller;
 		}
 
-		return new RawComponentMarshaller(componentName);
+		return new RawComponentScribe(componentName);
 	}
 
 	/**
 	 * Gets a property marshaller by name.
 	 * @param propertyName the property name (e.g. "VERSION")
-	 * @return the property marshaller or a {@link RawPropertyMarshaller} if not
+	 * @return the property marshaller or a {@link RawPropertyScribe} if not
 	 * found
 	 */
-	public ICalPropertyMarshaller<? extends ICalProperty> getPropertyMarshaller(String propertyName) {
+	public ICalPropertyScribe<? extends ICalProperty> getPropertyMarshaller(String propertyName) {
 		propertyName = propertyName.toUpperCase();
 
-		ICalPropertyMarshaller<? extends ICalProperty> marshaller = experimentalPropByName.get(propertyName);
+		ICalPropertyScribe<? extends ICalProperty> marshaller = experimentalPropByName.get(propertyName);
 		if (marshaller != null) {
 			return marshaller;
 		}
@@ -260,7 +260,7 @@ public class ICalMarshallerRegistrar {
 			return marshaller;
 		}
 
-		return new RawPropertyMarshaller(propertyName);
+		return new RawPropertyScribe(propertyName);
 	}
 
 	/**
@@ -268,8 +268,8 @@ public class ICalMarshallerRegistrar {
 	 * @param clazz the component class
 	 * @return the component marshaller or null if not found
 	 */
-	public ICalComponentMarshaller<? extends ICalComponent> getComponentMarshaller(Class<? extends ICalComponent> clazz) {
-		ICalComponentMarshaller<? extends ICalComponent> marshaller = experimentalCompByClass.get(clazz);
+	public ICalComponentScribe<? extends ICalComponent> getComponentMarshaller(Class<? extends ICalComponent> clazz) {
+		ICalComponentScribe<? extends ICalComponent> marshaller = experimentalCompByClass.get(clazz);
 		if (marshaller != null) {
 			return marshaller;
 		}
@@ -282,8 +282,8 @@ public class ICalMarshallerRegistrar {
 	 * @param clazz the property class
 	 * @return the property marshaller or null if not found
 	 */
-	public ICalPropertyMarshaller<? extends ICalProperty> getPropertyMarshaller(Class<? extends ICalProperty> clazz) {
-		ICalPropertyMarshaller<? extends ICalProperty> marshaller = experimentalPropByClass.get(clazz);
+	public ICalPropertyScribe<? extends ICalProperty> getPropertyMarshaller(Class<? extends ICalProperty> clazz) {
+		ICalPropertyScribe<? extends ICalProperty> marshaller = experimentalPropByClass.get(clazz);
 		if (marshaller != null) {
 			return marshaller;
 		}
@@ -296,10 +296,10 @@ public class ICalMarshallerRegistrar {
 	 * @param component the component instance
 	 * @return the component marshaller or null if not found
 	 */
-	public ICalComponentMarshaller<? extends ICalComponent> getComponentMarshaller(ICalComponent component) {
+	public ICalComponentScribe<? extends ICalComponent> getComponentMarshaller(ICalComponent component) {
 		if (component instanceof RawComponent) {
 			RawComponent raw = (RawComponent) component;
-			return new RawComponentMarshaller(raw.getName());
+			return new RawComponentScribe(raw.getName());
 		}
 
 		return getComponentMarshaller(component.getClass());
@@ -310,10 +310,10 @@ public class ICalMarshallerRegistrar {
 	 * @param property the property instance
 	 * @return the property marshaller or null if not found
 	 */
-	public ICalPropertyMarshaller<? extends ICalProperty> getPropertyMarshaller(ICalProperty property) {
+	public ICalPropertyScribe<? extends ICalProperty> getPropertyMarshaller(ICalProperty property) {
 		if (property instanceof RawProperty) {
 			RawProperty raw = (RawProperty) property;
-			return new RawPropertyMarshaller(raw.getName());
+			return new RawPropertyScribe(raw.getName());
 		}
 
 		return getPropertyMarshaller(property.getClass());
@@ -322,10 +322,10 @@ public class ICalMarshallerRegistrar {
 	/**
 	 * Gets a property marshaller by XML local name and namespace.
 	 * @param qname the XML local name and namespace
-	 * @return the property marshaller or a {@link XmlMarshaller} if not found
+	 * @return the property marshaller or a {@link XmlScribe} if not found
 	 */
-	public ICalPropertyMarshaller<? extends ICalProperty> getPropertyMarshaller(QName qname) {
-		ICalPropertyMarshaller<? extends ICalProperty> marshaller = experimentalPropByQName.get(qname);
+	public ICalPropertyScribe<? extends ICalProperty> getPropertyMarshaller(QName qname) {
+		ICalPropertyScribe<? extends ICalProperty> marshaller = experimentalPropByQName.get(qname);
 		if (marshaller != null) {
 			return marshaller;
 		}
@@ -336,7 +336,7 @@ public class ICalMarshallerRegistrar {
 		}
 
 		if (XCalNamespaceContext.XCAL_NS.equals(qname.getNamespaceURI())) {
-			return new RawPropertyMarshaller(qname.getLocalPart().toUpperCase());
+			return new RawPropertyScribe(qname.getLocalPart().toUpperCase());
 		}
 
 		return getPropertyMarshaller(Xml.class);
@@ -346,7 +346,7 @@ public class ICalMarshallerRegistrar {
 	 * Registers a component marshaller.
 	 * @param marshaller the marshaller to register
 	 */
-	public void register(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+	public void register(ICalComponentScribe<? extends ICalComponent> marshaller) {
 		experimentalCompByName.put(marshaller.getComponentName().toUpperCase(), marshaller);
 		experimentalCompByClass.put(marshaller.getComponentClass(), marshaller);
 	}
@@ -355,7 +355,7 @@ public class ICalMarshallerRegistrar {
 	 * Registers a property marshaller.
 	 * @param marshaller the marshaller to register
 	 */
-	public void register(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+	public void register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 		experimentalPropByName.put(marshaller.getPropertyName().toUpperCase(), marshaller);
 		experimentalPropByClass.put(marshaller.getPropertyClass(), marshaller);
 		experimentalPropByQName.put(marshaller.getQName(), marshaller);
@@ -365,7 +365,7 @@ public class ICalMarshallerRegistrar {
 	 * Unregisters a component marshaller.
 	 * @param marshaller the marshaller to unregister
 	 */
-	public void unregister(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+	public void unregister(ICalComponentScribe<? extends ICalComponent> marshaller) {
 		experimentalCompByName.remove(marshaller.getComponentName().toUpperCase());
 		experimentalCompByClass.remove(marshaller.getComponentClass());
 	}
@@ -374,7 +374,7 @@ public class ICalMarshallerRegistrar {
 	 * Unregisters a property marshaller
 	 * @param marshaller the marshaller to unregister
 	 */
-	public void unregister(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+	public void unregister(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 		experimentalPropByName.remove(marshaller.getPropertyName().toUpperCase());
 		experimentalPropByClass.remove(marshaller.getPropertyClass());
 		experimentalPropByQName.remove(marshaller.getQName());
@@ -385,16 +385,16 @@ public class ICalMarshallerRegistrar {
 	 * component ("VCALENDAR").
 	 * @return the marshaller
 	 */
-	public static ICalendarMarshaller getICalendarMarshaller() {
-		return (ICalendarMarshaller) standardCompByClass.get(ICalendar.class);
+	public static ICalendarScribe getICalendarMarshaller() {
+		return (ICalendarScribe) standardCompByClass.get(ICalendar.class);
 	}
 
-	private static void registerStandard(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+	private static void registerStandard(ICalComponentScribe<? extends ICalComponent> marshaller) {
 		standardCompByName.put(marshaller.getComponentName().toUpperCase(), marshaller);
 		standardCompByClass.put(marshaller.getComponentClass(), marshaller);
 	}
 
-	private static void registerStandard(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+	private static void registerStandard(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 		standardPropByName.put(marshaller.getPropertyName().toUpperCase(), marshaller);
 		standardPropByClass.put(marshaller.getPropertyClass(), marshaller);
 		standardPropByQName.put(marshaller.getQName(), marshaller);

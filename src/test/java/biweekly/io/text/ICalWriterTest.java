@@ -28,8 +28,9 @@ import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
 import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
-import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.SkipMeException;
+import biweekly.io.scribe.component.ICalComponentScribe;
+import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.CalendarUserType;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.ParticipationStatus;
@@ -43,7 +44,6 @@ import biweekly.property.Status;
 import biweekly.property.Summary;
 import biweekly.property.Trigger;
 import biweekly.property.Version;
-import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
@@ -683,7 +683,7 @@ public class ICalWriterTest {
 		}
 	}
 
-	private class TestPropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
+	private class TestPropertyMarshaller extends ICalPropertyScribe<TestProperty> {
 		public TestPropertyMarshaller() {
 			super(TestProperty.class, "X-TEST", null);
 		}
@@ -699,7 +699,7 @@ public class ICalWriterTest {
 		}
 	}
 
-	private class BadNameMarshaller extends ICalPropertyMarshaller<TestProperty> {
+	private class BadNameMarshaller extends ICalPropertyScribe<TestProperty> {
 		public BadNameMarshaller() {
 			super(TestProperty.class, "BAD*NAME", null);
 		}
@@ -715,7 +715,7 @@ public class ICalWriterTest {
 		}
 	}
 
-	private class SkipMeMarshaller extends ICalPropertyMarshaller<TestProperty> {
+	private class SkipMeMarshaller extends ICalPropertyScribe<TestProperty> {
 		public SkipMeMarshaller() {
 			super(TestProperty.class, "NAME", null);
 		}
@@ -731,7 +731,7 @@ public class ICalWriterTest {
 		}
 	}
 
-	private class MyVersionMarshaller extends ICalPropertyMarshaller<Version> {
+	private class MyVersionMarshaller extends ICalPropertyScribe<Version> {
 		public MyVersionMarshaller() {
 			super(Version.class, "VERSION", ICalDataType.TEXT);
 		}
@@ -747,7 +747,7 @@ public class ICalWriterTest {
 		}
 	}
 
-	private class PartyMarshaller extends ICalComponentMarshaller<Party> {
+	private class PartyMarshaller extends ICalComponentScribe<Party> {
 		public PartyMarshaller() {
 			super(Party.class, "X-VPARTY");
 		}
@@ -762,7 +762,7 @@ public class ICalWriterTest {
 		//empty
 	}
 
-	private class DataTypePropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
+	private class DataTypePropertyMarshaller extends ICalPropertyScribe<TestProperty> {
 		public DataTypePropertyMarshaller() {
 			super(TestProperty.class, "X-TEST", ICalDataType.TEXT);
 		}

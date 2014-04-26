@@ -12,12 +12,12 @@ import java.io.Writer;
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
-import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.ICalMarshallerRegistrar;
 import biweekly.io.SkipMeException;
+import biweekly.io.scribe.component.ICalComponentScribe;
+import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.property.marshaller.ICalPropertyMarshaller;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -137,7 +137,7 @@ public class JCalWriter implements Closeable, Flushable {
 	 * </p>
 	 * @param marshaller the marshaller to register
 	 */
-	public void registerMarshaller(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+	public void registerMarshaller(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 		registrar.register(marshaller);
 	}
 
@@ -152,7 +152,7 @@ public class JCalWriter implements Closeable, Flushable {
 	 * </p>
 	 * @param marshaller the marshaller to register
 	 */
-	public void registerMarshaller(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+	public void registerMarshaller(ICalComponentScribe<? extends ICalComponent> marshaller) {
 		registrar.register(marshaller);
 	}
 
@@ -213,7 +213,7 @@ public class JCalWriter implements Closeable, Flushable {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeComponent(ICalComponent component) throws IOException {
-		ICalComponentMarshaller compMarshaller = registrar.getComponentMarshaller(component);
+		ICalComponentScribe compMarshaller = registrar.getComponentMarshaller(component);
 		if (compMarshaller == null) {
 			throw new IllegalArgumentException("No marshaller found for component class \"" + component.getClass().getName() + "\".");
 		}
@@ -223,7 +223,7 @@ public class JCalWriter implements Closeable, Flushable {
 		//write properties
 		for (Object obj : compMarshaller.getProperties(component)) {
 			ICalProperty property = (ICalProperty) obj;
-			ICalPropertyMarshaller propMarshaller = registrar.getPropertyMarshaller(property);
+			ICalPropertyScribe propMarshaller = registrar.getPropertyMarshaller(property);
 			if (propMarshaller == null) {
 				throw new IllegalArgumentException("No marshaller found for property class \"" + property.getClass().getName() + "\".");
 			}

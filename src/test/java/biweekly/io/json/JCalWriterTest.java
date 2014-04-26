@@ -25,8 +25,9 @@ import biweekly.component.ICalComponent;
 import biweekly.component.StandardTime;
 import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
-import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.SkipMeException;
+import biweekly.io.scribe.component.ICalComponentScribe;
+import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.CalendarScale;
 import biweekly.property.DateStart;
@@ -34,7 +35,6 @@ import biweekly.property.ICalProperty;
 import biweekly.property.RecurrenceDates;
 import biweekly.property.Summary;
 import biweekly.property.Version;
-import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
@@ -638,7 +638,7 @@ public class JCalWriterTest {
 		}
 	}
 
-	private class TestPropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
+	private class TestPropertyMarshaller extends ICalPropertyScribe<TestProperty> {
 		public TestPropertyMarshaller() {
 			super(TestProperty.class, "X-TEST", ICalDataType.TEXT);
 		}
@@ -659,7 +659,7 @@ public class JCalWriterTest {
 		}
 	}
 
-	private class SkipMeMarshaller extends ICalPropertyMarshaller<TestProperty> {
+	private class SkipMeMarshaller extends ICalPropertyScribe<TestProperty> {
 		public SkipMeMarshaller() {
 			super(TestProperty.class, "NAME", null);
 		}
@@ -675,7 +675,7 @@ public class JCalWriterTest {
 		}
 	}
 
-	private class MyVersionMarshaller extends ICalPropertyMarshaller<Version> {
+	private class MyVersionMarshaller extends ICalPropertyScribe<Version> {
 		public MyVersionMarshaller() {
 			super(Version.class, "VERSION", ICalDataType.TEXT);
 		}
@@ -696,7 +696,7 @@ public class JCalWriterTest {
 		}
 	}
 
-	private class PartyMarshaller extends ICalComponentMarshaller<Party> {
+	private class PartyMarshaller extends ICalComponentScribe<Party> {
 		public PartyMarshaller() {
 			super(Party.class, "X-VPARTY");
 		}

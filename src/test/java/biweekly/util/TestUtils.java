@@ -26,10 +26,10 @@ import org.xml.sax.SAXException;
 import biweekly.ValidationWarnings;
 import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.component.ICalComponent;
+import biweekly.io.scribe.property.ICalPropertyScribe;
+import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.property.marshaller.ICalPropertyMarshaller;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -185,7 +185,7 @@ public class TestUtils {
 	 * @param marshaller the property marshaller
 	 * @return the document
 	 */
-	public static Document xcalProperty(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+	public static Document xcalProperty(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 		QName qname = marshaller.getQName();
 		Document document = XmlUtils.createDocument();
 		Element element = document.createElementNS(qname.getNamespaceURI(), qname.getLocalPart());
@@ -199,7 +199,7 @@ public class TestUtils {
 	 * @param body the XML of the element body
 	 * @return the document
 	 */
-	public static Document xcalProperty(ICalPropertyMarshaller<? extends ICalProperty> marshaller, String body) {
+	public static Document xcalProperty(ICalPropertyScribe<? extends ICalProperty> marshaller, String body) {
 		QName qname = marshaller.getQName();
 		try {
 			return XmlUtils.toDocument("<" + qname.getLocalPart() + " xmlns=\"" + qname.getNamespaceURI() + "\">" + body + "</" + qname.getLocalPart() + ">");
@@ -215,7 +215,7 @@ public class TestUtils {
 	 * @param marshaller the marshaller object
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static void assertWriteXml(String expectedInnerXml, ICalProperty propertyToWrite, ICalPropertyMarshaller marshaller) {
+	public static void assertWriteXml(String expectedInnerXml, ICalProperty propertyToWrite, ICalPropertyScribe marshaller) {
 		Document actual = xcalProperty(marshaller);
 		marshaller.writeXml(propertyToWrite, XmlUtils.getRootElement(actual));
 
@@ -230,7 +230,7 @@ public class TestUtils {
 	 * @param marshaller the marshaller object
 	 * @return the unmarshal result
 	 */
-	public static <T extends ICalProperty> Result<T> parseXCalProperty(String innerXml, ICalPropertyMarshaller<T> marshaller) {
+	public static <T extends ICalProperty> Result<T> parseXCalProperty(String innerXml, ICalPropertyScribe<T> marshaller) {
 		Document document = xcalProperty(marshaller, innerXml);
 		Element element = XmlUtils.getRootElement(document);
 		return marshaller.parseXml(element, new ICalParameters());

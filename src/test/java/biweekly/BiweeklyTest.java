@@ -18,12 +18,12 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import biweekly.component.ICalComponent;
-import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.CannotParseException;
+import biweekly.io.scribe.component.ICalComponentScribe;
+import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.XmlUtils;
 
 /*
@@ -562,7 +562,7 @@ public class BiweeklyTest {
 		}
 	}
 
-	private class TestPropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
+	private class TestPropertyMarshaller extends ICalPropertyScribe<TestProperty> {
 		private TestPropertyMarshaller() {
 			super(TestProperty.class, "X-TEST", null);
 		}
@@ -592,7 +592,7 @@ public class BiweeklyTest {
 		}
 	}
 
-	private class PartyMarshaller extends ICalComponentMarshaller<Party> {
+	private class PartyMarshaller extends ICalComponentScribe<Party> {
 		private PartyMarshaller() {
 			super(Party.class, "X-VPARTY");
 		}

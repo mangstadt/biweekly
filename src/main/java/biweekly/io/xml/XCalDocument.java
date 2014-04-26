@@ -34,16 +34,16 @@ import biweekly.ICalendar;
 import biweekly.Messages;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
-import biweekly.component.marshaller.ICalComponentMarshaller;
-import biweekly.component.marshaller.ICalendarMarshaller;
 import biweekly.io.CannotParseException;
 import biweekly.io.ICalMarshallerRegistrar;
 import biweekly.io.SkipMeException;
+import biweekly.io.scribe.component.ICalComponentScribe;
+import biweekly.io.scribe.component.ICalendarScribe;
+import biweekly.io.scribe.property.ICalPropertyScribe;
+import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.Xml;
-import biweekly.property.marshaller.ICalPropertyMarshaller;
-import biweekly.property.marshaller.ICalPropertyMarshaller.Result;
 import biweekly.util.IOUtils;
 import biweekly.util.XmlUtils;
 
@@ -127,7 +127,7 @@ import biweekly.util.XmlUtils;
  */
 //@formatter:on
 public class XCalDocument {
-	private static final ICalendarMarshaller icalMarshaller = ICalMarshallerRegistrar.getICalendarMarshaller();
+	private static final ICalendarScribe icalMarshaller = ICalMarshallerRegistrar.getICalendarMarshaller();
 	private static final XCalNamespaceContext nsContext = new XCalNamespaceContext("xcal");
 
 	/**
@@ -259,7 +259,7 @@ public class XCalDocument {
 	 * </p>
 	 * @param marshaller the marshaller to register
 	 */
-	public void registerMarshaller(ICalPropertyMarshaller<? extends ICalProperty> marshaller) {
+	public void registerMarshaller(ICalPropertyScribe<? extends ICalProperty> marshaller) {
 		registrar.register(marshaller);
 	}
 
@@ -274,7 +274,7 @@ public class XCalDocument {
 	 * </p>
 	 * @param marshaller the marshaller to register
 	 */
-	public void registerMarshaller(ICalComponentMarshaller<? extends ICalComponent> marshaller) {
+	public void registerMarshaller(ICalComponentScribe<? extends ICalComponent> marshaller) {
 		registrar.register(marshaller);
 	}
 
@@ -487,7 +487,7 @@ public class XCalDocument {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Element buildComponentElement(ICalComponent component) {
-		ICalComponentMarshaller m = registrar.getComponentMarshaller(component);
+		ICalComponentScribe m = registrar.getComponentMarshaller(component);
 		if (m == null) {
 			throw new IllegalArgumentException("No marshaller found for component class \"" + component.getClass().getName() + "\".");
 		}
@@ -543,7 +543,7 @@ public class XCalDocument {
 			//get parameters
 			parameters = property.getParameters();
 		} else {
-			ICalPropertyMarshaller pm = registrar.getPropertyMarshaller(property);
+			ICalPropertyScribe pm = registrar.getPropertyMarshaller(property);
 			if (pm == null) {
 				throw new IllegalArgumentException("No marshaller found for property class \"" + property.getClass().getName() + "\".");
 			}
@@ -604,7 +604,7 @@ public class XCalDocument {
 
 	private ICalComponent parseComponent(Element componentElement, List<String> warnings) {
 		//create the component object
-		ICalComponentMarshaller<? extends ICalComponent> m = registrar.getComponentMarshaller(componentElement.getLocalName());
+		ICalComponentScribe<? extends ICalComponent> m = registrar.getComponentMarshaller(componentElement.getLocalName());
 		ICalComponent component = m.emptyInstance();
 
 		//parse properties
@@ -637,7 +637,7 @@ public class XCalDocument {
 		String propertyName = propertyElement.getLocalName();
 		QName qname = new QName(propertyElement.getNamespaceURI(), propertyName);
 
-		ICalPropertyMarshaller<? extends ICalProperty> m = registrar.getPropertyMarshaller(qname);
+		ICalPropertyScribe<? extends ICalProperty> m = registrar.getPropertyMarshaller(qname);
 
 		ICalProperty property = null;
 		try {

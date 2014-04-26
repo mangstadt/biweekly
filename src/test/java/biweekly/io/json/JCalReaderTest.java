@@ -31,15 +31,15 @@ import biweekly.component.RawComponent;
 import biweekly.component.StandardTime;
 import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
-import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
+import biweekly.io.scribe.component.ICalComponentScribe;
+import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceDates;
 import biweekly.property.Summary;
-import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
@@ -649,7 +649,7 @@ public class JCalReaderTest {
 		assertNull(reader.readNext());
 	}
 
-	private class CompanyMarshaller extends ICalPropertyMarshaller<Company> {
+	private class CompanyMarshaller extends ICalPropertyScribe<Company> {
 		public CompanyMarshaller() {
 			super(Company.class, "X-COMPANY", null);
 		}
@@ -689,7 +689,7 @@ public class JCalReaderTest {
 		}
 	}
 
-	private class PartyMarshaller extends ICalComponentMarshaller<Party> {
+	private class PartyMarshaller extends ICalComponentScribe<Party> {
 		public PartyMarshaller() {
 			super(Party.class, "X-PARTY");
 		}

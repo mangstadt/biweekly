@@ -35,9 +35,10 @@ import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
 import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
-import biweekly.component.marshaller.ICalComponentMarshaller;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
+import biweekly.io.scribe.component.ICalComponentScribe;
+import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.CalendarUserType;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.ParticipationStatus;
@@ -47,7 +48,6 @@ import biweekly.property.Attendee;
 import biweekly.property.ICalProperty;
 import biweekly.property.ProductId;
 import biweekly.property.Summary;
-import biweekly.property.marshaller.ICalPropertyMarshaller;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
@@ -1168,7 +1168,7 @@ public class ICalReaderTest {
 		reader.readNext();
 	}
 
-	private class TestPropertyMarshaller extends ICalPropertyMarshaller<TestProperty> {
+	private class TestPropertyMarshaller extends ICalPropertyScribe<TestProperty> {
 		public TestPropertyMarshaller() {
 			super(TestProperty.class, "X-TEST", ICalDataType.TEXT);
 		}
@@ -1219,7 +1219,7 @@ public class ICalReaderTest {
 		}
 	}
 
-	private class PartyMarshaller extends ICalComponentMarshaller<Party> {
+	private class PartyMarshaller extends ICalComponentScribe<Party> {
 		public PartyMarshaller() {
 			super(Party.class, "X-VPARTY");
 		}
@@ -1234,7 +1234,7 @@ public class ICalReaderTest {
 		//empty
 	}
 
-	private class MyProductIdMarshaller extends ICalPropertyMarshaller<ProductId> {
+	private class MyProductIdMarshaller extends ICalPropertyScribe<ProductId> {
 
 		public MyProductIdMarshaller() {
 			super(ProductId.class, "PRODID", ICalDataType.TEXT);
@@ -1255,7 +1255,7 @@ public class ICalReaderTest {
 		//empty
 	}
 
-	private class MyEventMarshaller extends ICalComponentMarshaller<MyVEvent> {
+	private class MyEventMarshaller extends ICalComponentScribe<MyVEvent> {
 		public MyEventMarshaller() {
 			super(MyVEvent.class, "VEVENT");
 		}
