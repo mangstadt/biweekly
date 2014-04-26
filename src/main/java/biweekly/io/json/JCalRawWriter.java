@@ -52,7 +52,7 @@ public class JCalRawWriter implements Closeable, Flushable {
 	private final Writer writer;
 	private final boolean wrapInArray;
 	private final LinkedList<Info> stack = new LinkedList<Info>();
-	private JsonGenerator jg;
+	private JsonGenerator generator;
 	private boolean indent = false;
 	private boolean componentEnded = false;
 
@@ -90,7 +90,7 @@ public class JCalRawWriter implements Closeable, Flushable {
 	 * @throws IOException if there's an I/O problem
 	 */
 	public void writeStartComponent(String componentName) throws IOException {
-		if (jg == null) {
+		if (generator == null) {
 			init();
 		}
 
@@ -99,19 +99,19 @@ public class JCalRawWriter implements Closeable, Flushable {
 		if (!stack.isEmpty()) {
 			Info parent = stack.getLast();
 			if (!parent.wroteEndPropertiesArray) {
-				jg.writeEndArray();
+				generator.writeEndArray();
 				parent.wroteEndPropertiesArray = true;
 			}
 			if (!parent.wroteStartSubComponentsArray) {
-				jg.writeStartArray();
+				generator.writeStartArray();
 				parent.wroteStartSubComponentsArray = true;
 			}
 		}
 
-		jg.writeStartArray();
+		generator.writeStartArray();
 		indent(stack.size() * 2);
-		jg.writeString(componentName);
-		jg.writeStartArray(); //start properties array
+		generator.writeString(componentName);
+		generator.writeStartArray(); //start properties array
 
 		stack.add(new Info());
 	}
@@ -129,14 +129,14 @@ public class JCalRawWriter implements Closeable, Flushable {
 		Info cur = stack.removeLast();
 
 		if (!cur.wroteEndPropertiesArray) {
-			jg.writeEndArray();
+			generator.writeEndArray();
 		}
 		if (!cur.wroteStartSubComponentsArray) {
-			jg.writeStartArray();
+			generator.writeStartArray();
 		}
 
-		jg.writeEndArray(); //end sub-components array
-		jg.writeEndArray(); //end the array of this component
+		generator.writeEndArray(); //end sub-components array
+		generator.writeEndArray(); //end the array of this component
 
 		componentEnded = true;
 	}
@@ -174,14 +174,14 @@ public class JCalRawWriter implements Closeable, Flushable {
 			throw new IllegalStateException("Cannot write a property after calling \"writeEndComponent\".");
 		}
 
-		jg.writeStartArray();
+		generator.writeStartArray();
 		indent(stack.size() * 2);
 
 		//write the property name
-		jg.writeString(propertyName);
+		generator.writeString(propertyName);
 
 		//write parameters
-		jg.writeStartObject();
+		generator.writeStartObject();
 		for (Map.Entry<String, List<String>> entry : parameters) {
 			String name = entry.getKey().toLowerCase();
 			List<String> values = entry.getValue();
@@ -190,74 +190,74 @@ public class JCalRawWriter implements Closeable, Flushable {
 			}
 
 			if (values.size() == 1) {
-				jg.writeStringField(name, values.get(0));
+				generator.writeStringField(name, values.get(0));
 			} else {
-				jg.writeArrayFieldStart(name);
+				generator.writeArrayFieldStart(name);
 				for (String paramValue : values) {
-					jg.writeString(paramValue);
+					generator.writeString(paramValue);
 				}
-				jg.writeEndArray();
+				generator.writeEndArray();
 			}
 		}
-		jg.writeEndObject();
+		generator.writeEndObject();
 
 		//write data type
-		jg.writeString((dataType == null) ? "unknown" : dataType.getName().toLowerCase());
+		generator.writeString((dataType == null) ? "unknown" : dataType.getName().toLowerCase());
 
 		//write value
 		for (JsonValue jsonValue : value.getValues()) {
 			writeValue(jsonValue);
 		}
 
-		jg.writeEndArray();
+		generator.writeEndArray();
 	}
 
 	private void writeValue(JsonValue jsonValue) throws IOException {
 		if (jsonValue.isNull()) {
-			jg.writeNull();
+			generator.writeNull();
 			return;
 		}
 
 		Object val = jsonValue.getValue();
 		if (val != null) {
 			if (val instanceof Byte) {
-				jg.writeNumber((Byte) val);
+				generator.writeNumber((Byte) val);
 			} else if (val instanceof Short) {
-				jg.writeNumber((Short) val);
+				generator.writeNumber((Short) val);
 			} else if (val instanceof Integer) {
-				jg.writeNumber((Integer) val);
+				generator.writeNumber((Integer) val);
 			} else if (val instanceof Long) {
-				jg.writeNumber((Long) val);
+				generator.writeNumber((Long) val);
 			} else if (val instanceof Float) {
-				jg.writeNumber((Float) val);
+				generator.writeNumber((Float) val);
 			} else if (val instanceof Double) {
-				jg.writeNumber((Double) val);
+				generator.writeNumber((Double) val);
 			} else if (val instanceof Boolean) {
-				jg.writeBoolean((Boolean) val);
+				generator.writeBoolean((Boolean) val);
 			} else {
-				jg.writeString(val.toString());
+				generator.writeString(val.toString());
 			}
 			return;
 		}
 
 		List<JsonValue> array = jsonValue.getArray();
 		if (array != null) {
-			jg.writeStartArray();
+			generator.writeStartArray();
 			for (JsonValue element : array) {
 				writeValue(element);
 			}
-			jg.writeEndArray();
+			generator.writeEndArray();
 			return;
 		}
 
 		Map<String, JsonValue> object = jsonValue.getObject();
 		if (object != null) {
-			jg.writeStartObject();
+			generator.writeStartObject();
 			for (Map.Entry<String, JsonValue> entry : object.entrySet()) {
-				jg.writeFieldName(entry.getKey());
+				generator.writeFieldName(entry.getKey());
 				writeValue(entry.getValue());
 			}
-			jg.writeEndObject();
+			generator.writeEndObject();
 			return;
 		}
 	}
@@ -269,11 +269,13 @@ public class JCalRawWriter implements Closeable, Flushable {
 	 * @throws IOException
 	 */
 	private void indent(int spaces) throws IOException {
-		if (indent) {
-			jg.writeRaw(NEWLINE);
-			for (int i = 0; i < spaces; i++) {
-				jg.writeRaw(' ');
-			}
+		if (!indent) {
+			return;
+		}
+
+		generator.writeRaw(NEWLINE);
+		for (int i = 0; i < spaces; i++) {
+			generator.writeRaw(' ');
 		}
 	}
 
@@ -282,11 +284,11 @@ public class JCalRawWriter implements Closeable, Flushable {
 	 * @throws IOException if there's a problem flushing the stream
 	 */
 	public void flush() throws IOException {
-		if (jg == null) {
+		if (generator == null) {
 			return;
 		}
 
-		jg.flush();
+		generator.flush();
 	}
 
 	/**
@@ -295,7 +297,7 @@ public class JCalRawWriter implements Closeable, Flushable {
 	 * @throws IOException if there's a problem closing the stream
 	 */
 	public void closeJsonStream() throws IOException {
-		if (jg == null) {
+		if (generator == null) {
 			return;
 		}
 
@@ -305,10 +307,10 @@ public class JCalRawWriter implements Closeable, Flushable {
 
 		if (wrapInArray) {
 			indent(0);
-			jg.writeEndArray();
+			generator.writeEndArray();
 		}
 
-		jg.close();
+		generator.close();
 	}
 
 	/**
@@ -317,7 +319,7 @@ public class JCalRawWriter implements Closeable, Flushable {
 	 * @throws IOException if there's a problem closing the stream
 	 */
 	public void close() throws IOException {
-		if (jg == null) {
+		if (generator == null) {
 			return;
 		}
 
@@ -328,10 +330,10 @@ public class JCalRawWriter implements Closeable, Flushable {
 	private void init() throws IOException {
 		JsonFactory factory = new JsonFactory();
 		factory.configure(Feature.AUTO_CLOSE_TARGET, false);
-		jg = factory.createJsonGenerator(writer);
+		generator = factory.createJsonGenerator(writer);
 
 		if (wrapInArray) {
-			jg.writeStartArray();
+			generator.writeStartArray();
 			indent(0);
 		}
 	}
