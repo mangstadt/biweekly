@@ -83,7 +83,7 @@ public class JCalRawReader implements Closeable {
 	public void readNext(JCalDataStreamListener listener) throws IOException {
 		if (parser == null) {
 			JsonFactory factory = new JsonFactory();
-			parser = factory.createJsonParser(reader);
+			parser = factory.createParser(reader);
 		}
 
 		if (parser.isClosed()) {
