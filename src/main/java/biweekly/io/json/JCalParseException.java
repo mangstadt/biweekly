@@ -1,6 +1,6 @@
 package biweekly.io.json;
 
-import biweekly.ICalException;
+import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonToken;
 
@@ -36,7 +36,7 @@ import com.fasterxml.jackson.core.JsonToken;
  * @author Michael Angstadt
  */
 @SuppressWarnings("serial")
-public class JCalParseException extends ICalException {
+public class JCalParseException extends IOException {
 	private final JsonToken expected, actual;
 
 	/**

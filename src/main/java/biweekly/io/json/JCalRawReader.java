@@ -244,17 +244,17 @@ public class JCalRawReader implements Closeable {
 		}
 	}
 
-	private void checkNext(JsonToken expected) throws JsonParseException, IOException {
+	private void checkNext(JsonToken expected) throws IOException {
 		JsonToken actual = parser.nextToken();
 		check(expected, actual);
 	}
 
-	private void checkCurrent(JsonToken expected) {
+	private void checkCurrent(JsonToken expected) throws JCalParseException {
 		JsonToken actual = parser.getCurrentToken();
 		check(expected, actual);
 	}
 
-	private void check(JsonToken expected, JsonToken actual) {
+	private void check(JsonToken expected, JsonToken actual) throws JCalParseException {
 		if (actual != expected) {
 			throw new JCalParseException(expected, actual);
 		}
