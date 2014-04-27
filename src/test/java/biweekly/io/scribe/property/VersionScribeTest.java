@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import biweekly.io.scribe.property.VersionScribe;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Version;
 
@@ -55,7 +54,7 @@ public class VersionScribeTest {
 	public void parseText_min_max() {
 		sensei.assertParseText("1.0;2.0").run(has("1.0", "2.0"));
 		sensei.assertParseText("2.0").run(has(null, "2.0"));
-		sensei.assertParseText("").run(has(null, ""));
+		sensei.assertParseText("").run(has(null, null));
 	}
 
 	@Test

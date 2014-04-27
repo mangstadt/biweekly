@@ -50,7 +50,7 @@ public class RequestStatusScribe extends ICalPropertyScribe<RequestStatus> {
 
 	@Override
 	protected RequestStatus _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
-		SemiStructuredIterator it = semistructured(value);
+		SemiStructuredIterator it = semistructured(value, true);
 
 		RequestStatus requestStatus = new RequestStatus(it.next());
 		requestStatus.setDescription(it.next());

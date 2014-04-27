@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
 
@@ -595,43 +594,28 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 
 	/**
 	 * Splits a string by a delimiter, taking escaped characters into account.
-	 * @param string the string to split (e.g. "one,two,three")
-	 * @param delimiter the delimiter (e.g. ",")
+	 * @param delimiter the delimiter (e.g. ',')
 	 * @return the factory object
 	 */
-	protected static Splitter split(String string, String delimiter) {
-		return new Splitter(string, delimiter);
+	protected static Splitter splitter(char delimiter) {
+		return new Splitter(delimiter);
 	}
 
 	/**
-	 * Factory class for splitting strings.
+	 * A helper class for splitting strings.
 	 */
 	protected static class Splitter {
-		private String string;
-		private String delimiter;
-		private boolean removeEmpties = false;
+		private char delimiter;
 		private boolean unescape = false;
+		private boolean nullEmpties = false;
 		private int limit = -1;
 
 		/**
 		 * Creates a new splitter object.
-		 * @param string the string to split (e.g. "one,two,three")
-		 * @param delimiter the delimiter (e.g. ",")
+		 * @param delimiter the delimiter character (e.g. ',')
 		 */
-		public Splitter(String string, String delimiter) {
-			this.string = string;
+		public Splitter(char delimiter) {
 			this.delimiter = delimiter;
-		}
-
-		/**
-		 * Sets whether to remove empty elements.
-		 * @param removeEmpties true to remove empty elements, false not to
-		 * (default is false)
-		 * @return this
-		 */
-		public Splitter removeEmpties(boolean removeEmpties) {
-			this.removeEmpties = removeEmpties;
-			return this;
 		}
 
 		/**
@@ -641,6 +625,17 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		 */
 		public Splitter unescape(boolean unescape) {
 			this.unescape = unescape;
+			return this;
+		}
+
+		/**
+		 * Sets whether to treat empty elements as null elements.
+		 * @param nullEmpties true to treat them as null elements, false to
+		 * treat them as empty strings (default is false)
+		 * @return this
+		 */
+		public Splitter nullEmpties(boolean nullEmpties) {
+			this.nullEmpties = nullEmpties;
 			return this;
 		}
 
@@ -656,25 +651,54 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 
 		/**
 		 * Performs the split operation.
+		 * @param string the string to split (e.g. "one,two,three")
 		 * @return the split string
 		 */
-		public List<String> split() {
-			//from: http://stackoverflow.com/q/820172">http://stackoverflow.com/q/820172
-			String split[] = string.split("\\s*(?<!\\\\)" + Pattern.quote(delimiter) + "\\s*", limit);
+		public List<String> split(String string) {
+			//doing it this way is 10x faster than a regex
 
-			List<String> list = new ArrayList<String>(split.length);
-			for (String s : split) {
-				if (s.length() == 0 && removeEmpties) {
+			List<String> list = new ArrayList<String>();
+			boolean escaped = false;
+			int start = 0;
+			for (int i = 0; i < string.length(); i++) {
+				char ch = string.charAt(i);
+
+				if (escaped) {
+					escaped = false;
 					continue;
 				}
 
-				if (unescape) {
-					s = ICalPropertyScribe.unescape(s);
+				if (ch == delimiter) {
+					add(string.substring(start, i), list);
+					start = i + 1;
+					if (limit > 0 && list.size() == limit - 1) {
+						break;
+					}
+
+					continue;
 				}
 
-				list.add(s);
+				if (ch == '\\') {
+					escaped = true;
+					continue;
+				}
 			}
+
+			add(string.substring(start), list);
+
 			return list;
+		}
+
+		private void add(String str, List<String> list) {
+			str = str.trim();
+
+			if (nullEmpties && str.length() == 0) {
+				str = null;
+			} else if (unescape) {
+				str = ICalPropertyScribe.unescape(str);
+			}
+
+			list.add(str);
 		}
 	}
 
@@ -687,7 +711,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		if (value.length() == 0) {
 			return new ArrayList<String>(0);
 		}
-		return split(value, ",").unescape(true).split();
+		return splitter(',').unescape(true).split(value);
 	}
 
 	/**
@@ -755,7 +779,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @return the parsed values
 	 */
 	protected static SemiStructuredIterator semistructured(String value) {
-		return semistructured(value, -1);
+		return semistructured(value, false);
 	}
 
 	/**
@@ -763,11 +787,12 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * structured value components, semi-structured components cannot be
 	 * multi-valued.
 	 * @param value the string to parse (e.g. "one;two;three")
-	 * @param limit the max number of components to parse
+	 * @param nullEmpties true to treat empty elements as null, false to treat
+	 * them as empty strings
 	 * @return the parsed values
 	 */
-	protected static SemiStructuredIterator semistructured(String value, int limit) {
-		List<String> split = split(value, ";").unescape(true).limit(limit).split();
+	protected static SemiStructuredIterator semistructured(String value, boolean nullEmpties) {
+		List<String> split = splitter(';').unescape(true).nullEmpties(nullEmpties).split(value);
 		return new SemiStructuredIterator(split.iterator());
 	}
 
@@ -777,7 +802,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @return the parsed values
 	 */
 	protected static StructuredIterator structured(String value) {
-		List<String> split = split(value, ";").split();
+		List<String> split = splitter(';').split(value);
 		List<List<String>> components = new ArrayList<List<String>>(split.size());
 		for (String s : split) {
 			components.add(list(s));
@@ -907,12 +932,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		 * if there are no more values
 		 */
 		public String next() {
-			if (!hasNext()) {
-				return null;
-			}
-
-			String value = it.next();
-			return (value.length() == 0) ? null : value;
+			return hasNext() ? it.next() : null;
 		}
 
 		/**
@@ -945,7 +965,11 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	protected static ListMultimap<String, String> object(String value) {
 		ListMultimap<String, String> map = new ListMultimap<String, String>();
 
-		for (String component : split(value, ";").unescape(false).removeEmpties(true).split()) {
+		for (String component : splitter(';').unescape(false).split(value)) {
+			if (component.length() == 0) {
+				continue;
+			}
+
 			String[] split = component.split("=", 2);
 
 			String name = unescape(split[0].toUpperCase());

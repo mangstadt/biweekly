@@ -69,7 +69,7 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 
 	@Override
 	protected Geo _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
-		SemiStructuredIterator it = semistructured(value);
+		SemiStructuredIterator it = semistructured(value, true);
 		String latitudeStr = it.next();
 		String longitudeStr = it.next();
 

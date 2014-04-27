@@ -19,7 +19,6 @@ import org.junit.Test;
 import biweekly.ICalDataType;
 import biweekly.Warning;
 import biweekly.io.json.JCalValue;
-import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.SemiStructuredIterator;
 import biweekly.io.scribe.property.ICalPropertyScribe.StructuredIterator;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -95,23 +94,80 @@ public class ICalPropertyScribeTest {
 	}
 
 	@Test
-	public void split() {
+	public void splitter_limit() {
+		String str = "one,two,three,four";
 		List<String> actual, expected;
 
-		actual = ICalPropertyScribe.split("Doe;John;Joh\\,\\;nny;;Sr.,III", ";").split();
-		expected = Arrays.asList("Doe", "John", "Joh\\,\\;nny", "", "Sr.,III");
+		actual = ICalPropertyScribe.splitter(',').split(str);
+		expected = Arrays.asList("one", "two", "three", "four");
 		assertEquals(expected, actual);
 
-		actual = ICalPropertyScribe.split("Doe;John;Joh\\,\\;nny;;Sr.,III", ";").removeEmpties(true).split();
-		expected = Arrays.asList("Doe", "John", "Joh\\,\\;nny", "Sr.,III");
+		actual = ICalPropertyScribe.splitter(',').limit(2).split(str);
+		expected = Arrays.asList("one", "two,three,four");
 		assertEquals(expected, actual);
 
-		actual = ICalPropertyScribe.split("Doe;John;Joh\\,\\;nny;;Sr.,III", ";").unescape(true).split();
-		expected = Arrays.asList("Doe", "John", "Joh,;nny", "", "Sr.,III");
+		actual = ICalPropertyScribe.splitter(',').limit(4).split(str);
+		expected = Arrays.asList("one", "two", "three", "four");
 		assertEquals(expected, actual);
 
-		actual = ICalPropertyScribe.split("Doe;John;Joh\\,\\;nny;;Sr.,III", ";").removeEmpties(true).unescape(true).split();
-		expected = Arrays.asList("Doe", "John", "Joh,;nny", "Sr.,III");
+		actual = ICalPropertyScribe.splitter(',').limit(10).split(str);
+		expected = Arrays.asList("one", "two", "three", "four");
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void splitter_unescape() {
+		String str = "one,two\\,\\;three";
+		List<String> actual, expected;
+
+		actual = ICalPropertyScribe.splitter(',').split(str);
+		expected = Arrays.asList("one", "two\\,\\;three");
+		assertEquals(expected, actual);
+
+		actual = ICalPropertyScribe.splitter(',').unescape(true).split(str);
+		expected = Arrays.asList("one", "two,;three");
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void splitter_nullEmpties() {
+		String str = ",one,,two,";
+		List<String> actual, expected;
+
+		actual = ICalPropertyScribe.splitter(',').split(str);
+		expected = Arrays.asList("", "one", "", "two", "");
+		assertEquals(expected, actual);
+
+		actual = ICalPropertyScribe.splitter(',').nullEmpties(true).split(str);
+		expected = Arrays.asList(null, "one", null, "two", null);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void splitter_trim() {
+		List<String> actual = ICalPropertyScribe.splitter(',').split("one , two");
+		List<String> expected = Arrays.asList("one", "two");
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void splitter_empty() {
+		List<String> actual = ICalPropertyScribe.splitter(',').split("");
+		List<String> expected = Arrays.asList("");
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void splitter_all_settings() {
+		String str = "one ,two\\,three,,four,five";
+		List<String> actual, expected;
+
+		actual = ICalPropertyScribe.splitter(',').split(str);
+		expected = Arrays.asList("one", "two\\,three", "", "four", "five");
+		assertEquals(expected, actual);
+
+		actual = ICalPropertyScribe.splitter(',').unescape(true).limit(4).nullEmpties(true).split(str);
+		expected = Arrays.asList("one", "two,three", null, "four,five");
 		assertEquals(expected, actual);
 	}
 
@@ -306,6 +362,19 @@ public class ICalPropertyScribeTest {
 		SemiStructuredIterator it = ICalPropertyScribe.semistructured(input);
 		assertEquals("one", it.next());
 		assertEquals("two,three,four", it.next());
+		assertEquals("", it.next());
+		assertEquals("", it.next());
+		assertEquals("five;six", it.next());
+		assertEquals(null, it.next());
+	}
+
+	@Test
+	public void semistructured_nullEmpties() {
+		String input = "one;two,three\\,four;;;five\\;six";
+
+		SemiStructuredIterator it = ICalPropertyScribe.semistructured(input, true);
+		assertEquals("one", it.next());
+		assertEquals("two,three,four", it.next());
 		assertEquals(null, it.next());
 		assertEquals(null, it.next());
 		assertEquals("five;six", it.next());
@@ -313,20 +382,17 @@ public class ICalPropertyScribeTest {
 	}
 
 	@Test
-	public void semistructured_parse_limit() {
-		String input = "one;two,three\\,four;;;five\\;six";
+	public void semistructured_parse_empty() {
+		String input = "";
 
-		SemiStructuredIterator it = ICalPropertyScribe.semistructured(input, 2);
-		assertEquals("one", it.next());
-		assertEquals("two,three,four;;;five;six", it.next());
+		SemiStructuredIterator it = ICalPropertyScribe.semistructured(input);
+		assertEquals("", it.next());
 		assertEquals(null, it.next());
-		assertEquals(null, it.next());
-		assertEquals(null, it.next());
-		assertEquals(null, it.next());
+		assertFalse(it.hasNext());
 	}
 
 	@Test
-	public void structured_parse_string() {
+	public void structured_parse() {
 		String input = "one;two,three\\,four;;;five\\;six";
 
 		//using "nextComponent()"
@@ -372,6 +438,23 @@ public class ICalPropertyScribeTest {
 	}
 
 	@Test
+	public void structured_parse_empty() {
+		String input = "";
+
+		//using "nextComponent()"
+		StructuredIterator it = ICalPropertyScribe.structured(input);
+		assertEquals(Arrays.asList(), it.nextComponent());
+		assertEquals(Arrays.asList(), it.nextComponent());
+		assertFalse(it.hasNext());
+
+		//using "nextString()"
+		it = ICalPropertyScribe.structured(input);
+		assertEquals(null, it.nextString());
+		assertEquals(null, it.nextString());
+		assertFalse(it.hasNext());
+	}
+
+	@Test
 	public void structured_write() {
 		String actual = ICalPropertyScribe.structured("one", 2, null, "four;five,six\\seven", Arrays.asList("eight"), Arrays.asList("nine", null, "ten;eleven,twelve\\thirteen"));
 		assertEquals("one;2;;four\\;five\\,six\\\\seven;eight;nine,,ten\\;eleven\\,twelve\\\\thirteen", actual);
@@ -388,6 +471,15 @@ public class ICalPropertyScribeTest {
 		expected.put("C", "");
 		expected.put("D", "six=seven");
 
+		ListMultimap<String, String> actual = ICalPropertyScribe.object(input);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void object_parse_empty() {
+		String input = "";
+
+		ListMultimap<String, String> expected = new ListMultimap<String, String>();
 		ListMultimap<String, String> actual = ICalPropertyScribe.object(input);
 		assertEquals(expected, actual);
 	}

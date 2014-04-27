@@ -59,14 +59,16 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 
 	@Override
 	protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
-		List<String> split = split(value, ";").unescape(true).split();
+		SemiStructuredIterator it = semistructured(value, true);
+		String one = it.next();
+		String two = it.next();
 
 		String min = null, max = null;
-		if (split.size() == 1) {
-			max = split.get(0);
+		if (two == null) {
+			max = one;
 		} else {
-			min = split.get(0);
-			max = split.get(1);
+			min = one;
+			max = two;
 		}
 		return new Version(min, max);
 	}
