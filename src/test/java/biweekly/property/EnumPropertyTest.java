@@ -7,9 +7,6 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import biweekly.property.EnumProperty;
-import biweekly.util.TestUtils.Tests;
-
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -41,25 +38,20 @@ import biweekly.util.TestUtils.Tests;
 public class EnumPropertyTest {
 	@Test
 	public void validate() {
-		Tests tests = new Tests();
-
 		//null value
-		tests.add(null, 1);
+		assertValidate(null, 1);
 
 		//invalid value
-		tests.add("three", 1);
+		assertValidate("three", 1);
 
 		//case-insensitive compare
-		tests.add("two", 0);
-		tests.add("ONE", 0);
+		assertValidate("two", 0);
+		assertValidate("ONE", 0);
+	}
 
-		for (Object[] test : tests) {
-			String value = (String) test[0];
-			Integer expectedWarnings = (Integer) test[1];
-
-			TestProperty prop = new TestProperty(value);
-			assertWarnings(expectedWarnings, prop.validate(null));
-		}
+	private void assertValidate(String value, int expectedWarnings) {
+		TestProperty prop = new TestProperty(value);
+		assertWarnings(expectedWarnings, prop.validate(null));
 	}
 
 	private class TestProperty extends EnumProperty {

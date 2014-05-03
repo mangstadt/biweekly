@@ -7,10 +7,8 @@ import static org.junit.Assert.fail;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SimpleTimeZone;
@@ -234,27 +232,6 @@ public class TestUtils {
 		Document document = xcalProperty(marshaller, innerXml);
 		Element element = XmlUtils.getRootElement(document);
 		return marshaller.parseXml(element, new ICalParameters());
-	}
-
-	/**
-	 * Holds a list of test runs for a unit test.
-	 */
-	public static class Tests implements Iterable<Object[]> {
-		private List<Object[]> tests = new ArrayList<Object[]>();
-
-		/**
-		 * Adds a test run.
-		 * @param test the test data
-		 * @return this
-		 */
-		public Tests add(Object... test) {
-			tests.add(test);
-			return this;
-		}
-
-		public Iterator<Object[]> iterator() {
-			return tests.iterator();
-		}
 	}
 
 	private TestUtils() {

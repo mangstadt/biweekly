@@ -10,7 +10,6 @@ import org.junit.Test;
 import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.component.ICalComponent;
 import biweekly.property.ICalProperty;
-import biweekly.util.TestUtils.Tests;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -44,42 +43,38 @@ public class WarningsGroupTest {
 	@Test
 	public void toString_() {
 		//@formatter:off
-		Tests tests = new Tests();
-		tests.add(
+		assertToString(
 			"[Grandparent > Parent > TestComponent]: one",
 			new WarningsGroup(new TestComponent(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new Warning("one")))
 		);
-		tests.add(
+		assertToString(
 			"[Grandparent > Parent > TestComponent]: one" + NEWLINE + 
 			"[Grandparent > Parent > TestComponent]: two",
 			new WarningsGroup(new TestComponent(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new Warning("one"), new Warning("two")))
 		);
-		tests.add(
+		assertToString(
 			"[TestComponent]: one",
 			new WarningsGroup(new TestComponent(), Arrays.asList(new ICalComponent[0]), Arrays.asList(new Warning("one")))
 		);
-		tests.add(
+		assertToString(
 			"[Grandparent > Parent > TestProperty]: one",
 			new WarningsGroup(new TestProperty(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new Warning("one")))
 		);
-		tests.add(
+		assertToString(
 			"[Grandparent > Parent > TestProperty]: one" + NEWLINE + 
 			"[Grandparent > Parent > TestProperty]: two",
 			new WarningsGroup(new TestProperty(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new Warning("one"), new Warning("two")))
 		);
-		tests.add(
+		assertToString(
 			"[TestProperty]: one",
 			new WarningsGroup(new TestProperty(), Arrays.asList(new ICalComponent[0]), Arrays.asList(new Warning("one")))
 		);
 		//@formatter:on
+	}
 
-		for (Object[] test : tests) {
-			String expected = (String) test[0];
-			WarningsGroup group = (WarningsGroup) test[1];
-			String actual = group.toString();
-
-			assertEquals(expected, actual);
-		}
+	private void assertToString(String expected, WarningsGroup group) {
+		String actual = group.toString();
+		assertEquals(expected, actual);
 	}
 
 	private class TestProperty extends ICalProperty {
