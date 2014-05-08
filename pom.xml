@@ -151,16 +151,7 @@
 					<links>
 						<link>http://fasterxml.github.io/jackson-core/javadoc/2.1.0/</link>
 					</links>
-					<taglets>
-						<taglet>
-							<tagletClass>biweekly.javadoc.RfcTaglet</tagletClass>
-							<tagletpath>${project.build.outputDirectory}</tagletpath>
-						</taglet>
-					</taglets>
 					<quiet>true</quiet>
-					
-					<!-- Exclude taglet class from Javadocs -->
-					<excludePackageNames>biweekly.javadoc</excludePackageNames>
 					
 					<!-- Add Javascript syntax highlighter -->
 					<top><![CDATA[
