@@ -42,7 +42,7 @@ package biweekly.property;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545 p.109-11
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545 p.109-11</a>
  */
 public class Contact extends TextProperty {
 	//TODO override get/setValue methods to customize the Javadocs?

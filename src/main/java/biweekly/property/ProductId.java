@@ -43,7 +43,7 @@ import biweekly.Biweekly;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545 p.78-9
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545 p.78-9</a>
  */
 public class ProductId extends TextProperty {
 	/**

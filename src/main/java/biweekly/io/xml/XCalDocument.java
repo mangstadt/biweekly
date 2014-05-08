@@ -123,7 +123,7 @@ import biweekly.util.XmlUtils;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 6321
+ * @see <a href="http://tools.ietf.org/html/rfc6321">RFC 6321</a>
  */
 //@formatter:on
 public class XCalDocument {

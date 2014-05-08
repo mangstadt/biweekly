@@ -30,7 +30,7 @@ import java.util.Collection;
 /**
  * Defines how a property value is encoded.
  * @author Michael Angstadt
- * @rfc 5545 p.18-9
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545 p.18-9</a>
  */
 public class Encoding extends EnumParameterValue {
 	private static final ICalParameterCaseClasses<Encoding> enums = new ICalParameterCaseClasses<Encoding>(Encoding.class);

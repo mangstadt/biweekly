@@ -59,7 +59,7 @@ import biweekly.parameter.Role;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545 p.107-9
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545 p.107-9</a>
  */
 public class Attendee extends TextProperty {
 	/**
@@ -84,7 +84,7 @@ public class Attendee extends TextProperty {
 	 * Gets the type of user the attendee is (for example, an "individual" or a
 	 * "room").
 	 * @return the calendar user type or null if not set
-	 * @rfc 5545 p.16
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-16">RFC 5545 p.16</a>
 	 */
 	public CalendarUserType getCalendarUserType() {
 		return parameters.getCalendarUserType();
@@ -94,7 +94,7 @@ public class Attendee extends TextProperty {
 	 * Sets the type of user the attendee is (for example, an "individual" or a
 	 * "room").
 	 * @param cutype the calendar user type or null to remove
-	 * @rfc 5545 p.16
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-16">RFC 5545 p.16</a>
 	 */
 	public void setCalendarUserType(CalendarUserType cutype) {
 		parameters.setCalendarUserType(cutype);
@@ -104,7 +104,7 @@ public class Attendee extends TextProperty {
 	 * Gets the groups that the attendee is a member of.
 	 * @return the group URIs (typically, these are email address URIs, e.g.
 	 * "mailto:mailinglist@example.com")
-	 * @rfc 5545 p.21-2
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545 p.21-2</a>
 	 */
 	public List<String> getMembers() {
 		return parameters.getMembers();
@@ -114,7 +114,7 @@ public class Attendee extends TextProperty {
 	 * Adds a group that the attendee is a member of.
 	 * @param uri the group URI (typically, an email address URI, e.g.
 	 * "mailto:mailinglist@example.com")
-	 * @rfc 5545 p.21-2
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545 p.21-2</a>
 	 */
 	public void addMember(String uri) {
 		parameters.addMember(uri);
@@ -124,7 +124,7 @@ public class Attendee extends TextProperty {
 	 * Gets the attendee's role (for example, "chair" or
 	 * "required participant").
 	 * @return the role or null if not set
-	 * @rfc 5545 p.25-6
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545 p.25-6</a>
 	 */
 	public Role getRole() {
 		return parameters.getRole();
@@ -134,7 +134,7 @@ public class Attendee extends TextProperty {
 	 * Sets the attendee's role (for example, "chair" or
 	 * "required participant").
 	 * @param role the role or null to remove
-	 * @rfc 5545 p.25-6
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545 p.25-6</a>
 	 */
 	public void setRole(Role role) {
 		parameters.setRole(role);
@@ -143,7 +143,7 @@ public class Attendee extends TextProperty {
 	/**
 	 * Gets the attendee's level of participation.
 	 * @return the participation status or null if not set
-	 * @rfc 5545 p.22-3
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-22">RFC 5545 p.22-3</a>
 	 */
 	public ParticipationStatus getParticipationStatus() {
 		return parameters.getParticipationStatus();
@@ -152,7 +152,7 @@ public class Attendee extends TextProperty {
 	/**
 	 * Sets the attendee's level of participation.
 	 * @param status the participation status or null to remove
-	 * @rfc 5545 p.22-3
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-22">RFC 5545 p.22-3</a>
 	 */
 	public void setParticipationStatus(ParticipationStatus status) {
 		parameters.setParticipationStatus(status);
@@ -161,7 +161,7 @@ public class Attendee extends TextProperty {
 	/**
 	 * Gets whether the organizer requests a response from the attendee.
 	 * @return true if an RSVP is requested, false if not, null if not set
-	 * @rfc 5545 p.26-7
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-26">RFC 5545 p.26-7</a>
 	 */
 	public Boolean getRsvp() {
 		return parameters.getRsvp();
@@ -171,7 +171,7 @@ public class Attendee extends TextProperty {
 	 * Sets whether the organizer requests a response from the attendee.
 	 * @param rsvp true if an RSVP has been requested, false if not, null to
 	 * remove
-	 * @rfc 5545 p.26-7
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-26">RFC 5545 p.26-7</a>
 	 */
 	public void setRsvp(Boolean rsvp) {
 		parameters.setRsvp(rsvp);
@@ -181,7 +181,7 @@ public class Attendee extends TextProperty {
 	 * Gets the people who have delegated their responsibility to the attendee.
 	 * @return the delegators (typically email URIs, e.g.
 	 * "mailto:janedoe@example.com")
-	 * @rfc 5545 p.17
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545 p.17</a>
 	 */
 	public List<String> getDelegatedFrom() {
 		return parameters.getDelegatedFrom();
@@ -192,7 +192,7 @@ public class Attendee extends TextProperty {
 	 * attendee.
 	 * @param uri the delegator (typically an email URI, e.g.
 	 * "mailto:janedoe@example.com")
-	 * @rfc 5545 p.17
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545 p.17</a>
 	 */
 	public void addDelegatedFrom(String uri) {
 		parameters.addDelegatedFrom(uri);
@@ -203,7 +203,7 @@ public class Attendee extends TextProperty {
 	 * responsibility.
 	 * @return the delegatees (typically email URIs, e.g.
 	 * "mailto:janedoe@example.com")
-	 * @rfc 5545 p.17-8
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545 p.17-8</a>
 	 */
 	public List<String> getDelegatedTo() {
 		return parameters.getDelegatedTo();
@@ -214,7 +214,7 @@ public class Attendee extends TextProperty {
 	 * responsibility.
 	 * @param uri the delegatee (typically an email URI, e.g.
 	 * "mailto:janedoe@example.com")
-	 * @rfc 5545 p.17-8
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545 p.17-8</a>
 	 */
 	public void addDelegatedTo(String uri) {
 		parameters.addDelegatedTo(uri);

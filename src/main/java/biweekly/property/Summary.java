@@ -43,7 +43,7 @@ package biweekly.property;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545 p.93-4
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545 p.93-4</a>
  */
 public class Summary extends TextProperty {
 	/**

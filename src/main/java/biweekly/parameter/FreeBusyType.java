@@ -30,7 +30,7 @@ import java.util.Collection;
 /**
  * Defines whether a calendar user is free or busy over a time period.
  * @author Michael Angstadt
- * @rfc 5545 p.20-1
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-20">RFC 5545 p.20-1</a>
  */
 public class FreeBusyType extends EnumParameterValue {
 	private static final ICalParameterCaseClasses<FreeBusyType> enums = new ICalParameterCaseClasses<FreeBusyType>(FreeBusyType.class);

@@ -44,7 +44,7 @@ import java.util.List;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545 p.91
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-91">RFC 5545 p.91</a>
  */
 public class Resources extends ListProperty<String> {
 	/**

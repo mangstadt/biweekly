@@ -43,7 +43,7 @@ import java.util.List;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545 p.81-2
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545 p.81-2</a>
  */
 public class Categories extends ListProperty<String> {
 	/**

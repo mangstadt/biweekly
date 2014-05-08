@@ -99,7 +99,7 @@ import biweekly.util.DateTimeComponents;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545 p.96-7
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-96">RFC 5545 p.96-7</a>
  */
 public class DateDue extends DateOrDateTimeProperty {
 	/**

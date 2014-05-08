@@ -63,7 +63,7 @@ import biweekly.util.IOUtils;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545 p.80-1
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-80">RFC 5545 p.80-1</a>
  */
 public class Attachment extends ICalProperty {
 	private byte[] data;

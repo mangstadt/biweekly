@@ -73,7 +73,7 @@ import biweekly.property.RawProperty;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545
+ * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalReader implements Closeable {
 	private static final ICalendarScribe icalMarshaller = ScribeIndex.getICalendarScribe();

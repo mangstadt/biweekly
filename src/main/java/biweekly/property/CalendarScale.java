@@ -79,7 +79,7 @@ import java.util.Collection;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545 p.76-7
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-76">RFC 5545 p.76-7</a>
  */
 public class CalendarScale extends EnumProperty {
 	private static final String GREGORIAN = "GREGORIAN";

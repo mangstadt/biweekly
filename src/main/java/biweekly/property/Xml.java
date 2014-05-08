@@ -36,7 +36,7 @@ import biweekly.util.XmlUtils;
  * Stores a property that was parsed from an xCal document (XML-encoded
  * iCalendar object) whose XML namespace was not part of the xCal XML namespace.
  * @author Michael Angstadt
- * @rfc 6321 p.17-8
+ * @see <a href="http://tools.ietf.org/html/rfc6321#page-17">RFC 6321 p.17-8</a>
  */
 public class Xml extends ValuedProperty<Document> {
 	/**

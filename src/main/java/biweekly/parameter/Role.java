@@ -30,7 +30,7 @@ import java.util.Collection;
 /**
  * Defines the role that a calendar user holds.
  * @author Michael Angstadt
- * @rfc 5545 p.25-6
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545 p.25-6</a>
  */
 public class Role extends EnumParameterValue {
 	private static final ICalParameterCaseClasses<Role> enums = new ICalParameterCaseClasses<Role>(Role.class);

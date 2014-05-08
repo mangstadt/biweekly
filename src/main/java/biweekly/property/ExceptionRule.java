@@ -53,7 +53,7 @@ import biweekly.component.ICalComponent;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 2445 p.114-15
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-114">RFC 2445 p.114-15</a>
  */
 public class ExceptionRule extends RecurrenceProperty {
 	/**

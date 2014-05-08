@@ -54,7 +54,7 @@ import biweekly.component.VTimezone;
  * </p>
  * 
  * @author Michael Angstadt
- * @rfc 5545 p.102-3
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-102">RFC 5545 p.102-3</a>
  */
 public class TimezoneId extends TextProperty {
 	/**

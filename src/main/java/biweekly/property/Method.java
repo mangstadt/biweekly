@@ -42,7 +42,7 @@ package biweekly.property;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545 p.77-8
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545 p.77-8</a>
  */
 public class Method extends TextProperty {
 	/**

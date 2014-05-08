@@ -51,7 +51,7 @@ import biweekly.component.ICalComponent;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545 p.79-80
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-79">RFC 5545 p.79-80</a>
  */
 public class Version extends ICalProperty {
 	private static final String DEFAULT = "2.0";

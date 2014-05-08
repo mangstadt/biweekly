@@ -30,7 +30,7 @@ import java.util.Collection;
 /**
  * Defines the date that an alarm trigger is relative to.
  * @author Michael Angstadt
- * @rfc 5545 p.24
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-24">RFC 5545 p.24</a>
  */
 public class Related extends EnumParameterValue {
 	private static final ICalParameterCaseClasses<Related> enums = new ICalParameterCaseClasses<Related>(Related.class);

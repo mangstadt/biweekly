@@ -46,7 +46,7 @@ import biweekly.component.ICalComponent;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545 p.85-7
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-85">RFC 5545 p.85-7</a>
  */
 public class Geo extends ICalProperty {
 	private Double latitude;

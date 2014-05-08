@@ -39,7 +39,7 @@ import biweekly.parameter.ICalParameters;
 /**
  * Writes data to an iCalendar data stream.
  * @author Michael Angstadt
- * @rfc 5545
+ * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalRawWriter implements Closeable, Flushable {
 	/**
@@ -160,7 +160,7 @@ public class ICalRawWriter implements Closeable, Flushable {
 	 * </pre>
 	 * 
 	 * @return true if circumflex accent encoding is enabled, false if not
-	 * @rfc 6868
+	 * @see <a href="http://tools.ietf.org/html/rfc6868">RFC 6868</a>
 	 */
 	public boolean isCaretEncodingEnabled() {
 		return caretEncodingEnabled;
@@ -213,7 +213,7 @@ public class ICalRawWriter implements Closeable, Flushable {
 	 * </pre>
 	 * 
 	 * @param enable true to use circumflex accent encoding, false not to
-	 * @rfc 6868
+	 * @see <a href="http://tools.ietf.org/html/rfc6868">RFC 6868</a>
 	 */
 	public void setCaretEncodingEnabled(boolean enable) {
 		caretEncodingEnabled = enable;

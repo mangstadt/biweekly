@@ -46,7 +46,7 @@ import biweekly.component.ICalComponent;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545 p.88-9
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-88">RFC 5545 p.88-9</a>
  */
 public class PercentComplete extends IntegerProperty {
 	/**

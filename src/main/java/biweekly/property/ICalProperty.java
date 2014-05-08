@@ -120,7 +120,7 @@ public abstract class ICalProperty {
 	 * Gets a URI pointing to additional information about the entity
 	 * represented by the property.
 	 * @return the URI or null if not set
-	 * @rfc 5545 p.14-5
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-14">RFC 5545 p.14-5</a>
 	 */
 	String getAltRepresentation() {
 		return parameters.getAltRepresentation();
@@ -130,7 +130,7 @@ public abstract class ICalProperty {
 	 * Sets a URI pointing to additional information about the entity
 	 * represented by the property.
 	 * @param uri the URI or null to remove
-	 * @rfc 5545 p.14-5
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-14">RFC 5545 p.14-5</a>
 	 */
 	void setAltRepresentation(String uri) {
 		parameters.setAltRepresentation(uri);
@@ -139,7 +139,7 @@ public abstract class ICalProperty {
 	/**
 	 * Gets the content-type of the property's value.
 	 * @return the content type (e.g. "image/png") or null if not set
-	 * @rfc 5545 p.19-20
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-19">RFC 5545 p.19-20</a>
 	 */
 	String getFormatType() {
 		return parameters.getFormatType();
@@ -148,7 +148,7 @@ public abstract class ICalProperty {
 	/**
 	 * Sets the content-type of the property's value.
 	 * @param formatType the content type (e.g. "image/png") or null to remove
-	 * @rfc 5545 p.19-20
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-19">RFC 5545 p.19-20</a>
 	 */
 	void setFormatType(String formatType) {
 		parameters.setFormatType(formatType);
@@ -157,7 +157,7 @@ public abstract class ICalProperty {
 	/**
 	 * Gets the language that the property value is written in.
 	 * @return the language (e.g. "en" for English) or null if not set
-	 * @rfc 5545 p.21
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545 p.21</a>
 	 */
 	String getLanguage() {
 		return parameters.getLanguage();
@@ -166,7 +166,7 @@ public abstract class ICalProperty {
 	/**
 	 * Sets the language that the property value is written in.
 	 * @param language the language (e.g. "en" for English) or null to remove
-	 * @rfc 5545 p.21
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545 p.21</a>
 	 */
 	void setLanguage(String language) {
 		parameters.setLanguage(language);
@@ -179,7 +179,7 @@ public abstract class ICalProperty {
 	 * list of globally-defined timezones, see the <a
 	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
 	 * @return the timezone identifier or null if not set
-	 * @rfc 5545 p.27-8
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545 p.27-8</a>
 	 */
 	String getTimezoneId() {
 		return parameters.getTimezoneId();
@@ -193,7 +193,7 @@ public abstract class ICalProperty {
 	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
 	 * @param timezoneId the timezone identifier (e.g. "America/New_York") or
 	 * null to remove
-	 * @rfc 5545 p.27-8
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545 p.27-8</a>
 	 */
 	void setTimezoneId(String timezoneId) {
 		parameters.setTimezoneId(timezoneId);
@@ -204,7 +204,7 @@ public abstract class ICalProperty {
 	 * iCalendar object. Use {@link #setTimezoneId(String)} to use a
 	 * globally-defined timezone (e.g. "America/New_York").
 	 * @param timezone the timezone component to reference or null to remove
-	 * @rfc 5545 p.27-8
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545 p.27-8</a>
 	 */
 	void setTimezone(VTimezone timezone) {
 		if (timezone == null) {
@@ -223,7 +223,7 @@ public abstract class ICalProperty {
 	 * property.
 	 * @return a URI representing the person (typically, an email URI, e.g.
 	 * "mailto:janedoe@example.com") or null if not set
-	 * @rfc 5545 p.27
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545 p.27</a>
 	 */
 	String getSentBy() {
 		return parameters.getSentBy();
@@ -234,7 +234,7 @@ public abstract class ICalProperty {
 	 * property.
 	 * @param uri a URI representing the person (typically, an email URI, e.g.
 	 * "mailto:janedoe@example.com") or null to remove
-	 * @rfc 5545 p.27
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545 p.27</a>
 	 */
 	void setSentBy(String uri) {
 		parameters.setSentBy(uri);
@@ -243,7 +243,7 @@ public abstract class ICalProperty {
 	/**
 	 * Gets the display name of the person.
 	 * @return the display name (e.g. "John Doe") or null if not set
-	 * @rfc 5545 p.15-6
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-15">RFC 5545 p.15-6</a>
 	 */
 	String getCommonName() {
 		return parameters.getCommonName();
@@ -252,7 +252,7 @@ public abstract class ICalProperty {
 	/**
 	 * Sets the display name of the person.
 	 * @param commonName the display name (e.g. "John Doe") or null to remove
-	 * @rfc 5545 p.15-6
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-15">RFC 5545 p.15-6</a>
 	 */
 	void setCommonName(String commonName) {
 		parameters.setCommonName(commonName);
@@ -261,7 +261,7 @@ public abstract class ICalProperty {
 	/**
 	 * Gets a URI that contains additional information about the person.
 	 * @return the URI (e.g. an LDAP URI) or null if not set
-	 * @rfc 5545 p.18
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545 p.18</a>
 	 */
 	String getDirectoryEntry() {
 		return parameters.getDirectoryEntry();
@@ -270,7 +270,7 @@ public abstract class ICalProperty {
 	/**
 	 * Sets a URI that contains additional information about the person.
 	 * @param uri the URI (e.g. an LDAP URI) or null to remove
-	 * @rfc 5545 p.18
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545 p.18</a>
 	 */
 	void setDirectoryEntry(String uri) {
 		parameters.setDirectoryEntry(uri);

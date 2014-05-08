@@ -54,7 +54,7 @@ import java.util.Date;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545 p.137-8
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-137">RFC 5545 p.137-8</a>
  */
 public class DateTimeStamp extends DateTimeProperty {
 	/**

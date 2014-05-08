@@ -59,7 +59,7 @@ import biweekly.component.ICalComponent;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545 p.141-3
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-141">RFC 5545 p.141-3</a>
  */
 public class RequestStatus extends ICalProperty {
 	private String statusCode, description, exceptionText;

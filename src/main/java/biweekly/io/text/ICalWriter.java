@@ -64,7 +64,7 @@ import biweekly.property.ICalProperty;
  * 
  * </p>
  * @author Michael Angstadt
- * @rfc 5545
+ * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalWriter implements Closeable, Flushable {
 	private ScribeIndex index = new ScribeIndex();
