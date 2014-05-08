@@ -338,7 +338,7 @@ public class JCalReaderTest {
 		//@formatter:on
 
 		JCalReader reader = new JCalReader(json);
-		reader.registerMarshaller(new PartyMarshaller());
+		reader.registerScribe(new PartyMarshaller());
 		ICalendar ical = reader.readNext();
 
 		assertEquals(0, ical.getProperties().size());
@@ -401,7 +401,7 @@ public class JCalReaderTest {
 		//@formatter:on
 
 		JCalReader reader = new JCalReader(json);
-		reader.registerMarshaller(new CompanyMarshaller());
+		reader.registerScribe(new CompanyMarshaller());
 		ICalendar ical = reader.readNext();
 
 		assertEquals(1, ical.getProperties().size());
@@ -430,7 +430,7 @@ public class JCalReaderTest {
 		//@formatter:on
 
 		JCalReader reader = new JCalReader(json);
-		reader.registerMarshaller(new CompanyMarshaller());
+		reader.registerScribe(new CompanyMarshaller());
 		ICalendar ical = reader.readNext();
 
 		assertEquals(0, ical.getProperties().size());
@@ -455,7 +455,7 @@ public class JCalReaderTest {
 		//@formatter:on
 
 		JCalReader reader = new JCalReader(json);
-		reader.registerMarshaller(new CompanyMarshaller());
+		reader.registerScribe(new CompanyMarshaller());
 		ICalendar ical = reader.readNext();
 
 		assertEquals(1, ical.getProperties().size());

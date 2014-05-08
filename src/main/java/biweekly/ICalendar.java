@@ -347,7 +347,7 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Marshals this iCalendar object to its XML representation (xCal). If the
 	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * the {@link Biweekly} class instead, in order to register the scribe
 	 * classes.
 	 * @return the XML document
 	 * @throws IllegalArgumentException if the iCalendar object contains
@@ -360,7 +360,7 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Marshals this iCalendar object to its XML representation (xCal). If the
 	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * the {@link Biweekly} class instead, in order to register the scribe
 	 * classes.
 	 * @param file the file to write to
 	 * @throws IllegalArgumentException if the iCalendar object contains
@@ -375,7 +375,7 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Marshals this iCalendar object to its XML representation (xCal). If the
 	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * the {@link Biweekly} class instead, in order to register the scribe
 	 * classes.
 	 * @param out the data stream to write to
 	 * @throws IllegalArgumentException if the iCalendar object contains
@@ -389,7 +389,7 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Marshals this iCalendar object to its XML representation (xCal). If the
 	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * the {@link Biweekly} class instead, in order to register the scribe
 	 * classes.
 	 * @param writer the data stream to write to
 	 * @throws IllegalArgumentException if the iCalendar object contains
@@ -403,7 +403,7 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Marshals this iCalendar object to its JSON representation (jCal). If the
 	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * the {@link Biweekly} class instead, in order to register the scribe
 	 * classes.
 	 * @return the JSON string
 	 * @throws IllegalArgumentException if the iCalendar object contains
@@ -416,7 +416,7 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Marshals this iCalendar object to its JSON representation (jCal). If the
 	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * the {@link Biweekly} class instead, in order to register the scribe
 	 * classes.
 	 * @param file the file to write to
 	 * @throws IllegalArgumentException if the iCalendar object contains
@@ -430,7 +430,7 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Marshals this iCalendar object to its JSON representation (jCal). If the
 	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * the {@link Biweekly} class instead, in order to register the scribe
 	 * classes.
 	 * @param out the data stream to write to
 	 * @throws IllegalArgumentException if the iCalendar object contains
@@ -444,7 +444,7 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Marshals this iCalendar object to its JSON representation (jCal). If the
 	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the marshaller
+	 * the {@link Biweekly} class instead, in order to register the scribe
 	 * classes.
 	 * @param writer the data stream to write to
 	 * @throws IllegalArgumentException if the iCalendar object contains

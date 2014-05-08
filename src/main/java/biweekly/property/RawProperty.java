@@ -28,7 +28,7 @@ import biweekly.ICalDataType;
  */
 
 /**
- * Represents a property that does not have a marshaller associated with it.
+ * Represents a property that does not have a scribe associated with it.
  * @author Michael Angstadt
  */
 public class RawProperty extends ICalProperty {

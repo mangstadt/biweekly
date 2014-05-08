@@ -21,14 +21,14 @@ import biweekly.Messages;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
-import biweekly.io.ICalMarshallerRegistrar;
 import biweekly.io.SkipMeException;
 import biweekly.io.json.JCalRawReader.JCalDataStreamListener;
+import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.component.ICalendarScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
-import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
+import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
@@ -83,8 +83,8 @@ import com.fasterxml.jackson.core.JsonParseException;
  * draft</a>
  */
 public class JCalReader implements Closeable {
-	private static final ICalendarScribe icalMarshaller = ICalMarshallerRegistrar.getICalendarMarshaller();
-	private ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();
+	private static final ICalendarScribe icalMarshaller = ScribeIndex.getICalendarScribe();
+	private ScribeIndex index = new ScribeIndex();
 	private final JCalRawReader reader;
 	private final List<String> warnings = new ArrayList<String>();
 
@@ -132,48 +132,48 @@ public class JCalReader implements Closeable {
 
 	/**
 	 * <p>
-	 * Registers an experimental property marshaller. Can also be used to
-	 * override the marshaller of a standard property (such as DTSTART). Calling
-	 * this method is the same as calling:
+	 * Registers an experimental property scribe. Can also be used to override
+	 * the scribe of a standard property (such as DTSTART). Calling this method
+	 * is the same as calling:
 	 * </p>
 	 * <p>
-	 * {@code getRegistrar().register(marshaller)}.
+	 * {@code getScribeIndex().register(scribe)}.
 	 * </p>
-	 * @param marshaller the marshaller to register
+	 * @param scribe the scribe to register
 	 */
-	public void registerMarshaller(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-		registrar.register(marshaller);
+	public void registerScribe(ICalPropertyScribe<? extends ICalProperty> scribe) {
+		index.register(scribe);
 	}
 
 	/**
 	 * <p>
-	 * Registers an experimental component marshaller. Can also be used to
-	 * override the marshaller of a standard component (such as VEVENT). Calling
-	 * this method is the same as calling:
+	 * Registers an experimental component scribe. Can also be used to override
+	 * the scribe of a standard component (such as VEVENT). Calling this method
+	 * is the same as calling:
 	 * </p>
 	 * <p>
-	 * {@code getRegistrar().register(marshaller)}.
+	 * {@code getScribeIndex().register(scribe)}.
 	 * </p>
-	 * @param marshaller the marshaller to register
+	 * @param scribe the scribe to register
 	 */
-	public void registerMarshaller(ICalComponentScribe<? extends ICalComponent> marshaller) {
-		registrar.register(marshaller);
+	public void registerScribe(ICalComponentScribe<? extends ICalComponent> scribe) {
+		index.register(scribe);
 	}
 
 	/**
-	 * Gets the object that manages the component/property marshaller objects.
-	 * @return the marshaller registrar
+	 * Gets the object that manages the component/property scribes.
+	 * @return the scribe index
 	 */
-	public ICalMarshallerRegistrar getRegistrar() {
-		return registrar;
+	public ScribeIndex getScribeIndex() {
+		return index;
 	}
 
 	/**
-	 * Sets the object that manages the component/property marshaller objects.
-	 * @param registrar the marshaller registrar
+	 * Sets the object that manages the component/property scribes.
+	 * @param index the scribe index
 	 */
-	public void setRegistrar(ICalMarshallerRegistrar registrar) {
-		this.registrar = registrar;
+	public void setScribeIndex(ScribeIndex index) {
+		this.index = index;
 	}
 
 	/**
@@ -217,7 +217,7 @@ public class JCalReader implements Closeable {
 			ICalComponent parent = components.get(componentHierarchy);
 
 			//unmarshal the property
-			ICalPropertyScribe<? extends ICalProperty> m = registrar.getPropertyMarshaller(propertyName);
+			ICalPropertyScribe<? extends ICalProperty> m = index.getPropertyScribe(propertyName);
 			ICalProperty property = null;
 			try {
 				Result<? extends ICalProperty> result = m.parseJson(value, dataType, parameters);
@@ -246,7 +246,7 @@ public class JCalReader implements Closeable {
 		}
 
 		public void readComponent(List<String> parentHierarchy, String componentName) {
-			ICalComponentScribe<? extends ICalComponent> m = registrar.getComponentMarshaller(componentName);
+			ICalComponentScribe<? extends ICalComponent> m = index.getComponentScribe(componentName);
 			ICalComponent component = m.emptyInstance();
 
 			ICalComponent parent = components.get(parentHierarchy);

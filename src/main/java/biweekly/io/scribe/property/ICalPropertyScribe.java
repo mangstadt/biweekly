@@ -59,7 +59,7 @@ import biweekly.util.XmlUtils;
  */
 
 /**
- * Base class for iCalendar property marshallers.
+ * Base class for iCalendar property scribes.
  * @param <T> the property class
  * @author Michael Angstadt
  */
@@ -70,7 +70,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	protected final QName qname;
 
 	/**
-	 * Creates a new marshaller.
+	 * Creates a new scribe.
 	 * @param clazz the property class
 	 * @param propertyName the property name (e.g. "VERSION")
 	 * @param defaultDataType the property's default data type (e.g. "text") or
@@ -81,7 +81,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	}
 
 	/**
-	 * Creates a new marshaller.
+	 * Creates a new scribe.
 	 * @param clazz the property class
 	 * @param propertyName the property name (e.g. "VERSION")
 	 * @param defaultDataType the property's default data type (e.g. "text") or
@@ -196,8 +196,8 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * property's parameter list after it has been read.
 	 * @param parameters the parsed parameters
 	 * @return the unmarshalled property and its warnings
-	 * @throws CannotParseException if the marshaller could not parse the
-	 * property's value
+	 * @throws CannotParseException if the scribe could not parse the property's
+	 * value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
@@ -213,8 +213,8 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param element the property's XML element
 	 * @param parameters the property's parameters
 	 * @return the unmarshalled property and its warnings
-	 * @throws CannotParseException if the marshaller could not parse the
-	 * property's value
+	 * @throws CannotParseException if the scribe could not parse the property's
+	 * value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
@@ -231,8 +231,8 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param dataType the data type
 	 * @param parameters the parsed parameters
 	 * @return the unmarshalled property and its warnings
-	 * @throws CannotParseException if the marshaller could not parse the
-	 * property's value
+	 * @throws CannotParseException if the scribe could not parse the property's
+	 * value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
@@ -345,8 +345,8 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * note-worthy (but non-critical) issues that occurred during the
 	 * unmarshalling process
 	 * @return the unmarshalled property object
-	 * @throws CannotParseException if the marshaller could not parse the
-	 * property's value
+	 * @throws CannotParseException if the scribe could not parse the property's
+	 * value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
@@ -374,8 +374,8 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * note-worthy (but non-critical) issues that occurred during the
 	 * unmarshalling process
 	 * @return the unmarshalled property object
-	 * @throws CannotParseException if the marshaller could not parse the
-	 * property's value
+	 * @throws CannotParseException if the scribe could not parse the property's
+	 * value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
@@ -471,8 +471,8 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * note-worthy (but non-critical) issues that occurred during the
 	 * unmarshalling process
 	 * @return the unmarshalled property object
-	 * @throws CannotParseException if the marshaller could not parse the
-	 * property's value
+	 * @throws CannotParseException if the scribe could not parse the property's
+	 * value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */

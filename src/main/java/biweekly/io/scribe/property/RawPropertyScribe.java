@@ -38,7 +38,7 @@ import biweekly.util.XmlUtils;
  */
 
 /**
- * Marshals properties that do not have a marshaller associated with them.
+ * Marshals properties that do not have a scribe associated with them.
  * @author Michael Angstadt
  */
 public class RawPropertyScribe extends ICalPropertyScribe<RawProperty> {

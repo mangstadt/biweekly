@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalDataType;
-import biweekly.io.ICalMarshallerRegistrar;
+import biweekly.io.scribe.ScribeIndex;
 import biweekly.parameter.ICalParameters;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -49,7 +49,7 @@ import com.fasterxml.jackson.core.JsonToken;
  * draft</a>
  */
 public class JCalRawReader implements Closeable {
-	private static final String vcalendarComponentName = ICalMarshallerRegistrar.getICalendarMarshaller().getComponentName().toLowerCase(); //"vcalendar"
+	private static final String vcalendarComponentName = ScribeIndex.getICalendarScribe().getComponentName().toLowerCase(); //"vcalendar"
 
 	private final Reader reader;
 	private JsonParser parser;

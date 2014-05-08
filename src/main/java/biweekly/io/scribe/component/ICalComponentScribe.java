@@ -32,7 +32,7 @@ import biweekly.property.ICalProperty;
  */
 
 /**
- * Base class for iCalendar component marshallers.
+ * Base class for iCalendar component scribes.
  * @param <T> the component class
  * @author Michael Angstadt
  */
@@ -41,7 +41,7 @@ public abstract class ICalComponentScribe<T extends ICalComponent> {
 	protected final String componentName;
 
 	/**
-	 * Creates a new component marshaller.
+	 * Creates a new component scribe.
 	 * @param clazz the component's class
 	 * @param componentName the component's name (e.g. "VEVENT")
 	 */

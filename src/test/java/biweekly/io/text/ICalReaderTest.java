@@ -194,7 +194,7 @@ public class ICalReaderTest {
 
 		ICalReader reader = new ICalReader(ical);
 		reader.setCaretDecodingEnabled(true);
-		reader.registerMarshaller(new TestPropertyMarshaller());
+		reader.registerScribe(new TestPropertyMarshaller());
 
 		ICalendar icalendar = reader.readNext();
 
@@ -218,7 +218,7 @@ public class ICalReaderTest {
 
 		ICalReader reader = new ICalReader(ical);
 		reader.setCaretDecodingEnabled(false);
-		reader.registerMarshaller(new TestPropertyMarshaller());
+		reader.registerScribe(new TestPropertyMarshaller());
 
 		ICalendar icalendar = reader.readNext();
 
@@ -400,7 +400,7 @@ public class ICalReaderTest {
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
-		reader.registerMarshaller(new TestPropertyMarshaller());
+		reader.registerScribe(new TestPropertyMarshaller());
 
 		ICalendar icalendar = reader.readNext();
 
@@ -462,7 +462,7 @@ public class ICalReaderTest {
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
-		reader.registerMarshaller(new PartyMarshaller());
+		reader.registerScribe(new PartyMarshaller());
 		ICalendar icalendar = reader.readNext();
 
 		assertEquals("prodid", icalendar.getProductId().getValue());
@@ -486,7 +486,7 @@ public class ICalReaderTest {
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
-		reader.registerMarshaller(new MyProductIdMarshaller());
+		reader.registerScribe(new MyProductIdMarshaller());
 		ICalendar icalendar = reader.readNext();
 
 		assertEquals("THE PRODUCT ID", icalendar.getProductId().getValue());
@@ -510,7 +510,7 @@ public class ICalReaderTest {
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
-		reader.registerMarshaller(new MyEventMarshaller());
+		reader.registerScribe(new MyEventMarshaller());
 
 		ICalendar icalendar = reader.readNext();
 
@@ -539,7 +539,7 @@ public class ICalReaderTest {
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
-		reader.registerMarshaller(new MyEventMarshaller());
+		reader.registerScribe(new MyEventMarshaller());
 
 		ICalendar icalendar = reader.readNext();
 
@@ -562,7 +562,7 @@ public class ICalReaderTest {
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
-		reader.registerMarshaller(new TestPropertyMarshaller());
+		reader.registerScribe(new TestPropertyMarshaller());
 
 		ICalendar icalendar = reader.readNext();
 
@@ -593,7 +593,7 @@ public class ICalReaderTest {
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
-		reader.registerMarshaller(new TestPropertyMarshaller());
+		reader.registerScribe(new TestPropertyMarshaller());
 
 		{
 			ICalendar icalendar = reader.readNext();
@@ -634,7 +634,7 @@ public class ICalReaderTest {
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
-		reader.registerMarshaller(new TestPropertyMarshaller());
+		reader.registerScribe(new TestPropertyMarshaller());
 
 		ICalendar icalendar = reader.readNext();
 
@@ -660,7 +660,7 @@ public class ICalReaderTest {
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
-		reader.registerMarshaller(new TestPropertyMarshaller());
+		reader.registerScribe(new TestPropertyMarshaller());
 
 		ICalendar icalendar = reader.readNext();
 
@@ -708,7 +708,7 @@ public class ICalReaderTest {
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
-		reader.registerMarshaller(new TestPropertyMarshaller());
+		reader.registerScribe(new TestPropertyMarshaller());
 
 		ICalendar icalendar = reader.readNext();
 

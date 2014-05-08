@@ -21,10 +21,10 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import biweekly.component.ICalComponent;
-import biweekly.io.ICalMarshallerRegistrar;
 import biweekly.io.json.JCalParseException;
 import biweekly.io.json.JCalReader;
 import biweekly.io.json.JCalWriter;
+import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.text.ICalRawReader;
@@ -447,7 +447,7 @@ public class Biweekly {
 
 	static abstract class ParserChain<T> {
 		//Note: "package" level is used so various fields/methods don't show up in the Javadocs, but are still visible to child classes
-		final ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();
+		final ScribeIndex index = new ScribeIndex();
 
 		@SuppressWarnings("unchecked")
 		final T this_ = (T) this;
@@ -455,22 +455,22 @@ public class Biweekly {
 		List<List<String>> warnings;
 
 		/**
-		 * Registers a property marshaller.
-		 * @param marshaller the marshaller
+		 * Registers a property scribe.
+		 * @param scribe the scribe
 		 * @return this
 		 */
-		public T register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-			registrar.register(marshaller);
+		public T register(ICalPropertyScribe<? extends ICalProperty> scribe) {
+			index.register(scribe);
 			return this_;
 		}
 
 		/**
-		 * Registers a component marshaller.
-		 * @param marshaller the marshaller
+		 * Registers a component scribe.
+		 * @param scribe the scribe
 		 * @return this
 		 */
-		public T register(ICalComponentScribe<? extends ICalComponent> marshaller) {
-			registrar.register(marshaller);
+		public T register(ICalComponentScribe<? extends ICalComponent> scribe) {
+			index.register(scribe);
 			return this_;
 		}
 
@@ -569,7 +569,7 @@ public class Biweekly {
 
 		private ICalReader constructReader() throws IOException {
 			ICalReader parser = _constructReader();
-			parser.setRegistrar(registrar);
+			parser.setScribeIndex(index);
 			parser.setCaretDecodingEnabled(caretDecoding);
 			return parser;
 		}
@@ -610,13 +610,13 @@ public class Biweekly {
 		}
 
 		@Override
-		public ParserChainTextReader register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-			return super.register(marshaller);
+		public ParserChainTextReader register(ICalPropertyScribe<? extends ICalProperty> scribe) {
+			return super.register(scribe);
 		}
 
 		@Override
-		public ParserChainTextReader register(ICalComponentScribe<? extends ICalComponent> marshaller) {
-			return super.register(marshaller);
+		public ParserChainTextReader register(ICalComponentScribe<? extends ICalComponent> scribe) {
+			return super.register(scribe);
 		}
 
 		@Override
@@ -654,13 +654,13 @@ public class Biweekly {
 		}
 
 		@Override
-		public ParserChainTextString register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-			return super.register(marshaller);
+		public ParserChainTextString register(ICalPropertyScribe<? extends ICalProperty> scribe) {
+			return super.register(scribe);
 		}
 
 		@Override
-		public ParserChainTextString register(ICalComponentScribe<? extends ICalComponent> marshaller) {
-			return super.register(marshaller);
+		public ParserChainTextString register(ICalComponentScribe<? extends ICalComponent> scribe) {
+			return super.register(scribe);
 		}
 
 		@Override
@@ -726,7 +726,7 @@ public class Biweekly {
 
 		private XCalDocument constructDocument() throws SAXException, IOException {
 			XCalDocument parser = _constructDocument();
-			parser.setRegistrar(registrar);
+			parser.setScribeIndex(index);
 			return parser;
 		}
 
@@ -745,13 +745,13 @@ public class Biweekly {
 		}
 
 		@Override
-		public ParserChainXmlString register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-			return super.register(marshaller);
+		public ParserChainXmlString register(ICalPropertyScribe<? extends ICalProperty> scribe) {
+			return super.register(scribe);
 		}
 
 		@Override
-		public ParserChainXmlString register(ICalComponentScribe<? extends ICalComponent> marshaller) {
-			return super.register(marshaller);
+		public ParserChainXmlString register(ICalComponentScribe<? extends ICalComponent> scribe) {
+			return super.register(scribe);
 		}
 
 		@Override
@@ -815,13 +815,13 @@ public class Biweekly {
 		}
 
 		@Override
-		public ParserChainXmlReader register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-			return super.register(marshaller);
+		public ParserChainXmlReader register(ICalPropertyScribe<? extends ICalProperty> scribe) {
+			return super.register(scribe);
 		}
 
 		@Override
-		public ParserChainXmlReader register(ICalComponentScribe<? extends ICalComponent> marshaller) {
-			return super.register(marshaller);
+		public ParserChainXmlReader register(ICalComponentScribe<? extends ICalComponent> scribe) {
+			return super.register(scribe);
 		}
 
 		@Override
@@ -853,13 +853,13 @@ public class Biweekly {
 		}
 
 		@Override
-		public ParserChainXmlDocument register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-			return super.register(marshaller);
+		public ParserChainXmlDocument register(ICalPropertyScribe<? extends ICalProperty> scribe) {
+			return super.register(scribe);
 		}
 
 		@Override
-		public ParserChainXmlDocument register(ICalComponentScribe<? extends ICalComponent> marshaller) {
-			return super.register(marshaller);
+		public ParserChainXmlDocument register(ICalComponentScribe<? extends ICalComponent> scribe) {
+			return super.register(scribe);
 		}
 
 		@Override
@@ -960,7 +960,7 @@ public class Biweekly {
 
 		private JCalReader constructReader() throws IOException {
 			JCalReader parser = _constructReader();
-			parser.setRegistrar(registrar);
+			parser.setScribeIndex(index);
 			return parser;
 		}
 
@@ -1000,13 +1000,13 @@ public class Biweekly {
 		}
 
 		@Override
-		public ParserChainJsonReader register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-			return super.register(marshaller);
+		public ParserChainJsonReader register(ICalPropertyScribe<? extends ICalProperty> scribe) {
+			return super.register(scribe);
 		}
 
 		@Override
-		public ParserChainJsonReader register(ICalComponentScribe<? extends ICalComponent> marshaller) {
-			return super.register(marshaller);
+		public ParserChainJsonReader register(ICalComponentScribe<? extends ICalComponent> scribe) {
+			return super.register(scribe);
 		}
 
 		@Override
@@ -1039,13 +1039,13 @@ public class Biweekly {
 		}
 
 		@Override
-		public ParserChainJsonString register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-			return super.register(marshaller);
+		public ParserChainJsonString register(ICalPropertyScribe<? extends ICalProperty> scribe) {
+			return super.register(scribe);
 		}
 
 		@Override
-		public ParserChainJsonString register(ICalComponentScribe<? extends ICalComponent> marshaller) {
-			return super.register(marshaller);
+		public ParserChainJsonString register(ICalComponentScribe<? extends ICalComponent> scribe) {
+			return super.register(scribe);
 		}
 
 		@Override
@@ -1081,7 +1081,7 @@ public class Biweekly {
 
 	static abstract class WriterChain<T> {
 		final Collection<ICalendar> icals;
-		final ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();
+		final ScribeIndex index = new ScribeIndex();
 
 		@SuppressWarnings("unchecked")
 		final T this_ = (T) this;
@@ -1091,22 +1091,22 @@ public class Biweekly {
 		}
 
 		/**
-		 * Registers a property marshaller.
-		 * @param marshaller the marshaller
+		 * Registers a property scribe.
+		 * @param scribe the scribe
 		 * @return this
 		 */
-		public T register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-			registrar.register(marshaller);
+		public T register(ICalPropertyScribe<? extends ICalProperty> scribe) {
+			index.register(scribe);
 			return this_;
 		}
 
 		/**
-		 * Registers a component marshaller.
-		 * @param marshaller the marshaller
+		 * Registers a component scribe.
+		 * @param scribe the scribe
 		 * @return this
 		 */
-		public T register(ICalComponentScribe<? extends ICalComponent> marshaller) {
-			registrar.register(marshaller);
+		public T register(ICalComponentScribe<? extends ICalComponent> scribe) {
+			index.register(scribe);
 			return this_;
 		}
 	}
@@ -1151,10 +1151,10 @@ public class Biweekly {
 		/**
 		 * Writes the iCalendar objects to a string.
 		 * @return the iCalendar string
-		 * @throws IllegalArgumentException if the marshaller class for a
-		 * component or property object cannot be found (only happens when an
-		 * experimental property/component marshaller is not registered with the
-		 * {@code register} method.)
+		 * @throws IllegalArgumentException if the scribe class for a component
+		 * or property object cannot be found (only happens when an experimental
+		 * property/component scribe is not registered with the {@code register}
+		 * method.)
 		 */
 		public String go() {
 			StringWriter sw = new StringWriter();
@@ -1169,10 +1169,10 @@ public class Biweekly {
 		/**
 		 * Writes the iCalendar objects to a data stream.
 		 * @param out the output stream to write to
-		 * @throws IllegalArgumentException if the marshaller class for a
-		 * component or property object cannot be found (only happens when an
-		 * experimental property/component marshaller is not registered with the
-		 * {@code register} method.)
+		 * @throws IllegalArgumentException if the scribe class for a component
+		 * or property object cannot be found (only happens when an experimental
+		 * property/component scribe is not registered with the {@code register}
+		 * method.)
 		 * @throws IOException if there's a problem writing to the output stream
 		 */
 		public void go(OutputStream out) throws IOException {
@@ -1182,10 +1182,10 @@ public class Biweekly {
 		/**
 		 * Writes the iCalendar objects to a file.
 		 * @param file the file to write to
-		 * @throws IllegalArgumentException if the marshaller class for a
-		 * component or property object cannot be found (only happens when an
-		 * experimental property/component marshaller is not registered with the
-		 * {@code register} method.)
+		 * @throws IllegalArgumentException if the scribe class for a component
+		 * or property object cannot be found (only happens when an experimental
+		 * property/component scribe is not registered with the {@code register}
+		 * method.)
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file) throws IOException {
@@ -1197,10 +1197,10 @@ public class Biweekly {
 		 * @param file the file to write to
 		 * @param append true to append to the end of the file, false to
 		 * overwrite it
-		 * @throws IllegalArgumentException if the marshaller class for a
-		 * component or property object cannot be found (only happens when an
-		 * experimental property/component marshaller is not registered with the
-		 * {@code register} method.)
+		 * @throws IllegalArgumentException if the scribe class for a component
+		 * or property object cannot be found (only happens when an experimental
+		 * property/component scribe is not registered with the {@code register}
+		 * method.)
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file, boolean append) throws IOException {
@@ -1215,10 +1215,10 @@ public class Biweekly {
 		/**
 		 * Writes the iCalendar objects to a data stream.
 		 * @param writer the writer to write to
-		 * @throws IllegalArgumentException if the marshaller class for a
-		 * component or property object cannot be found (only happens when an
-		 * experimental property/component marshaller is not registered with the
-		 * {@code register} method.)
+		 * @throws IllegalArgumentException if the scribe class for a component
+		 * or property object cannot be found (only happens when an experimental
+		 * property/component scribe is not registered with the {@code register}
+		 * method.)
 		 * @throws IOException if there's a problem writing to the writer
 		 */
 		public void go(Writer writer) throws IOException {
@@ -1226,7 +1226,7 @@ public class Biweekly {
 		}
 
 		private void go(ICalWriter icalWriter) throws IOException {
-			icalWriter.setRegistrar(registrar);
+			icalWriter.setScribeIndex(index);
 			icalWriter.setCaretEncodingEnabled(caretEncoding);
 
 			for (ICalendar ical : icals) {
@@ -1254,13 +1254,13 @@ public class Biweekly {
 		}
 
 		@Override
-		public WriterChainXml register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-			return super.register(marshaller);
+		public WriterChainXml register(ICalPropertyScribe<? extends ICalProperty> scribe) {
+			return super.register(scribe);
 		}
 
 		@Override
-		public WriterChainXml register(ICalComponentScribe<? extends ICalComponent> marshaller) {
-			return super.register(marshaller);
+		public WriterChainXml register(ICalComponentScribe<? extends ICalComponent> scribe) {
+			return super.register(scribe);
 		}
 
 		/**
@@ -1289,10 +1289,10 @@ public class Biweekly {
 		/**
 		 * Writes the xCal document to a string.
 		 * @return the XML string
-		 * @throws IllegalArgumentException if the marshaller class for a
-		 * component or property object cannot be found (only happens when an
-		 * experimental property/component marshaller is not registered with the
-		 * {@code register} method.)
+		 * @throws IllegalArgumentException if the scribe class for a component
+		 * or property object cannot be found (only happens when an experimental
+		 * property/component scribe is not registered with the {@code register}
+		 * method.)
 		 */
 		public String go() {
 			StringWriter sw = new StringWriter();
@@ -1307,10 +1307,10 @@ public class Biweekly {
 		/**
 		 * Writes the xCal document to an output stream.
 		 * @param out the output stream to write to
-		 * @throws IllegalArgumentException if the marshaller class for a
-		 * component or property object cannot be found (only happens when an
-		 * experimental property/component marshaller is not registered with the
-		 * {@code register} method.)
+		 * @throws IllegalArgumentException if the scribe class for a component
+		 * or property object cannot be found (only happens when an experimental
+		 * property/component scribe is not registered with the {@code register}
+		 * method.)
 		 * @throws TransformerException if there's a problem writing the XML
 		 */
 		public void go(OutputStream out) throws TransformerException {
@@ -1321,10 +1321,10 @@ public class Biweekly {
 		/**
 		 * Writes the xCal document to a file.
 		 * @param file the file to write to
-		 * @throws IllegalArgumentException if the marshaller class for a
-		 * component or property object cannot be found (only happens when an
-		 * experimental property/component marshaller is not registered with the
-		 * {@code register} method.)
+		 * @throws IllegalArgumentException if the scribe class for a component
+		 * or property object cannot be found (only happens when an experimental
+		 * property/component scribe is not registered with the {@code register}
+		 * method.)
 		 * @throws TransformerException if there's a problem writing the XML
 		 * @throws IOException if there's a problem writing to the file
 		 */
@@ -1336,10 +1336,10 @@ public class Biweekly {
 		/**
 		 * Writes the xCal document to a writer.
 		 * @param writer the writer to write to
-		 * @throws IllegalArgumentException if the marshaller class for a
-		 * component or property object cannot be found (only happens when an
-		 * experimental property/component marshaller is not registered with the
-		 * {@code register} method.)
+		 * @throws IllegalArgumentException if the scribe class for a component
+		 * or property object cannot be found (only happens when an experimental
+		 * property/component scribe is not registered with the {@code register}
+		 * method.)
 		 * @throws TransformerException if there's a problem writing the XML
 		 */
 		public void go(Writer writer) throws TransformerException {
@@ -1358,7 +1358,7 @@ public class Biweekly {
 
 		private XCalDocument constructDocument() {
 			XCalDocument document = new XCalDocument();
-			document.setRegistrar(registrar);
+			document.setScribeIndex(index);
 			for (Map.Entry<String, ICalDataType> entry : parameterDataTypes.entrySet()) {
 				document.registerParameterDataType(entry.getKey(), entry.getValue());
 			}
@@ -1401,10 +1401,10 @@ public class Biweekly {
 		/**
 		 * Writes the iCalendar objects to a string.
 		 * @return the iCalendar string
-		 * @throws IllegalArgumentException if the marshaller class for a
-		 * component or property object cannot be found (only happens when an
-		 * experimental property/component marshaller is not registered with the
-		 * {@code register} method.)
+		 * @throws IllegalArgumentException if the scribe class for a component
+		 * or property object cannot be found (only happens when an experimental
+		 * property/component scribe is not registered with the {@code register}
+		 * method.)
 		 */
 		public String go() {
 			StringWriter sw = new StringWriter();
@@ -1419,10 +1419,10 @@ public class Biweekly {
 		/**
 		 * Writes the iCalendar objects to a data stream.
 		 * @param out the output stream to write to
-		 * @throws IllegalArgumentException if the marshaller class for a
-		 * component or property object cannot be found (only happens when an
-		 * experimental property/component marshaller is not registered with the
-		 * {@code register} method.)
+		 * @throws IllegalArgumentException if the scribe class for a component
+		 * or property object cannot be found (only happens when an experimental
+		 * property/component scribe is not registered with the {@code register}
+		 * method.)
 		 * @throws IOException if there's a problem writing to the output stream
 		 */
 		public void go(OutputStream out) throws IOException {
@@ -1432,10 +1432,10 @@ public class Biweekly {
 		/**
 		 * Writes the iCalendar objects to a file.
 		 * @param file the file to write to
-		 * @throws IllegalArgumentException if the marshaller class for a
-		 * component or property object cannot be found (only happens when an
-		 * experimental property/component marshaller is not registered with the
-		 * {@code register} method.)
+		 * @throws IllegalArgumentException if the scribe class for a component
+		 * or property object cannot be found (only happens when an experimental
+		 * property/component scribe is not registered with the {@code register}
+		 * method.)
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file) throws IOException {
@@ -1450,10 +1450,10 @@ public class Biweekly {
 		/**
 		 * Writes the iCalendar objects to a data stream.
 		 * @param writer the writer to write to
-		 * @throws IllegalArgumentException if the marshaller class for a
-		 * component or property object cannot be found (only happens when an
-		 * experimental property/component marshaller is not registered with the
-		 * {@code register} method.)
+		 * @throws IllegalArgumentException if the scribe class for a component
+		 * or property object cannot be found (only happens when an experimental
+		 * property/component scribe is not registered with the {@code register}
+		 * method.)
 		 * @throws IOException if there's a problem writing to the writer
 		 */
 		public void go(Writer writer) throws IOException {
@@ -1461,7 +1461,7 @@ public class Biweekly {
 		}
 
 		private void go(JCalWriter jcalWriter) throws IOException {
-			jcalWriter.setRegistrar(registrar);
+			jcalWriter.setScribeIndex(index);
 			jcalWriter.setIndent(indent);
 
 			for (ICalendar ical : icals) {

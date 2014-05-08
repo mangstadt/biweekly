@@ -35,8 +35,8 @@ import biweekly.Messages;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
-import biweekly.io.ICalMarshallerRegistrar;
 import biweekly.io.SkipMeException;
+import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.component.ICalendarScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -127,7 +127,7 @@ import biweekly.util.XmlUtils;
  */
 //@formatter:on
 public class XCalDocument {
-	private static final ICalendarScribe icalMarshaller = ICalMarshallerRegistrar.getICalendarMarshaller();
+	private static final ICalendarScribe icalMarshaller = ScribeIndex.getICalendarScribe();
 	private static final XCalNamespaceContext nsContext = new XCalNamespaceContext("xcal");
 
 	/**
@@ -157,7 +157,7 @@ public class XCalDocument {
 		registerParameterDataType(ICalParameters.TZID, ICalDataType.TEXT);
 	}
 
-	private ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();
+	private ScribeIndex index = new ScribeIndex();
 	private final List<List<String>> parseWarnings = new ArrayList<List<String>>();
 	private Document document;
 	private Element root;
@@ -250,48 +250,48 @@ public class XCalDocument {
 
 	/**
 	 * <p>
-	 * Registers an experimental property marshaller. Can also be used to
-	 * override the marshaller of a standard property (such as DTSTART). Calling
-	 * this method is the same as calling:
+	 * Registers an experimental property scribe. Can also be used to override
+	 * the scribe of a standard property (such as DTSTART). Calling this method
+	 * is the same as calling:
 	 * </p>
 	 * <p>
-	 * {@code getRegistrar().register(marshaller)}.
+	 * {@code getScribeIndex().register(scribe)}.
 	 * </p>
-	 * @param marshaller the marshaller to register
+	 * @param scribe the scribe to register
 	 */
-	public void registerMarshaller(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-		registrar.register(marshaller);
+	public void registerScribe(ICalPropertyScribe<? extends ICalProperty> scribe) {
+		index.register(scribe);
 	}
 
 	/**
 	 * <p>
-	 * Registers an experimental component marshaller. Can also be used to
-	 * override the marshaller of a standard component (such as VEVENT). Calling
-	 * this method is the same as calling:
+	 * Registers an experimental component scribe. Can also be used to override
+	 * the scribe of a standard component (such as VEVENT). Calling this method
+	 * is the same as calling:
 	 * </p>
 	 * <p>
-	 * {@code getRegistrar().register(marshaller)}.
+	 * {@code getScribeIndex().register(scribe)}.
 	 * </p>
-	 * @param marshaller the marshaller to register
+	 * @param scribe the scribe to register
 	 */
-	public void registerMarshaller(ICalComponentScribe<? extends ICalComponent> marshaller) {
-		registrar.register(marshaller);
+	public void registerScribe(ICalComponentScribe<? extends ICalComponent> scribe) {
+		index.register(scribe);
 	}
 
 	/**
-	 * Gets the object that manages the component/property marshaller objects.
-	 * @return the marshaller registrar
+	 * Gets the object that manages the component/property scribes.
+	 * @return the scribe index
 	 */
-	public ICalMarshallerRegistrar getRegistrar() {
-		return registrar;
+	public ScribeIndex getScribeIndex() {
+		return index;
 	}
 
 	/**
-	 * Sets the object that manages the component/property marshaller objects.
-	 * @param registrar the marshaller registrar
+	 * Sets the object that manages the component/property scribes.
+	 * @param index the scribe index
 	 */
-	public void setRegistrar(ICalMarshallerRegistrar registrar) {
-		this.registrar = registrar;
+	public void setScribeIndex(ScribeIndex index) {
+		this.index = index;
 	}
 
 	/**
@@ -377,10 +377,10 @@ public class XCalDocument {
 	 * are made to the {@link ICalendar} object after calling this method will
 	 * NOT be applied to the xCal document.
 	 * @param ical the iCalendar object to add
-	 * @throws IllegalArgumentException if the marshaller class for a component
-	 * or property object cannot be found (only happens when an experimental
-	 * property/component marshaller is not registered with the
-	 * {@code registerMarshaller} method.)
+	 * @throws IllegalArgumentException if the scribe class for a component or
+	 * property object cannot be found (only happens when an experimental
+	 * property/component scribe is not registered with the
+	 * {@code registerScribe} method.)
 	 */
 	public void add(ICalendar ical) {
 		Element element = buildComponentElement(ical);
@@ -487,9 +487,9 @@ public class XCalDocument {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Element buildComponentElement(ICalComponent component) {
-		ICalComponentScribe m = registrar.getComponentMarshaller(component);
+		ICalComponentScribe m = index.getComponentScribe(component);
 		if (m == null) {
-			throw new IllegalArgumentException("No marshaller found for component class \"" + component.getClass().getName() + "\".");
+			throw new IllegalArgumentException("No scribe found for component class \"" + component.getClass().getName() + "\".");
 		}
 
 		Element componentElement = buildElement(m.getComponentName().toLowerCase());
@@ -543,9 +543,9 @@ public class XCalDocument {
 			//get parameters
 			parameters = property.getParameters();
 		} else {
-			ICalPropertyScribe pm = registrar.getPropertyMarshaller(property);
+			ICalPropertyScribe pm = index.getPropertyScribe(property);
 			if (pm == null) {
-				throw new IllegalArgumentException("No marshaller found for property class \"" + property.getClass().getName() + "\".");
+				throw new IllegalArgumentException("No scribe found for property class \"" + property.getClass().getName() + "\".");
 			}
 
 			propertyElement = buildElement(pm.getQName());
@@ -604,7 +604,7 @@ public class XCalDocument {
 
 	private ICalComponent parseComponent(Element componentElement, List<String> warnings) {
 		//create the component object
-		ICalComponentScribe<? extends ICalComponent> m = registrar.getComponentMarshaller(componentElement.getLocalName());
+		ICalComponentScribe<? extends ICalComponent> m = index.getComponentScribe(componentElement.getLocalName());
 		ICalComponent component = m.emptyInstance();
 
 		//parse properties
@@ -637,7 +637,7 @@ public class XCalDocument {
 		String propertyName = propertyElement.getLocalName();
 		QName qname = new QName(propertyElement.getNamespaceURI(), propertyName);
 
-		ICalPropertyScribe<? extends ICalProperty> m = registrar.getPropertyMarshaller(qname);
+		ICalPropertyScribe<? extends ICalProperty> m = index.getPropertyScribe(qname);
 
 		ICalProperty property = null;
 		try {
@@ -657,7 +657,7 @@ public class XCalDocument {
 
 		//unmarshal as an XML property
 		if (property == null) {
-			m = registrar.getPropertyMarshaller(Xml.class);
+			m = index.getPropertyScribe(Xml.class);
 
 			Result<? extends ICalProperty> result = m.parseXml(propertyElement, parameters);
 

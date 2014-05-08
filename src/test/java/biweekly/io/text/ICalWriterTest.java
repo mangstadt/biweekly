@@ -249,7 +249,7 @@ public class ICalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw);
-		writer.registerMarshaller(new BadNameMarshaller());
+		writer.registerScribe(new BadNameMarshaller());
 		writer.write(ical);
 	}
 
@@ -260,7 +260,7 @@ public class ICalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw);
-		writer.registerMarshaller(new SkipMeMarshaller());
+		writer.registerScribe(new SkipMeMarshaller());
 		writer.write(ical);
 		writer.close();
 
@@ -282,7 +282,7 @@ public class ICalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw);
-		writer.registerMarshaller(new MyVersionMarshaller());
+		writer.registerScribe(new MyVersionMarshaller());
 		writer.write(ical);
 		writer.close();
 
@@ -331,7 +331,7 @@ public class ICalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw);
-		writer.registerMarshaller(new TestPropertyMarshaller());
+		writer.registerScribe(new TestPropertyMarshaller());
 		writer.write(ical);
 		writer.close();
 
@@ -380,7 +380,7 @@ public class ICalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw);
-		writer.registerMarshaller(new PartyMarshaller());
+		writer.registerScribe(new PartyMarshaller());
 		writer.write(ical);
 		writer.close();
 
@@ -406,7 +406,7 @@ public class ICalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw);
-		writer.registerMarshaller(new DataTypePropertyMarshaller());
+		writer.registerScribe(new DataTypePropertyMarshaller());
 		writer.write(ical);
 		writer.close();
 

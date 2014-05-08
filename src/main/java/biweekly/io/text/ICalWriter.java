@@ -13,8 +13,8 @@ import java.io.Writer;
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
-import biweekly.io.ICalMarshallerRegistrar;
 import biweekly.io.SkipMeException;
+import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
@@ -67,7 +67,7 @@ import biweekly.property.ICalProperty;
  * @rfc 5545
  */
 public class ICalWriter implements Closeable, Flushable {
-	private ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();
+	private ScribeIndex index = new ScribeIndex();
 	private final ICalRawWriter writer;
 
 	/**
@@ -230,57 +230,57 @@ public class ICalWriter implements Closeable, Flushable {
 
 	/**
 	 * <p>
-	 * Registers an experimental property marshaller. Can also be used to
-	 * override the marshaller of a standard property (such as DTSTART). Calling
-	 * this method is the same as calling:
+	 * Registers an experimental property scribe. Can also be used to override
+	 * the scribe of a standard property (such as DTSTART). Calling this method
+	 * is the same as calling:
 	 * </p>
 	 * <p>
-	 * {@code getRegistrar().register(marshaller)}.
+	 * {@code getScribeIndex().register(scribe)}.
 	 * </p>
-	 * @param marshaller the marshaller to register
+	 * @param scribe the scribe to register
 	 */
-	public void registerMarshaller(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-		registrar.register(marshaller);
+	public void registerScribe(ICalPropertyScribe<? extends ICalProperty> scribe) {
+		index.register(scribe);
 	}
 
 	/**
 	 * <p>
-	 * Registers an experimental component marshaller. Can also be used to
-	 * override the marshaller of a standard component (such as VEVENT). Calling
-	 * this method is the same as calling:
+	 * Registers an experimental component scribe. Can also be used to override
+	 * the scribe of a standard component (such as VEVENT). Calling this method
+	 * is the same as calling:
 	 * </p>
 	 * <p>
-	 * {@code getRegistrar().register(marshaller)}.
+	 * {@code getScribeIndex().register(scribe)}.
 	 * </p>
-	 * @param marshaller the marshaller to register
+	 * @param scribe the scribe to register
 	 */
-	public void registerMarshaller(ICalComponentScribe<? extends ICalComponent> marshaller) {
-		registrar.register(marshaller);
+	public void registerScribe(ICalComponentScribe<? extends ICalComponent> scribe) {
+		index.register(scribe);
 	}
 
 	/**
-	 * Gets the object that manages the component/property marshaller objects.
-	 * @return the marshaller registrar
+	 * Gets the object that manages the component/property scribes.
+	 * @return the scribe index
 	 */
-	public ICalMarshallerRegistrar getRegistrar() {
-		return registrar;
+	public ScribeIndex getScribeIndex() {
+		return index;
 	}
 
 	/**
-	 * Sets the object that manages the component/property marshaller objects.
-	 * @param registrar the marshaller registrar
+	 * Sets the object that manages the component/property scribes.
+	 * @param scribe the scribe index
 	 */
-	public void setRegistrar(ICalMarshallerRegistrar registrar) {
-		this.registrar = registrar;
+	public void setScribeIndex(ScribeIndex scribe) {
+		this.index = scribe;
 	}
 
 	/**
 	 * Writes an iCalendar object to the data stream.
 	 * @param ical the iCalendar object to write
-	 * @throws IllegalArgumentException if the marshaller class for a component
-	 * or property object cannot be found (only happens when an experimental
-	 * property/component marshaller is not registered with the
-	 * {@code registerMarshaller} method.)
+	 * @throws IllegalArgumentException if the scribe class for a component or
+	 * property object cannot be found (only happens when an experimental
+	 * property/component scribe is not registered with the
+	 * {@code registerScribe} method.)
 	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	public void write(ICalendar ical) throws IOException {
@@ -294,18 +294,18 @@ public class ICalWriter implements Closeable, Flushable {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeComponent(ICalComponent component) throws IOException {
-		ICalComponentScribe m = registrar.getComponentMarshaller(component);
+		ICalComponentScribe m = index.getComponentScribe(component);
 		if (m == null) {
-			throw new IllegalArgumentException("No marshaller found for component class \"" + component.getClass().getName() + "\".");
+			throw new IllegalArgumentException("No scribe found for component class \"" + component.getClass().getName() + "\".");
 		}
 
 		writer.writeBeginComponent(m.getComponentName());
 
 		for (Object obj : m.getProperties(component)) {
 			ICalProperty property = (ICalProperty) obj;
-			ICalPropertyScribe pm = registrar.getPropertyMarshaller(property);
+			ICalPropertyScribe pm = index.getPropertyScribe(property);
 			if (pm == null) {
-				throw new IllegalArgumentException("No marshaller found for property class \"" + property.getClass().getName() + "\".");
+				throw new IllegalArgumentException("No scribe found for property class \"" + property.getClass().getName() + "\".");
 			}
 
 			//marshal property

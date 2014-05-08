@@ -290,7 +290,7 @@ public class JCalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		JCalWriter writer = new JCalWriter(sw);
-		writer.registerMarshaller(new SkipMeMarshaller());
+		writer.registerScribe(new SkipMeMarshaller());
 		writer.write(ical);
 		writer.close();
 
@@ -316,7 +316,7 @@ public class JCalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		JCalWriter writer = new JCalWriter(sw);
-		writer.registerMarshaller(new MyVersionMarshaller());
+		writer.registerScribe(new MyVersionMarshaller());
 		writer.write(ical);
 		writer.close();
 
@@ -373,7 +373,7 @@ public class JCalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		JCalWriter writer = new JCalWriter(sw);
-		writer.registerMarshaller(new TestPropertyMarshaller());
+		writer.registerScribe(new TestPropertyMarshaller());
 		writer.write(ical);
 		writer.close();
 
@@ -434,7 +434,7 @@ public class JCalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		JCalWriter writer = new JCalWriter(sw);
-		writer.registerMarshaller(new PartyMarshaller());
+		writer.registerScribe(new PartyMarshaller());
 		writer.write(ical);
 		writer.close();
 

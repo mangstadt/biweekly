@@ -32,7 +32,7 @@ import biweekly.component.RawComponent;
  */
 public class RawComponentScribe extends ICalComponentScribe<RawComponent> {
 	/**
-	 * Creates a new raw component marshaller.
+	 * Creates a new raw component scribe.
 	 * @param componentName the component's name (e.g. "X-PARTY")
 	 */
 	public RawComponentScribe(String componentName) {

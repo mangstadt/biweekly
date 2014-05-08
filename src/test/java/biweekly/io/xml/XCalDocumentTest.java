@@ -400,7 +400,7 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		xcal.registerMarshaller(new CompanyMarshaller());
+		xcal.registerScribe(new CompanyMarshaller());
 		ICalendar ical = xcal.parseFirst();
 
 		assertEquals(1, xcal.getParseWarnings().size());
@@ -452,7 +452,7 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		xcal.registerMarshaller(new CompanyMarshaller());
+		xcal.registerScribe(new CompanyMarshaller());
 		ICalendar ical = xcal.parseFirst();
 
 		assertEquals(1, xcal.getParseWarnings().size());
@@ -479,7 +479,7 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		xcal.registerMarshaller(new CompanyMarshaller());
+		xcal.registerScribe(new CompanyMarshaller());
 		ICalendar ical = xcal.parseFirst();
 
 		assertEquals(1, xcal.getParseWarnings().size());
@@ -601,7 +601,7 @@ public class XCalDocumentTest {
 		ical.addComponent(party);
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.registerMarshaller(new PartyMarshaller());
+		xcal.registerScribe(new PartyMarshaller());
 		xcal.add(ical);
 
 		Document actual = xcal.getDocument();
@@ -629,7 +629,7 @@ public class XCalDocumentTest {
 		ical.addProperty(new Company("John Doe"));
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.registerMarshaller(new CompanyMarshaller());
+		xcal.registerScribe(new CompanyMarshaller());
 		xcal.add(ical);
 
 		Document actual = xcal.getDocument();
@@ -688,7 +688,7 @@ public class XCalDocumentTest {
 		ical.addProperty(new Company("skip-me"));
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.registerMarshaller(new CompanyMarshaller());
+		xcal.registerScribe(new CompanyMarshaller());
 		xcal.add(ical);
 
 		Document actual = xcal.getDocument();

@@ -1,4 +1,4 @@
-package biweekly.io;
+package biweekly.io.scribe;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -101,24 +101,24 @@ import biweekly.property.Xml;
 
 /**
  * <p>
- * Manages a listing of component and property marshallers. This is useful for
- * injecting the marshallers of any experimental components or properties you
- * have defined into a reader or writer object. The same object instance can be
+ * Manages a listing of component and property scribes. This is useful for
+ * injecting the scribes of any experimental components or properties you have
+ * defined into a reader or writer object. The same object instance can be
  * reused and injected into multiple reader/writer classes.
  * </p>
  * <p>
  * <b>Example:</b>
  * 
  * <pre class="brush:java">
- * //init the registrar
- * ICalMarshallerRegistrar registrar = new ICalMarshallerRegistrar();
- * registrar.register(new CustomPropertyMarshaller());
- * registrar.register(new AnotherCustomPropertyMarshaller());
- * registrar.register(new CustomComponentMarshaller());
+ * //init the index
+ * ScribeIndex index = new ScribeIndex();
+ * index.register(new CustomPropertyScribe());
+ * index.register(new AnotherCustomPropertyScribe());
+ * index.register(new CustomComponentScribe());
  * 
  * //inject into a reader class
  * ICalReader textReader = new ICalReader(...);
- * textReader.setRegistrar(registrar);
+ * textReader.setRegistrar(index);
  * List&lt;ICalendar&gt; icals = new ArrayList&lt;ICalendar&gt;();
  * ICalendar ical;
  * while ((ical = textReader.readNext()) != null){
@@ -127,7 +127,7 @@ import biweekly.property.Xml;
  * 
  * //inject the same instance in another reader/writer class
  * JCalWriter writer = new JCalWriter(...);
- * writer.setRegistrar(registrar);
+ * writer.setRegistrar(index);
  * for (ICalendar ical : icals){
  *   writer.write(ical);
  * }
@@ -136,8 +136,8 @@ import biweekly.property.Xml;
  * </p>
  * @author Michael Angstadt
  */
-public class ICalMarshallerRegistrar {
-	//define standard component marshallers
+public class ScribeIndex {
+	//define standard component scribes
 	private static final Map<String, ICalComponentScribe<? extends ICalComponent>> standardCompByName = new HashMap<String, ICalComponentScribe<? extends ICalComponent>>();
 	private static final Map<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>> standardCompByClass = new HashMap<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>>();
 	static {
@@ -152,7 +152,7 @@ public class ICalMarshallerRegistrar {
 		registerStandard(new DaylightSavingsTimeScribe());
 	}
 
-	//define standard property marshallers
+	//define standard property scribes
 	private static final Map<String, ICalPropertyScribe<? extends ICalProperty>> standardPropByName = new HashMap<String, ICalPropertyScribe<? extends ICalProperty>>();
 	private static final Map<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>> standardPropByClass = new HashMap<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>>();
 	private static final Map<QName, ICalPropertyScribe<? extends ICalProperty>> standardPropByQName = new HashMap<QName, ICalPropertyScribe<? extends ICalProperty>>();
@@ -220,12 +220,11 @@ public class ICalMarshallerRegistrar {
 	private final Map<QName, ICalPropertyScribe<? extends ICalProperty>> experimentalPropByQName = new HashMap<QName, ICalPropertyScribe<? extends ICalProperty>>(0);
 
 	/**
-	 * Gets a component marshaller by name.
+	 * Gets a component scribe by name.
 	 * @param componentName the component name (e.g. "VEVENT")
-	 * @return the component marshaller or a {@link RawComponentScribe} if
-	 * not found
+	 * @return the component scribe or a {@link RawComponentScribe} if not found
 	 */
-	public ICalComponentScribe<? extends ICalComponent> getComponentMarshaller(String componentName) {
+	public ICalComponentScribe<? extends ICalComponent> getComponentScribe(String componentName) {
 		componentName = componentName.toUpperCase();
 
 		ICalComponentScribe<? extends ICalComponent> marshaller = experimentalCompByName.get(componentName);
@@ -242,12 +241,11 @@ public class ICalMarshallerRegistrar {
 	}
 
 	/**
-	 * Gets a property marshaller by name.
+	 * Gets a property scribe by name.
 	 * @param propertyName the property name (e.g. "VERSION")
-	 * @return the property marshaller or a {@link RawPropertyScribe} if not
-	 * found
+	 * @return the property scribe or a {@link RawPropertyScribe} if not found
 	 */
-	public ICalPropertyScribe<? extends ICalProperty> getPropertyMarshaller(String propertyName) {
+	public ICalPropertyScribe<? extends ICalProperty> getPropertyScribe(String propertyName) {
 		propertyName = propertyName.toUpperCase();
 
 		ICalPropertyScribe<? extends ICalProperty> marshaller = experimentalPropByName.get(propertyName);
@@ -264,11 +262,11 @@ public class ICalMarshallerRegistrar {
 	}
 
 	/**
-	 * Gets a component marshaller by class.
+	 * Gets a component scribe by class.
 	 * @param clazz the component class
-	 * @return the component marshaller or null if not found
+	 * @return the component scribe or null if not found
 	 */
-	public ICalComponentScribe<? extends ICalComponent> getComponentMarshaller(Class<? extends ICalComponent> clazz) {
+	public ICalComponentScribe<? extends ICalComponent> getComponentScribe(Class<? extends ICalComponent> clazz) {
 		ICalComponentScribe<? extends ICalComponent> marshaller = experimentalCompByClass.get(clazz);
 		if (marshaller != null) {
 			return marshaller;
@@ -278,11 +276,11 @@ public class ICalMarshallerRegistrar {
 	}
 
 	/**
-	 * Gets a property marshaller by class.
+	 * Gets a property scribe by class.
 	 * @param clazz the property class
-	 * @return the property marshaller or null if not found
+	 * @return the property scribe or null if not found
 	 */
-	public ICalPropertyScribe<? extends ICalProperty> getPropertyMarshaller(Class<? extends ICalProperty> clazz) {
+	public ICalPropertyScribe<? extends ICalProperty> getPropertyScribe(Class<? extends ICalProperty> clazz) {
 		ICalPropertyScribe<? extends ICalProperty> marshaller = experimentalPropByClass.get(clazz);
 		if (marshaller != null) {
 			return marshaller;
@@ -292,39 +290,39 @@ public class ICalMarshallerRegistrar {
 	}
 
 	/**
-	 * Gets the appropriate component marshaller for a given component instance.
+	 * Gets the appropriate component scribe for a given component instance.
 	 * @param component the component instance
-	 * @return the component marshaller or null if not found
+	 * @return the component scribe or null if not found
 	 */
-	public ICalComponentScribe<? extends ICalComponent> getComponentMarshaller(ICalComponent component) {
+	public ICalComponentScribe<? extends ICalComponent> getComponentScribe(ICalComponent component) {
 		if (component instanceof RawComponent) {
 			RawComponent raw = (RawComponent) component;
 			return new RawComponentScribe(raw.getName());
 		}
 
-		return getComponentMarshaller(component.getClass());
+		return getComponentScribe(component.getClass());
 	}
 
 	/**
-	 * Gets the appropriate property marshaller for a given property instance.
+	 * Gets the appropriate property scribe for a given property instance.
 	 * @param property the property instance
-	 * @return the property marshaller or null if not found
+	 * @return the property scribe or null if not found
 	 */
-	public ICalPropertyScribe<? extends ICalProperty> getPropertyMarshaller(ICalProperty property) {
+	public ICalPropertyScribe<? extends ICalProperty> getPropertyScribe(ICalProperty property) {
 		if (property instanceof RawProperty) {
 			RawProperty raw = (RawProperty) property;
 			return new RawPropertyScribe(raw.getName());
 		}
 
-		return getPropertyMarshaller(property.getClass());
+		return getPropertyScribe(property.getClass());
 	}
 
 	/**
-	 * Gets a property marshaller by XML local name and namespace.
+	 * Gets a property scribe by XML local name and namespace.
 	 * @param qname the XML local name and namespace
-	 * @return the property marshaller or a {@link XmlScribe} if not found
+	 * @return the property scribe or a {@link XmlScribe} if not found
 	 */
-	public ICalPropertyScribe<? extends ICalProperty> getPropertyMarshaller(QName qname) {
+	public ICalPropertyScribe<? extends ICalProperty> getPropertyScribe(QName qname) {
 		ICalPropertyScribe<? extends ICalProperty> marshaller = experimentalPropByQName.get(qname);
 		if (marshaller != null) {
 			return marshaller;
@@ -339,53 +337,53 @@ public class ICalMarshallerRegistrar {
 			return new RawPropertyScribe(qname.getLocalPart().toUpperCase());
 		}
 
-		return getPropertyMarshaller(Xml.class);
+		return getPropertyScribe(Xml.class);
 	}
 
 	/**
-	 * Registers a component marshaller.
-	 * @param marshaller the marshaller to register
+	 * Registers a component scribe.
+	 * @param scribe the scribe to register
 	 */
-	public void register(ICalComponentScribe<? extends ICalComponent> marshaller) {
-		experimentalCompByName.put(marshaller.getComponentName().toUpperCase(), marshaller);
-		experimentalCompByClass.put(marshaller.getComponentClass(), marshaller);
+	public void register(ICalComponentScribe<? extends ICalComponent> scribe) {
+		experimentalCompByName.put(scribe.getComponentName().toUpperCase(), scribe);
+		experimentalCompByClass.put(scribe.getComponentClass(), scribe);
 	}
 
 	/**
-	 * Registers a property marshaller.
-	 * @param marshaller the marshaller to register
+	 * Registers a property scribe.
+	 * @param scribe the scribe to register
 	 */
-	public void register(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-		experimentalPropByName.put(marshaller.getPropertyName().toUpperCase(), marshaller);
-		experimentalPropByClass.put(marshaller.getPropertyClass(), marshaller);
-		experimentalPropByQName.put(marshaller.getQName(), marshaller);
+	public void register(ICalPropertyScribe<? extends ICalProperty> scribe) {
+		experimentalPropByName.put(scribe.getPropertyName().toUpperCase(), scribe);
+		experimentalPropByClass.put(scribe.getPropertyClass(), scribe);
+		experimentalPropByQName.put(scribe.getQName(), scribe);
 	}
 
 	/**
-	 * Unregisters a component marshaller.
-	 * @param marshaller the marshaller to unregister
+	 * Unregisters a component scribe.
+	 * @param scribe the scribe to unregister
 	 */
-	public void unregister(ICalComponentScribe<? extends ICalComponent> marshaller) {
-		experimentalCompByName.remove(marshaller.getComponentName().toUpperCase());
-		experimentalCompByClass.remove(marshaller.getComponentClass());
+	public void unregister(ICalComponentScribe<? extends ICalComponent> scribe) {
+		experimentalCompByName.remove(scribe.getComponentName().toUpperCase());
+		experimentalCompByClass.remove(scribe.getComponentClass());
 	}
 
 	/**
-	 * Unregisters a property marshaller
-	 * @param marshaller the marshaller to unregister
+	 * Unregisters a property scribe
+	 * @param scribe the scribe to unregister
 	 */
-	public void unregister(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-		experimentalPropByName.remove(marshaller.getPropertyName().toUpperCase());
-		experimentalPropByClass.remove(marshaller.getPropertyClass());
-		experimentalPropByQName.remove(marshaller.getQName());
+	public void unregister(ICalPropertyScribe<? extends ICalProperty> scribe) {
+		experimentalPropByName.remove(scribe.getPropertyName().toUpperCase());
+		experimentalPropByClass.remove(scribe.getPropertyClass());
+		experimentalPropByQName.remove(scribe.getQName());
 	}
 
 	/**
-	 * Convenience method for getting the marshaller of the root iCalendar
-	 * component ("VCALENDAR").
-	 * @return the marshaller
+	 * Convenience method for getting the scribe of the root iCalendar component
+	 * ("VCALENDAR").
+	 * @return the scribe
 	 */
-	public static ICalendarScribe getICalendarMarshaller() {
+	public static ICalendarScribe getICalendarScribe() {
 		return (ICalendarScribe) standardCompByClass.get(ICalendar.class);
 	}
 
