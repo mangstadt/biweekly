@@ -1,6 +1,5 @@
 package biweekly.io;
 
-import biweekly.ICalException;
 import biweekly.Warning;
 
 /*
@@ -35,7 +34,7 @@ import biweekly.Warning;
  * @author Michael Angstadt
  */
 @SuppressWarnings("serial")
-public class CannotParseException extends ICalException {
+public class CannotParseException extends RuntimeException {
 	private final Warning warning;
 
 	/**
