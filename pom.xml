@@ -204,6 +204,24 @@
 					<targetJdk>${java.version}</targetJdk>
 				</configuration>
 			</plugin>
+
+			<!-- 
+			Mutation Testing
+			To run: mvn pitest:mutationCoverage
+			-->
+			<plugin>
+				<groupId>org.pitest</groupId>
+				<artifactId>pitest-maven</artifactId>
+				<version>0.33</version>
+				<configuration>
+					<targetClasses>
+						<param>biweekly.*</param>
+					</targetClasses>
+					<targetTests>
+						<param>biweekly.*</param>
+					</targetTests>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
