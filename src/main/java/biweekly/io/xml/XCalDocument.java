@@ -31,10 +31,10 @@ import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
-import biweekly.Messages;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseWarnings;
 import biweekly.io.SkipMeException;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
@@ -158,7 +158,7 @@ public class XCalDocument {
 	}
 
 	private ScribeIndex index = new ScribeIndex();
-	private final List<List<String>> parseWarnings = new ArrayList<List<String>>();
+	private final List<ParseWarnings> parseWarnings = new ArrayList<ParseWarnings>();
 	private Document document;
 	private Element root;
 
@@ -325,7 +325,11 @@ public class XCalDocument {
 	 * @see #parseFirst
 	 */
 	public List<List<String>> getParseWarnings() {
-		return parseWarnings;
+		List<List<String>> warnings = new ArrayList<List<String>>();
+		for (ParseWarnings pw : parseWarnings) {
+			warnings.add(pw.copy());
+		}
+		return warnings;
 	}
 
 	/**
@@ -341,7 +345,7 @@ public class XCalDocument {
 
 		List<ICalendar> icals = new ArrayList<ICalendar>();
 		for (Element vcalendarElement : getVCalendarElements()) {
-			List<String> warnings = new ArrayList<String>();
+			ParseWarnings warnings = new ParseWarnings();
 			ICalendar ical = parseICal(vcalendarElement, warnings);
 			icals.add(ical);
 			this.parseWarnings.add(warnings);
@@ -361,7 +365,7 @@ public class XCalDocument {
 			return null;
 		}
 
-		List<String> warnings = new ArrayList<String>();
+		ParseWarnings warnings = new ParseWarnings();
 		parseWarnings.add(warnings);
 
 		List<Element> vcalendarElements = getVCalendarElements();
@@ -588,7 +592,7 @@ public class XCalDocument {
 		return parametersWrapperElement;
 	}
 
-	private ICalendar parseICal(Element icalElement, List<String> warnings) {
+	private ICalendar parseICal(Element icalElement, ParseWarnings warnings) {
 		ICalComponent root = parseComponent(icalElement, warnings);
 
 		ICalendar ical;
@@ -602,7 +606,7 @@ public class XCalDocument {
 		return ical;
 	}
 
-	private ICalComponent parseComponent(Element componentElement, List<String> warnings) {
+	private ICalComponent parseComponent(Element componentElement, ParseWarnings warnings) {
 		//create the component object
 		ICalComponentScribe<? extends ICalComponent> m = index.getComponentScribe(componentElement.getLocalName());
 		ICalComponent component = m.emptyInstance();
@@ -632,7 +636,7 @@ public class XCalDocument {
 		return component;
 	}
 
-	private ICalProperty parseProperty(Element propertyElement, List<String> warnings) {
+	private ICalProperty parseProperty(Element propertyElement, ParseWarnings warnings) {
 		ICalParameters parameters = parseParameters(propertyElement);
 		String propertyName = propertyElement.getLocalName();
 		QName qname = new QName(propertyElement.getNamespaceURI(), propertyName);
@@ -644,15 +648,15 @@ public class XCalDocument {
 			Result<? extends ICalProperty> result = m.parseXml(propertyElement, parameters);
 
 			for (Warning warning : result.getWarnings()) {
-				addWarning(propertyName, warnings, warning);
+				warnings.add(null, propertyName, warning);
 			}
 
 			property = result.getProperty();
 		} catch (SkipMeException e) {
-			addWarning(propertyName, warnings, Warning.parse(0, e.getMessage()));
+			warnings.add(null, propertyName, 0, e.getMessage());
 			return null;
 		} catch (CannotParseException e) {
-			addWarning(propertyName, warnings, Warning.parse(16, e.getMessage()));
+			warnings.add(null, propertyName, 16, e.getMessage());
 		}
 
 		//unmarshal as an XML property
@@ -662,7 +666,7 @@ public class XCalDocument {
 			Result<? extends ICalProperty> result = m.parseXml(propertyElement, parameters);
 
 			for (Warning warning : result.getWarnings()) {
-				addWarning(propertyName, warnings, warning);
+				warnings.add(null, propertyName, warning);
 			}
 
 			property = result.getProperty();
@@ -724,11 +728,6 @@ public class XCalDocument {
 			}
 		}
 		return elements;
-	}
-
-	private void addWarning(String propertyName, List<String> warnings, Warning warning) {
-		String message = Messages.INSTANCE.getMessage("parse.xml", propertyName, warning);
-		warnings.add(message);
 	}
 
 	@Override

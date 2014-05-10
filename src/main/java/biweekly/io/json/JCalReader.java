@@ -17,10 +17,10 @@ import java.util.Map;
 
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
-import biweekly.Messages;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseWarnings;
 import biweekly.io.SkipMeException;
 import biweekly.io.json.JCalRawReader.JCalDataStreamListener;
 import biweekly.io.scribe.ScribeIndex;
@@ -86,7 +86,7 @@ public class JCalReader implements Closeable {
 	private static final ICalendarScribe icalMarshaller = ScribeIndex.getICalendarScribe();
 	private ScribeIndex index = new ScribeIndex();
 	private final JCalRawReader reader;
-	private final List<String> warnings = new ArrayList<String>();
+	private final ParseWarnings warnings = new ParseWarnings();
 
 	/**
 	 * Creates a jCard reader.
@@ -127,7 +127,7 @@ public class JCalReader implements Closeable {
 	 * @return the warnings or empty list if there were no warnings
 	 */
 	public List<String> getWarnings() {
-		return new ArrayList<String>(warnings);
+		return warnings.copy();
 	}
 
 	/**
@@ -196,14 +196,6 @@ public class JCalReader implements Closeable {
 		return listener.getICalendar();
 	}
 
-	private void addWarning(String propertyName, Warning warning) {
-		String key = (propertyName == null) ? "parse.line" : "parse.lineWithProp";
-		int line = reader.getLineNum();
-
-		String message = Messages.INSTANCE.getMessage(key, line, warning, propertyName);
-		warnings.add(message);
-	}
-
 	//@Override
 	public void close() throws IOException {
 		reader.close();
@@ -223,21 +215,21 @@ public class JCalReader implements Closeable {
 				Result<? extends ICalProperty> result = m.parseJson(value, dataType, parameters);
 
 				for (Warning warning : result.getWarnings()) {
-					addWarning(propertyName, warning);
+					warnings.add(reader.getLineNum(), propertyName, warning);
 				}
 
 				property = result.getProperty();
 			} catch (SkipMeException e) {
-				addWarning(propertyName, Warning.parse(0, e.getMessage()));
+				warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());
 			} catch (CannotParseException e) {
 				Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseJson(value, dataType, parameters);
 				for (Warning warning : result.getWarnings()) {
-					addWarning(propertyName, warning);
+					warnings.add(reader.getLineNum(), propertyName, warning);
 				}
 				property = result.getProperty();
 
 				String valueStr = ((RawProperty) property).getValue();
-				addWarning(propertyName, Warning.parse(1, valueStr, e.getMessage()));
+				warnings.add(reader.getLineNum(), propertyName, 1, valueStr, e.getMessage());
 			}
 
 			if (property != null) {
