@@ -44,13 +44,16 @@ import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.io.scribe.component.ICalComponentScribe;
+import biweekly.io.scribe.property.CannotParseScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
+import biweekly.io.scribe.property.SkipMeScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.CalendarScale;
 import biweekly.property.DateStart;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceDates;
+import biweekly.property.SkipMeProperty;
 import biweekly.property.Summary;
 import biweekly.property.Version;
 import biweekly.property.Xml;
@@ -443,24 +446,27 @@ public class XCalDocumentTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
 				"<properties>" +
-					"<m:company xmlns:m=\"http://example.com\">" +
-						"<m:boss>skip-me</m:boss>" +
-					"</m:company>" +
+					"<skipme><unknown>value</unknown></skipme>" +
+					"<x-foo><unknown>bar</unknown></x-foo>" +
 				"</properties>" +
 			"</vcalendar>" +
 		"</icalendar>";
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		xcal.registerScribe(new CompanyMarshaller());
+		xcal.registerScribe(new SkipMeScribe());
 		ICalendar ical = xcal.parseFirst();
+
+		assertEquals(0, ical.getComponents().size());
+		assertEquals(1, ical.getProperties().size());
+
+		RawProperty property = ical.getExperimentalProperty("X-FOO");
+		assertNull(property.getDataType());
+		assertEquals("x-foo", property.getName());
+		assertEquals("bar", property.getValue());
 
 		assertEquals(1, xcal.getParseWarnings().size());
 		assertWarnings(1, xcal.getParseWarnings().get(0));
-
-		Company prop = ical.getProperty(Company.class);
-		assertNull(prop);
-		assertEquals(0, ical.getProperties().size());
 	}
 
 	@Test
@@ -470,26 +476,31 @@ public class XCalDocumentTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
 				"<properties>" +
-					"<m:company xmlns:m=\"http://example.com\">" +
-						"<m:boss>don't-parse-me</m:boss>" +
-					"</m:company>" +
+					"<cannotparse><unknown>value</unknown></cannotparse>" +
+					"<x-foo><unknown>bar</unknown></x-foo>" +
 				"</properties>" +
 			"</vcalendar>" +
 		"</icalendar>";
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		xcal.registerScribe(new CompanyMarshaller());
+		xcal.registerScribe(new CannotParseScribe());
 		ICalendar ical = xcal.parseFirst();
+
+		assertEquals(0, ical.getComponents().size());
+		assertEquals(2, ical.getProperties().size());
+
+		RawProperty property = ical.getExperimentalProperty("x-foo");
+		assertEquals(null, property.getDataType());
+		assertEquals("x-foo", property.getName());
+		assertEquals("bar", property.getValue());
+
+		Xml prop = ical.getProperty(Xml.class);
+		Document expected = XmlUtils.toDocument("<cannotparse xmlns=\"" + XCAL_NS + "\"><unknown>value</unknown></cannotparse>");
+		assertXMLEqual(expected, prop.getValue());
 
 		assertEquals(1, xcal.getParseWarnings().size());
 		assertWarnings(1, xcal.getParseWarnings().get(0));
-
-		assertNull(ical.getProperty(Company.class));
-
-		Xml prop = ical.getProperty(Xml.class);
-		Document expected = XmlUtils.toDocument("<m:company xmlns:m=\"http://example.com\"><m:boss>don't-parse-me</m:boss></m:company>");
-		assertXMLEqual(expected, prop.getValue());
 	}
 
 	@Test
@@ -685,10 +696,11 @@ public class XCalDocumentTest {
 	public void add_skipMeException() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
-		ical.addProperty(new Company("skip-me"));
+		ical.addProperty(new SkipMeProperty());
+		ical.addExperimentalProperty("X-FOO", "bar");
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.registerScribe(new CompanyMarshaller());
+		xcal.registerScribe(new SkipMeScribe());
 		xcal.add(ical);
 
 		Document actual = xcal.getDocument();
@@ -696,6 +708,9 @@ public class XCalDocumentTest {
 		Document expected = XmlUtils.toDocument(
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
+				"<properties>" +
+					"<x-foo><unknown>bar</unknown></x-foo>" +
+				"</properties>" +
 			"</vcalendar>" +
 		"</icalendar>");
 		//@formatter:on

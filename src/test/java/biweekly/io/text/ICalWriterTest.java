@@ -28,9 +28,9 @@ import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
 import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
-import biweekly.io.SkipMeException;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
+import biweekly.io.scribe.property.SkipMeScribe;
 import biweekly.parameter.CalendarUserType;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.ParticipationStatus;
@@ -40,6 +40,7 @@ import biweekly.property.Attendee;
 import biweekly.property.Classification;
 import biweekly.property.FreeBusy;
 import biweekly.property.ICalProperty;
+import biweekly.property.SkipMeProperty;
 import biweekly.property.Status;
 import biweekly.property.Summary;
 import biweekly.property.Trigger;
@@ -256,24 +257,25 @@ public class ICalWriterTest {
 	@Test
 	public void skipMeException() throws Exception {
 		ICalendar ical = new ICalendar();
-		ical.addProperty(new TestProperty("value"));
+		ical.getProperties().clear();
+		ical.addProperty(new SkipMeProperty());
+		ical.addExperimentalProperty("X-FOO", "bar");
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw);
-		writer.registerScribe(new SkipMeMarshaller());
+		writer.registerScribe(new SkipMeScribe());
 		writer.write(ical);
 		writer.close();
 
 		//@formatter:off
 		String expected = 
 		"BEGIN:VCALENDAR\r\n" +
-			"VERSION:2\\.0\r\n" +
-			"PRODID:.*?\r\n" +
+			"X-FOO:bar\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
 		String actual = sw.toString();
-		assertRegex(expected, actual);
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -707,22 +709,6 @@ public class ICalWriterTest {
 		@Override
 		protected String _writeText(TestProperty property) {
 			return property.getValue();
-		}
-
-		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
-			return new TestProperty(value);
-		}
-	}
-
-	private class SkipMeMarshaller extends ICalPropertyScribe<TestProperty> {
-		public SkipMeMarshaller() {
-			super(TestProperty.class, "NAME", null);
-		}
-
-		@Override
-		protected String _writeText(TestProperty property) {
-			throw new SkipMeException("Skipped");
 		}
 
 		@Override

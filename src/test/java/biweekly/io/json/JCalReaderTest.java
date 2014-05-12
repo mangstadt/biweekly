@@ -31,10 +31,10 @@ import biweekly.component.RawComponent;
 import biweekly.component.StandardTime;
 import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
-import biweekly.io.CannotParseException;
-import biweekly.io.SkipMeException;
 import biweekly.io.scribe.component.ICalComponentScribe;
+import biweekly.io.scribe.property.CannotParseScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
+import biweekly.io.scribe.property.SkipMeScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
@@ -422,7 +422,8 @@ public class JCalReaderTest {
 		String json =
 		"[\"vcalendar\"," +
 			"[" +
-				"[\"x-company\", {}, \"text\", \"skip-me\"]" +
+				"[\"skipme\", {}, \"text\", \"value\"]," +
+				"[\"x-foo\", {}, \"text\", \"bar\"]" +
 			"]," +
 			"[" +
 			"]" +
@@ -430,11 +431,16 @@ public class JCalReaderTest {
 		//@formatter:on
 
 		JCalReader reader = new JCalReader(json);
-		reader.registerScribe(new CompanyMarshaller());
+		reader.registerScribe(new SkipMeScribe());
 		ICalendar ical = reader.readNext();
 
-		assertEquals(0, ical.getProperties().size());
 		assertEquals(0, ical.getComponents().size());
+		assertEquals(1, ical.getProperties().size());
+
+		RawProperty property = ical.getExperimentalProperty("x-foo");
+		assertEquals(ICalDataType.TEXT, property.getDataType());
+		assertEquals("X-FOO", property.getName());
+		assertEquals("bar", property.getValue());
 
 		assertWarnings(1, reader.getWarnings());
 
@@ -447,7 +453,8 @@ public class JCalReaderTest {
 		String json =
 		"[\"vcalendar\"," +
 			"[" +
-				"[\"x-company\", {}, \"text\", \"don't-parse-me-bro\"]" +
+				"[\"cannotparse\", {}, \"text\", \"value\"]," +
+				"[\"x-foo\", {}, \"text\", \"bar\"]" +
 			"]," +
 			"[" +
 			"]" +
@@ -455,16 +462,21 @@ public class JCalReaderTest {
 		//@formatter:on
 
 		JCalReader reader = new JCalReader(json);
-		reader.registerScribe(new CompanyMarshaller());
+		reader.registerScribe(new CannotParseScribe());
 		ICalendar ical = reader.readNext();
 
-		assertEquals(1, ical.getProperties().size());
-		assertNull(ical.getProperty(Company.class));
-		RawProperty company = ical.getExperimentalProperty("x-company");
-		assertEquals(ICalDataType.TEXT, company.getDataType());
-		assertEquals("don't-parse-me-bro", company.getValue());
-
 		assertEquals(0, ical.getComponents().size());
+		assertEquals(2, ical.getProperties().size());
+
+		RawProperty property = ical.getExperimentalProperty("cannotparse");
+		assertEquals(ICalDataType.TEXT, property.getDataType());
+		assertEquals("cannotparse", property.getName());
+		assertEquals("value", property.getValue());
+
+		property = ical.getExperimentalProperty("x-foo");
+		assertEquals(ICalDataType.TEXT, property.getDataType());
+		assertEquals("X-FOO", property.getName());
+		assertEquals("bar", property.getValue());
 
 		assertWarnings(1, reader.getWarnings());
 
@@ -667,12 +679,6 @@ public class JCalReaderTest {
 		@Override
 		protected Company _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
 			String boss = value.asSingle();
-			if (boss.equals("skip-me")) {
-				throw new SkipMeException("");
-			}
-			if (boss.equals("don't-parse-me-bro")) {
-				throw new CannotParseException("");
-			}
 			return new Company(boss);
 		}
 	}

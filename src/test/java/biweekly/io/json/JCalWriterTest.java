@@ -25,14 +25,15 @@ import biweekly.component.ICalComponent;
 import biweekly.component.StandardTime;
 import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
-import biweekly.io.SkipMeException;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
+import biweekly.io.scribe.property.SkipMeScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.CalendarScale;
 import biweekly.property.DateStart;
 import biweekly.property.ICalProperty;
 import biweekly.property.RecurrenceDates;
+import biweekly.property.SkipMeProperty;
 import biweekly.property.Summary;
 import biweekly.property.Version;
 import biweekly.util.DateTimeComponents;
@@ -285,12 +286,13 @@ public class JCalWriterTest {
 	@Test
 	public void skipMeException() throws Throwable {
 		ICalendar ical = new ICalendar();
-		ical.setProductId("prodid");
-		ical.addProperty(new TestProperty("value"));
+		ical.getProperties().clear();
+		ical.addProperty(new SkipMeProperty());
+		ical.addExperimentalProperty("X-FOO", "bar");
 
 		StringWriter sw = new StringWriter();
 		JCalWriter writer = new JCalWriter(sw);
-		writer.registerScribe(new SkipMeMarshaller());
+		writer.registerScribe(new SkipMeScribe());
 		writer.write(ical);
 		writer.close();
 
@@ -298,8 +300,7 @@ public class JCalWriterTest {
 		String expected =
 		"[\"vcalendar\"," +
 			"[" +
-				"[\"version\",{},\"text\",\"2.0\"]," +
-				"[\"prodid\",{},\"text\",\"prodid\"]" +
+				"[\"x-foo\",{},\"unknown\",\"bar\"]" +
 			"]," +
 			"[" +
 			"]" +
@@ -656,22 +657,6 @@ public class JCalWriterTest {
 		@Override
 		protected JCalValue _writeJson(TestProperty property) {
 			return JCalValue.single(_writeText(property));
-		}
-	}
-
-	private class SkipMeMarshaller extends ICalPropertyScribe<TestProperty> {
-		public SkipMeMarshaller() {
-			super(TestProperty.class, "NAME", null);
-		}
-
-		@Override
-		protected String _writeText(TestProperty property) {
-			throw new SkipMeException("Skipped");
-		}
-
-		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
-			return new TestProperty(value);
 		}
 	}
 

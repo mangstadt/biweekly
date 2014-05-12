@@ -35,10 +35,10 @@ import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
 import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
-import biweekly.io.CannotParseException;
-import biweekly.io.SkipMeException;
 import biweekly.io.scribe.component.ICalComponentScribe;
+import biweekly.io.scribe.property.CannotParseScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
+import biweekly.io.scribe.property.SkipMeScribe;
 import biweekly.parameter.CalendarUserType;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.ParticipationStatus;
@@ -47,6 +47,7 @@ import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.ICalProperty;
 import biweekly.property.ProductId;
+import biweekly.property.RawProperty;
 import biweekly.property.Summary;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
@@ -627,22 +628,23 @@ public class ICalReaderTest {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
-			"PRODID:prodid\r\n" +
-			"VERSION:2.0\r\n" +
-			"X-TEST:one hundred\r\n" +
+			"SKIPME:value\r\n" +
+			"X-FOO:bar\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
-		reader.registerScribe(new TestPropertyMarshaller());
+		reader.registerScribe(new SkipMeScribe());
 
 		ICalendar icalendar = reader.readNext();
 
-		assertEquals("prodid", icalendar.getProductId().getValue());
-		assertEquals("2.0", icalendar.getVersion().getMaxVersion());
+		assertEquals(0, icalendar.getComponents().size());
+		assertEquals(1, icalendar.getProperties().size());
 
-		assertEquals(0, icalendar.getProperties(TestProperty.class).size());
-		assertEquals(0, icalendar.getExperimentalProperties().size());
+		RawProperty property = icalendar.getExperimentalProperty("X-FOO");
+		assertEquals(null, property.getDataType());
+		assertEquals("X-FOO", property.getName());
+		assertEquals("bar", property.getValue());
 
 		assertWarnings(1, reader.getWarnings());
 		assertNull(reader.readNext());
@@ -653,24 +655,28 @@ public class ICalReaderTest {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
-			"PRODID:prodid\r\n" +
-			"VERSION:2.0\r\n" +
-			"X-TEST:flower\r\n" +
+			"CANNOTPARSE:value\r\n" +
+			"X-FOO:bar\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
-		reader.registerScribe(new TestPropertyMarshaller());
+		reader.registerScribe(new CannotParseScribe());
 
 		ICalendar icalendar = reader.readNext();
 
-		assertEquals("prodid", icalendar.getProductId().getValue());
-		assertEquals("2.0", icalendar.getVersion().getMaxVersion());
+		assertEquals(0, icalendar.getComponents().size());
+		assertEquals(2, icalendar.getProperties().size());
 
-		//parsed as a RawProperty instead
-		assertEquals(0, icalendar.getProperties(TestProperty.class).size());
-		assertEquals(1, icalendar.getExperimentalProperties().size());
-		assertEquals("flower", icalendar.getExperimentalProperty("X-TEST").getValue());
+		RawProperty property = icalendar.getExperimentalProperty("CANNOTPARSE");
+		assertEquals(null, property.getDataType());
+		assertEquals("CANNOTPARSE", property.getName());
+		assertEquals("value", property.getValue());
+
+		property = icalendar.getExperimentalProperty("X-FOO");
+		assertEquals(null, property.getDataType());
+		assertEquals("X-FOO", property.getName());
+		assertEquals("bar", property.getValue());
 
 		assertWarnings(1, reader.getWarnings());
 		assertNull(reader.readNext());
@@ -1191,10 +1197,6 @@ public class ICalReaderTest {
 			} else if (value.equals("four")) {
 				number = 4;
 				warnings.add(new Warning("too high"));
-			} else if (value.equals("one hundred")) {
-				throw new SkipMeException("really too high");
-			} else {
-				throw new CannotParseException("wat");
 			}
 			prop.setNumber(number);
 			prop.setParsedDataType(dataType);
