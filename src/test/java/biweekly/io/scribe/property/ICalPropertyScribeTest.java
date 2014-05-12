@@ -547,6 +547,10 @@ public class ICalPropertyScribeTest {
 		
 		//no child elements
 		sensei.assertParseXml("value").warnings(1).run(has(null, "value"));
+		
+		//unknown data type
+		sensei.assertParseXml("<unknown>value</unknown>"
+		).warnings(1).run(has(null, "value"));
 		//@formatter:on
 	}
 

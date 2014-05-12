@@ -391,7 +391,8 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 				continue;
 			}
 
-			dataType = ICalDataType.get(child.getLocalName());
+			String dataTypeStr = child.getLocalName();
+			dataType = "unknown".equals(dataTypeStr) ? null : ICalDataType.get(dataTypeStr);
 			value = child.getTextContent();
 			break;
 		}
