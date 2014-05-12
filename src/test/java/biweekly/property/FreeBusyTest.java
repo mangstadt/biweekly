@@ -1,10 +1,12 @@
 package biweekly.property;
 
-import java.util.List;
+import static biweekly.util.TestUtils.assertValidate;
 
-import biweekly.Warning;
-import biweekly.component.ICalComponent;
-import biweekly.util.UtcOffset;
+import java.util.Date;
+
+import org.junit.Test;
+
+import biweekly.util.Duration;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -32,39 +34,44 @@ import biweekly.util.UtcOffset;
  */
 
 /**
- * Represents a property whose value is a timezone offset.
  * @author Michael Angstadt
  */
-public class UtcOffsetProperty extends ValuedProperty<UtcOffset> {
-	public UtcOffsetProperty(int hourOffset, int minuteOffset) {
-		this(new UtcOffset(hourOffset, minuteOffset));
-	}
+public class FreeBusyTest {
+	@Test
+	public void validate() {
+		FreeBusy property = new FreeBusy();
+		assertValidate(property).run(38);
 
-	public UtcOffsetProperty(UtcOffset offset) {
-		super(offset);
-	}
+		property = new FreeBusy();
+		property.addValue(null, (Date) null);
+		assertValidate(property).run(39, 40);
 
-	public Integer getHourOffset() {
-		return (value == null) ? null : value.getHour();
-	}
+		property = new FreeBusy();
+		property.addValue(new Date(), (Date) null);
+		assertValidate(property).run(40);
 
-	public Integer getMinuteOffset() {
-		return (value == null) ? null : value.getMinute();
-	}
+		property = new FreeBusy();
+		property.addValue(null, new Date());
+		assertValidate(property).run(39);
 
-	public void setValue(int hourOffset, int minuteOffset) {
-		setValue(new UtcOffset(hourOffset, minuteOffset));
-	}
+		property = new FreeBusy();
+		property.addValue(new Date(), new Date());
+		assertValidate(property).run();
 
-	@Override
-	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
-		super.validate(components, warnings);
-		if (value == null) {
-			return;
-		}
+		property = new FreeBusy();
+		property.addValue(null, (Duration) null);
+		assertValidate(property).run(39, 40);
 
-		if (value.getMinute() < 0 || value.getMinute() > 59) {
-			warnings.add(Warning.validate(34));
-		}
+		property = new FreeBusy();
+		property.addValue(new Date(), (Duration) null);
+		assertValidate(property).run(40);
+
+		property = new FreeBusy();
+		property.addValue(null, new Duration.Builder().build());
+		assertValidate(property).run(39);
+
+		property = new FreeBusy();
+		property.addValue(new Date(), new Duration.Builder().build());
+		assertValidate(property).run();
 	}
 }

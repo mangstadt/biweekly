@@ -63,7 +63,8 @@ import biweekly.util.ICalDateFormat;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-118">RFC 5545 p.118-20</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-118">RFC 5545
+ * p.118-20</a>
  */
 public class ExceptionDates extends ListProperty<Date> {
 	private boolean hasTime = true;
@@ -112,6 +113,8 @@ public class ExceptionDates extends ListProperty<Date> {
 
 	@Override
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
+		super.validate(components, warnings);
+
 		String tzid = getTimezoneId();
 		if (tzid != null && tzid.contains("/") && ICalDateFormat.parseTimeZoneId(tzid) == null) {
 			warnings.add(Warning.validate(27, tzid));

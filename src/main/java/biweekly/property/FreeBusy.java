@@ -64,7 +64,8 @@ import biweekly.util.Period;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-100">RFC 5545 p.100-1</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-100">RFC 5545
+ * p.100-1</a>
  */
 public class FreeBusy extends ICalProperty {
 	private final List<Period> values = new ArrayList<Period>();
@@ -100,7 +101,8 @@ public class FreeBusy extends ICalProperty {
 	 * property (for example, "free" or "busy"). If not set, the user should be
 	 * considered "busy".
 	 * @return the type or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-20">RFC 5545 p.20</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-20">RFC 5545
+	 * p.20</a>
 	 */
 	public FreeBusyType getType() {
 		return parameters.getFreeBusyType();
@@ -111,7 +113,8 @@ public class FreeBusy extends ICalProperty {
 	 * property (for example, "free" or "busy"). If not set, the user should be
 	 * considered "busy".
 	 * @param fbType the type or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-20">RFC 5545 p.20</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-20">RFC 5545
+	 * p.20</a>
 	 */
 	public void setType(FreeBusyType fbType) {
 		parameters.setFreeBusyType(fbType);
@@ -121,19 +124,20 @@ public class FreeBusy extends ICalProperty {
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		if (values.isEmpty()) {
 			warnings.add(Warning.validate(38));
-		} else {
-			for (Period timePeriod : values) {
-				if (timePeriod.getStartDate() == null) {
-					warnings.add(Warning.validate(39));
-					break;
-				}
-			}
+			return;
+		}
 
-			for (Period timePeriod : values) {
-				if (timePeriod.getEndDate() == null && timePeriod.getDuration() == null) {
-					warnings.add(Warning.validate(40));
-					break;
-				}
+		for (Period timePeriod : values) {
+			if (timePeriod.getStartDate() == null) {
+				warnings.add(Warning.validate(39));
+				break;
+			}
+		}
+
+		for (Period timePeriod : values) {
+			if (timePeriod.getEndDate() == null && timePeriod.getDuration() == null) {
+				warnings.add(Warning.validate(40));
+				break;
 			}
 		}
 	}

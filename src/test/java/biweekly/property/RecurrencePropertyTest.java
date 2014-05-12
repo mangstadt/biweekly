@@ -1,10 +1,13 @@
 package biweekly.property;
 
-import java.util.List;
+import static biweekly.util.TestUtils.assertValidate;
 
-import biweekly.Warning;
-import biweekly.component.ICalComponent;
-import biweekly.util.UtcOffset;
+import java.util.Date;
+
+import org.junit.Test;
+
+import biweekly.util.Recurrence;
+import biweekly.util.Recurrence.Frequency;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -32,39 +35,24 @@ import biweekly.util.UtcOffset;
  */
 
 /**
- * Represents a property whose value is a timezone offset.
  * @author Michael Angstadt
  */
-public class UtcOffsetProperty extends ValuedProperty<UtcOffset> {
-	public UtcOffsetProperty(int hourOffset, int minuteOffset) {
-		this(new UtcOffset(hourOffset, minuteOffset));
-	}
+public class RecurrencePropertyTest {
+	@Test
+	public void validate() {
+		RecurrenceProperty property = new RecurrenceProperty(null);
+		assertValidate(property).run(26);
 
-	public UtcOffsetProperty(UtcOffset offset) {
-		super(offset);
-	}
+		property = new RecurrenceProperty(new Recurrence.Builder((Frequency) null).build());
+		assertValidate(property).run(30);
 
-	public Integer getHourOffset() {
-		return (value == null) ? null : value.getHour();
-	}
+		property = new RecurrenceProperty(new Recurrence.Builder((Frequency) null).until(new Date()).count(1).build());
+		assertValidate(property).run(30, 31);
 
-	public Integer getMinuteOffset() {
-		return (value == null) ? null : value.getMinute();
-	}
+		property = new RecurrenceProperty(new Recurrence.Builder(Frequency.DAILY).until(new Date()).count(1).build());
+		assertValidate(property).run(31);
 
-	public void setValue(int hourOffset, int minuteOffset) {
-		setValue(new UtcOffset(hourOffset, minuteOffset));
-	}
-
-	@Override
-	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
-		super.validate(components, warnings);
-		if (value == null) {
-			return;
-		}
-
-		if (value.getMinute() < 0 || value.getMinute() > 59) {
-			warnings.add(Warning.validate(34));
-		}
+		property = new RecurrenceProperty(new Recurrence.Builder(Frequency.DAILY).build());
+		assertValidate(property).run();
 	}
 }

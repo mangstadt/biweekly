@@ -7,6 +7,8 @@ import static org.junit.Assert.fail;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +25,7 @@ import org.xml.sax.SAXException;
 
 import biweekly.ValidationWarnings;
 import biweekly.ValidationWarnings.WarningsGroup;
+import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
@@ -232,6 +235,66 @@ public class TestUtils {
 		Document document = xcalProperty(marshaller, innerXml);
 		Element element = XmlUtils.getRootElement(document);
 		return marshaller.parseXml(element, new ICalParameters());
+	}
+
+	/**
+	 * Asserts the validation of a property object.
+	 * @param property the property object
+	 * @return the validation checker object
+	 */
+	public static PropValidateChecker assertValidate(ICalProperty property) {
+		return new PropValidateChecker(property);
+	}
+
+	public static class PropValidateChecker {
+		private final ICalProperty property;
+		private List<ICalComponent> components = new ArrayList<ICalComponent>();
+
+		public PropValidateChecker(ICalProperty property) {
+			this.property = property;
+		}
+
+		/**
+		 * Defines the vCard instance to use (defaults to an empty vCard).
+		 * @param components the parent components
+		 * @return this
+		 */
+		public PropValidateChecker ical(List<ICalComponent> components) {
+			this.components = components;
+			return this;
+		}
+
+		/**
+		 * Performs the validation check.
+		 * @param expectedCodes the expected warning codes
+		 */
+		public void run(Integer... expectedCodes) {
+			List<Warning> warnings = property.validate(components);
+			boolean passed = checkCodes(warnings, expectedCodes);
+			if (!passed) {
+				fail("Expected codes were " + Arrays.toString(expectedCodes) + " but were actually:\n" + warnings);
+			}
+		}
+	}
+
+	private static boolean checkCodes(List<Warning> warnings, Integer... expectedCodes) {
+		if (warnings.size() != expectedCodes.length) {
+			return false;
+		}
+
+		List<Integer> actualCodes = new ArrayList<Integer>(); //don't use a Set because there can be multiple warnings with the same code
+		for (Warning warning : warnings) {
+			actualCodes.add(warning.getCode());
+		}
+
+		for (Integer code : expectedCodes) {
+			boolean found = actualCodes.remove((Object) code);
+			if (!found) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private TestUtils() {

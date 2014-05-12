@@ -147,7 +147,7 @@ public class DateOrDateTimeProperty extends ICalProperty {
 
 	@Override
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
-		if (value == null && components == null) {
+		if (value == null && rawComponents == null) {
 			warnings.add(Warning.validate(26));
 		}
 

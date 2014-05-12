@@ -1,10 +1,12 @@
 package biweekly.property;
 
-import java.util.List;
+import static biweekly.util.TestUtils.assertValidate;
 
-import biweekly.Warning;
-import biweekly.component.ICalComponent;
-import biweekly.util.UtcOffset;
+import java.util.Date;
+
+import org.junit.Test;
+
+import biweekly.util.DateTimeComponents;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -32,39 +34,33 @@ import biweekly.util.UtcOffset;
  */
 
 /**
- * Represents a property whose value is a timezone offset.
  * @author Michael Angstadt
  */
-public class UtcOffsetProperty extends ValuedProperty<UtcOffset> {
-	public UtcOffsetProperty(int hourOffset, int minuteOffset) {
-		this(new UtcOffset(hourOffset, minuteOffset));
-	}
+public class DateOrDateTimePropertyTest {
+	@Test
+	public void validate() {
+		DateOrDateTimeProperty property = new DateOrDateTimeProperty(null);
+		assertValidate(property).run(26);
 
-	public UtcOffsetProperty(UtcOffset offset) {
-		super(offset);
-	}
+		property = new DateOrDateTimeProperty(new DateTimeComponents(2010, 1, 1, 1, 1, 1, true));
+		assertValidate(property).run();
 
-	public Integer getHourOffset() {
-		return (value == null) ? null : value.getHour();
-	}
+		property = new DateOrDateTimeProperty(null, false);
+		assertValidate(property).run(26);
 
-	public Integer getMinuteOffset() {
-		return (value == null) ? null : value.getMinute();
-	}
+		property = new DateOrDateTimeProperty(new Date(), false);
+		assertValidate(property).run();
 
-	public void setValue(int hourOffset, int minuteOffset) {
-		setValue(new UtcOffset(hourOffset, minuteOffset));
-	}
+		property = new DateOrDateTimeProperty(null, true);
+		property.setTimezoneId("Foo/Bar");
+		assertValidate(property).run(26, 27);
 
-	@Override
-	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
-		super.validate(components, warnings);
-		if (value == null) {
-			return;
-		}
+		property = new DateOrDateTimeProperty(new Date(), true);
+		property.setTimezoneId("Foo/Bar");
+		assertValidate(property).run(27);
 
-		if (value.getMinute() < 0 || value.getMinute() > 59) {
-			warnings.add(Warning.validate(34));
-		}
+		property = new DateOrDateTimeProperty(new Date(), true);
+		property.setTimezoneId("America/New_York");
+		assertValidate(property).run();
 	}
 }

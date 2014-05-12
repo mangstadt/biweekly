@@ -1,9 +1,9 @@
 package biweekly.property;
 
-import java.util.List;
+import static biweekly.util.TestUtils.assertValidate;
 
-import biweekly.Warning;
-import biweekly.component.ICalComponent;
+import org.junit.Test;
+
 import biweekly.util.UtcOffset;
 
 /*
@@ -32,39 +32,21 @@ import biweekly.util.UtcOffset;
  */
 
 /**
- * Represents a property whose value is a timezone offset.
  * @author Michael Angstadt
  */
-public class UtcOffsetProperty extends ValuedProperty<UtcOffset> {
-	public UtcOffsetProperty(int hourOffset, int minuteOffset) {
-		this(new UtcOffset(hourOffset, minuteOffset));
-	}
+public class UtcOffsetPropertyTest {
+	@Test
+	public void validate() {
+		UtcOffsetProperty property = new UtcOffsetProperty(null);
+		assertValidate(property).run(26);
 
-	public UtcOffsetProperty(UtcOffset offset) {
-		super(offset);
-	}
+		property = new UtcOffsetProperty(new UtcOffset(1, -1));
+		assertValidate(property).run(34);
 
-	public Integer getHourOffset() {
-		return (value == null) ? null : value.getHour();
-	}
+		property = new UtcOffsetProperty(new UtcOffset(1, 60));
+		assertValidate(property).run(34);
 
-	public Integer getMinuteOffset() {
-		return (value == null) ? null : value.getMinute();
-	}
-
-	public void setValue(int hourOffset, int minuteOffset) {
-		setValue(new UtcOffset(hourOffset, minuteOffset));
-	}
-
-	@Override
-	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
-		super.validate(components, warnings);
-		if (value == null) {
-			return;
-		}
-
-		if (value.getMinute() < 0 || value.getMinute() > 59) {
-			warnings.add(Warning.validate(34));
-		}
+		property = new UtcOffsetProperty(new UtcOffset(1, 0));
+		assertValidate(property).run();
 	}
 }
