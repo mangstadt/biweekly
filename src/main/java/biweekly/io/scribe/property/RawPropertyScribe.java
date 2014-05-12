@@ -78,8 +78,9 @@ public class RawPropertyScribe extends ICalPropertyScribe<RawProperty> {
 				continue;
 			}
 
+			String dataTypeStr = child.getLocalName();
+			ICalDataType dataType = "unknown".equals(dataTypeStr) ? null : ICalDataType.get(dataTypeStr);
 			String value = child.getTextContent();
-			ICalDataType dataType = ICalDataType.get(child.getLocalName());
 			return new RawProperty(name, dataType, value);
 		}
 
