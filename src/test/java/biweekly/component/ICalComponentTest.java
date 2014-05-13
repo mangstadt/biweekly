@@ -10,6 +10,7 @@ import org.junit.Test;
 import biweekly.Warning;
 import biweekly.property.Description;
 import biweekly.property.Location;
+import biweekly.property.Status;
 import biweekly.property.Summary;
 
 /*
@@ -60,7 +61,6 @@ public class ICalComponentTest {
 	@Test
 	public void checkOptionalCardinality() {
 		TestComponent comp = new TestComponent();
-
 		comp.addProperty(new Summary(""));
 		comp.addProperty(new Description(""));
 		comp.addProperty(new Description(""));
@@ -70,6 +70,38 @@ public class ICalComponentTest {
 
 		//too many instances of Description
 		assertWarnings(1, warnings);
+	}
+
+	@Test
+	public void checkStatus_valid() {
+		TestComponent comp = new TestComponent();
+		comp.addProperty(Status.cancelled());
+
+		List<Warning> warnings = new ArrayList<Warning>();
+		comp.checkStatus(warnings, Status.cancelled());
+
+		assertWarnings(0, warnings);
+	}
+
+	@Test
+	public void checkStatus_invalid() {
+		TestComponent comp = new TestComponent();
+		comp.addProperty(Status.cancelled());
+
+		List<Warning> warnings = new ArrayList<Warning>();
+		comp.checkStatus(warnings, Status.completed());
+
+		assertWarnings(1, warnings);
+	}
+
+	@Test
+	public void checkStatus_null() {
+		TestComponent comp = new TestComponent();
+
+		List<Warning> warnings = new ArrayList<Warning>();
+		comp.checkStatus(warnings, Status.cancelled());
+
+		assertWarnings(0, warnings);
 	}
 
 	private class TestComponent extends ICalComponent {

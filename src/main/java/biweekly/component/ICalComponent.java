@@ -9,6 +9,7 @@ import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.Warning;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
+import biweekly.property.Status;
 import biweekly.util.ListMultimap;
 
 /*
@@ -432,6 +433,29 @@ public abstract class ICalComponent {
 				warnings.add(Warning.validate(3, clazz.getSimpleName()));
 				continue;
 			}
+		}
+	}
+
+	/**
+	 * Utility method for validating the {@link Status} property of a component.
+	 * @param warnings the list to add the warnings to
+	 * @param allowed the valid statuses
+	 */
+	protected void checkStatus(List<Warning> warnings, Status... allowed) {
+		Status actual = getProperty(Status.class);
+		if (actual == null) {
+			return;
+		}
+
+		List<String> allowedValues = new ArrayList<String>(allowed.length);
+		for (Status status : allowed) {
+			String value = status.getValue().toLowerCase();
+			allowedValues.add(value);
+		}
+
+		String actualValue = actual.getValue().toLowerCase();
+		if (!allowedValues.contains(actualValue)) {
+			warnings.add(Warning.validate(13, actual.getValue(), allowedValues));
 		}
 	}
 }
