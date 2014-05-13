@@ -809,7 +809,7 @@ public class XCalDocumentTest {
 			assertEquals("4088E990AD89CB3DBB484909", event.getUid().getValue());
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 	}
 
 	@Test
@@ -829,7 +829,7 @@ public class XCalDocumentTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 		assertExample(ical, "rfc6321-example1.xml");
 	}
 
@@ -935,7 +935,7 @@ public class XCalDocumentTest {
 			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 	}
 
 	@Test
@@ -1009,7 +1009,7 @@ public class XCalDocumentTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 		assertExample(ical, "rfc6321-example2.xml");
 	}
 

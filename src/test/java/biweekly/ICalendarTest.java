@@ -50,10 +50,10 @@ public class ICalendarTest {
 	@Test
 	public void validate() {
 		ICalendar ical = new ICalendar();
-		assertValidate(ical.validate(), ical);
+		assertValidate(ical).warn(ical, 4).run();
 
 		ical.addExperimentalComponent("X-TEST");
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 	}
 
 	@Test
@@ -74,20 +74,20 @@ public class ICalendarTest {
 		outter2.addProperty(prop3);
 		ical.addComponent(outter2);
 
-		assertValidate(ical.validate(), outter1, prop1, inner, prop2, outter2, prop3);
+		assertValidate(ical).warn(outter1, 1).warn(prop1, 2).warn(inner, 1).warn(prop2, 2).warn(outter2, 1).warn(prop3, 2).run();
 	}
 
 	private class TestComponent extends ICalComponent {
 		@Override
 		protected void validate(List<ICalComponent> components, List<Warning> warnings) {
-			warnings.add(new Warning(""));
+			warnings.add(Warning.parse(1));
 		}
 	}
 
 	private class TestProperty extends ICalProperty {
 		@Override
 		protected void validate(List<ICalComponent> components, List<Warning> warnings) {
-			warnings.add(new Warning(""));
+			warnings.add(Warning.parse(2));
 		}
 	}
 }

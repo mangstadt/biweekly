@@ -469,7 +469,7 @@ public class ICalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 		assertExample(ical, "rfc5545-example1.ics");
 	}
 
@@ -524,7 +524,7 @@ public class ICalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 		assertExample(ical, "rfc5545-example2.ics");
 	}
 
@@ -561,7 +561,7 @@ public class ICalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 		assertExample(ical, "rfc5545-example3.ics");
 	}
 
@@ -598,7 +598,7 @@ public class ICalWriterTest {
 			ical.addTodo(todo);
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 		assertExample(ical, "rfc5545-example4.ics");
 	}
 
@@ -621,7 +621,7 @@ public class ICalWriterTest {
 			ical.addJournal(journal);
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 		assertExample(ical, "rfc5545-example5.ics");
 	}
 
@@ -654,7 +654,7 @@ public class ICalWriterTest {
 			ical.addFreeBusy(freebusy);
 		}
 
-		assertValidate(ical.validate(), freebusy, freebusy); //UID and DTSTAMP missing
+		assertValidate(ical).warn(freebusy, 2, 2).run(); //UID and DTSTAMP missing
 		assertExample(ical, "rfc5545-example6.ics");
 	}
 

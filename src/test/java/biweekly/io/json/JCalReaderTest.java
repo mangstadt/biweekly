@@ -544,7 +544,7 @@ public class JCalReaderTest {
 			assertEquals(0, event.getComponents().size());
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 
 		assertNull(reader.readNext());
 	}
@@ -656,7 +656,7 @@ public class JCalReaderTest {
 			assertEquals(0, event.getComponents().size());
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 
 		assertNull(reader.readNext());
 	}

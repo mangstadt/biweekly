@@ -890,7 +890,7 @@ public class ICalReaderTest {
 			assertEquals(0, event.getComponents().size());
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 
 		assertNull(reader.readNext());
 	}
@@ -921,7 +921,7 @@ public class ICalReaderTest {
 			assertEquals(0, event.getComponents().size());
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 
 		assertNull(reader.readNext());
 	}
@@ -1008,7 +1008,7 @@ public class ICalReaderTest {
 			assertEquals(0, event.getComponents().size());
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 
 		assertNull(reader.readNext());
 	}
@@ -1046,7 +1046,7 @@ public class ICalReaderTest {
 			assertEquals(0, event.getComponents().size());
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 
 		assertNull(reader.readNext());
 	}
@@ -1093,7 +1093,7 @@ public class ICalReaderTest {
 			}
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 
 		assertNull(reader.readNext());
 	}
@@ -1122,7 +1122,7 @@ public class ICalReaderTest {
 			assertEquals(0, journal.getComponents().size());
 		}
 
-		assertValidate(ical.validate());
+		assertValidate(ical).run();
 
 		assertNull(reader.readNext());
 	}
@@ -1152,7 +1152,7 @@ public class ICalReaderTest {
 		}
 
 		//UID and DTSTAMP are missing from VFREEBUSY
-		assertValidate(ical.validate(), freebusy, freebusy);
+		assertValidate(ical).warn(freebusy, 2, 2).run();
 
 		assertNull(reader.readNext());
 	}

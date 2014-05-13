@@ -23,7 +23,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import biweekly.ValidationWarnings;
 import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
@@ -85,35 +84,6 @@ public class TestUtils {
 
 			assertWarnings(expectedSize, warnings);
 		}
-	}
-
-	/**
-	 * Asserts that a validation warnings list is correct.
-	 * @param warnings the warnings list
-	 * @param expectedPropsAndComps the property and component objects that are
-	 * expected to have warnings. The object should be added multiple times to
-	 * this vararg parameter, depending on how many warnings it is expected to
-	 * have (e.g. 3 times for 3 warnings)
-	 */
-	public static void assertValidate(ValidationWarnings warnings, Object... expectedPropsAndComps) {
-		Counts<Object> expectedCounts = new Counts<Object>();
-		for (Object obj : expectedPropsAndComps) {
-			if (!(obj instanceof ICalProperty) && !(obj instanceof ICalComponent)) {
-				fail("Bad unit test: \"TestUtils.assertValidate()\" only accepts ICalProperty and ICalComponent objects.");
-			}
-			expectedCounts.increment(obj);
-		}
-
-		Counts<Object> actualCounts = new Counts<Object>();
-		for (WarningsGroup warning : warnings) {
-			assertTrue(warning.getWarnings().size() > 0);
-			for (int i = 0; i < warning.getWarnings().size(); i++) {
-				Object obj = (warning.getProperty() == null) ? warning.getComponent() : warning.getProperty();
-				actualCounts.increment(obj);
-			}
-		}
-
-		assertEquals(warnings.toString(), expectedCounts, actualCounts);
 	}
 
 	/**
@@ -255,11 +225,12 @@ public class TestUtils {
 		}
 
 		/**
-		 * Defines the vCard instance to use (defaults to an empty vCard).
+		 * Defines the parent components of this property (defaults to no
+		 * parents).
 		 * @param components the parent components
 		 * @return this
 		 */
-		public PropValidateChecker ical(List<ICalComponent> components) {
+		public PropValidateChecker parents(List<ICalComponent> components) {
 			this.components = components;
 			return this;
 		}
@@ -274,6 +245,108 @@ public class TestUtils {
 			if (!passed) {
 				fail("Expected codes were " + Arrays.toString(expectedCodes) + " but were actually:\n" + warnings);
 			}
+		}
+	}
+
+	/**
+	 * Asserts the validation of a component object.
+	 * @param component the component object
+	 * @return the validation checker object
+	 */
+	public static CompValidateChecker assertValidate(ICalComponent component) {
+		return new CompValidateChecker(component);
+	}
+
+	public static class CompValidateChecker {
+		private final ICalComponent component;
+		private List<ICalComponent> components = new ArrayList<ICalComponent>();
+		private Map<ICalProperty, Integer[]> propertyWarnings = new HashMap<ICalProperty, Integer[]>();
+		private Map<ICalComponent, Integer[]> componentWarnings = new HashMap<ICalComponent, Integer[]>();
+
+		public CompValidateChecker(ICalComponent component) {
+			this.component = component;
+		}
+
+		/**
+		 * Defines the parent components of this property (defaults to no
+		 * parents).
+		 * @param components the parent components
+		 * @return this
+		 */
+		public CompValidateChecker parents(List<ICalComponent> components) {
+			this.components = components;
+			return this;
+		}
+
+		/**
+		 * Sets the expected warning codes for a specific property instance.
+		 * @param property the property instance
+		 * @param warnings the expected warning codes
+		 * @return this
+		 */
+		public CompValidateChecker warn(ICalProperty property, Integer... warnings) {
+			propertyWarnings.put(property, warnings);
+			return this;
+		}
+
+		/**
+		 * Sets the expected warning codes for a specific component instance.
+		 * @param component the component instance
+		 * @param warnings the expected warning codes
+		 * @return this
+		 */
+		public CompValidateChecker warn(ICalComponent component, Integer... warnings) {
+			componentWarnings.put(component, warnings);
+			return this;
+		}
+
+		/**
+		 * Performs the validation check.
+		 */
+		public void run() {
+			int count = 0;
+			List<WarningsGroup> groups = component.validate(components);
+			for (WarningsGroup group : groups) {
+				List<Warning> warnings = group.getWarnings();
+
+				ICalComponent comp = group.getComponent();
+				if (comp != null) {
+					Integer[] codes = componentWarnings.get(comp);
+					if (codes == null) {
+						failed(groups);
+					}
+
+					boolean passed = checkCodes(warnings, codes);
+					if (!passed) {
+						failed(groups);
+					}
+					count++;
+					continue;
+				}
+
+				ICalProperty prop = group.getProperty();
+				if (prop != null) {
+					Integer[] codes = propertyWarnings.get(prop);
+					if (codes == null) {
+						failed(groups);
+					}
+
+					boolean passed = checkCodes(warnings, codes);
+					if (!passed) {
+						failed(groups);
+					}
+					count++;
+					continue;
+				}
+			}
+
+			if (count != componentWarnings.size() + propertyWarnings.size()) {
+				failed(groups);
+			}
+		}
+
+		private void failed(List<WarningsGroup> groups) {
+			fail("Expected: Properties: " + propertyWarnings + " Components: " + componentWarnings + ", actual: " + groups);
 		}
 	}
 
@@ -299,44 +372,5 @@ public class TestUtils {
 
 	private TestUtils() {
 		//hide
-	}
-
-	/**
-	 * Keeps a count of how many identical instances of an object there are.
-	 */
-	private static class Counts<T> {
-		private final Map<T, Integer> map = new HashMap<T, Integer>();
-
-		public void increment(T t) {
-			Integer value = getCount(t);
-			map.put(t, value++);
-		}
-
-		public Integer getCount(T t) {
-			Integer value = map.get(t);
-			return (value == null) ? 0 : value;
-		}
-
-		@Override
-		public int hashCode() {
-			return map.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			Counts<?> other = (Counts<?>) obj;
-			return map.equals(other.map);
-		}
-
-		@Override
-		public String toString() {
-			return map.toString();
-		}
 	}
 }
