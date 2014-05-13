@@ -273,37 +273,42 @@ public class TestUtils {
 		 * @param components the parent components
 		 * @return this
 		 */
-		public CompValidateChecker parents(List<ICalComponent> components) {
-			this.components = components;
+		public CompValidateChecker parents(ICalComponent... components) {
+			this.components = Arrays.asList(components);
 			return this;
 		}
 
 		/**
 		 * Sets the expected warning codes for a specific property instance.
 		 * @param property the property instance
-		 * @param warnings the expected warning codes
+		 * @param codes the expected warning codes
 		 * @return this
 		 */
-		public CompValidateChecker warn(ICalProperty property, Integer... warnings) {
-			propertyWarnings.put(property, warnings);
+		public CompValidateChecker warn(ICalProperty property, Integer... codes) {
+			propertyWarnings.put(property, codes);
 			return this;
 		}
 
 		/**
 		 * Sets the expected warning codes for a specific component instance.
 		 * @param component the component instance
-		 * @param warnings the expected warning codes
+		 * @param codes the expected warning codes
 		 * @return this
 		 */
-		public CompValidateChecker warn(ICalComponent component, Integer... warnings) {
-			componentWarnings.put(component, warnings);
+		public CompValidateChecker warn(ICalComponent component, Integer... codes) {
+			componentWarnings.put(component, codes);
 			return this;
 		}
 
 		/**
 		 * Performs the validation check.
+		 * @param codes the warning codes for this component (can be empty)
 		 */
-		public void run() {
+		public void run(Integer... codes) {
+			if (codes.length > 0) {
+				warn(component, codes);
+			}
+
 			int count = 0;
 			List<WarningsGroup> groups = component.validate(components);
 			for (WarningsGroup group : groups) {
@@ -311,12 +316,12 @@ public class TestUtils {
 
 				ICalComponent comp = group.getComponent();
 				if (comp != null) {
-					Integer[] codes = componentWarnings.get(comp);
-					if (codes == null) {
+					Integer[] expectedCodes = componentWarnings.get(comp);
+					if (expectedCodes == null) {
 						failed(groups);
 					}
 
-					boolean passed = checkCodes(warnings, codes);
+					boolean passed = checkCodes(warnings, expectedCodes);
 					if (!passed) {
 						failed(groups);
 					}
@@ -326,12 +331,12 @@ public class TestUtils {
 
 				ICalProperty prop = group.getProperty();
 				if (prop != null) {
-					Integer[] codes = propertyWarnings.get(prop);
-					if (codes == null) {
+					Integer[] expectedCodes = propertyWarnings.get(prop);
+					if (expectedCodes == null) {
 						failed(groups);
 					}
 
-					boolean passed = checkCodes(warnings, codes);
+					boolean passed = checkCodes(warnings, expectedCodes);
 					if (!passed) {
 						failed(groups);
 					}

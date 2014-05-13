@@ -6,6 +6,9 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import biweekly.parameter.Related;
+import biweekly.util.Duration;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -41,6 +44,12 @@ public class TriggerTest {
 		assertValidate(property).run(33);
 
 		property = new Trigger(new Date());
+		assertValidate(property).run();
+
+		property = new Trigger(new Duration.Builder().build(), null);
+		assertValidate(property).run(10);
+
+		property = new Trigger(new Duration.Builder().build(), Related.END);
 		assertValidate(property).run();
 	}
 }
