@@ -1212,7 +1212,7 @@ public class VEvent extends ICalComponent {
 	@Override
 	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
-		checkOptionalCardinality(warnings, Classification.class, Created.class, Description.class, Geo.class, LastModified.class, Location.class, Organizer.class, Priority.class, Priority.class, Status.class, Summary.class, Transparency.class, Url.class, RecurrenceId.class);
+		checkOptionalCardinality(warnings, Classification.class, Created.class, Description.class, Geo.class, LastModified.class, Location.class, Organizer.class, Priority.class, Status.class, Summary.class, Transparency.class, Url.class, RecurrenceId.class);
 		checkStatus(warnings, Status.tentative(), Status.confirmed(), Status.cancelled());
 
 		DateStart dateStart = getDateStart();

@@ -50,7 +50,7 @@ public class ICalendarTest {
 	@Test
 	public void validate() {
 		ICalendar ical = new ICalendar();
-		assertValidate(ical).warn(ical, 4).run();
+		assertValidate(ical).run(4);
 
 		ical.addExperimentalComponent("X-TEST");
 		assertValidate(ical).run();

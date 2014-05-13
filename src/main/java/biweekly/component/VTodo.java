@@ -1262,7 +1262,7 @@ public class VTodo extends ICalComponent {
 			warnings.add(Warning.validate(24));
 		}
 
-		//DTSTART is required if DUE exists
+		//DTSTART is required if DURATION exists
 		if (dateStart == null && duration != null) {
 			warnings.add(Warning.validate(25));
 		}

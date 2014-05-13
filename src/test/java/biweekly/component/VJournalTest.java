@@ -1,13 +1,23 @@
 package biweekly.component;
 
 import static biweekly.util.TestUtils.assertValidate;
+import static biweekly.util.TestUtils.date;
 
 import java.util.Date;
 
 import org.junit.Test;
 
+import biweekly.property.Classification;
+import biweekly.property.Created;
 import biweekly.property.DateStart;
+import biweekly.property.LastModified;
+import biweekly.property.Organizer;
+import biweekly.property.RecurrenceId;
 import biweekly.property.RecurrenceRule;
+import biweekly.property.Sequence;
+import biweekly.property.Status;
+import biweekly.property.Summary;
+import biweekly.property.Url;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.Frequency;
 
@@ -39,11 +49,53 @@ import biweekly.util.Recurrence.Frequency;
 /**
  * @author Michael Angstadt
  */
-public class ObservanceTest {
+public class VJournalTest {
 	@Test
 	public void validate_required() {
-		Observance component = new Observance();
-		assertValidate(component).run(2, 2, 2);
+		VJournal component = new VJournal();
+		component.getProperties().clear();
+		assertValidate(component).run(2, 2);
+	}
+
+	@Test
+	public void validate_optional() {
+		VJournal component = new VJournal();
+		component.addProperty(Classification.confidential());
+		component.addProperty(Classification.confidential());
+		component.addProperty(new Created(new Date()));
+		component.addProperty(new Created(new Date()));
+		component.addProperty(new DateStart(new Date()));
+		component.addProperty(new DateStart(new Date()));
+		component.addProperty(new LastModified(new Date()));
+		component.addProperty(new LastModified(new Date()));
+		component.addProperty(new Organizer(""));
+		component.addProperty(new Organizer(""));
+		component.addProperty(new RecurrenceId(new Date()));
+		component.addProperty(new RecurrenceId(new Date()));
+		component.addProperty(new Sequence(1));
+		component.addProperty(new Sequence(1));
+		component.addProperty(Status.cancelled());
+		component.addProperty(Status.cancelled());
+		component.addProperty(new Summary(""));
+		component.addProperty(new Summary(""));
+		component.addProperty(new Url(""));
+		component.addProperty(new Url(""));
+		assertValidate(component).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
+	}
+
+	@Test
+	public void validate_status() {
+		VJournal component = new VJournal();
+		component.setStatus(Status.tentative());
+		assertValidate(component).run(13);
+	}
+
+	@Test
+	public void validate_different_date_datatypes() {
+		VJournal component = new VJournal();
+		component.setDateStart(new DateStart(date("2000-01-01"), false));
+		component.setRecurrenceId(new RecurrenceId(date("2000-01-01"), true));
+		assertValidate(component).run(19);
 	}
 
 	@Test
@@ -56,10 +108,8 @@ public class ObservanceTest {
 		};
 		//@formatter:on
 		for (Recurrence recurrence : recurrences) {
-			Observance component = new Observance();
-			component.setTimezoneOffsetFrom(1, 0);
-			component.setTimezoneOffsetTo(1, 0);
-			component.setDateStart(new DateStart(new Date(), false));
+			VJournal component = new VJournal();
+			component.setDateStart(new DateStart(date("2000-01-01"), false));
 			component.setRecurrenceRule(recurrence);
 			assertValidate(component).run(5);
 		}
@@ -67,10 +117,8 @@ public class ObservanceTest {
 
 	@Test
 	public void validate_multiple_rrules() {
-		Observance component = new Observance();
-		component.setDateStart(new DateStart(new Date()));
-		component.setTimezoneOffsetFrom(1, 0);
-		component.setTimezoneOffsetTo(1, 0);
+		VJournal component = new VJournal();
+		component.setDateStart(new DateStart(date("2000-01-01"), false));
 		component.addProperty(new RecurrenceRule(new Recurrence.Builder(Frequency.DAILY).build()));
 		component.addProperty(new RecurrenceRule(new Recurrence.Builder(Frequency.DAILY).build()));
 		assertValidate(component).run(6);

@@ -208,6 +208,32 @@ public class TestUtils {
 	}
 
 	/**
+	 * Creates a {@link Date} object.
+	 * @param text the date (e.g. "2000-01-30")
+	 * @return the parsed date
+	 */
+	public static Date date(String text) {
+		try {
+			return new SimpleDateFormat("yyyy-MM-dd").parse(text);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Creates a {@link Date} object.
+	 * @param text the date/time (e.g. "2000-01-30 13:20:11")
+	 * @return the parsed date
+	 */
+	public static Date datetime(String text) {
+		try {
+			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(text);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
 	 * Asserts the validation of a property object.
 	 * @param property the property object
 	 * @return the validation checker object
@@ -260,8 +286,8 @@ public class TestUtils {
 	public static class CompValidateChecker {
 		private final ICalComponent component;
 		private List<ICalComponent> components = new ArrayList<ICalComponent>();
-		private Map<ICalProperty, Integer[]> propertyWarnings = new HashMap<ICalProperty, Integer[]>();
-		private Map<ICalComponent, Integer[]> componentWarnings = new HashMap<ICalComponent, Integer[]>();
+		private Map<ICalProperty, Integer[]> propertyWarnings = new IntegerArrayMap<ICalProperty>();
+		private Map<ICalComponent, Integer[]> componentWarnings = new IntegerArrayMap<ICalComponent>();
 
 		public CompValidateChecker(ICalComponent component) {
 			this.component = component;
@@ -352,6 +378,27 @@ public class TestUtils {
 
 		private void failed(List<WarningsGroup> groups) {
 			fail("Expected: Properties: " + propertyWarnings + " Components: " + componentWarnings + ", actual: " + groups);
+		}
+	}
+
+	@SuppressWarnings("serial")
+	private static class IntegerArrayMap<T> extends HashMap<T, Integer[]> {
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder("{");
+			boolean first = true;
+			for (Map.Entry<T, Integer[]> entry : entrySet()) {
+				if (!first) {
+					sb.append(", ");
+				}
+				first = false;
+
+				sb.append(entry.getKey().getClass().getSimpleName()).append("=");
+				sb.append(Arrays.toString(entry.getValue())).append(", ");
+			}
+			sb.append("}");
+
+			return sb.toString();
 		}
 	}
 

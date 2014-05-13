@@ -7,9 +7,8 @@ import java.util.Date;
 import org.junit.Test;
 
 import biweekly.property.DateStart;
-import biweekly.property.RecurrenceRule;
-import biweekly.util.Recurrence;
-import biweekly.util.Recurrence.Frequency;
+import biweekly.property.LastModified;
+import biweekly.property.TimezoneUrl;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -39,40 +38,39 @@ import biweekly.util.Recurrence.Frequency;
 /**
  * @author Michael Angstadt
  */
-public class ObservanceTest {
+public class VTimezoneTest {
 	@Test
 	public void validate_required() {
-		Observance component = new Observance();
-		assertValidate(component).run(2, 2, 2);
+		VTimezone component = new VTimezone(null);
+		assertValidate(component).run(2, 21);
 	}
 
 	@Test
-	public void validate_time_in_rrule() {
-		//@formatter:off
-		Recurrence[] recurrences = {
-			new Recurrence.Builder(Frequency.DAILY).byHour(1).build(),
-			new Recurrence.Builder(Frequency.DAILY).byMinute(1).build(),
-			new Recurrence.Builder(Frequency.DAILY).bySecond(1).build()
-		};
-		//@formatter:on
-		for (Recurrence recurrence : recurrences) {
-			Observance component = new Observance();
-			component.setTimezoneOffsetFrom(1, 0);
-			component.setTimezoneOffsetTo(1, 0);
-			component.setDateStart(new DateStart(new Date(), false));
-			component.setRecurrenceRule(recurrence);
-			assertValidate(component).run(5);
-		}
+	public void validate_optional() {
+		VTimezone component = new VTimezone("");
+		component.addProperty(new LastModified(new Date()));
+		component.addProperty(new LastModified(new Date()));
+		component.addProperty(new TimezoneUrl(""));
+		component.addProperty(new TimezoneUrl(""));
+		assertValidate(component).run(3, 3, 21);
 	}
 
 	@Test
-	public void validate_multiple_rrules() {
-		Observance component = new Observance();
-		component.setDateStart(new DateStart(new Date()));
-		component.setTimezoneOffsetFrom(1, 0);
-		component.setTimezoneOffsetTo(1, 0);
-		component.addProperty(new RecurrenceRule(new Recurrence.Builder(Frequency.DAILY).build()));
-		component.addProperty(new RecurrenceRule(new Recurrence.Builder(Frequency.DAILY).build()));
-		assertValidate(component).run(6);
+	public void validate_observance_required() {
+		StandardTime standard = new StandardTime();
+		standard.setDateStart(new DateStart(new Date()));
+		standard.setTimezoneOffsetFrom(1, 0);
+		standard.setTimezoneOffsetTo(1, 0);
+		VTimezone component = new VTimezone("");
+		component.addStandardTime(standard);
+		assertValidate(component).run();
+
+		DaylightSavingsTime daylight = new DaylightSavingsTime();
+		daylight.setDateStart(new DateStart(new Date()));
+		daylight.setTimezoneOffsetFrom(1, 0);
+		daylight.setTimezoneOffsetTo(1, 0);
+		component = new VTimezone("");
+		component.addDaylightSavingsTime(daylight);
+		assertValidate(component).run();
 	}
 }

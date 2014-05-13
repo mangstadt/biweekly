@@ -43,30 +43,42 @@ import biweekly.util.Duration;
  */
 public class VAlarmTest {
 	@Test
-	public void validate() {
+	public void validate_required() {
 		VAlarm component = new VAlarm(null, null);
 		assertValidate(component).run(2, 2);
+	}
 
-		/////////////
-
-		Attachment attach = new Attachment("", new byte[0]);
-		component = new VAlarm(Action.audio(), new Trigger(new Date()));
-		component.addAttachment(attach);
-		component.addAttachment(attach);
+	@Test
+	public void validate_audio_attachment() {
+		//2 attachments
+		VAlarm component = new VAlarm(Action.audio(), new Trigger(new Date()));
+		component.addAttachment(new Attachment("", new byte[0]));
+		component.addAttachment(new Attachment("", new byte[0]));
 		assertValidate(component).run(7);
 
-		/////////////
+		//1 attachment
+		component = new VAlarm(Action.audio(), new Trigger(new Date()));
+		component.addAttachment(new Attachment("", new byte[0]));
+		assertValidate(component).run();
 
-		component = new VAlarm(Action.display(), new Trigger(new Date()));
+		//no attachments
+		component = new VAlarm(Action.audio(), new Trigger(new Date()));
+		assertValidate(component).run();
+	}
+
+	@Test
+	public void validate_display() {
+		VAlarm component = new VAlarm(Action.display(), new Trigger(new Date()));
 		assertValidate(component).run(2);
 
 		component = new VAlarm(Action.display(), new Trigger(new Date()));
 		component.setDescription("");
 		assertValidate(component).run();
+	}
 
-		/////////////
-
-		component = new VAlarm(Action.email(), new Trigger(new Date()));
+	@Test
+	public void validate_email() {
+		VAlarm component = new VAlarm(Action.email(), new Trigger(new Date()));
 		assertValidate(component).run(2, 2, 8);
 
 		component = new VAlarm(Action.email(), new Trigger(new Date()));
@@ -80,44 +92,44 @@ public class VAlarmTest {
 		component.addAttendee(new Attendee(""));
 		assertValidate(component).run();
 
+		//only EMAIL alarms can have attendees
 		component = new VAlarm(Action.audio(), new Trigger(new Date()));
 		component.addAttendee(new Attendee(""));
 		assertValidate(component).run(9);
+		component = new VAlarm(Action.display(), new Trigger(new Date()));
+		component.addAttendee(new Attendee(""));
+		assertValidate(component).run(9, 2);
+	}
 
-		/////////////
-
+	@Test
+	public void validate_related_start() {
 		VEvent event = new VEvent();
-		component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.START));
+		VAlarm component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.START));
 		assertValidate(component).parents(event).run(11);
 
 		event = new VEvent();
 		event.setDateStart(new Date());
 		component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.START));
 		assertValidate(component).parents(event).run();
+	}
 
-		/////////////
-
-		event = new VEvent();
-		component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.END));
+	@Test
+	public void validate_related_end() {
+		VEvent event = new VEvent();
+		VAlarm component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.END));
 		assertValidate(component).parents(event).run(12);
 
 		event = new VEvent();
 		event.setDateStart(new Date());
+		event.setDateEnd(new Date());
 		component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.END));
-		assertValidate(component).parents(event).run(12);
-
-		event = new VEvent();
-		event.setDuration(new Duration.Builder().build());
-		component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.END));
-		assertValidate(component).parents(event).run(12);
+		assertValidate(component).parents(event).run();
 
 		event = new VEvent();
 		event.setDateStart(new Date());
 		event.setDuration(new Duration.Builder().build());
 		component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.END));
 		assertValidate(component).parents(event).run();
-
-		/////////////
 
 		VTodo todo = new VTodo();
 		component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.END));
