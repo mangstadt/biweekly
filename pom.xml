@@ -41,9 +41,9 @@
 	</issueManagement>
 
 	<scm>
-		<connection>scm:svn:http://svn.code.sf.net/p/biweekly/code/trunk</connection>
-		<developerConnection>scm:svn:https://svn.code.sf.net/p/biweekly/code/trunk</developerConnection>
-		<url>https://sourceforge.net/p/biweekly/code/HEAD/tree/</url>
+		<connection>scm:git:git://git.code.sf.net/p/biweekly/code_git</connection>
+		<developerConnection>scm:git:ssh://git.code.sf.net/p/biweekly/code_git</developerConnection>
+		<url>https://sourceforge.net/p/biweekly/code_git/ci/master/tree/</url>
 	</scm>
 	
 	<properties>
