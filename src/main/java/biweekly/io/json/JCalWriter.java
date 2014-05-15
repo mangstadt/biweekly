@@ -213,42 +213,40 @@ public class JCalWriter implements Closeable, Flushable {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeComponent(ICalComponent component) throws IOException {
-		ICalComponentScribe compMarshaller = index.getComponentScribe(component);
-		if (compMarshaller == null) {
+		ICalComponentScribe componentScribe = index.getComponentScribe(component);
+		if (componentScribe == null) {
 			throw new IllegalArgumentException("No scribe found for component class \"" + component.getClass().getName() + "\".");
 		}
 
-		writer.writeStartComponent(compMarshaller.getComponentName().toLowerCase());
+		writer.writeStartComponent(componentScribe.getComponentName().toLowerCase());
 
 		//write properties
-		for (Object obj : compMarshaller.getProperties(component)) {
-			ICalProperty property = (ICalProperty) obj;
-			ICalPropertyScribe propMarshaller = index.getPropertyScribe(property);
-			if (propMarshaller == null) {
+		for (Object propertyObj : componentScribe.getProperties(component)) {
+			ICalProperty property = (ICalProperty) propertyObj;
+			ICalPropertyScribe propertyScribe = index.getPropertyScribe(property);
+			if (propertyScribe == null) {
 				throw new IllegalArgumentException("No scribe found for property class \"" + property.getClass().getName() + "\".");
 			}
 
 			//marshal property
-			String propertyName = propMarshaller.getPropertyName().toLowerCase();
 			ICalParameters parameters;
 			JCalValue value;
 			try {
-				parameters = propMarshaller.prepareParameters(property);
-				value = propMarshaller.writeJson(property);
+				parameters = propertyScribe.prepareParameters(property);
+				value = propertyScribe.writeJson(property);
 			} catch (SkipMeException e) {
 				continue;
 			}
 
-			//get the data type
-			ICalDataType dataType = propMarshaller.dataType(property);
-
 			//write property
+			String propertyName = propertyScribe.getPropertyName().toLowerCase();
+			ICalDataType dataType = propertyScribe.dataType(property);
 			writer.writeProperty(propertyName, parameters, dataType, value);
 		}
 
 		//write sub-components
-		for (Object obj : compMarshaller.getComponents(component)) {
-			ICalComponent subComponent = (ICalComponent) obj;
+		for (Object subComponentObj : componentScribe.getComponents(component)) {
+			ICalComponent subComponent = (ICalComponent) subComponentObj;
 			writeComponent(subComponent);
 		}
 

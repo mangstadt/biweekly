@@ -83,7 +83,7 @@ import com.fasterxml.jackson.core.JsonParseException;
  * draft</a>
  */
 public class JCalReader implements Closeable {
-	private static final ICalendarScribe icalMarshaller = ScribeIndex.getICalendarScribe();
+	private static final ICalendarScribe icalScribe = ScribeIndex.getICalendarScribe();
 	private ScribeIndex index = new ScribeIndex();
 	private final JCalRawReader reader;
 	private final ParseWarnings warnings = new ParseWarnings();
@@ -209,37 +209,29 @@ public class JCalReader implements Closeable {
 			ICalComponent parent = components.get(componentHierarchy);
 
 			//unmarshal the property
-			ICalPropertyScribe<? extends ICalProperty> m = index.getPropertyScribe(propertyName);
-			ICalProperty property = null;
+			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyName);
 			try {
-				Result<? extends ICalProperty> result = m.parseJson(value, dataType, parameters);
-
+				Result<? extends ICalProperty> result = scribe.parseJson(value, dataType, parameters);
 				for (Warning warning : result.getWarnings()) {
 					warnings.add(reader.getLineNum(), propertyName, warning);
 				}
-
-				property = result.getProperty();
+				ICalProperty property = result.getProperty();
+				parent.addProperty(property);
 			} catch (SkipMeException e) {
 				warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());
 			} catch (CannotParseException e) {
 				Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseJson(value, dataType, parameters);
-				for (Warning warning : result.getWarnings()) {
-					warnings.add(reader.getLineNum(), propertyName, warning);
-				}
-				property = result.getProperty();
+				ICalProperty property = result.getProperty();
+				parent.addProperty(property);
 
 				String valueStr = ((RawProperty) property).getValue();
 				warnings.add(reader.getLineNum(), propertyName, 1, valueStr, e.getMessage());
 			}
-
-			if (property != null) {
-				parent.addProperty(property);
-			}
 		}
 
 		public void readComponent(List<String> parentHierarchy, String componentName) {
-			ICalComponentScribe<? extends ICalComponent> m = index.getComponentScribe(componentName);
-			ICalComponent component = m.emptyInstance();
+			ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(componentName);
+			ICalComponent component = scribe.emptyInstance();
 
 			ICalComponent parent = components.get(parentHierarchy);
 			if (parent != null) {
@@ -257,7 +249,7 @@ public class JCalReader implements Closeable {
 				return null;
 			}
 
-			ICalComponent component = components.get(Arrays.asList(icalMarshaller.getComponentName().toLowerCase()));
+			ICalComponent component = components.get(Arrays.asList(icalScribe.getComponentName().toLowerCase()));
 			if (component == null) {
 				//should never happen because the parser always looks for a "vcalendar" component
 				return null;
@@ -268,8 +260,8 @@ public class JCalReader implements Closeable {
 				return (ICalendar) component;
 			}
 
-			//this will only happen if the user decides to override the ICalendarMarshaller for some reason
-			ICalendar ical = icalMarshaller.emptyInstance();
+			//this will only happen if the user decides to override the ICalendarScribe for some reason
+			ICalendar ical = icalScribe.emptyInstance();
 			ical.addComponent(component);
 			return ical;
 		}

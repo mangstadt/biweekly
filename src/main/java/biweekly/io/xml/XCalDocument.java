@@ -491,16 +491,16 @@ public class XCalDocument {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Element buildComponentElement(ICalComponent component) {
-		ICalComponentScribe m = index.getComponentScribe(component);
-		if (m == null) {
+		ICalComponentScribe componentScribe = index.getComponentScribe(component);
+		if (componentScribe == null) {
 			throw new IllegalArgumentException("No scribe found for component class \"" + component.getClass().getName() + "\".");
 		}
 
-		Element componentElement = buildElement(m.getComponentName().toLowerCase());
+		Element componentElement = buildElement(componentScribe.getComponentName().toLowerCase());
 
 		Element propertiesWrapperElement = buildElement("properties");
-		for (Object obj : m.getProperties(component)) {
-			ICalProperty property = (ICalProperty) obj;
+		for (Object propertyObj : componentScribe.getProperties(component)) {
+			ICalProperty property = (ICalProperty) propertyObj;
 
 			//create property element
 			Element propertyElement = buildPropertyElement(property);
@@ -513,8 +513,8 @@ public class XCalDocument {
 		}
 
 		Element componentsWrapperElement = buildElement("components");
-		for (Object obj : m.getComponents(component)) {
-			ICalComponent subComponent = (ICalComponent) obj;
+		for (Object subComponentObj : componentScribe.getComponents(component)) {
+			ICalComponent subComponent = (ICalComponent) subComponentObj;
 			Element subComponentElement = buildComponentElement(subComponent);
 			if (subComponentElement != null) {
 				componentsWrapperElement.appendChild(subComponentElement);
@@ -547,22 +547,22 @@ public class XCalDocument {
 			//get parameters
 			parameters = property.getParameters();
 		} else {
-			ICalPropertyScribe pm = index.getPropertyScribe(property);
-			if (pm == null) {
+			ICalPropertyScribe propertyScribe = index.getPropertyScribe(property);
+			if (propertyScribe == null) {
 				throw new IllegalArgumentException("No scribe found for property class \"" + property.getClass().getName() + "\".");
 			}
 
-			propertyElement = buildElement(pm.getQName());
+			propertyElement = buildElement(propertyScribe.getQName());
 
 			//marshal value
 			try {
-				pm.writeXml(property, propertyElement);
+				propertyScribe.writeXml(property, propertyElement);
 			} catch (SkipMeException e) {
 				return null;
 			}
 
 			//get parameters
-			parameters = pm.prepareParameters(property);
+			parameters = propertyScribe.prepareParameters(property);
 		}
 
 		//build parameters
@@ -594,22 +594,20 @@ public class XCalDocument {
 
 	private ICalendar parseICal(Element icalElement, ParseWarnings warnings) {
 		ICalComponent root = parseComponent(icalElement, warnings);
-
-		ICalendar ical;
 		if (root instanceof ICalendar) {
-			ical = (ICalendar) root;
-		} else {
-			//shouldn't happen, since only <vcalendar> elements are passed into this method
-			ical = icalMarshaller.emptyInstance();
-			ical.addComponent(root);
+			return (ICalendar) root;
 		}
+
+		//shouldn't happen, since only <vcalendar> elements are passed into this method
+		ICalendar ical = icalMarshaller.emptyInstance();
+		ical.addComponent(root);
 		return ical;
 	}
 
 	private ICalComponent parseComponent(Element componentElement, ParseWarnings warnings) {
 		//create the component object
-		ICalComponentScribe<? extends ICalComponent> m = index.getComponentScribe(componentElement.getLocalName());
-		ICalComponent component = m.emptyInstance();
+		ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(componentElement.getLocalName());
+		ICalComponent component = scribe.emptyInstance();
 
 		//parse properties
 		for (Element propertyWrapperElement : getChildElements(componentElement, "properties")) { //there should be only one <properties> element, but parse them all incase there are more
@@ -641,38 +639,23 @@ public class XCalDocument {
 		String propertyName = propertyElement.getLocalName();
 		QName qname = new QName(propertyElement.getNamespaceURI(), propertyName);
 
-		ICalPropertyScribe<? extends ICalProperty> m = index.getPropertyScribe(qname);
-
-		ICalProperty property = null;
+		ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(qname);
 		try {
-			Result<? extends ICalProperty> result = m.parseXml(propertyElement, parameters);
-
+			Result<? extends ICalProperty> result = scribe.parseXml(propertyElement, parameters);
 			for (Warning warning : result.getWarnings()) {
 				warnings.add(null, propertyName, warning);
 			}
-
-			property = result.getProperty();
+			return result.getProperty();
 		} catch (SkipMeException e) {
 			warnings.add(null, propertyName, 0, e.getMessage());
 			return null;
 		} catch (CannotParseException e) {
 			warnings.add(null, propertyName, 16, e.getMessage());
+
+			scribe = index.getPropertyScribe(Xml.class);
+			Result<? extends ICalProperty> result = scribe.parseXml(propertyElement, parameters);
+			return result.getProperty();
 		}
-
-		//unmarshal as an XML property
-		if (property == null) {
-			m = index.getPropertyScribe(Xml.class);
-
-			Result<? extends ICalProperty> result = m.parseXml(propertyElement, parameters);
-
-			for (Warning warning : result.getWarnings()) {
-				warnings.add(null, propertyName, warning);
-			}
-
-			property = result.getProperty();
-		}
-
-		return property;
 	}
 
 	private ICalParameters parseParameters(Element propertyElement) {
@@ -683,14 +666,16 @@ public class XCalDocument {
 			for (Element paramElement : paramElements) {
 				String name = paramElement.getLocalName().toUpperCase();
 				List<Element> valueElements = XmlUtils.toElementList(paramElement.getChildNodes());
-				if (valueElements.isEmpty()) { //this should never be true if the xCal follows the specs
+				if (valueElements.isEmpty()) {
+					//this should never be true if the xCal follows the specs
 					String value = paramElement.getTextContent();
 					parameters.put(name, value);
-				} else {
-					for (Element valueElement : valueElements) {
-						String value = valueElement.getTextContent();
-						parameters.put(name, value);
-					}
+					continue;
+				}
+
+				for (Element valueElement : valueElements) {
+					String value = valueElement.getTextContent();
+					parameters.put(name, value);
 				}
 			}
 		}

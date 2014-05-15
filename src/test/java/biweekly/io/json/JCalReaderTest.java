@@ -522,7 +522,7 @@ public class JCalReaderTest {
 	@Test
 	public void jcal_draft_example1() throws Throwable {
 		//see: http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05#page-25
-		JCalReader reader = new JCalReader(getClass().getResourceAsStream("jcal-draft-example1.json"));
+		JCalReader reader = read("jcal-draft-example1.json");
 		ICalendar ical = reader.readNext();
 
 		assertEquals(3, ical.getProperties().size());
@@ -552,7 +552,7 @@ public class JCalReaderTest {
 	@Test
 	public void jcal_draft_example2() throws Throwable {
 		//see: http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05#page-27
-		JCalReader reader = new JCalReader(getClass().getResourceAsStream("jcal-draft-example2.json"));
+		JCalReader reader = read("jcal-draft-example2.json");
 		ICalendar ical = reader.readNext();
 
 		DateFormat usEastern = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -659,6 +659,10 @@ public class JCalReaderTest {
 		assertValidate(ical).run();
 
 		assertNull(reader.readNext());
+	}
+
+	private JCalReader read(String file) {
+		return new JCalReader(getClass().getResourceAsStream(file));
 	}
 
 	private class CompanyMarshaller extends ICalPropertyScribe<Company> {

@@ -409,15 +409,15 @@ public class ICalReaderTest {
 		assertEquals("2.0", icalendar.getVersion().getMaxVersion());
 
 		assertEquals(2, icalendar.getProperties(TestProperty.class).size());
-		assertIntEquals(1, icalendar.getProperties(TestProperty.class).get(0).getNumber());
-		assertIntEquals(2, icalendar.getProperties(TestProperty.class).get(1).getNumber());
+		assertIntEquals(1, icalendar.getProperties(TestProperty.class).get(0).number);
+		assertIntEquals(2, icalendar.getProperties(TestProperty.class).get(1).number);
 
 		assertEquals(1, icalendar.getEvents().size());
 		VEvent event = icalendar.getEvents().get(0);
 		assertEquals("summary", event.getSummary().getValue());
 
 		assertEquals(1, event.getProperties(TestProperty.class).size());
-		assertIntEquals(3, event.getProperties(TestProperty.class).get(0).getNumber());
+		assertIntEquals(3, event.getProperties(TestProperty.class).get(0).number);
 
 		assertWarnings(0, reader.getWarnings());
 		assertNull(reader.readNext());
@@ -571,7 +571,7 @@ public class ICalReaderTest {
 		assertEquals("2.0", icalendar.getVersion().getMaxVersion());
 
 		assertEquals(1, icalendar.getProperties(TestProperty.class).size());
-		assertIntEquals(4, icalendar.getProperties(TestProperty.class).get(0).getNumber());
+		assertIntEquals(4, icalendar.getProperties(TestProperty.class).get(0).number);
 
 		assertWarnings(1, reader.getWarnings());
 		assertNull(reader.readNext());
@@ -603,7 +603,7 @@ public class ICalReaderTest {
 			assertEquals("2.0", icalendar.getVersion().getMaxVersion());
 
 			assertEquals(1, icalendar.getProperties(TestProperty.class).size());
-			assertIntEquals(4, icalendar.getProperties(TestProperty.class).get(0).getNumber());
+			assertIntEquals(4, icalendar.getProperties(TestProperty.class).get(0).number);
 
 			assertWarnings(1, reader.getWarnings());
 		}
@@ -615,7 +615,7 @@ public class ICalReaderTest {
 			assertEquals("2.0", icalendar.getVersion().getMaxVersion());
 
 			assertEquals(1, icalendar.getProperties(TestProperty.class).size());
-			assertIntEquals(4, icalendar.getProperties(TestProperty.class).get(0).getNumber());
+			assertIntEquals(4, icalendar.getProperties(TestProperty.class).get(0).number);
 
 			assertWarnings(1, reader.getWarnings());
 		}
@@ -758,9 +758,26 @@ public class ICalReaderTest {
 		assertNull(reader.readNext());
 	}
 
+	//see: http://stackoverflow.com/questions/33901/best-icalendar-library-for-java/17325369?noredirect=1#comment31110671_17325369
+	@Test
+	public void large_ical_file_stackoverflow_fix() throws Throwable {
+		StringBuilder sb = new StringBuilder();
+		sb.append("BEGIN:VCALENDAR\r\n");
+		for (int i = 0; i < 100000; i++) {
+			sb.append("BEGIN:VEVENT\r\nDESCRIPTION:test\r\n");
+		}
+		for (int i = 0; i < 100000; i++) {
+			sb.append("END:VEVENT\r\n");
+		}
+		sb.append("END:VCALENDAR\r\n");
+
+		ICalReader reader = new ICalReader(sb.toString());
+		reader.readNext();
+	}
+
 	@Test
 	public void outlook2010() throws Throwable {
-		ICalReader reader = new ICalReader(getClass().getResourceAsStream("outlook-2010.ics"));
+		ICalReader reader = read("outlook-2010.ics");
 		ICalendar ical = reader.readNext();
 
 		assertEquals(4, ical.getProperties().size());
@@ -897,7 +914,7 @@ public class ICalReaderTest {
 
 	@Test
 	public void example1() throws Throwable {
-		ICalReader reader = new ICalReader(getClass().getResourceAsStream("rfc5545-example1.ics"));
+		ICalReader reader = read("rfc5545-example1.ics");
 		ICalendar ical = reader.readNext();
 
 		assertEquals(2, ical.getProperties().size());
@@ -931,7 +948,7 @@ public class ICalReaderTest {
 		DateFormat nycFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
 		nycFormatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
 
-		ICalReader reader = new ICalReader(getClass().getResourceAsStream("rfc5545-example2.ics"));
+		ICalReader reader = read("rfc5545-example2.ics");
 		ICalendar ical = reader.readNext();
 
 		assertEquals(2, ical.getProperties().size());
@@ -1015,7 +1032,7 @@ public class ICalReaderTest {
 
 	@Test
 	public void example3() throws Throwable {
-		ICalReader reader = new ICalReader(getClass().getResourceAsStream("rfc5545-example3.ics"));
+		ICalReader reader = read("rfc5545-example3.ics");
 		ICalendar ical = reader.readNext();
 
 		assertEquals(3, ical.getProperties().size());
@@ -1053,7 +1070,7 @@ public class ICalReaderTest {
 
 	@Test
 	public void example4() throws Throwable {
-		ICalReader reader = new ICalReader(getClass().getResourceAsStream("rfc5545-example4.ics"));
+		ICalReader reader = read("rfc5545-example4.ics");
 		ICalendar ical = reader.readNext();
 
 		assertEquals(2, ical.getProperties().size());
@@ -1100,7 +1117,7 @@ public class ICalReaderTest {
 
 	@Test
 	public void example5() throws Throwable {
-		ICalReader reader = new ICalReader(getClass().getResourceAsStream("rfc5545-example5.ics"));
+		ICalReader reader = read("rfc5545-example5.ics");
 		ICalendar ical = reader.readNext();
 
 		assertEquals(2, ical.getProperties().size());
@@ -1129,7 +1146,7 @@ public class ICalReaderTest {
 
 	@Test
 	public void example6() throws Throwable {
-		ICalReader reader = new ICalReader(getClass().getResourceAsStream("rfc5545-example6.ics"));
+		ICalReader reader = read("rfc5545-example6.ics");
 		ICalendar ical = reader.readNext();
 
 		assertEquals(2, ical.getProperties().size());
@@ -1157,21 +1174,8 @@ public class ICalReaderTest {
 		assertNull(reader.readNext());
 	}
 
-	//see: http://stackoverflow.com/questions/33901/best-icalendar-library-for-java/17325369?noredirect=1#comment31110671_17325369
-	@Test
-	public void large_ical_file_stackoverflow_fix() throws Throwable {
-		StringBuilder sb = new StringBuilder();
-		sb.append("BEGIN:VCALENDAR\r\n");
-		for (int i = 0; i < 100000; i++) {
-			sb.append("BEGIN:VEVENT\r\nDESCRIPTION:test\r\n");
-		}
-		for (int i = 0; i < 100000; i++) {
-			sb.append("END:VEVENT\r\n");
-		}
-		sb.append("END:VCALENDAR\r\n");
-
-		ICalReader reader = new ICalReader(sb.toString());
-		reader.readNext();
+	private ICalReader read(String file) {
+		return new ICalReader(getClass().getResourceAsStream(file));
 	}
 
 	private class TestPropertyMarshaller extends ICalPropertyScribe<TestProperty> {
@@ -1181,7 +1185,7 @@ public class ICalReaderTest {
 
 		@Override
 		protected String _writeText(TestProperty property) {
-			return property.getNumber().toString();
+			return property.number.toString();
 		}
 
 		@Override
@@ -1198,8 +1202,8 @@ public class ICalReaderTest {
 				number = 4;
 				warnings.add(new Warning("too high"));
 			}
-			prop.setNumber(number);
-			prop.setParsedDataType(dataType);
+			prop.number = number;
+			prop.parsedDataType = dataType;
 			return prop;
 		}
 	}
@@ -1207,18 +1211,6 @@ public class ICalReaderTest {
 	private class TestProperty extends ICalProperty {
 		private Integer number;
 		private ICalDataType parsedDataType;
-
-		public Integer getNumber() {
-			return number;
-		}
-
-		public void setNumber(Integer number) {
-			this.number = number;
-		}
-
-		public void setParsedDataType(ICalDataType parsedDataType) {
-			this.parsedDataType = parsedDataType;
-		}
 	}
 
 	private class PartyMarshaller extends ICalComponentScribe<Party> {
@@ -1237,7 +1229,6 @@ public class ICalReaderTest {
 	}
 
 	private class MyProductIdMarshaller extends ICalPropertyScribe<ProductId> {
-
 		public MyProductIdMarshaller() {
 			super(ProductId.class, "PRODID", ICalDataType.TEXT);
 		}

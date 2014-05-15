@@ -25,9 +25,9 @@ import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.component.ICalendarScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
+import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.property.RawProperty;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -305,27 +305,26 @@ public class ICalReader implements Closeable {
 			String value = line.getValue();
 			try {
 				Result<? extends ICalProperty> result = marshaller.parseText(value, dataType, parameters);
-
 				for (Warning warning : result.getWarnings()) {
 					warnings.add(reader.getLineNum(), propertyName, warning);
 				}
-
 				property = result.getProperty();
 			} catch (SkipMeException e) {
 				warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());
+				continue;
 			} catch (CannotParseException e) {
 				warnings.add(reader.getLineNum(), propertyName, 1, value, e.getMessage());
-				property = new RawProperty(propertyName, dataType, value);
+
+				Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters);
+				property = result.getProperty();
 			}
 
 			//add the property to its component
-			if (property != null) {
-				if (componentStack.isEmpty()) {
-					orphanedProperties.add(property);
-				} else {
-					ICalComponent parentComponent = componentStack.get(componentStack.size() - 1);
-					parentComponent.addProperty(property);
-				}
+			if (componentStack.isEmpty()) {
+				orphanedProperties.add(property);
+			} else {
+				ICalComponent parentComponent = componentStack.get(componentStack.size() - 1);
+				parentComponent.addProperty(property);
 			}
 		}
 

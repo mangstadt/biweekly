@@ -294,17 +294,17 @@ public class ICalWriter implements Closeable, Flushable {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeComponent(ICalComponent component) throws IOException {
-		ICalComponentScribe m = index.getComponentScribe(component);
-		if (m == null) {
+		ICalComponentScribe componentScribe = index.getComponentScribe(component);
+		if (componentScribe == null) {
 			throw new IllegalArgumentException("No scribe found for component class \"" + component.getClass().getName() + "\".");
 		}
 
-		writer.writeBeginComponent(m.getComponentName());
+		writer.writeBeginComponent(componentScribe.getComponentName());
 
-		for (Object obj : m.getProperties(component)) {
-			ICalProperty property = (ICalProperty) obj;
-			ICalPropertyScribe pm = index.getPropertyScribe(property);
-			if (pm == null) {
+		for (Object propertyObj : componentScribe.getProperties(component)) {
+			ICalProperty property = (ICalProperty) propertyObj;
+			ICalPropertyScribe propertyScribe = index.getPropertyScribe(property);
+			if (propertyScribe == null) {
 				throw new IllegalArgumentException("No scribe found for property class \"" + property.getClass().getName() + "\".");
 			}
 
@@ -312,29 +312,29 @@ public class ICalWriter implements Closeable, Flushable {
 			ICalParameters parameters;
 			String value;
 			try {
-				parameters = pm.prepareParameters(property);
-				value = pm.writeText(property);
+				parameters = propertyScribe.prepareParameters(property);
+				value = propertyScribe.writeText(property);
 			} catch (SkipMeException e) {
 				continue;
 			}
 
 			//set the data type
-			ICalDataType dataType = pm.dataType(property);
-			if (dataType != null && dataType != pm.getDefaultDataType()) {
+			ICalDataType dataType = propertyScribe.dataType(property);
+			if (dataType != null && dataType != propertyScribe.getDefaultDataType()) {
 				//only add a VALUE parameter if the data type is (1) not "unknown" and (2) different from the property's default data type
 				parameters.setValue(dataType);
 			}
 
 			//write property to data stream
-			writer.writeProperty(pm.getPropertyName(), parameters, value);
+			writer.writeProperty(propertyScribe.getPropertyName(), parameters, value);
 		}
 
-		for (Object obj : m.getComponents(component)) {
-			ICalComponent subComponent = (ICalComponent) obj;
+		for (Object subComponentObj : componentScribe.getComponents(component)) {
+			ICalComponent subComponent = (ICalComponent) subComponentObj;
 			writeComponent(subComponent);
 		}
 
-		writer.writeEndComponent(m.getComponentName());
+		writer.writeEndComponent(componentScribe.getComponentName());
 	}
 
 	/**
