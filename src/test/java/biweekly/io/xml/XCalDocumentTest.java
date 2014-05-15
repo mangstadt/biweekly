@@ -4,8 +4,9 @@ import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
 import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertDateEquals;
 import static biweekly.util.TestUtils.assertIntEquals;
+import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertValidate;
-import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertWarningsLists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -14,6 +15,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -31,6 +33,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
@@ -135,41 +138,51 @@ public class XCalDocumentTest {
 				"</components>" +
 			"</vcalendar>" +
 			"<vcalendar>" +
-			"<properties>" +
-				"<prodid><text>-//Example Inc.//Example Client//EN</text></prodid>" +
-				"<version><text>2.0</text></version>" +
-			"</properties>" +
-			"<components>" +
-				"<vevent>" +
-					"<properties>" +
-						"<summary><text>Team Happy Hour</text></summary>" +
-					"</properties>" +
-				"</vevent>" +
-			"</components>" +
-		"</vcalendar>" +
+				"<properties>" +
+					"<prodid><text>-//Example Inc.//Example Client//EN</text></prodid>" +
+					"<version><text>2.0</text></version>" +
+				"</properties>" +
+				"<components>" +
+					"<vevent>" +
+						"<properties>" +
+							"<summary><text>Team Happy Hour</text></summary>" +
+						"</properties>" +
+					"</vevent>" +
+				"</components>" +
+			"</vcalendar>" +
 		"</icalendar>";
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
 		Iterator<ICalendar> it = xcal.parseAll().iterator();
-		assertEquals(2, xcal.getParseWarnings().size());
-		assertWarnings(0, xcal.getParseWarnings().get(0));
 
-		ICalendar ical = it.next();
-		assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		{
+			ICalendar ical = it.next();
+			assertSize(ical, 1, 2);
 
-		VEvent event = ical.getEvents().get(0);
-		assertEquals("Team Meeting", event.getSummary().getValue());
+			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
+			assertEquals("2.0", ical.getVersion().getMaxVersion());
 
-		ical = it.next();
-		assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-		assertEquals("2.0", ical.getVersion().getMaxVersion());
+			VEvent event = ical.getEvents().get(0);
+			assertSize(event, 0, 1);
+			assertEquals("Team Meeting", event.getSummary().getValue());
+		}
 
-		event = ical.getEvents().get(0);
-		assertEquals("Team Happy Hour", event.getSummary().getValue());
+		{
+			ICalendar ical = it.next();
+			assertSize(ical, 1, 2);
+
+			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
+			assertEquals("2.0", ical.getVersion().getMaxVersion());
+
+			VEvent event = ical.getEvents().get(0);
+			assertSize(event, 0, 1);
+			assertEquals("Team Happy Hour", event.getSummary().getValue());
+		}
 
 		assertFalse(it.hasNext());
+
+		assertWarningsLists(xcal.getParseWarnings(), 0, 0);
 	}
 
 	@Test
@@ -189,7 +202,7 @@ public class XCalDocumentTest {
 		XCalDocument xcal = new XCalDocument(xml);
 		ICalendar ical = xcal.parseFirst();
 		assertNull(ical);
-		assertEquals(0, xcal.getParseWarnings().size());
+		assertWarningsLists(xcal.getParseWarnings());
 	}
 
 	@Test
@@ -209,7 +222,7 @@ public class XCalDocumentTest {
 		XCalDocument xcal = new XCalDocument(xml);
 		ICalendar ical = xcal.parseFirst();
 		assertNull(ical);
-		assertEquals(0, xcal.getParseWarnings().size());
+		assertWarningsLists(xcal.getParseWarnings());
 	}
 
 	@Test
@@ -227,11 +240,12 @@ public class XCalDocumentTest {
 
 		XCalDocument xcal = new XCalDocument(xml);
 		ICalendar ical = xcal.parseFirst();
-		assertEquals(1, xcal.getParseWarnings().size());
-		assertWarnings(0, xcal.getParseWarnings().get(0));
+		assertSize(ical, 0, 1);
 
 		Summary prop = ical.getProperty(Summary.class);
 		assertEquals("  This \t  is \n   a   note ", prop.getValue());
+
+		assertWarningsLists(xcal.getParseWarnings(), 0);
 	}
 
 	@Test
@@ -280,8 +294,7 @@ public class XCalDocumentTest {
 
 		XCalDocument xcal = new XCalDocument(xml);
 		ICalendar ical = xcal.parseFirst();
-		assertEquals(1, xcal.getParseWarnings().size());
-		assertWarnings(0, xcal.getParseWarnings().get(0));
+		assertSize(ical, 0, 4);
 
 		Iterator<Summary> propIt = ical.getProperties(Summary.class).iterator();
 
@@ -306,6 +319,7 @@ public class XCalDocumentTest {
 		assertEquals(Arrays.asList("a", "b"), prop.getParameters("X-FOO"));
 
 		assertFalse(propIt.hasNext());
+		assertWarningsLists(xcal.getParseWarnings(), 0);
 	}
 
 	@Test
@@ -327,14 +341,14 @@ public class XCalDocumentTest {
 
 		XCalDocument xcal = new XCalDocument(xml);
 		ICalendar ical = xcal.parseFirst();
-
-		assertEquals(1, xcal.getParseWarnings().size());
-		assertWarnings(0, xcal.getParseWarnings().get(0));
+		assertSize(ical, 1, 0);
 
 		RawComponent comp = ical.getExperimentalComponent("x-party");
-		assertEquals(1, comp.getProperties().size());
+		assertSize(comp, 0, 1);
 		Summary prop = comp.getProperty(Summary.class);
 		assertEquals("Party", prop.getValue());
+
+		assertWarningsLists(xcal.getParseWarnings(), 0);
 	}
 
 	@Test
@@ -355,12 +369,11 @@ public class XCalDocumentTest {
 
 		XCalDocument xcal = new XCalDocument(xml);
 		ICalendar ical = xcal.parseFirst();
-
-		assertEquals(1, xcal.getParseWarnings().size());
-		assertWarnings(0, xcal.getParseWarnings().get(0));
-		assertEquals(1, ical.getComponents().size());
+		assertSize(ical, 1, 0);
 
 		assertNotNull(ical.getExperimentalComponent("x-party"));
+
+		assertWarningsLists(xcal.getParseWarnings(), 0);
 	}
 
 	@Test
@@ -378,13 +391,13 @@ public class XCalDocumentTest {
 
 		XCalDocument xcal = new XCalDocument(xml);
 		ICalendar ical = xcal.parseFirst();
-
-		assertEquals(1, xcal.getParseWarnings().size());
-		assertWarnings(0, xcal.getParseWarnings().get(0));
+		assertSize(ical, 0, 1);
 
 		RawProperty prop = ical.getExperimentalProperty("X-BOSS");
 		assertEquals("John Doe", prop.getValue());
 		assertEquals(ICalDataType.TEXT, prop.getDataType());
+
+		assertWarningsLists(xcal.getParseWarnings(), 0);
 	}
 
 	@Test
@@ -405,12 +418,12 @@ public class XCalDocumentTest {
 		XCalDocument xcal = new XCalDocument(xml);
 		xcal.registerScribe(new CompanyMarshaller());
 		ICalendar ical = xcal.parseFirst();
-
-		assertEquals(1, xcal.getParseWarnings().size());
-		assertWarnings(0, xcal.getParseWarnings().get(0));
+		assertSize(ical, 0, 1);
 
 		Company prop = ical.getProperty(Company.class);
 		assertEquals("John Doe", prop.getBoss());
+
+		assertWarningsLists(xcal.getParseWarnings(), 0);
 	}
 
 	@Test
@@ -430,13 +443,13 @@ public class XCalDocumentTest {
 
 		XCalDocument xcal = new XCalDocument(xml);
 		ICalendar ical = xcal.parseFirst();
-
-		assertEquals(1, xcal.getParseWarnings().size());
-		assertWarnings(0, xcal.getParseWarnings().get(0));
+		assertSize(ical, 0, 1);
 
 		Xml prop = ical.getProperty(Xml.class);
 		Document expected = XmlUtils.toDocument("<m:company xmlns:m=\"http://example.com\"><m:boss>John Doe</m:boss></m:company>");
 		assertXMLEqual(expected, prop.getValue());
+
+		assertWarningsLists(xcal.getParseWarnings(), 0);
 	}
 
 	@Test
@@ -456,17 +469,14 @@ public class XCalDocumentTest {
 		XCalDocument xcal = new XCalDocument(xml);
 		xcal.registerScribe(new SkipMeScribe());
 		ICalendar ical = xcal.parseFirst();
-
-		assertEquals(0, ical.getComponents().size());
-		assertEquals(1, ical.getProperties().size());
+		assertSize(ical, 0, 1);
 
 		RawProperty property = ical.getExperimentalProperty("X-FOO");
 		assertNull(property.getDataType());
 		assertEquals("x-foo", property.getName());
 		assertEquals("bar", property.getValue());
 
-		assertEquals(1, xcal.getParseWarnings().size());
-		assertWarnings(1, xcal.getParseWarnings().get(0));
+		assertWarningsLists(xcal.getParseWarnings(), 1);
 	}
 
 	@Test
@@ -486,9 +496,7 @@ public class XCalDocumentTest {
 		XCalDocument xcal = new XCalDocument(xml);
 		xcal.registerScribe(new CannotParseScribe());
 		ICalendar ical = xcal.parseFirst();
-
-		assertEquals(0, ical.getComponents().size());
-		assertEquals(2, ical.getProperties().size());
+		assertSize(ical, 0, 2);
 
 		RawProperty property = ical.getExperimentalProperty("x-foo");
 		assertEquals(null, property.getDataType());
@@ -499,8 +507,7 @@ public class XCalDocumentTest {
 		Document expected = XmlUtils.toDocument("<cannotparse xmlns=\"" + XCAL_NS + "\"><unknown>value</unknown></cannotparse>");
 		assertXMLEqual(expected, prop.getValue());
 
-		assertEquals(1, xcal.getParseWarnings().size());
-		assertWarnings(1, xcal.getParseWarnings().get(0));
+		assertWarningsLists(xcal.getParseWarnings(), 1);
 	}
 
 	@Test
@@ -520,11 +527,12 @@ public class XCalDocumentTest {
 
 		XCalDocument xcal = new XCalDocument(xml);
 		ICalendar ical = xcal.parseFirst();
-		assertEquals(1, xcal.getParseWarnings().size());
-		assertWarnings(0, xcal.getParseWarnings().get(0));
+		assertSize(ical, 0, 1);
 
 		Summary prop = ical.getProperty(Summary.class);
 		assertEquals("summary", prop.getValue());
+
+		assertWarningsLists(xcal.getParseWarnings(), 0);
 	}
 
 	@Test
@@ -546,8 +554,12 @@ public class XCalDocumentTest {
 
 		XCalDocument xcal = new XCalDocument(file);
 		ICalendar ical = xcal.parseFirst();
+		assertSize(ical, 0, 1);
+
 		Summary prop = ical.getProperty(Summary.class);
 		assertEquals("\u1e66ummary", prop.getValue());
+
+		assertWarningsLists(xcal.getParseWarnings(), 0);
 	}
 
 	@Test
@@ -788,21 +800,19 @@ public class XCalDocumentTest {
 
 	@Test
 	public void read_example1() throws Throwable {
-		XCalDocument xcal = new XCalDocument(getClass().getResourceAsStream("rfc6321-example1.xml"));
+		XCalDocument xcal = read("rfc6321-example1.xml");
 
-		List<ICalendar> icals = xcal.parseAll();
-		assertEquals(1, icals.size());
+		Iterator<ICalendar> it = xcal.parseAll().iterator();
 
-		ICalendar ical = icals.get(0);
-		assertEquals(3, ical.getProperties().size());
+		ICalendar ical = it.next();
+		assertSize(ical, 1, 3);
 		assertTrue(ical.getCalendarScale().isGregorian());
 		assertEquals("-//Example Inc.//Example Calendar//EN", ical.getProductId().getValue());
 		assertEquals("2.0", ical.getVersion().getMaxVersion());
 
-		assertEquals(1, ical.getComponents().size());
 		{
 			VEvent event = ical.getEvents().get(0);
-			assertEquals(4, event.getProperties().size());
+			assertSize(event, 0, 4);
 			assertDateEquals("20080205T191224Z", event.getDateTimeStamp().getValue());
 			assertDateEquals("20081006", event.getDateStart().getValue());
 			assertEquals("Planning meeting", event.getSummary().getValue());
@@ -810,6 +820,8 @@ public class XCalDocumentTest {
 		}
 
 		assertValidate(ical).run();
+
+		assertFalse(it.hasNext());
 	}
 
 	@Test
@@ -839,28 +851,25 @@ public class XCalDocumentTest {
 		DateFormat usEastern = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		usEastern.setTimeZone(TimeZone.getTimeZone("US/Eastern"));
 
-		XCalDocument xcal = new XCalDocument(getClass().getResourceAsStream("rfc6321-example2.xml"));
+		XCalDocument xcal = read("rfc6321-example2.xml");
 
-		List<ICalendar> icals = xcal.parseAll();
-		assertEquals(1, icals.size());
+		Iterator<ICalendar> it = xcal.parseAll().iterator();
 
-		ICalendar ical = icals.get(0);
-		assertEquals(2, ical.getProperties().size());
+		ICalendar ical = it.next();
+		assertSize(ical, 3, 2);
 		assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
 		assertEquals("2.0", ical.getVersion().getMaxVersion());
 
-		assertEquals(3, ical.getComponents().size());
 		{
 			VTimezone timezone = ical.getTimezones().get(0);
+			assertSize(timezone, 2, 2);
 
-			assertEquals(2, timezone.getProperties().size());
 			assertDateEquals("20040110T032845Z", timezone.getLastModified().getValue());
 			assertEquals("US/Eastern", timezone.getTimezoneId().getValue());
 
-			assertEquals(2, timezone.getComponents().size());
 			{
 				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
-				assertEquals(5, daylight.getProperties().size());
+				assertSize(daylight, 0, 5);
 				assertDateEquals("20000404T020000", daylight.getDateStart().getValue());
 				assertEquals(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false), daylight.getDateStart().getRawComponents());
 
@@ -879,7 +888,7 @@ public class XCalDocumentTest {
 			}
 			{
 				StandardTime standard = timezone.getStandardTimes().get(0);
-				assertEquals(5, standard.getProperties().size());
+				assertSize(standard, 0, 5);
 				assertDateEquals("20001026T020000", standard.getDateStart().getValue());
 				assertEquals(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false), standard.getDateStart().getRawComponents());
 
@@ -899,8 +908,8 @@ public class XCalDocumentTest {
 		}
 		{
 			VEvent event = ical.getEvents().get(0);
+			assertSize(event, 0, 8);
 
-			assertEquals(8, event.getProperties().size());
 			assertDateEquals("20060206T001121Z", event.getDateTimeStamp().getValue());
 			assertEquals(usEastern.parse("2006-01-02T12:00:00"), event.getDateStart().getValue());
 			assertEquals("US/Eastern", event.getDateStart().getTimezoneId());
@@ -922,8 +931,8 @@ public class XCalDocumentTest {
 		}
 		{
 			VEvent event = ical.getEvents().get(1);
+			assertSize(event, 0, 6);
 
-			assertEquals(6, event.getProperties().size());
 			assertDateEquals("20060206T001121Z", event.getDateTimeStamp().getValue());
 			assertEquals(usEastern.parse("2006-01-04T14:00:00"), event.getDateStart().getValue());
 			assertEquals("US/Eastern", event.getDateStart().getTimezoneId());
@@ -936,6 +945,8 @@ public class XCalDocumentTest {
 		}
 
 		assertValidate(ical).run();
+
+		assertFalse(it.hasNext());
 	}
 
 	@Test
@@ -1011,6 +1022,10 @@ public class XCalDocumentTest {
 
 		assertValidate(ical).run();
 		assertExample(ical, "rfc6321-example2.xml");
+	}
+
+	private XCalDocument read(String file) throws SAXException, IOException {
+		return new XCalDocument(getClass().getResourceAsStream("rfc6321-example2.xml"));
 	}
 
 	private void assertExample(ICalendar ical, String exampleFileName) {

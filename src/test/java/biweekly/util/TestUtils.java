@@ -135,6 +135,18 @@ public class TestUtils {
 	}
 
 	/**
+	 * Asserts that a component has a specific number of sub-components and
+	 * properties.
+	 * @param component the component to check
+	 * @param subComponents the expected number of sub-components
+	 * @param properties the expected number of properties
+	 */
+	public static void assertSize(ICalComponent component, int subComponents, int properties) {
+		assertEquals(subComponents, component.getComponents().size());
+		assertEquals(properties, component.getProperties().size());
+	}
+
+	/**
 	 * Builds a timezone object with the given offset.
 	 * @param hours the hour offset
 	 * @param minutes the minute offset
