@@ -813,6 +813,7 @@ public class XCalDocumentTest {
 		{
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 4);
+
 			assertDateEquals("20080205T191224Z", event.getDateTimeStamp().getValue());
 			assertDateEquals("20081006", event.getDateStart().getValue());
 			assertEquals("Planning meeting", event.getSummary().getValue());
@@ -1025,7 +1026,7 @@ public class XCalDocumentTest {
 	}
 
 	private XCalDocument read(String file) throws SAXException, IOException {
-		return new XCalDocument(getClass().getResourceAsStream("rfc6321-example2.xml"));
+		return new XCalDocument(getClass().getResourceAsStream(file));
 	}
 
 	private void assertExample(ICalendar ical, String exampleFileName) {
