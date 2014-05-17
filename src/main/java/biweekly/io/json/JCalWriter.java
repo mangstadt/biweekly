@@ -199,6 +199,7 @@ public class JCalWriter implements Closeable, Flushable {
 	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	public void write(ICalendar ical) throws IOException {
+		index.hasScribesFor(ical);
 		writeComponent(ical);
 	}
 
@@ -214,19 +215,12 @@ public class JCalWriter implements Closeable, Flushable {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeComponent(ICalComponent component) throws IOException {
 		ICalComponentScribe componentScribe = index.getComponentScribe(component);
-		if (componentScribe == null) {
-			throw new IllegalArgumentException("No scribe found for component class \"" + component.getClass().getName() + "\".");
-		}
-
 		writer.writeStartComponent(componentScribe.getComponentName().toLowerCase());
 
 		//write properties
 		for (Object propertyObj : componentScribe.getProperties(component)) {
 			ICalProperty property = (ICalProperty) propertyObj;
 			ICalPropertyScribe propertyScribe = index.getPropertyScribe(property);
-			if (propertyScribe == null) {
-				throw new IllegalArgumentException("No scribe found for property class \"" + property.getClass().getName() + "\".");
-			}
 
 			//marshal property
 			ICalParameters parameters;

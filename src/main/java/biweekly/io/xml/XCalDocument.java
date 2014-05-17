@@ -387,6 +387,7 @@ public class XCalDocument {
 	 * {@code registerScribe} method.)
 	 */
 	public void add(ICalendar ical) {
+		index.hasScribesFor(ical);
 		Element element = buildComponentElement(ical);
 		if (root == null) {
 			root = document.createElementNS(XCAL_NS, "icalendar");
@@ -492,10 +493,6 @@ public class XCalDocument {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private Element buildComponentElement(ICalComponent component) {
 		ICalComponentScribe componentScribe = index.getComponentScribe(component);
-		if (componentScribe == null) {
-			throw new IllegalArgumentException("No scribe found for component class \"" + component.getClass().getName() + "\".");
-		}
-
 		Element componentElement = buildElement(componentScribe.getComponentName().toLowerCase());
 
 		Element propertiesWrapperElement = buildElement("properties");
@@ -548,10 +545,6 @@ public class XCalDocument {
 			parameters = property.getParameters();
 		} else {
 			ICalPropertyScribe propertyScribe = index.getPropertyScribe(property);
-			if (propertyScribe == null) {
-				throw new IllegalArgumentException("No scribe found for property class \"" + property.getClass().getName() + "\".");
-			}
-
 			propertyElement = buildElement(propertyScribe.getQName());
 
 			//marshal value

@@ -1,7 +1,11 @@
 package biweekly.io.scribe;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -376,6 +380,47 @@ public class ScribeIndex {
 		experimentalPropByName.remove(scribe.getPropertyName().toUpperCase());
 		experimentalPropByClass.remove(scribe.getPropertyClass());
 		experimentalPropByQName.remove(scribe.getQName());
+	}
+
+	/**
+	 * Checks to see if this scribe index has scribes registered for all of the
+	 * components/properties in an iCalendar object.
+	 * @param ical the iCalendar object
+	 * @throws IllegalArgumentException if the scribe index is missing scribes
+	 * for one or more properties/components.
+	 */
+	public void hasScribesFor(ICalendar ical) {
+		Set<Class<? extends Object>> unregistered = new HashSet<Class<? extends Object>>();
+		List<ICalComponent> components = new ArrayList<ICalComponent>();
+		components.add(ical);
+
+		while (!components.isEmpty()) {
+			ICalComponent component = components.remove(components.size() - 1);
+
+			Class<? extends ICalComponent> componentClass = component.getClass();
+			if (componentClass != RawComponent.class && getComponentScribe(componentClass) == null) {
+				unregistered.add(componentClass);
+			}
+
+			for (Map.Entry<Class<? extends ICalProperty>, List<ICalProperty>> entry : component.getProperties()) {
+				List<ICalProperty> properties = entry.getValue();
+				if (properties.isEmpty()) {
+					continue;
+				}
+
+				Class<? extends ICalProperty> clazz = entry.getKey();
+				if (clazz != RawProperty.class && getPropertyScribe(clazz) == null) {
+					unregistered.add(clazz);
+				}
+			}
+
+			components.addAll(component.getComponents().values());
+		}
+
+		if (!unregistered.isEmpty()) {
+			//all code that calls this method needs to throw an exception, so an exception is thrown here instead of returning some value
+			throw new IllegalArgumentException("No scribes were found the following component/property classes: " + unregistered);
+		}
 	}
 
 	/**
