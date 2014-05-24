@@ -12,7 +12,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,7 +157,7 @@ public class XCalDocument {
 	}
 
 	private ScribeIndex index = new ScribeIndex();
-	private final List<ParseWarnings> parseWarnings = new ArrayList<ParseWarnings>();
+	private List<List<String>> parseWarnings = new ArrayList<List<String>>();
 	private Document document;
 	private Element root;
 
@@ -325,11 +324,7 @@ public class XCalDocument {
 	 * @see #parseFirst
 	 */
 	public List<List<String>> getParseWarnings() {
-		List<List<String>> warnings = new ArrayList<List<String>>();
-		for (ParseWarnings pw : parseWarnings) {
-			warnings.add(pw.copy());
-		}
-		return warnings;
+		return parseWarnings;
 	}
 
 	/**
@@ -337,21 +332,11 @@ public class XCalDocument {
 	 * @return the iCalendar objects
 	 */
 	public List<ICalendar> parseAll() {
-		parseWarnings.clear();
-
 		if (root == null) {
-			return Collections.emptyList();
+			return null;
 		}
 
-		List<ICalendar> icals = new ArrayList<ICalendar>();
-		for (Element vcalendarElement : getVCalendarElements()) {
-			ParseWarnings warnings = new ParseWarnings();
-			ICalendar ical = parseICal(vcalendarElement, warnings);
-			icals.add(ical);
-			this.parseWarnings.add(warnings);
-		}
-
-		return icals;
+		return parse(false);
 	}
 
 	/**
@@ -359,20 +344,27 @@ public class XCalDocument {
 	 * @return the iCalendar object or null if there are none
 	 */
 	public ICalendar parseFirst() {
-		parseWarnings.clear();
-
 		if (root == null) {
 			return null;
 		}
 
-		ParseWarnings warnings = new ParseWarnings();
-		parseWarnings.add(warnings);
+		List<ICalendar> icals = parse(true);
+		return icals.isEmpty() ? null : icals.get(0);
+	}
 
-		List<Element> vcalendarElements = getVCalendarElements();
-		if (vcalendarElements.isEmpty()) {
-			return null;
+	private List<ICalendar> parse(boolean parseFirstOnly) {
+		XCalReader reader = new XCalReader(document);
+		reader.setScribeIndex(index);
+		XCalListenerImpl listener = new XCalListenerImpl(parseFirstOnly);
+		parseWarnings = listener.warnings;
+
+		try {
+			reader.read(listener);
+		} catch (TransformerException e) {
+			throw new RuntimeException(e);
 		}
-		return parseICal(vcalendarElements.get(0), warnings);
+
+		return listener.icals;
 	}
 
 	/**
@@ -711,5 +703,24 @@ public class XCalDocument {
 	@Override
 	public String toString() {
 		return write(2);
+	}
+
+	private static class XCalListenerImpl implements XCalListener {
+		private final List<ICalendar> icals = new ArrayList<ICalendar>();
+		private final List<List<String>> warnings = new ArrayList<List<String>>();
+		private final boolean parseFirstOnly;
+
+		public XCalListenerImpl(boolean parseFirstOnly) {
+			this.parseFirstOnly = parseFirstOnly;
+		}
+
+		public void icalRead(ICalendar ical, List<String> warnings) throws StopReadingException {
+			this.icals.add(ical);
+			this.warnings.add(warnings);
+
+			if (parseFirstOnly) {
+				throw new StopReadingException();
+			}
+		}
 	}
 }
