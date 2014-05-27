@@ -164,6 +164,19 @@ public class XCalReader implements Closeable {
 
 	/**
 	 * <p>
+	 * Registers a component scribe. This is the same as calling:
+	 * </p>
+	 * <p>
+	 * {@code getScribeIndex().register(scribe)}
+	 * </p>
+	 * @param scribe the scribe to register
+	 */
+	public void registerScribe(ICalComponentScribe<? extends ICalComponent> scribe) {
+		index.register(scribe);
+	}
+
+	/**
+	 * <p>
 	 * Registers a property scribe. This is the same as calling:
 	 * </p>
 	 * <p>
