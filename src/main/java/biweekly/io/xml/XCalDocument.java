@@ -673,6 +673,10 @@ public class XCalDocument {
 		for (Element parametersElement : getChildElements(propertyElement, PARAMETERS)) { //there should be only one <parameters> element, but parse them all incase there are more
 			List<Element> paramElements = XmlUtils.toElementList(parametersElement.getChildNodes());
 			for (Element paramElement : paramElements) {
+				if (!XCAL_NS.equals(paramElement.getNamespaceURI())) {
+					continue;
+				}
+
 				String name = paramElement.getLocalName().toUpperCase();
 				List<Element> valueElements = XmlUtils.toElementList(paramElement.getChildNodes());
 				if (valueElements.isEmpty()) {
@@ -683,6 +687,10 @@ public class XCalDocument {
 				}
 
 				for (Element valueElement : valueElements) {
+					if (!XCAL_NS.equals(valueElement.getNamespaceURI())) {
+						continue;
+					}
+
 					String value = valueElement.getTextContent();
 					parameters.put(name, value);
 				}
