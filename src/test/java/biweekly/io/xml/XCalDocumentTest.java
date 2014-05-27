@@ -789,6 +789,69 @@ public class XCalDocumentTest {
 	}
 
 	@Test
+	public void add_no_existing_icalendar_element() throws Exception {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.addExperimentalProperty("x-foo", "bar");
+
+		XCalDocument xcal = new XCalDocument("<root />");
+
+		//constructor shouldn't modify document
+		Document actual = xcal.getDocument();
+		Document expected = XmlUtils.toDocument("<root/>");
+		assertXMLEqual(expected, actual);
+
+		xcal.add(ical);
+
+		actual = xcal.getDocument();
+		//@formatter:off
+		expected = XmlUtils.toDocument(
+		"<root>" +
+			"<icalendar xmlns=\"" + XCAL_NS + "\">" +
+				"<vcalendar>" +
+					"<properties>" +
+						"<x-foo><unknown>bar</unknown></x-foo>" +
+					"</properties>" +
+				"</vcalendar>" +
+			"</icalendar>" +
+		"</root>");
+		//@formatter:on
+		assertXMLEqual(expected, actual);
+	}
+
+	@Test
+	public void add_existing_icalendar_element() throws Exception {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.addExperimentalProperty("x-foo", "bar");
+
+		XCalDocument xcal = new XCalDocument("<root><icalendar xmlns=\"" + XCAL_NS + "\"><foo/></icalendar></root>");
+
+		//constructor shouldn't modify document
+		Document actual = xcal.getDocument();
+		Document expected = XmlUtils.toDocument("<root><icalendar xmlns=\"" + XCAL_NS + "\"><foo/></icalendar></root>");
+		assertXMLEqual(expected, actual);
+
+		xcal.add(ical);
+
+		actual = xcal.getDocument();
+		//@formatter:off
+		expected = XmlUtils.toDocument(
+		"<root>" +
+			"<icalendar xmlns=\"" + XCAL_NS + "\">" +
+				"<foo />" +
+				"<vcalendar>" +
+					"<properties>" +
+						"<x-foo><unknown>bar</unknown></x-foo>" +
+					"</properties>" +
+				"</vcalendar>" +
+			"</icalendar>" +
+		"</root>");
+		//@formatter:on
+		assertXMLEqual(expected, actual);
+	}
+
+	@Test
 	public void write() {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();

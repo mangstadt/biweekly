@@ -1,6 +1,11 @@
 package biweekly.io.xml;
 
 import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
+import static biweekly.io.xml.XCalQNames.COMPONENTS;
+import static biweekly.io.xml.XCalQNames.ICALENDAR;
+import static biweekly.io.xml.XCalQNames.PARAMETERS;
+import static biweekly.io.xml.XCalQNames.PROPERTIES;
+import static biweekly.io.xml.XCalQNames.VCALENDAR;
 import static biweekly.util.IOUtils.utf8Writer;
 
 import java.io.File;
@@ -12,6 +17,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,8 +163,8 @@ public class XCalDocument {
 	}
 
 	private ScribeIndex index = new ScribeIndex();
-	private List<List<String>> parseWarnings = new ArrayList<List<String>>();
-	private Document document;
+	private final List<ParseWarnings> parseWarnings = new ArrayList<ParseWarnings>();
+	private final Document document;
 	private Element root;
 
 	/**
@@ -187,9 +193,13 @@ public class XCalDocument {
 	 * @throws SAXException if there's a problem parsing the XML
 	 */
 	public XCalDocument(File file) throws SAXException, IOException {
+		this(readFile(file));
+	}
+
+	private static Document readFile(File file) throws SAXException, IOException {
 		InputStream in = new FileInputStream(file);
 		try {
-			init(XmlUtils.toDocument(in));
+			return XmlUtils.toDocument(in);
 		} finally {
 			IOUtils.closeQuietly(in);
 		}
@@ -220,19 +230,6 @@ public class XCalDocument {
 	 * @param document the XML DOM that contains the xCal document
 	 */
 	public XCalDocument(Document document) {
-		init(document);
-	}
-
-	/**
-	 * Creates an empty xCal document.
-	 */
-	public XCalDocument() {
-		document = XmlUtils.createDocument();
-		root = document.createElementNS(XCAL_NS, "icalendar");
-		document.appendChild(root);
-	}
-
-	private void init(Document document) {
 		this.document = document;
 
 		XPath xpath = XPathFactory.newInstance().newXPath();
@@ -241,10 +238,24 @@ public class XCalDocument {
 		try {
 			//find the <icalendar> element
 			String prefix = nsContext.getPrefix();
-			root = (Element) xpath.evaluate("//" + prefix + ":icalendar", document, XPathConstants.NODE);
+			root = (Element) xpath.evaluate("//" + prefix + ":" + ICALENDAR.getLocalPart(), document, XPathConstants.NODE);
 		} catch (XPathExpressionException e) {
 			//never thrown, xpath expression is hard coded
 		}
+	}
+
+	/**
+	 * Creates an empty xCal document.
+	 */
+	public XCalDocument() {
+		this(createRoot());
+	}
+
+	private static Document createRoot() {
+		Document document = XmlUtils.createDocument();
+		Element root = document.createElementNS(ICALENDAR.getNamespaceURI(), ICALENDAR.getLocalPart());
+		document.appendChild(root);
+		return document;
 	}
 
 	/**
@@ -324,7 +335,11 @@ public class XCalDocument {
 	 * @see #parseFirst
 	 */
 	public List<List<String>> getParseWarnings() {
-		return parseWarnings;
+		List<List<String>> warnings = new ArrayList<List<String>>();
+		for (ParseWarnings pw : parseWarnings) {
+			warnings.add(pw.copy());
+		}
+		return warnings;
 	}
 
 	/**
@@ -332,11 +347,21 @@ public class XCalDocument {
 	 * @return the iCalendar objects
 	 */
 	public List<ICalendar> parseAll() {
+		parseWarnings.clear();
+
 		if (root == null) {
-			return null;
+			return Collections.emptyList();
 		}
 
-		return parse(false);
+		List<ICalendar> icals = new ArrayList<ICalendar>();
+		for (Element vcalendarElement : getVCalendarElements()) {
+			ParseWarnings warnings = new ParseWarnings();
+			ICalendar ical = parseICal(vcalendarElement, warnings);
+			icals.add(ical);
+			this.parseWarnings.add(warnings);
+		}
+
+		return icals;
 	}
 
 	/**
@@ -344,38 +369,20 @@ public class XCalDocument {
 	 * @return the iCalendar object or null if there are none
 	 */
 	public ICalendar parseFirst() {
+		parseWarnings.clear();
+
 		if (root == null) {
 			return null;
 		}
 
-		List<ICalendar> icals = parse(true);
-		return icals.isEmpty() ? null : icals.get(0);
-	}
+		ParseWarnings warnings = new ParseWarnings();
+		parseWarnings.add(warnings);
 
-	private List<ICalendar> parse(boolean parseFirstOnly) {
-		parseWarnings.clear();
-
-		XCalReader reader = new XCalReader(document);
-		reader.setScribeIndex(index);
-
-		List<ICalendar> icals = new ArrayList<ICalendar>();
-		ICalendar ical;
-		try {
-			while ((ical = reader.readNext()) != null) {
-				icals.add(ical);
-				parseWarnings.add(reader.getWarnings());
-				if (parseFirstOnly) {
-					break;
-				}
-			}
-		} catch (TransformerException e) {
-			//shouldn't be thrown
-			throw new RuntimeException(e);
-		} finally {
-			IOUtils.closeQuietly(reader);
+		List<Element> vcalendarElements = getVCalendarElements();
+		if (vcalendarElements.isEmpty()) {
+			return null;
 		}
-
-		return icals;
+		return parseICal(vcalendarElements.get(0), warnings);
 	}
 
 	/**
@@ -392,9 +399,15 @@ public class XCalDocument {
 	public void add(ICalendar ical) {
 		index.hasScribesFor(ical);
 		Element element = buildComponentElement(ical);
+
 		if (root == null) {
-			root = document.createElementNS(XCAL_NS, "icalendar");
-			document.appendChild(root);
+			root = buildElement(ICALENDAR);
+			Element documentRoot = XmlUtils.getRootElement(document);
+			if (documentRoot == null) {
+				document.appendChild(root);
+			} else {
+				documentRoot.appendChild(root);
+			}
 		}
 		root.appendChild(element);
 	}
@@ -498,7 +511,7 @@ public class XCalDocument {
 		ICalComponentScribe componentScribe = index.getComponentScribe(component);
 		Element componentElement = buildElement(componentScribe.getComponentName().toLowerCase());
 
-		Element propertiesWrapperElement = buildElement("properties");
+		Element propertiesWrapperElement = buildElement(PROPERTIES);
 		for (Object propertyObj : componentScribe.getProperties(component)) {
 			ICalProperty property = (ICalProperty) propertyObj;
 
@@ -512,7 +525,7 @@ public class XCalDocument {
 			componentElement.appendChild(propertiesWrapperElement);
 		}
 
-		Element componentsWrapperElement = buildElement("components");
+		Element componentsWrapperElement = buildElement(COMPONENTS);
 		for (Object subComponentObj : componentScribe.getComponents(component)) {
 			ICalComponent subComponent = (ICalComponent) subComponentObj;
 			Element subComponentElement = buildComponentElement(subComponent);
@@ -571,7 +584,7 @@ public class XCalDocument {
 	}
 
 	private Element buildParametersElement(ICalParameters parameters) {
-		Element parametersWrapperElement = buildElement("parameters");
+		Element parametersWrapperElement = buildElement(PARAMETERS);
 
 		for (Map.Entry<String, List<String>> parameter : parameters) {
 			String name = parameter.getKey().toLowerCase();
@@ -606,7 +619,7 @@ public class XCalDocument {
 		ICalComponent component = scribe.emptyInstance();
 
 		//parse properties
-		for (Element propertyWrapperElement : getChildElements(componentElement, "properties")) { //there should be only one <properties> element, but parse them all incase there are more
+		for (Element propertyWrapperElement : getChildElements(componentElement, PROPERTIES)) { //there should be only one <properties> element, but parse them all incase there are more
 			for (Element propertyElement : XmlUtils.toElementList(propertyWrapperElement.getChildNodes())) {
 				ICalProperty property = parseProperty(propertyElement, warnings);
 				if (property != null) {
@@ -616,7 +629,7 @@ public class XCalDocument {
 		}
 
 		//parse sub-components
-		for (Element componentWrapperElement : getChildElements(componentElement, "components")) { //there should be only one <components> element, but parse them all incase there are more
+		for (Element componentWrapperElement : getChildElements(componentElement, COMPONENTS)) { //there should be only one <components> element, but parse them all incase there are more
 			for (Element subComponentElement : XmlUtils.toElementList(componentWrapperElement.getChildNodes())) {
 				if (!XCAL_NS.equals(subComponentElement.getNamespaceURI())) {
 					continue;
@@ -657,7 +670,7 @@ public class XCalDocument {
 	private ICalParameters parseParameters(Element propertyElement) {
 		ICalParameters parameters = new ICalParameters();
 
-		for (Element parametersElement : getChildElements(propertyElement, "parameters")) { //there should be only one <parameters> element, but parse them all incase there are more
+		for (Element parametersElement : getChildElements(propertyElement, PARAMETERS)) { //there should be only one <parameters> element, but parse them all incase there are more
 			List<Element> paramElements = XmlUtils.toElementList(parametersElement.getChildNodes());
 			for (Element paramElement : paramElements) {
 				String name = paramElement.getLocalName().toUpperCase();
@@ -698,13 +711,14 @@ public class XCalDocument {
 	}
 
 	private List<Element> getVCalendarElements() {
-		return getChildElements(root, "vcalendar");
+		return getChildElements(root, VCALENDAR);
 	}
 
-	private List<Element> getChildElements(Element parent, String localName) {
+	private List<Element> getChildElements(Element parent, QName qname) {
 		List<Element> elements = new ArrayList<Element>();
 		for (Element child : XmlUtils.toElementList(parent.getChildNodes())) {
-			if (localName.equals(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {
+			QName childQName = new QName(child.getNamespaceURI(), child.getLocalName());
+			if (qname.equals(childQName)) {
 				elements.add(child);
 			}
 		}
