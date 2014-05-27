@@ -54,6 +54,7 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.CalendarScale;
 import biweekly.property.DateStart;
 import biweekly.property.ICalProperty;
+import biweekly.property.ProductId;
 import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceDates;
 import biweekly.property.SkipMeProperty;
@@ -223,6 +224,64 @@ public class XCalDocumentTest {
 		ICalendar ical = xcal.parseFirst();
 		assertNull(ical);
 		assertWarningsLists(xcal.getParseWarnings());
+	}
+
+	@Test
+	public void parse_ignore_other_namespaces() throws Exception {
+		//@formatter:off
+		String xml =
+		"<root>" +
+			"<ignore xmlns=\"one\">text</ignore>" +
+			"<icalendar xmlns=\"" + XCAL_NS + "\">" +
+				"<ignore xmlns=\"two\">text</ignore>" +
+				"<vcalendar>" +
+					"<ignore xmlns=\"three\">text</ignore>" +
+					"<properties>" +
+						"<prodid>" +
+							"<parameters>" +
+								"<ignore xmlns=\"three\">text</ignore>" +
+								"<x-foo><ignore xmlns=\"three\">text</ignore><text>bar</text></x-foo>" +
+							"</parameters>" +
+							"<text>-//Example Inc.//Example Client//EN</text>" +
+						"</prodid>" +
+						"<version><text>2.0</text></version>" +
+					"</properties>" +
+					"<components>" +
+						"<ignore xmlns=\"four\">text</ignore>" +
+						"<vevent>" +
+							"<ignore xmlns=\"five\">text</ignore>" +
+							"<properties>" +
+								"<summary><text>Team Meeting</text></summary>" +
+							"</properties>" +
+							"<ignore xmlns=\"six\">text</ignore>" +
+						"</vevent>" +
+					"</components>" +
+				"</vcalendar>" +
+			"</icalendar>" + 
+		"</root>";
+		//@formatter:on
+
+		XCalDocument xcal = new XCalDocument(xml);
+		Iterator<ICalendar> it = xcal.parseAll().iterator();
+
+		{
+			ICalendar ical = it.next();
+			assertSize(ical, 1, 2);
+
+			ProductId productId = ical.getProductId();
+			assertEquals("-//Example Inc.//Example Client//EN", productId.getValue());
+			assertEquals("bar", productId.getParameter("x-foo"));
+
+			assertEquals("2.0", ical.getVersion().getMaxVersion());
+
+			VEvent event = ical.getEvents().get(0);
+			assertSize(event, 0, 1);
+			assertEquals("Team Meeting", event.getSummary().getValue());
+		}
+
+		assertFalse(it.hasNext());
+
+		assertWarningsLists(xcal.getParseWarnings(), 0);
 	}
 
 	@Test

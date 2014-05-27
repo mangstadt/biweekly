@@ -15,7 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.ErrorListener;
@@ -91,7 +93,7 @@ import biweekly.util.XmlUtils;
  * File file = new File("xcals.xml");
  * final List&lt;ICAlendar&gt; icals = new ArrayList&lt;ICalendar&gt;();
  * XCalReader xcalReader = new XCalReader(file);
- * xcalReader.read(new XCalistener(){
+ * xcalReader.read(new XCalListener(){
  *   public void icalRead(ICalendar ical, List&lt;String&gt; warnings) throws StopReadingException{
  *     icals.add(ical);
  *     //throw a "StopReadingException" to stop parsing early
@@ -238,18 +240,14 @@ public class XCalReader implements Closeable {
 
 	private class ContentHandlerImpl extends DefaultHandler {
 		private final Document DOC = XmlUtils.createDocument();
+		private final XCalStructure structure = new XCalStructure();
+		private final StringBuilder characterBuffer = new StringBuilder();
+		private final LinkedList<ICalComponent> componentStack = new LinkedList<ICalComponent>();
 
-		private boolean inICalendar, inProperties, inParameters;
-		private String paramName, paramDataType;
-		private StringBuilder characterBuffer = new StringBuilder();
-		private int dupNested = 0;
 		private Element propertyElement, parent;
-		private LinkedList<ICalComponent> componentStack = new LinkedList<ICalComponent>();
-		private LinkedList<QName> componentQNamesStack = new LinkedList<QName>();
-
+		private QName paramName;
 		private ICalendar ical;
 		private ICalComponent curComponent;
-		private QName componentQName;
 		private ICalParameters parameters;
 
 		@Override
@@ -263,117 +261,145 @@ public class XCalReader implements Closeable {
 			String textContent = characterBuffer.toString();
 			characterBuffer.setLength(0);
 
-			if (!inICalendar) {
+			if (structure.isEmpty()) {
+				//<icalendar>
 				if (ICALENDAR.equals(qname)) {
-					inICalendar = true;
+					structure.push(ElementType.icalendar);
 				}
 				return;
 			}
 
-			if (ical == null) {
-				if (VCALENDAR.equals(qname)) {
-					ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(localName);
-					ICalComponent component = scribe.emptyInstance();
+			ElementType parentType = structure.peek();
+			ElementType typeToPush = null;
+			//System.out.println(structure.stack + " current: " + localName);
+			if (parentType != null) {
+				switch (parentType) {
 
-					curComponent = component;
-					componentQName = qname;
-					ical = (ICalendar) component;
+				case icalendar:
+					//<vcalendar>
+					if (VCALENDAR.equals(qname)) {
+						ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(localName);
+						ICalComponent component = scribe.emptyInstance();
+
+						curComponent = component;
+						ical = (ICalendar) component;
+						typeToPush = ElementType.component;
+					}
+					break;
+
+				case component:
+					if (PROPERTIES.equals(qname)) {
+						//<properties>
+						typeToPush = ElementType.properties;
+					} else if (COMPONENTS.equals(qname)) {
+						//<components>
+						componentStack.add(curComponent);
+						curComponent = null;
+
+						typeToPush = ElementType.components;
+					}
+					break;
+
+				case components:
+					//start component element
+					if (XCAL_NS.equals(namespace)) {
+						ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(localName);
+						curComponent = scribe.emptyInstance();
+
+						ICalComponent parent = componentStack.getLast();
+						parent.addComponent(curComponent);
+
+						typeToPush = ElementType.component;
+					}
+					break;
+
+				case properties:
+					//start property element
+					propertyElement = createElement(namespace, localName, attributes);
+					parameters = new ICalParameters();
+					parent = propertyElement;
+					typeToPush = ElementType.property;
+					break;
+
+				case property:
+					//<parameters>
+					if (PARAMETERS.equals(qname)) {
+						typeToPush = ElementType.parameters;
+					}
+					break;
+
+				case parameters:
+					//inside of <parameters>
+					if (XCAL_NS.equals(namespace)) {
+						paramName = qname;
+						typeToPush = ElementType.parameter;
+					}
+					break;
+
+				case parameter:
+					//inside of a parameter element
+					if (XCAL_NS.equals(namespace)) {
+						typeToPush = ElementType.parameterValue;
+					}
+					break;
+				case parameterValue:
+					//should never have child elements
+					break;
 				}
-				return;
 			}
 
-			if (!inProperties) {
-				if (PROPERTIES.equals(qname)) {
-					inProperties = true;
-					return;
+			//append element to property element
+			if (propertyElement != null && typeToPush != ElementType.property && typeToPush != ElementType.parameters && !structure.underParameters()) {
+				if (textContent.length() > 0) {
+					parent.appendChild(DOC.createTextNode(textContent));
 				}
-				if (COMPONENTS.equals(qname)) {
-					componentStack.add(curComponent);
-					componentQNamesStack.add(componentQName);
-					curComponent = null;
-					componentQName = null;
-					return;
-				}
-				if (curComponent == null && XCAL_NS.equals(namespace)) {
-					ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(localName);
-					curComponent = scribe.emptyInstance();
-					componentQName = qname;
 
-					ICalComponent parent = componentStack.getLast();
-					parent.addComponent(curComponent);
-					return;
-				}
-				return;
+				Element element = createElement(namespace, localName, attributes);
+				parent.appendChild(element);
+				parent = element;
 			}
 
-			//we're parsing a property
-			if (propertyElement == null) {
-				propertyElement = createElement(namespace, localName, attributes);
-				parameters = new ICalParameters();
-				parent = propertyElement;
-				return;
-			}
-
-			if (!inParameters && PARAMETERS.equals(qname)) {
-				inParameters = true;
-				return;
-			}
-
-			if (inParameters) {
-				if (paramName == null) {
-					paramName = localName;
-				} else if (paramDataType == null) {
-					paramDataType = localName;
-				}
-				return;
-			}
-
-			if (textContent.length() > 0) {
-				parent.appendChild(DOC.createTextNode(textContent));
-			}
-
-			if (propertyElement.getNamespaceURI().equals(namespace) && propertyElement.getLocalName().equals(localName)) {
-				//incase a child element of the property element has the same qname as the property element
-				//e.g. a <duration> property can have a <duration> data value.
-				dupNested++;
-			}
-			Element element = createElement(namespace, localName, attributes);
-			parent.appendChild(element);
-			parent = element;
+			structure.push(typeToPush);
 		}
 
 		@Override
 		public void endElement(String namespace, String localName, String qName) throws SAXException {
-			QName qname = new QName(namespace, localName);
 			String textContent = characterBuffer.toString();
 			characterBuffer.setLength(0);
 
-			if (paramDataType != null && localName.equals(paramDataType)) {
-				parameters.put(paramName, textContent);
-				paramDataType = null;
+			if (structure.isEmpty()) {
+				//no <icalendar> elements were read yet
 				return;
 			}
 
-			if (paramName != null && localName.equals(paramName)) {
-				paramName = null;
+			ElementType type = structure.pop();
+			if (type == null && (propertyElement == null || structure.underParameters())) {
+				//it's a non-xCal element
 				return;
 			}
 
-			if (inParameters) {
-				if (PARAMETERS.equals(qname)) {
-					inParameters = false;
-				}
-				return;
-			}
+			//System.out.println(structure.stack + " ending: " + localName);
+			if (type != null) {
+				switch (type) {
+				case parameterValue:
+					parameters.put(paramName.getLocalPart(), textContent);
+					break;
 
-			if (propertyElement != null && namespace.equals(propertyElement.getNamespaceURI()) && localName.equals(propertyElement.getLocalName())) {
-				if (dupNested > 0) {
-					dupNested--;
-				} else {
+				case parameter:
+					//do nothing
+					break;
+
+				case parameters:
+					//do nothing
+					break;
+
+				case property:
 					propertyElement.appendChild(DOC.createTextNode(textContent));
 
+					//unmarshal property and add to parent component
+					QName propertyQName = new QName(propertyElement.getNamespaceURI(), propertyElement.getLocalName());
 					String propertyName = localName;
-					ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(qname);
+					ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyQName);
 					try {
 						Result<? extends ICalProperty> result = scribe.parseXml(propertyElement, parameters);
 						ICalProperty property = result.getProperty();
@@ -395,50 +421,44 @@ public class XCalReader implements Closeable {
 					}
 
 					propertyElement = null;
-					return;
+					break;
+
+				case component:
+					curComponent = null;
+
+					//</vcalendar>
+					if (VCALENDAR.getNamespaceURI().equals(namespace) && VCALENDAR.getLocalPart().equals(localName)) {
+						listener.icalRead(ical, warnings.copy());
+						warnings.clear();
+						ical = null;
+					}
+					break;
+
+				case properties:
+					break;
+
+				case components:
+					curComponent = componentStack.removeLast();
+					break;
+
+				case icalendar:
+					break;
 				}
 			}
 
-			if (curComponent != null && componentQName.equals(qname)) {
-				curComponent = null;
-				componentQName = null;
-
-				if (VCALENDAR.equals(qname)) {
-					listener.icalRead(ical, warnings.copy());
-					warnings.clear();
-					ical = null;
+			//append element to property element
+			if (propertyElement != null && type != ElementType.property && type != ElementType.parameters && !structure.underParameters()) {
+				if (textContent.length() > 0) {
+					parent.appendChild(DOC.createTextNode(textContent));
 				}
-				return;
+				parent = (Element) parent.getParentNode();
 			}
-
-			if (inProperties && PROPERTIES.equals(qname)) {
-				inProperties = false;
-				return;
-			}
-
-			if (curComponent == null && COMPONENTS.equals(qname)) {
-				curComponent = componentStack.removeLast();
-				componentQName = componentQNamesStack.removeLast();
-				return;
-			}
-
-			if (inICalendar && ICALENDAR.equals(qname)) {
-				inICalendar = false;
-				return;
-			}
-
-			if (parent == null) {
-				return;
-			}
-
-			if (textContent.length() > 0) {
-				parent.appendChild(DOC.createTextNode(textContent));
-			}
-			parent = (Element) parent.getParentNode();
 		}
 
 		private Element createElement(String namespace, String localName, Attributes attributes) {
 			Element element = DOC.createElementNS(namespace, localName);
+
+			//copy the attributes
 			for (int i = 0; i < attributes.getLength(); i++) {
 				String qname = attributes.getQName(i);
 				if (qname.startsWith("xmlns:")) {
@@ -449,7 +469,84 @@ public class XCalReader implements Closeable {
 				String value = attributes.getValue(i);
 				element.setAttribute(name, value);
 			}
+
 			return element;
+		}
+	}
+
+	private enum ElementType {
+		//<vcalendar> is treated as a component
+		//use lower-case so the names aren't confused with XCalQNames names
+		icalendar, components, properties, component, property, parameters, parameter, parameterValue;
+	}
+
+	//you need to keep track of the xCal structure (you can't just do QName comparisons)
+	//this is because it's possible for two elements to have the same QName, but be treated differently depending on their location in the document (e.g. <duration> property and <duration> data type)
+	/**
+	 * <p>
+	 * Keeps track of the structure of an xCal XML document.
+	 * </p>
+	 * 
+	 * <p>
+	 * Note that this class is here because you can't just do QName comparisons
+	 * on a one-by-one basis. The location of an XML element within the XML
+	 * document is important too. It's possible for two elements to have the
+	 * same QName, but be treated differently depending on their location (e.g.
+	 * the {@code <duration>} property has a {@code <duration>} data type)
+	 * </p>
+	 */
+	private class XCalStructure {
+		private final List<ElementType> stack = new ArrayList<ElementType>();
+
+		/**
+		 * Pops the top element type off the stack.
+		 * @return the element type or null if the stack is empty
+		 */
+		public ElementType pop() {
+			return stack.isEmpty() ? null : stack.remove(stack.size() - 1);
+		}
+
+		/**
+		 * Looks at the top element type.
+		 * @return the top element type or null if the stack is empty
+		 */
+		public ElementType peek() {
+			return stack.isEmpty() ? null : stack.get(stack.size() - 1);
+		}
+
+		/**
+		 * Adds an element type to the stack.
+		 * @param type the type to add or null if the XML element is not an xCal
+		 * element
+		 */
+		public void push(ElementType type) {
+			stack.add(type);
+		}
+
+		/**
+		 * Determines if the leaf node is under a {@code <parameters>} element.
+		 * @return true if it is, false if not
+		 */
+		public boolean underParameters() {
+			//get the first non-null type
+			ElementType nonNull = null;
+			for (int i = stack.size() - 1; i >= 0; i--) {
+				ElementType type = stack.get(i);
+				if (type != null) {
+					nonNull = type;
+					break;
+				}
+			}
+
+			return nonNull == ElementType.parameters || nonNull == ElementType.parameter || nonNull == ElementType.parameterValue;
+		}
+
+		/**
+		 * Determines if the stack is empty
+		 * @return true if the stack is empty, false if not
+		 */
+		public boolean isEmpty() {
+			return stack.isEmpty();
 		}
 	}
 
