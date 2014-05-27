@@ -18,6 +18,8 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.ErrorListener;
@@ -26,7 +28,6 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
@@ -90,14 +91,12 @@ import biweekly.util.XmlUtils;
  * <b>Example:</b>
  * 
  * <pre class="brush:java">
- * File file = new File("xcals.xml");
- * final List&lt;ICAlendar&gt; icals = new ArrayList&lt;ICalendar&gt;();
+ * File file = new File(&quot;xcals.xml&quot;);
+ * List&lt;ICalendar&gt; icals = new ArrayList&lt;ICalendar&gt;();
  * XCalReader xcalReader = new XCalReader(file);
- * xcalReader.read(new XCalListener(){
- *   public void icalRead(ICalendar ical, List&lt;String&gt; warnings) throws StopReadingException{
- *     icals.add(ical);
- *     //throw a "StopReadingException" to stop parsing early
- *   }
+ * ICalendar ical;
+ * while ((ical = xcalReader.readNext()) != null) {
+ * 	icals.add(ical);
  * }
  * </pre>
  * 
@@ -108,9 +107,16 @@ import biweekly.util.XmlUtils;
 public class XCalReader implements Closeable {
 	private final Source source;
 	private final Closeable stream;
+
+	private volatile ICalendar readICal;
 	private final ParseWarnings warnings = new ParseWarnings();
-	private ScribeIndex index = new ScribeIndex();
-	private XCalListener listener;
+	private volatile TransformerException thrown;
+	private volatile ScribeIndex index = new ScribeIndex();
+
+	private final ReadThread thread = new ReadThread();
+	private final Object lock = new Object();
+	private final BlockingQueue<Object> readerBlock = new ArrayBlockingQueue<Object>(1);
+	private final BlockingQueue<Object> threadBlock = new ArrayBlockingQueue<Object>(1);
 
 	/**
 	 * Creates an xCal reader.
@@ -186,54 +192,103 @@ public class XCalReader implements Closeable {
 	}
 
 	/**
-	 * Starts parsing the XML document. This method blocks until the entire
-	 * input stream or DOM is consumed, or until a {@link StopReadingException}
-	 * is thrown from the given {@link XCalListener}.
-	 * @param listener used for retrieving the parsed vCards
-	 * @throws TransformerException if there's a problem reading from the input
-	 * stream or a problem parsing the XML
+	 * Gets the warnings from the last iCalendar object that was unmarshalled.
+	 * This list is reset every time a new iCalendar object is read.
+	 * @return the warnings or empty list if there were no warnings
 	 */
-	public void read(XCalListener listener) throws TransformerException {
-		this.listener = listener;
+	public List<String> getWarnings() {
+		return warnings.copy();
+	}
 
-		//create the transformer
-		Transformer transformer;
-		try {
-			transformer = TransformerFactory.newInstance().newTransformer();
-		} catch (TransformerConfigurationException e) {
-			//no complex configurations
-			throw new RuntimeException(e);
-		} catch (TransformerFactoryConfigurationError e) {
-			//no complex configurations
-			throw new RuntimeException(e);
+	/**
+	 * Reads the next iCalendar object from the xCal stream.
+	 * @return the next iCalendar object or null if there are no more
+	 * @throws TransformerException if there's a problem reading from the stream
+	 */
+	public ICalendar readNext() throws TransformerException {
+		readICal = null;
+		warnings.clear();
+		thrown = null;
+
+		if (!thread.started) {
+			thread.start();
+		} else {
+			if (thread.finished || thread.closed) {
+				return null;
+			}
+
+			try {
+				threadBlock.put(lock);
+			} catch (InterruptedException e) {
+				return null;
+			}
 		}
 
-		//prevent error messages from being printed to stderr
-		transformer.setErrorListener(new ErrorListener() {
-			public void error(TransformerException e) {
-				//empty
-			}
-
-			public void fatalError(TransformerException e) {
-				//empty
-			}
-
-			public void warning(TransformerException e) {
-				//empty
-			}
-		});
-
-		//start parsing
-		ContentHandlerImpl handler = new ContentHandlerImpl();
-		SAXResult result = new SAXResult(handler);
+		//wait until thread reads xCard
 		try {
-			transformer.transform(source, result);
-		} catch (TransformerException e) {
-			Throwable cause = e.getCause();
-			if (cause != null && cause instanceof StopReadingException) {
-				//ignore StopReadingException because it signals that the user canceled the parsing operation
-			} else {
-				throw e;
+			readerBlock.take();
+		} catch (InterruptedException e) {
+			return null;
+		}
+
+		if (thrown != null) {
+			throw thrown;
+		}
+
+		return readICal;
+	}
+
+	private class ReadThread extends Thread {
+		private final SAXResult result;
+		private final Transformer transformer;
+		private volatile boolean finished = false, started = false, closed = false;
+
+		public ReadThread() {
+			setName(getClass().getSimpleName());
+
+			//create the transformer
+			try {
+				transformer = TransformerFactory.newInstance().newTransformer();
+			} catch (TransformerConfigurationException e) {
+				//no complex configurations
+				throw new RuntimeException(e);
+			}
+
+			//prevent error messages from being printed to stderr
+			transformer.setErrorListener(new ErrorListener() {
+				public void error(TransformerException e) {
+					//empty
+				}
+
+				public void fatalError(TransformerException e) {
+					//empty
+				}
+
+				public void warning(TransformerException e) {
+					//empty
+				}
+			});
+
+			result = new SAXResult(new ContentHandlerImpl());
+		}
+
+		@Override
+		public void run() {
+			started = true;
+
+			try {
+				transformer.transform(source, result);
+			} catch (TransformerException e) {
+				if (!thread.closed) {
+					thrown = e;
+				}
+			} finally {
+				finished = true;
+				try {
+					readerBlock.put(lock);
+				} catch (InterruptedException e) {
+					//ignore
+				}
 			}
 		}
 	}
@@ -246,7 +301,6 @@ public class XCalReader implements Closeable {
 
 		private Element propertyElement, parent;
 		private QName paramName;
-		private ICalendar ical;
 		private ICalComponent curComponent;
 		private ICalParameters parameters;
 
@@ -282,7 +336,7 @@ public class XCalReader implements Closeable {
 						ICalComponent component = scribe.emptyInstance();
 
 						curComponent = component;
-						ical = (ICalendar) component;
+						readICal = (ICalendar) component;
 						typeToPush = ElementType.component;
 					}
 					break;
@@ -428,9 +482,14 @@ public class XCalReader implements Closeable {
 
 					//</vcalendar>
 					if (VCALENDAR.getNamespaceURI().equals(namespace) && VCALENDAR.getLocalPart().equals(localName)) {
-						listener.icalRead(ical, warnings.copy());
-						warnings.clear();
-						ical = null;
+						//wait for readNext() to be called again
+						try {
+							readerBlock.put(lock);
+							threadBlock.take();
+						} catch (InterruptedException e) {
+							throw new SAXException(e);
+						}
+						return;
 					}
 					break;
 
@@ -554,6 +613,11 @@ public class XCalReader implements Closeable {
 	 * Closes the underlying input stream.
 	 */
 	public void close() throws IOException {
+		if (thread.isAlive()) {
+			thread.closed = true;
+			thread.interrupt();
+		}
+
 		if (stream != null) {
 			stream.close();
 		}

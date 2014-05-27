@@ -353,18 +353,29 @@ public class XCalDocument {
 	}
 
 	private List<ICalendar> parse(boolean parseFirstOnly) {
+		parseWarnings.clear();
+
 		XCalReader reader = new XCalReader(document);
 		reader.setScribeIndex(index);
-		XCalListenerImpl listener = new XCalListenerImpl(parseFirstOnly);
-		parseWarnings = listener.warnings;
 
+		List<ICalendar> icals = new ArrayList<ICalendar>();
+		ICalendar ical;
 		try {
-			reader.read(listener);
+			while ((ical = reader.readNext()) != null) {
+				icals.add(ical);
+				parseWarnings.add(reader.getWarnings());
+				if (parseFirstOnly) {
+					break;
+				}
+			}
 		} catch (TransformerException e) {
+			//shouldn't be thrown
 			throw new RuntimeException(e);
+		} finally {
+			IOUtils.closeQuietly(reader);
 		}
 
-		return listener.icals;
+		return icals;
 	}
 
 	/**
@@ -703,24 +714,5 @@ public class XCalDocument {
 	@Override
 	public String toString() {
 		return write(2);
-	}
-
-	private static class XCalListenerImpl implements XCalListener {
-		private final List<ICalendar> icals = new ArrayList<ICalendar>();
-		private final List<List<String>> warnings = new ArrayList<List<String>>();
-		private final boolean parseFirstOnly;
-
-		public XCalListenerImpl(boolean parseFirstOnly) {
-			this.parseFirstOnly = parseFirstOnly;
-		}
-
-		public void icalRead(ICalendar ical, List<String> warnings) throws StopReadingException {
-			this.icals.add(ical);
-			this.warnings.add(warnings);
-
-			if (parseFirstOnly) {
-				throw new StopReadingException();
-			}
-		}
 	}
 }
