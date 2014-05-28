@@ -416,7 +416,7 @@ public class XCalReader implements Closeable {
 			}
 
 			//append element to property element
-			if (propertyElement != null && typeToPush != ElementType.property && typeToPush != ElementType.parameters && !structure.underParameters()) {
+			if (propertyElement != null && typeToPush != ElementType.property && typeToPush != ElementType.parameters && !structure.isUnderParameters()) {
 				if (textContent.length() > 0) {
 					parent.appendChild(DOC.createTextNode(textContent));
 				}
@@ -440,7 +440,7 @@ public class XCalReader implements Closeable {
 			}
 
 			ElementType type = structure.pop();
-			if (type == null && (propertyElement == null || structure.underParameters())) {
+			if (type == null && (propertyElement == null || structure.isUnderParameters())) {
 				//it's a non-xCal element
 				return;
 			}
@@ -519,7 +519,7 @@ public class XCalReader implements Closeable {
 			}
 
 			//append element to property element
-			if (propertyElement != null && type != ElementType.property && type != ElementType.parameters && !structure.underParameters()) {
+			if (propertyElement != null && type != ElementType.property && type != ElementType.parameters && !structure.isUnderParameters()) {
 				if (textContent.length() > 0) {
 					parent.appendChild(DOC.createTextNode(textContent));
 				}
@@ -547,13 +547,11 @@ public class XCalReader implements Closeable {
 	}
 
 	private enum ElementType {
-		//<vcalendar> is treated as a component
-		//use lower-case so the names aren't confused with XCalQNames names
+		//a value is missing for "vcalendar" because it is treated as a "component"
+		//enum values are lower-case so they won't get confused with the "XCalQNames" variable names
 		icalendar, components, properties, component, property, parameters, parameter, parameterValue;
 	}
 
-	//you need to keep track of the xCal structure (you can't just do QName comparisons)
-	//this is because it's possible for two elements to have the same QName, but be treated differently depending on their location in the document (e.g. <duration> property and <duration> data type)
 	/**
 	 * <p>
 	 * Keeps track of the structure of an xCal XML document.
@@ -599,7 +597,7 @@ public class XCalReader implements Closeable {
 		 * Determines if the leaf node is under a {@code <parameters>} element.
 		 * @return true if it is, false if not
 		 */
-		public boolean underParameters() {
+		public boolean isUnderParameters() {
 			//get the first non-null type
 			ElementType nonNull = null;
 			for (int i = stack.size() - 1; i >= 0; i--) {
