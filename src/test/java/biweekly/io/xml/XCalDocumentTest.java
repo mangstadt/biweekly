@@ -475,7 +475,7 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		xcal.registerScribe(new CompanyMarshaller());
+		xcal.registerScribe(new CompanyScribe());
 		ICalendar ical = xcal.parseFirst();
 		assertSize(ical, 0, 1);
 
@@ -683,7 +683,7 @@ public class XCalDocumentTest {
 		ical.addComponent(party);
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.registerScribe(new PartyMarshaller());
+		xcal.registerScribe(new PartyScribe());
 		xcal.add(ical);
 
 		Document actual = xcal.getDocument();
@@ -711,7 +711,7 @@ public class XCalDocumentTest {
 		ical.addProperty(new Company("John Doe"));
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.registerScribe(new CompanyMarshaller());
+		xcal.registerScribe(new CompanyScribe());
 		xcal.add(ical);
 
 		Document actual = xcal.getDocument();
@@ -1164,8 +1164,8 @@ public class XCalDocumentTest {
 		}
 	}
 
-	private class CompanyMarshaller extends ICalPropertyScribe<Company> {
-		public CompanyMarshaller() {
+	private class CompanyScribe extends ICalPropertyScribe<Company> {
+		public CompanyScribe() {
 			super(Company.class, "X-COMPANY", null, new QName("http://example.com", "company"));
 		}
 
@@ -1214,8 +1214,8 @@ public class XCalDocumentTest {
 		}
 	}
 
-	private class PartyMarshaller extends ICalComponentScribe<Party> {
-		public PartyMarshaller() {
+	private class PartyScribe extends ICalComponentScribe<Party> {
+		public PartyScribe() {
 			super(Party.class, "X-PARTY");
 		}
 
