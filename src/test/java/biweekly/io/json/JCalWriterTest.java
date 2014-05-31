@@ -516,7 +516,6 @@ public class JCalWriterTest {
 
 	@Test
 	public void jcal_draft_example1() throws Throwable {
-		//see: http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05#page-25
 		//Note: all whitespace is removed from the expected JSON string it easier to compare it with the actual result
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
@@ -539,7 +538,6 @@ public class JCalWriterTest {
 
 	@Test
 	public void jcal_draft_example2() throws Throwable {
-		//see: http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05#page-27
 		//Note: all whitespace is removed from the expected JSON string it easier to compare it with the actual result
 		VTimezone usEasternTz;
 		ICalendar ical = new ICalendar();

@@ -45,8 +45,7 @@ import com.fasterxml.jackson.core.JsonToken;
 /**
  * Parses an iCalendar JSON data stream (jCal).
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05">jCal
- * draft</a>
+ * @see <a href="http://tools.ietf.org/html/rfc7265">RFC 7265</a>
  */
 public class JCalRawReader implements Closeable {
 	private static final String vcalendarComponentName = ScribeIndex.getICalendarScribe().getComponentName().toLowerCase(); //"vcalendar"

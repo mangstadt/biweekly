@@ -501,7 +501,6 @@ public class JCalReaderTest {
 
 	@Test
 	public void jcal_draft_example1() throws Throwable {
-		//see: http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05#page-25
 		JCalReader reader = read("jcal-draft-example1.json");
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 1, 3);
@@ -528,7 +527,6 @@ public class JCalReaderTest {
 
 	@Test
 	public void jcal_draft_example2() throws Throwable {
-		//see: http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05#page-27
 		JCalReader reader = read("jcal-draft-example2.json");
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 3, 2);

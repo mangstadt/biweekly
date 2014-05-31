@@ -63,8 +63,7 @@ import biweekly.property.ICalProperty;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/draft-ietf-jcardcal-jcal-05">jCal
- * draft</a>
+ * @see <a href="http://tools.ietf.org/html/rfc7265">RFC 7265</a>
  */
 public class JCalWriter implements Closeable, Flushable {
 	private ScribeIndex index = new ScribeIndex();
