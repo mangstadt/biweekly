@@ -407,7 +407,6 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	}
 
 	/**
-	 * /**
 	 * <p>
 	 * Unmarshals a property from a JSON data stream (jCal).
 	 * </p>
