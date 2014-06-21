@@ -162,7 +162,7 @@ public class XCalDocumentTest {
 			assertSize(ical, 1, 2);
 
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-			assertEquals("2.0", ical.getVersion().getMaxVersion());
+			assertTrue(ical.getVersion().isV2_0());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -174,7 +174,7 @@ public class XCalDocumentTest {
 			assertSize(ical, 1, 2);
 
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-			assertEquals("2.0", ical.getVersion().getMaxVersion());
+			assertTrue(ical.getVersion().isV2_0());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -272,7 +272,7 @@ public class XCalDocumentTest {
 			assertEquals("-//Example Inc.//Example Client//EN", productId.getValue());
 			assertEquals("bar", productId.getParameter("x-foo"));
 
-			assertEquals("2.0", ical.getVersion().getMaxVersion());
+			assertTrue(ical.getVersion().isV2_0());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -930,7 +930,7 @@ public class XCalDocumentTest {
 		assertSize(ical, 1, 3);
 		assertTrue(ical.getCalendarScale().isGregorian());
 		assertEquals("-//Example Inc.//Example Calendar//EN", ical.getProductId().getValue());
-		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertTrue(ical.getVersion().isV2_0());
 
 		{
 			VEvent event = ical.getEvents().get(0);
@@ -981,7 +981,7 @@ public class XCalDocumentTest {
 		ICalendar ical = it.next();
 		assertSize(ical, 3, 2);
 		assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertTrue(ical.getVersion().isV2_0());
 
 		{
 			VTimezone timezone = ical.getTimezones().get(0);

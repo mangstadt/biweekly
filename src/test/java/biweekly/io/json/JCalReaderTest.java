@@ -113,7 +113,7 @@ public class JCalReaderTest {
 		assertSize(ical, 1, 2);
 
 		assertEquals("-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN", ical.getProductId().getValue());
-		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertTrue(ical.getVersion().isV2_0());
 
 		VEvent event = ical.getEvents().get(0);
 		assertSize(event, 0, 2);
@@ -172,7 +172,7 @@ public class JCalReaderTest {
 			assertSize(ical, 1, 2);
 
 			assertEquals("prodid1", ical.getProductId().getValue());
-			assertEquals("2.0", ical.getVersion().getMaxVersion());
+			assertTrue(ical.getVersion().isV2_0());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 2);
@@ -187,7 +187,7 @@ public class JCalReaderTest {
 			assertSize(ical, 1, 2);
 
 			assertEquals("prodid2", ical.getProductId().getValue());
-			assertEquals("2.0", ical.getVersion().getMaxVersion());
+			assertTrue(ical.getVersion().isV2_0());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 2);
@@ -506,7 +506,7 @@ public class JCalReaderTest {
 		assertSize(ical, 1, 3);
 
 		assertEquals("-//Example Inc.//Example Calendar//EN", ical.getProductId().getValue());
-		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertTrue(ical.getVersion().isV2_0());
 		assertTrue(ical.getCalendarScale().isGregorian());
 
 		{
@@ -535,7 +535,7 @@ public class JCalReaderTest {
 		usEastern.setTimeZone(TimeZone.getTimeZone("US/Eastern"));
 
 		assertEquals("-//Example Corp.//Example Client//EN", ical.getProductId().getValue());
-		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertTrue(ical.getVersion().isV2_0());
 
 		{
 			VTimezone timezone = ical.getTimezones().get(0);

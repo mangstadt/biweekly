@@ -8,6 +8,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -68,7 +69,7 @@ public class BiweeklyTest {
 
 		ICalendar ical = Biweekly.parse(icalStr).warnings(warnings).first();
 
-		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertTrue(ical.getVersion().isV2_0());
 		assertEquals("prodid", ical.getProductId().getValue());
 		assertWarningsLists(warnings, 0);
 	}
@@ -92,11 +93,11 @@ public class BiweeklyTest {
 		Iterator<ICalendar> it = icals.iterator();
 
 		ICalendar ical = it.next();
-		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertTrue(ical.getVersion().isV2_0());
 		assertEquals("one", ical.getProductId().getValue());
 
 		ical = it.next();
-		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertTrue(ical.getVersion().isV2_0());
 		assertEquals("two", ical.getProductId().getValue());
 
 		assertWarningsLists(warnings, 0, 0);
@@ -169,7 +170,7 @@ public class BiweeklyTest {
 
 		ICalendar ical = Biweekly.parseXml(xml).warnings(warnings).first();
 
-		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertTrue(ical.getVersion().isV2_0());
 		assertEquals("one", ical.getProductId().getValue());
 		assertWarningsLists(warnings, 0);
 	}
@@ -200,11 +201,11 @@ public class BiweeklyTest {
 		Iterator<ICalendar> it = icals.iterator();
 
 		ICalendar ical = it.next();
-		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertTrue(ical.getVersion().isV2_0());
 		assertEquals("one", ical.getProductId().getValue());
 
 		ical = it.next();
-		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertTrue(ical.getVersion().isV2_0());
 		assertEquals("two", ical.getProductId().getValue());
 
 		assertWarningsLists(warnings, 0, 0);

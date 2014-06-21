@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Version;
+import biweekly.util.VersionNumber;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -67,7 +68,7 @@ public class VersionScribeTest {
 	@Test
 	public void parseXml() {
 		sensei.assertParseXml("<text>2.0</text>").run(has(null, "2.0"));
-		sensei.assertParseXml("<text/>").run(has(null, ""));
+		sensei.assertParseXml("<text/>").cannotParse();
 		sensei.assertParseXml("").cannotParse();
 	}
 
@@ -81,14 +82,17 @@ public class VersionScribeTest {
 	@Test
 	public void parseJson() {
 		sensei.assertParseJson("2.0").run(has(null, "2.0"));
-		sensei.assertParseJson("").run(has(null, ""));
+		sensei.assertParseJson("").cannotParse();
 	}
 
 	private Check<Version> has(final String min, final String max) {
 		return new Check<Version>() {
 			public void check(Version actual) {
-				assertEquals(min, actual.getMinVersion());
-				assertEquals(max, actual.getMaxVersion());
+				VersionNumber minNumber = (min == null) ? null : new VersionNumber(min);
+				VersionNumber maxNumber = (max == null) ? null : new VersionNumber(max);
+
+				assertEquals(minNumber, actual.getMinVersion());
+				assertEquals(maxNumber, actual.getMaxVersion());
 			}
 		};
 	}

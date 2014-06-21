@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import biweekly.component.ICalComponent;
 import biweekly.property.ICalProperty;
+import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -43,7 +44,7 @@ public class ICalendarTest {
 	@Test
 	public void constructor() {
 		ICalendar ical = new ICalendar();
-		assertEquals("2.0", ical.getVersion().getMaxVersion());
+		assertEquals(Version.ICAL, ical.getVersion().getMaxVersion());
 		assertNotNull(ical.getProductId());
 	}
 

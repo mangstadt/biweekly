@@ -4,6 +4,7 @@ import java.util.List;
 
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
+import biweekly.util.VersionNumber;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -51,17 +52,20 @@ import biweekly.component.ICalComponent;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-79">RFC 5545 p.79-80</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-79">RFC 5545
+ * p.79-80</a>
  */
 public class Version extends ICalProperty {
-	private static final String DEFAULT = "2.0";
+	public static final VersionNumber VCAL = new VersionNumber("1.0");
+	public static final VersionNumber ICAL = new VersionNumber("2.0");
 
-	private String minVersion, maxVersion;
+	private VersionNumber minVersion, maxVersion;
 
 	/**
 	 * Creates a new version property.
 	 * @param version the version that a consumer must support in order to
 	 * successfully parse the iCalendar object
+	 * @throws IllegalArgumentException if the version string is invalid
 	 */
 	public Version(String version) {
 		this(null, version);
@@ -73,27 +77,50 @@ public class Version extends ICalProperty {
 	 * order to successfully parse the iCalendar object
 	 * @param maxVersion the maximum version that a consumer must support in
 	 * order to successfully parse the iCalendar object
+	 * @throws IllegalArgumentException if one of the versions strings are
+	 * invalid
 	 */
 	public Version(String minVersion, String maxVersion) {
+		this((minVersion == null) ? null : new VersionNumber(minVersion), (maxVersion == null) ? null : new VersionNumber(maxVersion));
+	}
+
+	private Version(VersionNumber minVersion, VersionNumber maxVersion) {
 		this.minVersion = minVersion;
 		this.maxVersion = maxVersion;
 	}
 
 	/**
-	 * Creates a version property that is set to the default iCalendar version
+	 * Creates a version property that is set to the older vCalendar version
+	 * (1.0).
+	 * @return the property instance
+	 */
+	public static Version v1_0() {
+		return new Version(null, VCAL);
+	}
+
+	/**
+	 * Creates a version property that is set to the latest iCalendar version
 	 * (2.0).
 	 * @return the property instance
 	 */
 	public static Version v2_0() {
-		return new Version(DEFAULT);
+		return new Version(null, ICAL);
 	}
 
 	/**
-	 * Determines if this version is the default iCalendar version.
+	 * Determines if this property is set to the older vCalendar version.
+	 * @return true if the version is "1.0", false if not
+	 */
+	public boolean isV1_0() {
+		return VCAL.equals(maxVersion);
+	}
+
+	/**
+	 * Determines if this property is set to the latest iCalendar version.
 	 * @return true if the version is "2.0", false if not
 	 */
 	public boolean isV2_0() {
-		return DEFAULT.equalsIgnoreCase(maxVersion);
+		return ICAL.equals(maxVersion);
 	}
 
 	/**
@@ -101,7 +128,7 @@ public class Version extends ICalProperty {
 	 * successfully parse the iCalendar object.
 	 * @return the minimum version or null if not set
 	 */
-	public String getMinVersion() {
+	public VersionNumber getMinVersion() {
 		return minVersion;
 	}
 
@@ -110,7 +137,7 @@ public class Version extends ICalProperty {
 	 * successfully parse the iCalendar object.
 	 * @param minVersion the minimum version or null to remove
 	 */
-	public void setMinVersion(String minVersion) {
+	public void setMinVersion(VersionNumber minVersion) {
 		this.minVersion = minVersion;
 	}
 
@@ -119,7 +146,7 @@ public class Version extends ICalProperty {
 	 * successfully parse the iCalendar object.
 	 * @return the maximum version or null if not set
 	 */
-	public String getMaxVersion() {
+	public VersionNumber getMaxVersion() {
 		return maxVersion;
 	}
 
@@ -128,7 +155,7 @@ public class Version extends ICalProperty {
 	 * successfully parse the iCalendar object.
 	 * @param maxVersion the maximum version (this field is <b>required</b>)
 	 */
-	public void setMaxVersion(String maxVersion) {
+	public void setMaxVersion(VersionNumber maxVersion) {
 		this.maxVersion = maxVersion;
 	}
 

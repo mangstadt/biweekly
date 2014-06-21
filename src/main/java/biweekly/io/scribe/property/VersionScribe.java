@@ -4,10 +4,12 @@ import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.Warning;
+import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Version;
+import biweekly.util.VersionNumber;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -70,19 +72,22 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 			min = one;
 			max = two;
 		}
-		return new Version(min, max);
+
+		return parse(min, max);
 	}
 
 	@Override
 	protected void _writeXml(Version property, XCalElement element) {
-		element.append(dataType(property), property.getMaxVersion());
+		VersionNumber max = property.getMaxVersion();
+		String value = (max == null) ? null : max.toString();
+		element.append(dataType(property), value);
 	}
 
 	@Override
 	protected Version _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		String value = element.first(defaultDataType);
 		if (value != null) {
-			return new Version(value);
+			return parse(null, value);
 		}
 
 		throw missingXmlElements(defaultDataType);
@@ -90,11 +95,21 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 
 	@Override
 	protected JCalValue _writeJson(Version property) {
-		return JCalValue.single(property.getMaxVersion());
+		VersionNumber max = property.getMaxVersion();
+		String value = (max == null) ? null : max.toString();
+		return JCalValue.single(value);
 	}
 
 	@Override
 	protected Version _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
-		return new Version(value.asSingle());
+		return parse(null, value.asSingle());
+	}
+
+	private Version parse(String min, String max) {
+		try {
+			return new Version(min, max);
+		} catch (IllegalArgumentException e) {
+			throw new CannotParseException(30);
+		}
 	}
 }
