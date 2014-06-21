@@ -1170,12 +1170,12 @@ public class XCalDocumentTest {
 		}
 
 		@Override
-		protected String _writeText(Company property) {
+		protected String _writeText(Company property, Version version) {
 			return property.getBoss();
 		}
 
 		@Override
-		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 			return new Company(value);
 		}
 

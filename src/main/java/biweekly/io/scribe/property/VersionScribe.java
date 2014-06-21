@@ -46,7 +46,7 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 	}
 
 	@Override
-	protected String _writeText(Version property) {
+	protected String _writeText(Version property, Version version) {
 		StringBuilder sb = new StringBuilder();
 
 		if (property.getMinVersion() != null) {
@@ -60,7 +60,7 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 	}
 
 	@Override
-	protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 		SemiStructuredIterator it = semistructured(value, true);
 		String one = it.next();
 		String two = it.next();
@@ -80,7 +80,7 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 	protected void _writeXml(Version property, XCalElement element) {
 		VersionNumber max = property.getMaxVersion();
 		String value = (max == null) ? null : max.toString();
-		element.append(dataType(property), value);
+		element.append(dataType(property, null), value);
 	}
 
 	@Override

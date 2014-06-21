@@ -9,6 +9,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DurationProperty;
+import biweekly.property.Version;
 import biweekly.util.Duration;
 
 /*
@@ -46,7 +47,7 @@ public class DurationPropertyScribe extends ICalPropertyScribe<DurationProperty>
 	}
 
 	@Override
-	protected String _writeText(DurationProperty property) {
+	protected String _writeText(DurationProperty property, Version version) {
 		Duration duration = property.getValue();
 		if (duration != null) {
 			return duration.toString();
@@ -56,7 +57,7 @@ public class DurationPropertyScribe extends ICalPropertyScribe<DurationProperty>
 	}
 
 	@Override
-	protected DurationProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected DurationProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 		value = unescape(value);
 		return parse(value);
 	}
@@ -70,7 +71,7 @@ public class DurationPropertyScribe extends ICalPropertyScribe<DurationProperty>
 			durationStr = duration.toString();
 		}
 
-		element.append(dataType(property), durationStr);
+		element.append(dataType(property, null), durationStr);
 	}
 
 	@Override

@@ -24,6 +24,7 @@ import biweekly.io.scribe.property.ICalPropertyScribe.StructuredIterator;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.Version;
 import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.ListMultimap;
 
@@ -501,7 +502,7 @@ public class ICalPropertyScribeTest {
 	@Test
 	public void prepareParameters() {
 		TestProperty property = new TestProperty("value");
-		ICalParameters copy = marshaller.prepareParameters(property);
+		ICalParameters copy = marshaller.prepareParameters(property, null);
 
 		assertFalse(property.getParameters() == copy);
 		assertEquals("value", copy.first("PARAM"));
@@ -586,19 +587,19 @@ public class ICalPropertyScribeTest {
 		}
 
 		@Override
-		protected ICalParameters _prepareParameters(TestProperty property) {
+		protected ICalParameters _prepareParameters(TestProperty property, Version version) {
 			ICalParameters copy = new ICalParameters(property.getParameters());
 			copy.put("PARAM", "value");
 			return copy;
 		}
 
 		@Override
-		protected String _writeText(TestProperty property) {
+		protected String _writeText(TestProperty property, Version version) {
 			return property.value;
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 			warnings.add(new Warning("parseText"));
 			return new TestProperty(value, dataType);
 		}

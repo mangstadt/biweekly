@@ -26,6 +26,7 @@ import biweekly.io.text.ICalRawWriter;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.Version;
 import biweekly.util.ICalDateFormat;
 import biweekly.util.ListMultimap;
 import biweekly.util.StringUtils;
@@ -114,14 +115,6 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	}
 
 	/**
-	 * Gets the property's default data type.
-	 * @return the default data type (e.g. "text") or null if unknown
-	 */
-	public ICalDataType getDefaultDataType() {
-		return defaultDataType;
-	}
-
-	/**
 	 * Gets this property's local name and namespace for xCal documents.
 	 * @return the XML local name and namespace
 	 */
@@ -132,30 +125,42 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	/**
 	 * Sanitizes a property's parameters before the property is written.
 	 * @param property the property to write
+	 * @param version the version of the iCalendar object being generated
 	 * @return the sanitized parameters
 	 */
-	public final ICalParameters prepareParameters(T property) {
-		return _prepareParameters(property);
+	public final ICalParameters prepareParameters(T property, Version version) {
+		return _prepareParameters(property, version);
+	}
+
+	/**
+	 * Determines the default data type of a property instance.
+	 * @param version the version of the iCalendar object being generated
+	 * @return the data type or null if unknown
+	 */
+	public final ICalDataType defaultDataType(Version version) {
+		return _defaultDataType(version);
 	}
 
 	/**
 	 * Determines the data type of a property instance.
 	 * @param property the property
+	 * @param version the version of the iCalendar object being generated
 	 * @return the data type or null if unknown
 	 */
-	public final ICalDataType dataType(T property) {
-		return _dataType(property);
+	public final ICalDataType dataType(T property, Version version) {
+		return _dataType(property, version);
 	}
 
 	/**
 	 * Marshals a property's value to a string.
 	 * @param property the property
+	 * @param version the version of the iCalendar object being generated
 	 * @return the marshalled value
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
 	 */
-	public final String writeText(T property) {
-		return _writeText(property);
+	public final String writeText(T property, Version version) {
+		return _writeText(property, version);
 	}
 
 	/**
@@ -190,15 +195,16 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * default datatype. Note that the VALUE parameter is removed from the
 	 * property's parameter list after it has been read.
 	 * @param parameters the parsed parameters
+	 * @param version the version of the iCalendar object being generated
 	 * @return the unmarshalled property and its warnings
 	 * @throws CannotParseException if the scribe could not parse the property's
 	 * value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	public final Result<T> parseText(String value, ICalDataType dataType, ICalParameters parameters) {
+	public final Result<T> parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version) {
 		List<Warning> warnings = new ArrayList<Warning>(0);
-		T property = _parseText(value, dataType, parameters, warnings);
+		T property = _parseText(value, dataType, parameters, version, warnings);
 		property.setParameters(parameters);
 		return new Result<T>(property, warnings);
 	}
@@ -249,11 +255,28 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * unmodified.
 	 * </p>
 	 * @param property the property to write
+	 * @param version the version of the iCalendar object being generated
 	 * @return the sanitized parameters (this should be a *copy* of the
 	 * property's parameters if modifications were made)
 	 */
-	protected ICalParameters _prepareParameters(T property) {
+	protected ICalParameters _prepareParameters(T property, Version version) {
 		return property.getParameters();
+	}
+
+	/**
+	 * <p>
+	 * Determines the default data type of this property.
+	 * </p>
+	 * <p>
+	 * This method should be overridden by child classes if a property's default
+	 * data type changes depending the iCalendar version. The default
+	 * implementation of this method returns the property's default data type.
+	 * </p>
+	 * @param version the version of the iCalendar object being generated
+	 * @return the data type or null if unknown
+	 */
+	protected ICalDataType _defaultDataType(Version version) {
+		return defaultDataType;
 	}
 
 	/**
@@ -266,20 +289,22 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * method returns the property's default data type.
 	 * </p>
 	 * @param property the property
+	 * @param version the version of the iCalendar object being generated
 	 * @return the data type or null if unknown
 	 */
-	protected ICalDataType _dataType(T property) {
-		return defaultDataType;
+	protected ICalDataType _dataType(T property, Version version) {
+		return defaultDataType(version);
 	}
 
 	/**
 	 * Marshals a property's value to a string.
 	 * @param property the property
+	 * @param version the version of the iCalendar object being generated
 	 * @return the marshalled value
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
 	 */
-	protected abstract String _writeText(T property);
+	protected abstract String _writeText(T property, Version version);
 
 	/**
 	 * <p>
@@ -300,8 +325,8 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * stream
 	 */
 	protected void _writeXml(T property, XCalElement element) {
-		String value = writeText(property);
-		ICalDataType dataType = dataType(property);
+		String value = writeText(property, Version.v2_0());
+		ICalDataType dataType = dataType(property, Version.v2_0());
 		element.append(dataType, value);
 	}
 
@@ -321,7 +346,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * stream
 	 */
 	protected JCalValue _writeJson(T property) {
-		String value = writeText(property);
+		String value = writeText(property, Version.v2_0());
 		return JCalValue.single(value);
 	}
 
@@ -337,6 +362,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * assigned to the property object once this method returns. Therefore, do
 	 * not assign any parameters to the property object itself whilst inside of
 	 * this method, or else they will be overwritten.
+	 * @param version the version of the iCalendar object being generated
 	 * @param warnings allows the programmer to alert the user to any
 	 * note-worthy (but non-critical) issues that occurred during the
 	 * unmarshalling process
@@ -346,7 +372,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	protected abstract T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings);
+	protected abstract T _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings);
 
 	/**
 	 * <p>
@@ -399,7 +425,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		}
 
 		value = escape(value);
-		return _parseText(value, dataType, parameters, warnings);
+		return _parseText(value, dataType, parameters, Version.v2_0(), warnings);
 	}
 
 	/**
@@ -473,7 +499,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * {@link ICalendar} object
 	 */
 	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
-		return _parseText(jcalValueToString(value), dataType, parameters, warnings);
+		return _parseText(jcalValueToString(value), dataType, parameters, Version.v2_0(), warnings);
 	}
 
 	private String jcalValueToString(JCalValue value) {

@@ -11,11 +11,14 @@ import org.w3c.dom.Element;
 
 import biweekly.ICalDataType;
 import biweekly.Warning;
+import biweekly.io.CannotParseException;
+import biweekly.io.SkipMeException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RecurrenceProperty;
+import biweekly.property.Version;
 import biweekly.util.ICalDateFormat;
 import biweekly.util.ListMultimap;
 import biweekly.util.Recurrence;
@@ -74,10 +77,55 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	}
 
 	@Override
-	protected String _writeText(T property) {
+	protected String _writeText(T property, Version version) {
 		Recurrence recur = property.getValue();
 		if (recur == null) {
 			return "";
+		}
+
+		if (version.isV1_0()) {
+			StringBuilder sb = new StringBuilder();
+
+			Integer interval = recur.getInterval();
+			if (interval == null) {
+				interval = 1;
+			}
+
+			Integer count = recur.getCount();
+			Date until = recur.getUntil();
+			boolean untilHasTime = recur.hasTimeUntilDate();
+
+			switch (recur.getFrequency()) {
+			case YEARLY:
+				if (!recur.getByMonth().isEmpty()) {
+					sb.append("YM").append(interval);
+					for (Integer month : recur.getByMonth()) {
+						sb.append(' ').append(month);
+					}
+				} else {
+					sb.append("YD").append(interval);
+					for (Integer day : recur.getByYearDay()) {
+						sb.append(' ').append(day);
+					}
+				}
+				break;
+
+			//TODO the rest
+
+			default:
+				throw new SkipMeException("");
+			}
+
+			sb.append(' ');
+			if (count != null) {
+				sb.append('#').append(count);
+			} else if (until != null) {
+				sb.append(date(until).time(untilHasTime).write());
+			} else {
+				sb.append("#0");
+			}
+
+			return sb.toString();
 		}
 
 		ListMultimap<String, Object> components = buildComponents(recur, false);
@@ -85,8 +133,79 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
-		Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
+		final Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
+
+		if (version.isV1_0()) {
+			String splitValues[] = value.split("\\s+");
+
+			//parse the frequency and interval from the first token (e.g. "W2")
+			String frequencyStr;
+			Integer interval;
+			{
+				String splitValue = splitValues[0].toUpperCase();
+				Pattern p = Pattern.compile("^([A-Z]+)(\\d+)$");
+				Matcher m = p.matcher(splitValue);
+				if (!m.find()) {
+					throw new CannotParseException("");
+				}
+
+				frequencyStr = m.group(1);
+				interval = Integer.valueOf(m.group(2));
+			}
+
+			//determine what frequency enum to use and how to treat each tokenized value
+			Frequency frequency = null;
+			Handler<String> handler = null;
+			if ("YD".equals(frequencyStr)) {
+				frequency = Frequency.YEARLY;
+				handler = new Handler<String>() {
+					public void handle(String value) {
+						Integer day = Integer.valueOf(value);
+						builder.byYearDay(day);
+					}
+				};
+			} else if ("YM".equals(frequencyStr)) {
+				frequency = Frequency.YEARLY;
+				handler = new Handler<String>() {
+					public void handle(String value) {
+						Integer month = Integer.valueOf(value);
+						builder.byMonth(month);
+					}
+				};
+			} //TODO the rest
+
+			builder.frequency(frequency);
+			builder.interval(interval);
+
+			//parse the rest of the tokens
+			for (int i = 1; i < splitValues.length; i++) {
+				String splitValue = splitValues[i];
+				if (splitValue.startsWith("#")) {
+					Integer count = Integer.valueOf(splitValue.substring(1, splitValue.length()));
+					if (count == 0) {
+						//infinite
+						count = null;
+					}
+
+					builder.count(count);
+					break;
+				}
+
+				try {
+					//see if the value is an "until" date
+					Date until = date(splitValue).parse();
+					builder.until(until);
+					break;
+				} catch (IllegalArgumentException e) {
+					//value is a regular value
+					handler.handle(splitValue);
+				}
+			}
+
+			return newInstance(builder.build());
+		}
+
 		ListMultimap<String, String> rules = object(value);
 
 		parseFreq(rules, builder, warnings);
@@ -110,7 +229,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 	@Override
 	protected void _writeXml(T property, XCalElement element) {
-		XCalElement recurElement = element.append(dataType(property));
+		XCalElement recurElement = element.append(dataType(property, null));
 
 		Recurrence recur = property.getValue();
 		if (recur == null) {

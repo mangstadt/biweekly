@@ -10,6 +10,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DateOrDateTimeProperty;
+import biweekly.property.Version;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.ICalDateFormat;
 
@@ -49,12 +50,12 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 	}
 
 	@Override
-	protected ICalDataType _dataType(T property) {
+	protected ICalDataType _dataType(T property, Version version) {
 		return (property.getRawComponents() != null || property.getValue() == null || property.hasTime()) ? ICalDataType.DATE_TIME : ICalDataType.DATE;
 	}
 
 	@Override
-	protected String _writeText(T property) {
+	protected String _writeText(T property, Version version) {
 		DateTimeComponents components = property.getRawComponents();
 		if (components != null) {
 			return components.toString(false);
@@ -69,7 +70,7 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 		value = unescape(value);
 		return parse(value, parameters, warnings);
 	}
@@ -86,7 +87,7 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 			dateStr = date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).extended(true).write();
 		}
 
-		element.append(dataType(property), dateStr);
+		element.append(dataType(property, null), dateStr);
 	}
 
 	@Override

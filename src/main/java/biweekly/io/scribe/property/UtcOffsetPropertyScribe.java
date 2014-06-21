@@ -9,6 +9,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.UtcOffsetProperty;
+import biweekly.property.Version;
 import biweekly.util.UtcOffset;
 
 /*
@@ -47,7 +48,7 @@ public abstract class UtcOffsetPropertyScribe<T extends UtcOffsetProperty> exten
 	}
 
 	@Override
-	protected String _writeText(T property) {
+	protected String _writeText(T property, Version version) {
 		UtcOffset offset = property.getValue();
 		if (offset != null) {
 			return offset.toString(false);
@@ -57,7 +58,7 @@ public abstract class UtcOffsetPropertyScribe<T extends UtcOffsetProperty> exten
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 		value = unescape(value);
 		return parse(value);
 	}
@@ -71,7 +72,7 @@ public abstract class UtcOffsetPropertyScribe<T extends UtcOffsetProperty> exten
 			offsetStr = offset.toString(true);
 		}
 
-		element.append(dataType(property), offsetStr);
+		element.append(dataType(property, null), offsetStr);
 	}
 
 	@Override

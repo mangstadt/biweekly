@@ -51,6 +51,7 @@ import biweekly.property.ICalProperty;
 import biweekly.property.ProductId;
 import biweekly.property.RawProperty;
 import biweekly.property.Summary;
+import biweekly.property.Version;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
@@ -1167,12 +1168,12 @@ public class ICalReaderTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property) {
+		protected String _writeText(TestProperty property, Version version) {
 			return property.number.toString();
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 			TestProperty prop = new TestProperty();
 			Integer number = null;
 			if (value.equals("one")) {
@@ -1217,12 +1218,12 @@ public class ICalReaderTest {
 		}
 
 		@Override
-		protected String _writeText(ProductId property) {
+		protected String _writeText(ProductId property, Version version) {
 			return property.getValue();
 		}
 
 		@Override
-		protected ProductId _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+		protected ProductId _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 			return new ProductId(value.toUpperCase());
 		}
 	}

@@ -10,6 +10,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RecurrenceDates;
+import biweekly.property.Version;
 import biweekly.util.Duration;
 import biweekly.util.Period;
 
@@ -48,18 +49,18 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	}
 
 	@Override
-	protected ICalDataType _dataType(RecurrenceDates property) {
+	protected ICalDataType _dataType(RecurrenceDates property, Version version) {
 		if (property.getDates() != null) {
 			return property.hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
 		}
 		if (property.getPeriods() != null) {
 			return ICalDataType.PERIOD;
 		}
-		return getDefaultDataType();
+		return defaultDataType(version);
 	}
 
 	@Override
-	protected String _writeText(final RecurrenceDates property) {
+	protected String _writeText(final RecurrenceDates property, Version version) {
 		List<Date> dates = property.getDates();
 		if (dates != null) {
 			return list(dates, new ListCallback<Date>() {
@@ -98,7 +99,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	}
 
 	@Override
-	protected RecurrenceDates _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected RecurrenceDates _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 		return parse(list(value), dataType, parameters, warnings);
 	}
 

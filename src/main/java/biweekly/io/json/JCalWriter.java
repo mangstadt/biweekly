@@ -18,6 +18,7 @@ import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -68,6 +69,7 @@ import biweekly.property.ICalProperty;
 public class JCalWriter implements Closeable, Flushable {
 	private ScribeIndex index = new ScribeIndex();
 	private final JCalRawWriter writer;
+	private final Version targetVersion = Version.v2_0();
 
 	/**
 	 * Creates a jCal writer that writes to an output stream.
@@ -225,7 +227,7 @@ public class JCalWriter implements Closeable, Flushable {
 			ICalParameters parameters;
 			JCalValue value;
 			try {
-				parameters = propertyScribe.prepareParameters(property);
+				parameters = propertyScribe.prepareParameters(property, targetVersion);
 				value = propertyScribe.writeJson(property);
 			} catch (SkipMeException e) {
 				continue;
@@ -233,7 +235,7 @@ public class JCalWriter implements Closeable, Flushable {
 
 			//write property
 			String propertyName = propertyScribe.getPropertyName().toLowerCase();
-			ICalDataType dataType = propertyScribe.dataType(property);
+			ICalDataType dataType = propertyScribe.dataType(property, targetVersion);
 			writer.writeProperty(propertyName, parameters, dataType, value);
 		}
 

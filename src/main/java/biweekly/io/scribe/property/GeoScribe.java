@@ -9,6 +9,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Geo;
+import biweekly.property.Version;
 import biweekly.util.ICalFloatFormatter;
 
 /*
@@ -46,7 +47,7 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 	}
 
 	@Override
-	protected String _writeText(Geo property) {
+	protected String _writeText(Geo property, Version version) {
 		ICalFloatFormatter formatter = new ICalFloatFormatter();
 		StringBuilder sb = new StringBuilder();
 
@@ -68,7 +69,7 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 	}
 
 	@Override
-	protected Geo _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected Geo _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 		SemiStructuredIterator it = semistructured(value, true);
 		String latitudeStr = it.next();
 		String longitudeStr = it.next();

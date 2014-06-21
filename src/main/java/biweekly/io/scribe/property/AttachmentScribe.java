@@ -9,6 +9,7 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Attachment;
+import biweekly.property.Version;
 import biweekly.util.Base64;
 
 /*
@@ -46,7 +47,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 	}
 
 	@Override
-	protected ICalParameters _prepareParameters(Attachment property) {
+	protected ICalParameters _prepareParameters(Attachment property, Version version) {
 		ICalParameters copy = new ICalParameters(property.getParameters());
 
 		if (property.getUri() != null) {
@@ -59,7 +60,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 	}
 
 	@Override
-	protected ICalDataType _dataType(Attachment property) {
+	protected ICalDataType _dataType(Attachment property, Version version) {
 		if (property.getUri() != null) {
 			return ICalDataType.URI;
 		}
@@ -70,7 +71,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 	}
 
 	@Override
-	protected String _writeText(Attachment property) {
+	protected String _writeText(Attachment property, Version version) {
 		String uri = property.getUri();
 		if (uri != null) {
 			return uri;
@@ -85,7 +86,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 	}
 
 	@Override
-	protected Attachment _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected Attachment _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 		value = unescape(value);
 
 		if (dataType == ICalDataType.BINARY || parameters.getEncoding() == Encoding.BASE64) {

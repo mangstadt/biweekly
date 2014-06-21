@@ -9,6 +9,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.SkipMeProperty;
+import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -49,12 +50,12 @@ public class SkipMeScribe extends ICalPropertyScribe<SkipMeProperty> {
 	}
 
 	@Override
-	protected String _writeText(SkipMeProperty property) {
+	protected String _writeText(SkipMeProperty property, Version version) {
 		throw new SkipMeException("");
 	}
 
 	@Override
-	protected SkipMeProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected SkipMeProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 		throw new SkipMeException("");
 	}
 

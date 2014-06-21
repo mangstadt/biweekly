@@ -46,6 +46,7 @@ import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.Version;
 import biweekly.property.Xml;
 import biweekly.util.XmlUtils;
 
@@ -130,6 +131,7 @@ public class XCalWriter implements Closeable {
 	}
 
 	private final Writer writer;
+	private final Version targetVersion = Version.v2_0();
 	private final TransformerHandler handler;
 	private final String indent;
 	private final boolean icalendarElementExists;
@@ -365,7 +367,7 @@ public class XCalWriter implements Closeable {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void write(ICalProperty property) throws SAXException {
 		ICalPropertyScribe scribe = index.getPropertyScribe(property);
-		ICalParameters parameters = scribe.prepareParameters(property);
+		ICalParameters parameters = scribe.prepareParameters(property, targetVersion);
 
 		//get the property element to write
 		Element propertyElement;

@@ -9,6 +9,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.CannotParseProperty;
+import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -49,12 +50,12 @@ public class CannotParseScribe extends ICalPropertyScribe<CannotParseProperty> {
 	}
 
 	@Override
-	protected String _writeText(CannotParseProperty property) {
+	protected String _writeText(CannotParseProperty property, Version version) {
 		return "value";
 	}
 
 	@Override
-	protected CannotParseProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected CannotParseProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 		throw new CannotParseException("");
 	}
 

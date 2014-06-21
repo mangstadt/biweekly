@@ -10,6 +10,7 @@ import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RawProperty;
+import biweekly.property.Version;
 import biweekly.util.XmlUtils;
 
 /*
@@ -47,12 +48,12 @@ public class RawPropertyScribe extends ICalPropertyScribe<RawProperty> {
 	}
 
 	@Override
-	protected ICalDataType _dataType(RawProperty property) {
+	protected ICalDataType _dataType(RawProperty property, Version version) {
 		return property.getDataType();
 	}
 
 	@Override
-	protected String _writeText(RawProperty property) {
+	protected String _writeText(RawProperty property, Version version) {
 		String value = property.getValue();
 		if (value != null) {
 			return value;
@@ -62,7 +63,7 @@ public class RawPropertyScribe extends ICalPropertyScribe<RawProperty> {
 	}
 
 	@Override
-	protected RawProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected RawProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 		return new RawProperty(propertyName, dataType, value);
 	}
 

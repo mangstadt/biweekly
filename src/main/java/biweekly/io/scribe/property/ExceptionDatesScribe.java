@@ -11,6 +11,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ExceptionDates;
+import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -47,7 +48,7 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 	}
 
 	@Override
-	protected ICalDataType _dataType(ExceptionDates property) {
+	protected ICalDataType _dataType(ExceptionDates property, Version version) {
 		return property.hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
 	}
 
@@ -72,7 +73,7 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 
 	@Override
 	protected void _writeXml(ExceptionDates property, XCalElement element) {
-		ICalDataType dataType = dataType(property);
+		ICalDataType dataType = dataType(property, null);
 		for (Date value : property.getValues()) {
 			String dateStr = date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).extended(true).write();
 			element.append(dataType, dateStr);

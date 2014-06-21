@@ -19,6 +19,7 @@ import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -69,6 +70,7 @@ import biweekly.property.ICalProperty;
 public class ICalWriter implements Closeable, Flushable {
 	private ScribeIndex index = new ScribeIndex();
 	private final ICalRawWriter writer;
+	private final Version targetVersion = Version.v2_0();
 
 	/**
 	 * Creates an iCalendar writer that writes to an output stream. Uses the
@@ -306,15 +308,15 @@ public class ICalWriter implements Closeable, Flushable {
 			ICalParameters parameters;
 			String value;
 			try {
-				parameters = propertyScribe.prepareParameters(property);
-				value = propertyScribe.writeText(property);
+				parameters = propertyScribe.prepareParameters(property, targetVersion);
+				value = propertyScribe.writeText(property, targetVersion);
 			} catch (SkipMeException e) {
 				continue;
 			}
 
 			//set the data type
-			ICalDataType dataType = propertyScribe.dataType(property);
-			if (dataType != null && dataType != propertyScribe.getDefaultDataType()) {
+			ICalDataType dataType = propertyScribe.dataType(property, targetVersion);
+			if (dataType != null && dataType != propertyScribe.defaultDataType(targetVersion)) {
 				//only add a VALUE parameter if the data type is (1) not "unknown" and (2) different from the property's default data type
 				parameters.setValue(dataType);
 			}

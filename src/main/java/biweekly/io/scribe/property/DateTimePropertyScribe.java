@@ -10,6 +10,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DateTimeProperty;
+import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -47,7 +48,7 @@ public abstract class DateTimePropertyScribe<T extends DateTimeProperty> extends
 	}
 
 	@Override
-	protected String _writeText(T property) {
+	protected String _writeText(T property, Version version) {
 		Date value = property.getValue();
 		if (value != null) {
 			return date(value).write(); //should always be in UTC time
@@ -57,7 +58,7 @@ public abstract class DateTimePropertyScribe<T extends DateTimeProperty> extends
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 		value = unescape(value);
 		return parse(value, parameters, warnings);
 	}
@@ -71,7 +72,7 @@ public abstract class DateTimePropertyScribe<T extends DateTimeProperty> extends
 			dateStr = date(value).extended(true).write(); //should always be in UTC time
 		}
 
-		element.append(dataType(property), dateStr);
+		element.append(dataType(property, null), dateStr);
 	}
 
 	@Override

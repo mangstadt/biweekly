@@ -18,10 +18,10 @@ import org.xml.sax.SAXException;
 import biweekly.ICalDataType;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
-import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.Version;
 import biweekly.util.XmlUtils;
 
 /*
@@ -162,7 +162,7 @@ public class Sensei<T extends ICalProperty> {
 		 * @param expected the expected data type
 		 */
 		public void run(ICalDataType expected) {
-			ICalDataType actual = marshaller.dataType(property);
+			ICalDataType actual = marshaller.dataType(property, Version.v2_0());
 			assertEquals(expected, actual);
 		}
 	}
@@ -196,7 +196,7 @@ public class Sensei<T extends ICalProperty> {
 		 * Runs the test.
 		 */
 		public void run() {
-			ICalParameters actual = marshaller.prepareParameters(property);
+			ICalParameters actual = marshaller.prepareParameters(property, Version.v2_0());
 			assertEquals("Actual: " + actual, expected.size(), actual.size());
 
 			for (Map.Entry<String, List<String>> entry : expected) {
@@ -213,8 +213,8 @@ public class Sensei<T extends ICalProperty> {
 	}
 
 	/**
-	 * Tester class used for testing the
-	 * {@link ICalPropertyScribe#writeText} method.
+	 * Tester class used for testing the {@link ICalPropertyScribe#writeText}
+	 * method.
 	 */
 	public class WriteTextTest {
 		protected final T property;
@@ -228,7 +228,7 @@ public class Sensei<T extends ICalProperty> {
 		 * @return the marshalled value
 		 */
 		public String run() {
-			return marshaller.writeText(property);
+			return marshaller.writeText(property, Version.v2_0());
 		}
 
 		/**
@@ -268,8 +268,8 @@ public class Sensei<T extends ICalProperty> {
 	}
 
 	/**
-	 * Tester class used for testing the
-	 * {@link ICalPropertyScribe#writeJson} method.
+	 * Tester class used for testing the {@link ICalPropertyScribe#writeJson}
+	 * method.
 	 */
 	public class WriteJsonTest {
 		protected final T property;
@@ -380,12 +380,12 @@ public class Sensei<T extends ICalProperty> {
 	}
 
 	/**
-	 * Tester class used for testing the
-	 * {@link ICalPropertyScribe#parseText} method.
+	 * Tester class used for testing the {@link ICalPropertyScribe#parseText}
+	 * method.
 	 */
 	public class ParseTextTest extends ParseTest<ParseTextTest> {
 		private final String value;
-		private ICalDataType dataType = marshaller.getDefaultDataType();
+		private ICalDataType dataType = marshaller.defaultDataType(Version.v2_0());
 
 		/**
 		 * @param value the text to parse
@@ -407,7 +407,7 @@ public class Sensei<T extends ICalProperty> {
 		@Override
 		protected void run(Check<T> check, Class<? extends RuntimeException> exception) {
 			try {
-				Result<T> result = marshaller.parseText(value, dataType, parameters);
+				Result<T> result = marshaller.parseText(value, dataType, parameters, Version.v2_0());
 
 				if (exception != null) {
 					fail("Expected " + exception.getSimpleName() + " to be thrown.");
@@ -465,12 +465,12 @@ public class Sensei<T extends ICalProperty> {
 	}
 
 	/**
-	 * Tester class used for testing the
-	 * {@link ICalPropertyScribe#parseJson} method.
+	 * Tester class used for testing the {@link ICalPropertyScribe#parseJson}
+	 * method.
 	 */
 	public class ParseJsonTest extends ParseTest<ParseJsonTest> {
 		private final JCalValue value;
-		private ICalDataType dataType = marshaller.getDefaultDataType();
+		private ICalDataType dataType = marshaller.defaultDataType(Version.v2_0());
 
 		/**
 		 * @param value the jCal value to parse

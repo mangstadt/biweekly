@@ -691,12 +691,12 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property) {
+		protected String _writeText(TestProperty property, Version version) {
 			return property.getValue();
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 			return new TestProperty(value);
 		}
 	}
@@ -707,12 +707,12 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property) {
+		protected String _writeText(TestProperty property, Version version) {
 			return property.getValue();
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 			return new TestProperty(value);
 		}
 	}
@@ -723,12 +723,12 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(Version property) {
+		protected String _writeText(Version property, Version version) {
 			return property.getMaxVersion() + " (beta)";
 		}
 
 		@Override
-		protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+		protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 			return new Version(value);
 		}
 	}
@@ -754,7 +754,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected ICalDataType _dataType(TestProperty property) {
+		protected ICalDataType _dataType(TestProperty property, Version version) {
 			if (property.getValue().matches("\\d+")) {
 				return ICalDataType.INTEGER;
 			}
@@ -762,12 +762,12 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property) {
+		protected String _writeText(TestProperty property, Version version) {
 			return property.getValue();
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 			return new TestProperty(value);
 		}
 	}

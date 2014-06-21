@@ -643,18 +643,18 @@ public class JCalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property) {
+		protected String _writeText(TestProperty property, Version version) {
 			return property.getValue();
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 			return new TestProperty(value);
 		}
 
 		@Override
 		protected JCalValue _writeJson(TestProperty property) {
-			return JCalValue.single(_writeText(property));
+			return JCalValue.single(_writeText(property, null));
 		}
 	}
 
@@ -664,18 +664,18 @@ public class JCalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(Version property) {
+		protected String _writeText(Version property, Version version) {
 			return property.getMaxVersion() + " (beta)";
 		}
 
 		@Override
-		protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+		protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 			return new Version(value);
 		}
 
 		@Override
 		protected JCalValue _writeJson(Version property) {
-			return JCalValue.single(_writeText(property));
+			return JCalValue.single(_writeText(property, null));
 		}
 	}
 

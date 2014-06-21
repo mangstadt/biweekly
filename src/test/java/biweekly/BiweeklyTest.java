@@ -25,6 +25,7 @@ import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.Version;
 import biweekly.util.XmlUtils;
 
 /*
@@ -569,13 +570,13 @@ public class BiweeklyTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property) {
+		protected String _writeText(TestProperty property, Version version) {
 			Integer value = property.getNumber();
 			return (value == 1) ? "one" : value.toString();
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 			Integer number;
 			if (value.equals("one")) {
 				number = 1;
@@ -589,7 +590,7 @@ public class BiweeklyTest {
 
 		@Override
 		protected TestProperty _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
-			return _parseText(element.first(ICalDataType.TEXT), null, parameters, warnings);
+			return _parseText(element.first(ICalDataType.TEXT), null, parameters, null, warnings);
 		}
 	}
 

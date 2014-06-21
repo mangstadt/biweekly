@@ -17,6 +17,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
+import biweekly.property.Version;
 import biweekly.property.Xml;
 import biweekly.util.XmlUtils;
 
@@ -56,7 +57,7 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 	}
 
 	@Override
-	protected String _writeText(Xml property) {
+	protected String _writeText(Xml property, Version version) {
 		Document value = property.getValue();
 		if (value != null) {
 			String xml = valueToString(value);
@@ -67,7 +68,7 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 	}
 
 	@Override
-	protected Xml _parseText(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected Xml _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
 		value = unescape(value);
 		try {
 			return new Xml(value);

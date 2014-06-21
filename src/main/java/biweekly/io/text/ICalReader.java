@@ -28,6 +28,7 @@ import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -208,6 +209,7 @@ public class ICalReader implements Closeable {
 		List<ICalComponent> componentStack = new ArrayList<ICalComponent>();
 		List<String> componentNamesStack = new ArrayList<String>();
 
+		Version version = Version.v2_0();
 		while (true) {
 			//read next line
 			ICalRawLine line;
@@ -294,7 +296,7 @@ public class ICalReader implements Closeable {
 			ICalDataType dataType = parameters.getValue();
 			if (dataType == null) {
 				//use the default data type if there is no VALUE parameter
-				dataType = marshaller.getDefaultDataType();
+				dataType = marshaller.defaultDataType(version);
 			} else {
 				//remove VALUE parameter if it is set
 				parameters.setValue(null);
@@ -304,18 +306,22 @@ public class ICalReader implements Closeable {
 			ICalProperty property = null;
 			String value = line.getValue();
 			try {
-				Result<? extends ICalProperty> result = marshaller.parseText(value, dataType, parameters);
+				Result<? extends ICalProperty> result = marshaller.parseText(value, dataType, parameters, version);
 				for (Warning warning : result.getWarnings()) {
 					warnings.add(reader.getLineNum(), propertyName, warning);
 				}
 				property = result.getProperty();
+
+				if (property instanceof Version) {
+					version = (Version) property;
+				}
 			} catch (SkipMeException e) {
 				warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());
 				continue;
 			} catch (CannotParseException e) {
 				warnings.add(reader.getLineNum(), propertyName, 1, value, e.getMessage());
 
-				Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters);
+				Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters, version);
 				property = result.getProperty();
 			}
 
