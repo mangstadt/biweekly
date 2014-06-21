@@ -130,17 +130,12 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	}
 
 	/**
-	 * Sanitizes a property's parameters (called before the property is
-	 * written). Note that a copy of the parameters is returned so that the
-	 * property object does not get modified.
-	 * @param property the property
+	 * Sanitizes a property's parameters before the property is written.
+	 * @param property the property to write
 	 * @return the sanitized parameters
 	 */
 	public final ICalParameters prepareParameters(T property) {
-		//make a copy because the property should not get modified when it is marshalled
-		ICalParameters copy = new ICalParameters(property.getParameters());
-		_prepareParameters(property, copy);
-		return copy;
+		return _prepareParameters(property);
 	}
 
 	/**
@@ -250,14 +245,15 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * <p>
 	 * This method should be overridden by child classes that wish to tweak the
 	 * property's parameters before the property is written. The default
-	 * implementation of this method does nothing.
+	 * implementation of this method returns the property's parameters
+	 * unmodified.
 	 * </p>
-	 * @param property the property
-	 * @param copy the list of parameters to make modifications to (it is a copy
-	 * of the property's parameters)
+	 * @param property the property to write
+	 * @return the sanitized parameters (this should be a *copy* of the
+	 * property's parameters if modifications were made)
 	 */
-	protected void _prepareParameters(T property, ICalParameters copy) {
-		//do nothing
+	protected ICalParameters _prepareParameters(T property) {
+		return property.getParameters();
 	}
 
 	/**

@@ -7,7 +7,6 @@ import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.io.json.JCalValue;
-import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Importance;
@@ -59,11 +58,13 @@ public class ImportanceScribe extends ICalPropertyScribe<Importance> {
 	//optional
 	//tweaks the parameters before the property is written
 	@Override
-	protected void _prepareParameters(Importance property, ICalParameters copy) {
+	protected ICalParameters _prepareParameters(Importance property) {
+		ICalParameters copy = new ICalParameters(property.getParameters());
 		Integer value = property.getNumber();
 		if (value != null && value >= 10) {
 			copy.put("X-MESSAGE", "very important!!");
 		}
+		return copy;
 	}
 
 	//required

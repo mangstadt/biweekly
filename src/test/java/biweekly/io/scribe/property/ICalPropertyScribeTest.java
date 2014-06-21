@@ -586,8 +586,10 @@ public class ICalPropertyScribeTest {
 		}
 
 		@Override
-		protected void _prepareParameters(TestProperty property, ICalParameters copy) {
+		protected ICalParameters _prepareParameters(TestProperty property) {
+			ICalParameters copy = new ICalParameters(property.getParameters());
 			copy.put("PARAM", "value");
+			return copy;
 		}
 
 		@Override

@@ -46,12 +46,16 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 	}
 
 	@Override
-	protected void _prepareParameters(Attachment property, ICalParameters copy) {
+	protected ICalParameters _prepareParameters(Attachment property) {
+		ICalParameters copy = new ICalParameters(property.getParameters());
+
 		if (property.getUri() != null) {
 			copy.setEncoding(null);
 		} else if (property.getData() != null) {
 			copy.setEncoding(Encoding.BASE64);
 		}
+
+		return copy;
 	}
 
 	@Override
