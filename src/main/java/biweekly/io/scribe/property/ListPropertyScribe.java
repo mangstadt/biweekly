@@ -3,12 +3,12 @@ package biweekly.io.scribe.property;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ListProperty;
-import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -51,7 +51,7 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 	}
 
 	@Override
-	protected String _writeText(final T property, Version version) {
+	protected String _writeText(final T property, ICalVersion version) {
 		return list(property.getValues(), new ListCallback<V>() {
 			public String asString(V value) {
 				return writeValue(property, value);
@@ -60,7 +60,7 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
 		return parse(list(value), dataType, parameters, warnings);
 	}
 

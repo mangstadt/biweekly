@@ -5,12 +5,12 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RawProperty;
-import biweekly.property.Version;
 import biweekly.util.XmlUtils;
 
 /*
@@ -48,12 +48,12 @@ public class RawPropertyScribe extends ICalPropertyScribe<RawProperty> {
 	}
 
 	@Override
-	protected ICalDataType _dataType(RawProperty property, Version version) {
+	protected ICalDataType _dataType(RawProperty property, ICalVersion version) {
 		return property.getDataType();
 	}
 
 	@Override
-	protected String _writeText(RawProperty property, Version version) {
+	protected String _writeText(RawProperty property, ICalVersion version) {
 		String value = property.getValue();
 		if (value != null) {
 			return value;
@@ -63,7 +63,7 @@ public class RawPropertyScribe extends ICalPropertyScribe<RawProperty> {
 	}
 
 	@Override
-	protected RawProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
+	protected RawProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
 		return new RawProperty(propertyName, dataType, value);
 	}
 

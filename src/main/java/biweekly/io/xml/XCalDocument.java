@@ -35,6 +35,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
@@ -48,7 +49,6 @@ import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.property.Version;
 import biweekly.property.Xml;
 import biweekly.util.IOUtils;
 import biweekly.util.XmlUtils;
@@ -166,7 +166,7 @@ public class XCalDocument {
 	private ScribeIndex index = new ScribeIndex();
 	private final List<ParseWarnings> parseWarnings = new ArrayList<ParseWarnings>();
 	private final Document document;
-	private final Version targetVersion = Version.v2_0();
+	private final ICalVersion targetVersion = ICalVersion.V2_0;
 	private Element root;
 
 	/**

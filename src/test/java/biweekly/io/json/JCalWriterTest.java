@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.DaylightSavingsTime;
@@ -643,12 +644,12 @@ public class JCalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property, Version version) {
+		protected String _writeText(TestProperty property, ICalVersion version) {
 			return property.getValue();
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
 			return new TestProperty(value);
 		}
 
@@ -664,12 +665,12 @@ public class JCalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(Version property, Version version) {
+		protected String _writeText(Version property, ICalVersion version) {
 			return property.getMaxVersion() + " (beta)";
 		}
 
 		@Override
-		protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
+		protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
 			return new Version(value);
 		}
 

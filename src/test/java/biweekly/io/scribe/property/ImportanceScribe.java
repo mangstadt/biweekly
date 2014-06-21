@@ -3,6 +3,7 @@ package biweekly.io.scribe.property;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
@@ -10,7 +11,6 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Importance;
-import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -49,7 +49,7 @@ public class ImportanceScribe extends ICalPropertyScribe<Importance> {
 	//optional
 	//determines the iCal data type of the property's value
 	@Override
-	protected ICalDataType _dataType(Importance property, Version version) {
+	protected ICalDataType _dataType(Importance property, ICalVersion version) {
 		if (property.getText() != null) {
 			return ICalDataType.TEXT;
 		}
@@ -59,7 +59,7 @@ public class ImportanceScribe extends ICalPropertyScribe<Importance> {
 	//optional
 	//tweaks the parameters before the property is written
 	@Override
-	protected ICalParameters _prepareParameters(Importance property, Version version) {
+	protected ICalParameters _prepareParameters(Importance property, ICalVersion version) {
 		ICalParameters copy = new ICalParameters(property.getParameters());
 		Integer value = property.getNumber();
 		if (value != null && value >= 10) {
@@ -71,14 +71,14 @@ public class ImportanceScribe extends ICalPropertyScribe<Importance> {
 	//required
 	//writes the property to a plain-text iCal
 	@Override
-	protected String _writeText(Importance property, Version version) {
+	protected String _writeText(Importance property, ICalVersion version) {
 		return write(property);
 	}
 
 	//required
 	//parses the property from a plain-text iCal
 	@Override
-	protected Importance _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
+	protected Importance _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
 		value = unescape(value);
 		return parse(value, dataType);
 	}

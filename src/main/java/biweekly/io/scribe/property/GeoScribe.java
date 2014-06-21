@@ -3,13 +3,13 @@ package biweekly.io.scribe.property;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Geo;
-import biweekly.property.Version;
 import biweekly.util.ICalFloatFormatter;
 
 /*
@@ -47,7 +47,7 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 	}
 
 	@Override
-	protected String _writeText(Geo property, Version version) {
+	protected String _writeText(Geo property, ICalVersion version) {
 		ICalFloatFormatter formatter = new ICalFloatFormatter();
 		StringBuilder sb = new StringBuilder();
 
@@ -69,7 +69,7 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 	}
 
 	@Override
-	protected Geo _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
+	protected Geo _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
 		SemiStructuredIterator it = semistructured(value, true);
 		String latitudeStr = it.next();
 		String longitudeStr = it.next();

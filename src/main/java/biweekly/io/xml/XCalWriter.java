@@ -38,6 +38,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
 import biweekly.io.SkipMeException;
@@ -46,7 +47,6 @@ import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.property.Version;
 import biweekly.property.Xml;
 import biweekly.util.XmlUtils;
 
@@ -131,7 +131,7 @@ public class XCalWriter implements Closeable {
 	}
 
 	private final Writer writer;
-	private final Version targetVersion = Version.v2_0();
+	private final ICalVersion targetVersion = ICalVersion.V2_0;
 	private final TransformerHandler handler;
 	private final String indent;
 	private final boolean icalendarElementExists;

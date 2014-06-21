@@ -3,12 +3,12 @@ package biweekly.io.scribe.property;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RequestStatus;
-import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -45,12 +45,12 @@ public class RequestStatusScribe extends ICalPropertyScribe<RequestStatus> {
 	}
 
 	@Override
-	protected String _writeText(RequestStatus property, Version version) {
+	protected String _writeText(RequestStatus property, ICalVersion version) {
 		return structured(property.getStatusCode(), property.getDescription(), property.getExceptionText());
 	}
 
 	@Override
-	protected RequestStatus _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
+	protected RequestStatus _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
 		SemiStructuredIterator it = semistructured(value, true);
 
 		RequestStatus requestStatus = new RequestStatus(it.next());

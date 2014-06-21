@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import org.w3c.dom.Element;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
@@ -18,7 +19,6 @@ import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RecurrenceProperty;
-import biweekly.property.Version;
 import biweekly.util.ICalDateFormat;
 import biweekly.util.ListMultimap;
 import biweekly.util.Recurrence;
@@ -77,13 +77,13 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	}
 
 	@Override
-	protected String _writeText(T property, Version version) {
+	protected String _writeText(T property, ICalVersion version) {
 		Recurrence recur = property.getValue();
 		if (recur == null) {
 			return "";
 		}
 
-		if (version.isV1_0()) {
+		if (version == ICalVersion.V1_0) {
 			StringBuilder sb = new StringBuilder();
 
 			Integer interval = recur.getInterval();
@@ -133,10 +133,10 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
 		final Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
 
-		if (version.isV1_0()) {
+		if (version == ICalVersion.V1_0) {
 			String splitValues[] = value.split("\\s+");
 
 			//parse the frequency and interval from the first token (e.g. "W2")

@@ -17,6 +17,7 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Element;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
@@ -26,7 +27,6 @@ import biweekly.io.text.ICalRawWriter;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.property.Version;
 import biweekly.util.ICalDateFormat;
 import biweekly.util.ListMultimap;
 import biweekly.util.StringUtils;
@@ -128,7 +128,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param version the version of the iCalendar object being generated
 	 * @return the sanitized parameters
 	 */
-	public final ICalParameters prepareParameters(T property, Version version) {
+	public final ICalParameters prepareParameters(T property, ICalVersion version) {
 		return _prepareParameters(property, version);
 	}
 
@@ -137,7 +137,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param version the version of the iCalendar object being generated
 	 * @return the data type or null if unknown
 	 */
-	public final ICalDataType defaultDataType(Version version) {
+	public final ICalDataType defaultDataType(ICalVersion version) {
 		return _defaultDataType(version);
 	}
 
@@ -147,7 +147,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param version the version of the iCalendar object being generated
 	 * @return the data type or null if unknown
 	 */
-	public final ICalDataType dataType(T property, Version version) {
+	public final ICalDataType dataType(T property, ICalVersion version) {
 		return _dataType(property, version);
 	}
 
@@ -159,7 +159,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
 	 */
-	public final String writeText(T property, Version version) {
+	public final String writeText(T property, ICalVersion version) {
 		return _writeText(property, version);
 	}
 
@@ -202,7 +202,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	public final Result<T> parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version) {
+	public final Result<T> parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version) {
 		List<Warning> warnings = new ArrayList<Warning>(0);
 		T property = _parseText(value, dataType, parameters, version, warnings);
 		property.setParameters(parameters);
@@ -259,7 +259,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @return the sanitized parameters (this should be a *copy* of the
 	 * property's parameters if modifications were made)
 	 */
-	protected ICalParameters _prepareParameters(T property, Version version) {
+	protected ICalParameters _prepareParameters(T property, ICalVersion version) {
 		return property.getParameters();
 	}
 
@@ -275,7 +275,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param version the version of the iCalendar object being generated
 	 * @return the data type or null if unknown
 	 */
-	protected ICalDataType _defaultDataType(Version version) {
+	protected ICalDataType _defaultDataType(ICalVersion version) {
 		return defaultDataType;
 	}
 
@@ -292,7 +292,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param version the version of the iCalendar object being generated
 	 * @return the data type or null if unknown
 	 */
-	protected ICalDataType _dataType(T property, Version version) {
+	protected ICalDataType _dataType(T property, ICalVersion version) {
 		return defaultDataType(version);
 	}
 
@@ -304,7 +304,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
 	 */
-	protected abstract String _writeText(T property, Version version);
+	protected abstract String _writeText(T property, ICalVersion version);
 
 	/**
 	 * <p>
@@ -325,8 +325,8 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * stream
 	 */
 	protected void _writeXml(T property, XCalElement element) {
-		String value = writeText(property, Version.v2_0());
-		ICalDataType dataType = dataType(property, Version.v2_0());
+		String value = writeText(property, ICalVersion.V2_0);
+		ICalDataType dataType = dataType(property, ICalVersion.V2_0);
 		element.append(dataType, value);
 	}
 
@@ -346,7 +346,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * stream
 	 */
 	protected JCalValue _writeJson(T property) {
-		String value = writeText(property, Version.v2_0());
+		String value = writeText(property, ICalVersion.V2_0);
 		return JCalValue.single(value);
 	}
 
@@ -372,7 +372,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	protected abstract T _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings);
+	protected abstract T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings);
 
 	/**
 	 * <p>
@@ -425,7 +425,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		}
 
 		value = escape(value);
-		return _parseText(value, dataType, parameters, Version.v2_0(), warnings);
+		return _parseText(value, dataType, parameters, ICalVersion.V2_0, warnings);
 	}
 
 	/**
@@ -499,7 +499,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * {@link ICalendar} object
 	 */
 	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
-		return _parseText(jcalValueToString(value), dataType, parameters, Version.v2_0(), warnings);
+		return _parseText(jcalValueToString(value), dataType, parameters, ICalVersion.V2_0, warnings);
 	}
 
 	private String jcalValueToString(JCalValue value) {

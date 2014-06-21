@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
 import biweekly.io.SkipMeException;
@@ -19,7 +20,6 @@ import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -70,7 +70,7 @@ import biweekly.property.Version;
 public class ICalWriter implements Closeable, Flushable {
 	private ScribeIndex index = new ScribeIndex();
 	private final ICalRawWriter writer;
-	private final Version targetVersion = Version.v2_0();
+	private final ICalVersion targetVersion = ICalVersion.V2_0;
 
 	/**
 	 * Creates an iCalendar writer that writes to an output stream. Uses the

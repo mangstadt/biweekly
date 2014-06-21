@@ -4,13 +4,13 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DateOrDateTimeProperty;
-import biweekly.property.Version;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.ICalDateFormat;
 
@@ -50,12 +50,12 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 	}
 
 	@Override
-	protected ICalDataType _dataType(T property, Version version) {
+	protected ICalDataType _dataType(T property, ICalVersion version) {
 		return (property.getRawComponents() != null || property.getValue() == null || property.hasTime()) ? ICalDataType.DATE_TIME : ICalDataType.DATE;
 	}
 
 	@Override
-	protected String _writeText(T property, Version version) {
+	protected String _writeText(T property, ICalVersion version) {
 		DateTimeComponents components = property.getRawComponents();
 		if (components != null) {
 			return components.toString(false);
@@ -70,7 +70,7 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
 		value = unescape(value);
 		return parse(value, parameters, warnings);
 	}

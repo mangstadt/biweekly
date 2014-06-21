@@ -16,12 +16,12 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.property.Version;
 import biweekly.util.XmlUtils;
 
 /*
@@ -162,7 +162,7 @@ public class Sensei<T extends ICalProperty> {
 		 * @param expected the expected data type
 		 */
 		public void run(ICalDataType expected) {
-			ICalDataType actual = marshaller.dataType(property, Version.v2_0());
+			ICalDataType actual = marshaller.dataType(property, ICalVersion.V2_0);
 			assertEquals(expected, actual);
 		}
 	}
@@ -196,7 +196,7 @@ public class Sensei<T extends ICalProperty> {
 		 * Runs the test.
 		 */
 		public void run() {
-			ICalParameters actual = marshaller.prepareParameters(property, Version.v2_0());
+			ICalParameters actual = marshaller.prepareParameters(property, ICalVersion.V2_0);
 			assertEquals("Actual: " + actual, expected.size(), actual.size());
 
 			for (Map.Entry<String, List<String>> entry : expected) {
@@ -228,7 +228,7 @@ public class Sensei<T extends ICalProperty> {
 		 * @return the marshalled value
 		 */
 		public String run() {
-			return marshaller.writeText(property, Version.v2_0());
+			return marshaller.writeText(property, ICalVersion.V2_0);
 		}
 
 		/**
@@ -385,7 +385,7 @@ public class Sensei<T extends ICalProperty> {
 	 */
 	public class ParseTextTest extends ParseTest<ParseTextTest> {
 		private final String value;
-		private ICalDataType dataType = marshaller.defaultDataType(Version.v2_0());
+		private ICalDataType dataType = marshaller.defaultDataType(ICalVersion.V2_0);
 
 		/**
 		 * @param value the text to parse
@@ -407,7 +407,7 @@ public class Sensei<T extends ICalProperty> {
 		@Override
 		protected void run(Check<T> check, Class<? extends RuntimeException> exception) {
 			try {
-				Result<T> result = marshaller.parseText(value, dataType, parameters, Version.v2_0());
+				Result<T> result = marshaller.parseText(value, dataType, parameters, ICalVersion.V2_0);
 
 				if (exception != null) {
 					fail("Expected " + exception.getSimpleName() + " to be thrown.");
@@ -470,7 +470,7 @@ public class Sensei<T extends ICalProperty> {
 	 */
 	public class ParseJsonTest extends ParseTest<ParseJsonTest> {
 		private final JCalValue value;
-		private ICalDataType dataType = marshaller.defaultDataType(Version.v2_0());
+		private ICalDataType dataType = marshaller.defaultDataType(ICalVersion.V2_0);
 
 		/**
 		 * @param value the jCal value to parse

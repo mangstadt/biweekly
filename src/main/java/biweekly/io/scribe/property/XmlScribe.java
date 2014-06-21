@@ -11,13 +11,13 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
-import biweekly.property.Version;
 import biweekly.property.Xml;
 import biweekly.util.XmlUtils;
 
@@ -57,7 +57,7 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 	}
 
 	@Override
-	protected String _writeText(Xml property, Version version) {
+	protected String _writeText(Xml property, ICalVersion version) {
 		Document value = property.getValue();
 		if (value != null) {
 			String xml = valueToString(value);
@@ -68,7 +68,7 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 	}
 
 	@Override
-	protected Xml _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
+	protected Xml _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
 		value = unescape(value);
 		try {
 			return new Xml(value);

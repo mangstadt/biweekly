@@ -35,6 +35,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.DaylightSavingsTime;
@@ -55,7 +56,6 @@ import biweekly.property.ProductId;
 import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceDates;
 import biweekly.property.Summary;
-import biweekly.property.Version;
 import biweekly.property.Xml;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
@@ -1068,12 +1068,12 @@ public class XCalReaderTest {
 		}
 
 		@Override
-		protected String _writeText(Company property, Version version) {
+		protected String _writeText(Company property, ICalVersion version) {
 			return property.getBoss();
 		}
 
 		@Override
-		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
+		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
 			return new Company(value);
 		}
 

@@ -4,13 +4,13 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Trigger;
-import biweekly.property.Version;
 import biweekly.util.Duration;
 
 /*
@@ -48,12 +48,12 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 	}
 
 	@Override
-	protected ICalDataType _dataType(Trigger property, Version version) {
+	protected ICalDataType _dataType(Trigger property, ICalVersion version) {
 		return (property.getDate() == null) ? ICalDataType.DURATION : ICalDataType.DATE_TIME;
 	}
 
 	@Override
-	protected String _writeText(Trigger property, Version version) {
+	protected String _writeText(Trigger property, ICalVersion version) {
 		Duration duration = property.getDuration();
 		if (duration != null) {
 			return duration.toString();
@@ -68,7 +68,7 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 	}
 
 	@Override
-	protected Trigger _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
+	protected Trigger _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
 		value = unescape(value);
 
 		try {

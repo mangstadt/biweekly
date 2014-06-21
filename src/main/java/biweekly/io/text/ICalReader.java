@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
@@ -209,7 +210,7 @@ public class ICalReader implements Closeable {
 		List<ICalComponent> componentStack = new ArrayList<ICalComponent>();
 		List<String> componentNamesStack = new ArrayList<String>();
 
-		Version version = Version.v2_0();
+		ICalVersion version = ICalVersion.V1_0;
 		while (true) {
 			//read next line
 			ICalRawLine line;
@@ -313,7 +314,12 @@ public class ICalReader implements Closeable {
 				property = result.getProperty();
 
 				if (property instanceof Version) {
-					version = (Version) property;
+					Version versionProp = (Version) property;
+					if (versionProp.isV1_0()) {
+						version = ICalVersion.V1_0;
+					} else if (versionProp.isV2_0()) {
+						version = ICalVersion.V2_0;
+					}
 				}
 			} catch (SkipMeException e) {
 				warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());

@@ -3,6 +3,7 @@ package biweekly.io.scribe.property;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
@@ -46,7 +47,7 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 	}
 
 	@Override
-	protected String _writeText(Version property, Version version) {
+	protected String _writeText(Version property, ICalVersion version) {
 		StringBuilder sb = new StringBuilder();
 
 		if (property.getMinVersion() != null) {
@@ -60,7 +61,7 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 	}
 
 	@Override
-	protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
+	protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
 		SemiStructuredIterator it = semistructured(value, true);
 		String one = it.next();
 		String two = it.next();

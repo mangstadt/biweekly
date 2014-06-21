@@ -5,13 +5,13 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ExceptionDates;
-import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -48,7 +48,7 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 	}
 
 	@Override
-	protected ICalDataType _dataType(ExceptionDates property, Version version) {
+	protected ICalDataType _dataType(ExceptionDates property, ICalVersion version) {
 		return property.hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
 	}
 

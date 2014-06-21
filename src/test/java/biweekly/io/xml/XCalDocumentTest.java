@@ -36,6 +36,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.DaylightSavingsTime;
@@ -1170,12 +1171,12 @@ public class XCalDocumentTest {
 		}
 
 		@Override
-		protected String _writeText(Company property, Version version) {
+		protected String _writeText(Company property, ICalVersion version) {
 			return property.getBoss();
 		}
 
 		@Override
-		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, Version version, List<Warning> warnings) {
+		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
 			return new Company(value);
 		}
 
