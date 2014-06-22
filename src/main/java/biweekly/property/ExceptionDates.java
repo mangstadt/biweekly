@@ -3,6 +3,7 @@ package biweekly.property;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
@@ -112,8 +113,8 @@ public class ExceptionDates extends ListProperty<Date> {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
-		super.validate(components, warnings);
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+		super.validate(components, version, warnings);
 
 		String tzid = getTimezoneId();
 		if (tzid != null && tzid.contains("/") && ICalDateFormat.parseTimeZoneId(tzid) == null) {

@@ -24,6 +24,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import biweekly.ValidationWarnings.WarningsGroup;
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -278,7 +279,7 @@ public class TestUtils {
 		 * @param expectedCodes the expected warning codes
 		 */
 		public void run(Integer... expectedCodes) {
-			List<Warning> warnings = property.validate(components);
+			List<Warning> warnings = property.validate(components, ICalVersion.V2_0);
 			boolean passed = checkCodes(warnings, expectedCodes);
 			if (!passed) {
 				fail("Expected codes were " + Arrays.toString(expectedCodes) + " but were actually:\n" + warnings);
@@ -348,7 +349,7 @@ public class TestUtils {
 			}
 
 			int count = 0;
-			List<WarningsGroup> groups = component.validate(components);
+			List<WarningsGroup> groups = component.validate(components, ICalVersion.V2_0);
 			for (WarningsGroup group : groups) {
 				List<Warning> warnings = group.getWarnings();
 

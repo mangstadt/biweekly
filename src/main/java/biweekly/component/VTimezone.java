@@ -3,6 +3,7 @@ package biweekly.component;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.property.LastModified;
 import biweekly.property.TimezoneId;
@@ -201,7 +202,7 @@ public class VTimezone extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		checkRequiredCardinality(warnings, TimezoneId.class);
 		checkOptionalCardinality(warnings, LastModified.class, TimezoneUrl.class);
 

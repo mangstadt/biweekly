@@ -51,7 +51,7 @@ public class EnumPropertyTest {
 
 	private void assertValidate(String value, int expectedWarnings) {
 		TestProperty prop = new TestProperty(value);
-		assertWarnings(expectedWarnings, prop.validate(null));
+		assertWarnings(expectedWarnings, prop.validate(null, null));
 	}
 
 	private class TestProperty extends EnumProperty {

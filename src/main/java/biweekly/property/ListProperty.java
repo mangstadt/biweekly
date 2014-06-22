@@ -3,6 +3,7 @@ package biweekly.property;
 import java.util.ArrayList;
 import java.util.List;
 
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 
@@ -82,7 +83,7 @@ public class ListProperty<T> extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		if (values.isEmpty()) {
 			warnings.add(Warning.validate(26));
 		}

@@ -2,6 +2,7 @@ package biweekly.property;
 
 import java.util.List;
 
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.util.Recurrence;
@@ -60,8 +61,8 @@ public class RecurrenceRule extends RecurrenceProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
-		super.validate(components, warnings);
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+		super.validate(components, version, warnings);
 		if (value == null) {
 			return;
 		}

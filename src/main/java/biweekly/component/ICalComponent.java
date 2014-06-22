@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.Warning;
@@ -352,15 +353,16 @@ public abstract class ICalComponent {
 	 * iCalendar standard.
 	 * @param hierarchy the hierarchy of components that the component belongs
 	 * to
+	 * @param version the version to validate against
 	 * @see ICalendar#validate
 	 * @return a list of warnings or an empty list if no problems were found
 	 */
-	public final List<WarningsGroup> validate(List<ICalComponent> hierarchy) {
+	public final List<WarningsGroup> validate(List<ICalComponent> hierarchy, ICalVersion version) {
 		List<WarningsGroup> warnings = new ArrayList<WarningsGroup>();
 
 		//validate this component
 		List<Warning> warningsBuf = new ArrayList<Warning>(0);
-		validate(hierarchy, warningsBuf);
+		validate(hierarchy, version, warningsBuf);
 		if (!warningsBuf.isEmpty()) {
 			warnings.add(new WarningsGroup(this, hierarchy, warningsBuf));
 		}
@@ -372,7 +374,7 @@ public abstract class ICalComponent {
 
 		//validate properties
 		for (ICalProperty property : properties.values()) {
-			List<Warning> propWarnings = property.validate(hierarchy);
+			List<Warning> propWarnings = property.validate(hierarchy, version);
 			if (!propWarnings.isEmpty()) {
 				warnings.add(new WarningsGroup(property, hierarchy, propWarnings));
 			}
@@ -380,20 +382,27 @@ public abstract class ICalComponent {
 
 		//validate sub-components
 		for (ICalComponent component : components.values()) {
-			warnings.addAll(component.validate(hierarchy));
+			warnings.addAll(component.validate(hierarchy, version));
 		}
 
 		return warnings;
 	}
 
 	/**
+	 * <p>
 	 * Checks the component for data consistency problems or deviations from the
-	 * spec. Meant to be overridden by child classes.
+	 * spec.
+	 * </p>
+	 * <p>
+	 * This method should be overridden by child classes that wish to provide
+	 * validation logic. The default implementation of this method does nothing.
+	 * </p>
 	 * @param components the hierarchy of components that the component belongs
 	 * to
+	 * @param version the version to validate against
 	 * @param warnings the list to add the warnings to
 	 */
-	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		//do nothing
 	}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.parameter.FreeBusyType;
@@ -121,7 +122,7 @@ public class FreeBusy extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		if (values.isEmpty()) {
 			warnings.add(Warning.validate(38));
 			return;

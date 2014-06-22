@@ -3,6 +3,7 @@ package biweekly.component;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.property.Comment;
 import biweekly.property.DateStart;
@@ -298,7 +299,7 @@ public class Observance extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		checkRequiredCardinality(warnings, DateStart.class, TimezoneOffsetTo.class, TimezoneOffsetFrom.class);
 
 		//BYHOUR, BYMINUTE, and BYSECOND cannot be specified in RRULE if DTSTART's data type is "date"

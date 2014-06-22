@@ -3,6 +3,7 @@ package biweekly.property;
 import java.util.Collection;
 import java.util.List;
 
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 
@@ -61,8 +62,8 @@ public abstract class EnumProperty extends TextProperty {
 	protected abstract Collection<String> getStandardValues();
 
 	@Override
-	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
-		super.validate(components, warnings);
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+		super.validate(components, version, warnings);
 		if (value == null) {
 			return;
 		}

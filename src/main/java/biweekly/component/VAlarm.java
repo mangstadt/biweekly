@@ -3,6 +3,7 @@ package biweekly.component;
 import java.util.Arrays;
 import java.util.List;
 
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.parameter.Related;
 import biweekly.property.Action;
@@ -448,7 +449,7 @@ public class VAlarm extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		checkRequiredCardinality(warnings, Action.class, Trigger.class);
 
 		Action action = getAction();

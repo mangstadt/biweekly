@@ -2,6 +2,7 @@ package biweekly.property;
 
 import java.util.List;
 
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 
@@ -66,7 +67,7 @@ public class Importance extends ICalProperty {
 
 	//optional
 	@Override
-	protected void validate(List<ICalComponent> parentComponents, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> parentComponents, ICalVersion version, List<Warning> warnings) {
 		if (number == null && text == null) {
 			warnings.add(new Warning("Value is null."));
 		}
