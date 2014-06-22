@@ -4,6 +4,7 @@ import static biweekly.util.TestUtils.assertValidate;
 
 import org.junit.Test;
 
+import biweekly.ICalVersion;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.Frequency;
 
@@ -38,10 +39,10 @@ import biweekly.util.Recurrence.Frequency;
 public class ExceptionRuleTest {
 	@Test
 	public void validate() {
-		ExceptionRule property = new ExceptionRule(null);
-		assertValidate(property).run(26, 37);
+		ExceptionRule property = new ExceptionRule(new Recurrence.Builder(Frequency.DAILY).build());
+		assertValidate(property).versions(ICalVersion.V1_0, ICalVersion.V2_0_DEPRECATED).run();
 
 		property = new ExceptionRule(new Recurrence.Builder(Frequency.DAILY).build());
-		assertValidate(property).run(37);
+		assertValidate(property).versions(ICalVersion.V2_0).run(37);
 	}
 }

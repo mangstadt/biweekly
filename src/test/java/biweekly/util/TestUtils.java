@@ -23,8 +23,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.ICalVersion;
+import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -258,6 +258,7 @@ public class TestUtils {
 	public static class PropValidateChecker {
 		private final ICalProperty property;
 		private List<ICalComponent> components = new ArrayList<ICalComponent>();
+		private ICalVersion[] versions = ICalVersion.values();
 
 		public PropValidateChecker(ICalProperty property) {
 			this.property = property;
@@ -274,15 +275,22 @@ public class TestUtils {
 			return this;
 		}
 
+		public PropValidateChecker versions(ICalVersion... versions) {
+			this.versions = versions;
+			return this;
+		}
+
 		/**
 		 * Performs the validation check.
 		 * @param expectedCodes the expected warning codes
 		 */
 		public void run(Integer... expectedCodes) {
-			List<Warning> warnings = property.validate(components, ICalVersion.V2_0);
-			boolean passed = checkCodes(warnings, expectedCodes);
-			if (!passed) {
-				fail("Expected codes were " + Arrays.toString(expectedCodes) + " but were actually:\n" + warnings);
+			for (ICalVersion version : versions) {
+				List<Warning> warnings = property.validate(components, version);
+				boolean passed = checkCodes(warnings, expectedCodes);
+				if (!passed) {
+					fail(version.name() + ": Expected codes were " + Arrays.toString(expectedCodes) + " but were actually:\n" + warnings);
+				}
 			}
 		}
 	}

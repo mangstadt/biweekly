@@ -54,7 +54,8 @@ import biweekly.component.ICalComponent;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc2445#page-114">RFC 2445 p.114-15</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-114">RFC 2445
+ * p.114-15</a>
  */
 public class ExceptionRule extends RecurrenceProperty {
 	/**
@@ -69,6 +70,8 @@ public class ExceptionRule extends RecurrenceProperty {
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		super.validate(components, version, warnings);
 
-		warnings.add(Warning.validate(37));
+		if (version == ICalVersion.V2_0) {
+			warnings.add(Warning.validate(37));
+		}
 	}
 }

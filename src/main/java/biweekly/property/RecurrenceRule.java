@@ -1,10 +1,5 @@
 package biweekly.property;
 
-import java.util.List;
-
-import biweekly.ICalVersion;
-import biweekly.Warning;
-import biweekly.component.ICalComponent;
 import biweekly.util.Recurrence;
 
 /*
@@ -49,7 +44,8 @@ import biweekly.util.Recurrence;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545 p.122-32</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
+ * p.122-32</a>
  */
 public class RecurrenceRule extends RecurrenceProperty {
 	/**
@@ -58,17 +54,5 @@ public class RecurrenceRule extends RecurrenceProperty {
 	 */
 	public RecurrenceRule(Recurrence recur) {
 		super(recur);
-	}
-
-	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
-		super.validate(components, version, warnings);
-		if (value == null) {
-			return;
-		}
-
-		if (!value.getXRules().isEmpty()) {
-			warnings.add(Warning.validate(32));
-		}
 	}
 }

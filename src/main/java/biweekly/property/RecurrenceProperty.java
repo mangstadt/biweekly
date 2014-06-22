@@ -6,6 +6,7 @@ import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.util.Recurrence;
+import biweekly.util.Recurrence.Frequency;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -58,6 +59,31 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 
 		if (value.getUntil() != null && value.getCount() != null) {
 			warnings.add(Warning.validate(31));
+		}
+
+		switch (version) {
+		case V1_0:
+			if (!value.getXRules().isEmpty()) {
+				warnings.add(new Warning("X-Rules are not supported by vCal."));
+			}
+			if (!value.getBySetPos().isEmpty()) {
+				warnings.add(new Warning("BYSETPOS is not supported by vCal."));
+			}
+			if (value.getFrequency() == Frequency.SECONDLY) {
+				warnings.add(new Warning(Frequency.SECONDLY.name() + " frequency is not supported by vCal."));
+			}
+			break;
+
+		case V2_0_DEPRECATED:
+			//empty
+			break;
+
+		case V2_0:
+			if (!value.getXRules().isEmpty()) {
+				warnings.add(Warning.validate(32));
+			}
+
+			break;
 		}
 	}
 }
