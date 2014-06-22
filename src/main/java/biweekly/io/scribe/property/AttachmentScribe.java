@@ -10,7 +10,7 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Attachment;
-import biweekly.util.Base64;
+import biweekly.util.org.apache.commons.codec.binary.Base64;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -79,7 +79,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 
 		byte data[] = property.getData();
 		if (data != null) {
-			return Base64.encode(data);
+			return Base64.encodeBase64String(data);
 		}
 
 		return "";
@@ -90,7 +90,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 		value = unescape(value);
 
 		if (dataType == ICalDataType.BINARY || parameters.getEncoding() == Encoding.BASE64) {
-			return new Attachment(null, Base64.decode(value));
+			return new Attachment(null, Base64.decodeBase64(value));
 		}
 		return new Attachment(null, value);
 	}
@@ -105,7 +105,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 
 		byte data[] = property.getData();
 		if (data != null) {
-			element.append(ICalDataType.BINARY, Base64.encode(data));
+			element.append(ICalDataType.BINARY, Base64.encodeBase64String(data));
 			return;
 		}
 
@@ -121,7 +121,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 
 		String base64Data = element.first(ICalDataType.BINARY);
 		if (base64Data != null) {
-			return new Attachment(null, Base64.decode(base64Data)); //formatType will be set when the parameters are assigned to the property object
+			return new Attachment(null, Base64.decodeBase64(base64Data)); //formatType will be set when the parameters are assigned to the property object
 		}
 
 		throw missingXmlElements(ICalDataType.URI, ICalDataType.BINARY);
@@ -136,7 +136,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 
 		byte data[] = property.getData();
 		if (data != null) {
-			return JCalValue.single(Base64.encode(data));
+			return JCalValue.single(Base64.encodeBase64String(data));
 		}
 
 		return JCalValue.single("");
@@ -147,7 +147,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 		String valueStr = value.asSingle();
 
 		if (dataType == ICalDataType.BINARY) {
-			return new Attachment(null, Base64.decode(valueStr));
+			return new Attachment(null, Base64.decodeBase64(valueStr));
 		}
 		return new Attachment(null, valueStr);
 	}

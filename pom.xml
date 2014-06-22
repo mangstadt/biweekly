@@ -51,6 +51,15 @@
 	</properties>
 
 	<dependencies>
+		<!--
+		Source code of commons-codec has been included in the project to improve Android compatibility.
+		See: https://groups.google.com/forum/?fromgroups=#!topic/ez-vcard-discuss/w2TK7yetwr8
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.6</version>
+		</dependency>
+		-->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
@@ -68,12 +77,6 @@
 			<version>1.5</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.6</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -89,6 +92,15 @@
 				<artifactId>maven-bundle-plugin</artifactId>
 				<version>2.4.0</version>
 				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<!--
+						The plugin must be instructed to retrieve the filtered files from the "target/classes" directory.
+						Otherwise, it will copy the unfiltered versions in "src/main/resources" to the JAR.
+						-->
+						<Include-Resource>{maven-resources}, {biweekly.properties=target/classes/biweekly.properties}</Include-Resource>
+					</instructions>
+				</configuration>
 			</plugin>
 
 			<plugin>
@@ -152,6 +164,9 @@
 						<link>http://fasterxml.github.io/jackson-core/javadoc/2.1.0/</link>
 					</links>
 					<quiet>true</quiet>
+					
+					<!-- exclude commons-codec source -->
+					<excludePackageNames>biweekly.util.org.*</excludePackageNames>
 					
 					<!-- Add Javascript syntax highlighter -->
 					<top><![CDATA[
@@ -217,6 +232,10 @@
 					<targetClasses>
 						<param>biweekly.*</param>
 					</targetClasses>
+					<excludedClasses>
+						<!-- exclude commons-codec -->
+						<param>biweekly.util.org.*</param>
+					</excludedClasses>
 					<targetTests>
 						<param>biweekly.*</param>
 					</targetTests>

@@ -4,13 +4,12 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.scribe.property.AttachmentScribe;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Attachment;
+import biweekly.util.org.apache.commons.codec.binary.Base64;
 
 /*
  Copyright (c) 2013, Michael Angstadt
