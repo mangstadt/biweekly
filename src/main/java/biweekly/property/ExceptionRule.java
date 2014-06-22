@@ -5,6 +5,7 @@ import java.util.List;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
+import biweekly.util.Recurrence;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -62,7 +63,7 @@ public class ExceptionRule extends RecurrenceProperty {
 	 * Creates a new exception rule property.
 	 * @param recur the recurrence rule
 	 */
-	public ExceptionRule(biweekly.util.Recurrence recur) {
+	public ExceptionRule(Recurrence recur) {
 		super(recur);
 	}
 
