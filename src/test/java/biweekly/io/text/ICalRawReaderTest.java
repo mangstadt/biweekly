@@ -8,6 +8,8 @@ import java.io.StringReader;
 
 import org.junit.Test;
 
+import biweekly.ICalVersion;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -65,6 +67,26 @@ public class ICalRawReaderTest {
 		assertNull(reader.readLine());
 	}
 
+	@Test
+	public void version() throws Throwable {
+		//@formatter:off
+		String ical =
+		"verSION:2.0\r\n" +
+		"VERSION:1.0\r\n" +
+		"VERSION:invalid";
+		//@formatter:on
+		ICalRawReader reader = create(ical);
+
+		assertEquals(ICalVersion.V1_0, reader.getVersion());
+		assertEquals(line("verSION").value("2.0").build(), reader.readLine());
+		assertEquals(ICalVersion.V2_0, reader.getVersion());
+		assertEquals(line("VERSION").value("1.0").build(), reader.readLine());
+		assertEquals(ICalVersion.V1_0, reader.getVersion());
+		assertEquals(line("VERSION").value("invalid").build(), reader.readLine());
+		assertEquals(ICalVersion.V1_0, reader.getVersion());
+		assertNull(reader.readLine());
+	}
+
 	@Test(expected = ICalParseException.class)
 	public void bad_line() throws Throwable {
 		//@formatter:off
@@ -82,6 +104,18 @@ public class ICalRawReaderTest {
 	public void empty() throws Throwable {
 		String ical = "";
 		ICalRawReader reader = create(ical);
+
+		assertNull(reader.readLine());
+	}
+
+	@Test
+	public void empty_value() throws Throwable {
+		String vcard = "COMMENT:";
+		ICalRawReader reader = create(vcard);
+
+		ICalRawLine expected = line("COMMENT").value("").build();
+		ICalRawLine actual = reader.readLine();
+		assertEquals(expected, actual);
 
 		assertNull(reader.readLine());
 	}
@@ -120,6 +154,7 @@ public class ICalRawReaderTest {
 	public void parameter() throws Throwable {
 		//@formatter:off
 		String ical =
+		"VERSION:2.0\r\n" +
 		"PROP" +
 		";PARAM1=one" +
 		";PARAM2=\"two,;:^'^n^^^three\"" +
@@ -128,6 +163,7 @@ public class ICalRawReaderTest {
 		":value";
 		//@formatter:on
 		ICalRawReader reader = create(ical);
+		reader.readLine();
 
 		ICalRawLine.Builder builder = line("PROP");
 		builder.param("PARAM1", "one");
@@ -151,11 +187,204 @@ public class ICalRawReaderTest {
 		//@formatter:on
 		ICalRawReader reader = create(ical);
 
-		ICalRawLine expected = line("PROP").param("PARAM1", (String) null).param("PARAM2", "two").value("value").build();
+		ICalRawLine expected = line("PROP").param(null, "PARAM1").param("PARAM2", "two").value("value").build();
 		ICalRawLine actual = reader.readLine();
 		assertEquals(expected, actual);
 
 		assertNull(reader.readLine());
+	}
+
+	@Test
+	public void parameters_with_whitespace_around_equals() throws Throwable {
+		//1.0 (removes)
+		{
+			//@formatter:off
+			String vcard = 
+			"VERSION:1.0\r\n" +
+			"ADR;TYPE\t= WOrK;TYPE \t=  dOM:;;123 Main Str;Austin;TX;12345;US";
+			//@formatter:on
+			ICalRawReader reader = create(vcard);
+			reader.readLine();
+
+			ICalRawLine expected = line("ADR").param("TYPE", "WOrK").param("TYPE", "dOM").value(";;123 Main Str;Austin;TX;12345;US").build();
+			ICalRawLine actual = reader.readLine();
+			assertEquals(expected, actual);
+
+			assertNull(reader.readLine());
+		}
+
+		//2.0 (keeps)
+		{
+			//@formatter:off
+			String vcard = 
+			"VERSION:2.0\r\n" +
+			"ADR;TYPE\t= WOrK;TYPE \t=  dOM:;;123 Main Str;Austin;TX;12345;US";
+			//@formatter:on
+			ICalRawReader reader = create(vcard);
+			reader.readLine();
+
+			ICalRawLine expected = line("ADR").param("TYPE\t", " WOrK").param("TYPE \t", "  dOM").value(";;123 Main Str;Austin;TX;12345;US").build();
+			ICalRawLine actual = reader.readLine();
+			assertEquals(expected, actual);
+
+			assertNull(reader.readLine());
+		}
+	}
+
+	@Test
+	public void multi_valued_parameters() throws Throwable {
+		//1.0 (doesn't recognize them)
+		{
+			//@formatter:off
+			String vcard = 
+			"VERSION:1.0\r\n" +
+			"ADR;TYPE=dom,\"foo,bar\\;baz\",work,foo=bar;PREF=1:;;123 Main Str;Austin;TX;12345;US";
+			//@formatter:on
+			ICalRawReader reader = create(vcard);
+			reader.readLine();
+
+			ICalRawLine expected = line("ADR").param("TYPE", "dom,\"foo,bar;baz\",work,foo=bar").param("PREF", "1").value(";;123 Main Str;Austin;TX;12345;US").build();
+			ICalRawLine actual = reader.readLine();
+			assertEquals(expected, actual);
+
+			assertNull(reader.readLine());
+		}
+
+		//2.0
+		{
+			//@formatter:off
+			String vcard = 
+			"VERSION:2.0\r\n" +
+			"ADR;TYPE=dom,\"foo,bar;baz\",work,foo=bar;PREF=1:;;123 Main Str;Austin;TX;12345;US";
+			//@formatter:on
+			ICalRawReader reader = create(vcard);
+			reader.readLine();
+
+			ICalRawLine expected = line("ADR").param("TYPE", "dom", "foo,bar;baz", "work", "foo=bar").param("PREF", "1").value(";;123 Main Str;Austin;TX;12345;US").build();
+			ICalRawLine actual = reader.readLine();
+			assertEquals(expected, actual);
+
+			assertNull(reader.readLine());
+		}
+	}
+
+	@Test
+	public void character_escaping_in_parameters() throws Throwable {
+		//1.0 without caret escaping
+		{
+			//1: backslash that doesn't escape anything
+			//2: caret-escaped caret
+			//3: caret-escaped newline (lowercase n)
+			//4: backslash-escaped semi-colon (must be escaped in 2.1)
+			//5: caret-escaped newline (uppercase N)
+			//6: backslash-escaped newline (lowercase n)
+			//7: backslash-escaped newline (uppercase N)
+			//8: caret-escaped double quote
+			//9: un-escaped double quote (no special meaning in 2.1)
+			//a: caret that doesn't escape anything
+			//@formatter:off
+			String vcard = 
+			"VERSION:1.0\r\n" +
+			//          1    2     2     3        4     5            6        7  8       8   9   9     a
+			"ADR;LABEL=1\\23 ^^Main^^ St.^nSection\\; 12^NBuilding 20\\nApt 10\\N^'Austin^', \"TX\" 123^45:;;123 Main Str;Austin;TX;12345;US";
+			//@formatter:on
+			ICalRawReader reader = create(vcard);
+			reader.setCaretDecodingEnabled(false);
+			reader.readLine();
+
+			ICalRawLine expected = line("ADR").param("LABEL", "1\\23 ^^Main^^ St.^nSection; 12^NBuilding 20" + NEWLINE + "Apt 10" + NEWLINE + "^'Austin^', \"TX\" 123^45").value(";;123 Main Str;Austin;TX;12345;US").build();
+			ICalRawLine actual = reader.readLine();
+			assertEquals(expected, actual);
+
+			assertNull(reader.readLine());
+		}
+
+		//1.0 with caret escaping (no difference)
+		{
+			//1: backslash that doesn't escape anything
+			//2: caret-escaped caret
+			//3: caret-escaped newline (lowercase n)
+			//4: backslash-escaped semi-colon (must be escaped in 2.1)
+			//5: caret-escaped newline (uppercase N)
+			//6: backslash-escaped newline (lowercase n)
+			//7: backslash-escaped newline (uppercase N)
+			//8: caret-escaped double quote
+			//9: un-escaped double quote (no special meaning in 2.1)
+			//a: caret that doesn't escape anything
+			//@formatter:off
+			String vcard = 
+			"VERSION:1.0\r\n" +
+			//          1    2     2     3        4     5            6        7  8       8   9   9     a
+			"ADR;LABEL=1\\23 ^^Main^^ St.^nSection\\; 12^NBuilding 20\\nApt 10\\N^'Austin^', \"TX\" 123^45:;;123 Main Str;Austin;TX;12345;US";
+			//@formatter:on
+			ICalRawReader reader = create(vcard);
+			reader.setCaretDecodingEnabled(true);
+			reader.readLine();
+
+			ICalRawLine expected = line("ADR").param("LABEL", "1\\23 ^^Main^^ St.^nSection; 12^NBuilding 20" + NEWLINE + "Apt 10" + NEWLINE + "^'Austin^', \"TX\" 123^45").value(";;123 Main Str;Austin;TX;12345;US").build();
+			ICalRawLine actual = reader.readLine();
+			assertEquals(expected, actual);
+
+			assertNull(reader.readLine());
+		}
+
+		//2.0 without caret escaping
+		{
+			//0: value double quoted because of semi-colon and comma chars
+			//1: backslash that doesn't escape anything
+			//2: caret-escaped caret
+			//3: caret-escaped newline (lowercase n)
+			//4: caret-escaped newline (uppercase N)
+			//5: backslash-escaped newline (lowercase n)
+			//6: backslash-escaped newline (uppercase N)
+			//7: caret-escaped double quote
+			//8: backslash-escaped double quote (not part of the standard, included for interoperability)
+			//9: caret that doesn't escape anything
+			//@formatter:off
+			String vcard = 
+			"VERSION:2.0\r\n" +
+			//         0  1    2     2     3        0   4            5        6  7       7 0 8     8       9  0
+			"ADR;LABEL=\"1\\23 ^^Main^^ St.^nSection; 12^NBuilding 20\\nApt 10\\N^'Austin^', \\\"TX\\\" 123^45\":;;123 Main Str;Austin;TX;12345;US";
+			//@formatter:on
+			ICalRawReader reader = create(vcard);
+			reader.setCaretDecodingEnabled(false);
+			reader.readLine();
+
+			ICalRawLine expected = line("ADR").param("LABEL", "1\\23 ^^Main^^ St.^nSection; 12^NBuilding 20" + NEWLINE + "Apt 10" + NEWLINE + "^'Austin^', \"TX\" 123^45").value(";;123 Main Str;Austin;TX;12345;US").build();
+			ICalRawLine actual = reader.readLine();
+			assertEquals(expected, actual);
+
+			assertNull(reader.readLine());
+		}
+
+		//2.0 with caret escaping
+		{
+			//0: value double quoted because of semi-colon and comma chars
+			//1: backslash that doesn't escape anything
+			//2: caret-escaped caret
+			//3: caret-escaped newline (lowercase n)
+			//4: caret-escaped newline (uppercase N)
+			//5: backslash-escaped newline (lowercase n)
+			//6: backslash-escaped newline (uppercase N)
+			//7: caret-escaped double quote
+			//8: backslash-escaped double quote (not part of the standard, included for interoperability)
+			//9: caret that doesn't escape anything
+			//@formatter:off
+			String vcard = 
+			"VERSION:2.0\r\n" +
+			//         0  1    2     2     3        0   4            5        6  7       7 0 8     8       9  0
+			"ADR;LABEL=\"1\\23 ^^Main^^ St.^nSection; 12^NBuilding 20\\nApt 10\\N^'Austin^', \\\"TX\\\" 123^45\":;;123 Main Str;Austin;TX;12345;US";
+			//@formatter:on
+			ICalRawReader reader = create(vcard);
+			reader.setCaretDecodingEnabled(true);
+			reader.readLine();
+
+			ICalRawLine expected = line("ADR").param("LABEL", "1\\23 ^Main^ St." + NEWLINE + "Section; 12^NBuilding 20" + NEWLINE + "Apt 10" + NEWLINE + "\"Austin\", \"TX\" 123^45").value(";;123 Main Str;Austin;TX;12345;US").build();
+			ICalRawLine actual = reader.readLine();
+			assertEquals(expected, actual);
+
+			assertNull(reader.readLine());
+		}
 	}
 
 	@Test

@@ -11,7 +11,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +31,6 @@ import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.io.scribe.property.RecurrencePropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -209,7 +207,6 @@ public class ICalReader implements Closeable {
 		List<ICalComponent> componentStack = new ArrayList<ICalComponent>();
 		List<String> componentNamesStack = new ArrayList<String>();
 
-		ICalVersion version = ICalVersion.V1_0;
 		while (true) {
 			//read next line
 			ICalRawLine line;
@@ -283,16 +280,12 @@ public class ICalReader implements Closeable {
 				continue;
 			}
 
-			//check for value-less parameters
+			//check for name-less parameters
 			ICalParameters parameters = line.getParameters();
-			for (Map.Entry<String, List<String>> entry : parameters) {
-				List<String> paramValues = entry.getValue();
-				for (String value : paramValues) {
-					if (value == null) {
-						String paramName = entry.getKey();
-						warnings.add(reader.getLineNum(), propertyName, 4, paramName);
-						break;
-					}
+			if (reader.getVersion() != ICalVersion.V1_0) {
+				List<String> values = parameters.get(null);
+				if (!values.isEmpty()) {
+					warnings.add(reader.getLineNum(), propertyName, 4, values);
 				}
 			}
 
@@ -302,7 +295,7 @@ public class ICalReader implements Closeable {
 			ICalDataType dataType = parameters.getValue();
 			if (dataType == null) {
 				//use the default data type if there is no VALUE parameter
-				dataType = scribe.defaultDataType(version);
+				dataType = scribe.defaultDataType(reader.getVersion());
 			} else {
 				//remove VALUE parameter if it is set
 				parameters.setValue(null);
@@ -314,10 +307,10 @@ public class ICalReader implements Closeable {
 			List<Result<? extends ICalComponent>> componentsToAdd = new ArrayList<Result<? extends ICalComponent>>();
 
 			//handle "difficult" vCal properties
-			if (version == ICalVersion.V1_0) {
+			if (reader.getVersion() == ICalVersion.V1_0) {
 				try {
 					if (scribe instanceof RecurrencePropertyScribe) {
-						propertiesToAdd.addAll(handleVCalRRule(value, scribe, propertyName, dataType, parameters, version));
+						propertiesToAdd.addAll(handleVCalRRule(value, scribe, propertyName, dataType, parameters, reader.getVersion()));
 					}
 				} catch (SkipMeException e) {
 					warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());
@@ -325,25 +318,14 @@ public class ICalReader implements Closeable {
 				} catch (CannotParseException e) {
 					warnings.add(reader.getLineNum(), propertyName, 1, value, e.getMessage());
 
-					Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters, version);
+					Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters, reader.getVersion());
 					propertiesToAdd.add(result);
 				}
 			}
 
 			if (propertiesToAdd.isEmpty() && componentsToAdd.isEmpty()) {
 				try {
-					Result<? extends ICalProperty> result = scribe.parseText(value, dataType, parameters, version);
-
-					ICalProperty property = result.getProperty();
-					if (property instanceof Version) {
-						Version versionProp = (Version) property;
-						if (versionProp.isV1_0()) {
-							version = ICalVersion.V1_0;
-						} else if (versionProp.isV2_0()) {
-							version = ICalVersion.V2_0;
-						}
-					}
-
+					Result<? extends ICalProperty> result = scribe.parseText(value, dataType, parameters, reader.getVersion());
 					propertiesToAdd.add(result);
 				} catch (SkipMeException e) {
 					warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());
@@ -351,7 +333,7 @@ public class ICalReader implements Closeable {
 				} catch (CannotParseException e) {
 					warnings.add(reader.getLineNum(), propertyName, 1, value, e.getMessage());
 
-					Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters, version);
+					Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters, reader.getVersion());
 					propertiesToAdd.add(result);
 				}
 			}

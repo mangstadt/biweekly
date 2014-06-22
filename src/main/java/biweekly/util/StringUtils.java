@@ -56,6 +56,23 @@ public class StringUtils {
 	}
 
 	/**
+	 * Trims the whitespace off the right side of a string.
+	 * @param string the string to trim
+	 * @return the trimmed string
+	 */
+	public static String rtrim(String string) {
+		if (string == null) {
+			return null;
+		}
+
+		int i;
+		for (i = string.length() - 1; i >= 0 && Character.isWhitespace(string.charAt(i)); i--) {
+			//do nothing
+		}
+		return (i == 0) ? "" : string.substring(0, i + 1);
+	}
+
+	/**
 	 * Joins a collection of values into a delimited list.
 	 * @param collection the collection of values
 	 * @param delimiter the delimiter (e.g. ",")

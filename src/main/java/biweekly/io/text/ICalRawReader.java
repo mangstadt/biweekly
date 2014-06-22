@@ -6,7 +6,9 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 
+import biweekly.ICalVersion;
 import biweekly.parameter.ICalParameters;
+import biweekly.util.StringUtils;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -41,6 +43,7 @@ import biweekly.parameter.ICalParameters;
 public class ICalRawReader implements Closeable {
 	private final FoldedLineReader reader;
 	private boolean caretDecodingEnabled = true;
+	private ICalVersion version = ICalVersion.V1_0; //initialize to 1.0, since the VERSION property can exist anywhere in the file in this version
 
 	/**
 	 * Creates a new reader.
@@ -56,6 +59,14 @@ public class ICalRawReader implements Closeable {
 	 */
 	public int getLineNum() {
 		return reader.getLineNum();
+	}
+
+	/**
+	 * Gets the iCalendar version that the reader is currently parsing with.
+	 * @return the iCalendar version
+	 */
+	public ICalVersion getVersion() {
+		return version;
 	}
 
 	/**
@@ -90,8 +101,12 @@ public class ICalRawReader implements Closeable {
 					} else if (ch == 'n' || ch == 'N') {
 						//newlines
 						buffer.append(NEWLINE);
-					} else if (ch == '"') {
+					} else if (ch == '"' && version != ICalVersion.V1_0) {
 						//incase a double quote is escaped with a backslash
+						buffer.append(ch);
+					} else if (ch == ';' && version == ICalVersion.V1_0) {
+						//semi-colons can only be escaped in 1.- parameter values
+						//if a 2.0 param value has semi-colons, the value should be surrounded in double quotes
 						buffer.append(ch);
 					} else {
 						//treat the escape character as a normal character because it's not a valid escape sequence
@@ -113,7 +128,7 @@ public class ICalRawReader implements Closeable {
 				continue;
 			}
 
-			if (ch == '\\' || (ch == '^' && caretDecodingEnabled)) {
+			if (ch == '\\' || (ch == '^' && version != ICalVersion.V1_0 && caretDecodingEnabled)) {
 				//an escape character was read
 				escapeChar = ch;
 				continue;
@@ -123,13 +138,13 @@ public class ICalRawReader implements Closeable {
 				if (propertyName == null) {
 					//property name
 					propertyName = buffer.toString();
-				} else if (curParamName == null) {
-					//value-less parameter (bad iCal syntax)
-					String parameterName = buffer.toString();
-					parameters.put(parameterName, null);
 				} else {
 					//parameter value
 					String paramValue = buffer.toString();
+					if (version == ICalVersion.V1_0) {
+						//1.0 allows whitespace to surround the "=", so remove it
+						paramValue = StringUtils.ltrim(paramValue);
+					}
 					parameters.put(curParamName, paramValue);
 					curParamName = null;
 				}
@@ -147,7 +162,7 @@ public class ICalRawReader implements Closeable {
 				continue;
 			}
 
-			if (ch == ',' && !inQuotes) {
+			if (ch == ',' && !inQuotes && version != ICalVersion.V1_0) {
 				//multi-valued parameter
 				parameters.put(curParamName, buffer.toString());
 				buffer.setLength(0);
@@ -157,11 +172,16 @@ public class ICalRawReader implements Closeable {
 			if (ch == '=' && curParamName == null) {
 				//parameter name
 				curParamName = buffer.toString();
+				if (version == ICalVersion.V1_0) {
+					//2.1 allows whitespace to surround the "=", so remove it
+					curParamName = StringUtils.rtrim(curParamName);
+				}
 				buffer.setLength(0);
 				continue;
 			}
 
-			if (ch == '"') {
+			if (ch == '"' && version != ICalVersion.V1_0) {
+				//1.0 doesn't use the quoting mechanism
 				inQuotes = !inQuotes;
 				continue;
 			}
@@ -171,6 +191,13 @@ public class ICalRawReader implements Closeable {
 
 		if (propertyName == null || value == null) {
 			throw new ICalParseException(line);
+		}
+
+		if ("VERSION".equalsIgnoreCase(propertyName)) {
+			ICalVersion version = ICalVersion.get(value);
+			if (version != null) {
+				this.version = version;
+			}
 		}
 
 		return new ICalRawLine(propertyName, parameters, value);
