@@ -202,11 +202,7 @@ public class ICalReader implements Closeable {
 	public ICalendar readNext() throws IOException {
 		warnings.clear();
 
-		boolean dataWasRead = false;
-
-		List<ICalProperty> orphanedProperties = new ArrayList<ICalProperty>();
-		List<ICalComponent> orphanedComponents = new ArrayList<ICalComponent>();
-
+		ICalendar ical = null;
 		List<ICalComponent> componentStack = new ArrayList<ICalComponent>();
 		List<String> componentNamesStack = new ArrayList<String>();
 
@@ -230,21 +226,29 @@ public class ICalReader implements Closeable {
 
 			if ("BEGIN".equalsIgnoreCase(propertyName)) {
 				String componentName = line.getValue();
-				dataWasRead = true;
+				if (ical == null && !icalComponentName.equals(componentName)) {
+					//keep reading until a VCALENDAR component is found
+					continue;
+				}
 
 				ICalComponent parentComponent = componentStack.isEmpty() ? null : componentStack.get(componentStack.size() - 1);
 
-				ICalComponentScribe<? extends ICalComponent> marshaller = index.getComponentScribe(componentName);
-				ICalComponent component = marshaller.emptyInstance();
+				ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(componentName);
+				ICalComponent component = scribe.emptyInstance();
 				componentStack.add(component);
 				componentNamesStack.add(componentName);
 
 				if (parentComponent == null) {
-					orphanedComponents.add(component);
+					ical = (ICalendar) component;
 				} else {
 					parentComponent.addComponent(component);
 				}
 
+				continue;
+			}
+
+			if (ical == null) {
+				//VCALENDAR component hasn't been found yet
 				continue;
 			}
 
@@ -275,8 +279,6 @@ public class ICalReader implements Closeable {
 
 				continue;
 			}
-
-			dataWasRead = true;
 
 			//check for value-less parameters
 			ICalParameters parameters = line.getParameters();
@@ -332,39 +334,8 @@ public class ICalReader implements Closeable {
 			}
 
 			//add the property to its component
-			if (componentStack.isEmpty()) {
-				orphanedProperties.add(property);
-			} else {
-				ICalComponent parentComponent = componentStack.get(componentStack.size() - 1);
-				parentComponent.addProperty(property);
-			}
-		}
-
-		if (!dataWasRead) {
-			//EOF was reached without reading anything
-			return null;
-		}
-
-		ICalendar ical;
-		if (orphanedComponents.isEmpty()) {
-			//there were no components in the iCalendar object
-			ical = icalMarshaller.emptyInstance();
-		} else {
-			ICalComponent first = orphanedComponents.get(0);
-			if (first instanceof ICalendar) {
-				//this is the code-path that valid iCalendar objects should reach
-				ical = (ICalendar) first;
-			} else {
-				ical = icalMarshaller.emptyInstance();
-				for (ICalComponent component : orphanedComponents) {
-					ical.addComponent(component);
-				}
-			}
-		}
-
-		//add any properties that were not part of a component (will never happen if the iCalendar object is valid)
-		for (ICalProperty property : orphanedProperties) {
-			ical.addProperty(property);
+			ICalComponent parentComponent = componentStack.get(componentStack.size() - 1);
+			parentComponent.addProperty(property);
 		}
 
 		return ical;

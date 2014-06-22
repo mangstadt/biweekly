@@ -250,13 +250,6 @@ public class ICalReaderTest {
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
-		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 0, 2);
-
-		assertEquals("prodid", icalendar.getProductId().getValue());
-		assertTrue(icalendar.getVersion().isV2_0());
-
-		assertWarnings(0, reader.getWarnings());
 		assertNull(reader.readNext());
 	}
 
@@ -272,19 +265,27 @@ public class ICalReaderTest {
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void vcalendar_component_not_the_first_line() throws Throwable {
+		//@formatter:off
+		String ical =
+		"PRODID:prodid\r\n" +
+		"VERSION:2.0\r\n" +
+		"BEGIN:VCALENDAR\r\n" +
+			"PRODID:prodid\r\n" +
+			"VERSION:2.0\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		ICalReader reader = new ICalReader(ical);
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 1, 2);
+		assertSize(icalendar, 0, 2);
 
 		assertEquals("prodid", icalendar.getProductId().getValue());
 		assertTrue(icalendar.getVersion().isV2_0());
-
-		VEvent event = icalendar.getEvents().get(0);
-		assertSize(event, 0, 1);
-
-		assertEquals("summary", event.getSummary().getValue());
-
-		assertWarnings(0, reader.getWarnings());
-		assertNull(reader.readNext());
 	}
 
 	@Test
