@@ -39,6 +39,23 @@ public class StringUtils {
 	public static final String NEWLINE = System.getProperty("line.separator");
 
 	/**
+	 * Trims the whitespace off the left side of a string.
+	 * @param string the string to trim
+	 * @return the trimmed string
+	 */
+	public static String ltrim(String string) {
+		if (string == null) {
+			return null;
+		}
+
+		int i;
+		for (i = 0; i < string.length() && Character.isWhitespace(string.charAt(i)); i++) {
+			//do nothing
+		}
+		return (i == string.length()) ? "" : string.substring(i);
+	}
+
+	/**
 	 * Joins a collection of values into a delimited list.
 	 * @param collection the collection of values
 	 * @param delimiter the delimiter (e.g. ",")

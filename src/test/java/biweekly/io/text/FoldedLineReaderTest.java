@@ -95,6 +95,72 @@ public class FoldedLineReaderTest {
 	}
 
 	@Test
+	public void readLine_quoted_printable() throws Exception {
+		//@formatter:off
+		String ical =
+
+		//=========
+		//quoted-printable lines whose additional lines are not folded (Outlook craziness)
+
+		//one line
+		"COMMENT;ENCODING=QUOTED-PRINTABLE:One\n" +
+
+		//two lines
+		//(without "ENCODING" subtype name)
+		"COMMENT;QUOTED-PRINTABLE:One=0D=0A=\n" +
+		"Two\n" +
+
+		//two lines with an empty line at the end
+		"COMMENT;QUOTED-PRINTABLE:One=0D=0A=\n" +
+		"Two=0D=0A=\n" +
+		"\n" +
+
+		//two lines with an empty line in the middle
+		"COMMENT;QUOTED-PRINTABLE:One=0D=0A=\n" +
+		"=\n" +
+		"Two\n" +
+
+		//three lines
+		"COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0A=\n" +
+		"Two=0D=0A=\n" +
+		"Three\n" +
+
+		//it should recognize when the string "QUOTED-PRINTABLE" is not to the left of the colon
+		"COMMENT:Some QUOTED-PRINTABLE text=\n" +
+
+		//four lines
+		"COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0A=\n" +
+		"Two=0D=0A=\n" +
+		"Three=0D=0A=\n" +
+		"Four\n" +
+
+		//=========
+		
+		//a quoted-printable line whose additional lines *are* folded where the lines end in "="
+		"COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0A=\n" +
+		" Two=0D=0A=\n" +
+		" Three\n" +
+
+		//a quoted-printable line whose additional lines *are* folded, where the lines don't end in "="
+		"COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0A\n" +
+		" Two=0D=0A\n" +
+		" Three\n";
+		//@formatter:on
+
+		FoldedLineReader reader = new FoldedLineReader(ical);
+		assertEquals("COMMENT;ENCODING=QUOTED-PRINTABLE:One", reader.readLine());
+		assertEquals("COMMENT;QUOTED-PRINTABLE:One=0D=0ATwo", reader.readLine());
+		assertEquals("COMMENT;QUOTED-PRINTABLE:One=0D=0ATwo=0D=0A", reader.readLine());
+		assertEquals("COMMENT;QUOTED-PRINTABLE:One=0D=0ATwo", reader.readLine());
+		assertEquals("COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0ATwo=0D=0AThree", reader.readLine());
+		assertEquals("COMMENT:Some QUOTED-PRINTABLE text=", reader.readLine());
+		assertEquals("COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0ATwo=0D=0AThree=0D=0AFour", reader.readLine());
+		assertEquals("COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0ATwo=0D=0AThree", reader.readLine());
+		assertEquals("COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0ATwo=0D=0AThree", reader.readLine());
+		assertNull(reader.readLine());
+	}
+
+	@Test
 	public void getLineNum() throws Exception {
 		//@formatter:off
 		String ical =

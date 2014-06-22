@@ -2,8 +2,13 @@ package biweekly.io.text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.util.regex.Pattern;
+
+import biweekly.util.StringUtils;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -35,20 +40,33 @@ import java.io.StringReader;
  * @author Michael Angstadt
  */
 public class FoldedLineReader extends BufferedReader {
+	/**
+	 * Regular expression used to detect "quoted-printable" property values.
+	 */
+	private static final Pattern foldedQuotedPrintableValueRegex = Pattern.compile("[^:]*?QUOTED-PRINTABLE.*?:.*?=", Pattern.CASE_INSENSITIVE);
+
 	private String lastLine;
 	private boolean singleSpaceFolding = true;
 	private int lastLineNum = 0, lineCount = 0;
+	private final Charset charset;
 
 	/**
-	 * Creates a new folded line reader.
+	 * Creates a folded line reader.
 	 * @param reader the reader object to wrap
 	 */
 	public FoldedLineReader(Reader reader) {
 		super(reader);
+		if (reader instanceof InputStreamReader) {
+			InputStreamReader isr = (InputStreamReader) reader;
+			String charsetStr = isr.getEncoding();
+			charset = (charsetStr == null) ? null : Charset.forName(charsetStr);
+		} else {
+			charset = null;
+		}
 	}
 
 	/**
-	 * Creates a new folded line reader.
+	 * Creates a folded line reader.
 	 * @param text the text to read
 	 */
 	public FoldedLineReader(String text) {
@@ -84,9 +102,20 @@ public class FoldedLineReader extends BufferedReader {
 	}
 
 	/**
-	 * Reads the next non-empty line.
+	 * Gets the character encoding of the reader.
+	 * @return the character encoding or null if none is defined
+	 */
+	public Charset getEncoding() {
+		return charset;
+	}
+
+	/**
+	 * Reads the next non-empty line. Empty lines must be ignored because some
+	 * vCards (i.e. iPhone) contain empty lines. These empty lines appear in
+	 * between folded lines, which, if not ignored, will cause the parser to
+	 * incorrectly parse the vCard.
 	 * @return the next non-empty line or null of EOF
-	 * @throws IOException
+	 * @throws IOException if there's a problem reading from the reader
 	 */
 	private String readNonEmptyLine() throws IOException {
 		String line;
@@ -100,8 +129,8 @@ public class FoldedLineReader extends BufferedReader {
 	}
 
 	/**
-	 * Reads the next line, unfolding it if necessary.
-	 * @return the next line or null if EOF
+	 * Reads the next unfolded line.
+	 * @return the next unfolded line or null if EOF
 	 * @throws IOException if there's a problem reading from the reader
 	 */
 	@Override
@@ -109,32 +138,90 @@ public class FoldedLineReader extends BufferedReader {
 		String wholeLine = (lastLine == null) ? readNonEmptyLine() : lastLine;
 		lastLine = null;
 		if (wholeLine == null) {
+			//end of stream
 			return null;
 		}
 
-		//long lines are folded
+		//@formatter:off
+		/*
+		 * Lines that are QUOTED-PRINTABLE are folded in a strange way. A "=" is
+		 * appended to the end of a line to signal that the next line is folded.
+		 * Also, each folded line is not prepend with whitespace.
+		 * 
+		 * For example:
+		 * 
+		 * ------------
+		 * BEGIN:VCARD
+		 * NOTE;QUOTED-PRINTABLE: This is an=0D=0A=
+		 * annoyingly formatted=0D=0A=
+		 * note=
+		 * 
+		 * END:VCARD
+		 * ------------
+		 * 
+		 * In the example above, note how there is an empty line directly above
+		 * END. This is still part of the NOTE property value because the 3rd
+		 * line of NOTE ends with a "=".
+		 * 
+		 * This behavior has only been observed in Outlook vCards.
+		 */
+		//@formatter:on
+
+		boolean foldedQuotedPrintableLine = false;
+		if (foldedQuotedPrintableValueRegex.matcher(wholeLine).matches()) {
+			foldedQuotedPrintableLine = true;
+
+			//chop off the trailing "="
+			wholeLine = wholeLine.substring(0, wholeLine.length() - 1);
+		}
+
 		lastLineNum = lineCount;
-		StringBuilder wholeLineSb = new StringBuilder(wholeLine);
+		StringBuilder unfoldedLine = new StringBuilder(wholeLine);
 		while (true) {
-			String line = readNonEmptyLine();
+			String line = foldedQuotedPrintableLine ? super.readLine() : readNonEmptyLine();
 			if (line == null) {
+				//end of stream
 				break;
 			}
 
-			if (!Character.isWhitespace(line.charAt(0))) {
-				lastLine = line;
-				break;
-			}
+			if (foldedQuotedPrintableLine) {
+				line = StringUtils.ltrim(line);
 
-			//the line was folded
-			int lastWhitespace = 1;
-			if (!singleSpaceFolding) {
-				while (lastWhitespace < line.length() && Character.isWhitespace(line.charAt(lastWhitespace))) {
-					lastWhitespace++;
+				boolean endsInEquals = line.endsWith("=");
+				if (endsInEquals) {
+					//chop off the trailing "="
+					line = line.substring(0, line.length() - 1);
+				}
+
+				unfoldedLine.append(line);
+
+				if (endsInEquals) {
+					//there are more folded lines
+					continue;
+				} else {
+					//end of the folded line
+					break;
 				}
 			}
-			wholeLineSb.append(line.substring(lastWhitespace));
+
+			if (line.length() > 0 && Character.isWhitespace(line.charAt(0))) {
+				//the line is folded
+
+				int lastWhitespace = 1;
+				if (!singleSpaceFolding) {
+					while (lastWhitespace < line.length() && Character.isWhitespace(line.charAt(lastWhitespace))) {
+						lastWhitespace++;
+					}
+				}
+				unfoldedLine.append(line.substring(lastWhitespace));
+
+				continue;
+			}
+
+			lastLine = line;
+			break;
 		}
-		return wholeLineSb.toString();
+
+		return unfoldedLine.toString();
 	}
 }
