@@ -12,6 +12,8 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -27,6 +29,7 @@ import biweekly.io.scribe.component.ICalendarScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.io.scribe.property.RawPropertyScribe;
+import biweekly.io.scribe.property.RecurrencePropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.Version;
@@ -293,49 +296,82 @@ public class ICalReader implements Closeable {
 				}
 			}
 
-			ICalPropertyScribe<? extends ICalProperty> marshaller = index.getPropertyScribe(propertyName);
+			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyName);
 
 			//get the data type
 			ICalDataType dataType = parameters.getValue();
 			if (dataType == null) {
 				//use the default data type if there is no VALUE parameter
-				dataType = marshaller.defaultDataType(version);
+				dataType = scribe.defaultDataType(version);
 			} else {
 				//remove VALUE parameter if it is set
 				parameters.setValue(null);
 			}
 
-			//marshal the property
-			ICalProperty property = null;
 			String value = line.getValue();
-			try {
-				Result<? extends ICalProperty> result = marshaller.parseText(value, dataType, parameters, version);
+
+			List<Result<? extends ICalProperty>> propertiesToAdd = new ArrayList<Result<? extends ICalProperty>>();
+			List<Result<? extends ICalComponent>> componentsToAdd = new ArrayList<Result<? extends ICalComponent>>();
+
+			//handle "difficult" vCal properties
+			if (version == ICalVersion.V1_0) {
+				try {
+					if (scribe instanceof RecurrencePropertyScribe) {
+						propertiesToAdd.addAll(handleVCalRRule(value, scribe, propertyName, dataType, parameters, version));
+					}
+				} catch (SkipMeException e) {
+					warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());
+					continue;
+				} catch (CannotParseException e) {
+					warnings.add(reader.getLineNum(), propertyName, 1, value, e.getMessage());
+
+					Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters, version);
+					propertiesToAdd.add(result);
+				}
+			}
+
+			if (propertiesToAdd.isEmpty() && componentsToAdd.isEmpty()) {
+				try {
+					Result<? extends ICalProperty> result = scribe.parseText(value, dataType, parameters, version);
+
+					ICalProperty property = result.getProperty();
+					if (property instanceof Version) {
+						Version versionProp = (Version) property;
+						if (versionProp.isV1_0()) {
+							version = ICalVersion.V1_0;
+						} else if (versionProp.isV2_0()) {
+							version = ICalVersion.V2_0;
+						}
+					}
+
+					propertiesToAdd.add(result);
+				} catch (SkipMeException e) {
+					warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());
+					continue;
+				} catch (CannotParseException e) {
+					warnings.add(reader.getLineNum(), propertyName, 1, value, e.getMessage());
+
+					Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters, version);
+					propertiesToAdd.add(result);
+				}
+			}
+
+			//add the properties/components to the iCalendar object
+			ICalComponent parentComponent = componentStack.get(componentStack.size() - 1);
+			for (Result<? extends ICalProperty> result : propertiesToAdd) {
 				for (Warning warning : result.getWarnings()) {
 					warnings.add(reader.getLineNum(), propertyName, warning);
 				}
-				property = result.getProperty();
 
-				if (property instanceof Version) {
-					Version versionProp = (Version) property;
-					if (versionProp.isV1_0()) {
-						version = ICalVersion.V1_0;
-					} else if (versionProp.isV2_0()) {
-						version = ICalVersion.V2_0;
-					}
-				}
-			} catch (SkipMeException e) {
-				warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());
-				continue;
-			} catch (CannotParseException e) {
-				warnings.add(reader.getLineNum(), propertyName, 1, value, e.getMessage());
-
-				Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters, version);
-				property = result.getProperty();
+				parentComponent.addProperty(result.getProperty());
 			}
+			for (Result<? extends ICalComponent> result : componentsToAdd) {
+				for (Warning warning : result.getWarnings()) {
+					warnings.add(reader.getLineNum(), propertyName, warning);
+				}
 
-			//add the property to its component
-			ICalComponent parentComponent = componentStack.get(componentStack.size() - 1);
-			parentComponent.addProperty(property);
+				parentComponent.addComponent(result.getProperty());
+			}
 		}
 
 		return ical;
@@ -346,5 +382,33 @@ public class ICalReader implements Closeable {
 	 */
 	public void close() throws IOException {
 		reader.close();
+	}
+
+	private List<Result<? extends ICalProperty>> handleVCalRRule(String value, ICalPropertyScribe<? extends ICalProperty> scribe, String propertyName, ICalDataType dataType, ICalParameters parameters, ICalVersion version) {
+		Pattern p = Pattern.compile("#\\d+|\\d{8}T\\d{6}Z?");
+		Matcher m = p.matcher(value);
+
+		//extract each RRULE from the version string (there can be multiple)
+		List<String> subValues = new ArrayList<String>();
+		{
+			int prevIndex = 0;
+			while (m.find()) {
+				int end = m.end() + 1;
+				String subValue = value.substring(prevIndex, end).trim();
+				subValues.add(subValue);
+				prevIndex = end;
+			}
+			String subValue = value.substring(prevIndex).trim();
+			if (subValue.length() > 0) {
+				subValues.add(subValue);
+			}
+		}
+
+		List<Result<? extends ICalProperty>> results = new ArrayList<Result<? extends ICalProperty>>();
+		for (String subValue : subValues) {
+			Result<? extends ICalProperty> result = scribe.parseText(subValue, dataType, parameters, version);
+			results.add(result);
+		}
+		return results;
 	}
 }

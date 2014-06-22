@@ -51,6 +51,7 @@ import biweekly.property.Attendee;
 import biweekly.property.ICalProperty;
 import biweekly.property.ProductId;
 import biweekly.property.RawProperty;
+import biweekly.property.RecurrenceRule;
 import biweekly.property.Summary;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
@@ -778,6 +779,38 @@ public class ICalReaderTest {
 
 		ICalReader reader = new ICalReader(sb.toString());
 		reader.readNext();
+	}
+
+	@Test
+	public void vcal_rrule() throws Throwable {
+		//@formatter:off
+		String ical =
+		"BEGIN:VCALENDAR\r\n" +
+			"PRODID:prodid\r\n" +
+			"VERSION:1.0\r\n" +
+			"RRULE:MD1 1 #1 D2  20000101T000000Z  M3\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		ICalReader reader = new ICalReader(ical);
+		ICalendar icalendar = reader.readNext();
+		assertSize(icalendar, 0, 5);
+
+		assertEquals("prodid", icalendar.getProductId().getValue());
+		assertTrue(icalendar.getVersion().isV1_0());
+
+		DateFormat df = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
+		Iterator<RecurrenceRule> rrules = icalendar.getProperties(RecurrenceRule.class).iterator();
+		Recurrence expected = new Recurrence.Builder(Frequency.MONTHLY).interval(1).byMonthDay(1).count(1).build();
+		assertEquals(expected, rrules.next().getValue());
+		expected = new Recurrence.Builder(Frequency.DAILY).interval(2).until(df.parse("20000101T000000+0000")).build();
+		assertEquals(expected, rrules.next().getValue());
+		expected = new Recurrence.Builder(Frequency.MINUTELY).interval(3).count(2).build();
+		assertEquals(expected, rrules.next().getValue());
+		assertFalse(rrules.hasNext());
+
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
 	}
 
 	@Test

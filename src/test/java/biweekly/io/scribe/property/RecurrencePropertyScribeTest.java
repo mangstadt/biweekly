@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,9 +18,9 @@ import java.util.Map;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import biweekly.ICalVersion;
 import biweekly.io.json.JCalValue;
 import biweekly.io.json.JsonValue;
-import biweekly.io.scribe.property.RecurrencePropertyScribe;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.RecurrenceProperty;
 import biweekly.util.DefaultTimezoneRule;
@@ -61,6 +63,7 @@ public class RecurrencePropertyScribeTest {
 
 	private final RecurrencePropertyMarshallerImpl marshaller = new RecurrencePropertyMarshallerImpl();
 	private final Sensei<RecurrenceProperty> sensei = new Sensei<RecurrenceProperty>(marshaller);
+	private final DateFormat df = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
 
 	private final Date date;
 	{
@@ -149,6 +152,97 @@ public class RecurrencePropertyScribeTest {
 	private final RecurrenceProperty empty = new RecurrenceProperty(null);
 
 	@Test
+	public void writeText_vcal() throws Exception {
+		RecurrenceProperty prop = new RecurrenceProperty(null);
+		String expected, actual;
+
+		prop.setValue(null);
+		expected = "";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder((Frequency) null).build());
+		expected = "";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder(Frequency.SECONDLY).build());
+		expected = "";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder(Frequency.MINUTELY).build());
+		expected = "M1 #0";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder(Frequency.MINUTELY).interval(5).count(10).build());
+		expected = "M5 #10";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder(Frequency.MINUTELY).interval(5).until(df.parse("20000101T010000+0000")).build());
+		expected = "M5 20000101T010000Z";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder(Frequency.HOURLY).interval(2).build());
+		expected = "M120 #0";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder(Frequency.DAILY).interval(2).build());
+		expected = "D2 #0";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder(Frequency.WEEKLY).interval(2).byDay(DayOfWeek.MONDAY).byDay(DayOfWeek.WEDNESDAY).build());
+		expected = "W2 MO WE #0";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder(Frequency.WEEKLY).interval(2).build());
+		expected = "W2 #0";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder(Frequency.WEEKLY).interval(2).byDay(DayOfWeek.MONDAY).byDay(DayOfWeek.WEDNESDAY).build());
+		expected = "W2 MO WE #0";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder(Frequency.MONTHLY).interval(2).build());
+		expected = "MP2 #0";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder(Frequency.MONTHLY).interval(2).byDay(1, DayOfWeek.MONDAY).byDay(-1, DayOfWeek.WEDNESDAY).build());
+		expected = "MP2 1+ MO 1- WE #0";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder(Frequency.MONTHLY).interval(2).byMonthDay(10).byMonthDay(-2).build());
+		expected = "MD2 10+ 2- #0";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder(Frequency.YEARLY).interval(2).build());
+		expected = "YD2 #0";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder(Frequency.YEARLY).interval(2).byMonth(2).byMonth(3).build());
+		expected = "YM2 2 3 #0";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+
+		prop.setValue(new Recurrence.Builder(Frequency.YEARLY).interval(2).byYearDay(2).byYearDay(100).build());
+		expected = "YD2 2 100 #0";
+		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void writeText_multiples() {
 		String actual = sensei.assertWriteText(withMultiple).run();
 		List<String> split = Arrays.asList(actual.split(";"));
@@ -206,18 +300,54 @@ public class RecurrencePropertyScribeTest {
 	}
 
 	@Test
+	public void parseText_vcal() throws Exception {
+		sensei.assertParseText("S2").versions(ICalVersion.V1_0).cannotParse();
+
+		sensei.assertParseText("D2 0600$ 1230$ 1400 #0").versions(ICalVersion.V1_0).warnings(2).run(is(new Recurrence.Builder(Frequency.DAILY).interval(2).byHour(6).byHour(12).byHour(14).byMinute(0).byMinute(30).byMinute(0).build()));
+
+		sensei.assertParseText("M2").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MINUTELY).interval(2).count(2).build()));
+		sensei.assertParseText("M2 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MINUTELY).interval(2).build()));
+		sensei.assertParseText("M2 20000101T010000Z").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MINUTELY).interval(2).until(df.parse("20000101T010000+0000")).build()));
+
+		sensei.assertParseText("D2 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.DAILY).interval(2).build()));
+		sensei.assertParseText("D2 0600 1230 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.DAILY).interval(2).byHour(6).byHour(12).byMinute(0).byMinute(30).build()));
+		sensei.assertParseText("D2 0600 1230 invalid #0").versions(ICalVersion.V1_0).run(null, NumberFormatException.class);
+
+		sensei.assertParseText("W2 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.WEEKLY).interval(2).build()));
+		sensei.assertParseText("W2 MO WE #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.WEEKLY).interval(2).byDay(DayOfWeek.MONDAY).byDay(DayOfWeek.WEDNESDAY).build()));
+		sensei.assertParseText("W2 MO WE AA #0").versions(ICalVersion.V1_0).cannotParse();
+
+		sensei.assertParseText("MP2 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MONTHLY).interval(2).build()));
+		sensei.assertParseText("MP2 1+ 1- MO 1200 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MONTHLY).interval(2).byDay(1, DayOfWeek.MONDAY).byDay(-1, DayOfWeek.MONDAY).byHour(12).byMinute(0).build()));
+		sensei.assertParseText("MP2 1- MO FR 1200 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MONTHLY).interval(2).byDay(-1, DayOfWeek.MONDAY).byDay(-1, DayOfWeek.FRIDAY).byHour(12).byMinute(0).build()));
+		sensei.assertParseText("MP2 1- MO 1+ MO #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MONTHLY).interval(2).byDay(-1, DayOfWeek.MONDAY).byDay(1, DayOfWeek.MONDAY).build()));
+
+		sensei.assertParseText("MD2 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MONTHLY).interval(2).build()));
+		sensei.assertParseText("MD2 1+ 1- #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MONTHLY).interval(2).byMonthDay(1).byMonthDay(-1).build()));
+		sensei.assertParseText("MD2 1+ LD #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MONTHLY).interval(2).byMonthDay(1).byMonthDay(-1).build()));
+
+		sensei.assertParseText("YM2 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.YEARLY).interval(2).build()));
+		sensei.assertParseText("YM2 4 7 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.YEARLY).interval(2).byMonth(4).byMonth(7).build()));
+		sensei.assertParseText("YM2 4 invalid #0").versions(ICalVersion.V1_0).run(null, NumberFormatException.class);
+
+		sensei.assertParseText("YD2 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.YEARLY).interval(2).build()));
+		sensei.assertParseText("YD2 1 100 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.YEARLY).interval(2).byYearDay(1).byYearDay(100).build()));
+		sensei.assertParseText("YD2 4 invalid #0").versions(ICalVersion.V1_0).run(null, NumberFormatException.class);
+	}
+
+	@Test
 	public void parseText() {
-		sensei.assertParseText("FREQ=WEEKLY;COUNT=5;INTERVAL=10;UNTIL=" + dateTimeStr + ";BYSECOND=58,59;BYMINUTE=3,4;BYHOUR=1,2;BYDAY=MO,TU,WE,TH,FR,SA,SU,5FR;BYMONTHDAY=1,2;BYYEARDAY=100,101;BYWEEKNO=1,2;BYMONTH=5,6;BYSETPOS=7,8,9;WKST=TU;X-NAME=one,two;X-RULE=three").run(fullCheck);
+		sensei.assertParseText("FREQ=WEEKLY;COUNT=5;INTERVAL=10;UNTIL=" + dateTimeStr + ";BYSECOND=58,59;BYMINUTE=3,4;BYHOUR=1,2;BYDAY=MO,TU,WE,TH,FR,SA,SU,5FR;BYMONTHDAY=1,2;BYYEARDAY=100,101;BYWEEKNO=1,2;BYMONTH=5,6;BYSETPOS=7,8,9;WKST=TU;X-NAME=one,two;X-RULE=three").versions(ICalVersion.V2_0).run(fullCheck);
 	}
 
 	@Test
 	public void parseText_invalid_values() {
-		sensei.assertParseText("FREQ=W;COUNT=a;INTERVAL=b;UNTIL=invalid;BYSECOND=58,c,59;BYMINUTE=3,d,4;BYHOUR=1,e,2;BYDAY=f,MO,TU,WE,TH,FR,SA,SU,5FR,fFR;BYMONTHDAY=1,g,2;BYYEARDAY=100,h,101;BYWEEKNO=1,w,2;BYMONTH=5,i,6;BYSETPOS=7,8,j,9;WKST=k").warnings(15).run(invalidValuesCheck);
+		sensei.assertParseText("FREQ=W;COUNT=a;INTERVAL=b;UNTIL=invalid;BYSECOND=58,c,59;BYMINUTE=3,d,4;BYHOUR=1,e,2;BYDAY=f,MO,TU,WE,TH,FR,SA,SU,5FR,fFR;BYMONTHDAY=1,g,2;BYYEARDAY=100,h,101;BYWEEKNO=1,w,2;BYMONTH=5,i,6;BYSETPOS=7,8,j,9;WKST=k").versions(ICalVersion.V2_0).warnings(15).run(invalidValuesCheck);
 	}
 
 	@Test
 	public void parseText_invalid_component() {
-		sensei.assertParseText("FREQ=WEEKLY;no equals;COUNT=5").run(new Check<RecurrenceProperty>() {
+		sensei.assertParseText("FREQ=WEEKLY;no equals;COUNT=5").versions(ICalVersion.V2_0).run(new Check<RecurrenceProperty>() {
 			public void check(RecurrenceProperty property) {
 				Recurrence recur = property.getValue();
 				assertEquals(Frequency.WEEKLY, recur.getFrequency());
@@ -676,4 +806,13 @@ public class RecurrencePropertyScribeTest {
 			assertTrue(recur.getXRules().isEmpty());
 		}
 	};
+
+	private Check<RecurrenceProperty> is(final Recurrence expected) {
+		return new Check<RecurrenceProperty>() {
+			public void check(RecurrenceProperty property) {
+				Recurrence actual = property.getValue();
+				assertEquals(expected, actual);
+			}
+		};
+	}
 }

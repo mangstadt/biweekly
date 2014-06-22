@@ -218,9 +218,15 @@ public class Sensei<T extends ICalProperty> {
 	 */
 	public class WriteTextTest {
 		protected final T property;
+		private ICalVersion version = ICalVersion.V2_0;
 
 		public WriteTextTest(T property) {
 			this.property = property;
+		}
+
+		public WriteTextTest version(ICalVersion version) {
+			this.version = version;
+			return this;
 		}
 
 		/**
@@ -228,7 +234,7 @@ public class Sensei<T extends ICalProperty> {
 		 * @return the marshalled value
 		 */
 		public String run() {
-			return marshaller.writeText(property, ICalVersion.V2_0);
+			return marshaller.writeText(property, version);
 		}
 
 		/**
@@ -386,6 +392,7 @@ public class Sensei<T extends ICalProperty> {
 	public class ParseTextTest extends ParseTest<ParseTextTest> {
 		private final String value;
 		private ICalDataType dataType = marshaller.defaultDataType(ICalVersion.V2_0);
+		private ICalVersion versions[] = ICalVersion.values();
 
 		/**
 		 * @param value the text to parse
@@ -404,24 +411,31 @@ public class Sensei<T extends ICalProperty> {
 			return this;
 		}
 
+		public ParseTextTest versions(ICalVersion... versions) {
+			this.versions = versions;
+			return this;
+		}
+
 		@Override
 		protected void run(Check<T> check, Class<? extends RuntimeException> exception) {
-			try {
-				Result<T> result = marshaller.parseText(value, dataType, parameters, ICalVersion.V2_0);
+			for (ICalVersion version : versions) {
+				try {
+					Result<T> result = marshaller.parseText(value, dataType, parameters, version);
 
-				if (exception != null) {
-					fail("Expected " + exception.getSimpleName() + " to be thrown.");
-				}
-				if (check != null) {
-					check.check(result.getProperty());
-				}
+					if (exception != null) {
+						fail("Expected " + exception.getSimpleName() + " to be thrown.");
+					}
+					if (check != null) {
+						check.check(result.getProperty());
+					}
 
-				assertWarnings(warnings, result.getWarnings());
-			} catch (RuntimeException t) {
-				if (exception == null) {
-					throw t;
+					assertWarnings(warnings, result.getWarnings());
+				} catch (RuntimeException t) {
+					if (exception == null) {
+						throw t;
+					}
+					assertEquals(exception, t.getClass());
 				}
-				assertEquals(exception, t.getClass());
 			}
 		}
 	}

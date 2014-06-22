@@ -49,7 +49,8 @@ import java.util.Map;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-38">RFC 5545 p.38-45</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-38">RFC 5545
+ * p.38-45</a>
  */
 public final class Recurrence {
 	private final Frequency frequency;
@@ -476,7 +477,7 @@ public final class Recurrence {
 		 * @return this
 		 */
 		public Builder until(Date until) {
-			return until(until, true);
+			return until(until, until != null);
 		}
 
 		/**

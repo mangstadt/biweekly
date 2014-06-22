@@ -1,5 +1,7 @@
 package biweekly.io.scribe.property;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -13,7 +15,6 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
-import biweekly.io.SkipMeException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
@@ -83,148 +84,353 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			return "";
 		}
 
-		if (version == ICalVersion.V1_0) {
-			StringBuilder sb = new StringBuilder();
-
-			Integer interval = recur.getInterval();
-			if (interval == null) {
-				interval = 1;
-			}
-
-			Integer count = recur.getCount();
-			Date until = recur.getUntil();
-			boolean untilHasTime = recur.hasTimeUntilDate();
-
-			switch (recur.getFrequency()) {
-			case YEARLY:
-				if (!recur.getByMonth().isEmpty()) {
-					sb.append("YM").append(interval);
-					for (Integer month : recur.getByMonth()) {
-						sb.append(' ').append(month);
-					}
-				} else {
-					sb.append("YD").append(interval);
-					for (Integer day : recur.getByYearDay()) {
-						sb.append(' ').append(day);
-					}
-				}
-				break;
-
-			//TODO the rest
-
-			default:
-				throw new SkipMeException("");
-			}
-
-			sb.append(' ');
-			if (count != null) {
-				sb.append('#').append(count);
-			} else if (until != null) {
-				sb.append(date(until).time(untilHasTime).write());
-			} else {
-				sb.append("#0");
-			}
-
-			return sb.toString();
+		if (version != ICalVersion.V1_0) {
+			ListMultimap<String, Object> components = buildComponents(recur, false);
+			return object(components.getMap());
 		}
 
-		ListMultimap<String, Object> components = buildComponents(recur, false);
-		return object(components.getMap());
+		Frequency frequency = recur.getFrequency();
+		if (frequency == null) {
+			return "";
+		}
+
+		StringBuilder sb = new StringBuilder();
+
+		Integer interval = recur.getInterval();
+		if (interval == null) {
+			interval = 1;
+		}
+
+		switch (frequency) {
+		case YEARLY:
+			if (!recur.getByMonth().isEmpty()) {
+				sb.append("YM").append(interval);
+				for (Integer month : recur.getByMonth()) {
+					sb.append(' ').append(month);
+				}
+			} else {
+				sb.append("YD").append(interval);
+				for (Integer day : recur.getByYearDay()) {
+					sb.append(' ').append(day);
+				}
+			}
+			break;
+
+		case MONTHLY:
+			if (!recur.getByMonthDay().isEmpty()) {
+				sb.append("MD").append(interval);
+				for (Integer day : recur.getByMonthDay()) {
+					sb.append(' ').append(writeVCalInt(day));
+				}
+			} else {
+				sb.append("MP").append(interval);
+				for (int i = 0; i < recur.getByDay().size(); i++) {
+					DayOfWeek day = recur.getByDay().get(i);
+					Integer prefix = recur.getByDayPrefixes().get(i);
+					if (prefix == null) {
+						prefix = 1;
+					}
+					sb.append(' ').append(writeVCalInt(prefix)).append(' ').append(day.getAbbr());
+				}
+			}
+			break;
+
+		case WEEKLY:
+			sb.append("W").append(interval);
+			for (DayOfWeek day : recur.getByDay()) {
+				sb.append(' ').append(day.getAbbr());
+			}
+			break;
+
+		case DAILY:
+			sb.append("D").append(interval);
+			break;
+
+		case HOURLY:
+			sb.append("M").append(interval * 60);
+			break;
+
+		case MINUTELY:
+			sb.append("M").append(interval);
+			break;
+
+		default:
+			return "";
+		}
+
+		Integer count = recur.getCount();
+		Date until = recur.getUntil();
+		boolean untilHasTime = recur.hasTimeUntilDate();
+
+		sb.append(' ');
+		if (count != null) {
+			sb.append('#').append(count);
+		} else if (until != null) {
+			sb.append(date(until).time(untilHasTime).write());
+		} else {
+			sb.append("#0");
+		}
+
+		return sb.toString();
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, final List<Warning> warnings) {
 		final Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
 
-		if (version == ICalVersion.V1_0) {
-			String splitValues[] = value.split("\\s+");
+		if (value.length() == 0) {
+			return newInstance(builder.build());
+		}
 
-			//parse the frequency and interval from the first token (e.g. "W2")
-			String frequencyStr;
-			Integer interval;
-			{
-				String splitValue = splitValues[0].toUpperCase();
-				Pattern p = Pattern.compile("^([A-Z]+)(\\d+)$");
-				Matcher m = p.matcher(splitValue);
-				if (!m.find()) {
-					throw new CannotParseException("");
-				}
+		if (version != ICalVersion.V1_0) {
+			ListMultimap<String, String> rules = object(value);
 
-				frequencyStr = m.group(1);
-				interval = Integer.valueOf(m.group(2));
-			}
-
-			//determine what frequency enum to use and how to treat each tokenized value
-			Frequency frequency = null;
-			Handler<String> handler = null;
-			if ("YD".equals(frequencyStr)) {
-				frequency = Frequency.YEARLY;
-				handler = new Handler<String>() {
-					public void handle(String value) {
-						Integer day = Integer.valueOf(value);
-						builder.byYearDay(day);
-					}
-				};
-			} else if ("YM".equals(frequencyStr)) {
-				frequency = Frequency.YEARLY;
-				handler = new Handler<String>() {
-					public void handle(String value) {
-						Integer month = Integer.valueOf(value);
-						builder.byMonth(month);
-					}
-				};
-			} //TODO the rest
-
-			builder.frequency(frequency);
-			builder.interval(interval);
-
-			//parse the rest of the tokens
-			for (int i = 1; i < splitValues.length; i++) {
-				String splitValue = splitValues[i];
-				if (splitValue.startsWith("#")) {
-					Integer count = Integer.valueOf(splitValue.substring(1, splitValue.length()));
-					if (count == 0) {
-						//infinite
-						count = null;
-					}
-
-					builder.count(count);
-					break;
-				}
-
-				try {
-					//see if the value is an "until" date
-					Date until = date(splitValue).parse();
-					builder.until(until);
-					break;
-				} catch (IllegalArgumentException e) {
-					//value is a regular value
-					handler.handle(splitValue);
-				}
-			}
+			parseFreq(rules, builder, warnings);
+			parseUntil(rules, builder, warnings);
+			parseCount(rules, builder, warnings);
+			parseInterval(rules, builder, warnings);
+			parseBySecond(rules, builder, warnings);
+			parseByMinute(rules, builder, warnings);
+			parseByHour(rules, builder, warnings);
+			parseByDay(rules, builder, warnings);
+			parseByMonthDay(rules, builder, warnings);
+			parseByYearDay(rules, builder, warnings);
+			parseByWeekNo(rules, builder, warnings);
+			parseByMonth(rules, builder, warnings);
+			parseBySetPos(rules, builder, warnings);
+			parseWkst(rules, builder, warnings);
+			parseXRules(rules, builder, warnings); //must be called last
 
 			return newInstance(builder.build());
 		}
 
-		ListMultimap<String, String> rules = object(value);
+		String splitValues[] = value.toUpperCase().split("\\s+");
 
-		parseFreq(rules, builder, warnings);
-		parseUntil(rules, builder, warnings);
-		parseCount(rules, builder, warnings);
-		parseInterval(rules, builder, warnings);
-		parseBySecond(rules, builder, warnings);
-		parseByMinute(rules, builder, warnings);
-		parseByHour(rules, builder, warnings);
-		parseByDay(rules, builder, warnings);
-		parseByMonthDay(rules, builder, warnings);
-		parseByYearDay(rules, builder, warnings);
-		parseByWeekNo(rules, builder, warnings);
-		parseByMonth(rules, builder, warnings);
-		parseBySetPos(rules, builder, warnings);
-		parseWkst(rules, builder, warnings);
-		parseXRules(rules, builder, warnings); //must be called last
+		//parse the frequency and interval from the first token (e.g. "W2")
+		String frequencyStr;
+		Integer interval;
+		{
+			String firstToken = splitValues[0];
+			Pattern p = Pattern.compile("^([A-Z]+)(\\d+)$");
+			Matcher m = p.matcher(firstToken);
+			if (!m.find()) {
+				throw new CannotParseException("Invalid token: " + firstToken);
+			}
+
+			frequencyStr = m.group(1);
+			interval = Integer.valueOf(m.group(2));
+			splitValues = Arrays.copyOfRange(splitValues, 1, splitValues.length);
+		}
+		builder.interval(interval);
+
+		Integer count = null;
+		Date until = null;
+		if (splitValues.length == 0) {
+			count = 2;
+		} else {
+			String lastToken = splitValues[splitValues.length - 1];
+			if (lastToken.startsWith("#")) {
+				String countStr = lastToken.substring(1, lastToken.length());
+				count = Integer.valueOf(countStr);
+				if (count == 0) {
+					//infinite
+					count = null;
+				}
+
+				splitValues = Arrays.copyOfRange(splitValues, 0, splitValues.length - 1);
+			} else {
+				try {
+					//see if the value is an "until" date
+					until = date(lastToken).parse();
+					splitValues = Arrays.copyOfRange(splitValues, 0, splitValues.length - 1);
+				} catch (IllegalArgumentException e) {
+					//last token is a regular value
+					count = 2;
+				}
+			}
+		}
+		builder.count(count);
+		builder.until(until);
+
+		//determine what frequency enum to use and how to treat each tokenized value
+		Frequency frequency = null;
+		Handler<String> handler = null;
+		if ("YD".equals(frequencyStr)) {
+			frequency = Frequency.YEARLY;
+			handler = new Handler<String>() {
+				public void handle(String value) {
+					if (value == null) {
+						return;
+					}
+
+					Integer dayOfYear = Integer.valueOf(value);
+					builder.byYearDay(dayOfYear);
+				}
+			};
+		} else if ("YM".equals(frequencyStr)) {
+			frequency = Frequency.YEARLY;
+			handler = new Handler<String>() {
+				public void handle(String value) {
+					if (value == null) {
+						return;
+					}
+
+					Integer month = Integer.valueOf(value);
+					builder.byMonth(month);
+				}
+			};
+		} else if ("MD".equals(frequencyStr)) {
+			frequency = Frequency.MONTHLY;
+			handler = new Handler<String>() {
+				public void handle(String value) {
+					if (value == null) {
+						return;
+					}
+
+					Integer date = "LD".equals(value) ? -1 : parseVCalInt(value);
+					builder.byMonthDay(date);
+				}
+			};
+		} else if ("MP".equals(frequencyStr)) {
+			frequency = Frequency.MONTHLY;
+			handler = new Handler<String>() {
+				private final List<Integer> nums = new ArrayList<Integer>();
+				private final List<DayOfWeek> days = new ArrayList<DayOfWeek>();
+				private boolean readNum = false;
+
+				public void handle(String value) {
+					if (value == null) {
+						//end of list
+						for (Integer num : nums) {
+							for (DayOfWeek day : days) {
+								builder.byDay(num, day);
+							}
+						}
+						return;
+					}
+
+					if (value.matches("\\d{4}")) {
+						readNum = false;
+
+						Integer hour = Integer.valueOf(value.substring(0, 2));
+						builder.byHour(hour);
+
+						Integer minute = Integer.valueOf(value.substring(2, 4));
+						builder.byMinute(minute);
+						return;
+					}
+
+					try {
+						Integer curNum = parseVCalInt(value);
+
+						if (!readNum) {
+							//reset lists, new segment
+							for (Integer num : nums) {
+								for (DayOfWeek day : days) {
+									builder.byDay(num, day);
+								}
+							}
+							nums.clear();
+							days.clear();
+
+							readNum = true;
+						}
+
+						nums.add(curNum);
+					} catch (NumberFormatException e) {
+						readNum = false;
+
+						DayOfWeek day = parseDay(value);
+						days.add(day);
+					}
+				}
+			};
+		} else if ("W".equals(frequencyStr)) {
+			frequency = Frequency.WEEKLY;
+			handler = new Handler<String>() {
+				public void handle(String value) {
+					if (value == null) {
+						return;
+					}
+
+					DayOfWeek day = parseDay(value);
+					builder.byDay(day);
+				}
+			};
+		} else if ("D".equals(frequencyStr)) {
+			frequency = Frequency.DAILY;
+			handler = new Handler<String>() {
+				public void handle(String value) {
+					if (value == null) {
+						return;
+					}
+
+					Integer hour = Integer.valueOf(value.substring(0, 2));
+					builder.byHour(hour);
+
+					Integer minute = Integer.valueOf(value.substring(2, 4));
+					builder.byMinute(minute);
+				}
+			};
+		} else if ("M".equals(frequencyStr)) {
+			frequency = Frequency.MINUTELY;
+			handler = new Handler<String>() {
+				public void handle(String value) {
+					//TODO can this ever have values?
+				}
+			};
+		} else {
+			throw new CannotParseException("Unrecognized frequency: " + frequencyStr);
+		}
+
+		builder.frequency(frequency);
+
+		//parse the rest of the tokens
+		for (String splitValue : splitValues) {
+			//TODO not sure how to handle the "$" symbol, ignore it
+			if (splitValue.endsWith("$")) {
+				warnings.add(new Warning("Unable to integrate \"$\" operator into iCalendar data model.  This data will be lost: " + splitValue));
+				splitValue = splitValue.substring(0, splitValue.length() - 1);
+			}
+
+			handler.handle(splitValue);
+		}
+		handler.handle(null);
 
 		return newInstance(builder.build());
+	}
+
+	private Integer parseVCalInt(String value) {
+		int negate = 1;
+		if (value.endsWith("+")) {
+			value = value.substring(0, value.length() - 1);
+		} else if (value.endsWith("-")) {
+			value = value.substring(0, value.length() - 1);
+			negate = -1;
+		}
+
+		return Integer.valueOf(value) * negate;
+	}
+
+	private String writeVCalInt(Integer value) {
+		if (value > 0) {
+			return value + "+";
+		}
+
+		if (value < 0) {
+			return Math.abs(value) + "-";
+		}
+
+		return value + "";
+	}
+
+	private DayOfWeek parseDay(String value) {
+		DayOfWeek day = DayOfWeek.valueOfAbbr(value);
+		if (day == null) {
+			throw new CannotParseException("Invalid day: " + value);
+		}
+
+		return day;
 	}
 
 	@Override

@@ -1250,7 +1250,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @author Michael Angstadt
 	 * @param <T> the unmarshalled property class
 	 */
-	public static class Result<T extends ICalProperty> {
+	public static class Result<T> {
 		private final T property;
 		private final List<Warning> warnings;
 
