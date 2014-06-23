@@ -37,6 +37,8 @@ public class Encoding extends EnumParameterValue {
 
 	public static final Encoding BASE64 = new Encoding("BASE64");
 
+	public static final Encoding QUOTED_PRINTABLE = new Encoding("QUOTED-PRINTABLE"); //1.0 only
+
 	public static final Encoding _8BIT = new Encoding("8BIT");
 
 	private Encoding(String value) {

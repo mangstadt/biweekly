@@ -704,7 +704,8 @@ public class ICalReaderTest {
 			assertSize(icalendar, 0, 2);
 
 			assertEquals("value", icalendar.getProductId().getValue());
-			assertEquals(Arrays.asList("PARAM"), icalendar.getProductId().getParameters(null));
+			assertEquals(Arrays.asList(), icalendar.getProductId().getParameters(null));
+			assertEquals(Arrays.asList("PARAM"), icalendar.getProductId().getParameters("TYPE"));
 
 			assertWarnings(0, reader.getWarnings());
 			assertNull(reader.readNext());
@@ -725,7 +726,8 @@ public class ICalReaderTest {
 			assertSize(icalendar, 0, 2);
 
 			assertEquals("value", icalendar.getProductId().getValue());
-			assertEquals(Arrays.asList("PARAM"), icalendar.getProductId().getParameters(null));
+			assertEquals(Arrays.asList(), icalendar.getProductId().getParameters(null));
+			assertEquals(Arrays.asList("PARAM"), icalendar.getProductId().getParameters("TYPE"));
 
 			assertWarnings(1, reader.getWarnings());
 			assertNull(reader.readNext());

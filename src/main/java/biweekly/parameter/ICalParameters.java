@@ -45,6 +45,7 @@ import biweekly.util.ListMultimap;
 public class ICalParameters extends ListMultimap<String, String> {
 	public static final String CN = "CN";
 	public static final String ALTREP = "ALTREP";
+	public static final String CHARSET = "CHARSET"; //1.0 only
 	public static final String CUTYPE = "CUTYPE";
 	public static final String DELEGATED_FROM = "DELEGATED-FROM";
 	public static final String DELEGATED_TO = "DELEGATED-TO";
@@ -61,6 +62,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	public static final String ROLE = "ROLE";
 	public static final String RSVP = "RSVP";
 	public static final String SENT_BY = "SENT-BY";
+	public static final String TYPE = "TYPE"; //1.0 only
 	public static final String TZID = "TZID";
 	public static final String VALUE = "VALUE";
 
@@ -83,7 +85,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Gets a URI pointing to additional information about the entity
 	 * represented by the property.
 	 * @return the URI or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-14">RFC 5545 p.14-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-14">RFC 5545
+	 * p.14-5</a>
 	 */
 	public String getAltRepresentation() {
 		return first(ALTREP);
@@ -93,16 +96,26 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Sets a URI pointing to additional information about the entity
 	 * represented by the property.
 	 * @param uri the URI or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-14">RFC 5545 p.14-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-14">RFC 5545
+	 * p.14-5</a>
 	 */
 	public void setAltRepresentation(String uri) {
 		replace(ALTREP, uri);
 	}
 
+	public String getCharset() {
+		return first(CHARSET);
+	}
+
+	public void setCharset(String charset) {
+		replace(CHARSET, charset);
+	}
+
 	/**
 	 * Gets the display name of a person.
 	 * @return the display name (e.g. "John Doe") or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-15">RFC 5545 p.15-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-15">RFC 5545
+	 * p.15-6</a>
 	 */
 	public String getCommonName() {
 		return first(CN);
@@ -111,7 +124,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Sets the display name of a person.
 	 * @param cn the display name (e.g. "John Doe") or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-15">RFC 5545 p.15-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-15">RFC 5545
+	 * p.15-6</a>
 	 */
 	public void setCommonName(String cn) {
 		replace(CN, cn);
@@ -121,7 +135,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Gets the type of user an attendee is (for example, an "individual" or a
 	 * "room").
 	 * @return the calendar user type or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-16">RFC 5545 p.16</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-16">RFC 5545
+	 * p.16</a>
 	 */
 	public CalendarUserType getCalendarUserType() {
 		String value = first(CUTYPE);
@@ -132,7 +147,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Sets the type of user an attendee is (for example, an "individual" or a
 	 * "room").
 	 * @param cutype the calendar user type or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-16">RFC 5545 p.16</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-16">RFC 5545
+	 * p.16</a>
 	 */
 	public void setCalendarUserType(CalendarUserType cutype) {
 		replace(CUTYPE, (cutype == null) ? null : cutype.getValue());
@@ -142,7 +158,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Gets the people who have delegated their responsibility to an attendee.
 	 * @return the delegators (typically email URIs, e.g.
 	 * "mailto:janedoe@example.com")
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545 p.17</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
+	 * p.17</a>
 	 */
 	public List<String> getDelegatedFrom() {
 		return get(DELEGATED_FROM);
@@ -152,7 +169,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Adds a person who has delegated his or her responsibility to an attendee.
 	 * @param uri the delegator (typically an email URI, e.g.
 	 * "mailto:janedoe@example.com")
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545 p.17</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
+	 * p.17</a>
 	 */
 	public void addDelegatedFrom(String uri) {
 		put(DELEGATED_FROM, uri);
@@ -163,7 +181,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * attendee.
 	 * @param uri the delegator to remove (typically an email URI, e.g.
 	 * "mailto:janedoe@example.com")
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545 p.17</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
+	 * p.17</a>
 	 */
 	public void removeDelegatedFrom(String uri) {
 		remove(DELEGATED_FROM, uri);
@@ -172,7 +191,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Removes everyone who has delegated his or her responsibility to an
 	 * attendee.
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545 p.17</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
+	 * p.17</a>
 	 */
 	public void removeDelegatedFrom() {
 		removeAll(DELEGATED_FROM);
@@ -183,7 +203,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * responsibility.
 	 * @return the delegatees (typically email URIs, e.g.
 	 * "mailto:janedoe@example.com")
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545 p.17-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
+	 * p.17-8</a>
 	 */
 	public List<String> getDelegatedTo() {
 		return get(DELEGATED_TO);
@@ -194,7 +215,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * responsibility.
 	 * @param uri the delegatee (typically an email URI, e.g.
 	 * "mailto:janedoe@example.com")
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545 p.17-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
+	 * p.17-8</a>
 	 */
 	public void addDelegatedTo(String uri) {
 		put(DELEGATED_TO, uri);
@@ -205,7 +227,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * responsibility.
 	 * @param uri the delegatee to remove (typically an email URI, e.g.
 	 * "mailto:janedoe@example.com")
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545 p.17-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
+	 * p.17-8</a>
 	 */
 	public void removeDelegatedTo(String uri) {
 		remove(DELEGATED_TO, uri);
@@ -214,7 +237,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Removes everyone to which an attendee has delegated his or her
 	 * responsibility.
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545 p.17-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
+	 * p.17-8</a>
 	 */
 	public void removeDelegatedTo() {
 		removeAll(DELEGATED_TO);
@@ -223,7 +247,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Gets a URI that contains additional information about the person.
 	 * @return the URI (e.g. an LDAP URI) or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545 p.18</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545
+	 * p.18</a>
 	 */
 	public String getDirectoryEntry() {
 		return first(DIR);
@@ -232,7 +257,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Sets a URI that contains additional information about the person.
 	 * @param uri the URI (e.g. an LDAP URI) or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545 p.18</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545
+	 * p.18</a>
 	 */
 	public void setDirectoryEntry(String uri) {
 		replace(DIR, uri);
@@ -241,7 +267,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Gets the encoding of the property value (for example, "base64").
 	 * @return the encoding or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545 p.18-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545
+	 * p.18-9</a>
 	 */
 	public Encoding getEncoding() {
 		String value = first(ENCODING);
@@ -251,7 +278,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Sets the encoding of the property value (for example, "base64").
 	 * @param encoding the encoding or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545 p.18-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545
+	 * p.18-9</a>
 	 */
 	public void setEncoding(Encoding encoding) {
 		replace(ENCODING, (encoding == null) ? null : encoding.getValue());
@@ -260,7 +288,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Gets the content-type of the property's value.
 	 * @return the content type (e.g. "image/png") or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-19">RFC 5545 p.19-20</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-19">RFC 5545
+	 * p.19-20</a>
 	 */
 	public String getFormatType() {
 		return first(FMTTYPE);
@@ -269,7 +298,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Sets the content-type of the property's value.
 	 * @param formatType the content type (e.g. "image/png") or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-19">RFC 5545 p.19-20</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-19">RFC 5545
+	 * p.19-20</a>
 	 */
 	public void setFormatType(String formatType) {
 		replace(FMTTYPE, formatType);
@@ -280,7 +310,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * {@link FreeBusy} property (for example, "free" or "busy"). If not set,
 	 * the user should be considered "busy".
 	 * @return the type or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-20">RFC 5545 p.20</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-20">RFC 5545
+	 * p.20</a>
 	 */
 	public FreeBusyType getFreeBusyType() {
 		String value = first(FBTYPE);
@@ -292,7 +323,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * {@link FreeBusy} property (for example, "free" or "busy"). If not set,
 	 * the user should be considered "busy".
 	 * @param fbType the type or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-20">RFC 5545 p.20</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-20">RFC 5545
+	 * p.20</a>
 	 */
 	public void setFreeBusyType(FreeBusyType fbType) {
 		replace(FBTYPE, (fbType == null) ? null : fbType.getValue());
@@ -301,7 +333,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Gets the language that the property value is written in.
 	 * @return the language (e.g. "en" for English) or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545 p.21</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
+	 * p.21</a>
 	 */
 	public String getLanguage() {
 		return first(LANGUAGE);
@@ -310,7 +343,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Sets the language that the property value is written in.
 	 * @param language the language (e.g. "en" for English) or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545 p.21</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
+	 * p.21</a>
 	 */
 	public void setLanguage(String language) {
 		replace(LANGUAGE, language);
@@ -320,7 +354,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Adds a group that an attendee is a member of.
 	 * @param uri the group URI (typically, an email address URI, e.g.
 	 * "mailto:mailinglist@example.com")
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545 p.21-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
+	 * p.21-2</a>
 	 */
 	public void addMember(String uri) {
 		put(MEMBER, uri);
@@ -330,7 +365,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Gets the groups that an attendee is a member of.
 	 * @return the group URIs (typically, these are email address URIs, e.g.
 	 * "mailto:mailinglist@example.com")
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545 p.21-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
+	 * p.21-2</a>
 	 */
 	public List<String> getMembers() {
 		return get(MEMBER);
@@ -340,7 +376,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Removes a group that an attendee is a member of.
 	 * @param uri the group URI to remove (typically, an email address URI, e.g.
 	 * "mailto:mailinglist@example.com")
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545 p.21-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
+	 * p.21-2</a>
 	 */
 	public void removeMember(String uri) {
 		remove(MEMBER, uri);
@@ -348,7 +385,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 
 	/**
 	 * Removes all groups that an attendee is a member of.
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545 p.21-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
+	 * p.21-2</a>
 	 */
 	public void removeMembers() {
 		removeAll(MEMBER);
@@ -357,7 +395,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Gets an attendee's level of participation.
 	 * @return the participation status or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-22">RFC 5545 p.22-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-22">RFC 5545
+	 * p.22-3</a>
 	 */
 	public ParticipationStatus getParticipationStatus() {
 		String value = first(PARTSTAT);
@@ -367,7 +406,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Sets an attendee's level of participation.
 	 * @param status the participation status or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-22">RFC 5545 p.22-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-22">RFC 5545
+	 * p.22-3</a>
 	 */
 	public void setParticipationStatus(ParticipationStatus status) {
 		replace(PARTSTAT, (status == null) ? null : status.getValue());
@@ -377,7 +417,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Gets the effective range of recurrence instances from the instance
 	 * specified by a {@link RecurrenceId} property.
 	 * @return the range or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-23">RFC 5545 p.23-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-23">RFC 5545
+	 * p.23-4</a>
 	 */
 	public Range getRange() {
 		String value = first(RANGE);
@@ -388,7 +429,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Sets the effective range of recurrence instances from the instance
 	 * specified by a {@link RecurrenceId} property.
 	 * @param range the range or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-23">RFC 5545 p.23-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-23">RFC 5545
+	 * p.23-4</a>
 	 */
 	public void setRange(Range range) {
 		replace(RANGE, (range == null) ? null : range.getValue());
@@ -398,7 +440,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Gets the date-time field that the duration in a {@link Trigger} property
 	 * is relative to.
 	 * @return the field or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-24">RFC 5545 p.24</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-24">RFC 5545
+	 * p.24</a>
 	 */
 	public Related getRelated() {
 		String value = first(RELATED);
@@ -409,7 +452,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Sets the date-time field that the duration in a {@link Trigger} property
 	 * is relative to.
 	 * @param related the field or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-24">RFC 5545 p.24</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-24">RFC 5545
+	 * p.24</a>
 	 */
 	public void setRelated(Related related) {
 		replace(RELATED, (related == null) ? null : related.getValue());
@@ -418,7 +462,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Gets the relationship type of a {@link RelatedTo} property.
 	 * @return the relationship type (e.g. "child") or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545 p.25</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545
+	 * p.25</a>
 	 */
 	public RelationshipType getRelationshipType() {
 		String value = first(RELTYPE);
@@ -429,7 +474,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Sets the relationship type of a {@link RelatedTo} property.
 	 * @param relationshipType the relationship type (e.g. "child") or null to
 	 * remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545 p.25</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545
+	 * p.25</a>
 	 */
 	public void setRelationshipType(RelationshipType relationshipType) {
 		replace(RELTYPE, (relationshipType == null) ? null : relationshipType.getValue());
@@ -438,7 +484,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Gets an attendee's role (for example, "chair" or "required participant").
 	 * @return the role or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545 p.25-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545
+	 * p.25-6</a>
 	 */
 	public Role getRole() {
 		String value = first(ROLE);
@@ -448,7 +495,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	/**
 	 * Sets an attendee's role (for example, "chair" or "required participant").
 	 * @param role the role or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545 p.25-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545
+	 * p.25-6</a>
 	 */
 	public void setRole(Role role) {
 		replace(ROLE, (role == null) ? null : role.getValue());
@@ -459,7 +507,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @throws IllegalStateException if the parameter value is malformed and
 	 * cannot be parsed
 	 * @return true if an RSVP is requested, false if not, null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-26">RFC 5545 p.26-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-26">RFC 5545
+	 * p.26-7</a>
 	 */
 	public Boolean getRsvp() {
 		String value = first(RSVP);
@@ -480,7 +529,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Sets whether the organizer requests a response from an attendee.
 	 * @param rsvp true if an RSVP has been requested, false if not, null to
 	 * remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-26">RFC 5545 p.26-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-26">RFC 5545
+	 * p.26-7</a>
 	 */
 	public void setRsvp(Boolean rsvp) {
 		replace(RSVP, (rsvp == null) ? null : rsvp.toString().toUpperCase());
@@ -491,7 +541,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * property.
 	 * @return a URI representing the person (typically, an email URI, e.g.
 	 * "mailto:janedoe@example.com") or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545 p.27</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
+	 * p.27</a>
 	 */
 	public String getSentBy() {
 		return first(SENT_BY);
@@ -502,7 +553,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * property.
 	 * @param uri a URI representing the person (typically, an email URI, e.g.
 	 * "mailto:janedoe@example.com") or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545 p.27</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
+	 * p.27</a>
 	 */
 	public void setSentBy(String uri) {
 		replace(SENT_BY, uri);
@@ -515,7 +567,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * list of globally-defined timezones, see the <a
 	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
 	 * @return the timezone identifier or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545 p.27-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
+	 * p.27-8</a>
 	 */
 	public String getTimezoneId() {
 		return first(TZID);
@@ -528,7 +581,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * list of globally-defined timezones, see the <a
 	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
 	 * @param timezoneId the timezone identifier or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545 p.27-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
+	 * p.27-8</a>
 	 */
 	public void setTimezoneId(String timezoneId) {
 		replace(TZID, timezoneId);
@@ -538,7 +592,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Gets the data type of the property's value (for example, "text" or
 	 * "datetime").
 	 * @return the data type or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-29">RFC 5545 p.29-50</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-29">RFC 5545
+	 * p.29-50</a>
 	 */
 	public ICalDataType getValue() {
 		String value = first(VALUE);
@@ -549,7 +604,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Sets the data type of the property's value (for example, "text" or
 	 * "datetime").
 	 * @param value the data type or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-29">RFC 5545 p.29-50</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-29">RFC 5545
+	 * p.29-50</a>
 	 */
 	public void setValue(ICalDataType value) {
 		replace(VALUE, (value == null) ? null : value.getName());

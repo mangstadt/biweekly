@@ -32,7 +32,8 @@ import biweekly.util.CaseClasses;
 /**
  * Defines the data type of a property's value.
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-29">RFC 5545 p.29-50</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-29">RFC 5545
+ * p.29-50</a>
  */
 public class ICalDataType {
 	private static final CaseClasses<ICalDataType, String> enums = new CaseClasses<ICalDataType, String>(ICalDataType.class) {
@@ -50,6 +51,7 @@ public class ICalDataType {
 	public static final ICalDataType BINARY = new ICalDataType("BINARY");
 	public static final ICalDataType BOOLEAN = new ICalDataType("BOOLEAN");
 	public static final ICalDataType CAL_ADDRESS = new ICalDataType("CAL-ADDRESS");
+	public static final ICalDataType CONTENT_ID = new ICalDataType("CONTENT-ID"); //1.0 only
 	public static final ICalDataType DATE = new ICalDataType("DATE");
 	public static final ICalDataType DATE_TIME = new ICalDataType("DATE-TIME");
 	public static final ICalDataType DURATION = new ICalDataType("DURATION");
@@ -70,10 +72,24 @@ public class ICalDataType {
 
 	/**
 	 * Gets the name of the data type.
-	 * @return the name of the data type (e.g. "text")
+	 * @return the name of the data type (e.g. "TEXT")
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * Gets the name of the data type. This may return something different from
+	 * {@link #getName()}, since some data types have different names in
+	 * different iCalendar versions.
+	 * @param version the iCalendar version
+	 * @return the name of the data type (e.g. "TEXT")
+	 */
+	public String getName(ICalVersion version) {
+		if (version == ICalVersion.V1_0 && this == URI) {
+			return "URL";
+		}
+		return getName();
 	}
 
 	@Override
@@ -88,6 +104,10 @@ public class ICalDataType {
 	 * @return the object or null if not found
 	 */
 	public static ICalDataType find(String value) {
+		if ("CID".equalsIgnoreCase(value)) {
+			//"CID" is an alias for "CONTENT-ID" (p.17)
+			return CONTENT_ID;
+		}
 		return enums.find(value);
 	}
 
@@ -99,6 +119,10 @@ public class ICalDataType {
 	 * @return the object
 	 */
 	public static ICalDataType get(String value) {
+		if ("CID".equalsIgnoreCase(value)) {
+			//"CID" is an alias for "CONTENT-ID" (p.17)
+			return CONTENT_ID;
+		}
 		return enums.get(value);
 	}
 

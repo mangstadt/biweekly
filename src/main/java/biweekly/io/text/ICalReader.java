@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -29,8 +30,11 @@ import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.io.scribe.property.RecurrencePropertyScribe;
+import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.util.org.apache.commons.codec.DecoderException;
+import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -83,6 +87,7 @@ public class ICalReader implements Closeable {
 	private static final String icalComponentName = icalMarshaller.getComponentName();
 	private final ParseWarnings warnings = new ParseWarnings();
 	private ScribeIndex index = new ScribeIndex();
+	private Charset defaultQuotedPrintableCharset;
 	private final ICalRawReader reader;
 
 	/**
@@ -116,6 +121,10 @@ public class ICalReader implements Closeable {
 	 */
 	public ICalReader(Reader reader) {
 		this.reader = new ICalRawReader(reader);
+		defaultQuotedPrintableCharset = this.reader.getEncoding();
+		if (defaultQuotedPrintableCharset == null) {
+			defaultQuotedPrintableCharset = Charset.defaultCharset();
+		}
 	}
 
 	/**
@@ -138,6 +147,40 @@ public class ICalReader implements Closeable {
 	 */
 	public void setCaretDecodingEnabled(boolean enable) {
 		reader.setCaretDecodingEnabled(enable);
+	}
+
+	/**
+	 * <p>
+	 * Gets the character set to use when decoding quoted-printable values if
+	 * the property has no CHARSET parameter, or if the CHARSET parameter is not
+	 * a valid character set.
+	 * </p>
+	 * <p>
+	 * By default, the Reader's character encoding will be used. If the Reader
+	 * has no character encoding, then the system's default character encoding
+	 * will be used.
+	 * </p>
+	 * @return the character set
+	 */
+	public Charset getDefaultQuotedPrintableCharset() {
+		return defaultQuotedPrintableCharset;
+	}
+
+	/**
+	 * <p>
+	 * Sets the character set to use when decoding quoted-printable values if
+	 * the property has no CHARSET parameter, or if the CHARSET parameter is not
+	 * a valid character set.
+	 * </p>
+	 * <p>
+	 * By default, the Reader's character encoding will be used. If the Reader
+	 * has no character encoding, then the system's default character encoding
+	 * will be used.
+	 * </p>
+	 * @param charset the character set
+	 */
+	public void setDefaultQuotedPrintableCharset(Charset charset) {
+		defaultQuotedPrintableCharset = charset;
 	}
 
 	/**
@@ -289,6 +332,17 @@ public class ICalReader implements Closeable {
 				}
 			}
 
+			//process nameless parameters
+			processNamelessParameters(parameters);
+
+			//decode property value from quoted-printable
+			String value = line.getValue();
+			try {
+				value = decodeQuotedPrintable(propertyName, parameters, value);
+			} catch (DecoderException e) {
+				warnings.add(reader.getLineNum(), propertyName, 31, e.getMessage());
+			}
+
 			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyName);
 
 			//get the data type
@@ -300,8 +354,6 @@ public class ICalReader implements Closeable {
 				//remove VALUE parameter if it is set
 				parameters.setValue(null);
 			}
-
-			String value = line.getValue();
 
 			List<Result<? extends ICalProperty>> propertiesToAdd = new ArrayList<Result<? extends ICalProperty>>();
 			List<Result<? extends ICalComponent>> componentsToAdd = new ArrayList<Result<? extends ICalComponent>>();
@@ -360,17 +412,69 @@ public class ICalReader implements Closeable {
 	}
 
 	/**
-	 * Closes the underlying {@link Reader} object.
+	 * Assigns names to all nameless parameters. v2.0 requires all parameters to
+	 * have names, but v1.0 does not.
+	 * @param parameters the parameters
 	 */
-	public void close() throws IOException {
-		reader.close();
+	private void processNamelessParameters(ICalParameters parameters) {
+		List<String> namelessParamValues = parameters.get(null);
+		for (String paramValue : namelessParamValues) {
+			String paramName;
+			if (ICalDataType.find(paramValue) != null) {
+				paramName = ICalParameters.VALUE;
+			} else if (Encoding.find(paramValue) != null) {
+				paramName = ICalParameters.ENCODING;
+			} else {
+				//otherwise, assume it's a TYPE
+				paramName = ICalParameters.TYPE;
+			}
+			parameters.put(paramName, paramValue);
+		}
+		parameters.removeAll(null);
+	}
+
+	/**
+	 * Decodes the property value if it's encoded in quoted-printable encoding.
+	 * Quoted-printable encoding is only supported in v1.0.
+	 * @param name the property name
+	 * @param parameters the parameters
+	 * @param value the property value
+	 * @return the decoded property value
+	 * @throws DecoderException if the value couldn't be decoded
+	 */
+	private String decodeQuotedPrintable(String name, ICalParameters parameters, String value) throws DecoderException {
+		if (parameters.getEncoding() != Encoding.QUOTED_PRINTABLE) {
+			return value;
+		}
+
+		//remove encoding parameter
+		parameters.setEncoding(null);
+
+		//determine the character set
+		Charset charset = null;
+		String charsetStr = parameters.getCharset();
+		if (charsetStr == null) {
+			charset = defaultQuotedPrintableCharset;
+		} else {
+			try {
+				charset = Charset.forName(charsetStr);
+			} catch (Throwable t) {
+				charset = defaultQuotedPrintableCharset;
+
+				//the given charset was invalid, so add a warning
+				warnings.add(reader.getLineNum(), name, 32, charsetStr, charset.name());
+			}
+		}
+
+		QuotedPrintableCodec codec = new QuotedPrintableCodec(charset.name());
+		return codec.decode(value);
 	}
 
 	private List<Result<? extends ICalProperty>> handleVCalRRule(String value, ICalPropertyScribe<? extends ICalProperty> scribe, String propertyName, ICalDataType dataType, ICalParameters parameters, ICalVersion version) {
 		Pattern p = Pattern.compile("#\\d+|\\d{8}T\\d{6}Z?");
 		Matcher m = p.matcher(value);
 
-		//extract each RRULE from the version string (there can be multiple)
+		//extract each RRULE from the value string (there can be multiple)
 		List<String> subValues = new ArrayList<String>();
 		{
 			int prevIndex = 0;
@@ -392,5 +496,12 @@ public class ICalReader implements Closeable {
 			results.add(result);
 		}
 		return results;
+	}
+
+	/**
+	 * Closes the underlying {@link Reader} object.
+	 */
+	public void close() throws IOException {
+		reader.close();
 	}
 }

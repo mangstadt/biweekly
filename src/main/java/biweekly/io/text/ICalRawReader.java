@@ -5,6 +5,7 @@ import static biweekly.util.StringUtils.NEWLINE;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.charset.Charset;
 
 import biweekly.ICalVersion;
 import biweekly.parameter.ICalParameters;
@@ -285,6 +286,14 @@ public class ICalRawReader implements Closeable {
 	 */
 	public void setCaretDecodingEnabled(boolean enable) {
 		caretDecodingEnabled = enable;
+	}
+
+	/**
+	 * Gets the character encoding of the reader.
+	 * @return the character encoding or null if none is defined
+	 */
+	public Charset getEncoding() {
+		return reader.getEncoding();
 	}
 
 	/**
