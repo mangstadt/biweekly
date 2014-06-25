@@ -104,7 +104,7 @@ public class ICalWriterTest {
 		ical.addEvent(event);
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
 		writer.write(ical);
 		writer.close();
 
@@ -134,7 +134,7 @@ public class ICalWriterTest {
 		ical.addEvent(event);
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
 		writer.write(ical);
 		writer.close();
 
@@ -161,7 +161,7 @@ public class ICalWriterTest {
 		ical.getProductId().addParameter("X-TEST", "\"test\"");
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
 		writer.write(ical);
 		writer.close();
 
@@ -183,7 +183,7 @@ public class ICalWriterTest {
 		ical.getProductId().addParameter("X-TEST", "\"test\"");
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
 		writer.setCaretEncodingEnabled(true);
 		writer.write(ical);
 		writer.close();
@@ -203,7 +203,7 @@ public class ICalWriterTest {
 	@Test
 	public void multiple() throws Exception {
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
 		writer.write(new ICalendar());
 		writer.write(new ICalendar());
 		writer.close();
@@ -230,7 +230,7 @@ public class ICalWriterTest {
 		ical.addProperty(new TestProperty("value"));
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
 		writer.write(ical);
 	}
 
@@ -240,7 +240,7 @@ public class ICalWriterTest {
 		ical.addComponent(new Party());
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
 		writer.write(ical);
 	}
 
@@ -250,7 +250,7 @@ public class ICalWriterTest {
 		ical.addProperty(new TestProperty("value"));
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
 		writer.registerScribe(new BadNameMarshaller());
 		writer.write(ical);
 	}
@@ -263,7 +263,7 @@ public class ICalWriterTest {
 		ical.addExperimentalProperty("X-FOO", "bar");
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
 		writer.registerScribe(new SkipMeScribe());
 		writer.write(ical);
 		writer.close();
@@ -284,7 +284,7 @@ public class ICalWriterTest {
 		ICalendar ical = new ICalendar();
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
 		writer.registerScribe(new MyVersionMarshaller());
 		writer.write(ical);
 		writer.close();
@@ -308,7 +308,7 @@ public class ICalWriterTest {
 		ical.addExperimentalProperty("X-NUMBER", "2");
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
 		writer.write(ical);
 		writer.close();
 
@@ -333,7 +333,7 @@ public class ICalWriterTest {
 		ical.addProperty(new TestProperty("two"));
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
 		writer.registerScribe(new TestPropertyMarshaller());
 		writer.write(ical);
 		writer.close();
@@ -358,7 +358,7 @@ public class ICalWriterTest {
 		ical.addExperimentalComponent("X-VPARTY");
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
 		writer.write(ical);
 		writer.close();
 
@@ -382,7 +382,7 @@ public class ICalWriterTest {
 		ical.addComponent(new Party());
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
 		writer.registerScribe(new PartyMarshaller());
 		writer.write(ical);
 		writer.close();
@@ -408,7 +408,7 @@ public class ICalWriterTest {
 		ical.addProperty(new TestProperty("2"));
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
 		writer.registerScribe(new DataTypePropertyMarshaller());
 		writer.write(ical);
 		writer.close();
@@ -434,7 +434,7 @@ public class ICalWriterTest {
 		ical.addProperty(new Summary("\u1e66ummary"));
 
 		File file = tempFolder.newFile();
-		ICalWriter writer = new ICalWriter(file);
+		ICalWriter writer = new ICalWriter(file, ICalVersion.V2_0);
 		writer.write(ical);
 		writer.close();
 
@@ -661,7 +661,7 @@ public class ICalWriterTest {
 
 	private void assertExample(ICalendar ical, String exampleFileName) throws IOException {
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, null);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0, null);
 		writer.write(ical);
 		writer.close();
 

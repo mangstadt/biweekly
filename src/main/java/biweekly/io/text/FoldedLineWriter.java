@@ -1,7 +1,12 @@
 package biweekly.io.text;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
+
+import biweekly.util.org.apache.commons.codec.EncoderException;
+import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -33,16 +38,17 @@ import java.io.Writer;
  * @author Michael Angstadt
  */
 public class FoldedLineWriter extends Writer {
+	private final Writer writer;
 	private int curLineLength = 0;
-	private int lineLength;
+	private Integer lineLength;
 	private String indent;
 	private String newline;
-	private final Writer writer;
 
 	/**
+	 * Creates a folded line writer.
 	 * @param writer the writer object to wrap
 	 * @param lineLength the maximum length a line can be before it is folded
-	 * (excluding the newline)
+	 * (excluding the newline), or null disable folding
 	 * @param indent the string to prepend to each folded line (e.g. a single
 	 * space character)
 	 * @param newline the newline sequence to use (e.g. "\r\n")
@@ -51,15 +57,15 @@ public class FoldedLineWriter extends Writer {
 	 * @throws IllegalArgumentException if the length of the indent string is
 	 * greater than the max line length
 	 */
-	public FoldedLineWriter(Writer writer, int lineLength, String indent, String newline) {
+	public FoldedLineWriter(Writer writer, Integer lineLength, String indent, String newline) {
+		this.writer = writer;
 		setLineLength(lineLength);
 		setIndent(indent);
-		this.writer = writer;
 		this.newline = newline;
 	}
 
 	/**
-	 * Writes a string of text, followed by a newline.
+	 * Writes a string, followed by a newline.
 	 * @param str the text to write
 	 * @throws IOException if there's a problem writing to the output stream
 	 */
@@ -68,67 +74,175 @@ public class FoldedLineWriter extends Writer {
 		write(newline);
 	}
 
+	/**
+	 * Writes a string.
+	 * @param str the string to write
+	 * @param quotedPrintable true to encode the string in quoted-printable
+	 * encoding, false not to
+	 * @param charset the character set to use when encoding into
+	 * quoted-printable, or null to use the writer's character encoding (only
+	 * applicable if "quotedPrintable" is set to true)
+	 * @return this
+	 * @throws IOException if there's a problem writing to the output stream
+	 */
+	public FoldedLineWriter append(CharSequence str, boolean quotedPrintable, Charset charset) throws IOException {
+		write(str, quotedPrintable, charset);
+		return this;
+	}
+
+	/**
+	 * Writes a string.
+	 * @param str the string to write
+	 * @param quotedPrintable true to encode the string in quoted-printable
+	 * encoding, false not to
+	 * @param charset the character set to use when encoding into
+	 * quoted-printable, or null to use the writer's character encoding (only
+	 * applicable if "quotedPrintable" is set to true)
+	 * @throws IOException if there's a problem writing to the output stream
+	 */
+	public void write(CharSequence str, boolean quotedPrintable, Charset charset) throws IOException {
+		write(str.toString().toCharArray(), 0, str.length(), quotedPrintable, charset);
+	}
+
 	@Override
-	public void write(char buf[], int start, int end) throws IOException {
-		write(buf, start, end, lineLength, indent);
+	public void write(char[] cbuf, int off, int len) throws IOException {
+		write(cbuf, off, len, false, null);
 	}
 
 	/**
 	 * Writes a portion of an array of characters.
-	 * @param buf the array of characters
-	 * @param start the offset from which to start writing characters
-	 * @param end the number of characters to write
-	 * @param lineLength the maximum length a line can be before it is folded
-	 * (excluding the newline)
-	 * @param indent the indent string to use (e.g. a single space character)
+	 * @param cbuf the array of characters
+	 * @param off the offset from which to start writing characters
+	 * @param len the number of characters to write
+	 * @param quotedPrintable true to encode the string in quoted-printable
+	 * encoding, false not to
+	 * @param charset the character set to use when encoding into
+	 * quoted-printable, or null to use the writer's character encoding (only
+	 * applicable if "quotedPrintable" is set to true)
 	 * @throws IOException if there's a problem writing to the output stream
 	 */
-	public void write(char buf[], int start, int end, int lineLength, String indent) throws IOException {
+	public void write(char[] cbuf, int off, int len, boolean quotedPrintable, Charset charset) throws IOException {
+		//encode to quoted-printable
+		if (quotedPrintable) {
+			if (charset == null) {
+				charset = Charset.forName("UTF-8");
+			}
+
+			QuotedPrintableCodec codec = new QuotedPrintableCodec(charset.name());
+			try {
+				String str = new String(cbuf, off, len);
+				String encoded = codec.encode(str);
+
+				cbuf = encoded.toCharArray();
+				off = 0;
+				len = cbuf.length;
+			} catch (EncoderException e) {
+				//thrown if an unsupported charset is passed into the codec
+				//this should never be thrown because we already know the charset is valid (Charset object is passed in)
+				throw new RuntimeException(e);
+			}
+		}
+
+		if (lineLength == null) {
+			//if line folding is disabled, then write directly to the Writer
+			writer.write(cbuf, off, len);
+			return;
+		}
+
+		int effectiveLineLength = lineLength;
+		if (quotedPrintable) {
+			//"=" must be appended onto each line
+			effectiveLineLength -= 1;
+		}
+
+		int encodedCharPos = -1;
+		int start = off;
+		int end = off + len;
 		for (int i = start; i < end; i++) {
-			char c = buf[i];
+			char c = cbuf[i];
+
+			//keep track of the quoted-printable characters to prevent them from being cut in two at a folding boundary
+			if (encodedCharPos >= 0) {
+				encodedCharPos++;
+				if (encodedCharPos == 3) {
+					encodedCharPos = -1;
+				}
+			}
+
 			if (c == '\n') {
-				writer.write(buf, start, i - start + 1);
+				writer.write(cbuf, start, i - start + 1);
 				curLineLength = 0;
 				start = i + 1;
-			} else if (c == '\r') {
-				if (i == end - 1 || buf[i + 1] != '\n') {
-					writer.write(buf, start, i - start + 1);
+				continue;
+			}
+
+			if (c == '\r') {
+				if (i == end - 1 || cbuf[i + 1] != '\n') {
+					writer.write(cbuf, start, i - start + 1);
 					curLineLength = 0;
 					start = i + 1;
 				} else {
 					curLineLength++;
 				}
-			} else if (curLineLength >= lineLength) {
+				continue;
+			}
+
+			if (c == '=' && quotedPrintable) {
+				encodedCharPos = 0;
+			}
+
+			if (curLineLength >= effectiveLineLength) {
 				//if the last characters on the line are whitespace, then exceed the max line length in order to include the whitespace on the same line
 				//otherwise it will be lost because it will merge with the padding on the next line
 				if (Character.isWhitespace(c)) {
 					while (Character.isWhitespace(c) && i < end - 1) {
 						i++;
-						c = buf[i];
+						c = cbuf[i];
 					}
-					if (i == end - 1) {
+					if (i >= end - 1) {
 						//the rest of the char array is whitespace, so leave the loop
 						break;
 					}
 				}
 
-				writer.write(buf, start, i - start);
-				String s = newline + indent;
-				writer.write(s.toCharArray(), 0, s.length());
-				start = i;
+				//if we are in the middle of a quoted-printable encoded char, then exceed the max line length in order to print out the rest of the char
+				if (encodedCharPos > 0) {
+					i += 3 - encodedCharPos;
+					if (i >= end - 1) {
+						//the rest of the char array was an encoded char, so leave the loop
+						break;
+					}
+				}
+
+				writer.write(cbuf, start, i - start);
+				if (quotedPrintable) {
+					writer.write('=');
+				}
+				writer.write(newline);
+				writer.write(indent);
 				curLineLength = indent.length() + 1;
-			} else {
-				curLineLength++;
+				start = i;
+
+				continue;
 			}
+
+			curLineLength++;
 		}
-		writer.write(buf, start, end - start);
+
+		writer.write(cbuf, start, end - start);
 	}
 
+	/**
+	 * Closes the writer.
+	 */
 	@Override
 	public void close() throws IOException {
 		writer.close();
 	}
 
+	/**
+	 * Flushes the writer.
+	 */
 	@Override
 	public void flush() throws IOException {
 		writer.flush();
@@ -137,21 +251,21 @@ public class FoldedLineWriter extends Writer {
 	/**
 	 * Gets the maximum length a line can be before it is folded (excluding the
 	 * newline).
-	 * @return the line length
+	 * @return the line length or null if folding is disabled
 	 */
-	public int getLineLength() {
+	public Integer getLineLength() {
 		return lineLength;
 	}
 
 	/**
 	 * Sets the maximum length a line can be before it is folded (excluding the
 	 * newline).
-	 * @param lineLength the line length
+	 * @param lineLength the line length or null to disable folding
 	 * @throws IllegalArgumentException if the line length is less than or equal
 	 * to zero
 	 */
-	public void setLineLength(int lineLength) {
-		if (lineLength <= 0) {
+	public void setLineLength(Integer lineLength) {
+		if (lineLength != null && lineLength <= 0) {
 			throw new IllegalArgumentException("Line length must be greater than 0.");
 		}
 		this.lineLength = lineLength;
@@ -172,7 +286,7 @@ public class FoldedLineWriter extends Writer {
 	 * greater than the max line length
 	 */
 	public void setIndent(String indent) {
-		if (indent.length() >= lineLength) {
+		if (lineLength != null && indent.length() >= lineLength) {
 			throw new IllegalArgumentException("The length of the indent string must be less than the max line length.");
 		}
 		this.indent = indent;
@@ -192,5 +306,27 @@ public class FoldedLineWriter extends Writer {
 	 */
 	public void setNewline(String newline) {
 		this.newline = newline;
+	}
+
+	/**
+	 * Gets the wrapped {@link Writer} object.
+	 * @return the wrapped writer
+	 */
+	public Writer getWriter() {
+		return writer;
+	}
+
+	/**
+	 * Gets the writer's character encoding.
+	 * @return the writer's character encoding or null if undefined
+	 */
+	public Charset getEncoding() {
+		if (!(writer instanceof OutputStreamWriter)) {
+			return null;
+		}
+
+		OutputStreamWriter osw = (OutputStreamWriter) writer;
+		String charsetStr = osw.getEncoding();
+		return (charsetStr == null) ? null : Charset.forName(charsetStr);
 	}
 }

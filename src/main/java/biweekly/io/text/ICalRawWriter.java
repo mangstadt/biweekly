@@ -4,11 +4,16 @@ import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.BitSet;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import biweekly.ICalVersion;
+import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 
 /*
@@ -63,52 +68,84 @@ public class ICalRawWriter implements Closeable, Flushable {
 	 * The characters that are not valid in parameter values and that should be
 	 * removed.
 	 */
-	private static final BitSet invalidParamValueChars;
+	private static final Map<ICalVersion, BitSet> invalidParamValueChars;
 	static {
-		invalidParamValueChars = new BitSet(128);
-		invalidParamValueChars.set(0, 31);
-		invalidParamValueChars.set(127);
-		invalidParamValueChars.set('\t', false); //allow
-		invalidParamValueChars.set('\n', false); //allow
-		invalidParamValueChars.set('\r', false); //allow
+		BitSet controlChars = new BitSet(128);
+		controlChars.set(0, 31);
+		controlChars.set(127);
+		controlChars.set('\t', false); //allow
+		controlChars.set('\n', false); //allow
+		controlChars.set('\r', false); //allow
+
+		Map<ICalVersion, BitSet> map = new HashMap<ICalVersion, BitSet>();
+
+		//1.0
+		{
+			BitSet bitSet = new BitSet(128);
+			bitSet.or(controlChars);
+
+			bitSet.set(',');
+			bitSet.set('.');
+			bitSet.set(':');
+			bitSet.set('=');
+			bitSet.set('[');
+			bitSet.set(']');
+
+			map.put(ICalVersion.V1_0, bitSet);
+		}
+
+		//2.0
+		{
+			BitSet bitSet = new BitSet(128);
+			bitSet.or(controlChars);
+
+			map.put(ICalVersion.V2_0_DEPRECATED, bitSet);
+			map.put(ICalVersion.V2_0, bitSet);
+		}
+
+		invalidParamValueChars = Collections.unmodifiableMap(map);
 	}
 
 	private final String newline;
 	private boolean caretEncodingEnabled = false;
 	private final FoldingScheme foldingScheme;
-	private final Writer writer;
-	private ParameterValueChangedListener parameterValueChangedListener;
+	private final FoldedLineWriter writer;
+	private ICalVersion version;
 
 	/**
 	 * Creates an iCalendar raw writer using the standard folding scheme and
 	 * newline sequence.
 	 * @param writer the writer to the data stream
+	 * @param version the version to adhere to
 	 */
-	public ICalRawWriter(Writer writer) {
-		this(writer, FoldingScheme.DEFAULT);
+	public ICalRawWriter(Writer writer, ICalVersion version) {
+		this(writer, version, FoldingScheme.DEFAULT);
 	}
 
 	/**
 	 * Creates an iCalendar raw writer using the standard newline sequence.
 	 * @param writer the writer to the data stream
+	 * @param version the version to adhere to
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 */
-	public ICalRawWriter(Writer writer, FoldingScheme foldingScheme) {
-		this(writer, foldingScheme, "\r\n");
+	public ICalRawWriter(Writer writer, ICalVersion version, FoldingScheme foldingScheme) {
+		this(writer, version, foldingScheme, "\r\n");
 	}
 
 	/**
 	 * Creates an iCalendar raw writer.
 	 * @param writer the writer to the data stream
+	 * @param version the version to adhere to
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 * @param newline the newline sequence to use
 	 */
-	public ICalRawWriter(Writer writer, FoldingScheme foldingScheme, String newline) {
+	public ICalRawWriter(Writer writer, ICalVersion version, FoldingScheme foldingScheme, String newline) {
 		if (foldingScheme == null) {
-			this.writer = writer;
+			this.writer = new FoldedLineWriter(writer, null, "", newline);
 		} else {
 			this.writer = new FoldedLineWriter(writer, foldingScheme.getLineLength(), foldingScheme.getIndent(), newline);
 		}
+		this.version = version;
 		this.foldingScheme = foldingScheme;
 		this.newline = newline;
 	}
@@ -220,29 +257,27 @@ public class ICalRawWriter implements Closeable, Flushable {
 	}
 
 	/**
+	 * Gets the iCalendar version that the writer is adhering to.
+	 * @return the version
+	 */
+	public ICalVersion getVersion() {
+		return version;
+	}
+
+	/**
+	 * Sets the iCalendar version that the writer should adhere to.
+	 * @param version the version
+	 */
+	public void setVersion(ICalVersion version) {
+		this.version = version;
+	}
+
+	/**
 	 * Gets the newline sequence that is used to separate lines.
 	 * @return the newline sequence
 	 */
 	public String getNewline() {
 		return newline;
-	}
-
-	/**
-	 * Gets the listener which will be invoked when a parameter's value is
-	 * changed due to containing invalid characters.
-	 * @return the listener or null if not set
-	 */
-	public ParameterValueChangedListener getParameterValueChangedListener() {
-		return parameterValueChangedListener;
-	}
-
-	/**
-	 * Sets the listener which will be invoked when a parameter's value is
-	 * changed due to containing invalid characters.
-	 * @param parameterValueChangedListener the listener or null to remove
-	 */
-	public void setParameterValueChangedListener(ParameterValueChangedListener parameterValueChangedListener) {
-		this.parameterValueChangedListener = parameterValueChangedListener;
 	}
 
 	/**
@@ -274,6 +309,15 @@ public class ICalRawWriter implements Closeable, Flushable {
 	}
 
 	/**
+	 * Writes a "VERSION" property, based on the iCalendar version that the
+	 * writer is adhering to.
+	 * @throws IOException if there's an I/O problem
+	 */
+	public void writeVersion() throws IOException {
+		writeProperty("VERSION", version.getVersion());
+	}
+
+	/**
 	 * Writes a property to the iCalendar data stream.
 	 * @param propertyName the property name (e.g. "VERSION")
 	 * @param value the property value (e.g. "2.0")
@@ -300,6 +344,26 @@ public class ICalRawWriter implements Closeable, Flushable {
 			throw new IllegalArgumentException("Property name invalid.  Property names can only contain letters, numbers, and hyphens.");
 		}
 
+		value = sanitizeValue(parameters, value);
+
+		//determine if the property value must be encoded in quoted printable
+		//and determine the charset to use when encoding to quoted-printable
+		boolean quotedPrintable = (parameters.getEncoding() == Encoding.QUOTED_PRINTABLE);
+		Charset charset = null;
+		if (quotedPrintable) {
+			String charsetParam = parameters.getCharset();
+			if (charsetParam == null) {
+				charset = Charset.forName("UTF-8");
+			} else {
+				try {
+					charset = Charset.forName(charsetParam);
+				} catch (Throwable t) {
+					charset = Charset.forName("UTF-8");
+				}
+			}
+			parameters.setCharset(charset.name());
+		}
+
 		//write the property name
 		writer.append(propertyName);
 
@@ -307,43 +371,67 @@ public class ICalRawWriter implements Closeable, Flushable {
 		for (Map.Entry<String, List<String>> subType : parameters) {
 			String parameterName = subType.getKey();
 			List<String> parameterValues = subType.getValue();
-			if (!parameterValues.isEmpty()) {
-				//e.g. ADR;TYPE=home,work,"another,value":
+			if (parameterValues.isEmpty()) {
+				continue;
+			}
 
-				boolean first = true;
-				writer.append(';').append(parameterName).append('=');
+			if (version == ICalVersion.V1_0) {
+				//e.g. ADR;FOO=bar;FOO=car:
 				for (String parameterValue : parameterValues) {
-					if (!first) {
-						writer.append(',');
-					}
-
 					parameterValue = sanitizeParameterValue(parameterValue, parameterName, propertyName);
-
-					//surround with double quotes if contains special chars
-					if (quoteMeRegex.matcher(parameterValue).matches()) {
-						writer.append('"');
-						writer.append(parameterValue);
-						writer.append('"');
-					} else {
-						writer.append(parameterValue);
-					}
-
-					first = false;
+					writer.append(';').append(parameterName).append('=').append(parameterValue);
 				}
+				continue;
+			}
+
+			//e.g. ADR;TYPE=home,work,"another,value":
+			boolean first = true;
+			writer.append(';').append(parameterName).append('=');
+			for (String parameterValue : parameterValues) {
+				if (!first) {
+					writer.append(',');
+				}
+
+				parameterValue = sanitizeParameterValue(parameterValue, parameterName, propertyName);
+
+				//surround with double quotes if contains special chars
+				if (quoteMeRegex.matcher(parameterValue).matches()) {
+					writer.append('"');
+					writer.append(parameterValue);
+					writer.append('"');
+				} else {
+					writer.append(parameterValue);
+				}
+
+				first = false;
 			}
 		}
 
 		writer.append(':');
 
 		//write the property value
-		if (value == null) {
-			value = "";
-		} else {
-			value = escapeNewlines(value);
-		}
-		writer.append(value);
-
+		writer.append(value, quotedPrintable, charset);
 		writer.append(newline);
+	}
+
+	/**
+	 * Sanitizes a property value for safe inclusion in a vCard.
+	 * @param parameters the parameters
+	 * @param value the value to sanitize
+	 * @return the sanitized value
+	 */
+	private String sanitizeValue(ICalParameters parameters, String value) {
+		if (value == null) {
+			return "";
+		}
+
+		if (version == ICalVersion.V1_0 && containsNewlines(value)) {
+			//1.0 does not support the "\n" escape sequence (see "Delimiters" sub-section in section 2 of the specs)
+			parameters.setEncoding(Encoding.QUOTED_PRINTABLE);
+			return value;
+		}
+
+		return escapeNewlines(value);
 	}
 
 	/**
@@ -355,27 +443,38 @@ public class ICalRawWriter implements Closeable, Flushable {
 	 * @return the sanitized parameter value
 	 */
 	private String sanitizeParameterValue(String parameterValue, String parameterName, String propertyName) {
-		boolean valueChanged = false;
-		String modifiedValue = removeInvalidParameterValueChars(parameterValue);
+		//remove invalid characters
+		parameterValue = removeInvalidParameterValueChars(parameterValue);
 
-		if (caretEncodingEnabled) {
-			valueChanged = (modifiedValue != parameterValue);
-			modifiedValue = applyCaretEncoding(modifiedValue);
-		} else {
-			//replace double quotes with single quotes
-			modifiedValue = modifiedValue.replace('"', '\'');
-
+		switch (version) {
+		case V1_0:
 			//replace newlines with spaces
-			modifiedValue = newlineRegex.matcher(modifiedValue).replaceAll(" ");
+			parameterValue = newlineRegex.matcher(parameterValue).replaceAll(" ");
 
-			valueChanged = (modifiedValue != parameterValue);
+			//escape backslashes
+			parameterValue = parameterValue.replace("\\", "\\\\");
+
+			//escape semi-colons (see section 2)
+			parameterValue = parameterValue.replace(";", "\\;");
+
+			break;
+
+		default:
+			if (caretEncodingEnabled) {
+				//apply caret encoding
+				parameterValue = applyCaretEncoding(parameterValue);
+			} else {
+				//replace double quotes with single quotes
+				parameterValue = parameterValue.replace('"', '\'');
+
+				//replace newlines with spaces
+				parameterValue = newlineRegex.matcher(parameterValue).replaceAll(" ");
+			}
+
+			break;
 		}
 
-		if (valueChanged && parameterValueChangedListener != null) {
-			parameterValueChangedListener.onParameterValueChanged(propertyName, parameterName, parameterValue, modifiedValue);
-		}
-
-		return modifiedValue;
+		return parameterValue;
 	}
 
 	/**
@@ -384,16 +483,25 @@ public class ICalRawWriter implements Closeable, Flushable {
 	 * @return the sanitized parameter value
 	 */
 	private String removeInvalidParameterValueChars(String value) {
-		StringBuilder sb = new StringBuilder(value.length());
+		BitSet invalidChars = invalidParamValueChars.get(version);
+		StringBuilder sb = null;
 
 		for (int i = 0; i < value.length(); i++) {
 			char ch = value.charAt(i);
-			if (!invalidParamValueChars.get(ch)) {
+			if (invalidChars.get(ch)) {
+				if (sb == null) {
+					sb = new StringBuilder(value.length());
+					sb.append(value.substring(0, i));
+				}
+				continue;
+			}
+
+			if (sb != null) {
 				sb.append(ch);
 			}
 		}
 
-		return (sb.length() == value.length()) ? value : sb.toString();
+		return (sb == null) ? value : sb.toString();
 	}
 
 	/**
@@ -426,6 +534,23 @@ public class ICalRawWriter implements Closeable, Flushable {
 	}
 
 	/**
+	 * <p>
+	 * Determines if a string has at least one newline character sequence. The
+	 * newline character sequences are:
+	 * </p>
+	 * <ul>
+	 * <li>{@code \r\n}</li>
+	 * <li>{@code \r}</li>
+	 * <li>{@code \n}</li>
+	 * </ul>
+	 * @param text the text to escape
+	 * @return the escaped text
+	 */
+	private boolean containsNewlines(String text) {
+		return newlineRegex.matcher(text).find();
+	}
+
+	/**
 	 * Flushes the underlying {@link Writer} object.
 	 * @throws IOException if there's a problem flushing the writer
 	 */
@@ -438,25 +563,5 @@ public class ICalRawWriter implements Closeable, Flushable {
 	 */
 	public void close() throws IOException {
 		writer.close();
-	}
-
-	/**
-	 * Allows you to respond to when a parameter's value is changed due to it
-	 * containing invalid characters. If a character can be escaped (such as the
-	 * "^" character when caret encoding is enabled), then this does not count
-	 * as the parameter being modified because it can be decoded without losing
-	 * any information.
-	 * @author Michael Angstadt
-	 */
-	public static interface ParameterValueChangedListener {
-		/**
-		 * Called when a parameter value is changed.
-		 * @param propertyName the name of the property to which the parameter
-		 * belongs
-		 * @param parameterName the parameter name
-		 * @param originalValue the original parameter value
-		 * @param modifiedValue the modified parameter value
-		 */
-		void onParameterValueChanged(String propertyName, String parameterName, String originalValue, String modifiedValue);
 	}
 }

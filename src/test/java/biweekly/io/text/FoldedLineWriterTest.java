@@ -3,8 +3,11 @@ package biweekly.io.text;
 import static org.junit.Assert.assertEquals;
 
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 
 import org.junit.Test;
+
+import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -34,20 +37,93 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-@SuppressWarnings("resource")
 public class FoldedLineWriterTest {
 	@Test
-	public void write() throws Exception {
+	public void write() throws Throwable {
 		StringWriter sw = new StringWriter();
 		FoldedLineWriter writer = new FoldedLineWriter(sw, 10, " ", "\r\n");
+
 		writer.write("line\r\nThis line should be    ");
 		writer.write("new line");
 		writer.write("aa");
 		writer.write("line");
-		writer.append("22");
+		writer.write("\r\n0123456789\r\n");
 
+		writer.write("0123456789", true, null);
+		writer.write("\r\n");
+		writer.write("01234567=", true, null);
+		writer.write("\r\n");
+		writer.write("01234567==", true, null);
+		writer.write("\r\n");
+		writer.write("short", true, null);
+		writer.write("\r\n");
+		writer.write("quoted-printable line", true, null);
+
+		writer.close();
 		String actual = sw.toString();
-		String expected = "line\r\nThis line \r\n should be    \r\n new linea\r\n aline22";
+
+		//@formatter:off
+		String expected =
+		"line\r\n" +
+		"This line \r\n" +
+		" should be    \r\n" +
+		" new linea\r\n" +
+		" aline\r\n" +
+		"0123456789\r\n" +
+		"012345678=\r\n" +
+		" 9\r\n" +
+		"01234567=3D\r\n" +
+		"01234567=3D=\r\n" +
+		" =3D\r\n" +
+		"short\r\n" +
+		"quoted-pr=\r\n" +
+		" intable =\r\n" +
+		" line";
+		//@formatter:on
+
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void write_sub_array() throws Throwable {
+		StringWriter sw = new StringWriter();
+		FoldedLineWriter writer = new FoldedLineWriter(sw, 10, " ", "\r\n");
+
+		String str = "This line should be folded.";
+		writer.write(str, 5, 14);
+
+		writer.close();
+		String actual = sw.toString();
+
+		//@formatter:off
+		String expected =
+		"line shoul\r\n" +
+		" d be";
+		//@formatter:on
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void write_charset() throws Throwable {
+		StringWriter sw = new StringWriter();
+		FoldedLineWriter writer = new FoldedLineWriter(sw, 10, " ", "\r\n");
+
+		String str = "test\n\u00e4\u00f6\u00fc\u00df\ntest";
+		writer.write(str, true, Charset.forName("ISO-8859-1"));
+		writer.close();
+		String actual = sw.toString();
+
+		//@formatter:off
+		String expected =	
+		"test=0A=E4=\r\n" +
+		" =F6=FC=DF=\r\n" +
+		" =0Atest";
+		//@formatter:on
+
+		assertEquals(expected, actual);
+
+		QuotedPrintableCodec codec = new QuotedPrintableCodec("ISO-8859-1");
+		assertEquals("test\n\u00e4\u00f6\u00fc\u00df\ntest", codec.decode("test=0A=E4=F6=FC=DF=0Atest"));
 	}
 }

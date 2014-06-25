@@ -2,14 +2,16 @@ package biweekly.io.text;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
-import biweekly.io.text.ICalRawWriter.ParameterValueChangedListener;
+import biweekly.ICalVersion;
+import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
+import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -41,11 +43,17 @@ import biweekly.parameter.ICalParameters;
  */
 @SuppressWarnings("resource")
 public class ICalRawWriterTest {
+	private StringWriter sw;
+	private ICalRawWriter writer;
+
+	@Before
+	public void before() throws Exception {
+		sw = new StringWriter();
+		writer = new ICalRawWriter(sw, ICalVersion.V2_0);
+	}
+
 	@Test
 	public void property() throws Exception {
-		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw);
-
 		writer.writeProperty("PROP", "value1");
 
 		ICalParameters params = new ICalParameters();
@@ -65,17 +73,11 @@ public class ICalRawWriterTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void invalid_property_name() throws Exception {
-		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw);
-
 		writer.writeProperty("INVALID*PROP", "value");
 	}
 
 	@Test
 	public void writeBeginComponent() throws Exception {
-		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw);
-
 		writer.writeBeginComponent("COMP");
 		writer.close();
 
@@ -89,9 +91,6 @@ public class ICalRawWriterTest {
 
 	@Test
 	public void writeEndComponent() throws Exception {
-		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw);
-
 		writer.writeEndComponent("COMP");
 		writer.close();
 
@@ -104,10 +103,21 @@ public class ICalRawWriterTest {
 	}
 
 	@Test
-	public void folding() throws Exception {
-		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw);
+	public void writeVersion() throws Throwable {
+		writer.writeVersion();
 
+		String actual = sw.toString();
+
+		//@formatter:off
+		String expected =
+		"VERSION:2.0\r\n";
+		//@formatter:on
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void folding() throws Exception {
 		writer.writeProperty("PROP", "The use of calendaring and scheduling has grown considerably in the last decade. Enterprise and inter-enterprise business has become dependent      on rapid scheduling of events and actions using this information technology.");
 		writer.close();
 
@@ -124,8 +134,7 @@ public class ICalRawWriterTest {
 
 	@Test
 	public void custom_foldingScheme_and_newline() throws Exception {
-		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw, new FoldingScheme(100, "\t"), "*");
+		writer = new ICalRawWriter(sw, ICalVersion.V2_0, new FoldingScheme(100, "\t"), "*");
 
 		writer.writeProperty("PROP", "The use of calendaring and scheduling has grown considerably in the last decade. Enterprise and inter-enterprise business has become dependent on rapid scheduling of events and actions using this information technology.");
 		writer.close();
@@ -142,8 +151,7 @@ public class ICalRawWriterTest {
 
 	@Test
 	public void no_foldingScheme() throws Exception {
-		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw, null, "*");
+		writer = new ICalRawWriter(sw, ICalVersion.V2_0, null, "*");
 
 		writer.writeProperty("PROP", "The use of calendaring and scheduling has grown considerably in the last decade. Enterprise and inter-enterprise business has become dependent on rapid scheduling of events and actions using this information technology.");
 		writer.close();
@@ -157,48 +165,26 @@ public class ICalRawWriterTest {
 	}
 
 	@Test
-	public void caret_encoding_on() throws Exception {
+	public void newline() throws Throwable {
 		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw);
-		writer.setCaretEncodingEnabled(true);
+		ICalRawWriter writer = new ICalRawWriter(sw, ICalVersion.V1_0, FoldingScheme.DEFAULT, "*");
 
-		ICalParameters params = new ICalParameters();
-		params.put("PARAM", "foo\n \"bar\" ^_^");
-		writer.writeProperty("PROP", params, "value");
-		writer.close();
+		writer.writeProperty("PROP", "one");
+		writer.writeProperty("PROP", "two");
+
+		String actual = sw.toString();
 
 		//@formatter:off
 		String expected =
-		"PROP;PARAM=foo^n ^'bar^' ^^_^^:value\r\n";
+		"PROP:one*" +
+		"PROP:two*";
 		//@formatter:on
 
-		assertEquals(expected, sw.toString());
-	}
-
-	@Test
-	public void caret_encoding_off() throws Exception {
-		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw);
-		writer.setCaretEncodingEnabled(false);
-
-		ICalParameters params = new ICalParameters();
-		params.put("PARAM", "foo\n \"bar\" ^_^");
-		writer.writeProperty("PROP", params, "value");
-		writer.close();
-
-		//@formatter:off
-		String expected =
-		"PROP;PARAM=foo  'bar' ^_^:value\r\n";
-		//@formatter:on
-
-		assertEquals(expected, sw.toString());
+		assertEquals(actual, expected);
 	}
 
 	@Test
 	public void multiple_parameters() throws Exception {
-		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw);
-
 		ICalParameters params = new ICalParameters();
 		params.put("PARAM", "one");
 		params.put("PARAM", "two");
@@ -216,9 +202,6 @@ public class ICalRawWriterTest {
 
 	@Test
 	public void quoted_parameters() throws Exception {
-		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw);
-
 		ICalParameters params = new ICalParameters();
 		params.put("PARAM", "three,;:four");
 		writer.writeProperty("PROP", params, "value");
@@ -233,50 +216,171 @@ public class ICalRawWriterTest {
 	}
 
 	@Test
-	public void invalid_parameter_value_chars() throws Exception {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < 31; i++) { //control characters should be removed (except for \t, \n, and \r)
-			if (i != '\t' && i != '\n' && i != '\r') {
-				sb.append((char) i);
-			}
-		}
-		sb.append("\r\n");
-		sb.append('"');
-		sb.append('\n');
-		sb.append('\r');
-		final String expectedOriginalValue = sb.toString();
+	public void parameters_special_chars() throws Throwable {
+		//1.0 without caret escaping
+		//removes , : = [ ] FS
+		//replaces \ with \\
+		//replaces ; with \;
+		//replaces newline with space
+		assertParametersSpecialChars(ICalVersion.V1_0, false, "PROP;X-TEST=^�\\\\\\;\"\t ;X-TEST=normal:\r\n");
 
-		sb = new StringBuilder();
-		sb.append(' ');
-		sb.append('\'');
-		sb.append(' ');
-		sb.append(' ');
-		final String expectedModifiedValue = sb.toString();
+		//1.0 with caret escaping (ignored)
+		//removes , : = [ ] FS
+		//replaces \ with \\
+		//replaces ; with \;
+		//replaces newline with space
+		assertParametersSpecialChars(ICalVersion.V1_0, true, "PROP;X-TEST=^�\\\\\\;\"\t ;X-TEST=normal:\r\n");
 
-		final List<Boolean> hit = new ArrayList<Boolean>();
+		//2.0 without caret escaping
+		//removes FS
+		//replaces \ with \\
+		//replaces newline with space
+		//replaces " with '
+		//surrounds in double quotes, since it contains , ; or :
+		assertParametersSpecialChars(ICalVersion.V2_0, false, "PROP;X-TEST=\"^�\\,;:=[]'\t \",normal:\r\n");
+
+		//2.0 with caret escaping
+		//removes FS
+		//replaces ^ with ^^
+		//replaces newline with ^n
+		//replaces " with ^'
+		//surrounds in double quotes, since it contains , ; or :
+		assertParametersSpecialChars(ICalVersion.V2_0, true, "PROP;X-TEST=\"^^�\\,;:=[]^'\t^n\",normal:\r\n");
+	}
+
+	private void assertParametersSpecialChars(ICalVersion version, boolean caretEncodingEnabled, String expected) throws IOException {
 		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw);
-		writer.setParameterValueChangedListener(new ParameterValueChangedListener() {
-			public void onParameterValueChanged(String propertyName, String parameterName, String originalValue, String modifiedValue) {
-				assertEquals("PROP", propertyName);
-				assertEquals("PARAM", parameterName);
-				assertEquals(expectedOriginalValue, originalValue);
-				assertEquals(expectedModifiedValue, modifiedValue);
-				hit.add(true);
-			}
-		});
+		ICalRawWriter writer = new ICalRawWriter(sw, version);
+		writer.setCaretEncodingEnabled(caretEncodingEnabled);
 
-		ICalParameters params = new ICalParameters();
-		params.put("PARAM", expectedOriginalValue);
-		writer.writeProperty("PROP", params, "value");
+		ICalParameters parameters = new ICalParameters();
+		parameters.put("X-TEST", "^�\\,;:=[]\"\t\n" + ((char) 28));
+		parameters.put("X-TEST", "normal");
+		writer.writeProperty("PROP", parameters, "");
+
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	/*
+	 * If newline characters exist in a property value in 2.1, then that
+	 * property value should be "quoted-printable" encoded. The escape sequence
+	 * "\n" should ONLY be used for 3.0 and 4.0. See the "Delimiters" subsection
+	 * in section 2 of the 2.1 specs.
+	 */
+	@Test
+	public void newlines_in_property_values() throws Throwable {
+		assertNewlinesInPropertyValues(ICalVersion.V1_0, "PROP;ENCODING=QUOTED-PRINTABLE;CHARSET=UTF-8:one=0D=0Atwo\r\n");
+		assertNewlinesInPropertyValues(ICalVersion.V2_0, "PROP:one\\ntwo\r\n");
+	}
+
+	private void assertNewlinesInPropertyValues(ICalVersion version, String expected) throws IOException {
+		StringWriter sw = new StringWriter();
+		ICalRawWriter writer = new ICalRawWriter(sw, version);
+
+		writer.writeProperty("PROP", "one\r\ntwo");
+
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	/*
+	 * Property values that use "quoted-printable" encoding must include a "="
+	 * at the end of the line if the next line is folded.
+	 */
+	@Test
+	public void quoted_printable_line() throws Throwable {
+		StringWriter sw = new StringWriter();
+		ICalRawWriter writer = new ICalRawWriter(sw, ICalVersion.V1_0, new FoldingScheme(60, " "));
+
+		ICalParameters parameters = new ICalParameters();
+		parameters.setEncoding(Encoding.QUOTED_PRINTABLE);
+
+		writer.writeProperty("PROP", parameters, "quoted-printable \r\nline");
+		writer.writeProperty("PROP", parameters, "short");
 		writer.close();
 
+		//must construct the first line differently, since the length of the CHARSET parameter will vary depending on the local machine
+		String firstLine = "PROP;ENCODING=QUOTED-PRINTABLE;CHARSET=UTF-8:quoted-printable =0D=0Aline";
+		firstLine = firstLine.substring(0, 59) + "=\r\n " + firstLine.substring(59);
+
 		//@formatter:off
-		String expected =
-		"PROP;PARAM=" + expectedModifiedValue + ":value\r\n";
+		String expected = firstLine + "\r\n" +
+		"PROP;ENCODING=QUOTED-PRINTABLE;CHARSET=UTF-8:short\r\n";
 		//@formatter:on
 
-		assertEquals(1, hit.size());
-		assertEquals(expected, sw.toString());
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void quoted_printable_line_encoding() throws Throwable {
+		final String propValue = "\u00e4\u00f6\u00fc\u00df";
+
+		//UTF-8
+		{
+			StringWriter sw = new StringWriter();
+			ICalRawWriter writer = new ICalRawWriter(sw, ICalVersion.V1_0);
+
+			ICalParameters parameters = new ICalParameters();
+			parameters.setEncoding(Encoding.QUOTED_PRINTABLE);
+			parameters.setCharset("UTF-8");
+
+			writer.writeProperty("PROP", parameters, propValue);
+			writer.close();
+
+			//@formatter:off
+			String expected =
+			"PROP;ENCODING=QUOTED-PRINTABLE;CHARSET=UTF-8:=C3=A4=C3=B6=C3=BC=C3=9F\r\n";
+			//@formatter:on
+
+			String actual = sw.toString();
+			assertEquals(expected, actual);
+		}
+
+		//ISO-8859-1
+		{
+			StringWriter sw = new StringWriter();
+			ICalRawWriter writer = new ICalRawWriter(sw, ICalVersion.V1_0);
+
+			ICalParameters parameters = new ICalParameters();
+			parameters.setEncoding(Encoding.QUOTED_PRINTABLE);
+			parameters.setCharset("ISO-8859-1");
+
+			writer.writeProperty("PROP", parameters, propValue);
+			writer.close();
+
+			//@formatter:off
+			String expected =
+			"PROP;ENCODING=QUOTED-PRINTABLE;CHARSET=ISO-8859-1:=E4=F6=FC=DF\r\n";
+			//@formatter:on
+
+			String actual = sw.toString();
+			assertEquals(expected, actual);
+		}
+
+		//invalid
+		{
+			StringWriter sw = new StringWriter();
+			ICalRawWriter writer = new ICalRawWriter(sw, ICalVersion.V1_0);
+
+			ICalParameters parameters = new ICalParameters();
+			parameters.setEncoding(Encoding.QUOTED_PRINTABLE);
+			parameters.setCharset("invalid");
+
+			writer.writeProperty("PROP", parameters, propValue);
+			writer.close();
+
+			QuotedPrintableCodec codec = new QuotedPrintableCodec("UTF-8");
+			String encoded = codec.encode(propValue);
+
+			//@formatter:off
+			String expected =
+			"PROP;ENCODING=QUOTED-PRINTABLE;CHARSET=UTF-8:" + encoded + "\r\n";
+			//@formatter:on
+
+			String actual = sw.toString();
+			assertEquals(expected, actual);
+		}
 	}
 }

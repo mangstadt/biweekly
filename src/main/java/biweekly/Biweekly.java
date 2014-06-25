@@ -1176,7 +1176,7 @@ public class Biweekly {
 		 * @throws IOException if there's a problem writing to the output stream
 		 */
 		public void go(OutputStream out) throws IOException {
-			go(new ICalWriter(out));
+			go(new ICalWriter(out, ICalVersion.V2_0));
 		}
 
 		/**
@@ -1204,7 +1204,7 @@ public class Biweekly {
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file, boolean append) throws IOException {
-			ICalWriter icalWriter = new ICalWriter(file, append);
+			ICalWriter icalWriter = new ICalWriter(file, append, ICalVersion.V2_0);
 			try {
 				go(icalWriter);
 			} finally {
@@ -1222,7 +1222,7 @@ public class Biweekly {
 		 * @throws IOException if there's a problem writing to the writer
 		 */
 		public void go(Writer writer) throws IOException {
-			go(new ICalWriter(writer));
+			go(new ICalWriter(writer, ICalVersion.V2_0));
 		}
 
 		private void go(ICalWriter icalWriter) throws IOException {

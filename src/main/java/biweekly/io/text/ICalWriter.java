@@ -4,10 +4,11 @@ import static biweekly.util.IOUtils.utf8Writer;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import biweekly.ICalDataType;
@@ -76,106 +77,116 @@ public class ICalWriter implements Closeable, Flushable {
 	 * Creates an iCalendar writer that writes to an output stream. Uses the
 	 * standard folding scheme and newline sequence.
 	 * @param outputStream the output stream to write to
+	 * @param version the iCalendar version to adhere to
 	 */
-	public ICalWriter(OutputStream outputStream) {
-		this(utf8Writer(outputStream));
+	public ICalWriter(OutputStream outputStream, ICalVersion version) {
+		this((version == ICalVersion.V1_0) ? new OutputStreamWriter(outputStream) : utf8Writer(outputStream), version);
 	}
 
 	/**
 	 * Creates an iCalendar writer that writes to an output stream. Uses the
 	 * standard newline sequence.
 	 * @param outputStream the output stream to write to
+	 * @param version the iCalendar version to adhere to
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 */
-	public ICalWriter(OutputStream outputStream, FoldingScheme foldingScheme) {
-		this(utf8Writer(outputStream), foldingScheme);
+	public ICalWriter(OutputStream outputStream, ICalVersion version, FoldingScheme foldingScheme) {
+		this((version == ICalVersion.V1_0) ? new OutputStreamWriter(outputStream) : utf8Writer(outputStream), version, foldingScheme);
 	}
 
 	/**
 	 * Creates an iCalendar writer that writes to an output stream.
 	 * @param outputStream the output stream to write to
+	 * @param version the iCalendar version to adhere to
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 * @param newline the newline sequence to use
 	 */
-	public ICalWriter(OutputStream outputStream, FoldingScheme foldingScheme, String newline) {
-		this(utf8Writer(outputStream), foldingScheme, newline);
+	public ICalWriter(OutputStream outputStream, ICalVersion version, FoldingScheme foldingScheme, String newline) {
+		this((version == ICalVersion.V1_0) ? new OutputStreamWriter(outputStream) : utf8Writer(outputStream), version, foldingScheme, newline);
 	}
 
 	/**
 	 * Creates an iCalendar writer that writes to a file. Uses the standard
 	 * folding scheme and newline sequence.
 	 * @param file the file to write to
-	 * @throws FileNotFoundException if the file cannot be written to
+	 * @param version the iCalendar version to adhere to
+	 * @throws IOException if the file cannot be written to
 	 */
-	public ICalWriter(File file) throws FileNotFoundException {
-		this(utf8Writer(file));
+	public ICalWriter(File file, ICalVersion version) throws IOException {
+		this((version == ICalVersion.V1_0) ? new FileWriter(file) : utf8Writer(file), version);
 	}
 
 	/**
 	 * Creates an iCalendar writer that writes to a file. Uses the standard
 	 * folding scheme and newline sequence.
 	 * @param file the file to write to
+	 * @param version the iCalendar version to adhere to
 	 * @param append true to append to the end of the file, false to overwrite
 	 * it
-	 * @throws FileNotFoundException if the file cannot be written to
+	 * @throws IOException if the file cannot be written to
 	 */
-	public ICalWriter(File file, boolean append) throws FileNotFoundException {
-		this(utf8Writer(file, append));
+	public ICalWriter(File file, boolean append, ICalVersion version) throws IOException {
+		this((version == ICalVersion.V1_0) ? new FileWriter(file, append) : utf8Writer(file, append), version);
 	}
 
 	/**
 	 * Creates an iCalendar writer that writes to a file. Uses the standard
 	 * newline sequence.
 	 * @param file the file to write to
+	 * @param version the iCalendar version to adhere to
 	 * @param append true to append to the end of the file, false to overwrite
 	 * it
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
-	 * @throws FileNotFoundException if the file cannot be written to
+	 * @throws IOException if the file cannot be written to
 	 */
-	public ICalWriter(File file, boolean append, FoldingScheme foldingScheme) throws FileNotFoundException {
-		this(utf8Writer(file, append), foldingScheme);
+	public ICalWriter(File file, boolean append, ICalVersion version, FoldingScheme foldingScheme) throws IOException {
+		this((version == ICalVersion.V1_0) ? new FileWriter(file, append) : utf8Writer(file, append), version, foldingScheme);
 	}
 
 	/**
 	 * Creates an iCalendar writer that writes to a file.
 	 * @param file the file to write to
+	 * @param version the iCalendar version to adhere to
 	 * @param append true to append to the end of the file, false to overwrite
 	 * it
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 * @param newline the newline sequence to use
-	 * @throws FileNotFoundException if the file cannot be written to
+	 * @throws IOException if the file cannot be written to
 	 */
-	public ICalWriter(File file, boolean append, FoldingScheme foldingScheme, String newline) throws FileNotFoundException {
-		this(utf8Writer(file, append), foldingScheme, newline);
+	public ICalWriter(File file, boolean append, ICalVersion version, FoldingScheme foldingScheme, String newline) throws IOException {
+		this((version == ICalVersion.V1_0) ? new FileWriter(file, append) : utf8Writer(file, append), version, foldingScheme, newline);
 	}
 
 	/**
 	 * Creates an iCalendar writer that writes to a writer. Uses the standard
 	 * folding scheme and newline sequence.
 	 * @param writer the writer to the data stream
+	 * @param version the iCalendar version to adhere to
 	 */
-	public ICalWriter(Writer writer) {
-		this(writer, FoldingScheme.DEFAULT);
+	public ICalWriter(Writer writer, ICalVersion version) {
+		this(writer, version, FoldingScheme.DEFAULT);
 	}
 
 	/**
 	 * Creates an iCalendar writer that writes to a writer. Uses the standard
 	 * newline sequence.
 	 * @param writer the writer to the data stream
+	 * @param version the iCalendar version to adhere to
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 */
-	public ICalWriter(Writer writer, FoldingScheme foldingScheme) {
-		this(writer, foldingScheme, "\r\n");
+	public ICalWriter(Writer writer, ICalVersion version, FoldingScheme foldingScheme) {
+		this(writer, version, foldingScheme, "\r\n");
 	}
 
 	/**
 	 * Creates an iCalendar writer that writes to a writer.
 	 * @param writer the writer to the data stream
+	 * @param version the iCalendar version to adhere to
 	 * @param foldingScheme the folding scheme to use or null not to fold at all
 	 * @param newline the newline sequence to use
 	 */
-	public ICalWriter(Writer writer, FoldingScheme foldingScheme, String newline) {
-		this.writer = new ICalRawWriter(writer, foldingScheme, newline);
+	public ICalWriter(Writer writer, ICalVersion version, FoldingScheme foldingScheme, String newline) {
+		this.writer = new ICalRawWriter(writer, version, foldingScheme, newline);
 	}
 
 	/**
