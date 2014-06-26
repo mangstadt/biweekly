@@ -15,12 +15,15 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
+import biweekly.component.VAlarm;
 import biweekly.io.SkipMeException;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
+import biweekly.property.Action;
 import biweekly.property.ICalProperty;
+import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -190,6 +193,22 @@ public class ICalWriter implements Closeable, Flushable {
 	}
 
 	/**
+	 * Gets the version that the written iCalendar objects will adhere to.
+	 * @return the iCalendar version
+	 */
+	public ICalVersion getTargetVersion() {
+		return writer.getVersion();
+	}
+
+	/**
+	 * Sets the version that the written iCalendar objects will adhere to.
+	 * @param targetVersion the iCalendar version
+	 */
+	public void setTargetVersion(ICalVersion targetVersion) {
+		writer.setVersion(targetVersion);
+	}
+
+	/**
 	 * <p>
 	 * Gets whether the writer will apply circumflex accent encoding on
 	 * parameter values (disabled by default). This escaping mechanism allows
@@ -308,32 +327,21 @@ public class ICalWriter implements Closeable, Flushable {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeComponent(ICalComponent component) throws IOException {
+		if (targetVersion == ICalVersion.V1_0) {
+			if (component instanceof VAlarm) {
+				VAlarm alarm = (VAlarm) component;
+				if (alarm.getAction() == Action.email()) {
+					//TODO
+				}
+				//TODO
+			}
+		}
 		ICalComponentScribe componentScribe = index.getComponentScribe(component);
 		writer.writeBeginComponent(componentScribe.getComponentName());
 
 		for (Object propertyObj : componentScribe.getProperties(component)) {
 			ICalProperty property = (ICalProperty) propertyObj;
-			ICalPropertyScribe propertyScribe = index.getPropertyScribe(property);
-
-			//marshal property
-			ICalParameters parameters;
-			String value;
-			try {
-				parameters = propertyScribe.prepareParameters(property, targetVersion);
-				value = propertyScribe.writeText(property, targetVersion);
-			} catch (SkipMeException e) {
-				continue;
-			}
-
-			//set the data type
-			ICalDataType dataType = propertyScribe.dataType(property, targetVersion);
-			if (dataType != null && dataType != propertyScribe.defaultDataType(targetVersion)) {
-				//only add a VALUE parameter if the data type is (1) not "unknown" and (2) different from the property's default data type
-				parameters.setValue(dataType);
-			}
-
-			//write property to data stream
-			writer.writeProperty(propertyScribe.getPropertyName(), parameters, value);
+			writeProperty(property);
 		}
 
 		for (Object subComponentObj : componentScribe.getComponents(component)) {
@@ -342,6 +350,36 @@ public class ICalWriter implements Closeable, Flushable {
 		}
 
 		writer.writeEndComponent(componentScribe.getComponentName());
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void writeProperty(ICalProperty property) throws IOException {
+		ICalPropertyScribe propertyScribe = index.getPropertyScribe(property);
+
+		String value;
+		if (property instanceof Version) {
+			value = targetVersion.getVersion();
+		} else {
+			//marshal property
+			try {
+				value = propertyScribe.writeText(property, targetVersion);
+			} catch (SkipMeException e) {
+				return;
+			}
+		}
+
+		//get parameters
+		ICalParameters parameters = propertyScribe.prepareParameters(property, targetVersion);
+
+		//set the data type
+		ICalDataType dataType = propertyScribe.dataType(property, targetVersion);
+		if (dataType != null && dataType != propertyScribe.defaultDataType(targetVersion)) {
+			//only add a VALUE parameter if the data type is (1) not "unknown" and (2) different from the property's default data type
+			parameters.setValue(dataType);
+		}
+
+		//write property to data stream
+		writer.writeProperty(propertyScribe.getPropertyName(), parameters, value);
 	}
 
 	/**

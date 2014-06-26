@@ -41,6 +41,7 @@ import biweekly.property.Attendee;
 import biweekly.property.Classification;
 import biweekly.property.FreeBusy;
 import biweekly.property.ICalProperty;
+import biweekly.property.ProductId;
 import biweekly.property.SkipMeProperty;
 import biweekly.property.Status;
 import biweekly.property.Summary;
@@ -282,23 +283,24 @@ public class ICalWriterTest {
 	@Test
 	public void override_marshaller() throws Exception {
 		ICalendar ical = new ICalendar();
+		ical.setProductId("prod id");
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
-		writer.registerScribe(new MyVersionMarshaller());
+		writer.registerScribe(new MyProdIdScribe());
 		writer.write(ical);
 		writer.close();
 
 		//@formatter:off
 		String expected = 
 		"BEGIN:VCALENDAR\r\n" +
-			"VERSION:2\\.0 \\(beta\\)\r\n" +
-			"PRODID:.*?\r\n" +
+			"VERSION:2.0\r\n" +
+			"PRODID:PROD ID\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
 		String actual = sw.toString();
-		assertRegex(expected, actual);
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -446,7 +448,7 @@ public class ICalWriterTest {
 		//@formatter:on
 
 		String actual = IOUtils.getFileContents(file, "UTF-8");
-		assertRegex(expected, actual);
+		assertEquals(expected, actual);
 	}
 
 	@Test
@@ -718,19 +720,19 @@ public class ICalWriterTest {
 		}
 	}
 
-	private class MyVersionMarshaller extends ICalPropertyScribe<Version> {
-		public MyVersionMarshaller() {
-			super(Version.class, "VERSION", ICalDataType.TEXT);
+	private class MyProdIdScribe extends ICalPropertyScribe<ProductId> {
+		public MyProdIdScribe() {
+			super(ProductId.class, "PRODID", ICalDataType.TEXT);
 		}
 
 		@Override
-		protected String _writeText(Version property, ICalVersion version) {
-			return property.getMaxVersion() + " (beta)";
+		protected String _writeText(ProductId property, ICalVersion version) {
+			return property.getValue().toUpperCase();
 		}
 
 		@Override
-		protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
-			return new Version(value);
+		protected ProductId _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+			return new ProductId(value);
 		}
 	}
 
