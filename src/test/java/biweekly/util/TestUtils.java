@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -220,30 +221,29 @@ public class TestUtils {
 		return marshaller.parseXml(element, new ICalParameters());
 	}
 
-	/**
-	 * Creates a {@link Date} object.
-	 * @param text the date (e.g. "2000-01-30")
-	 * @return the parsed date
-	 */
-	public static Date date(String text) {
-		try {
-			return new SimpleDateFormat("yyyy-MM-dd").parse(text);
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
-	}
+	//@formatter:off
+	private static DateFormat dfs[] = new DateFormat[]{
+		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z"),
+		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"),
+		new SimpleDateFormat("yyyy-MM-dd")
+	};
+	//@formatter:on
 
 	/**
 	 * Creates a {@link Date} object.
-	 * @param text the date/time (e.g. "2000-01-30 13:20:11")
-	 * @return the parsed date
+	 * @param text the date string (e.g. "2000-01-30", see code for acceptable
+	 * formats)
+	 * @return the parsed date or null if it couldn't be parsed
 	 */
-	public static Date datetime(String text) {
-		try {
-			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(text);
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
+	public static Date date(String text) {
+		for (DateFormat df : dfs) {
+			try {
+				return df.parse(text);
+			} catch (ParseException e) {
+				//try the next date formatter
+			}
 		}
+		return null;
 	}
 
 	/**

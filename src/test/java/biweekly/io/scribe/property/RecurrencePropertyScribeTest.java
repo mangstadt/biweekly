@@ -1,12 +1,11 @@
 package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.assertIntEquals;
+import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -63,7 +62,6 @@ public class RecurrencePropertyScribeTest {
 
 	private final RecurrencePropertyMarshallerImpl marshaller = new RecurrencePropertyMarshallerImpl();
 	private final Sensei<RecurrenceProperty> sensei = new Sensei<RecurrenceProperty>(marshaller);
-	private final DateFormat df = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
 
 	private final Date date;
 	{
@@ -181,7 +179,7 @@ public class RecurrencePropertyScribeTest {
 		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
 		assertEquals(expected, actual);
 
-		prop.setValue(new Recurrence.Builder(Frequency.MINUTELY).interval(5).until(df.parse("20000101T010000+0000")).build());
+		prop.setValue(new Recurrence.Builder(Frequency.MINUTELY).interval(5).until(date("2000-01-01 01:00:00 +0000")).build());
 		expected = "M5 20000101T010000Z";
 		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
 		assertEquals(expected, actual);
@@ -307,7 +305,7 @@ public class RecurrencePropertyScribeTest {
 
 		sensei.assertParseText("M2").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MINUTELY).interval(2).count(2).build()));
 		sensei.assertParseText("M2 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MINUTELY).interval(2).build()));
-		sensei.assertParseText("M2 20000101T010000Z").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MINUTELY).interval(2).until(df.parse("20000101T010000+0000")).build()));
+		sensei.assertParseText("M2 20000101T010000Z").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MINUTELY).interval(2).until(date("2000-01-01 01:00:00 +0000")).build()));
 
 		sensei.assertParseText("D2 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.DAILY).interval(2).build()));
 		sensei.assertParseText("D2 0600 1230 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.DAILY).interval(2).byHour(6).byHour(12).byMinute(0).byMinute(30).build()));
