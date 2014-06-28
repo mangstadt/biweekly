@@ -57,6 +57,7 @@ import biweekly.util.Recurrence;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-114">RFC 2445
  * p.114-15</a>
+ * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
  */
 public class ExceptionRule extends RecurrenceProperty {
 	/**

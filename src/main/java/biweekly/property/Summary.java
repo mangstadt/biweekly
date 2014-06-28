@@ -44,6 +44,7 @@ package biweekly.property;
  * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545 p.93-4</a>
+ * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.36</a>
  */
 public class Summary extends TextProperty {
 	/**

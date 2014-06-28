@@ -100,6 +100,7 @@ import biweekly.util.DateTimeComponents;
  * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-95">RFC 5545 p.95-6</a>
+ * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
  */
 public class DateEnd extends DateOrDateTimeProperty {
 	/**

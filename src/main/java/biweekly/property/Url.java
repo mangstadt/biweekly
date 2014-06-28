@@ -41,7 +41,9 @@ package biweekly.property;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545 p.116-7</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
+ * p.116-7</a>
+ * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.37</a>
  */
 public class Url extends TextProperty {
 	/**

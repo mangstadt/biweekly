@@ -65,6 +65,7 @@ import java.util.Collection;
  * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-92">RFC 5545 p.92-3</a>
+ * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35-6</a>
  */
 public class Status extends EnumProperty {
 	private static final String TENTATIVE = "TENTATIVE";

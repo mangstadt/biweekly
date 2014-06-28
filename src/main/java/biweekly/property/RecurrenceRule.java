@@ -46,6 +46,7 @@ import biweekly.util.Recurrence;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
  * p.122-32</a>
+ * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34</a>
  */
 public class RecurrenceRule extends RecurrenceProperty {
 	/**

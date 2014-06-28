@@ -44,6 +44,7 @@ import biweekly.Biweekly;
  * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545 p.78-9</a>
+ * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
  */
 public class ProductId extends TextProperty {
 	/**

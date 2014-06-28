@@ -66,6 +66,7 @@ import biweekly.util.ICalDateFormat;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-118">RFC 5545
  * p.118-20</a>
+ * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
  */
 public class ExceptionDates extends ListProperty<Date> {
 	private boolean hasTime = true;

@@ -42,6 +42,7 @@ package biweekly.property;
  * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-87">RFC 5545 p.87-8</a>
+ * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.32</a>
  */
 public class Location extends TextProperty {
 	/**

@@ -45,6 +45,7 @@ import java.util.Date;
  * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545 p.136</a>
+ * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.29</a>
  */
 public class Created extends DateTimeProperty {
 	/**
