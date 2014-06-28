@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Attachment;
 import biweekly.util.org.apache.commons.codec.binary.Base64;
@@ -61,7 +62,9 @@ public class AttachmentScribeTest {
 
 	@Test
 	public void dataType() {
-		sensei.assertDataType(withUrl).run(ICalDataType.URI);
+		sensei.assertDataType(withUrl).versions(ICalVersion.V1_0).run(ICalDataType.URL);
+		sensei.assertDataType(withUrl).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(ICalDataType.URI);
+
 		sensei.assertDataType(withData).run(ICalDataType.BINARY);
 		sensei.assertDataType(empty).run(ICalDataType.URI);
 	}

@@ -152,9 +152,15 @@ public class Sensei<T extends ICalProperty> {
 	 */
 	public class DataTypeTest {
 		protected final T property;
+		private ICalVersion versions[] = ICalVersion.values();
 
 		public DataTypeTest(T property) {
 			this.property = property;
+		}
+
+		public DataTypeTest versions(ICalVersion... versions) {
+			this.versions = versions;
+			return this;
 		}
 
 		/**
@@ -162,8 +168,10 @@ public class Sensei<T extends ICalProperty> {
 		 * @param expected the expected data type
 		 */
 		public void run(ICalDataType expected) {
-			ICalDataType actual = marshaller.dataType(property, ICalVersion.V2_0);
-			assertEquals(expected, actual);
+			for (ICalVersion version : versions) {
+				ICalDataType actual = marshaller.dataType(property, version);
+				assertEquals(expected, actual);
+			}
 		}
 	}
 

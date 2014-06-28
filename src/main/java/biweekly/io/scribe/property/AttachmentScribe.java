@@ -62,7 +62,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 	@Override
 	protected ICalDataType _dataType(Attachment property, ICalVersion version) {
 		if (property.getUri() != null) {
-			return ICalDataType.URI;
+			return (version == ICalVersion.V1_0) ? ICalDataType.URL : ICalDataType.URI;
 		}
 		if (property.getData() != null) {
 			return ICalDataType.BINARY;

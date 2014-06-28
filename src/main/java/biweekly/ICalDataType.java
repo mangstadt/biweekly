@@ -62,6 +62,7 @@ public class ICalDataType {
 	public static final ICalDataType TEXT = new ICalDataType("TEXT");
 	public static final ICalDataType TIME = new ICalDataType("TIME");
 	public static final ICalDataType URI = new ICalDataType("URI");
+	public static final ICalDataType URL = new ICalDataType("URL");
 	public static final ICalDataType UTC_OFFSET = new ICalDataType("UTC-OFFSET");
 
 	private final String name;
@@ -76,20 +77,6 @@ public class ICalDataType {
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * Gets the name of the data type. This may return something different from
-	 * {@link #getName()}, since some data types have different names in
-	 * different iCalendar versions.
-	 * @param version the iCalendar version
-	 * @return the name of the data type (e.g. "TEXT")
-	 */
-	public String getName(ICalVersion version) {
-		if (version == ICalVersion.V1_0 && this == URI) {
-			return "URL";
-		}
-		return getName();
 	}
 
 	@Override
