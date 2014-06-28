@@ -394,6 +394,7 @@ public class ICalWriter implements Closeable, Flushable {
 		ICalDataType dataType = propertyScribe.dataType(property, writer.getVersion());
 		if (dataType != null && dataType != propertyScribe.defaultDataType(writer.getVersion())) {
 			//only add a VALUE parameter if the data type is (1) not "unknown" and (2) different from the property's default data type
+			parameters = new ICalParameters(parameters);
 			parameters.setValue(dataType);
 		}
 
