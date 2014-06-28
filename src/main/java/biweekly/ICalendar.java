@@ -17,6 +17,7 @@ import biweekly.component.VJournal;
 import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
 import biweekly.property.CalendarScale;
+import biweekly.property.Geo;
 import biweekly.property.Method;
 import biweekly.property.ProductId;
 import biweekly.property.Version;
@@ -316,6 +317,10 @@ public class ICalendar extends ICalComponent {
 
 		if (this.components.isEmpty()) {
 			warnings.add(Warning.validate(4));
+		}
+
+		if (version != ICalVersion.V1_0 && getProperty(Geo.class) != null) {
+			warnings.add(Warning.validate(44));
 		}
 	}
 

@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import java.util.Iterator;
 import java.util.List;
 
 import biweekly.ICalDataType;
@@ -49,30 +50,43 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 	@Override
 	protected String _writeText(Geo property, ICalVersion version) {
 		ICalFloatFormatter formatter = new ICalFloatFormatter();
-		StringBuilder sb = new StringBuilder();
 
 		Double latitude = property.getLatitude();
 		if (latitude == null) {
 			latitude = 0.0;
 		}
-		sb.append(formatter.format(latitude));
-
-		sb.append(';');
-
+		String latitudeStr = formatter.format(latitude);
+		
 		Double longitude = property.getLongitude();
 		if (longitude == null) {
 			longitude = 0.0;
 		}
-		sb.append(formatter.format(longitude));
-
-		return sb.toString();
+		String longitudeStr = formatter.format(longitude);
+		
+		switch (version){
+		case V1_0:
+			return list(latitudeStr, longitudeStr);
+		default:
+			return structured(latitudeStr, longitudeStr);
+		}
 	}
 
 	@Override
 	protected Geo _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
-		SemiStructuredIterator it = semistructured(value, true);
-		String latitudeStr = it.next();
-		String longitudeStr = it.next();
+		String latitudeStr, longitudeStr;
+		switch (version) {
+		case V1_0:
+			Iterator<String> it1 = list(value).iterator();
+			latitudeStr = it1.hasNext() ? it1.next() : null;
+			longitudeStr = it1.hasNext() ? it1.next() : null;
+			break;
+
+		default:
+			SemiStructuredIterator it2 = semistructured(value, true);
+			latitudeStr = it2.next();
+			longitudeStr = it2.next();
+			break;
+		}
 
 		if (latitudeStr == null || longitudeStr == null) {
 			throw new CannotParseException(20);

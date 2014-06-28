@@ -5,8 +5,8 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
+import biweekly.ICalVersion;
 import biweekly.io.json.JCalValue;
-import biweekly.io.scribe.property.GeoScribe;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Geo;
 
@@ -50,16 +50,35 @@ public class GeoScribeTest {
 
 	@Test
 	public void writeText() {
-		sensei.assertWriteText(withBoth).run("12.34;56.78");
-		sensei.assertWriteText(withLatitude).run("12.34;0.0");
-		sensei.assertWriteText(withLongitude).run("0.0;56.78");
-		sensei.assertWriteText(withManyDecimals).run("12.344444;56.777778");
-		sensei.assertWriteText(empty).run("0.0;0.0");
+		sensei.assertWriteText(withBoth).version(ICalVersion.V1_0).run("12.34,56.78");
+		sensei.assertWriteText(withBoth).version(ICalVersion.V2_0_DEPRECATED).run("12.34;56.78");
+		sensei.assertWriteText(withBoth).version(ICalVersion.V2_0).run("12.34;56.78");
+
+		sensei.assertWriteText(withLatitude).version(ICalVersion.V1_0).run("12.34,0.0");
+		sensei.assertWriteText(withLatitude).version(ICalVersion.V2_0_DEPRECATED).run("12.34;0.0");
+		sensei.assertWriteText(withLatitude).version(ICalVersion.V2_0).run("12.34;0.0");
+
+		sensei.assertWriteText(withLongitude).version(ICalVersion.V1_0).run("0.0,56.78");
+		sensei.assertWriteText(withLongitude).version(ICalVersion.V2_0_DEPRECATED).run("0.0;56.78");
+		sensei.assertWriteText(withLongitude).version(ICalVersion.V2_0).run("0.0;56.78");
+
+		sensei.assertWriteText(withManyDecimals).version(ICalVersion.V1_0).run("12.344444,56.777778");
+		sensei.assertWriteText(withManyDecimals).version(ICalVersion.V2_0_DEPRECATED).run("12.344444;56.777778");
+		sensei.assertWriteText(withManyDecimals).version(ICalVersion.V2_0).run("12.344444;56.777778");
+
+		sensei.assertWriteText(empty).version(ICalVersion.V1_0).run("0.0,0.0");
+		sensei.assertWriteText(empty).version(ICalVersion.V2_0_DEPRECATED).run("0.0;0.0");
+		sensei.assertWriteText(empty).version(ICalVersion.V2_0).run("0.0;0.0");
 	}
 
 	@Test
 	public void parseText() {
-		sensei.assertParseText("12.34;56.78").run(has(12.34, 56.78));
+		sensei.assertParseText("12.34,56.78").versions(ICalVersion.V1_0).run(has(12.34, 56.78));
+		sensei.assertParseText("12.34;56.78").versions(ICalVersion.V1_0).cannotParse();
+
+		sensei.assertParseText("12.34;56.78").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(has(12.34, 56.78));
+		sensei.assertParseText("12.34,56.78").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).cannotParse();
+
 		sensei.assertParseText("invalid;56.78").cannotParse();
 		sensei.assertParseText("12.34;invalid").cannotParse();
 		sensei.assertParseText("12.34").cannotParse();

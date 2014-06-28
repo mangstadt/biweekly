@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.Test;
 
 import biweekly.component.ICalComponent;
+import biweekly.property.Geo;
 import biweekly.property.ICalProperty;
 import biweekly.property.Version;
 
@@ -55,6 +56,10 @@ public class ICalendarTest {
 
 		ical.addExperimentalComponent("X-TEST");
 		assertValidate(ical).run();
+
+		ical.addProperty(new Geo(1.0, 2.0));
+		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(44);
+		assertValidate(ical).versions(ICalVersion.V1_0).run();
 	}
 
 	@Test

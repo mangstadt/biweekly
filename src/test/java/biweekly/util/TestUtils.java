@@ -309,6 +309,7 @@ public class TestUtils {
 		private List<ICalComponent> components = new ArrayList<ICalComponent>();
 		private Map<ICalProperty, Integer[]> propertyWarnings = new IntegerArrayMap<ICalProperty>();
 		private Map<ICalComponent, Integer[]> componentWarnings = new IntegerArrayMap<ICalComponent>();
+		private ICalVersion versions[] = ICalVersion.values();
 
 		public CompValidateChecker(ICalComponent component) {
 			this.component = component;
@@ -347,6 +348,11 @@ public class TestUtils {
 			return this;
 		}
 
+		public CompValidateChecker versions(ICalVersion... versions) {
+			this.versions = versions;
+			return this;
+		}
+
 		/**
 		 * Performs the validation check.
 		 * @param codes the warning codes for this component (can be empty)
@@ -356,44 +362,46 @@ public class TestUtils {
 				warn(component, codes);
 			}
 
-			int count = 0;
-			List<WarningsGroup> groups = component.validate(components, ICalVersion.V2_0);
-			for (WarningsGroup group : groups) {
-				List<Warning> warnings = group.getWarnings();
+			for (ICalVersion version : versions) {
+				int count = 0;
+				List<WarningsGroup> groups = component.validate(components, version);
+				for (WarningsGroup group : groups) {
+					List<Warning> warnings = group.getWarnings();
 
-				ICalComponent comp = group.getComponent();
-				if (comp != null) {
-					Integer[] expectedCodes = componentWarnings.get(comp);
-					if (expectedCodes == null) {
-						failed(groups);
+					ICalComponent comp = group.getComponent();
+					if (comp != null) {
+						Integer[] expectedCodes = componentWarnings.get(comp);
+						if (expectedCodes == null) {
+							failed(groups);
+						}
+
+						boolean passed = checkCodes(warnings, expectedCodes);
+						if (!passed) {
+							failed(groups);
+						}
+						count++;
+						continue;
 					}
 
-					boolean passed = checkCodes(warnings, expectedCodes);
-					if (!passed) {
-						failed(groups);
+					ICalProperty prop = group.getProperty();
+					if (prop != null) {
+						Integer[] expectedCodes = propertyWarnings.get(prop);
+						if (expectedCodes == null) {
+							failed(groups);
+						}
+
+						boolean passed = checkCodes(warnings, expectedCodes);
+						if (!passed) {
+							failed(groups);
+						}
+						count++;
+						continue;
 					}
-					count++;
-					continue;
 				}
 
-				ICalProperty prop = group.getProperty();
-				if (prop != null) {
-					Integer[] expectedCodes = propertyWarnings.get(prop);
-					if (expectedCodes == null) {
-						failed(groups);
-					}
-
-					boolean passed = checkCodes(warnings, expectedCodes);
-					if (!passed) {
-						failed(groups);
-					}
-					count++;
-					continue;
+				if (count != componentWarnings.size() + propertyWarnings.size()) {
+					failed(groups);
 				}
-			}
-
-			if (count != componentWarnings.size() + propertyWarnings.size()) {
-				failed(groups);
 			}
 		}
 
