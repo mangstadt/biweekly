@@ -1,6 +1,7 @@
 package biweekly.parameter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import biweekly.ICalDataType;
@@ -507,8 +508,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @throws IllegalStateException if the parameter value is malformed and
 	 * cannot be parsed
 	 * @return true if an RSVP is requested, false if not, null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-26">RFC 5545
-	 * p.26-7</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.26</a>
 	 */
 	public Boolean getRsvp() {
 		String value = first(RSVP);
@@ -516,11 +516,11 @@ public class ICalParameters extends ListMultimap<String, String> {
 		if (value == null) {
 			return null;
 		}
-		if ("true".equalsIgnoreCase(value)) {
-			return true;
+		if ("true".equalsIgnoreCase(value) || "yes".equalsIgnoreCase(value)) {
+			return Boolean.TRUE;
 		}
-		if ("false".equalsIgnoreCase(value)) {
-			return false;
+		if ("false".equalsIgnoreCase(value) || "no".equalsIgnoreCase(value)) {
+			return Boolean.FALSE;
 		}
 		throw new IllegalStateException(RSVP + " parameter value is malformed and could not be parsed. Retrieve its raw text value instead.");
 	}
@@ -624,8 +624,12 @@ public class ICalParameters extends ListMultimap<String, String> {
 		final int nonStandardCode = 1;
 
 		String value = first(RSVP);
-		if (value != null && !value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("false")) {
-			warnings.add(Warning.validate(nonStandardCode, RSVP, value, "[TRUE, FALSE]"));
+		if (value != null) {
+			value = value.toLowerCase();
+			List<String> validValues = Arrays.asList("true", "false", "yes", "no");
+			if (!validValues.contains(value)) {
+				warnings.add(Warning.validate(nonStandardCode, RSVP, value, validValues));
+			}
 		}
 
 		value = first(CUTYPE);

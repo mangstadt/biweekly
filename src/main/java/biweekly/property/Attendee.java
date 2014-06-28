@@ -2,6 +2,9 @@ package biweekly.property;
 
 import java.util.List;
 
+import biweekly.ICalVersion;
+import biweekly.Warning;
+import biweekly.component.ICalComponent;
 import biweekly.component.VAlarm;
 import biweekly.parameter.CalendarUserType;
 import biweekly.parameter.ParticipationStatus;
@@ -280,6 +283,16 @@ public class Attendee extends TextProperty {
 	@Override
 	public void setLanguage(String language) {
 		super.setLanguage(language);
+	}
+
+	@Override
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+		Role role = getRole();
+
+		switch (version) {
+		case V1_0:
+
+		}
 	}
 
 }

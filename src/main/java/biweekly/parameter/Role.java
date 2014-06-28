@@ -35,13 +35,17 @@ import java.util.Collection;
 public class Role extends EnumParameterValue {
 	private static final ICalParameterCaseClasses<Role> enums = new ICalParameterCaseClasses<Role>(Role.class);
 
+	//2.0
 	public static final Role CHAIR = new Role("CHAIR");
-
 	public static final Role REQ_PARTICIPANT = new Role("REQ-PARTICIPANT");
-
 	public static final Role OPT_PARTICIPANT = new Role("OPT-PARTICIPANT");
-
 	public static final Role NON_PARTICIPANT = new Role("NON-PARTICIPANT");
+
+	//1.0
+	public static final Role ATTENDEE = new Role("ATTENDEE");
+	public static final Role ORGANIZER = new Role("ORGANIZER");
+	public static final Role OWNER = new Role("OWNER");
+	public static final Role DELEGATE = new Role("DELEGATE");
 
 	private Role(String value) {
 		super(value);

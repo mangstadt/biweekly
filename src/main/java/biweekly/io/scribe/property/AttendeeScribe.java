@@ -1,6 +1,8 @@
 package biweekly.io.scribe.property;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
+import biweekly.parameter.ICalParameters;
 import biweekly.property.Attendee;
 
 /*
@@ -35,6 +37,39 @@ import biweekly.property.Attendee;
 public class AttendeeScribe extends TextPropertyScribe<Attendee> {
 	public AttendeeScribe() {
 		super(Attendee.class, "ATTENDEE", ICalDataType.CAL_ADDRESS);
+	}
+
+	@Override
+	protected ICalParameters _prepareParameters(Attendee property, ICalVersion version) {
+		String rsvp = property.getParameter(ICalParameters.RSVP);
+		if (rsvp == null) {
+			return property.getParameters();
+		}
+
+		ICalParameters copy = new ICalParameters(property.getParameters());
+		copy.remove(ICalParameters.RSVP, rsvp);
+
+		switch (version) {
+		case V1_0:
+			if ("FALSE".equalsIgnoreCase(rsvp)) {
+				rsvp = "NO";
+			} else if ("TRUE".equalsIgnoreCase(rsvp)) {
+				rsvp = "YES";
+			}
+			break;
+
+		default:
+			if ("NO".equalsIgnoreCase(rsvp)) {
+				rsvp = "FALSE";
+			} else if ("YES".equalsIgnoreCase(rsvp)) {
+				rsvp = "TRUE";
+			}
+			break;
+		}
+
+		copy.put(ICalParameters.RSVP, rsvp);
+
+		return copy;
 	}
 
 	@Override
