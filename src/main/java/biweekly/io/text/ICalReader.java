@@ -19,7 +19,10 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
+import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
+import biweekly.component.StandardTime;
+import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseWarnings;
 import biweekly.io.SkipMeException;
@@ -32,7 +35,10 @@ import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.io.scribe.property.RecurrencePropertyScribe;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
+import biweekly.property.DateStart;
+import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
+import biweekly.util.UtcOffset;
 import biweekly.util.org.apache.commons.codec.DecoderException;
 import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
 
@@ -247,6 +253,7 @@ public class ICalReader implements Closeable {
 		warnings.clear();
 
 		ICalendar ical = null;
+		List<String> values = new ArrayList<String>();
 		List<ICalComponent> componentStack = new ArrayList<ICalComponent>();
 		List<String> componentNamesStack = new ArrayList<String>();
 
@@ -323,27 +330,22 @@ public class ICalReader implements Closeable {
 				continue;
 			}
 
-			//check for name-less parameters
 			ICalParameters parameters = line.getParameters();
-			if (reader.getVersion() != ICalVersion.V1_0) {
-				List<String> values = parameters.get(null);
-				if (!values.isEmpty()) {
-					warnings.add(reader.getLineNum(), propertyName, 4, values);
-				}
-			}
+			String value = line.getValue();
+			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyName);
 
 			//process nameless parameters
-			processNamelessParameters(parameters);
+			processNamelessParameters(parameters, propertyName);
 
 			//decode property value from quoted-printable
-			String value = line.getValue();
-			try {
-				value = decodeQuotedPrintable(propertyName, parameters, value);
-			} catch (DecoderException e) {
-				warnings.add(reader.getLineNum(), propertyName, 31, e.getMessage());
+			if (parameters.getEncoding() == Encoding.QUOTED_PRINTABLE) {
+				try {
+					value = decodeQuotedPrintable(propertyName, parameters.getCharset(), value);
+				} catch (DecoderException e) {
+					warnings.add(reader.getLineNum(), propertyName, 31, e.getMessage());
+				}
+				parameters.setEncoding(null);
 			}
-
-			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyName);
 
 			//get the data type
 			ICalDataType dataType = parameters.getValue();
@@ -355,50 +357,65 @@ public class ICalReader implements Closeable {
 				parameters.setValue(null);
 			}
 
+			//determine how many properties should be parsed from this property value
+			values.clear();
+			if (reader.getVersion() == ICalVersion.V1_0 && scribe instanceof RecurrencePropertyScribe) {
+				//extract each RRULE from the value string (there can be multiple)
+				Pattern p = Pattern.compile("#\\d+|\\d{8}T\\d{6}Z?");
+				Matcher m = p.matcher(value);
+
+				int prevIndex = 0;
+				while (m.find()) {
+					int end = m.end() + 1;
+					String subValue = value.substring(prevIndex, end).trim();
+					values.add(subValue);
+					prevIndex = end;
+				}
+				String subValue = value.substring(prevIndex).trim();
+				if (subValue.length() > 0) {
+					values.add(subValue);
+				}
+			} else {
+				values.add(value);
+			}
+
 			List<Result<? extends ICalProperty>> propertiesToAdd = new ArrayList<Result<? extends ICalProperty>>();
 			List<Result<? extends ICalComponent>> componentsToAdd = new ArrayList<Result<? extends ICalComponent>>();
-
-			//handle "difficult" vCal properties
-			if (reader.getVersion() == ICalVersion.V1_0) {
+			for (String v : values) {
 				try {
-					if (scribe instanceof RecurrencePropertyScribe) {
-						propertiesToAdd.addAll(handleVCalRRule(value, scribe, propertyName, dataType, parameters, reader.getVersion()));
-					}
-				} catch (SkipMeException e) {
-					warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());
-					continue;
-				} catch (CannotParseException e) {
-					warnings.add(reader.getLineNum(), propertyName, 1, value, e.getMessage());
-
-					Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters, reader.getVersion());
-					propertiesToAdd.add(result);
-				}
-			}
-
-			if (propertiesToAdd.isEmpty() && componentsToAdd.isEmpty()) {
-				try {
-					Result<? extends ICalProperty> result = scribe.parseText(value, dataType, parameters, reader.getVersion());
+					Result<? extends ICalProperty> result = scribe.parseText(v, dataType, parameters, reader.getVersion());
 					propertiesToAdd.add(result);
 				} catch (SkipMeException e) {
 					warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());
 					continue;
 				} catch (CannotParseException e) {
-					warnings.add(reader.getLineNum(), propertyName, 1, value, e.getMessage());
+					warnings.add(reader.getLineNum(), propertyName, 1, v, e.getMessage());
 
-					Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters, reader.getVersion());
+					Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseText(v, dataType, parameters, reader.getVersion());
 					propertiesToAdd.add(result);
 				}
 			}
 
-			//add the properties/components to the iCalendar object
+			//add the properties to the iCalendar object
 			ICalComponent parentComponent = componentStack.get(componentStack.size() - 1);
 			for (Result<? extends ICalProperty> result : propertiesToAdd) {
 				for (Warning warning : result.getWarnings()) {
 					warnings.add(reader.getLineNum(), propertyName, warning);
 				}
 
-				parentComponent.addProperty(result.getProperty());
+				ICalProperty property = result.getProperty();
+				if (property instanceof Daylight) {
+					//DAYLIGHT property => VTIMEZONE component
+					Daylight daylight = (Daylight) property;
+					VTimezone timezone = convertDaylightToTimezone(daylight);
+					parentComponent.addComponent(timezone);
+					continue;
+				}
+
+				parentComponent.addProperty(property);
 			}
+
+			//add the components to the iCalendar object
 			for (Result<? extends ICalComponent> result : componentsToAdd) {
 				for (Warning warning : result.getWarnings()) {
 					warnings.add(reader.getLineNum(), propertyName, warning);
@@ -415,9 +432,18 @@ public class ICalReader implements Closeable {
 	 * Assigns names to all nameless parameters. v2.0 requires all parameters to
 	 * have names, but v1.0 does not.
 	 * @param parameters the parameters
+	 * @param propertyName the property name
 	 */
-	private void processNamelessParameters(ICalParameters parameters) {
+	private void processNamelessParameters(ICalParameters parameters, String propertyName) {
 		List<String> namelessParamValues = parameters.get(null);
+		if (namelessParamValues.isEmpty()) {
+			return;
+		}
+
+		if (reader.getVersion() != ICalVersion.V1_0) {
+			warnings.add(reader.getLineNum(), propertyName, 4, namelessParamValues);
+		}
+
 		for (String paramValue : namelessParamValues) {
 			String paramName;
 			if (ICalDataType.find(paramValue) != null) {
@@ -436,33 +462,25 @@ public class ICalReader implements Closeable {
 	/**
 	 * Decodes the property value if it's encoded in quoted-printable encoding.
 	 * Quoted-printable encoding is only supported in v1.0.
-	 * @param name the property name
-	 * @param parameters the parameters
+	 * @param propertyName the property name
+	 * @param charsetParam the value of the CHARSET parameter
 	 * @param value the property value
 	 * @return the decoded property value
 	 * @throws DecoderException if the value couldn't be decoded
 	 */
-	private String decodeQuotedPrintable(String name, ICalParameters parameters, String value) throws DecoderException {
-		if (parameters.getEncoding() != Encoding.QUOTED_PRINTABLE) {
-			return value;
-		}
-
-		//remove encoding parameter
-		parameters.setEncoding(null);
-
+	private String decodeQuotedPrintable(String propertyName, String charsetParam, String value) throws DecoderException {
 		//determine the character set
 		Charset charset = null;
-		String charsetStr = parameters.getCharset();
-		if (charsetStr == null) {
+		if (charsetParam == null) {
 			charset = defaultQuotedPrintableCharset;
 		} else {
 			try {
-				charset = Charset.forName(charsetStr);
+				charset = Charset.forName(charsetParam);
 			} catch (Throwable t) {
 				charset = defaultQuotedPrintableCharset;
 
 				//the given charset was invalid, so add a warning
-				warnings.add(reader.getLineNum(), name, 32, charsetStr, charset.name());
+				warnings.add(reader.getLineNum(), propertyName, 32, charsetParam, charset.name());
 			}
 		}
 
@@ -470,32 +488,35 @@ public class ICalReader implements Closeable {
 		return codec.decode(value);
 	}
 
-	private List<Result<? extends ICalProperty>> handleVCalRRule(String value, ICalPropertyScribe<? extends ICalProperty> scribe, String propertyName, ICalDataType dataType, ICalParameters parameters, ICalVersion version) {
-		Pattern p = Pattern.compile("#\\d+|\\d{8}T\\d{6}Z?");
-		Matcher m = p.matcher(value);
-
-		//extract each RRULE from the value string (there can be multiple)
-		List<String> subValues = new ArrayList<String>();
-		{
-			int prevIndex = 0;
-			while (m.find()) {
-				int end = m.end() + 1;
-				String subValue = value.substring(prevIndex, end).trim();
-				subValues.add(subValue);
-				prevIndex = end;
-			}
-			String subValue = value.substring(prevIndex).trim();
-			if (subValue.length() > 0) {
-				subValues.add(subValue);
-			}
+	/**
+	 * Converts a DAYLIGHT property to a VTIMEZONE component.
+	 * @param daylight the DAYLIGHT property
+	 * @return the VTIMEZONE component
+	 */
+	private VTimezone convertDaylightToTimezone(Daylight daylight) {
+		VTimezone timezone = new VTimezone("TZ1");
+		if (!daylight.isDaylight()) {
+			return timezone;
 		}
 
-		List<Result<? extends ICalProperty>> results = new ArrayList<Result<? extends ICalProperty>>();
-		for (String subValue : subValues) {
-			Result<? extends ICalProperty> result = scribe.parseText(subValue, dataType, parameters, version);
-			results.add(result);
-		}
-		return results;
+		UtcOffset offset = daylight.getOffset();
+
+		//TODO convert all local dates to this timezone
+		DaylightSavingsTime dst = new DaylightSavingsTime();
+		dst.setDateStart(new DateStart(daylight.getStart()));
+		dst.setTimezoneOffsetFrom(offset.getHour() - 1, offset.getMinute());
+		dst.setTimezoneOffsetTo(offset.getHour(), offset.getMinute());
+		dst.addTimezoneName(daylight.getDaylightName());
+		timezone.addDaylightSavingsTime(dst);
+
+		StandardTime st = new StandardTime();
+		st.setDateStart(new DateStart(daylight.getEnd()));
+		st.setTimezoneOffsetFrom(offset.getHour(), offset.getMinute());
+		st.setTimezoneOffsetTo(offset.getHour() - 1, offset.getMinute());
+		st.addTimezoneName(daylight.getStandardName());
+		timezone.addStandardTime(st);
+
+		return timezone;
 	}
 
 	/**

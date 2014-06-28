@@ -2,6 +2,7 @@ package biweekly.io.text;
 
 import static biweekly.util.TestUtils.assertRegex;
 import static biweekly.util.TestUtils.assertValidate;
+import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
@@ -39,6 +40,8 @@ import biweekly.parameter.Role;
 import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.Classification;
+import biweekly.property.DateStart;
+import biweekly.property.Daylight;
 import biweekly.property.FreeBusy;
 import biweekly.property.ICalProperty;
 import biweekly.property.ProductId;
@@ -50,6 +53,7 @@ import biweekly.property.Version;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
+import biweekly.util.UtcOffset;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -448,6 +452,200 @@ public class ICalWriterTest {
 		//@formatter:on
 
 		String actual = IOUtils.getFileContents(file, "UTF-8");
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void vcal_VTimezone_to_Daylight() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+
+		VTimezone timezone = new VTimezone(null);
+
+		DaylightSavingsTime daylightSavings = new DaylightSavingsTime();
+		daylightSavings.setDateStart(new DateStart(date("2014-01-01 01:00:00")));
+		daylightSavings.setTimezoneOffsetFrom(-5, 0);
+		daylightSavings.setTimezoneOffsetTo(-4, 0);
+		daylightSavings.addTimezoneName("EDT");
+		timezone.addDaylightSavingsTime(daylightSavings);
+
+		StandardTime standard = new StandardTime();
+		standard.setDateStart(new DateStart(date("2014-02-01 01:00:00")));
+		standard.setTimezoneOffsetFrom(-4, 0);
+		standard.setTimezoneOffsetTo(-5, 0);
+		standard.addTimezoneName("EST");
+		timezone.addStandardTime(standard);
+
+		ical.addComponent(timezone);
+
+		StringWriter sw = new StringWriter();
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected = 
+		"BEGIN:VCALENDAR\r\n" +
+			"DAYLIGHT:TRUE;-0400;20140101T010000;20140201T010000;EST;EDT\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void vcal_VTimezone_to_Daylight_multiple_observances() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+
+		VTimezone timezone = new VTimezone(null);
+
+		DaylightSavingsTime daylightSavings = new DaylightSavingsTime();
+		daylightSavings.setDateStart(new DateStart(date("2014-01-01 01:00:00")));
+		daylightSavings.setTimezoneOffsetFrom(-5, 0);
+		daylightSavings.setTimezoneOffsetTo(-4, 0);
+		daylightSavings.addTimezoneName("EDT");
+		timezone.addDaylightSavingsTime(daylightSavings);
+
+		StandardTime standard = new StandardTime();
+		standard.setDateStart(new DateStart(date("2014-02-01 01:00:00")));
+		standard.setTimezoneOffsetFrom(-4, 0);
+		standard.setTimezoneOffsetTo(-5, 0);
+		standard.addTimezoneName("EST");
+		timezone.addStandardTime(standard);
+
+		daylightSavings = new DaylightSavingsTime();
+		daylightSavings.setDateStart(new DateStart(date("2014-03-01 01:00:00")));
+		daylightSavings.setTimezoneOffsetFrom(-5, 0);
+		daylightSavings.setTimezoneOffsetTo(-4, 0);
+		daylightSavings.addTimezoneName("EDT2");
+		timezone.addDaylightSavingsTime(daylightSavings);
+
+		standard = new StandardTime();
+		standard.setDateStart(new DateStart(date("2014-04-01 01:00:00")));
+		standard.setTimezoneOffsetFrom(-4, 0);
+		standard.setTimezoneOffsetTo(-5, 0);
+		standard.addTimezoneName("EST2");
+		timezone.addStandardTime(standard);
+
+		ical.addComponent(timezone);
+
+		StringWriter sw = new StringWriter();
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected = 
+		"BEGIN:VCALENDAR\r\n" +
+			"DAYLIGHT:TRUE;-0400;20140101T010000;20140201T010000;EST;EDT\r\n" +
+			"DAYLIGHT:TRUE;-0400;20140301T010000;20140401T010000;EST2;EDT2\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void vcal_VTimezone_to_Daylight_no_daylight_component() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+
+		VTimezone timezone = new VTimezone(null);
+
+		StandardTime standard = new StandardTime();
+		standard.setDateStart(new DateStart(date("2014-02-01 01:00:00")));
+		standard.setTimezoneOffsetFrom(-4, 0);
+		standard.setTimezoneOffsetTo(-5, 0);
+		standard.addTimezoneName("EST");
+		timezone.addStandardTime(standard);
+
+		ical.addComponent(timezone);
+
+		StringWriter sw = new StringWriter();
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected = 
+		"BEGIN:VCALENDAR\r\n" +
+			"DAYLIGHT:FALSE\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void vcal_VTimezone_to_Daylight_no_standard_component() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+
+		VTimezone timezone = new VTimezone(null);
+
+		DaylightSavingsTime daylightSavings = new DaylightSavingsTime();
+		daylightSavings.setDateStart(new DateStart(date("2014-01-01 01:00:00")));
+		daylightSavings.setTimezoneOffsetFrom(-5, 0);
+		daylightSavings.setTimezoneOffsetTo(-4, 0);
+		daylightSavings.addTimezoneName("EDT");
+		timezone.addDaylightSavingsTime(daylightSavings);
+
+		ical.addComponent(timezone);
+
+		StringWriter sw = new StringWriter();
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected = 
+		"BEGIN:VCALENDAR\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void vcal_Daylight_to_VTimezone() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+
+		Daylight daylight = new Daylight(true, new UtcOffset(-4, 0), date("2014-01-01 01:00:00"), date("2014-02-01 01:00:00"), "EST", "EDT");
+		ical.addProperty(daylight);
+
+		StringWriter sw = new StringWriter();
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected = 
+		"BEGIN:VCALENDAR\r\n" +
+			"BEGIN:VTIMEZONE\r\n" +
+				"TZID:TZ1\r\n" +
+				"BEGIN:DAYLIGHT\r\n" +
+					"DTSTART:20140101T010000\r\n" +
+					"TZOFFSETFROM:-0500\r\n" +
+					"TZOFFSETTO:-0400\r\n" +
+					"TZNAME:EDT\r\n" +
+				"END:DAYLIGHT\r\n" +
+				"BEGIN:STANDARD\r\n" +
+					"DTSTART:20140201T010000\r\n" +
+					"TZOFFSETFROM:-0400\r\n" +
+					"TZOFFSETTO:-0500\r\n" +
+					"TZNAME:EST\r\n" +
+				"END:STANDARD\r\n" +
+			"END:VTIMEZONE\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		String actual = sw.toString();
 		assertEquals(expected, actual);
 	}
 

@@ -88,6 +88,19 @@ public class Observance extends ICalComponent {
 	}
 
 	/**
+	 * Sets the date that the timezone observance starts.
+	 * @param date the start date
+	 * @return the property that was created
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
+	 * p.97-8</a>
+	 */
+	public DateStart setDateStart(Date date) {
+		DateStart prop = (date == null) ? null : new DateStart(date);
+		setDateStart(prop);
+		return prop;
+	}
+
+	/**
 	 * Gets the UTC offset that the timezone observance transitions to.
 	 * @return the UTC offset or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-105">RFC 5545

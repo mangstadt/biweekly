@@ -6,6 +6,7 @@ import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -60,6 +61,7 @@ import biweekly.util.Period;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
+import biweekly.util.UtcOffset;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -816,7 +818,6 @@ public class ICalReaderTest {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
-			"PRODID:prodid\r\n" +
 			"VERSION:1.0\r\n" +
 			"RRULE:MD1 1 #1 D2  20000101T000000Z  M3\r\n" +
 		"END:VCALENDAR\r\n";
@@ -824,9 +825,7 @@ public class ICalReaderTest {
 
 		ICalReader reader = new ICalReader(ical);
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 0, 5);
-
-		assertEquals("prodid", icalendar.getProductId().getValue());
+		assertSize(icalendar, 0, 4);
 		assertTrue(icalendar.getVersion().isV1_0());
 
 		DateFormat df = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
@@ -838,6 +837,76 @@ public class ICalReaderTest {
 		expected = new Recurrence.Builder(Frequency.MINUTELY).interval(3).count(2).build();
 		assertEquals(expected, rrules.next().getValue());
 		assertFalse(rrules.hasNext());
+
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void vcal_daylight_true() throws Throwable {
+		//@formatter:off
+		String ical =
+		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:1.0\r\n" +
+			"DAYLIGHT:TRUE;-0400;20140309T020000Z;20141102T020000Z;EST;EDT\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		ICalReader reader = new ICalReader(ical);
+		ICalendar icalendar = reader.readNext();
+		assertSize(icalendar, 1, 1);
+		assertTrue(icalendar.getVersion().isV1_0());
+
+		{
+			VTimezone timezone = icalendar.getTimezones().get(0);
+			assertSize(timezone, 2, 1);
+			assertEquals("TZ1", timezone.getTimezoneId().getValue());
+
+			{
+				StandardTime standard = timezone.getStandardTimes().get(0);
+				assertSize(standard, 0, 4);
+
+				assertEquals(date("2014-11-02 02:00:00 +0000"), standard.getDateStart().getValue());
+				assertEquals(new UtcOffset(-4, 0), standard.getTimezoneOffsetFrom().getValue());
+				assertEquals(new UtcOffset(-5, 0), standard.getTimezoneOffsetTo().getValue());
+				assertEquals("EST", standard.getTimezoneNames().get(0).getValue());
+			}
+
+			{
+				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
+				assertSize(daylight, 0, 4);
+
+				assertEquals(date("2014-03-09 02:00:00 +0000"), daylight.getDateStart().getValue());
+				assertEquals(new UtcOffset(-5, 0), daylight.getTimezoneOffsetFrom().getValue());
+				assertEquals(new UtcOffset(-4, 0), daylight.getTimezoneOffsetTo().getValue());
+				assertEquals("EDT", daylight.getTimezoneNames().get(0).getValue());
+			}
+		}
+
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void vcal_daylight_false() throws Throwable {
+		//@formatter:off
+		String ical =
+		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:1.0\r\n" +
+			"DAYLIGHT:FALSE\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		ICalReader reader = new ICalReader(ical);
+		ICalendar icalendar = reader.readNext();
+		assertSize(icalendar, 1, 1);
+		assertTrue(icalendar.getVersion().isV1_0());
+
+		{
+			VTimezone timezone = icalendar.getTimezones().get(0);
+			assertSize(timezone, 0, 1);
+			assertEquals("TZ1", timezone.getTimezoneId().getValue());
+		}
 
 		assertWarnings(0, reader.getWarnings());
 		assertNull(reader.readNext());

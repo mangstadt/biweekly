@@ -10,20 +10,27 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
+import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
-import biweekly.component.VAlarm;
+import biweekly.component.StandardTime;
+import biweekly.component.VTimezone;
 import biweekly.io.SkipMeException;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
-import biweekly.property.Action;
+import biweekly.property.DateStart;
+import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.property.Version;
+import biweekly.util.UtcOffset;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -74,7 +81,6 @@ import biweekly.property.Version;
 public class ICalWriter implements Closeable, Flushable {
 	private ScribeIndex index = new ScribeIndex();
 	private final ICalRawWriter writer;
-	private final ICalVersion targetVersion = ICalVersion.V2_0;
 
 	/**
 	 * Creates an iCalendar writer that writes to an output stream. Uses the
@@ -327,15 +333,18 @@ public class ICalWriter implements Closeable, Flushable {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeComponent(ICalComponent component) throws IOException {
-		if (targetVersion == ICalVersion.V1_0) {
-			if (component instanceof VAlarm) {
-				VAlarm alarm = (VAlarm) component;
-				if (alarm.getAction() == Action.email()) {
-					//TODO
+		if (writer.getVersion() == ICalVersion.V1_0) {
+			if (component instanceof VTimezone) {
+				//VTIMEZONE component => DAYLIGHT property
+				VTimezone timezone = (VTimezone) component;
+				List<Daylight> daylights = convertTimezoneToDaylight(timezone);
+				for (Daylight daylight : daylights) {
+					writeProperty(daylight);
 				}
-				//TODO
+				return;
 			}
 		}
+
 		ICalComponentScribe componentScribe = index.getComponentScribe(component);
 		writer.writeBeginComponent(componentScribe.getComponentName());
 
@@ -354,32 +363,105 @@ public class ICalWriter implements Closeable, Flushable {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeProperty(ICalProperty property) throws IOException {
+		if (writer.getVersion() == ICalVersion.V2_0 || writer.getVersion() == ICalVersion.V2_0_DEPRECATED) {
+			if (property instanceof Daylight) {
+				//DAYLIGHT property => VTIMEZONE component
+				Daylight daylight = (Daylight) property;
+				VTimezone timezone = convertDaylightToTimezone(daylight);
+				writeComponent(timezone);
+				return;
+			}
+		}
+
 		ICalPropertyScribe propertyScribe = index.getPropertyScribe(property);
 
 		String value;
 		if (property instanceof Version) {
-			value = targetVersion.getVersion();
+			value = writer.getVersion().getVersion();
 		} else {
 			//marshal property
 			try {
-				value = propertyScribe.writeText(property, targetVersion);
+				value = propertyScribe.writeText(property, writer.getVersion());
 			} catch (SkipMeException e) {
 				return;
 			}
 		}
 
 		//get parameters
-		ICalParameters parameters = propertyScribe.prepareParameters(property, targetVersion);
+		ICalParameters parameters = propertyScribe.prepareParameters(property, writer.getVersion());
 
 		//set the data type
-		ICalDataType dataType = propertyScribe.dataType(property, targetVersion);
-		if (dataType != null && dataType != propertyScribe.defaultDataType(targetVersion)) {
+		ICalDataType dataType = propertyScribe.dataType(property, writer.getVersion());
+		if (dataType != null && dataType != propertyScribe.defaultDataType(writer.getVersion())) {
 			//only add a VALUE parameter if the data type is (1) not "unknown" and (2) different from the property's default data type
 			parameters.setValue(dataType);
 		}
 
 		//write property to data stream
 		writer.writeProperty(propertyScribe.getPropertyName(), parameters, value);
+	}
+
+	private List<Daylight> convertTimezoneToDaylight(VTimezone timezone) {
+		List<DaylightSavingsTime> daylightSavingsTimes = timezone.getDaylightSavingsTime();
+		List<StandardTime> standardTimes = timezone.getStandardTimes();
+
+		List<Daylight> daylights = new ArrayList<Daylight>();
+		int len = Math.max(daylightSavingsTimes.size(), standardTimes.size());
+		for (int i = 0; i < len; i++) {
+			DaylightSavingsTime daylightSavings = (i < daylightSavingsTimes.size()) ? daylightSavingsTimes.get(i) : null;
+			StandardTime standard = (i < standardTimes.size()) ? standardTimes.get(i) : null;
+
+			if (daylightSavings == null) {
+				//there is no accompanying DAYLIGHT component, which means that daylight savings time is not observed
+				daylights.add(new Daylight());
+				continue;
+			}
+
+			if (standard == null) {
+				//there is no accompanying STANDARD component, which makes no sense
+				continue;
+			}
+
+			UtcOffset offset = daylightSavings.getTimezoneOffsetTo().getValue();
+			Date start = daylightSavings.getDateStart().getValue();
+			Date end = standard.getDateStart().getValue();
+			String daylightName = (daylightSavings.getTimezoneNames().isEmpty()) ? null : daylightSavings.getTimezoneNames().get(0).getValue();
+			String standardName = (standard.getTimezoneNames().isEmpty()) ? null : standard.getTimezoneNames().get(0).getValue();
+
+			daylights.add(new Daylight(true, offset, start, end, standardName, daylightName));
+		}
+		return daylights;
+	}
+
+	/**
+	 * Converts a DAYLIGHT property to a VTIMEZONE component.
+	 * @param daylight the DAYLIGHT property
+	 * @return the VTIMEZONE component
+	 */
+	private VTimezone convertDaylightToTimezone(Daylight daylight) {
+		VTimezone timezone = new VTimezone("TZ1");
+		if (!daylight.isDaylight()) {
+			return timezone;
+		}
+
+		UtcOffset offset = daylight.getOffset();
+
+		//TODO convert all local dates to this timezone
+		DaylightSavingsTime dst = new DaylightSavingsTime();
+		dst.setDateStart(new DateStart(daylight.getStart()));
+		dst.setTimezoneOffsetFrom(offset.getHour() - 1, offset.getMinute());
+		dst.setTimezoneOffsetTo(offset.getHour(), offset.getMinute());
+		dst.addTimezoneName(daylight.getDaylightName());
+		timezone.addDaylightSavingsTime(dst);
+
+		StandardTime st = new StandardTime();
+		st.setDateStart(new DateStart(daylight.getEnd()));
+		st.setTimezoneOffsetFrom(offset.getHour(), offset.getMinute());
+		st.setTimezoneOffsetTo(offset.getHour() - 1, offset.getMinute());
+		st.addTimezoneName(daylight.getStandardName());
+		timezone.addStandardTime(st);
+
+		return timezone;
 	}
 
 	/**

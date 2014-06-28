@@ -37,6 +37,7 @@ import biweekly.io.scribe.property.DateDueScribe;
 import biweekly.io.scribe.property.DateEndScribe;
 import biweekly.io.scribe.property.DateStartScribe;
 import biweekly.io.scribe.property.DateTimeStampScribe;
+import biweekly.io.scribe.property.DaylightScribe;
 import biweekly.io.scribe.property.DescriptionScribe;
 import biweekly.io.scribe.property.DurationPropertyScribe;
 import biweekly.io.scribe.property.ExceptionDatesScribe;
@@ -214,6 +215,9 @@ public class ScribeIndex {
 
 		//RFC 2445
 		registerStandard(new ExceptionRuleScribe());
+
+		//vCal
+		registerStandard(new DaylightScribe());
 	}
 
 	private final Map<String, ICalComponentScribe<? extends ICalComponent>> experimentalCompByName = new HashMap<String, ICalComponentScribe<? extends ICalComponent>>(0);
