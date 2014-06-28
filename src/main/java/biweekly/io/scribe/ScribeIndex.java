@@ -67,6 +67,7 @@ import biweekly.io.scribe.property.TimezoneIdScribe;
 import biweekly.io.scribe.property.TimezoneNameScribe;
 import biweekly.io.scribe.property.TimezoneOffsetFromScribe;
 import biweekly.io.scribe.property.TimezoneOffsetToScribe;
+import biweekly.io.scribe.property.TimezoneScribe;
 import biweekly.io.scribe.property.TimezoneUrlScribe;
 import biweekly.io.scribe.property.TransparencyScribe;
 import biweekly.io.scribe.property.TriggerScribe;
@@ -218,6 +219,7 @@ public class ScribeIndex {
 
 		//vCal
 		registerStandard(new DaylightScribe());
+		registerStandard(new TimezoneScribe());
 	}
 
 	private final Map<String, ICalComponentScribe<? extends ICalComponent>> experimentalCompByName = new HashMap<String, ICalComponentScribe<? extends ICalComponent>>(0);
