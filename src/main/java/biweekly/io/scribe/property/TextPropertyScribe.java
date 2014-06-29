@@ -67,7 +67,7 @@ public abstract class TextPropertyScribe<T extends TextProperty> extends ICalPro
 
 	@Override
 	protected void _writeXml(T property, XCalElement element) {
-		element.append(dataType(property, null), property.getValue());
+		element.append(dataType(property, ICalVersion.V2_0), property.getValue());
 	}
 
 	@Override
