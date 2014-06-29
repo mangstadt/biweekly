@@ -348,7 +348,7 @@ public class VJournal extends ICalComponent {
 	 * p.111-2</a>
 	 */
 	public Organizer setOrganizer(String email) {
-		Organizer prop = (email == null) ? null : Organizer.email(email);
+		Organizer prop = (email == null) ? null : new Organizer(null, email);
 		setOrganizer(prop);
 		return prop;
 	}

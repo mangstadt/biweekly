@@ -105,10 +105,20 @@ public class ICalParameters extends ListMultimap<String, String> {
 		replace(ALTREP, uri);
 	}
 
+	/**
+	 * Gets the character set that the property value is encoded in.
+	 * @return the character set or null if not set
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.16</a>
+	 */
 	public String getCharset() {
 		return first(CHARSET);
 	}
 
+	/**
+	 * Sets the character set that the property value is encoded in.
+	 * @param charset the character set or null to remove
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.16</a>
+	 */
 	public void setCharset(String charset) {
 		replace(CHARSET, charset);
 	}

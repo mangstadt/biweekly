@@ -55,14 +55,14 @@ import biweekly.util.XmlUtils;
  * @author Michael Angstadt
  */
 public class Sensei<T extends ICalProperty> {
-	private final ICalPropertyScribe<T> marshaller;
+	private final ICalPropertyScribe<T> scribe;
 
 	/**
 	 * Creates a new sensei.
-	 * @param marshaller the property marshaller
+	 * @param scribe the property scribe
 	 */
-	public Sensei(ICalPropertyScribe<T> marshaller) {
-		this.marshaller = marshaller;
+	public Sensei(ICalPropertyScribe<T> scribe) {
+		this.scribe = scribe;
 	}
 
 	/**
@@ -169,7 +169,7 @@ public class Sensei<T extends ICalProperty> {
 		 */
 		public void run(ICalDataType expected) {
 			for (ICalVersion version : versions) {
-				ICalDataType actual = marshaller.dataType(property, version);
+				ICalDataType actual = scribe.dataType(property, version);
 				assertEquals(expected, actual);
 			}
 		}
@@ -181,6 +181,7 @@ public class Sensei<T extends ICalProperty> {
 	 */
 	public class PrepareParamsTest {
 		protected final T property;
+		private ICalVersion versions[] = ICalVersion.values();
 		private ICalParameters expected = new ICalParameters();
 
 		public PrepareParamsTest(T property) {
@@ -200,21 +201,28 @@ public class Sensei<T extends ICalProperty> {
 			return this;
 		}
 
+		public PrepareParamsTest versions(ICalVersion... versions) {
+			this.versions = versions;
+			return this;
+		}
+
 		/**
 		 * Runs the test.
 		 */
 		public void run() {
-			ICalParameters actual = marshaller.prepareParameters(property, ICalVersion.V2_0);
-			assertEquals("Actual: " + actual, expected.size(), actual.size());
+			for (ICalVersion version : versions) {
+				ICalParameters actual = scribe.prepareParameters(property, version);
+				assertEquals("Actual: " + actual, expected.size(), actual.size());
 
-			for (Map.Entry<String, List<String>> entry : expected) {
-				String expectedKey = entry.getKey();
-				List<String> expectedValues = entry.getValue();
+				for (Map.Entry<String, List<String>> entry : expected) {
+					String expectedKey = entry.getKey();
+					List<String> expectedValues = entry.getValue();
 
-				List<String> actualValues = actual.get(expectedKey);
-				assertEquals("Actual: " + actual, expectedValues.size(), actualValues.size());
-				for (String expectedValue : expectedValues) {
-					assertTrue("Actual: " + actual, actualValues.contains(expectedValue));
+					List<String> actualValues = actual.get(expectedKey);
+					assertEquals("Actual: " + actual, expectedValues.size(), actualValues.size());
+					for (String expectedValue : expectedValues) {
+						assertTrue("Actual: " + actual, actualValues.contains(expectedValue));
+					}
 				}
 			}
 		}
@@ -242,7 +250,7 @@ public class Sensei<T extends ICalProperty> {
 		 * @return the marshalled value
 		 */
 		public String run() {
-			return marshaller.writeText(property, version);
+			return scribe.writeText(property, version);
 		}
 
 		/**
@@ -273,7 +281,7 @@ public class Sensei<T extends ICalProperty> {
 		 */
 		public void run(String expectedInnerXml) {
 			Document actual = createXCalElement();
-			marshaller.writeXml(property, XmlUtils.getRootElement(actual));
+			scribe.writeXml(property, XmlUtils.getRootElement(actual));
 
 			Document expected = createXCalElement(expectedInnerXml);
 
@@ -297,7 +305,7 @@ public class Sensei<T extends ICalProperty> {
 		 * @return the marshalled value
 		 */
 		public JCalValue run() {
-			return marshaller.writeJson(property);
+			return scribe.writeJson(property);
 		}
 
 		/**
@@ -399,7 +407,7 @@ public class Sensei<T extends ICalProperty> {
 	 */
 	public class ParseTextTest extends ParseTest<ParseTextTest> {
 		private final String value;
-		private ICalDataType dataType = marshaller.defaultDataType(ICalVersion.V2_0);
+		private ICalDataType dataType = scribe.defaultDataType(ICalVersion.V2_0);
 		private ICalVersion versions[] = ICalVersion.values();
 
 		/**
@@ -428,7 +436,7 @@ public class Sensei<T extends ICalProperty> {
 		protected void run(Check<T> check, Class<? extends RuntimeException> exception) {
 			for (ICalVersion version : versions) {
 				try {
-					Result<T> result = marshaller.parseText(value, dataType, parameters, version);
+					Result<T> result = scribe.parseText(value, dataType, new ICalParameters(parameters), version);
 
 					if (exception != null) {
 						fail("Expected " + exception.getSimpleName() + " to be thrown.");
@@ -467,7 +475,7 @@ public class Sensei<T extends ICalProperty> {
 			try {
 				Document document = createXCalElement(innerXml);
 				Element element = XmlUtils.getRootElement(document);
-				Result<T> result = marshaller.parseXml(element, parameters);
+				Result<T> result = scribe.parseXml(element, parameters);
 
 				if (exception != null) {
 					fail("Expected " + exception.getSimpleName() + " to be thrown.");
@@ -492,7 +500,7 @@ public class Sensei<T extends ICalProperty> {
 	 */
 	public class ParseJsonTest extends ParseTest<ParseJsonTest> {
 		private final JCalValue value;
-		private ICalDataType dataType = marshaller.defaultDataType(ICalVersion.V2_0);
+		private ICalDataType dataType = scribe.defaultDataType(ICalVersion.V2_0);
 
 		/**
 		 * @param value the jCal value to parse
@@ -514,7 +522,7 @@ public class Sensei<T extends ICalProperty> {
 		@Override
 		protected void run(Check<T> check, Class<? extends RuntimeException> exception) {
 			try {
-				Result<T> result = marshaller.parseJson(value, dataType, parameters);
+				Result<T> result = scribe.parseJson(value, dataType, parameters);
 
 				if (exception != null) {
 					fail("Expected " + exception.getSimpleName() + " to be thrown.");
@@ -550,7 +558,7 @@ public class Sensei<T extends ICalProperty> {
 	}
 
 	private Document createXCalElement(String innerXml) {
-		QName qname = marshaller.getQName();
+		QName qname = scribe.getQName();
 		String localName = qname.getLocalPart();
 		String ns = qname.getNamespaceURI();
 

@@ -54,25 +54,52 @@ import biweekly.component.VTodo;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545 p.111-2</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
+ * p.111-2</a>
  */
-public class Organizer extends TextProperty {
+public class Organizer extends ICalProperty {
+	private String uri, email, name;
+
 	/**
 	 * Creates an organizer property
-	 * @param uri a URI representing the organizer (typically, an email address,
-	 * e.g. "mailto:johndoe@example.com")
+	 * @param name the organizer's name (e.g. "John Doe")
+	 * @param email the organizer's email address (e.g. "jdoe@example.com")
 	 */
-	public Organizer(String uri) {
-		super(uri);
+	public Organizer(String name, String email) {
+		this.name = name;
+		this.email = email;
 	}
 
 	/**
-	 * Creates an organizer property using an email address as its value.
-	 * @param email the email address (e.g. "johndoe@example.com")
-	 * @return the property
+	 * Gets the organizer's email
+	 * @return the email (e.g. "jdoe@company.com")
 	 */
-	public static Organizer email(String email) {
-		return new Organizer("mailto:" + email);
+	public String getEmail() {
+		return email;
+	}
+
+	/**
+	 * Sets the organizer's email
+	 * @param email the email (e.g. "jdoe@company.com")
+	 */
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	/**
+	 * Gets a URI representing the organizer.
+	 * @return the URI (e.g. "mailto:jdoe@company.com")
+	 */
+	public String getUri() {
+		return uri;
+	}
+
+	/**
+	 * Sets a URI representing the organizer.
+	 * @param uri the URI (e.g. "mailto:jdoe@company.com")
+	 */
+	public void setUri(String uri) {
+		this.uri = uri;
 	}
 
 	@Override
@@ -87,12 +114,12 @@ public class Organizer extends TextProperty {
 
 	@Override
 	public String getCommonName() {
-		return super.getCommonName();
+		return name;
 	}
 
 	@Override
 	public void setCommonName(String commonName) {
-		super.setCommonName(commonName);
+		this.name = commonName;
 	}
 
 	@Override

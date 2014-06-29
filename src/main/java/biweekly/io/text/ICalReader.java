@@ -1,5 +1,6 @@
 package biweekly.io.text;
 
+import static biweekly.io.DataModelConverter.convert;
 import static biweekly.util.IOUtils.utf8Reader;
 
 import java.io.Closeable;
@@ -19,9 +20,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
-import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
-import biweekly.component.StandardTime;
 import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseWarnings;
@@ -35,10 +34,10 @@ import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.io.scribe.property.RecurrencePropertyScribe;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
-import biweekly.property.DateStart;
+import biweekly.parameter.Role;
+import biweekly.property.Attendee;
 import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
-import biweekly.util.UtcOffset;
 import biweekly.util.org.apache.commons.codec.DecoderException;
 import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
 
@@ -404,12 +403,29 @@ public class ICalReader implements Closeable {
 				}
 
 				ICalProperty property = result.getProperty();
-				if (property instanceof Daylight) {
+
+				switch (reader.getVersion()) {
+				case V1_0:
 					//DAYLIGHT property => VTIMEZONE component
-					Daylight daylight = (Daylight) property;
-					VTimezone timezone = convertDaylightToTimezone(daylight);
-					parentComponent.addComponent(timezone);
-					continue;
+					if (property instanceof Daylight) {
+						Daylight daylight = (Daylight) property;
+						VTimezone timezone = convert(daylight);
+						parentComponent.addComponent(timezone);
+						continue;
+					}
+
+					//ATTENDEE with "organizer" role => ORGANIZER property
+					if (property instanceof Attendee) {
+						Attendee attendee = (Attendee) property;
+						if (attendee.getRole() == Role.ORGANIZER) {
+							property = convert(attendee);
+						}
+					}
+					break;
+
+				default:
+					//empty
+					break;
 				}
 
 				parentComponent.addProperty(property);
@@ -486,37 +502,6 @@ public class ICalReader implements Closeable {
 
 		QuotedPrintableCodec codec = new QuotedPrintableCodec(charset.name());
 		return codec.decode(value);
-	}
-
-	/**
-	 * Converts a DAYLIGHT property to a VTIMEZONE component.
-	 * @param daylight the DAYLIGHT property
-	 * @return the VTIMEZONE component
-	 */
-	private VTimezone convertDaylightToTimezone(Daylight daylight) {
-		VTimezone timezone = new VTimezone("TZ1");
-		if (!daylight.isDaylight()) {
-			return timezone;
-		}
-
-		UtcOffset offset = daylight.getOffset();
-
-		//TODO convert all local dates to this timezone
-		DaylightSavingsTime dst = new DaylightSavingsTime();
-		dst.setDateStart(new DateStart(daylight.getStart()));
-		dst.setTimezoneOffsetFrom(offset.getHour() - 1, offset.getMinute());
-		dst.setTimezoneOffsetTo(offset.getHour(), offset.getMinute());
-		dst.addTimezoneName(daylight.getDaylightName());
-		timezone.addDaylightSavingsTime(dst);
-
-		StandardTime st = new StandardTime();
-		st.setDateStart(new DateStart(daylight.getEnd()));
-		st.setTimezoneOffsetFrom(offset.getHour(), offset.getMinute());
-		st.setTimezoneOffsetTo(offset.getHour() - 1, offset.getMinute());
-		st.addTimezoneName(daylight.getStandardName());
-		timezone.addStandardTime(st);
-
-		return timezone;
 	}
 
 	/**

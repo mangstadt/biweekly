@@ -41,9 +41,9 @@ import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.Classification;
 import biweekly.property.DateStart;
-import biweekly.property.Daylight;
 import biweekly.property.FreeBusy;
 import biweekly.property.ICalProperty;
+import biweekly.property.Organizer;
 import biweekly.property.ProductId;
 import biweekly.property.SkipMeProperty;
 import biweekly.property.Status;
@@ -53,7 +53,6 @@ import biweekly.property.Version;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
-import biweekly.util.UtcOffset;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -612,36 +611,23 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_Daylight_to_VTimezone() throws Throwable {
+	public void vcal_Organizer_to_Attendee() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 
-		Daylight daylight = new Daylight(true, new UtcOffset(-4, 0), date("2014-01-01 01:00:00"), date("2014-02-01 01:00:00"), "EST", "EDT");
-		ical.addProperty(daylight);
+		Organizer organizer = new Organizer("John Doe", "jdoe@example.com");
+		organizer.setLanguage("en");
+		ical.addProperty(organizer);
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
 		writer.write(ical);
 		writer.close();
 
 		//@formatter:off
 		String expected = 
 		"BEGIN:VCALENDAR\r\n" +
-			"BEGIN:VTIMEZONE\r\n" +
-				"TZID:TZ1\r\n" +
-				"BEGIN:DAYLIGHT\r\n" +
-					"DTSTART:20140101T010000\r\n" +
-					"TZOFFSETFROM:-0500\r\n" +
-					"TZOFFSETTO:-0400\r\n" +
-					"TZNAME:EDT\r\n" +
-				"END:DAYLIGHT\r\n" +
-				"BEGIN:STANDARD\r\n" +
-					"DTSTART:20140201T010000\r\n" +
-					"TZOFFSETFROM:-0400\r\n" +
-					"TZOFFSETTO:-0500\r\n" +
-					"TZNAME:EST\r\n" +
-				"END:STANDARD\r\n" +
-			"END:VTIMEZONE\r\n" +
+		"ATTENDEE;LANGUAGE=en;ROLE=ORGANIZER:John Doe <jdoe@example.com>\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 

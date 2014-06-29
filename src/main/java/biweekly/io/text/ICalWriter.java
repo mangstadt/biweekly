@@ -1,5 +1,6 @@
 package biweekly.io.text;
 
+import static biweekly.io.DataModelConverter.convert;
 import static biweekly.util.IOUtils.utf8Writer;
 
 import java.io.Closeable;
@@ -10,30 +11,23 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
-import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
-import biweekly.component.StandardTime;
 import biweekly.component.VTimezone;
 import biweekly.io.SkipMeException;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Role;
 import biweekly.property.Attendee;
-import biweekly.property.DateStart;
 import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.property.Organizer;
 import biweekly.property.Version;
-import biweekly.util.UtcOffset;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -338,10 +332,10 @@ public class ICalWriter implements Closeable, Flushable {
 	private void writeComponent(ICalComponent component) throws IOException {
 		switch (writer.getVersion()) {
 		case V1_0:
+			//VTIMEZONE component => DAYLIGHT properties
 			if (component instanceof VTimezone) {
-				//VTIMEZONE component => DAYLIGHT property
 				VTimezone timezone = (VTimezone) component;
-				List<Daylight> daylights = convertTimezoneToDaylight(timezone);
+				List<Daylight> daylights = convert(timezone);
 				for (Daylight daylight : daylights) {
 					writeProperty(daylight);
 				}
@@ -351,6 +345,7 @@ public class ICalWriter implements Closeable, Flushable {
 			break;
 
 		default:
+			//empty
 			break;
 		}
 
@@ -375,35 +370,16 @@ public class ICalWriter implements Closeable, Flushable {
 		switch (writer.getVersion()) {
 		case V1_0:
 			//ORGANIZER property => ATTENDEE with role of "organizer" 
-			if (property instanceof Organizer) { //TODO
+			if (property instanceof Organizer) {
 				Organizer organizer = (Organizer) property;
-				Attendee attendee = new Attendee(organizer.getValue());
-				attendee.setParameters(organizer.getParameters());
-				attendee.setRole(Role.ORGANIZER);
+				Attendee attendee = convert(organizer);
 				writeProperty(attendee);
 				return;
 			}
 			break;
 
 		default:
-			//DAYLIGHT property => VTIMEZONE component
-			if (property instanceof Daylight) {
-				Daylight daylight = (Daylight) property;
-				VTimezone timezone = convertDaylightToTimezone(daylight);
-				writeComponent(timezone);
-				return;
-			}
-
-			//ATTENDEE with role of "organizer" => ORGANIZER property
-			if (property instanceof Attendee) {
-				Attendee attendee = (Attendee) property;
-				if (attendee.getRole() == Role.ORGANIZER) {
-					Organizer organizer = new Organizer(attendee.getUri()); //TODO
-					organizer.setParameters(attendee.getParameters());
-					writeProperty(organizer);
-					return;
-				}
-			}
+			//empty
 			break;
 		}
 
@@ -434,69 +410,6 @@ public class ICalWriter implements Closeable, Flushable {
 
 		//write property to data stream
 		writer.writeProperty(propertyScribe.getPropertyName(), parameters, value);
-	}
-
-	private List<Daylight> convertTimezoneToDaylight(VTimezone timezone) {
-		List<DaylightSavingsTime> daylightSavingsTimes = timezone.getDaylightSavingsTime();
-		List<StandardTime> standardTimes = timezone.getStandardTimes();
-
-		List<Daylight> daylights = new ArrayList<Daylight>();
-		int len = Math.max(daylightSavingsTimes.size(), standardTimes.size());
-		for (int i = 0; i < len; i++) {
-			DaylightSavingsTime daylightSavings = (i < daylightSavingsTimes.size()) ? daylightSavingsTimes.get(i) : null;
-			StandardTime standard = (i < standardTimes.size()) ? standardTimes.get(i) : null;
-
-			if (daylightSavings == null) {
-				//there is no accompanying DAYLIGHT component, which means that daylight savings time is not observed
-				daylights.add(new Daylight());
-				continue;
-			}
-
-			if (standard == null) {
-				//there is no accompanying STANDARD component, which makes no sense
-				continue;
-			}
-
-			UtcOffset offset = daylightSavings.getTimezoneOffsetTo().getValue();
-			Date start = daylightSavings.getDateStart().getValue();
-			Date end = standard.getDateStart().getValue();
-			String daylightName = (daylightSavings.getTimezoneNames().isEmpty()) ? null : daylightSavings.getTimezoneNames().get(0).getValue();
-			String standardName = (standard.getTimezoneNames().isEmpty()) ? null : standard.getTimezoneNames().get(0).getValue();
-
-			daylights.add(new Daylight(true, offset, start, end, standardName, daylightName));
-		}
-		return daylights;
-	}
-
-	/**
-	 * Converts a DAYLIGHT property to a VTIMEZONE component.
-	 * @param daylight the DAYLIGHT property
-	 * @return the VTIMEZONE component
-	 */
-	private VTimezone convertDaylightToTimezone(Daylight daylight) {
-		VTimezone timezone = new VTimezone("TZ1");
-		if (!daylight.isDaylight()) {
-			return timezone;
-		}
-
-		UtcOffset offset = daylight.getOffset();
-
-		//TODO convert all local dates to this timezone
-		DaylightSavingsTime dst = new DaylightSavingsTime();
-		dst.setDateStart(new DateStart(daylight.getStart()));
-		dst.setTimezoneOffsetFrom(offset.getHour() - 1, offset.getMinute());
-		dst.setTimezoneOffsetTo(offset.getHour(), offset.getMinute());
-		dst.addTimezoneName(daylight.getDaylightName());
-		timezone.addDaylightSavingsTime(dst);
-
-		StandardTime st = new StandardTime();
-		st.setDateStart(new DateStart(daylight.getEnd()));
-		st.setTimezoneOffsetFrom(offset.getHour(), offset.getMinute());
-		st.setTimezoneOffsetTo(offset.getHour() - 1, offset.getMinute());
-		st.addTimezoneName(daylight.getStandardName());
-		timezone.addStandardTime(st);
-
-		return timezone;
 	}
 
 	/**

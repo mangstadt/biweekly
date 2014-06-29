@@ -4,7 +4,6 @@ import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -516,10 +515,8 @@ public class ICalPropertyScribeTest {
 
 	@Test
 	public void parseText() {
-		final ICalParameters params = new ICalParameters();
-		sensei.assertParseText("value").params(params).warnings(1).run(new Check<TestProperty>() {
+		sensei.assertParseText("value").warnings(1).run(new Check<TestProperty>() {
 			public void check(TestProperty property) {
-				assertTrue(params == property.getParameters());
 				has(ICalDataType.TEXT, "value").check(property);
 			}
 		});

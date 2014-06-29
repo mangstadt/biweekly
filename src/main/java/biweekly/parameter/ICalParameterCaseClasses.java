@@ -2,6 +2,7 @@ package biweekly.parameter;
 
 import java.lang.reflect.Constructor;
 
+import biweekly.ICalVersion;
 import biweekly.util.CaseClasses;
 
 /*
@@ -42,13 +43,21 @@ public class ICalParameterCaseClasses<T extends EnumParameterValue> extends Case
 
 	@Override
 	protected T create(String value) {
+		//reflection: return new ClassName(value);
 		try {
-			//reflection: return new ClassName(value);
+			//try (String) constructor
 			Constructor<T> constructor = clazz.getDeclaredConstructor(String.class);
 			constructor.setAccessible(true);
 			return constructor.newInstance(value);
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			try {
+				//try (String, ICalVersion...) constructor
+				Constructor<T> constructor = clazz.getDeclaredConstructor(String.class, ICalVersion[].class);
+				constructor.setAccessible(true);
+				return constructor.newInstance(value, new ICalVersion[] {});
+			} catch (Exception e2) {
+				throw new RuntimeException(e2);
+			}
 		}
 	}
 

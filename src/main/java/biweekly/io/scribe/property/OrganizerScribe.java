@@ -1,6 +1,13 @@
 package biweekly.io.scribe.property;
 
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
+import biweekly.Warning;
+import biweekly.parameter.ICalParameters;
 import biweekly.property.Organizer;
 
 /*
@@ -32,13 +39,57 @@ import biweekly.property.Organizer;
  * Marshals {@link Organizer} properties.
  * @author Michael Angstadt
  */
-public class OrganizerScribe extends TextPropertyScribe<Organizer> {
+public class OrganizerScribe extends ICalPropertyScribe<Organizer> {
 	public OrganizerScribe() {
 		super(Organizer.class, "ORGANIZER", ICalDataType.CAL_ADDRESS);
 	}
 
 	@Override
-	protected Organizer newInstance(String value) {
-		return new Organizer(value);
+	protected ICalParameters _prepareParameters(Organizer property, ICalVersion version) {
+		//CN parameter
+		String name = property.getCommonName();
+		if (name != null) {
+			ICalParameters copy = new ICalParameters(property.getParameters());
+			copy.put(ICalParameters.CN, name);
+			return copy;
+		}
+
+		return super._prepareParameters(property, version);
+	}
+
+	@Override
+	protected Organizer _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+		String name = parameters.first(ICalParameters.CN);
+		if (name != null) {
+			parameters.remove(ICalParameters.CN, name);
+		}
+
+		String uri = null, email = null;
+		Pattern p = Pattern.compile("^mailto:(.*?)$");
+		Matcher m = p.matcher(value);
+		if (m.find()) {
+			email = m.group(1);
+		} else {
+			uri = value;
+		}
+
+		Organizer organizer = new Organizer(name, email);
+		organizer.setUri(uri);
+		return organizer;
+	}
+
+	@Override
+	protected String _writeText(Organizer property, ICalVersion version) {
+		String uri = property.getUri();
+		if (uri != null) {
+			return uri;
+		}
+
+		String email = property.getEmail();
+		if (email != null) {
+			return "mailto:" + email;
+		}
+
+		return "";
 	}
 }

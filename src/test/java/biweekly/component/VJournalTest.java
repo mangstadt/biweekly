@@ -68,8 +68,8 @@ public class VJournalTest {
 		component.addProperty(new DateStart(new Date()));
 		component.addProperty(new LastModified(new Date()));
 		component.addProperty(new LastModified(new Date()));
-		component.addProperty(new Organizer(""));
-		component.addProperty(new Organizer(""));
+		component.addProperty(new Organizer(null, null));
+		component.addProperty(new Organizer(null, null));
 		component.addProperty(new RecurrenceId(new Date()));
 		component.addProperty(new RecurrenceId(new Date()));
 		component.addProperty(new Sequence(1));

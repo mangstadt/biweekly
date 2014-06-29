@@ -47,8 +47,6 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 		super(Attendee.class, "ATTENDEE", ICalDataType.CAL_ADDRESS);
 	}
 
-	//TODO URL data type if version is 1.0
-
 	@Override
 	protected ICalDataType _defaultDataType(ICalVersion version) {
 		switch (version) {
@@ -147,7 +145,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 		//CN parameter
 		String name = property.getCommonName();
 		if (name != null && version != ICalVersion.V1_0) {
-			copy.put("CN", name);
+			copy.put(ICalParameters.CN, name);
 		}
 
 		return copy;
@@ -155,9 +153,16 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 
 	@Override
 	protected Attendee _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
-		Boolean rsvp = null;
 		String uri = null, name = null, email = null;
+
+		Boolean rsvp = null;
 		String rsvpStr = parameters.first(ICalParameters.RSVP);
+
+		Role role = null;
+		String roleStr = parameters.first(ICalParameters.ROLE);
+
+		ParticipationLevel level = null;
+		ParticipationStatus status = null;
 
 		switch (version) {
 		case V1_0:
@@ -167,6 +172,22 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 				} else if ("NO".equalsIgnoreCase(rsvpStr)) {
 					rsvp = Boolean.FALSE;
 				}
+			}
+
+			if (roleStr != null) {
+				role = Role.get(roleStr);
+			}
+
+			String expect = parameters.first("EXPECT");
+			if (expect != null) {
+				parameters.remove("EXPECT", expect);
+				level = ParticipationLevel.get(expect);
+			}
+
+			String statusStr = parameters.first("STATUS");
+			if (statusStr != null) {
+				parameters.remove("STATUS", statusStr);
+				status = ParticipationStatus.get(statusStr);
 			}
 
 			Pattern p = Pattern.compile("^(.*?)<(.*?)>$");
@@ -191,8 +212,29 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 				}
 			}
 
-			List<String> names = parameters.removeAll(ICalParameters.CN);
-			name = names.isEmpty() ? null : names.get(0);
+			if (roleStr != null) {
+				if (roleStr.equalsIgnoreCase(Role.CHAIR.getValue())) {
+					role = Role.CHAIR;
+				} else {
+					ParticipationLevel l = ParticipationLevel.find(roleStr);
+					if (l == null) {
+						role = Role.get(roleStr);
+					} else {
+						level = l;
+					}
+				}
+			}
+
+			String partStat = parameters.first("PARTSTAT");
+			if (partStat != null) {
+				parameters.remove("PARTSTAT", partStat);
+				status = ParticipationStatus.get(partStat);
+			}
+
+			name = parameters.first(ICalParameters.CN);
+			if (name != null) {
+				parameters.remove(ICalParameters.CN, name);
+			}
 
 			p = Pattern.compile("^mailto:(.*?)$");
 			m = p.matcher(value);
@@ -201,17 +243,24 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			} else {
 				uri = value;
 			}
-		}
 
-		//TODO parse STATUS, PARTSTAT, ROLE
+			break;
+		}
 
 		if (rsvp != null) {
 			parameters.removeAll(ICalParameters.RSVP);
 		}
+		if (roleStr != null) {
+			parameters.remove(ICalParameters.ROLE, roleStr);
+		}
 
 		Attendee attendee = new Attendee(name, email);
-		attendee.setUri(uri);
+		attendee.setParticipationStatus(status);
+		attendee.setParticipationLevel(level);
+		attendee.setRole(role);
 		attendee.setRsvp(rsvp);
+		attendee.setUri(uri);
+
 		return attendee;
 	}
 

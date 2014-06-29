@@ -77,7 +77,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param defaultDataType the property's default data type (e.g. "text") or
 	 * null if unknown
 	 */
-	public ICalPropertyScribe(Class<T> clazz, String propertyName, ICalDataType defaultDataType) {
+	public ICalPropertyScribe(Class<T> clazz, String propertyName, ICalDataType defaultDataType) { //TODO remove defaultDataType
 		this(clazz, propertyName, defaultDataType, new QName(XCAL_NS, propertyName.toLowerCase()));
 	}
 

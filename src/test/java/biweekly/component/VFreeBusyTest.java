@@ -56,8 +56,8 @@ public class VFreeBusyTest {
 		component.addProperty(new DateStart(date("2000-01-01")));
 		component.addProperty(new DateEnd(date("2000-01-10")));
 		component.addProperty(new DateEnd(date("2000-01-10")));
-		component.addProperty(new Organizer(""));
-		component.addProperty(new Organizer(""));
+		component.addProperty(new Organizer(null, null));
+		component.addProperty(new Organizer(null, null));
 		component.addProperty(new Url(""));
 		component.addProperty(new Url(""));
 		assertValidate(component).run(3, 3, 3, 3, 3);

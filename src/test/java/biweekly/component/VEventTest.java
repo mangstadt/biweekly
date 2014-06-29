@@ -81,8 +81,8 @@ public class VEventTest {
 		component.addProperty(new LastModified(new Date()));
 		component.addProperty(new Location(""));
 		component.addProperty(new Location(""));
-		component.addProperty(new Organizer(""));
-		component.addProperty(new Organizer(""));
+		component.addProperty(new Organizer(null, null));
+		component.addProperty(new Organizer(null, null));
 		component.addProperty(new Priority(1));
 		component.addProperty(new Priority(1));
 		component.addProperty(Status.cancelled());

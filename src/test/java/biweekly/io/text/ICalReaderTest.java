@@ -999,7 +999,7 @@ public class ICalReaderTest {
 
 			assertEquals("Auditorium 16", event.getLocation().getValue());
 
-			assertEquals("mailto:bobsmith@example.com", event.getOrganizer().getValue());
+			assertEquals("bobsmith@example.com", event.getOrganizer().getEmail());
 			assertEquals("Smith, Bob", event.getOrganizer().getCommonName());
 
 			assertIntEquals(5, event.getPriority().getValue());
@@ -1057,7 +1057,7 @@ public class ICalReaderTest {
 
 			assertDateEquals("19960704T120000Z", event.getDateTimeStamp().getValue());
 			assertEquals("uid1@example.com", event.getUid().getValue());
-			assertEquals("mailto:jsmith@example.com", event.getOrganizer().getValue());
+			assertEquals("jsmith@example.com", event.getOrganizer().getEmail());
 			assertDateEquals("19960918T143000Z", event.getDateStart().getValue());
 			assertDateEquals("19960920T220000Z", event.getDateEnd().getValue());
 			assertTrue(event.getStatus().isConfirmed());
@@ -1126,7 +1126,7 @@ public class ICalReaderTest {
 
 			assertDateEquals("19980309T231000Z", event.getDateTimeStamp().getValue());
 			assertEquals("guid-1.example.com", event.getUid().getValue());
-			assertEquals("mailto:mrbig@example.com", event.getOrganizer().getValue());
+			assertEquals("mrbig@example.com", event.getOrganizer().getEmail());
 
 			Attendee attendee = event.getAttendees().get(0);
 			assertEquals("employee-A@example.com", attendee.getEmail());
@@ -1171,7 +1171,7 @@ public class ICalReaderTest {
 			assertDateEquals("19970324T120000Z", event.getDateTimeStamp().getValue());
 			assertIntEquals(0, event.getSequence().getValue());
 			assertEquals("uid3@example.com", event.getUid().getValue());
-			assertEquals("mailto:jdoe@example.com", event.getOrganizer().getValue());
+			assertEquals("jdoe@example.com", event.getOrganizer().getEmail());
 			assertDateEquals("19970324T123000Z", event.getDateStart().getValue());
 			assertDateEquals("19970324T210000Z", event.getDateEnd().getValue());
 			assertEquals(Arrays.asList("MEETING", "PROJECT"), event.getCategories().get(0).getValues());
@@ -1206,7 +1206,7 @@ public class ICalReaderTest {
 			assertDateEquals("19980130T134500Z", todo.getDateTimeStamp().getValue());
 			assertIntEquals(2, todo.getSequence().getValue());
 			assertEquals("uid4@example.com", todo.getUid().getValue());
-			assertEquals("mailto:unclesam@example.com", todo.getOrganizer().getValue());
+			assertEquals("unclesam@example.com", todo.getOrganizer().getEmail());
 
 			Attendee attendee = todo.getAttendees().get(0);
 			assertEquals("jqpublic@example.com", attendee.getEmail());
@@ -1252,7 +1252,7 @@ public class ICalReaderTest {
 
 			assertDateEquals("19970324T120000Z", journal.getDateTimeStamp().getValue());
 			assertEquals("uid5@example.com", journal.getUid().getValue());
-			assertEquals("mailto:jsmith@example.com", journal.getOrganizer().getValue());
+			assertEquals("jsmith@example.com", journal.getOrganizer().getEmail());
 			assertTrue(journal.getStatus().isDraft());
 			assertTrue(journal.getClassification().isPublic());
 			assertEquals(Arrays.asList("Project Report", "XYZ", "Weekly Meeting"), journal.getCategories().get(0).getValues());
@@ -1277,7 +1277,7 @@ public class ICalReaderTest {
 		{
 			assertSize(freebusy, 0, 7);
 
-			assertEquals("mailto:jsmith@example.com", freebusy.getOrganizer().getValue());
+			assertEquals("jsmith@example.com", freebusy.getOrganizer().getEmail());
 			assertDateEquals("19980313T141711Z", freebusy.getDateStart().getValue());
 			assertDateEquals("19980410T141711Z", freebusy.getDateEnd().getValue());
 			assertEquals(Arrays.asList(new Period(utcFormatter.parse("19980314T233000"), utcFormatter.parse("19980315T003000Z"))), freebusy.getFreeBusy().get(0).getValues());

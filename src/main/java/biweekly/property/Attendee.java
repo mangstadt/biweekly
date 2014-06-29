@@ -374,7 +374,7 @@ public class Attendee extends ICalProperty {
 	}
 
 	/**
-	 * Gets the language that the common name parameter is written in.
+	 * Gets the language that the common name is written in.
 	 */
 	@Override
 	public String getLanguage() {
@@ -382,7 +382,7 @@ public class Attendee extends ICalProperty {
 	}
 
 	/**
-	 * Sets the language that the common name parameter is written in.
+	 * Sets the language that the common name is written in.
 	 */
 	@Override
 	public void setLanguage(String language) {

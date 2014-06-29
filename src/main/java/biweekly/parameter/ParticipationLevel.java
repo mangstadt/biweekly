@@ -35,8 +35,8 @@ import biweekly.util.CaseClasses;
 
 /**
  * Defines what level of participation is expected from a calendar user. Note
- * that the parameter that this class corresponds to varies depending on the
- * iCalendar version.
+ * that this class does not correspond to a particular parameter. The parameter
+ * varies depending on the iCalendar version.
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545 p.25-6</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.26-7</a>
