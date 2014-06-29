@@ -2,6 +2,12 @@ package biweekly.parameter;
 
 import java.util.Collection;
 
+import biweekly.ICalVersion;
+import biweekly.component.VEvent;
+import biweekly.component.VJournal;
+import biweekly.component.VTodo;
+import biweekly.property.Attendee;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -28,23 +34,72 @@ import java.util.Collection;
  */
 
 /**
- * Defines a calendar user's level of participation.
+ * Defines a calendar user's level of participation. Used with the
+ * {@link Attendee} property.
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-22">RFC 5545 p.22-3</a>
  */
-public class ParticipationStatus extends EnumParameterValue {
+public class ParticipationStatus extends VersionedEnumParameterValue {
 	private static final ICalParameterCaseClasses<ParticipationStatus> enums = new ICalParameterCaseClasses<ParticipationStatus>(ParticipationStatus.class);
 
-	public static final ParticipationStatus NEEDS_ACTION = new ParticipationStatus("NEEDS-ACTION"); //VEVENT, VTODO, VJOURNAL
-	public static final ParticipationStatus ACCEPTED = new ParticipationStatus("ACCEPTED"); //VEVENT, VTODO, VJOURNAL
-	public static final ParticipationStatus DECLINED = new ParticipationStatus("DECLINED"); //VEVENT, VTODO, VJOURNAL
-	public static final ParticipationStatus TENTATIVE = new ParticipationStatus("TENTATIVE"); //VEVENT, VTODO
-	public static final ParticipationStatus DELEGATED = new ParticipationStatus("DELEGATED"); //VEVENT, VTODO
-	public static final ParticipationStatus COMPLETED = new ParticipationStatus("COMPLETED"); //VTODO
-	public static final ParticipationStatus IN_PROGRESS = new ParticipationStatus("IN_PROGRESS"); //VTODO
+	/**
+	 * <p>
+	 * Indicates that the user needs to make a decision about the item. Valid
+	 * within the {@link VEvent}, {@link VTodo}, {@link VJournal} components.
+	 * </p>
+	 */
+	public static final ParticipationStatus NEEDS_ACTION = new ParticipationStatus("NEEDS-ACTION");
 
-	private ParticipationStatus(String value) {
-		super(value);
+	/**
+	 * Indicates that the user has accepted the item. Valid within the
+	 * {@link VEvent}, {@link VTodo}, {@link VJournal} components.
+	 */
+	public static final ParticipationStatus ACCEPTED = new ParticipationStatus("ACCEPTED");
+
+	/**
+	 * Indicates that the user has declined the item. Valid within the
+	 * {@link VEvent}, {@link VTodo}, {@link VJournal} components.
+	 */
+	public static final ParticipationStatus DECLINED = new ParticipationStatus("DECLINED");
+
+	/**
+	 * Indicates that the user has tentatively accepted the item. Valid within
+	 * the {@link VEvent} and {@link VJournal} components.
+	 */
+	public static final ParticipationStatus TENTATIVE = new ParticipationStatus("TENTATIVE");
+
+	/**
+	 * Indicates that the user has delegated the item to someone else. Valid
+	 * within the {@link VEvent} and {@link VTodo} components.
+	 */
+	public static final ParticipationStatus DELEGATED = new ParticipationStatus("DELEGATED");
+
+	/**
+	 * Indicates that the user has completed the item. Only valid within the
+	 * {@link VTodo} component.
+	 */
+	public static final ParticipationStatus COMPLETED = new ParticipationStatus("COMPLETED");
+
+	/**
+	 * Indicates that the user is in the process of completing the item. Only
+	 * valid within the {@link VTodo} component.
+	 */
+	public static final ParticipationStatus IN_PROCESS = new ParticipationStatus("IN_PROCESS", ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
+
+	/**
+	 * Indicates that the user confirmed attendance. Only valid within the
+	 * {@link VEvent} component of vCalendar version 1.0.
+	 */
+	public static final ParticipationStatus CONFIRMED = new ParticipationStatus("CONFIRMED", ICalVersion.V1_0);
+
+	/**
+	 * Indicates that the item was sent out to the user. Valid within
+	 * {@link VEvent} and {@link VTodo} components of vCalendar version 1.0.
+	 */
+	public static final ParticipationStatus SENT = new ParticipationStatus("SENT", ICalVersion.V1_0);
+
+	private ParticipationStatus(String value, ICalVersion... supportedVersions) {
+		super(value, supportedVersions);
 	}
 
 	/**
@@ -54,6 +109,9 @@ public class ParticipationStatus extends EnumParameterValue {
 	 * @return the object or null if not found
 	 */
 	public static ParticipationStatus find(String value) {
+		if ("NEEDS ACTION".equalsIgnoreCase(value)) { //vCal
+			return NEEDS_ACTION;
+		}
 		return enums.find(value);
 	}
 
@@ -65,6 +123,9 @@ public class ParticipationStatus extends EnumParameterValue {
 	 * @return the object
 	 */
 	public static ParticipationStatus get(String value) {
+		if ("NEEDS ACTION".equalsIgnoreCase(value)) { //vCal
+			return NEEDS_ACTION;
+		}
 		return enums.get(value);
 	}
 

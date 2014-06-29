@@ -311,7 +311,7 @@ public abstract class ICalProperty {
 		validate(components, version, warnings);
 
 		//validate parameters
-		warnings.addAll(parameters.validate());
+		warnings.addAll(parameters.validate(version));
 
 		return warnings;
 	}

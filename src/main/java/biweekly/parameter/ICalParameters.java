@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.VTimezone;
 import biweekly.property.FreeBusy;
@@ -616,9 +617,10 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * from the spec. These problems will not prevent the iCalendar object from
 	 * being written to a data stream, but may prevent it from being parsed
 	 * correctly by the consuming application.
+	 * @param version the version to validate against
 	 * @return a list of warnings or an empty list if no problems were found
 	 */
-	public List<Warning> validate() {
+	public List<Warning> validate(ICalVersion version) {
 		List<Warning> warnings = new ArrayList<Warning>(0);
 
 		final int nonStandardCode = 1;
@@ -653,8 +655,16 @@ public class ICalParameters extends ListMultimap<String, String> {
 		}
 
 		value = first(RANGE);
-		if (value != null && Range.find(value) == null) {
-			warnings.add(Warning.validate(nonStandardCode, RANGE, value, Range.all()));
+		if (value != null) {
+			Range range = Range.find(value);
+
+			if (range == null) {
+				warnings.add(Warning.validate(nonStandardCode, RANGE, value, Range.all()));
+			}
+
+			if (range == Range.THIS_AND_PRIOR && version == ICalVersion.V2_0) {
+				//TODO deprecated
+			}
 		}
 
 		value = first(RELATED);

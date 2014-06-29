@@ -3,6 +3,7 @@ package biweekly.io.scribe.property;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.ParticipationStatus;
 import biweekly.property.Attendee;
 
 /*
@@ -41,33 +42,60 @@ public class AttendeeScribe extends TextPropertyScribe<Attendee> {
 
 	@Override
 	protected ICalParameters _prepareParameters(Attendee property, ICalVersion version) {
-		String rsvp = property.getParameter(ICalParameters.RSVP);
-		if (rsvp == null) {
-			return property.getParameters();
-		}
-
 		ICalParameters copy = new ICalParameters(property.getParameters());
-		copy.remove(ICalParameters.RSVP, rsvp);
 
-		switch (version) {
-		case V1_0:
-			if ("FALSE".equalsIgnoreCase(rsvp)) {
-				rsvp = "NO";
-			} else if ("TRUE".equalsIgnoreCase(rsvp)) {
-				rsvp = "YES";
-			}
-			break;
+		//RSVP parameter
+		//1.0 - Uses the values "YES" and "NO"
+		//2.0 - Uses the values "TRUE" and "FALSE"
+		{
+			String rsvp = copy.first(ICalParameters.RSVP);
+			if (rsvp != null) {
+				copy.remove(ICalParameters.RSVP, rsvp);
+				switch (version) {
+				case V1_0:
+					if ("FALSE".equalsIgnoreCase(rsvp)) {
+						rsvp = "NO";
+					} else if ("TRUE".equalsIgnoreCase(rsvp)) {
+						rsvp = "YES";
+					}
+					break;
 
-		default:
-			if ("NO".equalsIgnoreCase(rsvp)) {
-				rsvp = "FALSE";
-			} else if ("YES".equalsIgnoreCase(rsvp)) {
-				rsvp = "TRUE";
+				default:
+					if ("NO".equalsIgnoreCase(rsvp)) {
+						rsvp = "FALSE";
+					} else if ("YES".equalsIgnoreCase(rsvp)) {
+						rsvp = "TRUE";
+					}
+					break;
+				}
+				copy.put(ICalParameters.RSVP, rsvp);
 			}
-			break;
 		}
 
-		copy.put(ICalParameters.RSVP, rsvp);
+		//PARTSTAT vs STATUS
+		//1.0 - Calls the parameter "STATUS"
+		//2.0 - Calls the parameter "PARTSTAT"
+		{
+			ParticipationStatus partStat = copy.getParticipationStatus();
+			if (partStat != null && version == ICalVersion.V1_0) {
+				//convert "NEEDS-ACTION" value to "NEEDS ACTION"
+				String value = (partStat == ParticipationStatus.NEEDS_ACTION) ? "NEEDS ACTION" : partStat.getValue();
+
+				//name the parameter "STATUS" instead of "PARTSTAT"
+				copy.removeAll(ICalParameters.PARTSTAT);
+				copy.put("STATUS", value);
+			}
+
+			String statusStr = copy.first("STATUS");
+			if (statusStr != null && version != ICalVersion.V1_0) {
+				//convert "NEEDS ACTION" value to "NEEDS-ACTION"
+				String value = statusStr.equalsIgnoreCase("NEEDS ACTION") ? ParticipationStatus.NEEDS_ACTION.getValue() : statusStr;
+
+				//name the parameter "PARTSTAT" instead of "STATUS"
+				copy.removeAll("STATUS");
+				copy.put(ICalParameters.PARTSTAT, value);
+			}
+		}
 
 		return copy;
 	}
