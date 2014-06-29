@@ -26,9 +26,12 @@ import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Role;
+import biweekly.property.Attendee;
 import biweekly.property.DateStart;
 import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
+import biweekly.property.Organizer;
 import biweekly.property.Version;
 import biweekly.util.UtcOffset;
 
@@ -333,7 +336,8 @@ public class ICalWriter implements Closeable, Flushable {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeComponent(ICalComponent component) throws IOException {
-		if (writer.getVersion() == ICalVersion.V1_0) {
+		switch (writer.getVersion()) {
+		case V1_0:
 			if (component instanceof VTimezone) {
 				//VTIMEZONE component => DAYLIGHT property
 				VTimezone timezone = (VTimezone) component;
@@ -343,6 +347,11 @@ public class ICalWriter implements Closeable, Flushable {
 				}
 				return;
 			}
+
+			break;
+
+		default:
+			break;
 		}
 
 		ICalComponentScribe componentScribe = index.getComponentScribe(component);
@@ -363,14 +372,39 @@ public class ICalWriter implements Closeable, Flushable {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeProperty(ICalProperty property) throws IOException {
-		if (writer.getVersion() == ICalVersion.V2_0 || writer.getVersion() == ICalVersion.V2_0_DEPRECATED) {
+		switch (writer.getVersion()) {
+		case V1_0:
+			//ORGANIZER property => ATTENDEE with role of "organizer" 
+			if (property instanceof Organizer) { //TODO
+				Organizer organizer = (Organizer) property;
+				Attendee attendee = new Attendee(organizer.getValue());
+				attendee.setParameters(organizer.getParameters());
+				attendee.setRole(Role.ORGANIZER);
+				writeProperty(attendee);
+				return;
+			}
+			break;
+
+		default:
+			//DAYLIGHT property => VTIMEZONE component
 			if (property instanceof Daylight) {
-				//DAYLIGHT property => VTIMEZONE component
 				Daylight daylight = (Daylight) property;
 				VTimezone timezone = convertDaylightToTimezone(daylight);
 				writeComponent(timezone);
 				return;
 			}
+
+			//ATTENDEE with role of "organizer" => ORGANIZER property
+			if (property instanceof Attendee) {
+				Attendee attendee = (Attendee) property;
+				if (attendee.getRole() == Role.ORGANIZER) {
+					Organizer organizer = new Organizer(attendee.getUri()); //TODO
+					organizer.setParameters(attendee.getParameters());
+					writeProperty(organizer);
+					return;
+				}
+			}
+			break;
 		}
 
 		ICalPropertyScribe propertyScribe = index.getPropertyScribe(property);

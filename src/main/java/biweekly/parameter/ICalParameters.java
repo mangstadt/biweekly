@@ -395,27 +395,6 @@ public class ICalParameters extends ListMultimap<String, String> {
 	}
 
 	/**
-	 * Gets an attendee's level of participation.
-	 * @return the participation status or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-22">RFC 5545
-	 * p.22-3</a>
-	 */
-	public ParticipationStatus getParticipationStatus() {
-		String value = first(PARTSTAT);
-		return (value == null) ? null : ParticipationStatus.get(value);
-	}
-
-	/**
-	 * Sets an attendee's level of participation.
-	 * @param status the participation status or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-22">RFC 5545
-	 * p.22-3</a>
-	 */
-	public void setParticipationStatus(ParticipationStatus status) {
-		replace(PARTSTAT, (status == null) ? null : status.getValue());
-	}
-
-	/**
 	 * Gets the effective range of recurrence instances from the instance
 	 * specified by a {@link RecurrenceId} property.
 	 * @return the range or null if not set
@@ -481,60 +460,6 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 */
 	public void setRelationshipType(RelationshipType relationshipType) {
 		replace(RELTYPE, (relationshipType == null) ? null : relationshipType.getValue());
-	}
-
-	/**
-	 * Gets an attendee's role (for example, "chair" or "required participant").
-	 * @return the role or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545
-	 * p.25-6</a>
-	 */
-	public Role getRole() {
-		String value = first(ROLE);
-		return (value == null) ? null : Role.get(value);
-	}
-
-	/**
-	 * Sets an attendee's role (for example, "chair" or "required participant").
-	 * @param role the role or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545
-	 * p.25-6</a>
-	 */
-	public void setRole(Role role) {
-		replace(ROLE, (role == null) ? null : role.getValue());
-	}
-
-	/**
-	 * Gets whether the organizer requests a response from an attendee.
-	 * @throws IllegalStateException if the parameter value is malformed and
-	 * cannot be parsed
-	 * @return true if an RSVP is requested, false if not, null if not set
-	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.26</a>
-	 */
-	public Boolean getRsvp() {
-		String value = first(RSVP);
-
-		if (value == null) {
-			return null;
-		}
-		if ("true".equalsIgnoreCase(value) || "yes".equalsIgnoreCase(value)) {
-			return Boolean.TRUE;
-		}
-		if ("false".equalsIgnoreCase(value) || "no".equalsIgnoreCase(value)) {
-			return Boolean.FALSE;
-		}
-		throw new IllegalStateException(RSVP + " parameter value is malformed and could not be parsed. Retrieve its raw text value instead.");
-	}
-
-	/**
-	 * Sets whether the organizer requests a response from an attendee.
-	 * @param rsvp true if an RSVP has been requested, false if not, null to
-	 * remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-26">RFC 5545
-	 * p.26-7</a>
-	 */
-	public void setRsvp(Boolean rsvp) {
-		replace(RSVP, (rsvp == null) ? null : rsvp.toString().toUpperCase());
 	}
 
 	/**

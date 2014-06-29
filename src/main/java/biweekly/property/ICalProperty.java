@@ -229,8 +229,13 @@ public abstract class ICalProperty {
 	}
 
 	/**
+	 * <p>
 	 * Gets a person that is acting on behalf of the person defined in the
 	 * property.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 2.0}
+	 * </p>
 	 * @return a URI representing the person (typically, an email URI, e.g.
 	 * "mailto:janedoe@example.com") or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
@@ -241,8 +246,13 @@ public abstract class ICalProperty {
 	}
 
 	/**
+	 * <p>
 	 * Sets a person that is acting on behalf of the person defined in the
 	 * property.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 2.0}
+	 * </p>
 	 * @param uri a URI representing the person (typically, an email URI, e.g.
 	 * "mailto:janedoe@example.com") or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
@@ -253,7 +263,12 @@ public abstract class ICalProperty {
 	}
 
 	/**
+	 * <p>
 	 * Gets the display name of the person.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 2.0}
+	 * </p>
 	 * @return the display name (e.g. "John Doe") or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-15">RFC 5545
 	 * p.15-6</a>
@@ -263,7 +278,12 @@ public abstract class ICalProperty {
 	}
 
 	/**
+	 * <p>
 	 * Sets the display name of the person.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 2.0}
+	 * </p>
 	 * @param commonName the display name (e.g. "John Doe") or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-15">RFC 5545
 	 * p.15-6</a>
@@ -273,7 +293,12 @@ public abstract class ICalProperty {
 	}
 
 	/**
+	 * <p>
 	 * Gets a URI that contains additional information about the person.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 2.0}
+	 * </p>
 	 * @return the URI (e.g. an LDAP URI) or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545
 	 * p.18</a>
@@ -283,7 +308,12 @@ public abstract class ICalProperty {
 	}
 
 	/**
+	 * <p>
 	 * Sets a URI that contains additional information about the person.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 2.0}
+	 * </p>
 	 * @param uri the URI (e.g. an LDAP URI) or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545
 	 * p.18</a>

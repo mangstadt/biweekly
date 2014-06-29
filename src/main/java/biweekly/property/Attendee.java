@@ -7,6 +7,7 @@ import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.VAlarm;
 import biweekly.parameter.CalendarUserType;
+import biweekly.parameter.ParticipationLevel;
 import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
 
@@ -42,7 +43,7 @@ import biweekly.parameter.Role;
  * <ul>
  * <li>{@link VAlarm} (with "EMAIL" action) - An email address that is to
  * receive the alarm.</li>
- * <li>All others - An attendee of the event.</li>
+ * <li>All others - An attendee of the calendar entity.</li>
  * </ul>
  * </p>
  * 
@@ -66,28 +67,72 @@ import biweekly.parameter.Role;
  * p.107-9</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25-7</a>
  */
-public class Attendee extends TextProperty {
+public class Attendee extends ICalProperty {
+	private String name, email, uri;
+	private Role role;
+	private ParticipationLevel participationLevel;
+	private ParticipationStatus status;
+	private Boolean rsvp;
+
+	/**
+	 * Creates an attendee property.
+	 * @param name the attendee's name (e.g. "John Doe")
+	 * @param email the attendee's email (e.g. "jdoe@example.com")
+	 */
+	public Attendee(String name, String email) {
+		this.name = name;
+		this.email = email;
+	}
+
 	/**
 	 * Creates an attendee property.
 	 * @param uri a URI representing the attendee (typically, an email address,
 	 * e.g. "mailto:johndoe@example.com")
 	 */
 	public Attendee(String uri) {
-		super(uri);
+		this.uri = uri;
 	}
 
 	/**
-	 * Creates an attendee property using an email address as its value.
-	 * @param email the email address (e.g. "johndoe@example.com")
-	 * @return the property
+	 * Gets the attendee's email
+	 * @return the email (e.g. "jdoe@company.com")
 	 */
-	public static Attendee email(String email) {
-		return new Attendee("mailto:" + email);
+	public String getEmail() {
+		return email;
 	}
 
 	/**
+	 * Sets the attendee's email
+	 * @param email the email (e.g. "jdoe@company.com")
+	 */
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	/**
+	 * Gets a URI representing the attendee.
+	 * @return the URI (e.g. "mailto:jdoe@company.com")
+	 */
+	public String getUri() {
+		return uri;
+	}
+
+	/**
+	 * Sets a URI representing the attendee.
+	 * @param uri the URI (e.g. "mailto:jdoe@company.com")
+	 */
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+
+	/**
+	 * <p>
 	 * Gets the type of user the attendee is (for example, an "individual" or a
 	 * "room").
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 2.0}
+	 * </p>
 	 * @return the calendar user type or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-16">RFC 5545
 	 * p.16</a>
@@ -97,8 +142,13 @@ public class Attendee extends TextProperty {
 	}
 
 	/**
+	 * <p>
 	 * Sets the type of user the attendee is (for example, an "individual" or a
 	 * "room").
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 2.0}
+	 * </p>
 	 * @param cutype the calendar user type or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-16">RFC 5545
 	 * p.16</a>
@@ -108,7 +158,12 @@ public class Attendee extends TextProperty {
 	}
 
 	/**
+	 * <p>
 	 * Gets the groups that the attendee is a member of.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 2.0}
+	 * </p>
 	 * @return the group URIs (typically, these are email address URIs, e.g.
 	 * "mailto:mailinglist@example.com")
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
@@ -119,7 +174,12 @@ public class Attendee extends TextProperty {
 	}
 
 	/**
+	 * <p>
 	 * Adds a group that the attendee is a member of.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 2.0}
+	 * </p>
 	 * @param uri the group URI (typically, an email address URI, e.g.
 	 * "mailto:mailinglist@example.com")
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
@@ -130,45 +190,69 @@ public class Attendee extends TextProperty {
 	}
 
 	/**
-	 * Gets the attendee's role (for example, "chair" or
-	 * "required participant").
+	 * Gets an attendee's role (for example, "chair" or "attendee").
 	 * @return the role or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545
 	 * p.25-6</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25</a>
 	 */
 	public Role getRole() {
-		return parameters.getRole();
+		return role;
 	}
 
 	/**
-	 * Sets the attendee's role (for example, "chair" or
-	 * "required participant").
+	 * Sets an attendee's role (for example, "chair" or "attendee").
 	 * @param role the role or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545
 	 * p.25-6</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25</a>
 	 */
 	public void setRole(Role role) {
-		parameters.setRole(role);
+		this.role = role;
 	}
 
 	/**
-	 * Gets the attendee's level of participation.
+	 * Gets an attendee's level of participation.
+	 * @return the participation level or null if not set
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545
+	 * p.25-6</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.26-7</a>
+	 */
+	public ParticipationLevel getParticipationLevel() {
+		return participationLevel;
+	}
+
+	/**
+	 * Sets an attendee's level of participation.
+	 * @param status the participation level or null to remove
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545
+	 * p.25-6</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.26-7</a>
+	 */
+	public void setParticipationLevel(ParticipationLevel level) {
+		this.participationLevel = level;
+	}
+
+	/**
+	 * Gets an attendee's participation status
 	 * @return the participation status or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-22">RFC 5545
 	 * p.22-3</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25-6</a>
 	 */
 	public ParticipationStatus getParticipationStatus() {
-		return parameters.getParticipationStatus();
+		return status;
 	}
 
 	/**
-	 * Sets the attendee's level of participation.
+	 * Sets an attendee's participation status.
 	 * @param status the participation status or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-22">RFC 5545
 	 * p.22-3</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25-6</a>
 	 */
 	public void setParticipationStatus(ParticipationStatus status) {
-		parameters.setParticipationStatus(status);
+		this.status = status;
 	}
 
 	/**
@@ -178,7 +262,7 @@ public class Attendee extends TextProperty {
 	 * p.26-7</a>
 	 */
 	public Boolean getRsvp() {
-		return parameters.getRsvp();
+		return rsvp;
 	}
 
 	/**
@@ -189,13 +273,18 @@ public class Attendee extends TextProperty {
 	 * p.26-7</a>
 	 */
 	public void setRsvp(Boolean rsvp) {
-		parameters.setRsvp(rsvp);
+		this.rsvp = rsvp;
 	}
 
 	/**
+	 * <p>
 	 * Gets the people who have delegated their responsibility to the attendee.
 	 * @return the delegators (typically email URIs, e.g.
 	 * "mailto:janedoe@example.com")
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 2.0}
+	 * </p>
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
 	 * p.17</a>
 	 */
@@ -204,8 +293,13 @@ public class Attendee extends TextProperty {
 	}
 
 	/**
+	 * <p>
 	 * Adds a person who has delegated his or her responsibility to the
 	 * attendee.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 2.0}
+	 * </p>
 	 * @param uri the delegator (typically an email URI, e.g.
 	 * "mailto:janedoe@example.com")
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
@@ -216,8 +310,13 @@ public class Attendee extends TextProperty {
 	}
 
 	/**
+	 * <p>
 	 * Gets the people to which the attendee has delegated his or her
 	 * responsibility.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 2.0}
+	 * </p>
 	 * @return the delegatees (typically email URIs, e.g.
 	 * "mailto:janedoe@example.com")
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
@@ -228,8 +327,13 @@ public class Attendee extends TextProperty {
 	}
 
 	/**
+	 * <p>
 	 * Adds a person to which the attendee has delegated his or her
 	 * responsibility.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 2.0}
+	 * </p>
 	 * @param uri the delegatee (typically an email URI, e.g.
 	 * "mailto:janedoe@example.com")
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
@@ -251,12 +355,12 @@ public class Attendee extends TextProperty {
 
 	@Override
 	public String getCommonName() {
-		return super.getCommonName();
+		return name;
 	}
 
 	@Override
 	public void setCommonName(String commonName) {
-		super.setCommonName(commonName);
+		this.name = commonName;
 	}
 
 	@Override
@@ -287,12 +391,6 @@ public class Attendee extends TextProperty {
 
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
-		Role role = getRole();
-
-		switch (version) {
-		case V1_0:
-
-		}
+		//TODO
 	}
-
 }

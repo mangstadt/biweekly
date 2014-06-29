@@ -38,15 +38,14 @@ import biweekly.property.Attendee;
  * {@link Attendee} property.
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-22">RFC 5545 p.22-3</a>
+ * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25-6</a>
  */
 public class ParticipationStatus extends VersionedEnumParameterValue {
 	private static final ICalParameterCaseClasses<ParticipationStatus> enums = new ICalParameterCaseClasses<ParticipationStatus>(ParticipationStatus.class);
 
 	/**
-	 * <p>
 	 * Indicates that the user needs to make a decision about the item. Valid
 	 * within the {@link VEvent}, {@link VTodo}, {@link VJournal} components.
-	 * </p>
 	 */
 	public static final ParticipationStatus NEEDS_ACTION = new ParticipationStatus("NEEDS-ACTION");
 

@@ -35,8 +35,8 @@ import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.SkipMeScribe;
 import biweekly.parameter.CalendarUserType;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.ParticipationLevel;
 import biweekly.parameter.ParticipationStatus;
-import biweekly.parameter.Role;
 import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.Classification;
@@ -708,9 +708,9 @@ public class ICalWriterTest {
 			event.setUid("guid-1.example.com");
 			event.setOrganizer("mrbig@example.com");
 
-			Attendee attendee = Attendee.email("employee-A@example.com");
+			Attendee attendee = new Attendee(null, "employee-A@example.com");
 			attendee.setRsvp(true);
-			attendee.setRole(Role.REQ_PARTICIPANT);
+			attendee.setParticipationLevel(ParticipationLevel.REQUIRED);
 			attendee.setCalendarUserType(CalendarUserType.GROUP);
 			event.addAttendee(attendee);
 
@@ -744,7 +744,7 @@ public class ICalWriterTest {
 			event.setUid("uid3@example.com");
 			event.setOrganizer("jdoe@example.com");
 
-			Attendee attendee = Attendee.email("jsmith@example.com");
+			Attendee attendee = new Attendee(null, "jsmith@example.com");
 			attendee.setRsvp(true);
 			event.addAttendee(attendee);
 
@@ -780,7 +780,7 @@ public class ICalWriterTest {
 			todo.setUid("uid4@example.com");
 			todo.setOrganizer("unclesam@example.com");
 
-			Attendee attendee = Attendee.email("jqpublic@example.com");
+			Attendee attendee = new Attendee(null, "jqpublic@example.com");
 			attendee.setParticipationStatus(ParticipationStatus.ACCEPTED);
 			todo.addAttendee(attendee);
 

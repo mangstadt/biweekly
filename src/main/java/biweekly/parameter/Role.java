@@ -2,6 +2,8 @@ package biweekly.parameter;
 
 import java.util.Collection;
 
+import biweekly.ICalVersion;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -31,24 +33,63 @@ import java.util.Collection;
  * Defines the role that a calendar user holds.
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545 p.25-6</a>
+ * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25</a>
  */
-public class Role extends EnumParameterValue {
+public class Role extends VersionedEnumParameterValue {
 	private static final ICalParameterCaseClasses<Role> enums = new ICalParameterCaseClasses<Role>(Role.class);
 
-	//2.0
-	public static final Role CHAIR = new Role("CHAIR");
-	public static final Role REQ_PARTICIPANT = new Role("REQ-PARTICIPANT");
-	public static final Role OPT_PARTICIPANT = new Role("OPT-PARTICIPANT");
-	public static final Role NON_PARTICIPANT = new Role("NON-PARTICIPANT");
+	/**
+	 * <p>
+	 * Indicates that the user is the chair of the calendar entity.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 2.0}
+	 * </p>
+	 */
+	public static final Role CHAIR = new Role("CHAIR", ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 
-	//1.0
-	public static final Role ATTENDEE = new Role("ATTENDEE");
-	public static final Role ORGANIZER = new Role("ORGANIZER");
-	public static final Role OWNER = new Role("OWNER");
-	public static final Role DELEGATE = new Role("DELEGATE");
+	/**
+	 * <p>
+	 * Indicates that the user is an attendee of the calendar entity.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 1.0}
+	 * </p>
+	 */
+	public static final Role ATTENDEE = new Role("ATTENDEE", ICalVersion.V1_0);
 
-	private Role(String value) {
-		super(value);
+	/**
+	 * <p>
+	 * Indicates that the user is the organizer of the calendar entity.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 1.0}
+	 * </p>
+	 */
+	public static final Role ORGANIZER = new Role("ORGANIZER", ICalVersion.V1_0);
+
+	/**
+	 * <p>
+	 * Indicates that the user is the owner of the calendar entity.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 1.0}
+	 * </p>
+	 */
+	public static final Role OWNER = new Role("OWNER", ICalVersion.V1_0);
+
+	/**
+	 * <p>
+	 * Indicates that the user is a delegate of another attendee.
+	 * </p>
+	 * <p>
+	 * <b>Supported versions:</b> {@code 1.0}
+	 * </p>
+	 */
+	public static final Role DELEGATE = new Role("DELEGATE", ICalVersion.V1_0);
+
+	private Role(String value, ICalVersion... versions) {
+		super(value, versions);
 	}
 
 	/**

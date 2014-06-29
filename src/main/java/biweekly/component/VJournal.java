@@ -625,7 +625,7 @@ public class VJournal extends ICalComponent {
 	 * p.107-9</a>
 	 */
 	public Attendee addAttendee(String email) {
-		Attendee prop = Attendee.email(email);
+		Attendee prop = new Attendee(null, email);
 		addAttendee(prop);
 		return prop;
 	}

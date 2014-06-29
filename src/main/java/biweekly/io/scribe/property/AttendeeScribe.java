@@ -1,9 +1,16 @@
 package biweekly.io.scribe.property;
 
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
+import biweekly.Warning;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.ParticipationLevel;
 import biweekly.parameter.ParticipationStatus;
+import biweekly.parameter.Role;
 import biweekly.property.Attendee;
 
 /*
@@ -35,9 +42,29 @@ import biweekly.property.Attendee;
  * Marshals {@link Attendee} properties.
  * @author Michael Angstadt
  */
-public class AttendeeScribe extends TextPropertyScribe<Attendee> {
+public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 	public AttendeeScribe() {
 		super(Attendee.class, "ATTENDEE", ICalDataType.CAL_ADDRESS);
+	}
+
+	//TODO URL data type if version is 1.0
+
+	@Override
+	protected ICalDataType _defaultDataType(ICalVersion version) {
+		switch (version) {
+		case V1_0:
+			return null;
+		default:
+			return ICalDataType.CAL_ADDRESS;
+		}
+	}
+
+	@Override
+	protected ICalDataType _dataType(Attendee property, ICalVersion version) {
+		if (version == ICalVersion.V1_0 && property.getUri() != null) {
+			return ICalDataType.URL;
+		}
+		return defaultDataType(version);
 	}
 
 	@Override
@@ -47,61 +74,174 @@ public class AttendeeScribe extends TextPropertyScribe<Attendee> {
 		//RSVP parameter
 		//1.0 - Uses the values "YES" and "NO"
 		//2.0 - Uses the values "TRUE" and "FALSE"
-		{
-			String rsvp = copy.first(ICalParameters.RSVP);
-			if (rsvp != null) {
-				copy.remove(ICalParameters.RSVP, rsvp);
-				switch (version) {
-				case V1_0:
-					if ("FALSE".equalsIgnoreCase(rsvp)) {
-						rsvp = "NO";
-					} else if ("TRUE".equalsIgnoreCase(rsvp)) {
-						rsvp = "YES";
-					}
-					break;
+		Boolean rsvp = property.getRsvp();
+		if (rsvp != null) {
+			String value = null;
+			switch (version) {
+			case V1_0:
+				value = rsvp ? "YES" : "NO";
+				break;
 
-				default:
-					if ("NO".equalsIgnoreCase(rsvp)) {
-						rsvp = "FALSE";
-					} else if ("YES".equalsIgnoreCase(rsvp)) {
-						rsvp = "TRUE";
-					}
-					break;
-				}
-				copy.put(ICalParameters.RSVP, rsvp);
+			default:
+				value = rsvp ? "TRUE" : "FALSE";
+				break;
 			}
+
+			copy.put(ICalParameters.RSVP, value);
+		}
+
+		//ROLE and EXPECT parameters
+		//1.0 - Uses ROLE and EXPECT
+		//2.0 - Uses only ROLE
+		Role role = property.getRole();
+		ParticipationLevel level = property.getParticipationLevel();
+		switch (version) {
+		case V1_0:
+			if (role != null) {
+				copy.put("ROLE", role.getValue());
+			}
+			if (level != null) {
+				copy.put("EXPECT", level.getValue(version));
+			}
+			break;
+
+		default:
+			String value = null;
+			if (role == Role.CHAIR) {
+				value = role.getValue();
+			} else if (level != null) {
+				value = level.getValue(version);
+			} else if (role != null) {
+				value = role.getValue();
+			}
+
+			if (value != null) {
+				copy.put("ROLE", value);
+			}
+			break;
 		}
 
 		//PARTSTAT vs STATUS
 		//1.0 - Calls the parameter "STATUS"
 		//2.0 - Calls the parameter "PARTSTAT"
-		{
-			ParticipationStatus partStat = copy.getParticipationStatus();
-			if (partStat != null && version == ICalVersion.V1_0) {
-				//convert "NEEDS-ACTION" value to "NEEDS ACTION"
-				String value = (partStat == ParticipationStatus.NEEDS_ACTION) ? "NEEDS ACTION" : partStat.getValue();
+		ParticipationStatus partStat = property.getParticipationStatus();
+		if (partStat != null) {
+			String paramName;
+			String paramValue;
 
-				//name the parameter "STATUS" instead of "PARTSTAT"
-				copy.removeAll(ICalParameters.PARTSTAT);
-				copy.put("STATUS", value);
+			switch (version) {
+			case V1_0:
+				paramName = "STATUS";
+				paramValue = (partStat == ParticipationStatus.NEEDS_ACTION) ? "NEEDS ACTION" : partStat.getValue();
+				break;
+
+			default:
+				paramName = "PARTSTAT";
+				paramValue = partStat.getValue();
+				break;
 			}
 
-			String statusStr = copy.first("STATUS");
-			if (statusStr != null && version != ICalVersion.V1_0) {
-				//convert "NEEDS ACTION" value to "NEEDS-ACTION"
-				String value = statusStr.equalsIgnoreCase("NEEDS ACTION") ? ParticipationStatus.NEEDS_ACTION.getValue() : statusStr;
+			copy.put(paramName, paramValue);
+		}
 
-				//name the parameter "PARTSTAT" instead of "STATUS"
-				copy.removeAll("STATUS");
-				copy.put(ICalParameters.PARTSTAT, value);
-			}
+		//CN parameter
+		String name = property.getCommonName();
+		if (name != null && version != ICalVersion.V1_0) {
+			copy.put("CN", name);
 		}
 
 		return copy;
 	}
 
 	@Override
-	protected Attendee newInstance(String value) {
-		return new Attendee(value);
+	protected Attendee _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+		Boolean rsvp = null;
+		String uri = null, name = null, email = null;
+		String rsvpStr = parameters.first(ICalParameters.RSVP);
+
+		switch (version) {
+		case V1_0:
+			if (rsvpStr != null) {
+				if ("YES".equalsIgnoreCase(rsvpStr)) {
+					rsvp = Boolean.TRUE;
+				} else if ("NO".equalsIgnoreCase(rsvpStr)) {
+					rsvp = Boolean.FALSE;
+				}
+			}
+
+			Pattern p = Pattern.compile("^(.*?)<(.*?)>$");
+			Matcher m = p.matcher(value);
+			if (m.find()) {
+				name = m.group(1).trim();
+				email = m.group(2).trim();
+			} else if (dataType == ICalDataType.URL) {
+				uri = value;
+			} else {
+				email = value;
+			}
+
+			break;
+
+		default:
+			if (rsvpStr != null) {
+				if ("TRUE".equalsIgnoreCase(rsvpStr)) {
+					rsvp = Boolean.TRUE;
+				} else if ("FALSE".equalsIgnoreCase(rsvpStr)) {
+					rsvp = Boolean.FALSE;
+				}
+			}
+
+			List<String> names = parameters.removeAll(ICalParameters.CN);
+			name = names.isEmpty() ? null : names.get(0);
+
+			p = Pattern.compile("^mailto:(.*?)$");
+			m = p.matcher(value);
+			if (m.find()) {
+				email = m.group(1);
+			} else {
+				uri = value;
+			}
+		}
+
+		//TODO parse STATUS, PARTSTAT, ROLE
+
+		if (rsvp != null) {
+			parameters.removeAll(ICalParameters.RSVP);
+		}
+
+		Attendee attendee = new Attendee(name, email);
+		attendee.setUri(uri);
+		attendee.setRsvp(rsvp);
+		return attendee;
+	}
+
+	@Override
+	protected String _writeText(Attendee property, ICalVersion version) {
+		String uri = property.getUri();
+		if (uri != null) {
+			return uri;
+		}
+
+		String name = property.getCommonName();
+		String email = property.getEmail();
+		switch (version) {
+		case V1_0:
+			if (name != null && email != null) {
+				return escape(name + " <" + email + ">");
+			}
+			if (email != null) {
+				return escape(email);
+			}
+
+			break;
+
+		default:
+			if (email != null) {
+				return "mailto:" + email;
+			}
+			break;
+		}
+
+		return "";
 	}
 }

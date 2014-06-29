@@ -45,6 +45,7 @@ import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.SkipMeScribe;
 import biweekly.parameter.CalendarUserType;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.ParticipationLevel;
 import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
 import biweekly.property.Attachment;
@@ -972,15 +973,15 @@ public class ICalReaderTest {
 
 			Attendee attendee = event.getAttendees().get(0);
 			assertEquals("Doe, John", attendee.getCommonName());
-			assertEquals(Role.OPT_PARTICIPANT, attendee.getRole());
+			assertEquals(ParticipationLevel.OPTIONAL, attendee.getParticipationLevel());
 			assertEquals(Boolean.FALSE, attendee.getRsvp());
-			assertEquals("mailto:johndoe@example.com", attendee.getValue());
+			assertEquals("johndoe@example.com", attendee.getEmail());
 
 			attendee = event.getAttendees().get(1);
 			assertEquals("Doe, Jane", attendee.getCommonName());
 			assertEquals(Role.CHAIR, attendee.getRole());
 			assertEquals(Boolean.TRUE, attendee.getRsvp());
-			assertEquals("mailto:janedoe@example.com", attendee.getValue());
+			assertEquals("janedoe@example.com", attendee.getEmail());
 
 			assertEquals("PUBLIC", event.getClassification().getValue());
 			assertDateEquals("20130608T200410Z", event.getCreated().getValue());
@@ -1128,9 +1129,9 @@ public class ICalReaderTest {
 			assertEquals("mailto:mrbig@example.com", event.getOrganizer().getValue());
 
 			Attendee attendee = event.getAttendees().get(0);
-			assertEquals("mailto:employee-A@example.com", attendee.getValue());
+			assertEquals("employee-A@example.com", attendee.getEmail());
 			assertTrue(attendee.getRsvp());
-			assertEquals(Role.REQ_PARTICIPANT, attendee.getRole());
+			assertEquals(ParticipationLevel.REQUIRED, attendee.getParticipationLevel());
 			assertEquals(CalendarUserType.GROUP, attendee.getCalendarUserType());
 
 			assertEquals("Project XYZ Review Meeting", event.getDescription().getValue());
@@ -1208,7 +1209,7 @@ public class ICalReaderTest {
 			assertEquals("mailto:unclesam@example.com", todo.getOrganizer().getValue());
 
 			Attendee attendee = todo.getAttendees().get(0);
-			assertEquals("mailto:jqpublic@example.com", attendee.getValue());
+			assertEquals("jqpublic@example.com", attendee.getEmail());
 			assertEquals(ParticipationStatus.ACCEPTED, attendee.getParticipationStatus());
 
 			assertDateEquals("19980415T000000", todo.getDateDue().getValue());

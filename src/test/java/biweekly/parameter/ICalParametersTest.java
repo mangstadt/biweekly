@@ -2,9 +2,6 @@ package biweekly.parameter;
 
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -54,21 +51,6 @@ public class ICalParametersTest {
 		//ListMultimapTest tests the rest of the get/put/remove methods
 		params.put("NUMBERS", "1");
 		assertEquals("1", params.first("numbers"));
-	}
-
-	@Test
-	public void rsvp() {
-		assertNull(params.getRsvp());
-		params.setRsvp(true);
-		assertTrue(params.getRsvp());
-		params.setRsvp(false);
-		assertFalse(params.getRsvp());
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void rsvp_malformed() {
-		params.put("RSVP", "invalid");
-		params.getRsvp();
 	}
 
 	@Test
