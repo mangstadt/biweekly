@@ -26,6 +26,7 @@ import biweekly.io.scribe.component.VTodoScribe;
 import biweekly.io.scribe.property.ActionScribe;
 import biweekly.io.scribe.property.AttachmentScribe;
 import biweekly.io.scribe.property.AttendeeScribe;
+import biweekly.io.scribe.property.AudioAlarmScribe;
 import biweekly.io.scribe.property.CalendarScaleScribe;
 import biweekly.io.scribe.property.CategoriesScribe;
 import biweekly.io.scribe.property.ClassificationScribe;
@@ -218,6 +219,7 @@ public class ScribeIndex {
 		registerStandard(new ExceptionRuleScribe());
 
 		//vCal
+		registerStandard(new AudioAlarmScribe());
 		registerStandard(new DaylightScribe());
 		registerStandard(new TimezoneScribe());
 	}

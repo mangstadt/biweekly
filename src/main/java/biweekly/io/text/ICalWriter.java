@@ -17,6 +17,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
+import biweekly.component.VAlarm;
 import biweekly.component.VTimezone;
 import biweekly.io.SkipMeException;
 import biweekly.io.scribe.ScribeIndex;
@@ -27,6 +28,7 @@ import biweekly.property.Attendee;
 import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.property.Organizer;
+import biweekly.property.VCalAlarmProperty;
 import biweekly.property.Version;
 
 /*
@@ -320,16 +322,17 @@ public class ICalWriter implements Closeable, Flushable {
 	 */
 	public void write(ICalendar ical) throws IOException {
 		index.hasScribesFor(ical);
-		writeComponent(ical);
+		writeComponent(ical, null);
 	}
 
 	/**
 	 * Writes a component to the data stream.
 	 * @param component the component to write
+	 * @param parent the parent component
 	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void writeComponent(ICalComponent component) throws IOException {
+	private void writeComponent(ICalComponent component, ICalComponent parent) throws IOException {
 		switch (writer.getVersion()) {
 		case V1_0:
 			//VTIMEZONE component => DAYLIGHT properties
@@ -340,6 +343,16 @@ public class ICalWriter implements Closeable, Flushable {
 					writeProperty(daylight);
 				}
 				return;
+			}
+
+			//VALARM component => vCal alarm property
+			if (component instanceof VAlarm) {
+				VAlarm valarm = (VAlarm) component;
+				VCalAlarmProperty vcalAlarm = convert(valarm, component);
+				if (vcalAlarm != null) {
+					writeProperty(vcalAlarm);
+					return;
+				}
 			}
 
 			break;
@@ -359,7 +372,7 @@ public class ICalWriter implements Closeable, Flushable {
 
 		for (Object subComponentObj : componentScribe.getComponents(component)) {
 			ICalComponent subComponent = (ICalComponent) subComponentObj;
-			writeComponent(subComponent);
+			writeComponent(subComponent, component);
 		}
 
 		writer.writeEndComponent(componentScribe.getComponentName());

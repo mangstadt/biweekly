@@ -21,6 +21,7 @@ import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
+import biweekly.component.VAlarm;
 import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseWarnings;
@@ -36,6 +37,7 @@ import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Role;
 import biweekly.property.Attendee;
+import biweekly.property.AudioAlarm;
 import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.util.org.apache.commons.codec.DecoderException;
@@ -421,6 +423,17 @@ public class ICalReader implements Closeable {
 							property = convert(attendee);
 						}
 					}
+
+					//AALARM property => VALARM component
+					if (property instanceof AudioAlarm) {
+						AudioAlarm aalarm = (AudioAlarm) property;
+						VAlarm valarm = convert(aalarm);
+						parentComponent.addComponent(valarm);
+					}
+
+					//TODO DALARM property => VALARM component
+					//TODO MALARM property => VALARM component
+					//TODO PALARM property => VALARM component
 					break;
 
 				default:

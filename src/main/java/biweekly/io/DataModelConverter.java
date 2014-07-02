@@ -5,13 +5,25 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.component.DaylightSavingsTime;
+import biweekly.component.ICalComponent;
 import biweekly.component.StandardTime;
+import biweekly.component.VAlarm;
 import biweekly.component.VTimezone;
+import biweekly.parameter.Related;
 import biweekly.parameter.Role;
+import biweekly.property.Action;
+import biweekly.property.Attachment;
 import biweekly.property.Attendee;
+import biweekly.property.AudioAlarm;
+import biweekly.property.DateEnd;
 import biweekly.property.DateStart;
 import biweekly.property.Daylight;
+import biweekly.property.DurationProperty;
 import biweekly.property.Organizer;
+import biweekly.property.Repeat;
+import biweekly.property.Trigger;
+import biweekly.property.VCalAlarmProperty;
+import biweekly.util.Duration;
 import biweekly.util.UtcOffset;
 
 /*
@@ -138,5 +150,145 @@ public class DataModelConverter {
 		attendee.setUri(organizer.getUri());
 		attendee.setParameters(organizer.getParameters());
 		return attendee;
+	}
+
+	/**
+	 * Converts a {@link AudioAlarm} property to a {@link VAlarm} component.
+	 * @param aalarm the AALARM property
+	 * @return the VALARM component
+	 */
+	public static VAlarm convert(AudioAlarm aalarm) {
+		Trigger trigger = new Trigger(aalarm.getStart());
+		VAlarm valarm = new VAlarm(Action.audio(), trigger);
+
+		valarm.addAttachment(buildAttachment(aalarm));
+		valarm.setDuration(aalarm.getSnooze());
+		valarm.setRepeat(aalarm.getRepeat());
+
+		return valarm;
+	}
+
+	private static Attachment buildAttachment(AudioAlarm aalarm) {
+		String type = aalarm.getParameter("TYPE");
+		String contentType = (type == null) ? null : "audio/" + type.toLowerCase();
+		byte data[] = aalarm.getData();
+		if (data != null) {
+			return new Attachment(contentType, data);
+		}
+
+		String contentId = aalarm.getContentId();
+		String uri = (contentId == null) ? aalarm.getUri() : "CID:" + contentId;
+		return new Attachment(contentType, uri);
+	}
+
+	/**
+	 * Converts a {@link VAlarm} component to a vCal alarm property.
+	 * @param valarm the VALARM component
+	 * @param parent the component that holds the VALARM component
+	 * @return the alarm property
+	 */
+	public static VCalAlarmProperty convert(VAlarm valarm, ICalComponent parent) {
+		Action action = valarm.getAction();
+		if (action == null) {
+			return null;
+		}
+
+		if (action.isAudio()) {
+			AudioAlarm aalarm = new AudioAlarm();
+			aalarm.setStart(determineStartDate(valarm, parent));
+
+			List<Attachment> attaches = valarm.getAttachments();
+			if (!attaches.isEmpty()) {
+				Attachment attach = attaches.get(0);
+
+				String formatType = attach.getFormatType();
+				aalarm.setParameter("TYPE", formatType);
+
+				byte[] data = attach.getData();
+				if (data != null) {
+					aalarm.setData(data);
+				}
+
+				String uri = attach.getUri();
+				if (uri != null) {
+					if (uri.toUpperCase().startsWith("CID:")) {
+						String contentId = uri.substring(4);
+						aalarm.setContentId(contentId);
+					} else {
+						aalarm.setUri(uri);
+					}
+				}
+			}
+
+			DurationProperty duration = valarm.getDuration();
+			if (duration != null) {
+				aalarm.setSnooze(duration.getValue());
+			}
+
+			Repeat repeat = valarm.getRepeat();
+			if (repeat != null) {
+				aalarm.setRepeat(repeat.getValue());
+			}
+
+			return aalarm;
+		}
+
+		if (action.isDisplay()) {
+			//TODO
+		}
+
+		if (action.isEmail()) {
+			//TODO
+		}
+
+		return null;
+	}
+
+	private static Date determineStartDate(VAlarm valarm, ICalComponent parent) {
+		Trigger trigger = valarm.getTrigger();
+		if (trigger == null) {
+			return null;
+		}
+
+		Date start = trigger.getDate();
+		if (start != null) {
+			return start;
+		}
+
+		Duration triggerDuration = trigger.getDuration();
+		if (triggerDuration == null) {
+			return null;
+		}
+
+		Related related = trigger.getRelated();
+		if (related == Related.START) {
+			DateStart parentDateStart = parent.getProperty(DateStart.class);
+			if (parentDateStart == null) {
+				return null;
+			}
+
+			Date date = parentDateStart.getValue();
+			return (date == null) ? null : triggerDuration.add(date);
+		}
+
+		if (related == Related.END) {
+			DateEnd parentDateEnd = parent.getProperty(DateEnd.class);
+			if (parentDateEnd != null) {
+				Date date = parentDateEnd.getValue();
+				return (date == null) ? null : triggerDuration.add(date);
+			}
+
+			DateStart parentDateStart = parent.getProperty(DateStart.class);
+			DurationProperty parentDuration = parent.getProperty(DurationProperty.class);
+			if (parentDuration == null || parentDateStart == null) {
+				return null;
+			}
+
+			Duration duration = parentDuration.getValue();
+			Date date = parentDateStart.getValue();
+			return (duration == null || date == null) ? null : duration.add(date);
+		}
+
+		return null;
 	}
 }
