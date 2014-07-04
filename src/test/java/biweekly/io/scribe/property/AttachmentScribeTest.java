@@ -48,15 +48,21 @@ public class AttachmentScribeTest {
 	private final String url = "http://example.com/image.png";
 	private final byte[] data = "data".getBytes();
 	private final String base64Data = Base64.encodeBase64String(data);
+	private final String contentId = "content-id";
 
 	private final Attachment withUrl = new Attachment(formatType, url);
 	private final Attachment withData = new Attachment(formatType, data);
+	private final Attachment withContentId = new Attachment(formatType, (String) null);
+	{
+		withContentId.setContentId(contentId);
+	}
 	private final Attachment empty = new Attachment(null, (String) null);
 
 	@Test
 	public void prepareParameters() {
 		sensei.assertPrepareParams(withUrl).expected("FMTTYPE", formatType).run();
 		sensei.assertPrepareParams(withData).expected("FMTTYPE", formatType).expected("ENCODING", "BASE64").run();
+		sensei.assertPrepareParams(withContentId).expected("FMTTYPE", formatType).run();
 		sensei.assertPrepareParams(empty).run();
 	}
 
@@ -66,6 +72,10 @@ public class AttachmentScribeTest {
 		sensei.assertDataType(withUrl).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(ICalDataType.URI);
 
 		sensei.assertDataType(withData).run(ICalDataType.BINARY);
+
+		sensei.assertDataType(withContentId).versions(ICalVersion.V1_0).run(ICalDataType.CONTENT_ID);
+		sensei.assertDataType(withContentId).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(ICalDataType.URI);
+
 		sensei.assertDataType(empty).run(ICalDataType.URI);
 	}
 
@@ -73,6 +83,9 @@ public class AttachmentScribeTest {
 	public void writeText() {
 		sensei.assertWriteText(withUrl).run(url);
 		sensei.assertWriteText(withData).run(base64Data);
+		sensei.assertWriteText(withContentId).version(ICalVersion.V1_0).run(contentId);
+		sensei.assertWriteText(withContentId).version(ICalVersion.V2_0_DEPRECATED).run("CID:" + contentId);
+		sensei.assertWriteText(withContentId).version(ICalVersion.V2_0).run("CID:" + contentId);
 		sensei.assertWriteText(empty).run("");
 	}
 

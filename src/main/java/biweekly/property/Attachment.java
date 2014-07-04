@@ -69,7 +69,7 @@ import biweekly.util.IOUtils;
  */
 public class Attachment extends ICalProperty {
 	private byte[] data;
-	private String uri;
+	private String uri, contentId;
 
 	/**
 	 * Creates a new attachment.
@@ -112,8 +112,7 @@ public class Attachment extends ICalProperty {
 	}
 
 	/**
-	 * Sets the attachment's binary data. If the attachment has a URI associated
-	 * with it, the URI will be set to null.
+	 * Assigns binary data to the attachment's value.
 	 * @param data the binary data
 	 */
 	public void setData(byte[] data) {
@@ -130,13 +129,28 @@ public class Attachment extends ICalProperty {
 	}
 
 	/**
-	 * Sets the attachment's URI. If the attachment has binary data associated
-	 * with it, the binary data will be set to null.
+	 * Assigns a URI to the attachment's value.
 	 * @param uri the URI (e.g. "http://example.com/image.png")
 	 */
 	public void setUri(String uri) {
 		this.uri = uri;
 		data = null;
+	}
+
+	/**
+	 * Gets the attachment's content ID.
+	 * @return the content ID
+	 */
+	public String getContentId() {
+		return contentId;
+	}
+
+	/**
+	 * Assigns a content ID to the attachment's value.
+	 * @param contentId the content ID
+	 */
+	public void setContentId(String contentId) {
+		this.contentId = contentId;
 	}
 
 	@Override
@@ -151,7 +165,7 @@ public class Attachment extends ICalProperty {
 
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
-		if (uri == null && data == null) {
+		if (uri == null && data == null && contentId == null) {
 			warnings.add(Warning.validate(26));
 		}
 	}

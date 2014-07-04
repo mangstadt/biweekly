@@ -67,6 +67,9 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 		if (property.getData() != null) {
 			return ICalDataType.BINARY;
 		}
+		if (property.getContentId() != null) {
+			return (version == ICalVersion.V1_0) ? ICalDataType.CONTENT_ID : ICalDataType.URI;
+		}
 		return defaultDataType;
 	}
 
@@ -80,6 +83,11 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 		byte data[] = property.getData();
 		if (data != null) {
 			return Base64.encodeBase64String(data);
+		}
+
+		String contentId = property.getContentId();
+		if (contentId != null) {
+			return (version == ICalVersion.V1_0) ? contentId : "CID:" + contentId;
 		}
 
 		return "";

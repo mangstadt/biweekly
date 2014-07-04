@@ -43,5 +43,9 @@ public class AttachmentTest {
 
 		attach = new Attachment(null, new byte[0]);
 		assertValidate(attach).run();
+
+		attach = new Attachment(null, (byte[]) null);
+		attach.setContentId("content-id");
+		assertValidate(attach).run();
 	}
 }
