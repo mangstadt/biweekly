@@ -38,7 +38,36 @@ public class TransparencyScribe extends TextPropertyScribe<Transparency> {
 	}
 
 	@Override
+	protected String _writeText(Transparency property, ICalVersion version) {
+		if (version == ICalVersion.V1_0) {
+			if (property.isOpaque()) {
+				return "0";
+			}
+			if (property.isTransparent()) {
+				return "1";
+			}
+		}
+
+		return super._writeText(property, version);
+	}
+
+	@Override
 	protected Transparency newInstance(String value, ICalVersion version) {
+		if (version == ICalVersion.V1_0) {
+			try {
+				int intValue = Integer.parseInt(value);
+				switch (intValue) {
+				case 0:
+					return Transparency.opaque();
+				case 1:
+					//values greater than "1" provide implementation-specific semantics
+					return Transparency.transparent();
+				}
+			} catch (NumberFormatException e) {
+				//ignore
+			}
+		}
+
 		return new Transparency(value);
 	}
 }
