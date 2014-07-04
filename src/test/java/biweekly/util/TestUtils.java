@@ -221,6 +221,10 @@ public class TestUtils {
 		return marshaller.parseXml(element, new ICalParameters());
 	}
 
+	public static <T> T[] each(T... values) {
+		return values;
+	}
+
 	//@formatter:off
 	private static DateFormat dfs[] = new DateFormat[]{
 		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z"),

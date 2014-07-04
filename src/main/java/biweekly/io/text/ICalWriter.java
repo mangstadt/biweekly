@@ -25,6 +25,7 @@ import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Attendee;
+import biweekly.property.Created;
 import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.property.Organizer;
@@ -396,7 +397,7 @@ public class ICalWriter implements Closeable, Flushable {
 			break;
 		}
 
-		ICalPropertyScribe propertyScribe = index.getPropertyScribe(property);
+		ICalPropertyScribe scribe = index.getPropertyScribe(property);
 
 		String value;
 		if (property instanceof Version) {
@@ -404,25 +405,34 @@ public class ICalWriter implements Closeable, Flushable {
 		} else {
 			//marshal property
 			try {
-				value = propertyScribe.writeText(property, writer.getVersion());
+				value = scribe.writeText(property, writer.getVersion());
 			} catch (SkipMeException e) {
 				return;
 			}
 		}
 
 		//get parameters
-		ICalParameters parameters = propertyScribe.prepareParameters(property, writer.getVersion());
+		ICalParameters parameters = scribe.prepareParameters(property, writer.getVersion());
 
 		//set the data type
-		ICalDataType dataType = propertyScribe.dataType(property, writer.getVersion());
-		if (dataType != null && dataType != propertyScribe.defaultDataType(writer.getVersion())) {
+		ICalDataType dataType = scribe.dataType(property, writer.getVersion());
+		if (dataType != null && dataType != scribe.defaultDataType(writer.getVersion())) {
 			//only add a VALUE parameter if the data type is (1) not "unknown" and (2) different from the property's default data type
 			parameters = new ICalParameters(parameters);
 			parameters.setValue(dataType);
 		}
 
+		//get the property name
+		String propertyName;
+		if (writer.getVersion() == ICalVersion.V1_0 && property instanceof Created) {
+			//the vCal DCREATED property is the same as the iCal CREATED property
+			propertyName = "DCREATED";
+		} else {
+			propertyName = scribe.getPropertyName();
+		}
+
 		//write property to data stream
-		writer.writeProperty(propertyScribe.getPropertyName(), parameters, value);
+		writer.writeProperty(propertyName, parameters, value);
 	}
 
 	/**

@@ -50,6 +50,7 @@ import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
 import biweekly.property.Attachment;
 import biweekly.property.Attendee;
+import biweekly.property.Created;
 import biweekly.property.ICalProperty;
 import biweekly.property.ProductId;
 import biweekly.property.RawProperty;
@@ -911,6 +912,47 @@ public class ICalReaderTest {
 
 		assertWarnings(0, reader.getWarnings());
 		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void vcal_DCREATED_property() throws Throwable {
+		{
+			//@formatter:off
+			String ical =
+			"BEGIN:VCALENDAR\r\n" +
+				"VERSION:1.0\r\n" +
+				"DCREATED:20140101T010000\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+
+			ICalReader reader = new ICalReader(ical);
+			ICalendar icalendar = reader.readNext();
+			assertSize(icalendar, 0, 2);
+			assertTrue(icalendar.getVersion().isV1_0());
+			assertEquals(date("2014-01-01 01:00:00"), icalendar.getProperty(Created.class).getValue());
+
+			assertWarnings(0, reader.getWarnings());
+			assertNull(reader.readNext());
+		}
+
+		{
+			//@formatter:off
+			String ical =
+			"BEGIN:VCALENDAR\r\n" +
+				"VERSION:2.0\r\n" +
+				"DCREATED:20140101T010000\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+
+			ICalReader reader = new ICalReader(ical);
+			ICalendar icalendar = reader.readNext();
+			assertSize(icalendar, 0, 2);
+			assertTrue(icalendar.getVersion().isV2_0());
+			assertEquals("20140101T010000", icalendar.getExperimentalProperty("DCREATED").getValue());
+
+			assertWarnings(0, reader.getWarnings());
+			assertNull(reader.readNext());
+		}
 	}
 
 	@Test

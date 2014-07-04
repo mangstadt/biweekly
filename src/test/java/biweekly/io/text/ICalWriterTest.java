@@ -3,6 +3,7 @@ package biweekly.io.text;
 import static biweekly.util.TestUtils.assertRegex;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
+import static biweekly.util.TestUtils.each;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
@@ -40,6 +41,7 @@ import biweekly.parameter.ParticipationStatus;
 import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.Classification;
+import biweekly.property.Created;
 import biweekly.property.DateStart;
 import biweekly.property.FreeBusy;
 import biweekly.property.ICalProperty;
@@ -619,20 +621,84 @@ public class ICalWriterTest {
 		organizer.setLanguage("en");
 		ical.addProperty(organizer);
 
-		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
-		writer.write(ical);
-		writer.close();
+		{
+			ICalVersion version = ICalVersion.V1_0;
+			StringWriter sw = new StringWriter();
+			ICalWriter writer = new ICalWriter(sw, version);
+			writer.write(ical);
+			writer.close();
 
-		//@formatter:off
-		String expected = 
-		"BEGIN:VCALENDAR\r\n" +
-		"ATTENDEE;LANGUAGE=en;ROLE=ORGANIZER:John Doe <jdoe@example.com>\r\n" +
-		"END:VCALENDAR\r\n";
-		//@formatter:on
+			//@formatter:off
+			String expected = 
+			"BEGIN:VCALENDAR\r\n" +
+			"ATTENDEE;LANGUAGE=en;ROLE=ORGANIZER:John Doe <jdoe@example.com>\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
 
-		String actual = sw.toString();
-		assertEquals(expected, actual);
+			String actual = sw.toString();
+			assertEquals(expected, actual);
+		}
+
+		for (ICalVersion version : each(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0)) {
+			StringWriter sw = new StringWriter();
+			ICalWriter writer = new ICalWriter(sw, version);
+			writer.write(ical);
+			writer.close();
+
+			//@formatter:off
+			String expected = 
+			"BEGIN:VCALENDAR\r\n" +
+			"ORGANIZER;LANGUAGE=en;CN=John Doe:mailto:jdoe@example.com\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+
+			String actual = sw.toString();
+			assertEquals(expected, actual);
+		}
+	}
+
+	@Test
+	public void vcal_DCREATED_property() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+
+		Created created = new Created(date("2014-01-01 01:00:00 +0000"));
+		ical.addProperty(created);
+
+		{
+			ICalVersion version = ICalVersion.V1_0;
+			StringWriter sw = new StringWriter();
+			ICalWriter writer = new ICalWriter(sw, version);
+			writer.write(ical);
+			writer.close();
+
+			//@formatter:off
+			String expected = 
+			"BEGIN:VCALENDAR\r\n" +
+			"DCREATED:20140101T010000Z\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+
+			String actual = sw.toString();
+			assertEquals(expected, actual);
+		}
+
+		for (ICalVersion version : each(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0)) {
+			StringWriter sw = new StringWriter();
+			ICalWriter writer = new ICalWriter(sw, version);
+			writer.write(ical);
+			writer.close();
+
+			//@formatter:off
+			String expected = 
+			"BEGIN:VCALENDAR\r\n" +
+			"CREATED:20140101T010000Z\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+
+			String actual = sw.toString();
+			assertEquals(expected, actual);
+		}
 	}
 
 	@Test

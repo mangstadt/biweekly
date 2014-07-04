@@ -38,6 +38,7 @@ import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Role;
 import biweekly.property.Attendee;
 import biweekly.property.AudioAlarm;
+import biweekly.property.Created;
 import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.util.org.apache.commons.codec.DecoderException;
@@ -333,7 +334,14 @@ public class ICalReader implements Closeable {
 
 			ICalParameters parameters = line.getParameters();
 			String value = line.getValue();
-			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyName);
+
+			ICalPropertyScribe<? extends ICalProperty> scribe;
+			if (reader.getVersion() == ICalVersion.V1_0 && "DCREATED".equals(propertyName)) {
+				//the vCal DCREATED property is the same as the iCal CREATED property
+				scribe = index.getPropertyScribe(Created.class);
+			} else {
+				scribe = index.getPropertyScribe(propertyName);
+			}
 
 			//process nameless parameters
 			processNamelessParameters(parameters, propertyName);
