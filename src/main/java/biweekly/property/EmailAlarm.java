@@ -29,7 +29,7 @@ import biweekly.component.VAlarm;
 
 /**
  * Defines an alarm that sends an email when triggered. It is recommended that
- * the {@link VAlarm} component be used to created alarms.
+ * the {@link VAlarm} component be used to create alarms.
  * @author Michael Angstadt
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.32</a>
  * @see VAlarm#email

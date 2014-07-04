@@ -136,6 +136,18 @@ public class VAlarm extends ICalComponent {
 	}
 
 	/**
+	 * Creates a procedure alarm (vCal 1.0 only).
+	 * @param trigger the trigger
+	 * @param path the path or name of the procedure
+	 * @return the alarm
+	 */
+	public static VAlarm procedure(Trigger trigger, String path) {
+		VAlarm alarm = new VAlarm(Action.procedure(), trigger);
+		alarm.setDescription(path);
+		return alarm;
+	}
+
+	/**
 	 * Creates an email alarm.
 	 * @param trigger the trigger
 	 * @param subject the email subject
@@ -478,6 +490,14 @@ public class VAlarm extends ICalComponent {
 				//only EMAIL alarms can have ATTENDEEs
 				if (!getAttendees().isEmpty()) {
 					warnings.add(Warning.validate(9));
+				}
+			}
+
+			if (action.isProcedure()) {
+				checkRequiredCardinality(warnings, Description.class);
+
+				if (version != ICalVersion.V1_0) {
+					warnings.add(Warning.validate(46));
 				}
 			}
 		}

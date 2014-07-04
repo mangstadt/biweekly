@@ -54,6 +54,7 @@ import biweekly.io.scribe.property.MethodScribe;
 import biweekly.io.scribe.property.OrganizerScribe;
 import biweekly.io.scribe.property.PercentCompleteScribe;
 import biweekly.io.scribe.property.PriorityScribe;
+import biweekly.io.scribe.property.ProcedureAlarmScribe;
 import biweekly.io.scribe.property.ProductIdScribe;
 import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.io.scribe.property.RecurrenceDatesScribe;
@@ -225,6 +226,7 @@ public class ScribeIndex {
 		registerStandard(new DaylightScribe());
 		registerStandard(new DisplayAlarmScribe());
 		registerStandard(new EmailAlarmScribe());
+		registerStandard(new ProcedureAlarmScribe());
 		registerStandard(new TimezoneScribe());
 	}
 

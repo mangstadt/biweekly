@@ -28,43 +28,38 @@ import biweekly.component.VAlarm;
  */
 
 /**
- * Defines an alarm that will play an audio file when triggered. It is
- * recommended that the {@link VAlarm} component be used to create alarms.
+ * Defines an alarm that executes a procedure when triggered. It is recommended
+ * that the {@link VAlarm} component be used to created alarms.
  * @author Michael Angstadt
- * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.27-8</a>
- * @see VAlarm#audio
+ * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.33</a>
+ * @see VAlarm#procedure
  */
-public class AudioAlarm extends VCalAlarmProperty {
-	private String contentId, uri;
-	private byte[] data;
+public class ProcedureAlarm extends VCalAlarmProperty {
+	private String path;
 
-	public String getContentId() {
-		return contentId;
+	/**
+	 * @param path the path or name of the procedure to run when the alarm is
+	 * triggered
+	 */
+	public ProcedureAlarm(String path) {
+		this.path = path;
 	}
 
-	public void setContentId(String contentId) {
-		this.contentId = contentId;
-		this.uri = null;
-		this.data = null;
+	/**
+	 * Gets the path or name of the procedure to run when the alarm is
+	 * triggered.
+	 * @return the path
+	 */
+	public String getPath() {
+		return path;
 	}
 
-	public String getUri() {
-		return uri;
-	}
-
-	public void setUri(String uri) {
-		this.uri = uri;
-		this.contentId = null;
-		this.data = null;
-	}
-
-	public byte[] getData() {
-		return data;
-	}
-
-	public void setData(byte[] data) {
-		this.data = data;
-		this.uri = null;
-		this.contentId = null;
+	/**
+	 * Sets the path or name of the procedure to run when the alarm is
+	 * triggered.
+	 * @param text the path
+	 */
+	public void getPath(String path) {
+		this.path = path;
 	}
 }

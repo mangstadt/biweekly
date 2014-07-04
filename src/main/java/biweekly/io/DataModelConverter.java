@@ -23,6 +23,7 @@ import biweekly.property.DisplayAlarm;
 import biweekly.property.DurationProperty;
 import biweekly.property.EmailAlarm;
 import biweekly.property.Organizer;
+import biweekly.property.ProcedureAlarm;
 import biweekly.property.Repeat;
 import biweekly.property.Trigger;
 import biweekly.property.VCalAlarmProperty;
@@ -207,6 +208,22 @@ public class DataModelConverter {
 		return valarm;
 	}
 
+	/**
+	 * Converts a {@link ProcedureAlarm} property to a {@link VAlarm} component.
+	 * @param dalarm the PALARM property
+	 * @return the VALARM component
+	 */
+	public static VAlarm convert(ProcedureAlarm dalarm) {
+		Trigger trigger = new Trigger(dalarm.getStart());
+		VAlarm valarm = new VAlarm(Action.procedure(), trigger);
+
+		valarm.setDescription(dalarm.getPath());
+		valarm.setDuration(dalarm.getSnooze());
+		valarm.setRepeat(dalarm.getRepeat());
+
+		return valarm;
+	}
+
 	private static Attachment buildAttachment(AudioAlarm aalarm) {
 		String type = aalarm.getParameter("TYPE");
 		String contentType = (type == null) ? null : "audio/" + type.toLowerCase();
@@ -288,6 +305,12 @@ public class DataModelConverter {
 			malarm.setNote(note);
 
 			return malarm;
+		}
+
+		if (action.isProcedure()) {
+			Description description = valarm.getDescription();
+			String path = (description == null) ? null : description.getValue();
+			return new ProcedureAlarm(path);
 		}
 
 		return null;

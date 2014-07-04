@@ -29,13 +29,14 @@ import biweekly.io.SkipMeException;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.component.ICalendarScribe;
-import biweekly.io.scribe.property.AudioAlarmScribe;
 import biweekly.io.scribe.property.DisplayAlarmScribe;
 import biweekly.io.scribe.property.EmailAlarmScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
+import biweekly.io.scribe.property.ProcedureAlarmScribe;
 import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.io.scribe.property.RecurrencePropertyScribe;
+import biweekly.io.scribe.property.VCalAlarmPropertyScribe;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Role;
@@ -46,6 +47,7 @@ import biweekly.property.Daylight;
 import biweekly.property.DisplayAlarm;
 import biweekly.property.EmailAlarm;
 import biweekly.property.ICalProperty;
+import biweekly.property.ProcedureAlarm;
 import biweekly.util.org.apache.commons.codec.DecoderException;
 import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
 
@@ -350,7 +352,7 @@ public class ICalReader implements Closeable {
 
 			//treat a vCal property as a raw property if the version is not 1.0
 			if (reader.getVersion() != ICalVersion.V1_0) {
-				if (scribe instanceof AudioAlarmScribe || scribe instanceof DisplayAlarmScribe || scribe instanceof EmailAlarmScribe) {
+				if (scribe instanceof VCalAlarmPropertyScribe) {
 					scribe = new RawPropertyScribe(propertyName);
 				}
 			}
@@ -468,7 +470,13 @@ public class ICalReader implements Closeable {
 						continue;
 					}
 
-					//TODO PALARM property => VALARM component
+					//PALARM property => VALARM component
+					if (property instanceof ProcedureAlarm) {
+						ProcedureAlarm palarm = (ProcedureAlarm) property;
+						VAlarm valarm = convert(palarm);
+						parentComponent.addComponent(valarm);
+						continue;
+					}
 					break;
 
 				default:

@@ -6,6 +6,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import biweekly.ICalVersion;
 import biweekly.parameter.Related;
 import biweekly.property.Action;
 import biweekly.property.Attachment;
@@ -99,6 +100,18 @@ public class VAlarmTest {
 		component = new VAlarm(Action.display(), new Trigger(new Date()));
 		component.addAttendee(new Attendee(""));
 		assertValidate(component).run(9, 2);
+	}
+
+	@Test
+	public void validate_procedure() {
+		VAlarm component = new VAlarm(Action.procedure(), new Trigger(new Date()));
+		assertValidate(component).versions(ICalVersion.V1_0).run(2);
+		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(2, 46);
+
+		component = new VAlarm(Action.procedure(), new Trigger(new Date()));
+		component.setDescription("");
+		assertValidate(component).versions(ICalVersion.V1_0).run();
+		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(46);
 	}
 
 	@Test

@@ -61,12 +61,14 @@ import java.util.Collection;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-132">RFC 5545 p.132-3</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-132">RFC 5545
+ * p.132-3</a>
  */
 public class Action extends EnumProperty {
 	private static final String AUDIO = "AUDIO";
 	private static final String DISPLAY = "DISPLAY";
 	private static final String EMAIL = "EMAIL";
+	private static final String PROCEDURE = "PROCEDURE";
 
 	/**
 	 * Creates an action property. Use of this constructor is discouraged and
@@ -126,12 +128,28 @@ public class Action extends EnumProperty {
 		return is(EMAIL);
 	}
 
+	/**
+	 * Creates a "procedure" action property (vCal 1.0 only).
+	 * @return the property
+	 */
+	public static Action procedure() {
+		return create(PROCEDURE);
+	}
+
+	/**
+	 * Determines if this property is a "procedure" action (vCal 1.0 only).
+	 * @return true if it's a "procedure" action, false if not
+	 */
+	public boolean isProcedure() {
+		return is(PROCEDURE);
+	}
+
 	private static Action create(String value) {
 		return new Action(value);
 	}
 
 	@Override
 	protected Collection<String> getStandardValues() {
-		return Arrays.asList(AUDIO, DISPLAY, EMAIL);
+		return Arrays.asList(AUDIO, DISPLAY, EMAIL, PROCEDURE);
 	}
 }

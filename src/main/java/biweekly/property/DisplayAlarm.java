@@ -28,8 +28,8 @@ import biweekly.component.VAlarm;
  */
 
 /**
- * Defines an alarm that displays text when triggered. It is recommended that
- * the {@link VAlarm} component be used to created alarms.
+ * Defines an alarm that displays a message when triggered. It is recommended
+ * that the {@link VAlarm} component be used to created alarms.
  * @author Michael Angstadt
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.30</a>
  * @see VAlarm#display

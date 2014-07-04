@@ -1,6 +1,10 @@
-package biweekly.property;
+package biweekly.io.scribe.property;
 
-import biweekly.component.VAlarm;
+import java.util.Arrays;
+import java.util.List;
+
+import biweekly.ICalDataType;
+import biweekly.property.ProcedureAlarm;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -28,43 +32,26 @@ import biweekly.component.VAlarm;
  */
 
 /**
- * Defines an alarm that will play an audio file when triggered. It is
- * recommended that the {@link VAlarm} component be used to create alarms.
+ * Marshals {@link ProcedureAlarm} properties.
  * @author Michael Angstadt
- * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.27-8</a>
- * @see VAlarm#audio
  */
-public class AudioAlarm extends VCalAlarmProperty {
-	private String contentId, uri;
-	private byte[] data;
-
-	public String getContentId() {
-		return contentId;
+public class ProcedureAlarmScribe extends VCalAlarmPropertyScribe<ProcedureAlarm> {
+	public ProcedureAlarmScribe() {
+		super(ProcedureAlarm.class, "PALARM", ICalDataType.TEXT);
 	}
 
-	public void setContentId(String contentId) {
-		this.contentId = contentId;
-		this.uri = null;
-		this.data = null;
+	@Override
+	protected List<String> writeData(ProcedureAlarm property) {
+		String path = property.getPath();
+		if (path != null) {
+			return Arrays.asList(path);
+		}
+
+		return Arrays.asList();
 	}
 
-	public String getUri() {
-		return uri;
-	}
-
-	public void setUri(String uri) {
-		this.uri = uri;
-		this.contentId = null;
-		this.data = null;
-	}
-
-	public byte[] getData() {
-		return data;
-	}
-
-	public void setData(byte[] data) {
-		this.data = data;
-		this.uri = null;
-		this.contentId = null;
+	@Override
+	protected ProcedureAlarm create(ICalDataType dataType, SemiStructuredIterator it) {
+		return new ProcedureAlarm(it.next());
 	}
 }
