@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import biweekly.ICalVersion;
 import biweekly.property.Contact;
 
 /*
@@ -37,7 +38,7 @@ public class ContactScribe extends TextPropertyScribe<Contact> {
 	}
 
 	@Override
-	protected Contact newInstance(String value) {
+	protected Contact newInstance(String value, ICalVersion version) {
 		return new Contact(value);
 	}
 }

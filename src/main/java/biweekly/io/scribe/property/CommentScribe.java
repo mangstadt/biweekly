@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import biweekly.ICalVersion;
 import biweekly.property.Comment;
 
 /*
@@ -37,7 +38,7 @@ public class CommentScribe extends TextPropertyScribe<Comment> {
 	}
 
 	@Override
-	protected Comment newInstance(String value) {
+	protected Comment newInstance(String value, ICalVersion version) {
 		return new Comment(value);
 	}
 }

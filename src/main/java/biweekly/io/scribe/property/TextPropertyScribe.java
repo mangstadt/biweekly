@@ -62,7 +62,7 @@ public abstract class TextPropertyScribe<T extends TextProperty> extends ICalPro
 	@Override
 	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
 		value = unescape(value);
-		return newInstance(value);
+		return newInstance(value, version);
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public abstract class TextPropertyScribe<T extends TextProperty> extends ICalPro
 	protected T _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
 		String value = element.first(defaultDataType);
 		if (value != null) {
-			return newInstance(value);
+			return newInstance(value, ICalVersion.V2_0);
 		}
 
 		throw missingXmlElements(defaultDataType);
@@ -87,8 +87,8 @@ public abstract class TextPropertyScribe<T extends TextProperty> extends ICalPro
 
 	@Override
 	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
-		return newInstance(value.asSingle());
+		return newInstance(value.asSingle(), ICalVersion.V2_0);
 	}
 
-	protected abstract T newInstance(String value);
+	protected abstract T newInstance(String value, ICalVersion version);
 }

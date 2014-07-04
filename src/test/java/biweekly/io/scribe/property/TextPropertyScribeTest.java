@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.io.scribe.property.TextPropertyScribe;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.TextProperty;
@@ -109,7 +110,7 @@ public class TextPropertyScribeTest {
 		}
 
 		@Override
-		protected TextPropertyImpl newInstance(String value) {
+		protected TextPropertyImpl newInstance(String value, ICalVersion version) {
 			return new TextPropertyImpl(value);
 		}
 	}

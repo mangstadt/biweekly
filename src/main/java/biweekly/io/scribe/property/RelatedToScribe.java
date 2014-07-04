@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import biweekly.ICalVersion;
 import biweekly.property.RelatedTo;
 
 /*
@@ -37,7 +38,7 @@ public class RelatedToScribe extends TextPropertyScribe<RelatedTo> {
 	}
 
 	@Override
-	protected RelatedTo newInstance(String value) {
+	protected RelatedTo newInstance(String value, ICalVersion version) {
 		return new RelatedTo(value);
 	}
 }

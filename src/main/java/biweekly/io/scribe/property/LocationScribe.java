@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import biweekly.ICalVersion;
 import biweekly.property.Location;
 
 /*
@@ -37,7 +38,7 @@ public class LocationScribe extends TextPropertyScribe<Location> {
 	}
 
 	@Override
-	protected Location newInstance(String value) {
+	protected Location newInstance(String value, ICalVersion version) {
 		return new Location(value);
 	}
 }

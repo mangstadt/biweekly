@@ -1,6 +1,7 @@
 package biweekly.io.scribe.property;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.property.Url;
 
 /*
@@ -38,7 +39,7 @@ public class UrlScribe extends TextPropertyScribe<Url> {
 	}
 
 	@Override
-	protected Url newInstance(String value) {
+	protected Url newInstance(String value, ICalVersion version) {
 		return new Url(value);
 	}
 }

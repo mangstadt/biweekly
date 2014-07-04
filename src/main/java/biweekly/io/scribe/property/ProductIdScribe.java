@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import biweekly.ICalVersion;
 import biweekly.property.ProductId;
 
 /*
@@ -37,7 +38,7 @@ public class ProductIdScribe extends TextPropertyScribe<ProductId> {
 	}
 
 	@Override
-	protected ProductId newInstance(String value) {
+	protected ProductId newInstance(String value, ICalVersion version) {
 		return new ProductId(value);
 	}
 }

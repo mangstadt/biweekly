@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import biweekly.ICalVersion;
 import biweekly.property.Method;
 
 /*
@@ -37,7 +38,7 @@ public class MethodScribe extends TextPropertyScribe<Method> {
 	}
 
 	@Override
-	protected Method newInstance(String value) {
+	protected Method newInstance(String value, ICalVersion version) {
 		return new Method(value);
 	}
 }

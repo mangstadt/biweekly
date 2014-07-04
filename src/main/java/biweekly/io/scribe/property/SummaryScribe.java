@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import biweekly.ICalVersion;
 import biweekly.property.Summary;
 
 /*
@@ -37,7 +38,7 @@ public class SummaryScribe extends TextPropertyScribe<Summary> {
 	}
 
 	@Override
-	protected Summary newInstance(String value) {
+	protected Summary newInstance(String value, ICalVersion version) {
 		return new Summary(value);
 	}
 }

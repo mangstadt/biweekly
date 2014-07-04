@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import biweekly.ICalVersion;
 import biweekly.property.TimezoneName;
 
 /*
@@ -37,7 +38,7 @@ public class TimezoneNameScribe extends TextPropertyScribe<TimezoneName> {
 	}
 
 	@Override
-	protected TimezoneName newInstance(String value) {
+	protected TimezoneName newInstance(String value, ICalVersion version) {
 		return new TimezoneName(value);
 	}
 }

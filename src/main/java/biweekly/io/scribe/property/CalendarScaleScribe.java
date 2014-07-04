@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import biweekly.ICalVersion;
 import biweekly.property.CalendarScale;
 
 /*
@@ -37,7 +38,7 @@ public class CalendarScaleScribe extends TextPropertyScribe<CalendarScale> {
 	}
 
 	@Override
-	protected CalendarScale newInstance(String value) {
+	protected CalendarScale newInstance(String value, ICalVersion version) {
 		return new CalendarScale(value);
 	}
 }

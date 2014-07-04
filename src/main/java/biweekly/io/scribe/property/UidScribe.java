@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import biweekly.ICalVersion;
 import biweekly.property.Uid;
 
 /*
@@ -37,7 +38,7 @@ public class UidScribe extends TextPropertyScribe<Uid> {
 	}
 
 	@Override
-	protected Uid newInstance(String value) {
+	protected Uid newInstance(String value, ICalVersion version) {
 		return new Uid(value);
 	}
 }

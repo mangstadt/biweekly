@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import biweekly.ICalVersion;
 import biweekly.property.Transparency;
 
 /*
@@ -37,7 +38,7 @@ public class TransparencyScribe extends TextPropertyScribe<Transparency> {
 	}
 
 	@Override
-	protected Transparency newInstance(String value) {
+	protected Transparency newInstance(String value, ICalVersion version) {
 		return new Transparency(value);
 	}
 }

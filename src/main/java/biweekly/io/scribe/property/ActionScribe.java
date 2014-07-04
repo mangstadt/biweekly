@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import biweekly.ICalVersion;
 import biweekly.property.Action;
 
 /*
@@ -37,7 +38,7 @@ public class ActionScribe extends TextPropertyScribe<Action> {
 	}
 
 	@Override
-	protected Action newInstance(String value) {
+	protected Action newInstance(String value, ICalVersion version) {
 		return new Action(value);
 	}
 }
