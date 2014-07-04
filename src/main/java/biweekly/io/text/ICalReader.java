@@ -29,6 +29,8 @@ import biweekly.io.SkipMeException;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.component.ICalendarScribe;
+import biweekly.io.scribe.property.AudioAlarmScribe;
+import biweekly.io.scribe.property.DisplayAlarmScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.io.scribe.property.RawPropertyScribe;
@@ -40,6 +42,7 @@ import biweekly.property.Attendee;
 import biweekly.property.AudioAlarm;
 import biweekly.property.Created;
 import biweekly.property.Daylight;
+import biweekly.property.DisplayAlarm;
 import biweekly.property.ICalProperty;
 import biweekly.util.org.apache.commons.codec.DecoderException;
 import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
@@ -343,6 +346,13 @@ public class ICalReader implements Closeable {
 				scribe = index.getPropertyScribe(propertyName);
 			}
 
+			//treat a vCal property as a raw property if the version is not 1.0
+			if (reader.getVersion() != ICalVersion.V1_0) {
+				if (scribe instanceof AudioAlarmScribe || scribe instanceof DisplayAlarmScribe) {
+					scribe = new RawPropertyScribe(propertyName);
+				}
+			}
+
 			//process nameless parameters
 			processNamelessParameters(parameters, propertyName);
 
@@ -437,9 +447,17 @@ public class ICalReader implements Closeable {
 						AudioAlarm aalarm = (AudioAlarm) property;
 						VAlarm valarm = convert(aalarm);
 						parentComponent.addComponent(valarm);
+						continue;
 					}
 
-					//TODO DALARM property => VALARM component
+					//DALARM property => VALARM component
+					if (property instanceof DisplayAlarm) {
+						DisplayAlarm dalarm = (DisplayAlarm) property;
+						VAlarm valarm = convert(dalarm);
+						parentComponent.addComponent(valarm);
+						continue;
+					}
+
 					//TODO MALARM property => VALARM component
 					//TODO PALARM property => VALARM component
 					break;

@@ -18,6 +18,8 @@ import biweekly.property.AudioAlarm;
 import biweekly.property.DateEnd;
 import biweekly.property.DateStart;
 import biweekly.property.Daylight;
+import biweekly.property.Description;
+import biweekly.property.DisplayAlarm;
 import biweekly.property.DurationProperty;
 import biweekly.property.Organizer;
 import biweekly.property.Repeat;
@@ -154,7 +156,7 @@ public class DataModelConverter {
 
 	/**
 	 * Converts a {@link AudioAlarm} property to a {@link VAlarm} component.
-	 * @param aalarm the AALARM property
+	 * @param aalarm the AALARM property	
 	 * @return the VALARM component
 	 */
 	public static VAlarm convert(AudioAlarm aalarm) {
@@ -164,6 +166,22 @@ public class DataModelConverter {
 		valarm.addAttachment(buildAttachment(aalarm));
 		valarm.setDuration(aalarm.getSnooze());
 		valarm.setRepeat(aalarm.getRepeat());
+
+		return valarm;
+	}
+
+	/**
+	 * Converts a {@link DisplayAlarm} property to a {@link VAlarm} component.
+	 * @param dalarm the DALARM property
+	 * @return the VALARM component
+	 */
+	public static VAlarm convert(DisplayAlarm dalarm) {
+		Trigger trigger = new Trigger(dalarm.getStart());
+		VAlarm valarm = new VAlarm(Action.display(), trigger);
+
+		valarm.setDescription(dalarm.getText());
+		valarm.setDuration(dalarm.getSnooze());
+		valarm.setRepeat(dalarm.getRepeat());
 
 		return valarm;
 	}
@@ -234,7 +252,9 @@ public class DataModelConverter {
 		}
 
 		if (action.isDisplay()) {
-			//TODO
+			Description description = valarm.getDescription();
+			String text = (description == null) ? null : description.getValue();
+			return new DisplayAlarm(text);
 		}
 
 		if (action.isEmail()) {

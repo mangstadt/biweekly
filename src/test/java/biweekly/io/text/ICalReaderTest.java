@@ -816,6 +816,90 @@ public class ICalReaderTest {
 	}
 
 	@Test
+	public void vcal_AALARM_property() throws Throwable {
+		{
+			//@formatter:off
+			String ical =
+			"BEGIN:VCALENDAR\r\n" +
+				"VERSION:1.0\r\n" +
+				"AALARM;VALUE=URL:20140101T010000;PT10M;5;http://example.com\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+
+			ICalReader reader = new ICalReader(ical);
+			ICalendar icalendar = reader.readNext();
+			assertSize(icalendar, 1, 1);
+			assertTrue(icalendar.getVersion().isV1_0());
+
+			VAlarm valarm = icalendar.getComponent(VAlarm.class);
+			assertSize(valarm, 0, 5);
+			assertTrue(valarm.getAction().isAudio());
+			assertEquals(date("2014-01-01 01:00:00"), valarm.getTrigger().getDate());
+			assertEquals(new Duration.Builder().minutes(10).build(), valarm.getDuration().getValue());
+			assertIntEquals(5, valarm.getRepeat().getValue());
+			assertEquals("http://example.com", valarm.getAttachments().get(0).getUri());
+		}
+
+		{
+			//@formatter:off
+			String ical =
+			"BEGIN:VCALENDAR\r\n" +
+				"VERSION:2.0\r\n" +
+				"AALARM;VALUE=URL:20140101T010000;PT10M;5;http://example.com\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+
+			ICalReader reader = new ICalReader(ical);
+			ICalendar icalendar = reader.readNext();
+			assertSize(icalendar, 0, 2);
+			assertTrue(icalendar.getVersion().isV2_0());
+			assertEquals("20140101T010000;PT10M;5;http://example.com", icalendar.getExperimentalProperty("AALARM").getValue());
+		}
+	}
+
+	@Test
+	public void vcal_DALARM_property() throws Throwable {
+		{
+			//@formatter:off
+			String ical =
+			"BEGIN:VCALENDAR\r\n" +
+				"VERSION:1.0\r\n" +
+				"DALARM:20140101T010000;PT10M;5;display-text\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+
+			ICalReader reader = new ICalReader(ical);
+			ICalendar icalendar = reader.readNext();
+			assertSize(icalendar, 1, 1);
+			assertTrue(icalendar.getVersion().isV1_0());
+
+			VAlarm valarm = icalendar.getComponent(VAlarm.class);
+			assertSize(valarm, 0, 5);
+			assertTrue(valarm.getAction().isDisplay());
+			assertEquals(date("2014-01-01 01:00:00"), valarm.getTrigger().getDate());
+			assertEquals(new Duration.Builder().minutes(10).build(), valarm.getDuration().getValue());
+			assertIntEquals(5, valarm.getRepeat().getValue());
+			assertEquals("display-text", valarm.getDescription().getValue());
+		}
+
+		{
+			//@formatter:off
+			String ical =
+			"BEGIN:VCALENDAR\r\n" +
+				"VERSION:2.0\r\n" +
+				"DALARM:20140101T010000;PT10M;5;display-text\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+
+			ICalReader reader = new ICalReader(ical);
+			ICalendar icalendar = reader.readNext();
+			assertSize(icalendar, 0, 2);
+			assertTrue(icalendar.getVersion().isV2_0());
+			assertEquals("20140101T010000;PT10M;5;display-text", icalendar.getExperimentalProperty("DALARM").getValue());
+		}
+	}
+
+	@Test
 	public void vcal_rrule() throws Throwable {
 		//@formatter:off
 		String ical =
