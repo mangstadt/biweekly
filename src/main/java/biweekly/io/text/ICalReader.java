@@ -31,6 +31,7 @@ import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.component.ICalendarScribe;
 import biweekly.io.scribe.property.AudioAlarmScribe;
 import biweekly.io.scribe.property.DisplayAlarmScribe;
+import biweekly.io.scribe.property.EmailAlarmScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.io.scribe.property.RawPropertyScribe;
@@ -43,6 +44,7 @@ import biweekly.property.AudioAlarm;
 import biweekly.property.Created;
 import biweekly.property.Daylight;
 import biweekly.property.DisplayAlarm;
+import biweekly.property.EmailAlarm;
 import biweekly.property.ICalProperty;
 import biweekly.util.org.apache.commons.codec.DecoderException;
 import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
@@ -348,7 +350,7 @@ public class ICalReader implements Closeable {
 
 			//treat a vCal property as a raw property if the version is not 1.0
 			if (reader.getVersion() != ICalVersion.V1_0) {
-				if (scribe instanceof AudioAlarmScribe || scribe instanceof DisplayAlarmScribe) {
+				if (scribe instanceof AudioAlarmScribe || scribe instanceof DisplayAlarmScribe || scribe instanceof EmailAlarmScribe) {
 					scribe = new RawPropertyScribe(propertyName);
 				}
 			}
@@ -458,7 +460,14 @@ public class ICalReader implements Closeable {
 						continue;
 					}
 
-					//TODO MALARM property => VALARM component
+					//MALARM property => VALARM component
+					if (property instanceof EmailAlarm) {
+						EmailAlarm malarm = (EmailAlarm) property;
+						VAlarm valarm = convert(malarm);
+						parentComponent.addComponent(valarm);
+						continue;
+					}
+
 					//TODO PALARM property => VALARM component
 					break;
 

@@ -42,6 +42,7 @@ import biweekly.io.scribe.property.DaylightScribe;
 import biweekly.io.scribe.property.DescriptionScribe;
 import biweekly.io.scribe.property.DisplayAlarmScribe;
 import biweekly.io.scribe.property.DurationPropertyScribe;
+import biweekly.io.scribe.property.EmailAlarmScribe;
 import biweekly.io.scribe.property.ExceptionDatesScribe;
 import biweekly.io.scribe.property.ExceptionRuleScribe;
 import biweekly.io.scribe.property.FreeBusyScribe;
@@ -223,6 +224,7 @@ public class ScribeIndex {
 		registerStandard(new AudioAlarmScribe());
 		registerStandard(new DaylightScribe());
 		registerStandard(new DisplayAlarmScribe());
+		registerStandard(new EmailAlarmScribe());
 		registerStandard(new TimezoneScribe());
 	}
 

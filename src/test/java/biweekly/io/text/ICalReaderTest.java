@@ -900,6 +900,49 @@ public class ICalReaderTest {
 	}
 
 	@Test
+	public void vcal_MALARM_property() throws Throwable {
+		{
+			//@formatter:off
+			String ical =
+			"BEGIN:VCALENDAR\r\n" +
+				"VERSION:1.0\r\n" +
+				"MALARM:20140101T010000;PT10M;5;jdoe@example.com;note\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+
+			ICalReader reader = new ICalReader(ical);
+			ICalendar icalendar = reader.readNext();
+			assertSize(icalendar, 1, 1);
+			assertTrue(icalendar.getVersion().isV1_0());
+
+			VAlarm valarm = icalendar.getComponent(VAlarm.class);
+			assertSize(valarm, 0, 6);
+			assertTrue(valarm.getAction().isEmail());
+			assertEquals(date("2014-01-01 01:00:00"), valarm.getTrigger().getDate());
+			assertEquals(new Duration.Builder().minutes(10).build(), valarm.getDuration().getValue());
+			assertIntEquals(5, valarm.getRepeat().getValue());
+			assertEquals("note", valarm.getDescription().getValue());
+			assertEquals("jdoe@example.com", valarm.getAttendees().get(0).getEmail());
+		}
+
+		{
+			//@formatter:off
+			String ical =
+			"BEGIN:VCALENDAR\r\n" +
+				"VERSION:2.0\r\n" +
+				"MALARM:20140101T010000;PT10M;5;jdoe@example.com;note\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+
+			ICalReader reader = new ICalReader(ical);
+			ICalendar icalendar = reader.readNext();
+			assertSize(icalendar, 0, 2);
+			assertTrue(icalendar.getVersion().isV2_0());
+			assertEquals("20140101T010000;PT10M;5;jdoe@example.com;note", icalendar.getExperimentalProperty("MALARM").getValue());
+		}
+	}
+
+	@Test
 	public void vcal_rrule() throws Throwable {
 		//@formatter:off
 		String ical =
