@@ -3,6 +3,8 @@ package biweekly.property;
 import java.util.Arrays;
 import java.util.Collection;
 
+import biweekly.ICalVersion;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -133,7 +135,7 @@ public class Classification extends EnumProperty {
 	}
 
 	@Override
-	protected Collection<String> getStandardValues() {
+	protected Collection<String> getStandardValues(ICalVersion version) {
 		return Arrays.asList(PUBLIC, PRIVATE, CONFIDENTIAL);
 	}
 }

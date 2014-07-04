@@ -1214,7 +1214,17 @@ public class VEvent extends ICalComponent {
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
 		checkOptionalCardinality(warnings, Classification.class, Created.class, Description.class, Geo.class, LastModified.class, Location.class, Organizer.class, Priority.class, Status.class, Summary.class, Transparency.class, Url.class, RecurrenceId.class);
-		checkStatus(warnings, Status.tentative(), Status.confirmed(), Status.cancelled());
+
+		Status validStatuses[];
+		switch (version) {
+		case V1_0:
+			validStatuses = new Status[] { Status.tentative(), Status.confirmed(), Status.cancelled(), Status.declined(), Status.delegated(), Status.sent() };
+			break;
+		default:
+			validStatuses = new Status[] { Status.tentative(), Status.confirmed(), Status.cancelled() };
+			break;
+		}
+		checkStatus(warnings, validStatuses);
 
 		DateStart dateStart = getDateStart();
 		DateEnd dateEnd = getDateEnd();

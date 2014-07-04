@@ -948,7 +948,7 @@ public class XCalReaderTest {
 				assertEquals("4088E990AD89CB3DBB484909", event.getUid().getValue());
 			}
 
-			assertValidate(ical).run();
+			assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 		}
 
 		assertNull(reader.readNext());
@@ -1052,7 +1052,7 @@ public class XCalReaderTest {
 				assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
 			}
 
-			assertValidate(ical).run();
+			assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 		}
 
 		assertNull(reader.readNext());

@@ -1,6 +1,11 @@
 package biweekly.io.scribe.property;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
 import biweekly.ICalVersion;
+import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Status;
 
 /*
@@ -29,29 +34,35 @@ import biweekly.property.Status;
  */
 
 /**
- * Marshals {@link Status} properties.
  * @author Michael Angstadt
  */
-public class StatusScribe extends TextPropertyScribe<Status> {
-	public StatusScribe() {
-		super(Status.class, "STATUS");
+public class StatusScribeTest {
+	private final StatusScribe scribe = new StatusScribe();
+	private final Sensei<Status> sensei = new Sensei<Status>(scribe);
+
+	@Test
+	public void writeText_needsAction() {
+		Status status = Status.needsAction();
+
+		sensei.assertWriteText(status).version(ICalVersion.V1_0).run("NEEDS ACTION");
+		sensei.assertWriteText(status).version(ICalVersion.V2_0_DEPRECATED).run("NEEDS-ACTION");
+		sensei.assertWriteText(status).version(ICalVersion.V2_0).run("NEEDS-ACTION");
 	}
 
-	@Override
-	protected String _writeText(Status property, ICalVersion version) {
-		if (version == ICalVersion.V1_0 && property.isNeedsAction()) {
-			//vCal doesn't have a hyphen in the value
-			return "NEEDS ACTION";
-		}
-		return super._writeText(property, version);
+	@Test
+	public void parseText_needsAction() {
+		sensei.assertParseText("NEEDS ACTION").versions(ICalVersion.V1_0).run(isNeedsAction(true));
+		sensei.assertParseText("NEEDS ACTION").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(isNeedsAction(false));
+
+		sensei.assertParseText("NEEDS-ACTION").versions(ICalVersion.V1_0).run(isNeedsAction(true));
+		sensei.assertParseText("NEEDS-ACTION").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(isNeedsAction(true));
 	}
 
-	@Override
-	protected Status newInstance(String value, ICalVersion version) {
-		if (version == ICalVersion.V1_0 && "NEEDS ACTION".equalsIgnoreCase(value)) {
-			//vCal doesn't have a hyphen in the value
-			return Status.needsAction();
-		}
-		return new Status(value);
+	private Check<Status> isNeedsAction(final boolean isNeedsAction) {
+		return new Check<Status>() {
+			public void check(Status actual) {
+				assertEquals(isNeedsAction, actual.isNeedsAction());
+			}
+		};
 	}
 }

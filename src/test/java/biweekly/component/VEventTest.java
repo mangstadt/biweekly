@@ -7,6 +7,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import biweekly.ICalVersion;
 import biweekly.property.Classification;
 import biweekly.property.Created;
 import biweekly.property.DateEnd;
@@ -85,8 +86,10 @@ public class VEventTest {
 		component.addProperty(new Organizer(null, null));
 		component.addProperty(new Priority(1));
 		component.addProperty(new Priority(1));
-		component.addProperty(Status.cancelled());
-		component.addProperty(Status.cancelled());
+		Status status1 = Status.cancelled();
+		component.addProperty(status1);
+		Status status2 = Status.cancelled();
+		component.addProperty(status2);
 		component.addProperty(new Summary(""));
 		component.addProperty(new Summary(""));
 		component.addProperty(Transparency.opaque());
@@ -95,15 +98,20 @@ public class VEventTest {
 		component.addProperty(new Url(""));
 		component.addProperty(new RecurrenceId(new Date()));
 		component.addProperty(new RecurrenceId(new Date()));
-		assertValidate(component).parents(parent).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 14);
+
+		assertValidate(component).parents(parent).versions(ICalVersion.V1_0).warn(status1, 46).warn(status2, 46).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 14);
+		assertValidate(component).parents(parent).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 14);
 	}
 
 	@Test
 	public void validate_status() {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
-		component.setStatus(Status.draft());
-		assertValidate(component).parents(parent).run(13, 14);
+		Status status = Status.draft();
+		component.setStatus(status);
+
+		assertValidate(component).parents(parent).versions(ICalVersion.V1_0).warn(status, 46).run(13, 14);
+		assertValidate(component).parents(parent).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(13, 14);
 	}
 
 	@Test

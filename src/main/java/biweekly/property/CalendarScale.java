@@ -2,6 +2,9 @@ package biweekly.property;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+
+import biweekly.ICalVersion;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -111,7 +114,15 @@ public class CalendarScale extends EnumProperty {
 	}
 
 	@Override
-	protected Collection<String> getStandardValues() {
+	protected Collection<String> getStandardValues(ICalVersion version) {
 		return Arrays.asList(GREGORIAN);
+	}
+
+	@Override
+	protected Collection<ICalVersion> getSupportedVersions() {
+		if (value == null) {
+			return Collections.emptyList();
+		}
+		return Arrays.asList(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

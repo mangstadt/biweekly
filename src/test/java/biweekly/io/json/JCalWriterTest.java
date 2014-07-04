@@ -533,7 +533,7 @@ public class JCalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical).run();
+		assertValidate(ical).versions(ICalVersion.V2_0).run();
 		assertExample(ical, "jcal-draft-example1.json");
 	}
 
@@ -608,7 +608,7 @@ public class JCalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical).run();
+		assertValidate(ical).versions(ICalVersion.V2_0).run();
 		assertExample(ical, "jcal-draft-example2.json");
 	}
 

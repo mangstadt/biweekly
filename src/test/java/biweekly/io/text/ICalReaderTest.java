@@ -1248,7 +1248,7 @@ public class ICalReaderTest {
 			assertEquals("0", event.getExperimentalProperty("X-MS-OLK-CONFTYPE").getValue());
 		}
 
-		assertValidate(ical).run();
+		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 
 		assertNull(reader.readNext());
 	}
@@ -1277,7 +1277,7 @@ public class ICalReaderTest {
 			assertEquals("Networld+Interop Conferenceand Exhibit\nAtlanta World Congress Center\nAtlanta, Georgia", event.getDescription().getValue());
 		}
 
-		assertValidate(ical).run();
+		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 
 		assertNull(reader.readNext());
 	}
@@ -1360,7 +1360,7 @@ public class ICalReaderTest {
 			assertEquals("1CP Conference Room 4350", event.getLocation().getValue());
 		}
 
-		assertValidate(ical).run();
+		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 
 		assertNull(reader.readNext());
 	}
@@ -1396,7 +1396,7 @@ public class ICalReaderTest {
 			assertEquals("application/postscript", attach.getFormatType());
 		}
 
-		assertValidate(ical).run();
+		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 
 		assertNull(reader.readNext());
 	}
@@ -1443,7 +1443,7 @@ public class ICalReaderTest {
 			}
 		}
 
-		assertValidate(ical).run();
+		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 
 		assertNull(reader.readNext());
 	}
@@ -1470,7 +1470,7 @@ public class ICalReaderTest {
 			assertEquals("Project xyz Review Meeting Minutes" + NEWLINE + "Agenda" + NEWLINE + "1. Review of project version 1.0 requirements." + NEWLINE + "2.Definitionof project processes." + NEWLINE + "3. Review of project schedule." + NEWLINE + "Participants: John Smith, Jane Doe, Jim Dandy" + NEWLINE + "-It wasdecided that the requirements need to be signed off byproduct marketing." + NEWLINE + "-Project processes were accepted." + NEWLINE + "-Project schedule needs to account for scheduled holidaysand employee vacation time. Check with HR for specificdates." + NEWLINE + "-New schedule will be distributed by Friday." + NEWLINE + "-Next weeks meeting is cancelled. No meeting until 3/23.", journal.getDescriptions().get(0).getValue());
 		}
 
-		assertValidate(ical).run();
+		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 
 		assertNull(reader.readNext());
 	}
@@ -1498,7 +1498,7 @@ public class ICalReaderTest {
 		}
 
 		//UID and DTSTAMP are missing from VFREEBUSY
-		assertValidate(ical).warn(freebusy, 2, 2).run();
+		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).warn(freebusy, 2, 2).run();
 
 		assertNull(reader.readNext());
 	}

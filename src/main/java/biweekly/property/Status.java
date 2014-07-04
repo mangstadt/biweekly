@@ -2,6 +2,12 @@ package biweekly.property;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+
+import biweekly.ICalVersion;
+import biweekly.component.VEvent;
+import biweekly.component.VJournal;
+import biweekly.component.VTodo;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -68,14 +74,23 @@ import java.util.Collection;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35-6</a>
  */
 public class Status extends EnumProperty {
-	private static final String TENTATIVE = "TENTATIVE";
-	private static final String CONFIRMED = "CONFIRMED";
+	//2.0
 	private static final String CANCELLED = "CANCELLED";
-	private static final String NEEDS_ACTION = "NEEDS-ACTION";
-	private static final String COMPLETED = "COMPLETED";
-	private static final String IN_PROGRESS = "IN-PROGRESS";
 	private static final String DRAFT = "DRAFT";
 	private static final String FINAL = "FINAL";
+	private static final String IN_PROGRESS = "IN-PROGRESS";
+
+	//1.0
+	private static final String ACCEPTED = "ACCEPTED";
+	private static final String DECLINED = "DECLINED";
+	private static final String DELEGATED = "DELEGATED";
+	private static final String SENT = "SENT";
+
+	//1.0 and 2.0
+	private static final String COMPLETED = "COMPLETED";
+	private static final String CONFIRMED = "CONFIRMED";
+	private static final String NEEDS_ACTION = "NEEDS-ACTION";
+	private static final String TENTATIVE = "TENTATIVE";
 
 	/**
 	 * Creates a status property. Use of this constructor is discouraged and may
@@ -97,7 +112,7 @@ public class Status extends EnumProperty {
 
 	/**
 	 * Determines if the status is set to "tentative".
-	 * @return true if set to "tentative", false if not
+	 * @return true if it is, false if not
 	 */
 	public boolean isTentative() {
 		return is(TENTATIVE);
@@ -113,15 +128,15 @@ public class Status extends EnumProperty {
 
 	/**
 	 * Determines if the status is set to "confirmed".
-	 * @return true if set to "confirmed", false if not
+	 * @return true if it is, false if not
 	 */
 	public boolean isConfirmed() {
 		return is(CONFIRMED);
 	}
 
 	/**
-	 * Creates a "cancelled" status property (only valid for event, to-do, and
-	 * journal components).
+	 * Creates a "cancelled" status property (only valid in iCalendar 2.0 in
+	 * {@link VEvent}, {@link VTodo}, and {@link VJournal} components).
 	 * @return the property
 	 */
 	public static Status cancelled() {
@@ -130,15 +145,14 @@ public class Status extends EnumProperty {
 
 	/**
 	 * Determines if the status is set to "cancelled".
-	 * @return true if set to "cancelled", false if not
+	 * @return true if it is, false if not
 	 */
 	public boolean isCancelled() {
 		return is(CANCELLED);
 	}
 
 	/**
-	 * Creates a "needs-action" status property (only valid for to-do
-	 * components).
+	 * Creates a "needs-action" status property.
 	 * @return the property
 	 */
 	public static Status needsAction() {
@@ -147,14 +161,15 @@ public class Status extends EnumProperty {
 
 	/**
 	 * Determines if the status is set to "needs-action".
-	 * @return true if set to "needs-action", false if not
+	 * @return true if it is, false if not
 	 */
 	public boolean isNeedsAction() {
 		return is(NEEDS_ACTION);
 	}
 
 	/**
-	 * Creates a "completed" status property (only valid for to-do components).
+	 * Creates a "completed" status property (only valid in {@link VTodo}
+	 * components).
 	 * @return the property
 	 */
 	public static Status completed() {
@@ -163,15 +178,15 @@ public class Status extends EnumProperty {
 
 	/**
 	 * Determines if the status is set to "completed".
-	 * @return true if set to "completed", false if not
+	 * @return true if it is, false if not
 	 */
 	public boolean isCompleted() {
 		return is(COMPLETED);
 	}
 
 	/**
-	 * Creates a "in-progress" status property (only valid for to-do
-	 * components).
+	 * Creates a "in-progress" status property (only valid in iCalendar 2.0 in
+	 * {@link VTodo} components).
 	 * @return the property
 	 */
 	public static Status inProgress() {
@@ -180,14 +195,15 @@ public class Status extends EnumProperty {
 
 	/**
 	 * Determines if the status is set to "in-progress".
-	 * @return true if set to "in-progress", false if not
+	 * @return true if it is, false if not
 	 */
 	public boolean isInProgress() {
 		return is(IN_PROGRESS);
 	}
 
 	/**
-	 * Creates a "draft" status property (only valid for journal components).
+	 * Creates a "draft" status property (only valid in iCalendar 2.0 in
+	 * {@link VJournal} components).
 	 * @return the property
 	 */
 	public static Status draft() {
@@ -196,14 +212,15 @@ public class Status extends EnumProperty {
 
 	/**
 	 * Determines if the status is set to "draft".
-	 * @return true if set to "draft", false if not
+	 * @return true if it is, false if not
 	 */
 	public boolean isDraft() {
 		return is(DRAFT);
 	}
 
 	/**
-	 * Creates a "final" status property (only valid for journal components).
+	 * Creates a "final" status property (only valid in iCalendar 2.0 in
+	 * {@link VJournal} components).
 	 * @return the property
 	 */
 	public static Status final_() {
@@ -212,18 +229,107 @@ public class Status extends EnumProperty {
 
 	/**
 	 * Determines if the status is set to "final".
-	 * @return true if set to "final", false if not
+	 * @return true if it is, false if not
 	 */
 	public boolean isFinal() {
 		return is(FINAL);
 	}
 
-	private static Status create(String status) {
+	/**
+	 * Creates an "accepted" status property (only valid in vCal 1.0 in
+	 * {@link VTodo} components).
+	 * @return the property
+	 */
+	public static Status accepted() {
+		return create(ACCEPTED);
+	}
+
+	/**
+	 * Determines if the status is set to "accepted".
+	 * @return true if it is, false if not
+	 */
+	public boolean isAccepted() {
+		return is(ACCEPTED);
+	}
+
+	/**
+	 * Creates a "declined" status property (only valid in vCal 1.0).
+	 * @return the property
+	 */
+	public static Status declined() {
+		return create(DECLINED);
+	}
+
+	/**
+	 * Determines if the status is set to "declined".
+	 * @return true if it is, false if not
+	 */
+	public boolean isDeclined() {
+		return is(DECLINED);
+	}
+
+	/**
+	 * Creates a "delegated" status property (only valid in vCal 1.0).
+	 * @return the property
+	 */
+	public static Status delegated() {
+		return create(DELEGATED);
+	}
+
+	/**
+	 * Determines if the status is set to "delegated".
+	 * @return true if it is, false if not
+	 */
+	public boolean isDelegated() {
+		return is(DELEGATED);
+	}
+
+	/**
+	 * Creates a "sent" status property (only valid in vCal 1.0).
+	 * @return the property
+	 */
+	public static Status sent() {
+		return create(SENT);
+	}
+
+	/**
+	 * Determines if the status is set to "sent".
+	 * @return true if it is, false if not
+	 */
+	public boolean isSent() {
+		return is(SENT);
+	}
+
+	public static Status create(String status) {
 		return new Status(status);
 	}
 
 	@Override
-	protected Collection<String> getStandardValues() {
-		return Arrays.asList(TENTATIVE, CONFIRMED, CANCELLED, NEEDS_ACTION, COMPLETED, IN_PROGRESS, DRAFT, FINAL);
+	protected Collection<String> getStandardValues(ICalVersion version) {
+		switch (version) {
+		case V1_0:
+			return Arrays.asList(ACCEPTED, COMPLETED, CONFIRMED, DECLINED, DELEGATED, NEEDS_ACTION, SENT, TENTATIVE);
+		default:
+			return Arrays.asList(CANCELLED, COMPLETED, CONFIRMED, DRAFT, FINAL, IN_PROGRESS, NEEDS_ACTION, TENTATIVE);
+		}
+	}
+
+	@Override
+	protected Collection<ICalVersion> getSupportedVersions() {
+		if (value == null) {
+			return Collections.emptyList();
+		}
+
+		if (isCompleted() || isConfirmed() || isNeedsAction() || isTentative()) {
+			return Arrays.asList(ICalVersion.values());
+		}
+		if (isCancelled() || isDraft() || isFinal() || isInProgress()) {
+			return Arrays.asList(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
+		}
+		if (isAccepted() || isDeclined() || isDelegated() || isSent()) {
+			return Arrays.asList(ICalVersion.V1_0);
+		}
+
+		return Collections.emptyList();
 	}
 }

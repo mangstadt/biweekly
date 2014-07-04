@@ -7,6 +7,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import biweekly.ICalVersion;
 import biweekly.property.Classification;
 import biweekly.property.Created;
 import biweekly.property.DateStart;
@@ -74,13 +75,17 @@ public class VJournalTest {
 		component.addProperty(new RecurrenceId(new Date()));
 		component.addProperty(new Sequence(1));
 		component.addProperty(new Sequence(1));
-		component.addProperty(Status.cancelled());
-		component.addProperty(Status.cancelled());
+		Status status1 = Status.cancelled();
+		component.addProperty(status1);
+		Status status2 = Status.cancelled();
+		component.addProperty(status2);
 		component.addProperty(new Summary(""));
 		component.addProperty(new Summary(""));
 		component.addProperty(new Url(""));
 		component.addProperty(new Url(""));
-		assertValidate(component).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
+
+		assertValidate(component).versions(ICalVersion.V1_0).warn(status1, 46).warn(status2, 46).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
+		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
 	}
 
 	@Test

@@ -643,7 +643,7 @@ public class XCalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical).run();
+		assertValidate(ical).versions(ICalVersion.V2_0).run();
 		assertExample(ical, "rfc6321-example1.xml");
 	}
 
@@ -716,7 +716,7 @@ public class XCalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical).run();
+		assertValidate(ical).versions(ICalVersion.V2_0).run();
 		assertExample(ical, "rfc6321-example2.xml");
 	}
 

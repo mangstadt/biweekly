@@ -495,10 +495,6 @@ public class VAlarm extends ICalComponent {
 
 			if (action.isProcedure()) {
 				checkRequiredCardinality(warnings, Description.class);
-
-				if (version != ICalVersion.V1_0) {
-					warnings.add(Warning.validate(46));
-				}
 			}
 		}
 

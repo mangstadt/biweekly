@@ -1,6 +1,8 @@
 package biweekly.property;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import biweekly.ICalVersion;
@@ -57,9 +59,21 @@ public abstract class EnumProperty extends TextProperty {
 
 	/**
 	 * Gets the list of acceptable values for this property.
+	 * @param version the version
 	 * @return the list of acceptable values
 	 */
-	protected abstract Collection<String> getStandardValues();
+	protected abstract Collection<String> getStandardValues(ICalVersion version);
+
+	/**
+	 * Gets the iCalendar versions that this property's value is supported in.
+	 * @return the supported versions
+	 */
+	protected Collection<ICalVersion> getSupportedVersions() {
+		if (value == null) {
+			return Collections.emptyList();
+		}
+		return Arrays.asList(ICalVersion.values());
+	}
 
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
@@ -68,14 +82,16 @@ public abstract class EnumProperty extends TextProperty {
 			return;
 		}
 
-		Collection<String> standardValues = getStandardValues();
-		for (String standardValue : standardValues) {
-			if (value.equalsIgnoreCase(standardValue)) {
-				//found, value is OK
-				return;
-			}
+		Collection<ICalVersion> supportedVersions = getSupportedVersions();
+		if (supportedVersions.isEmpty()) {
+			//it's a non-standard value
+			warnings.add(Warning.validate(28, value, getStandardValues(version)));
+			return;
 		}
 
-		warnings.add(Warning.validate(28, value, standardValues));
+		boolean supported = supportedVersions.contains(version);
+		if (!supported) {
+			warnings.add(Warning.validate(46, value, supportedVersions));
+		}
 	}
 }

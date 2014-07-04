@@ -104,14 +104,14 @@ public class VAlarmTest {
 
 	@Test
 	public void validate_procedure() {
-		VAlarm component = new VAlarm(Action.procedure(), new Trigger(new Date()));
+		Action action = Action.procedure();
+		VAlarm component = new VAlarm(action, new Trigger(new Date()));
 		assertValidate(component).versions(ICalVersion.V1_0).run(2);
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(2, 46);
+		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).warn(action, 46).run(2);
 
-		component = new VAlarm(Action.procedure(), new Trigger(new Date()));
 		component.setDescription("");
 		assertValidate(component).versions(ICalVersion.V1_0).run();
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(46);
+		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).warn(action, 46).run();
 	}
 
 	@Test

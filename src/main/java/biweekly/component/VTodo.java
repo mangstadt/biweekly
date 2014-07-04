@@ -1238,7 +1238,17 @@ public class VTodo extends ICalComponent {
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
 		checkOptionalCardinality(warnings, Classification.class, Completed.class, Created.class, Description.class, DateStart.class, Geo.class, LastModified.class, Location.class, Organizer.class, PercentComplete.class, Priority.class, RecurrenceId.class, Sequence.class, Status.class, Summary.class, Url.class);
-		checkStatus(warnings, Status.needsAction(), Status.completed(), Status.inProgress(), Status.cancelled());
+
+		Status validStatuses[];
+		switch (version) {
+		case V1_0:
+			validStatuses = new Status[] { Status.needsAction(), Status.completed(), Status.accepted(), Status.declined(), Status.delegated(), Status.sent() };
+			break;
+		default:
+			validStatuses = new Status[] { Status.needsAction(), Status.completed(), Status.inProgress(), Status.cancelled() };
+			break;
+		}
+		checkStatus(warnings, validStatuses);
 
 		DateStart dateStart = getDateStart();
 		DateDue dateDue = getDateDue();

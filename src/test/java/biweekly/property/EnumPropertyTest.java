@@ -4,8 +4,11 @@ import static biweekly.util.TestUtils.assertWarnings;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.junit.Test;
+
+import biweekly.ICalVersion;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -39,29 +42,62 @@ public class EnumPropertyTest {
 	@Test
 	public void validate() {
 		//null value
-		assertValidate(null, 1);
+		EnumPropertyImpl prop = new EnumPropertyImpl(null);
+		assertWarnings(1, prop.validate(null, ICalVersion.V1_0));
+		assertWarnings(1, prop.validate(null, ICalVersion.V2_0_DEPRECATED));
+		assertWarnings(1, prop.validate(null, ICalVersion.V2_0));
 
 		//invalid value
-		assertValidate("three", 1);
+		prop = new EnumPropertyImpl("three");
+		assertWarnings(1, prop.validate(null, ICalVersion.V1_0));
+		assertWarnings(1, prop.validate(null, ICalVersion.V2_0_DEPRECATED));
+		assertWarnings(1, prop.validate(null, ICalVersion.V2_0));
 
-		//case-insensitive compare
-		assertValidate("two", 0);
-		assertValidate("ONE", 0);
+		prop = new EnumPropertyImpl("");
+		assertWarnings(1, prop.validate(null, ICalVersion.V1_0));
+		assertWarnings(1, prop.validate(null, ICalVersion.V2_0_DEPRECATED));
+		assertWarnings(1, prop.validate(null, ICalVersion.V2_0));
+
+		prop = new EnumPropertyImpl("ONE");
+		assertWarnings(0, prop.validate(null, ICalVersion.V1_0));
+		assertWarnings(1, prop.validate(null, ICalVersion.V2_0_DEPRECATED));
+		assertWarnings(1, prop.validate(null, ICalVersion.V2_0));
+
+		prop = new EnumPropertyImpl("TWO");
+		assertWarnings(1, prop.validate(null, ICalVersion.V1_0));
+		assertWarnings(0, prop.validate(null, ICalVersion.V2_0_DEPRECATED));
+		assertWarnings(0, prop.validate(null, ICalVersion.V2_0));
 	}
 
-	private void assertValidate(String value, int expectedWarnings) {
-		TestProperty prop = new TestProperty(value);
-		assertWarnings(expectedWarnings, prop.validate(null, null));
-	}
-
-	private class TestProperty extends EnumProperty {
-		public TestProperty(String value) {
+	private class EnumPropertyImpl extends EnumProperty {
+		public EnumPropertyImpl(String value) {
 			super(value);
 		}
 
 		@Override
-		protected Collection<String> getStandardValues() {
-			return Arrays.asList("one", "TWO");
+		protected Collection<String> getStandardValues(ICalVersion version) {
+			switch (version) {
+			case V1_0:
+				return Arrays.asList("one");
+			default:
+				return Arrays.asList("TWO");
+			}
+		}
+
+		@Override
+		protected Collection<ICalVersion> getSupportedVersions() {
+			if (value == null) {
+				return Collections.emptyList();
+			}
+
+			if ("one".equalsIgnoreCase(value)) {
+				return Arrays.asList(ICalVersion.V1_0);
+			}
+			if ("two".equalsIgnoreCase(value)) {
+				return Arrays.asList(ICalVersion.V2_0, ICalVersion.V2_0_DEPRECATED);
+			}
+
+			return Collections.emptyList();
 		}
 	}
 }

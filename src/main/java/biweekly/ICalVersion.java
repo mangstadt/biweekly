@@ -84,6 +84,9 @@ public enum ICalVersion {
 
 	@Override
 	public String toString() {
+		if (this == V2_0_DEPRECATED) {
+			return version + " (obsoleted)";
+		}
 		return version;
 	}
 }

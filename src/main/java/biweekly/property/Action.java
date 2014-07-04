@@ -2,6 +2,9 @@ package biweekly.property;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+
+import biweekly.ICalVersion;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -149,7 +152,28 @@ public class Action extends EnumProperty {
 	}
 
 	@Override
-	protected Collection<String> getStandardValues() {
-		return Arrays.asList(AUDIO, DISPLAY, EMAIL, PROCEDURE);
+	protected Collection<String> getStandardValues(ICalVersion version) {
+		switch (version) {
+		case V1_0:
+			return Arrays.asList(AUDIO, DISPLAY, EMAIL, PROCEDURE);
+		default:
+			return Arrays.asList(AUDIO, DISPLAY, EMAIL);
+		}
+	}
+
+	@Override
+	protected Collection<ICalVersion> getSupportedVersions() {
+		if (value == null) {
+			return Collections.emptyList();
+		}
+
+		if (isAudio() || isDisplay() || isEmail()) {
+			return Arrays.asList(ICalVersion.values());
+		}
+		if (isProcedure()) {
+			return Arrays.asList(ICalVersion.V1_0);
+		}
+
+		return Collections.emptyList();
 	}
 }
