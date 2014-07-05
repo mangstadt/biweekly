@@ -1121,6 +1121,7 @@ public class Biweekly {
 	 * @see Biweekly#write(ICalendar...)
 	 */
 	public static class WriterChainText extends WriterChain<WriterChainText> {
+		ICalVersion version = ICalVersion.V2_0;
 		boolean caretEncoding = false;
 
 		private WriterChainText(Collection<ICalendar> icals) {
@@ -1145,6 +1146,16 @@ public class Biweekly {
 		 */
 		public WriterChainText caretEncoding(boolean enable) {
 			this.caretEncoding = enable;
+			return this_;
+		}
+
+		/**
+		 * Sets the iCal version to adhere to when writing (defaults to 2.0).
+		 * @param version the version
+		 * @return this
+		 */
+		public WriterChainText version(ICalVersion version) {
+			this.version = version;
 			return this_;
 		}
 
@@ -1176,7 +1187,7 @@ public class Biweekly {
 		 * @throws IOException if there's a problem writing to the output stream
 		 */
 		public void go(OutputStream out) throws IOException {
-			go(new ICalWriter(out, ICalVersion.V2_0));
+			go(new ICalWriter(out, version));
 		}
 
 		/**
@@ -1204,7 +1215,7 @@ public class Biweekly {
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file, boolean append) throws IOException {
-			ICalWriter icalWriter = new ICalWriter(file, append, ICalVersion.V2_0);
+			ICalWriter icalWriter = new ICalWriter(file, append, version);
 			try {
 				go(icalWriter);
 			} finally {
@@ -1222,7 +1233,7 @@ public class Biweekly {
 		 * @throws IOException if there's a problem writing to the writer
 		 */
 		public void go(Writer writer) throws IOException {
-			go(new ICalWriter(writer, ICalVersion.V2_0));
+			go(new ICalWriter(writer, version));
 		}
 
 		private void go(ICalWriter icalWriter) throws IOException {

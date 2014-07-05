@@ -318,7 +318,8 @@ public class ICalendar extends ICalComponent {
 	 * @return the plain text representation
 	 */
 	public String write() {
-		return Biweekly.write(this).go();
+		ICalVersion version = (this.version == null) ? ICalVersion.V2_0 : this.version;
+		return Biweekly.write(this).version(version).go();
 	}
 
 	/**
@@ -327,7 +328,8 @@ public class ICalendar extends ICalComponent {
 	 * @throws IOException if there's an I/O problem
 	 */
 	public void write(File file) throws IOException {
-		Biweekly.write(this).go(file);
+		ICalVersion version = (this.version == null) ? ICalVersion.V2_0 : this.version;
+		Biweekly.write(this).version(version).go(file);
 	}
 
 	/**
@@ -336,7 +338,8 @@ public class ICalendar extends ICalComponent {
 	 * @throws IOException if there's an I/O problem
 	 */
 	public void write(OutputStream out) throws IOException {
-		Biweekly.write(this).go(out);
+		ICalVersion version = (this.version == null) ? ICalVersion.V2_0 : this.version;
+		Biweekly.write(this).version(version).go(out);
 	}
 
 	/**
@@ -345,7 +348,8 @@ public class ICalendar extends ICalComponent {
 	 * @throws IOException if there's an I/O problem
 	 */
 	public void write(Writer writer) throws IOException {
-		Biweekly.write(this).go(writer);
+		ICalVersion version = (this.version == null) ? ICalVersion.V2_0 : this.version;
+		Biweekly.write(this).version(version).go(writer);
 	}
 
 	/**
