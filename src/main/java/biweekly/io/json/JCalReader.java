@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
@@ -32,6 +33,7 @@ import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
+import biweekly.property.Version;
 
 import com.fasterxml.jackson.core.JsonParseException;
 
@@ -214,7 +216,20 @@ public class JCalReader implements Closeable {
 				for (Warning warning : result.getWarnings()) {
 					warnings.add(reader.getLineNum(), propertyName, warning);
 				}
+
+				//set "ICalendar.version" if the value of the VERSION property is recognized
+				//otherwise, unmarshal VERSION like a normal property
 				ICalProperty property = result.getProperty();
+				if (parent instanceof ICalendar && property instanceof Version) {
+					Version version = (Version) property;
+					ICalVersion icalVersion = version.toICalVersion();
+					if (icalVersion != null) {
+						ICalendar ical = (ICalendar) parent;
+						ical.setVersion(icalVersion);
+						return;
+					}
+				}
+
 				parent.addProperty(property);
 			} catch (SkipMeException e) {
 				warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());

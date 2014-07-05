@@ -111,10 +111,10 @@ public class JCalReaderTest {
 
 		JCalReader reader = new JCalReader(json);
 		ICalendar ical = reader.readNext();
-		assertSize(ical, 1, 2);
+		assertSize(ical, 1, 1);
 
 		assertEquals("-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN", ical.getProductId().getValue());
-		assertTrue(ical.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 		VEvent event = ical.getEvents().get(0);
 		assertSize(event, 0, 2);
@@ -170,10 +170,10 @@ public class JCalReaderTest {
 
 		{
 			ICalendar ical = reader.readNext();
-			assertSize(ical, 1, 2);
+			assertSize(ical, 1, 1);
 
 			assertEquals("prodid1", ical.getProductId().getValue());
-			assertTrue(ical.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 2);
@@ -185,10 +185,10 @@ public class JCalReaderTest {
 
 		{
 			ICalendar ical = reader.readNext();
-			assertSize(ical, 1, 2);
+			assertSize(ical, 1, 1);
 
 			assertEquals("prodid2", ical.getProductId().getValue());
-			assertTrue(ical.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 2);
@@ -504,10 +504,10 @@ public class JCalReaderTest {
 	public void jcal_draft_example1() throws Throwable {
 		JCalReader reader = read("jcal-draft-example1.json");
 		ICalendar ical = reader.readNext();
-		assertSize(ical, 1, 3);
+		assertSize(ical, 1, 2);
 
 		assertEquals("-//Example Inc.//Example Calendar//EN", ical.getProductId().getValue());
-		assertTrue(ical.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, ical.getVersion());
 		assertTrue(ical.getCalendarScale().isGregorian());
 
 		{
@@ -530,13 +530,13 @@ public class JCalReaderTest {
 	public void jcal_draft_example2() throws Throwable {
 		JCalReader reader = read("jcal-draft-example2.json");
 		ICalendar ical = reader.readNext();
-		assertSize(ical, 3, 2);
+		assertSize(ical, 3, 1);
 
 		DateFormat usEastern = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		usEastern.setTimeZone(TimeZone.getTimeZone("US/Eastern"));
 
 		assertEquals("-//Example Corp.//Example Client//EN", ical.getProductId().getValue());
-		assertTrue(ical.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 		{
 			VTimezone timezone = ical.getTimezones().get(0);

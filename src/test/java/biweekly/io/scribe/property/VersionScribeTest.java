@@ -42,7 +42,7 @@ public class VersionScribeTest {
 
 	private final Version withMinMax = new Version("1.0", "2.0");
 	private final Version withMax = new Version("2.0");
-	private final Version empty = new Version(null);
+	private final Version empty = new Version((String) null);
 
 	@Test
 	public void writeText_min_max() {

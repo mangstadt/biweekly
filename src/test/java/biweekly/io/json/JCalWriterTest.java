@@ -253,6 +253,7 @@ public class JCalWriterTest {
 		String expected =
 		"[\"vcalendar\"," +
 			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]" +
 			"]," +
 			"[" +
 			"]" +
@@ -301,6 +302,7 @@ public class JCalWriterTest {
 		String expected =
 		"[\"vcalendar\"," +
 			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]," +
 				"[\"x-foo\",{},\"unknown\",\"bar\"]" +
 			"]," +
 			"[" +
@@ -314,6 +316,7 @@ public class JCalWriterTest {
 	@Test
 	public void override_marshaller() throws Throwable {
 		ICalendar ical = new ICalendar();
+		ical.addProperty(new Version("2.0"));
 		ical.setProductId("prodid");
 
 		StringWriter sw = new StringWriter();
@@ -505,6 +508,7 @@ public class JCalWriterTest {
 		String expected =
 		"[\"vcalendar\"," +
 			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]," +
 				"[\"summary\",{},\"text\",\"\u1e66ummary\"]" +
 			"]," +
 			"[" +
@@ -522,7 +526,6 @@ public class JCalWriterTest {
 		ical.getProperties().clear();
 		ical.setCalendarScale(CalendarScale.gregorian());
 		ical.setProductId("-//ExampleInc.//ExampleCalendar//EN");
-		ical.setVersion(Version.v2_0());
 		{
 			VEvent event = new VEvent();
 			event.getProperties().clear();
@@ -544,7 +547,6 @@ public class JCalWriterTest {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setProductId("-//ExampleCorp.//ExampleClient//EN");
-		ical.setVersion(Version.v2_0());
 		{
 			usEasternTz = new VTimezone(null);
 			usEasternTz.setLastModified(utcFormatter.parse("2004-01-10T03:28:45"));

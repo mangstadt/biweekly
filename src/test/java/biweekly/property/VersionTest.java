@@ -35,7 +35,7 @@ import org.junit.Test;
 public class VersionTest {
 	@Test
 	public void validate() {
-		Version property = new Version(null);
+		Version property = new Version((String) null);
 		assertValidate(property).run(35);
 
 		property = new Version("1.0", null);

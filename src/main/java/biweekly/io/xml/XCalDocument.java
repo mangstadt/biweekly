@@ -49,6 +49,7 @@ import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.Version;
 import biweekly.property.Xml;
 import biweekly.util.IOUtils;
 import biweekly.util.XmlUtils;
@@ -514,7 +515,13 @@ public class XCalDocument {
 		Element componentElement = buildElement(componentScribe.getComponentName().toLowerCase());
 
 		Element propertiesWrapperElement = buildElement(PROPERTIES);
-		for (Object propertyObj : componentScribe.getProperties(component)) {
+		List propertyObjs = componentScribe.getProperties(component);
+		if (component instanceof ICalendar && component.getProperty(Version.class) == null) {
+			//add a version property
+			propertyObjs.add(0, new Version(targetVersion));
+		}
+
+		for (Object propertyObj : propertyObjs) {
 			ICalProperty property = (ICalProperty) propertyObj;
 
 			//create property element
@@ -619,14 +626,29 @@ public class XCalDocument {
 		//create the component object
 		ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(componentElement.getLocalName());
 		ICalComponent component = scribe.emptyInstance();
+		boolean isICalendar = component instanceof ICalendar;
 
 		//parse properties
 		for (Element propertyWrapperElement : getChildElements(componentElement, PROPERTIES)) { //there should be only one <properties> element, but parse them all incase there are more
 			for (Element propertyElement : XmlUtils.toElementList(propertyWrapperElement.getChildNodes())) {
 				ICalProperty property = parseProperty(propertyElement, warnings);
-				if (property != null) {
-					component.addProperty(property);
+				if (property == null) {
+					continue;
 				}
+
+				//set "ICalendar.version" if the value of the VERSION property is recognized
+				//otherwise, unmarshal VERSION like a normal property
+				if (isICalendar && property instanceof Version) {
+					Version version = (Version) property;
+					ICalVersion icalVersion = version.toICalVersion();
+					if (icalVersion != null) {
+						ICalendar ical = (ICalendar) component;
+						ical.setVersion(icalVersion);
+						continue;
+					}
+				}
+
+				component.addProperty(property);
 			}
 		}
 

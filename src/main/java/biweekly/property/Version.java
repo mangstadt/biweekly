@@ -58,10 +58,19 @@ import biweekly.util.VersionNumber;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
  */
 public class Version extends ICalProperty {
-	public static final VersionNumber VCAL = new VersionNumber("1.0");
-	public static final VersionNumber ICAL = new VersionNumber("2.0");
+	public static final VersionNumber VCAL = new VersionNumber(ICalVersion.V1_0.getVersion());
+	public static final VersionNumber ICAL = new VersionNumber(ICalVersion.V2_0.getVersion());
 
 	private VersionNumber minVersion, maxVersion;
+
+	/**
+	 * Creates a new version property.
+	 * @param version the version that a consumer must support in order to
+	 * successfully parse the iCalendar object
+	 */
+	public Version(ICalVersion version) {
+		this((version == null) ? null : version.getVersion());
+	}
 
 	/**
 	 * Creates a new version property.
@@ -97,7 +106,7 @@ public class Version extends ICalProperty {
 	 * @return the property instance
 	 */
 	public static Version v1_0() {
-		return new Version(null, VCAL);
+		return new Version(ICalVersion.V1_0);
 	}
 
 	/**
@@ -106,7 +115,7 @@ public class Version extends ICalProperty {
 	 * @return the property instance
 	 */
 	public static Version v2_0() {
-		return new Version(null, ICAL);
+		return new Version(ICalVersion.V2_0);
 	}
 
 	/**
@@ -159,6 +168,17 @@ public class Version extends ICalProperty {
 	 */
 	public void setMaxVersion(VersionNumber maxVersion) {
 		this.maxVersion = maxVersion;
+	}
+
+	/**
+	 * Converts this property's value to an {@link ICalVersion} enum.
+	 * @return the {@link ICalVersion} enum or null if it couldn't be converted
+	 */
+	public ICalVersion toICalVersion() {
+		if (minVersion == null && maxVersion != null) {
+			return ICalVersion.get(maxVersion.toString());
+		}
+		return null;
 	}
 
 	@Override

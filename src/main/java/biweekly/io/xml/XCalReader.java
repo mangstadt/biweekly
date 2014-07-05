@@ -39,6 +39,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
@@ -51,6 +52,7 @@ import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.Version;
 import biweekly.property.Xml;
 import biweekly.util.XmlUtils;
 
@@ -470,6 +472,18 @@ public class XCalReader implements Closeable {
 					try {
 						Result<? extends ICalProperty> result = scribe.parseXml(propertyElement, parameters);
 						ICalProperty property = result.getProperty();
+
+						if (property instanceof Version && curComponent instanceof ICalendar) {
+							Version versionProp = (Version) property;
+							ICalVersion version = versionProp.toICalVersion();
+							if (version != null) {
+								ICalendar ical = (ICalendar) curComponent;
+								ical.setVersion(version);
+
+								propertyElement = null;
+								break;
+							}
+						}
 
 						curComponent.addProperty(property);
 						for (Warning warning : result.getWarnings()) {

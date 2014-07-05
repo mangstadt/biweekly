@@ -60,7 +60,6 @@ import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceDates;
 import biweekly.property.SkipMeProperty;
 import biweekly.property.Summary;
-import biweekly.property.Version;
 import biweekly.property.Xml;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
@@ -160,10 +159,10 @@ public class XCalDocumentTest {
 
 		{
 			ICalendar ical = it.next();
-			assertSize(ical, 1, 2);
+			assertSize(ical, 1, 1);
 
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-			assertTrue(ical.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -172,10 +171,10 @@ public class XCalDocumentTest {
 
 		{
 			ICalendar ical = it.next();
-			assertSize(ical, 1, 2);
+			assertSize(ical, 1, 1);
 
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-			assertTrue(ical.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -267,13 +266,13 @@ public class XCalDocumentTest {
 
 		{
 			ICalendar ical = it.next();
-			assertSize(ical, 1, 2);
+			assertSize(ical, 1, 1);
 
 			ProductId productId = ical.getProductId();
 			assertEquals("-//Example Inc.//Example Client//EN", productId.getValue());
 			assertEquals("bar", productId.getParameter("x-foo"));
 
-			assertTrue(ical.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -647,6 +646,7 @@ public class XCalDocumentTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
 				"<properties>" +
+					"<version><text>2.0</text></version>" +
 					"<m:company xmlns:m=\"http://example.com\">" +
 						"<m:boss>John Doe</m:boss>" +
 					"</m:company>" +
@@ -692,6 +692,9 @@ public class XCalDocumentTest {
 		Document expected = XmlUtils.toDocument(
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
+				"<properties>" +
+					"<version><text>2.0</text></version>" +
+				"</properties>" +
 				"<components>" +
 					"<x-party>" +
 						"<properties>" +
@@ -721,6 +724,7 @@ public class XCalDocumentTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
 				"<properties>" +
+					"<version><text>2.0</text></version>" +
 					"<m:company xmlns:m=\"http://example.com\">" +
 						"<m:boss>John Doe</m:boss>" +
 					"</m:company>" +
@@ -750,6 +754,7 @@ public class XCalDocumentTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
 				"<properties>" +
+					"<version><text>2.0</text></version>" +
 					"<summary>" +
 						"<parameters>" +
 							"<x-one><text>one</text></x-one>" +
@@ -781,6 +786,7 @@ public class XCalDocumentTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
 				"<properties>" +
+					"<version><text>2.0</text></version>" +
 					"<x-foo><unknown>bar</unknown></x-foo>" +
 				"</properties>" +
 			"</vcalendar>" +
@@ -811,6 +817,7 @@ public class XCalDocumentTest {
 			"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 				"<vcalendar>" +
 					"<properties>" +
+						"<version><text>2.0</text></version>" +
 						"<x-foo><unknown>bar</unknown></x-foo>" +
 					"</properties>" +
 				"</vcalendar>" +
@@ -843,6 +850,7 @@ public class XCalDocumentTest {
 				"<foo />" +
 				"<vcalendar>" +
 					"<properties>" +
+						"<version><text>2.0</text></version>" +
 						"<x-foo><unknown>bar</unknown></x-foo>" +
 					"</properties>" +
 				"</vcalendar>" +
@@ -868,6 +876,7 @@ public class XCalDocumentTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
 				"<properties>" +
+					"<version><text>2.0</text></version>" +
 					"<summary><text>summary</text></summary>" +
 				"</properties>" +
 			"</vcalendar>" +
@@ -893,6 +902,9 @@ public class XCalDocumentTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" + NEWLINE +
 		"  <vcalendar>" + NEWLINE +	
 		"    <properties>" + NEWLINE +
+		"      <version>" + NEWLINE + 
+		"        <text>2.0</text>" + NEWLINE +
+		"      </version>" + NEWLINE +
 		"      <summary>" + NEWLINE +
 		"        <text>summary</text>" + NEWLINE +
 		"      </summary>" + NEWLINE +
@@ -928,10 +940,10 @@ public class XCalDocumentTest {
 		Iterator<ICalendar> it = xcal.parseAll().iterator();
 
 		ICalendar ical = it.next();
-		assertSize(ical, 1, 3);
+		assertSize(ical, 1, 2);
 		assertTrue(ical.getCalendarScale().isGregorian());
 		assertEquals("-//Example Inc.//Example Calendar//EN", ical.getProductId().getValue());
-		assertTrue(ical.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 		{
 			VEvent event = ical.getEvents().get(0);
@@ -954,7 +966,6 @@ public class XCalDocumentTest {
 		ical.getProperties().clear();
 		ical.setCalendarScale(CalendarScale.gregorian());
 		ical.setProductId("-//Example Inc.//Example Calendar//EN");
-		ical.setVersion(Version.v2_0());
 		{
 			VEvent event = new VEvent();
 			event.getProperties().clear();
@@ -980,9 +991,9 @@ public class XCalDocumentTest {
 		Iterator<ICalendar> it = xcal.parseAll().iterator();
 
 		ICalendar ical = it.next();
-		assertSize(ical, 3, 2);
+		assertSize(ical, 3, 1);
 		assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-		assertTrue(ical.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 		{
 			VTimezone timezone = ical.getTimezones().get(0);
@@ -1080,7 +1091,6 @@ public class XCalDocumentTest {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setProductId("-//Example Inc.//Example Client//EN");
-		ical.setVersion(Version.v2_0());
 		{
 			usEasternTz = new VTimezone(null);
 			usEasternTz.setLastModified(utcFormatter.parse("2004-01-10T03:28:45"));

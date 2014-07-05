@@ -47,6 +47,7 @@ import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.Version;
 import biweekly.property.Xml;
 import biweekly.util.XmlUtils;
 
@@ -332,12 +333,16 @@ public class XCalWriter implements Closeable {
 		start(name);
 		level++;
 
-		List<ICalProperty> properties = scribe.getProperties(component);
+		List properties = scribe.getProperties(component);
+		if (component instanceof ICalendar && component.getProperty(Version.class) == null) {
+			properties.add(0, new Version(targetVersion));
+		}
+
 		if (!properties.isEmpty()) {
 			start(PROPERTIES);
 			level++;
 
-			for (Object propertyObj : scribe.getProperties(component)) {
+			for (Object propertyObj : properties) {
 				ICalProperty property = (ICalProperty) propertyObj;
 				write(property);
 			}
@@ -346,12 +351,12 @@ public class XCalWriter implements Closeable {
 			end(PROPERTIES);
 		}
 
-		Collection<ICalComponent> components = scribe.getComponents(component);
-		if (!components.isEmpty()) {
+		Collection subComponents = scribe.getComponents(component);
+		if (!subComponents.isEmpty()) {
 			start(COMPONENTS);
 			level++;
 
-			for (Object subComponentObj : scribe.getComponents(component)) {
+			for (Object subComponentObj : subComponents) {
 				ICalComponent subComponent = (ICalComponent) subComponentObj;
 				write(subComponent);
 			}

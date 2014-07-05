@@ -6,6 +6,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import biweekly.ICalVersion;
 import biweekly.parameter.ICalParameters;
@@ -43,8 +45,9 @@ import biweekly.util.StringUtils;
  */
 public class ICalRawReader implements Closeable {
 	private final FoldedLineReader reader;
+	private final List<String> components = new ArrayList<String>();
 	private boolean caretDecodingEnabled = true;
-	private ICalVersion version = ICalVersion.V1_0; //initialize to 1.0, since the VERSION property can exist anywhere in the file in this version
+	private ICalVersion version = null;
 
 	/**
 	 * Creates a new reader.
@@ -194,14 +197,34 @@ public class ICalRawReader implements Closeable {
 			throw new ICalParseException(line);
 		}
 
-		if ("VERSION".equalsIgnoreCase(propertyName)) {
+		if ("BEGIN".equalsIgnoreCase(propertyName)) {
+			components.add(value.toUpperCase());
+		} else if ("END".equalsIgnoreCase(propertyName)) {
+			int index = components.lastIndexOf(value.toUpperCase());
+			if (index >= 0) {
+				components.subList(index, components.size()).clear();
+			}
+		} else if ("VERSION".equalsIgnoreCase(propertyName) && isUnderVCalendar()) {
+			//only look at VERSION properties that are directly under the VCALENDAR component
 			ICalVersion version = ICalVersion.get(value);
 			if (version != null) {
+				//if the value is a valid version, then skip this property and parse the next
 				this.version = version;
+				return readLine();
 			}
 		}
 
 		return new ICalRawLine(propertyName, parameters, value);
+	}
+
+	private boolean isUnderVCalendar() {
+		int firstIndex = components.indexOf("VCALENDAR");
+		if (firstIndex < 0) {
+			return false;
+		}
+
+		int lastIndex = components.lastIndexOf("VCALENDAR");
+		return firstIndex == lastIndex && firstIndex == components.size() - 1;
 	}
 
 	/**

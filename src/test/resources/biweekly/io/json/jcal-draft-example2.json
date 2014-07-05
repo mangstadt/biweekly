@@ -1,7 +1,7 @@
 ["vcalendar",
   [
-    ["prodid", {}, "text", "-//Example Corp.//Example Client//EN"],
-    ["version", {}, "text", "2.0"]
+    ["version", {}, "text", "2.0"],
+    ["prodid", {}, "text", "-//Example Corp.//Example Client//EN"]
   ],
   [
     ["vtimezone",

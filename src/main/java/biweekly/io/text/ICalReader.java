@@ -29,11 +29,8 @@ import biweekly.io.SkipMeException;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.component.ICalendarScribe;
-import biweekly.io.scribe.property.DisplayAlarmScribe;
-import biweekly.io.scribe.property.EmailAlarmScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
-import biweekly.io.scribe.property.ProcedureAlarmScribe;
 import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.io.scribe.property.RecurrencePropertyScribe;
 import biweekly.io.scribe.property.VCalAlarmPropertyScribe;
@@ -428,8 +425,7 @@ public class ICalReader implements Closeable {
 
 				ICalProperty property = result.getProperty();
 
-				switch (reader.getVersion()) {
-				case V1_0:
+				if (reader.getVersion() == null || reader.getVersion() == ICalVersion.V1_0) {
 					//DAYLIGHT property => VTIMEZONE component
 					if (property instanceof Daylight) {
 						Daylight daylight = (Daylight) property;
@@ -477,11 +473,6 @@ public class ICalReader implements Closeable {
 						parentComponent.addComponent(valarm);
 						continue;
 					}
-					break;
-
-				default:
-					//empty
-					break;
 				}
 
 				parentComponent.addProperty(property);
@@ -495,6 +486,10 @@ public class ICalReader implements Closeable {
 
 				parentComponent.addComponent(result.getProperty());
 			}
+		}
+
+		if (ical != null) {
+			ical.setVersion(reader.getVersion());
 		}
 
 		return ical;

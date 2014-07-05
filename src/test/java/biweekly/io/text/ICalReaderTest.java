@@ -56,6 +56,7 @@ import biweekly.property.ProductId;
 import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceRule;
 import biweekly.property.Summary;
+import biweekly.property.Version;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
@@ -123,10 +124,10 @@ public class ICalReaderTest {
 
 		ICalReader reader = new ICalReader(ical);
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 1, 3);
+		assertSize(icalendar, 1, 2);
 
 		assertEquals("-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN", icalendar.getProductId().getValue());
-		assertTrue(icalendar.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 		assertEquals("a test", icalendar.getExperimentalProperty("X-TEST").getValue());
 
 		{
@@ -167,10 +168,10 @@ public class ICalReaderTest {
 
 		{
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 1, 2);
+			assertSize(icalendar, 1, 1);
 
 			assertEquals("prodid", icalendar.getProductId().getValue());
-			assertTrue(icalendar.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
 			VEvent event = icalendar.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -181,10 +182,10 @@ public class ICalReaderTest {
 
 		{
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 1, 2);
+			assertSize(icalendar, 1, 1);
 
 			assertEquals("prodid", icalendar.getProductId().getValue());
-			assertTrue(icalendar.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
 			VTodo todo = icalendar.getTodos().get(0);
 			assertSize(todo, 0, 1);
@@ -197,13 +198,11 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void caret_encoding_enabled() throws Throwable {
+	public void unrecognized_version_number() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
-			"VERSION:2.0\r\n" +
-			"PRODID;X-TEST=^'test^':prodid\r\n" +
-			"VERSION:2.0\r\n" +
+			"VERSION:2.0;3.0\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
@@ -212,11 +211,59 @@ public class ICalReaderTest {
 		reader.registerScribe(new TestPropertyMarshaller());
 
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 0, 3);
+		assertSize(icalendar, 0, 1);
+
+		assertEquals("2.0", icalendar.getProperty(Version.class).getMinVersion().toString());
+		assertEquals("3.0", icalendar.getProperty(Version.class).getMaxVersion().toString());
+		assertNull(icalendar.getVersion());
+
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void invalid_version_value() throws Throwable {
+		//@formatter:off
+		String ical =
+		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:invalid\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		ICalReader reader = new ICalReader(ical);
+		reader.setCaretDecodingEnabled(true);
+		reader.registerScribe(new TestPropertyMarshaller());
+
+		ICalendar icalendar = reader.readNext();
+		assertSize(icalendar, 0, 1);
+
+		assertEquals("invalid", icalendar.getExperimentalProperty("VERSION").getValue());
+		assertNull(icalendar.getVersion());
+
+		assertWarnings(1, reader.getWarnings());
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void caret_encoding_enabled() throws Throwable {
+		//@formatter:off
+		String ical =
+		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:2.0\r\n" +
+			"PRODID;X-TEST=^'test^':prodid\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		ICalReader reader = new ICalReader(ical);
+		reader.setCaretDecodingEnabled(true);
+		reader.registerScribe(new TestPropertyMarshaller());
+
+		ICalendar icalendar = reader.readNext();
+		assertSize(icalendar, 0, 1);
 
 		assertEquals("prodid", icalendar.getProductId().getValue());
 		assertEquals("\"test\"", icalendar.getProductId().getParameter("X-TEST"));
-		assertTrue(icalendar.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
 		assertWarnings(0, reader.getWarnings());
 		assertNull(reader.readNext());
@@ -229,7 +276,6 @@ public class ICalReaderTest {
 		"BEGIN:VCALENDAR\r\n" +
 			"VERSION:2.0\r\n" +
 			"PRODID;X-TEST=^'test^':prodid\r\n" +
-			"VERSION:2.0\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
@@ -238,11 +284,11 @@ public class ICalReaderTest {
 		reader.registerScribe(new TestPropertyMarshaller());
 
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 0, 3);
+		assertSize(icalendar, 0, 1);
 
 		assertEquals("prodid", icalendar.getProductId().getValue());
 		assertEquals("^'test^'", icalendar.getProductId().getParameter("X-TEST"));
-		assertTrue(icalendar.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
 		assertWarnings(0, reader.getWarnings());
 		assertNull(reader.readNext());
@@ -289,10 +335,10 @@ public class ICalReaderTest {
 
 		ICalReader reader = new ICalReader(ical);
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 0, 2);
+		assertSize(icalendar, 0, 1);
 
 		assertEquals("prodid2", icalendar.getProductId().getValue());
-		assertTrue(icalendar.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 	}
 
 	@Test
@@ -300,26 +346,26 @@ public class ICalReaderTest {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
-		"PRODID:prodid\r\n" +
-		"VERSION:2.0\r\n" +
-		"BEGIN:VEVENT\r\n" +
-			"SUMMARY:summary\r\n" +
+			"PRODID:prodid\r\n" +
+			"VERSION:2.0\r\n" +
+			"BEGIN:VEVENT\r\n" +
+				"SUMMARY:summary\r\n" +
+				"BEGIN:VTODO\r\n" +
+					"SUMMARY:one\r\n" +
+			  //"END:VTODO\r\n" + missing END property
+			"END:VEVENT\r\n" +		
 			"BEGIN:VTODO\r\n" +
-				"SUMMARY:one\r\n" +
-		  //"END:VTODO\r\n" + missing END property
-		"END:VEVENT\r\n" +		
-		"BEGIN:VTODO\r\n" +
-			"SUMMARY:two\r\n" +
-		"END:VTODO\r\n" +
+				"SUMMARY:two\r\n" +
+			"END:VTODO\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 2, 2);
+		assertSize(icalendar, 2, 1);
 
 		assertEquals("prodid", icalendar.getProductId().getValue());
-		assertTrue(icalendar.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
 		VEvent event = icalendar.getEvents().get(0);
 		assertSize(event, 1, 1);
@@ -351,10 +397,10 @@ public class ICalReaderTest {
 
 		ICalReader reader = new ICalReader(ical);
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 1, 2);
+		assertSize(icalendar, 1, 1);
 
 		assertEquals("prodid", icalendar.getProductId().getValue());
-		assertTrue(icalendar.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
 		VEvent event = icalendar.getEvents().get(0);
 		assertSize(event, 0, 1);
@@ -382,10 +428,10 @@ public class ICalReaderTest {
 
 		ICalReader reader = new ICalReader(ical);
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 1, 4);
+		assertSize(icalendar, 1, 3);
 
 		assertEquals("prodid", icalendar.getProductId().getValue());
-		assertTrue(icalendar.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 		assertEquals("one", icalendar.getExperimentalProperties("X-TEST1").get(0).getValue());
 		assertEquals("one point five", icalendar.getExperimentalProperties("X-TEST1").get(1).getValue());
 
@@ -418,10 +464,10 @@ public class ICalReaderTest {
 		reader.registerScribe(new TestPropertyMarshaller());
 
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 1, 4);
+		assertSize(icalendar, 1, 3);
 
 		assertEquals("prodid", icalendar.getProductId().getValue());
-		assertTrue(icalendar.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 		assertIntEquals(1, icalendar.getProperties(TestProperty.class).get(0).number);
 		assertIntEquals(2, icalendar.getProperties(TestProperty.class).get(1).number);
 
@@ -449,10 +495,10 @@ public class ICalReaderTest {
 
 		ICalReader reader = new ICalReader(ical);
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 1, 2);
+		assertSize(icalendar, 1, 1);
 
 		assertEquals("prodid", icalendar.getProductId().getValue());
-		assertTrue(icalendar.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
 		RawComponent component = icalendar.getExperimentalComponent("X-VPARTY");
 		assertSize(component, 0, 1);
@@ -478,10 +524,10 @@ public class ICalReaderTest {
 		ICalReader reader = new ICalReader(ical);
 		reader.registerScribe(new PartyMarshaller());
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 1, 2);
+		assertSize(icalendar, 1, 1);
 
 		assertEquals("prodid", icalendar.getProductId().getValue());
-		assertTrue(icalendar.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
 		Party component = icalendar.getComponent(Party.class);
 		assertSize(component, 0, 1);
@@ -504,10 +550,10 @@ public class ICalReaderTest {
 		ICalReader reader = new ICalReader(ical);
 		reader.registerScribe(new MyProductIdMarshaller());
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 0, 2);
+		assertSize(icalendar, 0, 1);
 
 		assertEquals("THE PRODUCT ID", icalendar.getProductId().getValue());
-		assertTrue(icalendar.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
 		assertWarnings(0, reader.getWarnings());
 		assertNull(reader.readNext());
@@ -530,10 +576,10 @@ public class ICalReaderTest {
 		reader.registerScribe(new MyEventMarshaller());
 
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 1, 2);
+		assertSize(icalendar, 1, 1);
 
 		assertEquals("prodid", icalendar.getProductId().getValue());
-		assertTrue(icalendar.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
 		MyVEvent event = icalendar.getComponent(MyVEvent.class);
 		assertSize(event, 0, 1);
@@ -558,10 +604,10 @@ public class ICalReaderTest {
 		reader.registerScribe(new MyEventMarshaller());
 
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 0, 2);
+		assertSize(icalendar, 0, 1);
 
 		assertEquals("prodid", icalendar.getProductId().getValue());
-		assertTrue(icalendar.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
 		assertWarnings(1, reader.getWarnings());
 		assertNull(reader.readNext());
@@ -582,10 +628,10 @@ public class ICalReaderTest {
 		reader.registerScribe(new TestPropertyMarshaller());
 
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 0, 3);
+		assertSize(icalendar, 0, 2);
 
 		assertEquals("prodid", icalendar.getProductId().getValue());
-		assertTrue(icalendar.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 		assertIntEquals(4, icalendar.getProperty(TestProperty.class).number);
 
 		assertWarnings(1, reader.getWarnings());
@@ -613,10 +659,10 @@ public class ICalReaderTest {
 
 		{
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 0, 3);
+			assertSize(icalendar, 0, 2);
 
 			assertEquals("prodid", icalendar.getProductId().getValue());
-			assertTrue(icalendar.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 			assertIntEquals(4, icalendar.getProperty(TestProperty.class).number);
 
 			assertWarnings(1, reader.getWarnings());
@@ -624,10 +670,10 @@ public class ICalReaderTest {
 
 		{
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 0, 3);
+			assertSize(icalendar, 0, 2);
 
 			assertEquals("prodid", icalendar.getProductId().getValue());
-			assertTrue(icalendar.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 			assertIntEquals(4, icalendar.getProperty(TestProperty.class).number);
 
 			assertWarnings(1, reader.getWarnings());
@@ -705,7 +751,7 @@ public class ICalReaderTest {
 
 			ICalReader reader = new ICalReader(ical);
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 0, 2);
+			assertSize(icalendar, 0, 1);
 
 			assertEquals("value", icalendar.getProductId().getValue());
 			assertEquals(Arrays.asList(), icalendar.getProductId().getParameters(null));
@@ -727,7 +773,7 @@ public class ICalReaderTest {
 
 			ICalReader reader = new ICalReader(ical);
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 0, 2);
+			assertSize(icalendar, 0, 1);
 
 			assertEquals("value", icalendar.getProductId().getValue());
 			assertEquals(Arrays.asList(), icalendar.getProductId().getParameters(null));
@@ -754,10 +800,10 @@ public class ICalReaderTest {
 		reader.registerScribe(new TestPropertyMarshaller());
 
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 0, 4);
+		assertSize(icalendar, 0, 3);
 
 		assertEquals("prodid", icalendar.getProductId().getValue());
-		assertTrue(icalendar.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
 		Iterator<TestProperty> it = icalendar.getProperties(TestProperty.class).iterator();
 
@@ -791,7 +837,7 @@ public class ICalReaderTest {
 
 		ICalReader reader = new ICalReader(file);
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 0, 2);
+		assertSize(icalendar, 0, 1);
 		assertEquals("\u1e66ummary", icalendar.getProperty(Summary.class).getValue());
 
 		assertWarnings(0, reader.getWarnings());
@@ -828,8 +874,8 @@ public class ICalReaderTest {
 
 			ICalReader reader = new ICalReader(ical);
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 1, 1);
-			assertTrue(icalendar.getVersion().isV1_0());
+			assertSize(icalendar, 1, 0);
+			assertEquals(ICalVersion.V1_0, icalendar.getVersion());
 
 			VAlarm valarm = icalendar.getComponent(VAlarm.class);
 			assertSize(valarm, 0, 5);
@@ -851,8 +897,8 @@ public class ICalReaderTest {
 
 			ICalReader reader = new ICalReader(ical);
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 0, 2);
-			assertTrue(icalendar.getVersion().isV2_0());
+			assertSize(icalendar, 0, 1);
+			assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 			assertEquals("20140101T010000;PT10M;5;http://example.com", icalendar.getExperimentalProperty("AALARM").getValue());
 		}
 	}
@@ -870,8 +916,8 @@ public class ICalReaderTest {
 
 			ICalReader reader = new ICalReader(ical);
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 1, 1);
-			assertTrue(icalendar.getVersion().isV1_0());
+			assertSize(icalendar, 1, 0);
+			assertEquals(ICalVersion.V1_0, icalendar.getVersion());
 
 			VAlarm valarm = icalendar.getComponent(VAlarm.class);
 			assertSize(valarm, 0, 5);
@@ -893,8 +939,8 @@ public class ICalReaderTest {
 
 			ICalReader reader = new ICalReader(ical);
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 0, 2);
-			assertTrue(icalendar.getVersion().isV2_0());
+			assertSize(icalendar, 0, 1);
+			assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 			assertEquals("20140101T010000;PT10M;5;display-text", icalendar.getExperimentalProperty("DALARM").getValue());
 		}
 	}
@@ -912,8 +958,8 @@ public class ICalReaderTest {
 
 			ICalReader reader = new ICalReader(ical);
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 1, 1);
-			assertTrue(icalendar.getVersion().isV1_0());
+			assertSize(icalendar, 1, 0);
+			assertEquals(ICalVersion.V1_0, icalendar.getVersion());
 
 			VAlarm valarm = icalendar.getComponent(VAlarm.class);
 			assertSize(valarm, 0, 6);
@@ -936,8 +982,8 @@ public class ICalReaderTest {
 
 			ICalReader reader = new ICalReader(ical);
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 0, 2);
-			assertTrue(icalendar.getVersion().isV2_0());
+			assertSize(icalendar, 0, 1);
+			assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 			assertEquals("20140101T010000;PT10M;5;jdoe@example.com;note", icalendar.getExperimentalProperty("MALARM").getValue());
 		}
 	}
@@ -955,8 +1001,8 @@ public class ICalReaderTest {
 
 			ICalReader reader = new ICalReader(ical);
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 1, 1);
-			assertTrue(icalendar.getVersion().isV1_0());
+			assertSize(icalendar, 1, 0);
+			assertEquals(ICalVersion.V1_0, icalendar.getVersion());
 
 			VAlarm valarm = icalendar.getComponent(VAlarm.class);
 			assertSize(valarm, 0, 5);
@@ -978,8 +1024,8 @@ public class ICalReaderTest {
 
 			ICalReader reader = new ICalReader(ical);
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 0, 2);
-			assertTrue(icalendar.getVersion().isV2_0());
+			assertSize(icalendar, 0, 1);
+			assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 			assertEquals("20140101T010000;PT10M;5;file:///bin/ls", icalendar.getExperimentalProperty("PALARM").getValue());
 		}
 	}
@@ -996,8 +1042,8 @@ public class ICalReaderTest {
 
 		ICalReader reader = new ICalReader(ical);
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 0, 4);
-		assertTrue(icalendar.getVersion().isV1_0());
+		assertSize(icalendar, 0, 3);
+		assertEquals(ICalVersion.V1_0, icalendar.getVersion());
 
 		DateFormat df = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
 		Iterator<RecurrenceRule> rrules = icalendar.getProperties(RecurrenceRule.class).iterator();
@@ -1025,8 +1071,8 @@ public class ICalReaderTest {
 
 		ICalReader reader = new ICalReader(ical);
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 1, 1);
-		assertTrue(icalendar.getVersion().isV1_0());
+		assertSize(icalendar, 1, 0);
+		assertEquals(ICalVersion.V1_0, icalendar.getVersion());
 
 		{
 			VTimezone timezone = icalendar.getTimezones().get(0);
@@ -1070,8 +1116,8 @@ public class ICalReaderTest {
 
 		ICalReader reader = new ICalReader(ical);
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 1, 1);
-		assertTrue(icalendar.getVersion().isV1_0());
+		assertSize(icalendar, 1, 0);
+		assertEquals(ICalVersion.V1_0, icalendar.getVersion());
 
 		{
 			VTimezone timezone = icalendar.getTimezones().get(0);
@@ -1096,8 +1142,8 @@ public class ICalReaderTest {
 
 			ICalReader reader = new ICalReader(ical);
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 0, 2);
-			assertTrue(icalendar.getVersion().isV1_0());
+			assertSize(icalendar, 0, 1);
+			assertEquals(ICalVersion.V1_0, icalendar.getVersion());
 			assertEquals(date("2014-01-01 01:00:00"), icalendar.getProperty(Created.class).getValue());
 
 			assertWarnings(0, reader.getWarnings());
@@ -1115,8 +1161,8 @@ public class ICalReaderTest {
 
 			ICalReader reader = new ICalReader(ical);
 			ICalendar icalendar = reader.readNext();
-			assertSize(icalendar, 0, 2);
-			assertTrue(icalendar.getVersion().isV2_0());
+			assertSize(icalendar, 0, 1);
+			assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 			assertEquals("20140101T010000", icalendar.getExperimentalProperty("DCREATED").getValue());
 
 			assertWarnings(0, reader.getWarnings());
@@ -1128,11 +1174,10 @@ public class ICalReaderTest {
 	public void outlook2010() throws Throwable {
 		ICalReader reader = read("outlook-2010.ics");
 		ICalendar ical = reader.readNext();
-		assertSize(ical, 2, 4);
+		assertSize(ical, 2, 3);
 
 		assertEquals("-//Microsoft Corporation//Outlook 14.0 MIMEDIR//EN", ical.getProductId().getValue());
-		assertTrue(ical.getVersion().isV2_0());
-		assertEquals(null, ical.getVersion().getMinVersion());
+		assertEquals(ICalVersion.V2_0, ical.getVersion());
 		assertEquals("REQUEST", ical.getMethod().getValue());
 		assertEquals("TRUE", ical.getExperimentalProperty("X-MS-OLK-FORCEINSPECTOROPEN").getValue());
 
@@ -1257,10 +1302,10 @@ public class ICalReaderTest {
 	public void example1() throws Throwable {
 		ICalReader reader = read("rfc5545-example1.ics");
 		ICalendar ical = reader.readNext();
-		assertSize(ical, 1, 2);
+		assertSize(ical, 1, 1);
 
 		assertEquals("-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN", ical.getProductId().getValue());
-		assertTrue(ical.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 		{
 			VEvent event = ical.getEvents().get(0);
@@ -1289,10 +1334,10 @@ public class ICalReaderTest {
 
 		ICalReader reader = read("rfc5545-example2.ics");
 		ICalendar ical = reader.readNext();
-		assertSize(ical, 2, 2);
+		assertSize(ical, 2, 1);
 
 		assertEquals("-//RDU Software//NONSGML HandCal//EN", ical.getProductId().getValue());
-		assertTrue(ical.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 		{
 			VTimezone timezone = ical.getTimezones().get(0);
@@ -1369,11 +1414,11 @@ public class ICalReaderTest {
 	public void example3() throws Throwable {
 		ICalReader reader = read("rfc5545-example3.ics");
 		ICalendar ical = reader.readNext();
-		assertSize(ical, 1, 3);
+		assertSize(ical, 1, 2);
 
 		assertEquals("xyz", ical.getMethod().getValue());
 		assertEquals("-//ABC Corporation//NONSGML My Product//EN", ical.getProductId().getValue());
-		assertTrue(ical.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 		{
 			VEvent event = ical.getEvents().get(0);
@@ -1405,9 +1450,9 @@ public class ICalReaderTest {
 	public void example4() throws Throwable {
 		ICalReader reader = read("rfc5545-example4.ics");
 		ICalendar ical = reader.readNext();
-		assertSize(ical, 1, 2);
+		assertSize(ical, 1, 1);
 
-		assertTrue(ical.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, ical.getVersion());
 		assertEquals("-//ABC Corporation//NONSGML My Product//EN", ical.getProductId().getValue());
 
 		{
@@ -1452,9 +1497,9 @@ public class ICalReaderTest {
 	public void example5() throws Throwable {
 		ICalReader reader = read("rfc5545-example5.ics");
 		ICalendar ical = reader.readNext();
-		assertSize(ical, 1, 2);
+		assertSize(ical, 1, 1);
 
-		assertTrue(ical.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, ical.getVersion());
 		assertEquals("-//ABC Corporation//NONSGML My Product//EN", ical.getProductId().getValue());
 
 		{
@@ -1479,9 +1524,9 @@ public class ICalReaderTest {
 	public void example6() throws Throwable {
 		ICalReader reader = read("rfc5545-example6.ics");
 		ICalendar ical = reader.readNext();
-		assertSize(ical, 1, 2);
+		assertSize(ical, 1, 1);
 
-		assertTrue(ical.getVersion().isV2_0());
+		assertEquals(ICalVersion.V2_0, ical.getVersion());
 		assertEquals("-//RDU Software//NONSGML HandCal//EN", ical.getProductId().getValue());
 
 		VFreeBusy freebusy = ical.getFreeBusies().get(0);

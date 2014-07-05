@@ -366,7 +366,12 @@ public class ICalWriter implements Closeable, Flushable {
 		ICalComponentScribe componentScribe = index.getComponentScribe(component);
 		writer.writeBeginComponent(componentScribe.getComponentName());
 
-		for (Object propertyObj : componentScribe.getProperties(component)) {
+		List propertyObjs = componentScribe.getProperties(component);
+		if (component instanceof ICalendar && component.getProperty(Version.class) == null) {
+			propertyObjs.add(0, new Version(writer.getVersion()));
+		}
+
+		for (Object propertyObj : propertyObjs) {
 			ICalProperty property = (ICalProperty) propertyObj;
 			writeProperty(property);
 		}
@@ -400,15 +405,11 @@ public class ICalWriter implements Closeable, Flushable {
 		ICalPropertyScribe scribe = index.getPropertyScribe(property);
 
 		String value;
-		if (property instanceof Version) {
-			value = writer.getVersion().getVersion();
-		} else {
-			//marshal property
-			try {
-				value = scribe.writeText(property, writer.getVersion());
-			} catch (SkipMeException e) {
-				return;
-			}
+		//marshal property
+		try {
+			value = scribe.writeText(property, writer.getVersion());
+		} catch (SkipMeException e) {
+			return;
 		}
 
 		//get parameters

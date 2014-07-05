@@ -20,7 +20,6 @@ import biweekly.property.CalendarScale;
 import biweekly.property.Geo;
 import biweekly.property.Method;
 import biweekly.property.ProductId;
-import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -72,6 +71,8 @@ import biweekly.property.Version;
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalendar extends ICalComponent {
+	private ICalVersion version;
+
 	/**
 	 * <p>
 	 * Creates a new iCalendar object.
@@ -81,40 +82,28 @@ public class ICalendar extends ICalComponent {
 	 * properties <b>must</b> be present in order for the iCalendar object to be
 	 * valid:
 	 * <ul>
-	 * <li>{@link Version} - Set to the default iCalendar version ("2.0").</li>
 	 * <li>{@link ProductId} - Set to a value that represents this library.</li>
 	 * </ul>
 	 * </p>
 	 */
 	public ICalendar() {
-		setVersion(Version.v2_0());
 		setProductId(ProductId.biweekly());
 	}
 
 	/**
-	 * Gets the min/max versions a consumer must support in order to
-	 * successfully parse the iCalendar object. All {@link ICalendar} objects
-	 * are initialized with a version of "2.0" (the default version). It is a
-	 * <b>required</b> property.
+	 * Gets the version of this iCalendar object.
 	 * @return the version
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-79">RFC 5545
-	 * p.79-80</a>
 	 */
-	public Version getVersion() {
-		return getProperty(Version.class);
+	public ICalVersion getVersion() {
+		return version;
 	}
 
 	/**
-	 * Sets the min/max versions a consumer must support in order to
-	 * successfully parse the iCalendar object. All {@link ICalendar} objects
-	 * are initialized with a version of "2.0" (the default version). It is a
-	 * <b>required</b> property.
+	 * Sets the version of this iCalendar object.
 	 * @param version the version
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-79">RFC 5545
-	 * p.79-80</a>
 	 */
-	public void setVersion(Version version) {
-		setProperty(Version.class, version);
+	public void setVersion(ICalVersion version) {
+		this.version = version;
 	}
 
 	/**
@@ -313,7 +302,7 @@ public class ICalendar extends ICalComponent {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
-		checkRequiredCardinality(warnings, ProductId.class, Version.class);
+		checkRequiredCardinality(warnings, ProductId.class);
 
 		if (this.components.isEmpty()) {
 			warnings.add(Warning.validate(4));

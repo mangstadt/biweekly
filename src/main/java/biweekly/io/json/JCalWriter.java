@@ -8,6 +8,7 @@ import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -19,6 +20,7 @@ import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -218,8 +220,13 @@ public class JCalWriter implements Closeable, Flushable {
 		ICalComponentScribe componentScribe = index.getComponentScribe(component);
 		writer.writeStartComponent(componentScribe.getComponentName().toLowerCase());
 
+		List propertyObjs = componentScribe.getProperties(component);
+		if (component instanceof ICalendar && component.getProperty(Version.class) == null) {
+			propertyObjs.add(0, new Version(targetVersion));
+		}
+
 		//write properties
-		for (Object propertyObj : componentScribe.getProperties(component)) {
+		for (Object propertyObj : propertyObjs) {
 			ICalProperty property = (ICalProperty) propertyObj;
 			ICalPropertyScribe propertyScribe = index.getPropertyScribe(property);
 

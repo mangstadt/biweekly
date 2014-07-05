@@ -51,7 +51,6 @@ import biweekly.property.ProductId;
 import biweekly.property.RecurrenceDates;
 import biweekly.property.SkipMeProperty;
 import biweekly.property.Summary;
-import biweekly.property.Version;
 import biweekly.property.Xml;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
@@ -140,6 +139,7 @@ public class XCalWriterTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" + NEWLINE +
 			"<vcalendar>" +
 				"<properties>" +
+					"<version><text>2.0</text></version>" +
 					"<prodid>" +
 						"<parameters>" +
 							"<x-foo><unknown>bar</unknown></x-foo>" + 
@@ -184,6 +184,7 @@ public class XCalWriterTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" + NEWLINE +
 			"<vcalendar>" +
 				"<properties>" +
+					"<version><text>2.0</text></version>" + 
 					"<prodid>" +
 						"<parameters>" +
 							"<x-foo><unknown>bar</unknown></x-foo>" + 
@@ -203,6 +204,7 @@ public class XCalWriterTest {
 			"</vcalendar>" +
 			"<vcalendar>" +
 				"<properties>" +
+					"<version><text>2.0</text></version>" +
 					"<prodid>" +
 						"<text>value</text>" +
 					"</prodid>" +
@@ -240,6 +242,7 @@ public class XCalWriterTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
 				"<properties>" +
+					"<version><text>2.0</text></version>" +
 					"<m:company xmlns:m=\"http://example.com\">" +
 						"<parameters>" +
 							"<x-foo><unknown>bar</unknown></x-foo>" +
@@ -266,7 +269,9 @@ public class XCalWriterTest {
 		String expected =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
-				"<properties />" +
+				"<properties>" +
+					"<version><text>2.0</text></version>" +
+				"</properties>" +
 			"</vcalendar>" +
 		"</icalendar>";
 		//@formatter:on
@@ -292,6 +297,7 @@ public class XCalWriterTest {
 			"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 				"<vcalendar>" +
 					"<properties>" +
+						"<version><text>2.0</text></version>" +
 						"<prodid><text>value</text></prodid>" +
 					"</properties>" +
 				"</vcalendar>" +
@@ -321,6 +327,7 @@ public class XCalWriterTest {
 				"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 					"<vcalendar>" +
 						"<properties>" +
+							"<version><text>2.0</text></version>" +
 							"<prodid><text>value</text></prodid>" +
 						"</properties>" +
 					"</vcalendar>" +
@@ -349,6 +356,7 @@ public class XCalWriterTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
 				"<properties>" +
+					"<version><text>2.0</text></version>" +
 					"<prodid><text>value</text></prodid>" +
 				"</properties>" +
 			"</vcalendar>" +
@@ -377,6 +385,7 @@ public class XCalWriterTest {
 				"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 					"<vcalendar>" +
 						"<properties>" +
+							"<version><text>2.0</text></version>" +
 							"<prodid><text>value</text></prodid>" +
 						"</properties>" +
 					"</vcalendar>" +
@@ -409,6 +418,7 @@ public class XCalWriterTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
 				"<properties>" +
+					"<version><text>2.0</text></version>" +
 					"<prodid>" +
 						"<parameters>" +
 							"<language><text>en</text></language>" +
@@ -440,6 +450,7 @@ public class XCalWriterTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
 				"<properties>" +
+					"<version><text>2.0</text></version>" +
 					"<x-foo><unknown>bar</unknown></x-foo>" +
 				"</properties>" +
 			"</vcalendar>" +
@@ -473,6 +484,7 @@ public class XCalWriterTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
 				"<properties>" +
+					"<version><text>2.0</text></version>" +
 					"<prodid><text>value</text></prodid>" +
 				"</properties>" +
 			"</vcalendar>" +
@@ -506,6 +518,7 @@ public class XCalWriterTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
 				"<properties>" +
+					"<version><text>2.0</text></version>" +
 					"<prodid><text>value</text></prodid>" +
 				"</properties>" +
 			"</vcalendar>" +
@@ -528,6 +541,7 @@ public class XCalWriterTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
 				"<properties>" +
+					"<version><text>2.0</text></version>" +
 					"<m:company xmlns:m=\"http://example.com\">" +
 						"<m:boss>John Doe</m:boss>" +
 					"</m:company>" +
@@ -554,6 +568,9 @@ public class XCalWriterTest {
 		String expected =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
+				"<properties>" +
+					"<version><text>2.0</text></version>" +
+				"</properties>" +
 				"<components>" +
 					"<x-party>" +
 						"<properties>" +
@@ -588,6 +605,9 @@ public class XCalWriterTest {
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" + NEWLINE +
 		"  <vcalendar>" + NEWLINE +	
 		"    <properties>" + NEWLINE +
+		"      <version>" + NEWLINE +
+		"        <text>2.0</text>" + NEWLINE +
+		"      </version>" + NEWLINE +
 		"      <prodid>" + NEWLINE +
 		"        <parameters>" + NEWLINE +
 		"          <x-foo>" + NEWLINE + 
@@ -632,7 +652,6 @@ public class XCalWriterTest {
 	public void write_example1() throws Throwable {
 		ical.setCalendarScale(CalendarScale.gregorian());
 		ical.setProductId("-//Example Inc.//Example Calendar//EN");
-		ical.setVersion(Version.v2_0());
 		{
 			VEvent event = new VEvent();
 			event.getProperties().clear();
@@ -652,7 +671,6 @@ public class XCalWriterTest {
 		//see: RFC 6321 p.51
 		VTimezone usEasternTz;
 		ical.setProductId("-//Example Inc.//Example Client//EN");
-		ical.setVersion(Version.v2_0());
 		{
 			usEasternTz = new VTimezone(null);
 			usEasternTz.setLastModified(utcFormatter.parse("2004-01-10T03:28:45"));

@@ -1,7 +1,6 @@
 package biweekly;
 
 import static biweekly.util.TestUtils.assertValidate;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
@@ -11,7 +10,6 @@ import org.junit.Test;
 import biweekly.component.ICalComponent;
 import biweekly.property.Geo;
 import biweekly.property.ICalProperty;
-import biweekly.property.Version;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -45,7 +43,6 @@ public class ICalendarTest {
 	@Test
 	public void constructor() {
 		ICalendar ical = new ICalendar();
-		assertEquals(Version.ICAL, ical.getVersion().getMaxVersion());
 		assertNotNull(ical.getProductId());
 	}
 

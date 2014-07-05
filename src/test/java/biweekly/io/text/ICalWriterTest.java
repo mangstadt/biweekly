@@ -51,7 +51,6 @@ import biweekly.property.SkipMeProperty;
 import biweekly.property.Status;
 import biweekly.property.Summary;
 import biweekly.property.Trigger;
-import biweekly.property.Version;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
@@ -277,6 +276,7 @@ public class ICalWriterTest {
 		//@formatter:off
 		String expected = 
 		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:2.0\r\n" +
 			"X-FOO:bar\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
@@ -448,6 +448,7 @@ public class ICalWriterTest {
 		//@formatter:off
 		String expected = 
 		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:2.0\r\n" +
 			"SUMMARY:\u1e66ummary\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
@@ -487,6 +488,7 @@ public class ICalWriterTest {
 		//@formatter:off
 		String expected = 
 		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:1.0\r\n" +
 			"DAYLIGHT:TRUE;-0400;20140101T010000;20140201T010000;EST;EDT\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
@@ -540,6 +542,7 @@ public class ICalWriterTest {
 		//@formatter:off
 		String expected = 
 		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:1.0\r\n" +
 			"DAYLIGHT:TRUE;-0400;20140101T010000;20140201T010000;EST;EDT\r\n" +
 			"DAYLIGHT:TRUE;-0400;20140301T010000;20140401T010000;EST2;EDT2\r\n" +
 		"END:VCALENDAR\r\n";
@@ -573,6 +576,7 @@ public class ICalWriterTest {
 		//@formatter:off
 		String expected = 
 		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:1.0\r\n" +
 			"DAYLIGHT:FALSE\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
@@ -605,6 +609,7 @@ public class ICalWriterTest {
 		//@formatter:off
 		String expected = 
 		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:1.0\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
@@ -631,7 +636,8 @@ public class ICalWriterTest {
 			//@formatter:off
 			String expected = 
 			"BEGIN:VCALENDAR\r\n" +
-			"ATTENDEE;LANGUAGE=en;ROLE=ORGANIZER:John Doe <jdoe@example.com>\r\n" +
+				"VERSION:1.0\r\n" +
+				"ATTENDEE;LANGUAGE=en;ROLE=ORGANIZER:John Doe <jdoe@example.com>\r\n" +
 			"END:VCALENDAR\r\n";
 			//@formatter:on
 
@@ -648,7 +654,8 @@ public class ICalWriterTest {
 			//@formatter:off
 			String expected = 
 			"BEGIN:VCALENDAR\r\n" +
-			"ORGANIZER;LANGUAGE=en;CN=John Doe:mailto:jdoe@example.com\r\n" +
+				"VERSION:2.0\r\n" +
+				"ORGANIZER;LANGUAGE=en;CN=John Doe:mailto:jdoe@example.com\r\n" +
 			"END:VCALENDAR\r\n";
 			//@formatter:on
 
@@ -675,7 +682,8 @@ public class ICalWriterTest {
 			//@formatter:off
 			String expected = 
 			"BEGIN:VCALENDAR\r\n" +
-			"DCREATED:20140101T010000Z\r\n" +
+				"VERSION:1.0\r\n" +
+				"DCREATED:20140101T010000Z\r\n" +
 			"END:VCALENDAR\r\n";
 			//@formatter:on
 
@@ -692,7 +700,8 @@ public class ICalWriterTest {
 			//@formatter:off
 			String expected = 
 			"BEGIN:VCALENDAR\r\n" +
-			"CREATED:20140101T010000Z\r\n" +
+				"VERSION:2.0\r\n" +
+				"CREATED:20140101T010000Z\r\n" +
 			"END:VCALENDAR\r\n";
 			//@formatter:on
 
@@ -706,7 +715,6 @@ public class ICalWriterTest {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setProductId("-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN");
-		ical.setVersion(Version.v2_0());
 		{
 			VEvent event = new VEvent();
 			event.getProperties().clear();
@@ -732,7 +740,6 @@ public class ICalWriterTest {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setProductId("-//RDU Software//NONSGML HandCal//EN");
-		ical.setVersion(Version.v2_0());
 		{
 			usEasternTz = new VTimezone(null);
 			usEasternTz.setTimezoneId("America/New_York");
@@ -786,7 +793,6 @@ public class ICalWriterTest {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setMethod("xyz");
-		ical.setVersion(Version.v2_0());
 		ical.setProductId("-//ABC Corporation//NONSGML My Product//EN");
 		{
 			VEvent event = new VEvent();
@@ -822,7 +828,6 @@ public class ICalWriterTest {
 	public void example4() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
-		ical.setVersion(Version.v2_0());
 		ical.setProductId("-//ABC Corporation//NONSGML My Product//EN");
 		{
 			VTodo todo = new VTodo();
@@ -859,7 +864,6 @@ public class ICalWriterTest {
 	public void example5() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
-		ical.setVersion(Version.v2_0());
 		ical.setProductId("-//ABC Corporation//NONSGML My Product//EN");
 		{
 			VJournal journal = new VJournal();
@@ -882,7 +886,6 @@ public class ICalWriterTest {
 	public void example6() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
-		ical.setVersion(Version.v2_0());
 		ical.setProductId("-//RDU Software//NONSGML HandCal//EN");
 		VFreeBusy freebusy = new VFreeBusy();
 		{

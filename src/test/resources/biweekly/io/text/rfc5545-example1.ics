@@ -1,6 +1,6 @@
 BEGIN:VCALENDAR
-PRODID:-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN
 VERSION:2.0
+PRODID:-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN
 BEGIN:VEVENT
 DTSTAMP:19960704T120000Z
 UID:uid1@example.com

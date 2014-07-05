@@ -129,10 +129,10 @@ public class XCalReaderTest {
 
 		{
 			ICalendar ical = reader.readNext();
-			assertSize(ical, 1, 2);
+			assertSize(ical, 1, 1);
 
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-			assertTrue(ical.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -184,10 +184,10 @@ public class XCalReaderTest {
 
 		{
 			ICalendar ical = reader.readNext();
-			assertSize(ical, 1, 2);
+			assertSize(ical, 1, 1);
 
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-			assertTrue(ical.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -198,10 +198,10 @@ public class XCalReaderTest {
 
 		{
 			ICalendar ical = reader.readNext();
-			assertSize(ical, 1, 2);
+			assertSize(ical, 1, 1);
 
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-			assertTrue(ical.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -280,10 +280,10 @@ public class XCalReaderTest {
 
 		{
 			ICalendar ical = reader.readNext();
-			assertSize(ical, 1, 2);
+			assertSize(ical, 1, 1);
 
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-			assertTrue(ical.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -362,13 +362,13 @@ public class XCalReaderTest {
 
 		{
 			ICalendar ical = reader.readNext();
-			assertSize(ical, 1, 2);
+			assertSize(ical, 1, 1);
 
 			ProductId productId = ical.getProductId();
 			assertEquals("-//Example Inc.//Example Client//EN", productId.getValue());
 			assertEquals("bar", productId.getParameter("x-foo"));
 
-			assertTrue(ical.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -512,20 +512,20 @@ public class XCalReaderTest {
 
 		{
 			ICalendar ical = reader.readNext();
-			assertSize(ical, 0, 2);
+			assertSize(ical, 0, 1);
 
 			assertEquals("value1", ical.getProductId().getValue());
-			assertTrue(ical.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 			assertWarnings(0, reader.getWarnings());
 		}
 
 		{
 			ICalendar ical = reader.readNext();
-			assertSize(ical, 0, 2);
+			assertSize(ical, 0, 1);
 
 			assertEquals("value2", ical.getProductId().getValue());
-			assertTrue(ical.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 			assertWarnings(0, reader.getWarnings());
 		}
@@ -933,10 +933,10 @@ public class XCalReaderTest {
 
 		{
 			ICalendar ical = reader.readNext();
-			assertSize(ical, 1, 3);
+			assertSize(ical, 1, 2);
 			assertTrue(ical.getCalendarScale().isGregorian());
 			assertEquals("-//Example Inc.//Example Calendar//EN", ical.getProductId().getValue());
-			assertTrue(ical.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 			{
 				VEvent event = ical.getEvents().get(0);
@@ -964,9 +964,9 @@ public class XCalReaderTest {
 
 		{
 			ICalendar ical = reader.readNext();
-			assertSize(ical, 3, 2);
+			assertSize(ical, 3, 1);
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-			assertTrue(ical.getVersion().isV2_0());
+			assertEquals(ICalVersion.V2_0, ical.getVersion());
 
 			{
 				VTimezone timezone = ical.getTimezones().get(0);

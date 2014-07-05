@@ -58,7 +58,6 @@ public class ICalRawReaderTest {
 
 		assertEquals(line("BEGIN").value("VCALENDAR").build(), reader.readLine());
 		assertEquals(line("PRODID").value("-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN").build(), reader.readLine());
-		assertEquals(line("VERSION").value("2.0").build(), reader.readLine());
 		assertEquals(line("BEGIN").value("VEVENT").build(), reader.readLine());
 		assertEquals(line("SUMMARY").value("Networld+Interop Conference").build(), reader.readLine());
 		assertEquals(line("DESCRIPTION").value("Networld+Interop Conferenceand Exhibit\\nAtlanta World Congress Center\\nAtlanta\\, Georgia").build(), reader.readLine());
@@ -71,19 +70,48 @@ public class ICalRawReaderTest {
 	public void version() throws Throwable {
 		//@formatter:off
 		String ical =
-		"verSION:2.0\r\n" +
-		"VERSION:1.0\r\n" +
-		"VERSION:invalid";
+		"VERSION:2.0\r\n" +
+		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:invalid\r\n" +
+			"VERSION:2.0\r\n" +
+			"PRODID:value\r\n" +
+			"BEGIN:VEVENT\r\n" +
+				"VERSION:1.0\r\n" +
+				"SUMMARY:value\r\n" +
+			//missing END:VEVENT
+		"END:VCALENDAR\r\n" +
+		"VERSION:1.0\r\n";
 		//@formatter:on
 		ICalRawReader reader = create(ical);
+		assertEquals(null, reader.getVersion());
 
-		assertEquals(ICalVersion.V1_0, reader.getVersion());
-		assertEquals(line("verSION").value("2.0").build(), reader.readLine());
-		assertEquals(ICalVersion.V2_0, reader.getVersion());
-		assertEquals(line("VERSION").value("1.0").build(), reader.readLine());
-		assertEquals(ICalVersion.V1_0, reader.getVersion());
+		assertEquals(line("VERSION").value("2.0").build(), reader.readLine());
+		assertEquals(null, reader.getVersion());
+
+		assertEquals(line("BEGIN").value("VCALENDAR").build(), reader.readLine());
+		assertEquals(null, reader.getVersion());
+
 		assertEquals(line("VERSION").value("invalid").build(), reader.readLine());
-		assertEquals(ICalVersion.V1_0, reader.getVersion());
+		assertEquals(null, reader.getVersion());
+
+		assertEquals(line("PRODID").value("value").build(), reader.readLine());
+		assertEquals(ICalVersion.V2_0, reader.getVersion());
+
+		assertEquals(line("BEGIN").value("VEVENT").build(), reader.readLine());
+		assertEquals(ICalVersion.V2_0, reader.getVersion());
+
+		assertEquals(line("VERSION").value("1.0").build(), reader.readLine());
+		assertEquals(ICalVersion.V2_0, reader.getVersion());
+
+		assertEquals(line("SUMMARY").value("value").build(), reader.readLine());
+		assertEquals(ICalVersion.V2_0, reader.getVersion());
+
+		assertEquals(line("END").value("VCALENDAR").build(), reader.readLine());
+		assertEquals(ICalVersion.V2_0, reader.getVersion());
+
+		assertEquals(line("VERSION").value("1.0").build(), reader.readLine());
+		assertEquals(ICalVersion.V2_0, reader.getVersion());
+
 		assertNull(reader.readLine());
 	}
 
@@ -151,35 +179,6 @@ public class ICalRawReaderTest {
 	}
 
 	@Test
-	public void parameter() throws Throwable {
-		//@formatter:off
-		String ical =
-		"VERSION:2.0\r\n" +
-		"PROP" +
-		";PARAM1=one" +
-		";PARAM2=\"two,;:^'^n^^^three\"" +
-		";PARAM3=four,\"five,;:^'^n^^^six\"" +
-		";PARAM4=seven^'^n^^^eight" +
-		":value";
-		//@formatter:on
-		ICalRawReader reader = create(ical);
-		reader.readLine();
-
-		ICalRawLine.Builder builder = line("PROP");
-		builder.param("PARAM1", "one");
-		builder.param("PARAM2", "two,;:\"" + NEWLINE + "^^three");
-		builder.param("PARAM3", "four", "five,;:\"" + NEWLINE + "^^six");
-		builder.param("PARAM4", "seven\"" + NEWLINE + "^^eight");
-		builder.value("value");
-		ICalRawLine expected = builder.build();
-
-		ICalRawLine actual = reader.readLine();
-		assertEquals(expected, actual);
-
-		assertNull(reader.readLine());
-	}
-
-	@Test
 	public void parameter_valueless() throws Throwable {
 		//@formatter:off
 		String ical =
@@ -200,8 +199,10 @@ public class ICalRawReaderTest {
 		{
 			//@formatter:off
 			String vcard = 
+			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:1.0\r\n" +
-			"ADR;TYPE\t= WOrK;TYPE \t=  dOM:;;123 Main Str;Austin;TX;12345;US";
+			"ADR;TYPE\t= WOrK;TYPE \t=  dOM:;;123 Main Str;Austin;TX;12345;US\r\n" +
+			"END:VCALENDAR\r\n";
 			//@formatter:on
 			ICalRawReader reader = create(vcard);
 			reader.readLine();
@@ -210,6 +211,7 @@ public class ICalRawReaderTest {
 			ICalRawLine actual = reader.readLine();
 			assertEquals(expected, actual);
 
+			reader.readLine();
 			assertNull(reader.readLine());
 		}
 
@@ -217,8 +219,10 @@ public class ICalRawReaderTest {
 		{
 			//@formatter:off
 			String vcard = 
+			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:2.0\r\n" +
-			"ADR;TYPE\t= WOrK;TYPE \t=  dOM:;;123 Main Str;Austin;TX;12345;US";
+			"ADR;TYPE\t= WOrK;TYPE \t=  dOM:;;123 Main Str;Austin;TX;12345;US\r\n" +
+			"END:VCALENDAR\r\n";
 			//@formatter:on
 			ICalRawReader reader = create(vcard);
 			reader.readLine();
@@ -227,6 +231,7 @@ public class ICalRawReaderTest {
 			ICalRawLine actual = reader.readLine();
 			assertEquals(expected, actual);
 
+			reader.readLine();
 			assertNull(reader.readLine());
 		}
 	}
@@ -237,8 +242,10 @@ public class ICalRawReaderTest {
 		{
 			//@formatter:off
 			String vcard = 
+			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:1.0\r\n" +
-			"ADR;TYPE=dom,\"foo,bar\\;baz\",work,foo=bar;PREF=1:;;123 Main Str;Austin;TX;12345;US";
+			"ADR;TYPE=dom,\"foo,bar\\;baz\",work,foo=bar;PREF=1:;;123 Main Str;Austin;TX;12345;US\r\n" +
+			"END:VCALENDAR\r\n";
 			//@formatter:on
 			ICalRawReader reader = create(vcard);
 			reader.readLine();
@@ -247,15 +254,18 @@ public class ICalRawReaderTest {
 			ICalRawLine actual = reader.readLine();
 			assertEquals(expected, actual);
 
+			reader.readLine();
 			assertNull(reader.readLine());
 		}
 
 		//2.0
 		{
 			//@formatter:off
-			String vcard = 
+			String vcard =
+			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:2.0\r\n" +
-			"ADR;TYPE=dom,\"foo,bar;baz\",work,foo=bar;PREF=1:;;123 Main Str;Austin;TX;12345;US";
+			"ADR;TYPE=dom,\"foo,bar;baz\",work,foo=bar;PREF=1:;;123 Main Str;Austin;TX;12345;US\r\n" +
+			"END:VCALENDAR\r\n";
 			//@formatter:on
 			ICalRawReader reader = create(vcard);
 			reader.readLine();
@@ -264,6 +274,7 @@ public class ICalRawReaderTest {
 			ICalRawLine actual = reader.readLine();
 			assertEquals(expected, actual);
 
+			reader.readLine();
 			assertNull(reader.readLine());
 		}
 	}
@@ -284,9 +295,11 @@ public class ICalRawReaderTest {
 			//a: caret that doesn't escape anything
 			//@formatter:off
 			String vcard = 
+			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:1.0\r\n" +
 			//          1    2     2     3        4     5            6        7  8       8   9   9     a
-			"ADR;LABEL=1\\23 ^^Main^^ St.^nSection\\; 12^NBuilding 20\\nApt 10\\N^'Austin^', \"TX\" 123^45:;;123 Main Str;Austin;TX;12345;US";
+			"ADR;LABEL=1\\23 ^^Main^^ St.^nSection\\; 12^NBuilding 20\\nApt 10\\N^'Austin^', \"TX\" 123^45:;;123 Main Str;Austin;TX;12345;US\r\n" +
+			"END:VCALENDAR\r\n";
 			//@formatter:on
 			ICalRawReader reader = create(vcard);
 			reader.setCaretDecodingEnabled(false);
@@ -296,6 +309,7 @@ public class ICalRawReaderTest {
 			ICalRawLine actual = reader.readLine();
 			assertEquals(expected, actual);
 
+			reader.readLine();
 			assertNull(reader.readLine());
 		}
 
@@ -313,9 +327,11 @@ public class ICalRawReaderTest {
 			//a: caret that doesn't escape anything
 			//@formatter:off
 			String vcard = 
+			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:1.0\r\n" +
 			//          1    2     2     3        4     5            6        7  8       8   9   9     a
-			"ADR;LABEL=1\\23 ^^Main^^ St.^nSection\\; 12^NBuilding 20\\nApt 10\\N^'Austin^', \"TX\" 123^45:;;123 Main Str;Austin;TX;12345;US";
+			"ADR;LABEL=1\\23 ^^Main^^ St.^nSection\\; 12^NBuilding 20\\nApt 10\\N^'Austin^', \"TX\" 123^45:;;123 Main Str;Austin;TX;12345;US\r\n" +
+			"END:VCALENDAR\r\n";
 			//@formatter:on
 			ICalRawReader reader = create(vcard);
 			reader.setCaretDecodingEnabled(true);
@@ -325,6 +341,7 @@ public class ICalRawReaderTest {
 			ICalRawLine actual = reader.readLine();
 			assertEquals(expected, actual);
 
+			reader.readLine();
 			assertNull(reader.readLine());
 		}
 
@@ -342,9 +359,11 @@ public class ICalRawReaderTest {
 			//9: caret that doesn't escape anything
 			//@formatter:off
 			String vcard = 
+			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:2.0\r\n" +
 			//         0  1    2     2     3        0   4            5        6  7       7 0 8     8       9  0
-			"ADR;LABEL=\"1\\23 ^^Main^^ St.^nSection; 12^NBuilding 20\\nApt 10\\N^'Austin^', \\\"TX\\\" 123^45\":;;123 Main Str;Austin;TX;12345;US";
+			"ADR;LABEL=\"1\\23 ^^Main^^ St.^nSection; 12^NBuilding 20\\nApt 10\\N^'Austin^', \\\"TX\\\" 123^45\":;;123 Main Str;Austin;TX;12345;US\r\n" +
+			"END:VCALENDAR\r\n";
 			//@formatter:on
 			ICalRawReader reader = create(vcard);
 			reader.setCaretDecodingEnabled(false);
@@ -354,6 +373,7 @@ public class ICalRawReaderTest {
 			ICalRawLine actual = reader.readLine();
 			assertEquals(expected, actual);
 
+			reader.readLine();
 			assertNull(reader.readLine());
 		}
 
@@ -371,9 +391,11 @@ public class ICalRawReaderTest {
 			//9: caret that doesn't escape anything
 			//@formatter:off
 			String vcard = 
+			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:2.0\r\n" +
 			//         0  1    2     2     3        0   4            5        6  7       7 0 8     8       9  0
-			"ADR;LABEL=\"1\\23 ^^Main^^ St.^nSection; 12^NBuilding 20\\nApt 10\\N^'Austin^', \\\"TX\\\" 123^45\":;;123 Main Str;Austin;TX;12345;US";
+			"ADR;LABEL=\"1\\23 ^^Main^^ St.^nSection; 12^NBuilding 20\\nApt 10\\N^'Austin^', \\\"TX\\\" 123^45\":;;123 Main Str;Austin;TX;12345;US\r\n" +
+			"END:VCALENDAR\r\n";
 			//@formatter:on
 			ICalRawReader reader = create(vcard);
 			reader.setCaretDecodingEnabled(true);
@@ -383,6 +405,7 @@ public class ICalRawReaderTest {
 			ICalRawLine actual = reader.readLine();
 			assertEquals(expected, actual);
 
+			reader.readLine();
 			assertNull(reader.readLine());
 		}
 	}
