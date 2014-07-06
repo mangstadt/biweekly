@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
@@ -41,7 +42,9 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
+import biweekly.component.VTimezone;
 import biweekly.io.SkipMeException;
+import biweekly.io.WriteContext;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -139,6 +142,10 @@ public class XCalWriter implements Closeable {
 	private int level = 0;
 	private boolean textNodeJustPrinted = false, started = false;
 	private ScribeIndex index = new ScribeIndex();
+
+	private WriteContext context;
+	private TimeZone timezone;
+	private VTimezone vtimezone;
 
 	/**
 	 * Creates an xCard writer (UTF-8 encoding will be used).
@@ -286,6 +293,34 @@ public class XCalWriter implements Closeable {
 	}
 
 	/**
+	 * Registers the data type of an experimental parameter. Experimental
+	 * parameters use the "unknown" data type by default.
+	 * @param parameterName the parameter name (e.g. "x-foo")
+	 * @param dataType the data type or null to remove
+	 */
+	public void registerParameterDataType(String parameterName, ICalDataType dataType) {
+		parameterName = parameterName.toLowerCase();
+		if (dataType == null) {
+			parameterDataTypes.remove(parameterName);
+		} else {
+			parameterDataTypes.put(parameterName, dataType);
+		}
+	}
+
+	/**
+	 * Sets the timezone to format all date/time property values in (defaults to
+	 * UTC).
+	 * @param timezone the timezone or null for UTC
+	 * @param vtimezone the VTIMEZONE component that this timezone corresponds
+	 * to, or null for floating time (floating time is a date-time value which
+	 * is not UTC and whose property does not have a TZID parameter)
+	 */
+	public void setTimezone(TimeZone timezone, VTimezone vtimezone) {
+		this.timezone = timezone;
+		this.vtimezone = vtimezone;
+	}
+
+	/**
 	 * Writes an iCalendar object.
 	 * @param ical the iCalendar object to write
 	 * @throws SAXException if there's a problem writing the iCalendar object
@@ -294,6 +329,7 @@ public class XCalWriter implements Closeable {
 	 */
 	public void write(ICalendar ical) throws SAXException {
 		index.hasScribesFor(ical);
+		context = new WriteContext(targetVersion, timezone, vtimezone);
 
 		if (!started) {
 			handler.startDocument();
@@ -308,21 +344,6 @@ public class XCalWriter implements Closeable {
 		}
 
 		write((ICalComponent) ical);
-	}
-
-	/**
-	 * Registers the data type of an experimental parameter. Experimental
-	 * parameters use the "unknown" data type by default.
-	 * @param parameterName the parameter name (e.g. "x-foo")
-	 * @param dataType the data type or null to remove
-	 */
-	public void registerParameterDataType(String parameterName, ICalDataType dataType) {
-		parameterName = parameterName.toLowerCase();
-		if (dataType == null) {
-			parameterDataTypes.remove(parameterName);
-		} else {
-			parameterDataTypes.put(parameterName, dataType);
-		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -372,7 +393,7 @@ public class XCalWriter implements Closeable {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void write(ICalProperty property) throws SAXException {
 		ICalPropertyScribe scribe = index.getPropertyScribe(property);
-		ICalParameters parameters = scribe.prepareParameters(property, targetVersion);
+		ICalParameters parameters = scribe.prepareParameters(property, context);
 
 		//get the property element to write
 		Element propertyElement;
@@ -387,7 +408,7 @@ public class XCalWriter implements Closeable {
 			QName qname = scribe.getQName();
 			propertyElement = DOC.createElementNS(qname.getNamespaceURI(), qname.getLocalPart());
 			try {
-				scribe.writeXml(property, propertyElement);
+				scribe.writeXml(property, propertyElement, context);
 			} catch (SkipMeException e) {
 				return;
 			}

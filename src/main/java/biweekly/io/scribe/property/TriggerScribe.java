@@ -7,6 +7,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -53,7 +54,7 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 	}
 
 	@Override
-	protected String _writeText(Trigger property, ICalVersion version) {
+	protected String _writeText(Trigger property, WriteContext context) {
 		Duration duration = property.getDuration();
 		if (duration != null) {
 			return duration.toString();
@@ -88,7 +89,7 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 	}
 
 	@Override
-	protected void _writeXml(Trigger property, XCalElement element) {
+	protected void _writeXml(Trigger property, XCalElement element, WriteContext context) {
 		Duration duration = property.getDuration();
 		if (duration != null) {
 			element.append(ICalDataType.DURATION, duration.toString());
@@ -129,7 +130,7 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 	}
 
 	@Override
-	protected JCalValue _writeJson(Trigger property) {
+	protected JCalValue _writeJson(Trigger property, WriteContext context) {
 		Duration duration = property.getDuration();
 		if (duration != null) {
 			return JCalValue.single(duration.toString());

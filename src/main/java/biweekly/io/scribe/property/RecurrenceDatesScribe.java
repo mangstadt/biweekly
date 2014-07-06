@@ -7,6 +7,7 @@ import java.util.List;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -49,6 +50,12 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	}
 
 	@Override
+	protected ICalParameters _prepareParameters(RecurrenceDates property, WriteContext context) {
+		boolean hasTime = property.hasTime() || !property.getPeriods().isEmpty();
+		return handleTzidParameter(property, hasTime, false, context);
+	}
+
+	@Override
 	protected ICalDataType _dataType(RecurrenceDates property, ICalVersion version) {
 		if (property.getDates() != null) {
 			return property.hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
@@ -60,16 +67,17 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	}
 
 	@Override
-	protected String _writeText(final RecurrenceDates property, ICalVersion version) {
+	protected String _writeText(final RecurrenceDates property, final WriteContext context) {
 		List<Date> dates = property.getDates();
 		if (dates != null) {
 			return list(dates, new ListCallback<Date>() {
 				public String asString(Date date) {
-					return date(date).time(property.hasTime()).tzid(property.getTimezoneId()).write();
+					return date(date).time(property.hasTime()).tz(context.getTimeZone()).write();
 				}
 			});
 		}
 
+		//TODO vCal does not support periods
 		List<Period> periods = property.getPeriods();
 		if (periods != null) {
 			return list(periods, new ListCallback<Period>() {
@@ -77,14 +85,14 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 					StringBuilder sb = new StringBuilder();
 
 					if (period.getStartDate() != null) {
-						String date = date(period.getStartDate()).tzid(property.getTimezoneId()).write();
+						String date = date(period.getStartDate()).tz(context.getTimeZone()).write();
 						sb.append(date);
 					}
 
 					sb.append('/');
 
 					if (period.getEndDate() != null) {
-						String date = date(period.getEndDate()).tzid(property.getTimezoneId()).write();
+						String date = date(period.getEndDate()).tz(context.getTimeZone()).write();
 						sb.append(date);
 					} else if (period.getDuration() != null) {
 						sb.append(period.getDuration());
@@ -104,7 +112,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	}
 
 	@Override
-	protected void _writeXml(RecurrenceDates property, XCalElement element) {
+	protected void _writeXml(RecurrenceDates property, XCalElement element, WriteContext context) {
 		List<Date> dates = property.getDates();
 		if (dates != null) {
 			ICalDataType dataType = property.hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
@@ -112,7 +120,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 				element.append(dataType, "");
 			} else {
 				for (Date date : dates) {
-					String dateStr = date(date).time(property.hasTime()).tzid(property.getTimezoneId()).extended(true).write();
+					String dateStr = date(date).time(property.hasTime()).tz(context.getTimeZone()).extended(true).write();
 					element.append(dataType, dateStr);
 				}
 			}
@@ -129,12 +137,12 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 					Date start = period.getStartDate();
 					if (start != null) {
-						periodElement.append("start", date(start).tzid(property.getTimezoneId()).extended(true).write());
+						periodElement.append("start", date(start).tz(context.getTimeZone()).extended(true).write());
 					}
 
 					Date end = period.getEndDate();
 					if (end != null) {
-						periodElement.append("end", date(end).tzid(property.getTimezoneId()).extended(true).write());
+						periodElement.append("end", date(end).tz(context.getTimeZone()).extended(true).write());
 					}
 
 					Duration duration = period.getDuration();
@@ -218,28 +226,28 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	}
 
 	@Override
-	protected JCalValue _writeJson(RecurrenceDates property) {
+	protected JCalValue _writeJson(RecurrenceDates property, WriteContext context) {
 		List<String> values = new ArrayList<String>();
 
 		List<Date> dates = property.getDates();
 		List<Period> periods = property.getPeriods();
 		if (dates != null) {
 			for (Date date : dates) {
-				String dateStr = date(date).time(property.hasTime()).tzid(property.getTimezoneId()).extended(true).write();
+				String dateStr = date(date).time(property.hasTime()).tz(context.getTimeZone()).extended(true).write();
 				values.add(dateStr);
 			}
 		} else if (periods != null) {
 			for (Period period : property.getPeriods()) {
 				StringBuilder sb = new StringBuilder();
 				if (period.getStartDate() != null) {
-					String value = date(period.getStartDate()).tzid(property.getTimezoneId()).extended(true).write();
+					String value = date(period.getStartDate()).tz(context.getTimeZone()).extended(true).write();
 					sb.append(value);
 				}
 
 				sb.append('/');
 
 				if (period.getEndDate() != null) {
-					String value = date(period.getEndDate()).tzid(property.getTimezoneId()).extended(true).write();
+					String value = date(period.getEndDate()).tz(context.getTimeZone()).extended(true).write();
 					sb.append(value);
 				} else if (period.getDuration() != null) {
 					sb.append(period.getDuration());

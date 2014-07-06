@@ -33,6 +33,7 @@ import biweekly.component.RawComponent;
 import biweekly.component.StandardTime;
 import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
+import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.CannotParseScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -639,7 +640,7 @@ public class JCalReaderTest {
 		}
 
 		@Override
-		protected String _writeText(Company property, ICalVersion version) {
+		protected String _writeText(Company property, WriteContext context) {
 			return property.getBoss();
 		}
 

@@ -6,6 +6,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -50,7 +51,7 @@ public class CannotParseScribe extends ICalPropertyScribe<CannotParseProperty> {
 	}
 
 	@Override
-	protected String _writeText(CannotParseProperty property, ICalVersion version) {
+	protected String _writeText(CannotParseProperty property, WriteContext context) {
 		return "value";
 	}
 

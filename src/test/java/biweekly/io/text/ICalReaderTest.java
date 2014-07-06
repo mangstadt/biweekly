@@ -7,6 +7,7 @@ import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.assertWarnings;
 import static biweekly.util.TestUtils.date;
+import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -39,6 +40,7 @@ import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
 import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
+import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.CannotParseScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -98,12 +100,6 @@ import biweekly.util.UtcOffset;
 public class ICalReaderTest {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
-
-	private final DateFormat utcFormatter;
-	{
-		utcFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
-		utcFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-	}
 
 	@Test
 	public void basic() throws Throwable {
@@ -1536,9 +1532,9 @@ public class ICalReaderTest {
 			assertEquals("jsmith@example.com", freebusy.getOrganizer().getEmail());
 			assertDateEquals("19980313T141711Z", freebusy.getDateStart().getValue());
 			assertDateEquals("19980410T141711Z", freebusy.getDateEnd().getValue());
-			assertEquals(Arrays.asList(new Period(utcFormatter.parse("19980314T233000"), utcFormatter.parse("19980315T003000Z"))), freebusy.getFreeBusy().get(0).getValues());
-			assertEquals(Arrays.asList(new Period(utcFormatter.parse("19980316T153000"), utcFormatter.parse("19980316T163000"))), freebusy.getFreeBusy().get(1).getValues());
-			assertEquals(Arrays.asList(new Period(utcFormatter.parse("19980318T030000"), utcFormatter.parse("19980318T040000"))), freebusy.getFreeBusy().get(2).getValues());
+			assertEquals(Arrays.asList(new Period(utc("1998-03-14 23:30:00"), utc("1998-03-15 00:30:00"))), freebusy.getFreeBusy().get(0).getValues());
+			assertEquals(Arrays.asList(new Period(utc("1998-03-16 15:30:00"), utc("1998-03-16 16:30:00"))), freebusy.getFreeBusy().get(1).getValues());
+			assertEquals(Arrays.asList(new Period(utc("1998-03-18 03:00:00"), utc("1998-03-18 04:00:00"))), freebusy.getFreeBusy().get(2).getValues());
 			assertEquals("http://www.example.com/calendar/busytime/jsmith.ifb", freebusy.getUrl().getValue());
 		}
 
@@ -1558,7 +1554,7 @@ public class ICalReaderTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property, ICalVersion version) {
+		protected String _writeText(TestProperty property, WriteContext context) {
 			return property.number.toString();
 		}
 
@@ -1608,7 +1604,7 @@ public class ICalReaderTest {
 		}
 
 		@Override
-		protected String _writeText(ProductId property, ICalVersion version) {
+		protected String _writeText(ProductId property, WriteContext context) {
 			return property.getValue();
 		}
 

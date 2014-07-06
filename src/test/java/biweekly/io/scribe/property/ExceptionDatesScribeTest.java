@@ -10,8 +10,8 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.io.json.JCalValue;
-import biweekly.io.scribe.property.ExceptionDatesScribe;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.ExceptionDates;
 import biweekly.util.DefaultTimezoneRule;
@@ -120,22 +120,39 @@ public class ExceptionDatesScribeTest {
 
 	@Test
 	public void writeText() {
-		sensei.assertWriteText(withDates).run(date1Str + "," + date2Str);
-		sensei.assertWriteText(withDateTimes).run(datetime1Str + "," + datetime2Str);
+		sensei.assertWriteText(withDates).version(ICalVersion.V1_0).run(date1Str + ";" + date2Str);
+		sensei.assertWriteText(withDates).version(ICalVersion.V2_0_DEPRECATED).run(date1Str + "," + date2Str);
+		sensei.assertWriteText(withDates).version(ICalVersion.V2_0).run(date1Str + "," + date2Str);
+
+		sensei.assertWriteText(withDateTimes).version(ICalVersion.V1_0).run(datetime1Str + ";" + datetime2Str);
+		sensei.assertWriteText(withDateTimes).version(ICalVersion.V2_0_DEPRECATED).run(datetime1Str + "," + datetime2Str);
+		sensei.assertWriteText(withDateTimes).version(ICalVersion.V2_0).run(datetime1Str + "," + datetime2Str);
+
 		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
 	public void parseText() {
-		sensei.assertParseText(date1Str + "," + date2Str).run(has(true, date1, date2));
-		sensei.assertParseText(date1Str + "," + date2Str).dataType(ICalDataType.DATE).run(is(withDates));
-		sensei.assertParseText(date1Str + "," + date2Str).dataType(ICalDataType.DATE_TIME).run(has(true, date1, date2));
+		sensei.assertParseText(date1Str + ";" + date2Str).versions(ICalVersion.V1_0).run(has(true, date1, date2));
+		sensei.assertParseText(date1Str + "," + date2Str).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(has(true, date1, date2));
 
-		sensei.assertParseText(datetime1Str + "," + datetime2Str).run(is(withDateTimes));
-		sensei.assertParseText(datetime1Str + "," + datetime2Str).dataType(ICalDataType.DATE).run(has(false, datetime1, datetime2));
-		sensei.assertParseText(datetime1Str + "," + datetime2Str).dataType(ICalDataType.DATE_TIME).run(is(withDateTimes));
+		sensei.assertParseText(date1Str + ";" + date2Str).versions(ICalVersion.V1_0).dataType(ICalDataType.DATE).run(is(withDates));
+		sensei.assertParseText(date1Str + "," + date2Str).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).dataType(ICalDataType.DATE).run(is(withDates));
 
-		sensei.assertParseText(datetime1Str + ",invalid").cannotParse();
+		sensei.assertParseText(date1Str + ";" + date2Str).versions(ICalVersion.V1_0).dataType(ICalDataType.DATE_TIME).run(has(true, date1, date2));
+		sensei.assertParseText(date1Str + "," + date2Str).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).dataType(ICalDataType.DATE_TIME).run(has(true, date1, date2));
+
+		sensei.assertParseText(datetime1Str + ";" + datetime2Str).versions(ICalVersion.V1_0).run(is(withDateTimes));
+		sensei.assertParseText(datetime1Str + "," + datetime2Str).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(is(withDateTimes));
+
+		sensei.assertParseText(datetime1Str + ";" + datetime2Str).versions(ICalVersion.V1_0).dataType(ICalDataType.DATE).run(has(false, datetime1, datetime2));
+		sensei.assertParseText(datetime1Str + "," + datetime2Str).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).dataType(ICalDataType.DATE).run(has(false, datetime1, datetime2));
+
+		sensei.assertParseText(datetime1Str + ";" + datetime2Str).versions(ICalVersion.V1_0).dataType(ICalDataType.DATE_TIME).run(is(withDateTimes));
+		sensei.assertParseText(datetime1Str + "," + datetime2Str).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).dataType(ICalDataType.DATE_TIME).run(is(withDateTimes));
+
+		sensei.assertParseText(datetime1Str + ";invalid").versions(ICalVersion.V1_0).cannotParse();
+		sensei.assertParseText(datetime1Str + ",invalid").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).cannotParse();
 
 		sensei.assertParseText("").run(has(true));
 		sensei.assertParseText("").dataType(ICalDataType.DATE).run(has(false));

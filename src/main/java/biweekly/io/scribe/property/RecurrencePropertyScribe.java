@@ -15,6 +15,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
@@ -78,13 +79,13 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	}
 
 	@Override
-	protected String _writeText(T property, ICalVersion version) {
+	protected String _writeText(T property, WriteContext context) {
 		Recurrence recur = property.getValue();
 		if (recur == null) {
 			return "";
 		}
 
-		if (version != ICalVersion.V1_0) {
+		if (context.getVersion() != ICalVersion.V1_0) {
 			ListMultimap<String, Object> components = buildComponents(recur, false);
 			return object(components.getMap());
 		}
@@ -434,7 +435,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	}
 
 	@Override
-	protected void _writeXml(T property, XCalElement element) {
+	protected void _writeXml(T property, XCalElement element, WriteContext context) {
 		XCalElement recurElement = element.append(dataType(property, null));
 
 		Recurrence recur = property.getValue();
@@ -491,7 +492,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	}
 
 	@Override
-	protected JCalValue _writeJson(T property) {
+	protected JCalValue _writeJson(T property, WriteContext context) {
 		Recurrence recur = property.getValue();
 		if (recur == null) {
 			return JCalValue.object(new ListMultimap<String, Object>(0));

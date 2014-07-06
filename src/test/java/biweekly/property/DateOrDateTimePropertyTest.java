@@ -50,17 +50,5 @@ public class DateOrDateTimePropertyTest {
 
 		property = new DateOrDateTimeProperty(new Date(), false);
 		assertValidate(property).run();
-
-		property = new DateOrDateTimeProperty(null, true);
-		property.setTimezoneId("Foo/Bar");
-		assertValidate(property).run(26, 27);
-
-		property = new DateOrDateTimeProperty(new Date(), true);
-		property.setTimezoneId("Foo/Bar");
-		assertValidate(property).run(27);
-
-		property = new DateOrDateTimeProperty(new Date(), true);
-		property.setTimezoneId("America/New_York");
-		assertValidate(property).run();
 	}
 }

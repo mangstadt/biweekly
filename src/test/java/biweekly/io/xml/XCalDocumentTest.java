@@ -7,6 +7,8 @@ import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.assertWarningsLists;
+import static biweekly.util.TestUtils.date;
+import static biweekly.util.TestUtils.utc;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -47,6 +49,7 @@ import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
+import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.CannotParseScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -102,17 +105,7 @@ public class XCalDocumentTest {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
-	private final DateFormat utcFormatter;
-	{
-		utcFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		utcFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-	}
-	private final DateFormat usEasternFormatter;
-	{
-		usEasternFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		usEasternFormatter.setTimeZone(TimeZone.getTimeZone("US/Eastern"));
-	}
-	private final DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+	private final TimeZone eastern = TimeZone.getTimeZone("America/New_York");
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -969,15 +962,15 @@ public class XCalDocumentTest {
 		{
 			VEvent event = new VEvent();
 			event.getProperties().clear();
-			event.setDateTimeStamp(utcFormatter.parse("2008-02-05T19:12:24"));
-			event.setDateStart(new DateStart(dateFormatter.parse("2008-10-06"), false));
+			event.setDateTimeStamp(utc("2008-02-05 19:12:24"));
+			event.setDateStart(new DateStart(date("2008-10-06"), false));
 			event.setSummary("Planning meeting");
 			event.setUid("4088E990AD89CB3DBB484909");
 			ical.addEvent(event);
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0).run();
-		assertExample(ical, "rfc6321-example1.xml");
+		assertExample(ical, "rfc6321-example1.xml", null, null);
 	}
 
 	@Test
@@ -1092,9 +1085,8 @@ public class XCalDocumentTest {
 		ical.getProperties().clear();
 		ical.setProductId("-//Example Inc.//Example Client//EN");
 		{
-			usEasternTz = new VTimezone(null);
-			usEasternTz.setLastModified(utcFormatter.parse("2004-01-10T03:28:45"));
-			usEasternTz.setTimezoneId("US/Eastern");
+			usEasternTz = new VTimezone("US/Eastern");
+			usEasternTz.setLastModified(utc("2004-01-10 03:28:45"));
 			{
 				DaylightSavingsTime daylight = new DaylightSavingsTime();
 				daylight.setDateStart(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false));
@@ -1125,15 +1117,14 @@ public class XCalDocumentTest {
 		}
 		{
 			VEvent event = new VEvent();
-			event.setDateTimeStamp(utcFormatter.parse("2006-02-06T00:11:21"));
-			event.setDateStart(usEasternFormatter.parse("2006-01-02T12:00:00")).setTimezone(usEasternTz);
+			event.setDateTimeStamp(utc("2006-02-06 00:11:21"));
+			event.setDateStart(date("2006-01-02 12:00:00", eastern));
 			event.setDuration(Duration.builder().hours(1).build());
 
 			Recurrence rrule = new Recurrence.Builder(Frequency.DAILY).count(5).build();
 			event.setRecurrenceRule(rrule);
 
-			RecurrenceDates rdate = new RecurrenceDates(Arrays.asList(new Period(usEasternFormatter.parse("2006-01-02T15:00:00"), Duration.builder().hours(2).build())));
-			rdate.setTimezone(usEasternTz);
+			RecurrenceDates rdate = new RecurrenceDates(Arrays.asList(new Period(date("2006-01-02 15:00:00", eastern), Duration.builder().hours(2).build())));
 			event.addRecurrenceDates(rdate);
 
 			event.setSummary("Event #2");
@@ -1143,11 +1134,11 @@ public class XCalDocumentTest {
 		}
 		{
 			VEvent event = new VEvent();
-			event.setDateTimeStamp(utcFormatter.parse("2006-02-06T00:11:21"));
-			event.setDateStart(usEasternFormatter.parse("2006-01-04T14:00:00")).setTimezone(usEasternTz);
+			event.setDateTimeStamp(utc("2006-02-06 00:11:21"));
+			event.setDateStart(date("2006-01-04 14:00:00", eastern));
 			event.setDuration(Duration.builder().hours(1).build());
 
-			event.setRecurrenceId(usEasternFormatter.parse("2006-01-04T12:00:00")).setTimezone(usEasternTz);
+			event.setRecurrenceId(date("2006-01-04 12:00:00", eastern));
 
 			event.setSummary("Event #2 bis");
 			event.setUid("00959BC664CA650E933C892C@example.com");
@@ -1155,15 +1146,18 @@ public class XCalDocumentTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0).run();
-		assertExample(ical, "rfc6321-example2.xml");
+		assertExample(ical, "rfc6321-example2.xml", eastern, usEasternTz);
 	}
 
 	private XCalDocument read(String file) throws SAXException, IOException {
 		return new XCalDocument(getClass().getResourceAsStream(file));
 	}
 
-	private void assertExample(ICalendar ical, String exampleFileName) {
+	private void assertExample(ICalendar ical, String exampleFileName, TimeZone timezone, VTimezone vtimezone) {
 		XCalDocument xcal = new XCalDocument();
+		if (timezone != null) {
+			xcal.setTimezone(timezone, vtimezone);
+		}
 		xcal.add(ical);
 
 		try {
@@ -1181,7 +1175,7 @@ public class XCalDocumentTest {
 		}
 
 		@Override
-		protected String _writeText(Company property, ICalVersion version) {
+		protected String _writeText(Company property, WriteContext context) {
 			return property.getBoss();
 		}
 
@@ -1191,7 +1185,7 @@ public class XCalDocumentTest {
 		}
 
 		@Override
-		protected void _writeXml(Company property, XCalElement element) {
+		protected void _writeXml(Company property, XCalElement element, WriteContext context) {
 			if (property.getBoss().equals("skip-me")) {
 				throw new SkipMeException("");
 			}

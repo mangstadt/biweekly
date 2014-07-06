@@ -7,6 +7,7 @@ import java.util.List;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -49,7 +50,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 	}
 
 	@Override
-	protected String _writeText(FreeBusy property, ICalVersion version) {
+	protected String _writeText(FreeBusy property, WriteContext context) {
 		List<Period> values = property.getValues();
 
 		return list(values, new ListCallback<Period>() {
@@ -81,7 +82,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 	}
 
 	@Override
-	protected void _writeXml(FreeBusy property, XCalElement element) {
+	protected void _writeXml(FreeBusy property, XCalElement element, WriteContext context) {
 		for (Period period : property.getValues()) {
 			XCalElement periodElement = element.append(ICalDataType.PERIOD);
 
@@ -153,7 +154,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 	}
 
 	@Override
-	protected JCalValue _writeJson(FreeBusy property) {
+	protected JCalValue _writeJson(FreeBusy property, WriteContext context) {
 		List<Period> values = property.getValues();
 		if (values.isEmpty()) {
 			return JCalValue.single("");

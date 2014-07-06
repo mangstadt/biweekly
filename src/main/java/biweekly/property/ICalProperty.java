@@ -189,43 +189,8 @@ public abstract class ICalProperty {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
 	 * p.27-8</a>
 	 */
-	String getTimezoneId() {
+	public String getTimezoneId() {
 		return parameters.getTimezoneId();
-	}
-
-	/**
-	 * Sets the timezone identifier. This either (a) references the
-	 * {@link TimezoneId} property of a {@link VTimezone} component, or (b)
-	 * specifies a globally-defined timezone (e.g. "America/New_York"). For a
-	 * list of globally-defined timezones, see the <a
-	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
-	 * @param timezoneId the timezone identifier (e.g. "America/New_York") or
-	 * null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
-	 * p.27-8</a>
-	 */
-	void setTimezoneId(String timezoneId) {
-		parameters.setTimezoneId(timezoneId);
-	}
-
-	/**
-	 * Sets the property's timezone to a timezone that is defined within the
-	 * iCalendar object. Use {@link #setTimezoneId(String)} to use a
-	 * globally-defined timezone (e.g. "America/New_York").
-	 * @param timezone the timezone component to reference or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
-	 * p.27-8</a>
-	 */
-	void setTimezone(VTimezone timezone) {
-		if (timezone == null) {
-			setTimezoneId(null);
-			return;
-		}
-
-		TimezoneId tzid = timezone.getTimezoneId();
-		if (tzid != null) {
-			setTimezoneId(tzid.getValue());
-		}
 	}
 
 	/**

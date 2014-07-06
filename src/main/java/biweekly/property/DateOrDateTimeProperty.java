@@ -6,9 +6,7 @@ import java.util.List;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
-import biweekly.component.VTimezone;
 import biweekly.util.DateTimeComponents;
-import biweekly.util.ICalDateFormat;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -43,7 +41,7 @@ public class DateOrDateTimeProperty extends ICalProperty {
 	protected Date value;
 	protected DateTimeComponents rawComponents;
 	protected boolean hasTime;
-	protected boolean localTime;
+	protected boolean floating;
 
 	/**
 	 * Creates a new property.
@@ -113,48 +111,25 @@ public class DateOrDateTimeProperty extends ICalProperty {
 	 * @return true to output the date without a timezone, false to include a
 	 * timezone
 	 */
-	public boolean isLocalTime() {
-		return localTime;
+	public boolean isFloatingTime() {
+		return floating;
 	}
 
 	/**
-	 * Sets whether the date should be outputted in local time (without a
-	 * timezone). Use {@link #setTimezoneId(String)} to specify a timezone.
-	 * Dates are written in UTC time by default.
-	 * @param localTime true to output the date without a timezone, false to
+	 * Sets whether the date should be outputted in floating time (a date-time
+	 * value that is not in UTC and whose property does not have a TZID
+	 * parameter).
+	 * @param floating true to output the date in floating time, false to
 	 * include a timezone (defaults to false)
 	 */
-	public void setLocalTime(boolean localTime) {
-		this.localTime = localTime;
-		if (localTime) {
-			setTimezoneId(null);
-		}
-	}
-
-	@Override
-	public String getTimezoneId() {
-		return super.getTimezoneId();
-	}
-
-	@Override
-	public void setTimezoneId(String timezoneId) {
-		super.setTimezoneId(timezoneId);
-	}
-
-	@Override
-	public void setTimezone(VTimezone timezone) {
-		super.setTimezone(timezone);
+	public void setFloatingTime(boolean floating) {
+		this.floating = floating;
 	}
 
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		if (value == null && rawComponents == null) {
 			warnings.add(Warning.validate(26));
-		}
-
-		String tzid = getTimezoneId();
-		if (tzid != null && tzid.contains("/") && ICalDateFormat.parseTimeZoneId(tzid) == null) {
-			warnings.add(Warning.validate(27, tzid));
 		}
 	}
 }

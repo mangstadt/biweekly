@@ -7,6 +7,7 @@ import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -59,7 +60,7 @@ public class ImportanceScribe extends ICalPropertyScribe<Importance> {
 	//optional
 	//tweaks the parameters before the property is written
 	@Override
-	protected ICalParameters _prepareParameters(Importance property, ICalVersion version) {
+	protected ICalParameters _prepareParameters(Importance property, WriteContext context) {
 		ICalParameters copy = new ICalParameters(property.getParameters());
 		Integer value = property.getNumber();
 		if (value != null && value >= 10) {
@@ -71,7 +72,7 @@ public class ImportanceScribe extends ICalPropertyScribe<Importance> {
 	//required
 	//writes the property to a plain-text iCal
 	@Override
-	protected String _writeText(Importance property, ICalVersion version) {
+	protected String _writeText(Importance property, WriteContext context) {
 		return write(property);
 	}
 
@@ -86,7 +87,7 @@ public class ImportanceScribe extends ICalPropertyScribe<Importance> {
 	//optional
 	//writes the property to an XML document (xCal)
 	@Override
-	protected void _writeXml(Importance property, XCalElement element) {
+	protected void _writeXml(Importance property, XCalElement element, WriteContext context) {
 		Integer value = property.getNumber();
 		if (value != null) {
 			if (value > 100) {
@@ -127,7 +128,7 @@ public class ImportanceScribe extends ICalPropertyScribe<Importance> {
 	//optional
 	//writes the property to a JSON document (jCal)
 	@Override
-	protected JCalValue _writeJson(Importance property) {
+	protected JCalValue _writeJson(Importance property, WriteContext context) {
 		return JCalValue.single(write(property));
 	}
 

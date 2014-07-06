@@ -1,8 +1,10 @@
-package biweekly.io.scribe.property;
+package biweekly.io;
+
+import java.util.TimeZone;
 
 import biweekly.ICalVersion;
-import biweekly.io.WriteContext;
-import biweekly.property.Status;
+import biweekly.component.VTimezone;
+import biweekly.property.TimezoneId;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -30,29 +32,33 @@ import biweekly.property.Status;
  */
 
 /**
- * Marshals {@link Status} properties.
  * @author Michael Angstadt
  */
-public class StatusScribe extends TextPropertyScribe<Status> {
-	public StatusScribe() {
-		super(Status.class, "STATUS");
+public class WriteContext {
+	private final ICalVersion version;
+	private final TimeZone timezone;
+	private final VTimezone vtimezone;
+
+	public WriteContext(ICalVersion version, TimeZone timezone, VTimezone vtimezone) {
+		this.version = version;
+		this.timezone = timezone;
+		this.vtimezone = vtimezone;
 	}
 
-	@Override
-	protected String _writeText(Status property, WriteContext context) {
-		if (context.getVersion() == ICalVersion.V1_0 && property.isNeedsAction()) {
-			//vCal doesn't have a hyphen in the value
-			return "NEEDS ACTION";
-		}
-		return super._writeText(property, context);
+	public ICalVersion getVersion() {
+		return version;
 	}
 
-	@Override
-	protected Status newInstance(String value, ICalVersion version) {
-		if (version == ICalVersion.V1_0 && "NEEDS ACTION".equalsIgnoreCase(value)) {
-			//vCal doesn't have a hyphen in the value
-			return Status.needsAction();
+	public TimeZone getTimeZone() {
+		return timezone;
+	}
+
+	public String getTimezoneId() {
+		if (vtimezone == null) {
+			return null;
 		}
-		return new Status(value);
+
+		TimezoneId id = vtimezone.getTimezoneId();
+		return (id == null) ? null : id.getValue();
 	}
 }

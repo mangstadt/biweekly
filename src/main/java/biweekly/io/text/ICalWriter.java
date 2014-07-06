@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.List;
+import java.util.TimeZone;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -20,6 +21,7 @@ import biweekly.component.ICalComponent;
 import biweekly.component.VAlarm;
 import biweekly.component.VTimezone;
 import biweekly.io.SkipMeException;
+import biweekly.io.WriteContext;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -81,6 +83,10 @@ import biweekly.property.Version;
 public class ICalWriter implements Closeable, Flushable {
 	private ScribeIndex index = new ScribeIndex();
 	private final ICalRawWriter writer;
+
+	private WriteContext context;
+	private TimeZone timezone;
+	private VTimezone vtimezone;
 
 	/**
 	 * Creates an iCalendar writer that writes to an output stream. Uses the
@@ -313,6 +319,19 @@ public class ICalWriter implements Closeable, Flushable {
 	}
 
 	/**
+	 * Sets the timezone to format all date/time property values in (defaults to
+	 * UTC).
+	 * @param timezone the timezone or null for UTC
+	 * @param vtimezone the VTIMEZONE component that this timezone corresponds
+	 * to, or null for floating time (floating time is a date-time value which
+	 * is not UTC and whose property does not have a TZID parameter)
+	 */
+	public void setTimezone(TimeZone timezone, VTimezone vtimezone) {
+		this.timezone = timezone;
+		this.vtimezone = vtimezone;
+	}
+
+	/**
 	 * Writes an iCalendar object to the data stream.
 	 * @param ical the iCalendar object to write
 	 * @throws IllegalArgumentException if the scribe class for a component or
@@ -323,6 +342,7 @@ public class ICalWriter implements Closeable, Flushable {
 	 */
 	public void write(ICalendar ical) throws IOException {
 		index.hasScribesFor(ical);
+		context = new WriteContext(writer.getVersion(), timezone, vtimezone);
 		writeComponent(ical, null);
 	}
 
@@ -404,16 +424,16 @@ public class ICalWriter implements Closeable, Flushable {
 
 		ICalPropertyScribe scribe = index.getPropertyScribe(property);
 
-		String value;
 		//marshal property
+		String value;
 		try {
-			value = scribe.writeText(property, writer.getVersion());
+			value = scribe.writeText(property, context);
 		} catch (SkipMeException e) {
 			return;
 		}
 
 		//get parameters
-		ICalParameters parameters = scribe.prepareParameters(property, writer.getVersion());
+		ICalParameters parameters = scribe.prepareParameters(property, context);
 
 		//set the data type
 		ICalDataType dataType = scribe.dataType(property, writer.getVersion());

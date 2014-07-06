@@ -8,6 +8,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.VCalAlarmProperty;
 import biweekly.util.Duration;
@@ -47,7 +48,7 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 	}
 
 	@Override
-	protected String _writeText(T property, ICalVersion version) {
+	protected String _writeText(T property, WriteContext context) {
 		List<String> values = new ArrayList<String>(4);
 
 		Date start = property.getStart();

@@ -1,13 +1,6 @@
 package biweekly.property;
 
 import java.util.Date;
-import java.util.List;
-
-import biweekly.ICalVersion;
-import biweekly.Warning;
-import biweekly.component.ICalComponent;
-import biweekly.component.VTimezone;
-import biweekly.util.ICalDateFormat;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -96,30 +89,5 @@ public class ExceptionDates extends ListProperty<Date> {
 	 */
 	public void setHasTime(boolean hasTime) {
 		this.hasTime = hasTime;
-	}
-
-	@Override
-	public String getTimezoneId() {
-		return super.getTimezoneId();
-	}
-
-	@Override
-	public void setTimezoneId(String timezoneId) {
-		super.setTimezoneId(timezoneId);
-	}
-
-	@Override
-	public void setTimezone(VTimezone timezone) {
-		super.setTimezone(timezone);
-	}
-
-	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
-		super.validate(components, version, warnings);
-
-		String tzid = getTimezoneId();
-		if (tzid != null && tzid.contains("/") && ICalDateFormat.parseTimeZoneId(tzid) == null) {
-			warnings.add(Warning.validate(27, tzid));
-		}
 	}
 }

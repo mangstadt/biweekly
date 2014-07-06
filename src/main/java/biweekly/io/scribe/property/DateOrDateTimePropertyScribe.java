@@ -7,6 +7,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -50,12 +51,17 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 	}
 
 	@Override
+	protected ICalParameters _prepareParameters(T property, WriteContext context) {
+		return handleTzidParameter(property, property.hasTime(), property.isFloatingTime(), context);
+	}
+
+	@Override
 	protected ICalDataType _dataType(T property, ICalVersion version) {
 		return (property.getRawComponents() != null || property.getValue() == null || property.hasTime()) ? ICalDataType.DATE_TIME : ICalDataType.DATE;
 	}
 
 	@Override
-	protected String _writeText(T property, ICalVersion version) {
+	protected String _writeText(T property, WriteContext context) {
 		DateTimeComponents components = property.getRawComponents();
 		if (components != null) {
 			return components.toString(false);
@@ -63,7 +69,7 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 
 		Date value = property.getValue();
 		if (value != null) {
-			return date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).write();
+			return date(value).time(property.hasTime()).tz(property.isFloatingTime(), context.getTimeZone()).write();
 		}
 
 		return "";
@@ -76,7 +82,7 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 	}
 
 	@Override
-	protected void _writeXml(T property, XCalElement element) {
+	protected void _writeXml(T property, XCalElement element, WriteContext context) {
 		String dateStr = null;
 
 		Date value = property.getValue();
@@ -84,7 +90,7 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 		if (components != null) {
 			dateStr = components.toString(true);
 		} else if (value != null) {
-			dateStr = date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).extended(true).write();
+			dateStr = date(value).time(property.hasTime()).tz(property.isFloatingTime(), context.getTimeZone()).extended(true).write();
 		}
 
 		element.append(dataType(property, null), dateStr);
@@ -105,7 +111,7 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 	}
 
 	@Override
-	protected JCalValue _writeJson(T property) {
+	protected JCalValue _writeJson(T property, WriteContext context) {
 		DateTimeComponents components = property.getRawComponents();
 		if (components != null) {
 			return JCalValue.single(components.toString(true));
@@ -113,7 +119,7 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 
 		Date value = property.getValue();
 		if (value != null) {
-			return JCalValue.single(date(value).time(property.hasTime()).tz(property.isLocalTime(), property.getTimezoneId()).extended(true).write());
+			return JCalValue.single(date(value).time(property.hasTime()).tz(property.isFloatingTime(), context.getTimeZone()).extended(true).write());
 		}
 
 		return JCalValue.single("");
@@ -152,7 +158,7 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 
 		T prop = newInstance(date, hasTime);
 		prop.setRawComponents(components);
-		prop.setLocalTime(localTz);
+		prop.setFloatingTime(localTz);
 		return prop;
 	}
 }

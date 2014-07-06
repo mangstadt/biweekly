@@ -8,6 +8,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -48,6 +49,11 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 	}
 
 	@Override
+	protected ICalParameters _prepareParameters(ExceptionDates property, WriteContext context) {
+		return handleTzidParameter(property, property.hasTime(), false, context);
+	}
+
+	@Override
 	protected ICalDataType _dataType(ExceptionDates property, ICalVersion version) {
 		return property.hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
 	}
@@ -58,8 +64,8 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 	}
 
 	@Override
-	protected String writeValue(ExceptionDates property, Date value) {
-		return date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).write();
+	protected String writeValue(ExceptionDates property, Date value, WriteContext context) {
+		return date(value).time(property.hasTime()).tz(context.getTimeZone()).write();
 	}
 
 	@Override
@@ -72,7 +78,7 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 	}
 
 	@Override
-	protected void _writeXml(ExceptionDates property, XCalElement element) {
+	protected void _writeXml(ExceptionDates property, XCalElement element, WriteContext context) {
 		ICalDataType dataType = dataType(property, null);
 		for (Date value : property.getValues()) {
 			String dateStr = date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).extended(true).write();
@@ -98,7 +104,7 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 	}
 
 	@Override
-	protected JCalValue _writeJson(ExceptionDates property) {
+	protected JCalValue _writeJson(ExceptionDates property, WriteContext context) {
 		List<Date> values = property.getValues();
 		if (values.isEmpty()) {
 			return JCalValue.single("");

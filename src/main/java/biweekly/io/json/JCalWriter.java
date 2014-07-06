@@ -9,12 +9,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.List;
+import java.util.TimeZone;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
+import biweekly.component.VTimezone;
 import biweekly.io.SkipMeException;
+import biweekly.io.WriteContext;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -72,6 +75,10 @@ public class JCalWriter implements Closeable, Flushable {
 	private ScribeIndex index = new ScribeIndex();
 	private final JCalRawWriter writer;
 	private final ICalVersion targetVersion = ICalVersion.V2_0;
+
+	private WriteContext context;
+	private TimeZone timezone;
+	private VTimezone vtimezone;
 
 	/**
 	 * Creates a jCal writer that writes to an output stream.
@@ -193,6 +200,19 @@ public class JCalWriter implements Closeable, Flushable {
 	}
 
 	/**
+	 * Sets the timezone to format all date/time property values in (defaults to
+	 * UTC).
+	 * @param timezone the timezone or null for UTC
+	 * @param vtimezone the VTIMEZONE component that this timezone corresponds
+	 * to, or null for floating time (floating time is a date-time value which
+	 * is not UTC and whose property does not have a TZID parameter)
+	 */
+	public void setTimezone(TimeZone timezone, VTimezone vtimezone) {
+		this.timezone = timezone;
+		this.vtimezone = vtimezone;
+	}
+
+	/**
 	 * Writes an iCalendar object to the data stream.
 	 * @param ical the iCalendar object to write
 	 * @throws IllegalArgumentException if the scribe class for a component or
@@ -203,6 +223,7 @@ public class JCalWriter implements Closeable, Flushable {
 	 */
 	public void write(ICalendar ical) throws IOException {
 		index.hasScribesFor(ical);
+		context = new WriteContext(targetVersion, timezone, vtimezone);
 		writeComponent(ical);
 	}
 
@@ -234,8 +255,8 @@ public class JCalWriter implements Closeable, Flushable {
 			ICalParameters parameters;
 			JCalValue value;
 			try {
-				parameters = propertyScribe.prepareParameters(property, targetVersion);
-				value = propertyScribe.writeJson(property);
+				parameters = propertyScribe.prepareParameters(property, context);
+				value = propertyScribe.writeJson(property, context);
 			} catch (SkipMeException e) {
 				continue;
 			}

@@ -6,6 +6,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -47,7 +48,7 @@ public abstract class IntegerPropertyScribe<T extends IntegerProperty> extends I
 	}
 
 	@Override
-	protected String _writeText(T property, ICalVersion version) {
+	protected String _writeText(T property, WriteContext context) {
 		Integer value = property.getValue();
 		if (value != null) {
 			return value.toString();
@@ -63,7 +64,7 @@ public abstract class IntegerPropertyScribe<T extends IntegerProperty> extends I
 	}
 
 	@Override
-	protected void _writeXml(T property, XCalElement element) {
+	protected void _writeXml(T property, XCalElement element, WriteContext context) {
 		String valueStr = null;
 
 		Integer value = property.getValue();
@@ -85,7 +86,7 @@ public abstract class IntegerPropertyScribe<T extends IntegerProperty> extends I
 	}
 
 	@Override
-	protected JCalValue _writeJson(T property) {
+	protected JCalValue _writeJson(T property, WriteContext context) {
 		return JCalValue.single(property.getValue());
 	}
 

@@ -19,6 +19,7 @@ import org.xml.sax.SAXException;
 
 import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
+import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.xml.XCalElement;
@@ -573,7 +574,7 @@ public class BiweeklyTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property, ICalVersion version) {
+		protected String _writeText(TestProperty property, WriteContext context) {
 			Integer value = property.getNumber();
 			return (value == 1) ? "one" : value.toString();
 		}

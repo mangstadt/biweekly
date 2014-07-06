@@ -5,6 +5,7 @@ import java.util.List;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.Encoding;
@@ -47,7 +48,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 	}
 
 	@Override
-	protected ICalParameters _prepareParameters(Attachment property, ICalVersion version) {
+	protected ICalParameters _prepareParameters(Attachment property, WriteContext context) {
 		ICalParameters copy = new ICalParameters(property.getParameters());
 
 		if (property.getUri() != null) {
@@ -74,7 +75,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 	}
 
 	@Override
-	protected String _writeText(Attachment property, ICalVersion version) {
+	protected String _writeText(Attachment property, WriteContext context) {
 		String uri = property.getUri();
 		if (uri != null) {
 			return uri;
@@ -87,7 +88,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 
 		String contentId = property.getContentId();
 		if (contentId != null) {
-			return (version == ICalVersion.V1_0) ? contentId : "CID:" + contentId;
+			return (context.getVersion() == ICalVersion.V1_0) ? contentId : "CID:" + contentId;
 		}
 
 		return "";
@@ -104,7 +105,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 	}
 
 	@Override
-	protected void _writeXml(Attachment property, XCalElement element) {
+	protected void _writeXml(Attachment property, XCalElement element, WriteContext context) {
 		String uri = property.getUri();
 		if (uri != null) {
 			element.append(ICalDataType.URI, uri);
@@ -136,7 +137,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 	}
 
 	@Override
-	protected JCalValue _writeJson(Attachment property) {
+	protected JCalValue _writeJson(Attachment property, WriteContext context) {
 		String uri = property.getUri();
 		if (uri != null) {
 			return JCalValue.single(uri);

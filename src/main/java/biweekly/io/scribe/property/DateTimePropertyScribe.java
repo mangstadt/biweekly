@@ -7,6 +7,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -38,7 +39,8 @@ import biweekly.property.DateTimeProperty;
  */
 
 /**
- * Marshals properties that have "date-time" values.
+ * Marshals properties that have "date-time" values. These values will always be
+ * formatted in the UTC timezone.
  * @param <T> the property class
  * @author Michael Angstadt
  */
@@ -48,7 +50,7 @@ public abstract class DateTimePropertyScribe<T extends DateTimeProperty> extends
 	}
 
 	@Override
-	protected String _writeText(T property, ICalVersion version) {
+	protected String _writeText(T property, WriteContext context) {
 		Date value = property.getValue();
 		if (value != null) {
 			return date(value).write(); //should always be in UTC time
@@ -64,7 +66,7 @@ public abstract class DateTimePropertyScribe<T extends DateTimeProperty> extends
 	}
 
 	@Override
-	protected void _writeXml(T property, XCalElement element) {
+	protected void _writeXml(T property, XCalElement element, WriteContext context) {
 		String dateStr = null;
 
 		Date value = property.getValue();
@@ -86,7 +88,7 @@ public abstract class DateTimePropertyScribe<T extends DateTimeProperty> extends
 	}
 
 	@Override
-	protected JCalValue _writeJson(T property) {
+	protected JCalValue _writeJson(T property, WriteContext context) {
 		Date value = property.getValue();
 		if (value != null) {
 			return JCalValue.single(date(value).extended(true).write());

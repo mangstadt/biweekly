@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
+import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.ParticipationLevel;
 import biweekly.parameter.ParticipationStatus;
@@ -66,7 +67,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 	}
 
 	@Override
-	protected ICalParameters _prepareParameters(Attendee property, ICalVersion version) {
+	protected ICalParameters _prepareParameters(Attendee property, WriteContext context) {
 		ICalParameters copy = new ICalParameters(property.getParameters());
 
 		//RSVP parameter
@@ -75,7 +76,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 		Boolean rsvp = property.getRsvp();
 		if (rsvp != null) {
 			String value = null;
-			switch (version) {
+			switch (context.getVersion()) {
 			case V1_0:
 				value = rsvp ? "YES" : "NO";
 				break;
@@ -93,13 +94,13 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 		//2.0 - Uses only ROLE
 		Role role = property.getRole();
 		ParticipationLevel level = property.getParticipationLevel();
-		switch (version) {
+		switch (context.getVersion()) {
 		case V1_0:
 			if (role != null) {
 				copy.put("ROLE", role.getValue());
 			}
 			if (level != null) {
-				copy.put("EXPECT", level.getValue(version));
+				copy.put("EXPECT", level.getValue(context.getVersion()));
 			}
 			break;
 
@@ -108,7 +109,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			if (role == Role.CHAIR) {
 				value = role.getValue();
 			} else if (level != null) {
-				value = level.getValue(version);
+				value = level.getValue(context.getVersion());
 			} else if (role != null) {
 				value = role.getValue();
 			}
@@ -127,7 +128,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			String paramName;
 			String paramValue;
 
-			switch (version) {
+			switch (context.getVersion()) {
 			case V1_0:
 				paramName = "STATUS";
 				paramValue = (partStat == ParticipationStatus.NEEDS_ACTION) ? "NEEDS ACTION" : partStat.getValue();
@@ -144,7 +145,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 
 		//CN parameter
 		String name = property.getCommonName();
-		if (name != null && version != ICalVersion.V1_0) {
+		if (name != null && context.getVersion() != ICalVersion.V1_0) {
 			copy.put(ICalParameters.CN, name);
 		}
 
@@ -265,7 +266,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 	}
 
 	@Override
-	protected String _writeText(Attendee property, ICalVersion version) {
+	protected String _writeText(Attendee property, WriteContext context) {
 		String uri = property.getUri();
 		if (uri != null) {
 			return uri;
@@ -273,7 +274,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 
 		String name = property.getCommonName();
 		String email = property.getEmail();
-		switch (version) {
+		switch (context.getVersion()) {
 		case V1_0:
 			if (name != null && email != null) {
 				return escape(name + " <" + email + ">");

@@ -4,13 +4,12 @@ import static biweekly.util.TestUtils.assertRegex;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.each;
+import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -31,6 +30,7 @@ import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
 import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
+import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.SkipMeScribe;
@@ -88,17 +88,7 @@ public class ICalWriterTest {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
-	private final DateFormat utcFormatter;
-	{
-		utcFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
-		utcFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-	}
-	private final DateFormat usEasternFormatter;
-	{
-		usEasternFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
-		usEasternFormatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
-	}
-	private final DateFormat localFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+	private final TimeZone eastern = TimeZone.getTimeZone("America/New_York");
 
 	@Test
 	public void basic() throws Exception {
@@ -718,11 +708,11 @@ public class ICalWriterTest {
 		{
 			VEvent event = new VEvent();
 			event.getProperties().clear();
-			event.setDateTimeStamp(utcFormatter.parse("19960704T120000"));
+			event.setDateTimeStamp(utc("1996-07-04 12:00:00"));
 			event.setUid("uid1@example.com");
 			event.setOrganizer("jsmith@example.com");
-			event.setDateStart(utcFormatter.parse("19960918T143000"));
-			event.setDateEnd(utcFormatter.parse("19960920T220000"));
+			event.setDateStart(utc("1996-09-18 14:30:00"));
+			event.setDateEnd(utc("1996-09-20 22:00:00"));
 			event.setStatus(Status.confirmed());
 			event.addCategories("CONFERENCE");
 			event.setSummary("Networld+Interop Conference");
@@ -731,7 +721,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example1.ics");
+		assertExample(ical, "rfc5545-example1.ics", null, null);
 	}
 
 	@Test
@@ -763,7 +753,7 @@ public class ICalWriterTest {
 		}
 		{
 			VEvent event = new VEvent();
-			event.setDateTimeStamp(utcFormatter.parse("19980309T231000"));
+			event.setDateTimeStamp(utc("1998-03-09 23:10:00"));
 			event.setUid("guid-1.example.com");
 			event.setOrganizer("mrbig@example.com");
 
@@ -776,16 +766,16 @@ public class ICalWriterTest {
 			event.setDescription("Project XYZ Review Meeting");
 			event.addCategories("MEETING");
 			event.setClassification(Classification.public_());
-			event.setCreated(utcFormatter.parse("19980309T130000"));
+			event.setCreated(utc("1998-03-09 13:00:00"));
 			event.setSummary("XYZ Project Review");
-			event.setDateStart(usEasternFormatter.parse("19980312T083000")).setTimezone(usEasternTz);
-			event.setDateEnd(usEasternFormatter.parse("19980312T093000")).setTimezone(usEasternTz);
+			event.setDateStart(date("1998-03-12 08:30:00", eastern));
+			event.setDateEnd(date("1998-03-12 09:30:00", eastern));
 			event.setLocation("1CP Conference Room 4350");
 			ical.addEvent(event);
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example2.ics");
+		assertExample(ical, "rfc5545-example2.ics", eastern, usEasternTz);
 	}
 
 	@Test
@@ -797,7 +787,7 @@ public class ICalWriterTest {
 		{
 			VEvent event = new VEvent();
 			event.getProperties().clear();
-			event.setDateTimeStamp(utcFormatter.parse("19970324T120000"));
+			event.setDateTimeStamp(utc("1997-03-24 12:00:00"));
 			event.setSequence(0);
 			event.setUid("uid3@example.com");
 			event.setOrganizer("jdoe@example.com");
@@ -806,8 +796,8 @@ public class ICalWriterTest {
 			attendee.setRsvp(true);
 			event.addAttendee(attendee);
 
-			event.setDateStart(utcFormatter.parse("19970324T123000"));
-			event.setDateEnd(utcFormatter.parse("19970324T210000"));
+			event.setDateStart(utc("1997-03-24 12:30:00"));
+			event.setDateEnd(utc("1997-03-24 21:00:00"));
 			event.addCategories("MEETING", "PROJECT");
 			event.setClassification(Classification.public_());
 			event.setSummary("Calendaring Interoperability Planning Meeting");
@@ -821,7 +811,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example3.ics");
+		assertExample(ical, "rfc5545-example3.ics", null, null);
 	}
 
 	@Test
@@ -832,7 +822,7 @@ public class ICalWriterTest {
 		{
 			VTodo todo = new VTodo();
 			todo.getProperties().clear();
-			todo.setDateTimeStamp(utcFormatter.parse("19980130T134500"));
+			todo.setDateTimeStamp(utc("1998-01-30 13:45:00"));
 			todo.setSequence(2);
 			todo.setUid("uid4@example.com");
 			todo.setOrganizer("unclesam@example.com");
@@ -841,11 +831,11 @@ public class ICalWriterTest {
 			attendee.setParticipationStatus(ParticipationStatus.ACCEPTED);
 			todo.addAttendee(attendee);
 
-			todo.setDateDue(localFormatter.parse("19980415T000000")).setLocalTime(true);
+			todo.setDateDue(date("1998-04-15")).setFloatingTime(true);
 			todo.setStatus(Status.needsAction());
 			todo.setSummary("Submit Income Taxes");
 			{
-				Trigger trigger = new Trigger(utcFormatter.parse("19980403T120000"));
+				Trigger trigger = new Trigger(utc("1998-04-03 12:00:00"));
 				Attachment attach = new Attachment("audio/basic", "http://example.com/pub/audio-files/ssbanner.aud");
 				VAlarm alarm = VAlarm.audio(trigger, attach);
 				alarm.setRepeat(4);
@@ -857,7 +847,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example4.ics");
+		assertExample(ical, "rfc5545-example4.ics", null, null);
 	}
 
 	@Test
@@ -868,7 +858,7 @@ public class ICalWriterTest {
 		{
 			VJournal journal = new VJournal();
 			journal.getProperties().clear();
-			journal.setDateTimeStamp(utcFormatter.parse("19970324T120000"));
+			journal.setDateTimeStamp(utc("1997-03-24 12:00:00"));
 			journal.setUid("uid5@example.com");
 			journal.setOrganizer("jsmith@example.com");
 			journal.setStatus(Status.draft());
@@ -879,7 +869,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example5.ics");
+		assertExample(ical, "rfc5545-example5.ics", null, null);
 	}
 
 	@Test
@@ -891,19 +881,19 @@ public class ICalWriterTest {
 		{
 			freebusy.getProperties().clear();
 			freebusy.setOrganizer("jsmith@example.com");
-			freebusy.setDateStart(utcFormatter.parse("19980313T141711"));
-			freebusy.setDateEnd(utcFormatter.parse("19980410T141711"));
+			freebusy.setDateStart(utc("1998-03-13 14:17:11"));
+			freebusy.setDateEnd(utc("1998-04-10 14:17:11"));
 
 			FreeBusy fb = new FreeBusy();
-			fb.addValue(utcFormatter.parse("19980314T233000"), utcFormatter.parse("19980315T003000"));
+			fb.addValue(utc("1998-03-14 23:30:00"), utc("1998-03-15 00:30:00"));
 			freebusy.addFreeBusy(fb);
 
 			fb = new FreeBusy();
-			fb.addValue(utcFormatter.parse("19980316T153000"), utcFormatter.parse("19980316T163000"));
+			fb.addValue(utc("1998-03-16 15:30:00"), utc("1998-03-16 16:30:00"));
 			freebusy.addFreeBusy(fb);
 
 			fb = new FreeBusy();
-			fb.addValue(utcFormatter.parse("19980318T030000"), utcFormatter.parse("19980318T040000"));
+			fb.addValue(utc("1998-03-18 03:00:00"), utc("1998-03-18 04:00:00"));
 			freebusy.addFreeBusy(fb);
 
 			freebusy.setUrl("http://www.example.com/calendar/busytime/jsmith.ifb");
@@ -911,12 +901,13 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).warn(freebusy, 2, 2).run(); //UID and DTSTAMP missing
-		assertExample(ical, "rfc5545-example6.ics");
+		assertExample(ical, "rfc5545-example6.ics", null, null);
 	}
 
-	private void assertExample(ICalendar ical, String exampleFileName) throws IOException {
+	private void assertExample(ICalendar ical, String exampleFileName, TimeZone timezone, VTimezone vtimezone) throws IOException {
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0, null);
+		writer.setTimezone(timezone, vtimezone);
 		writer.write(ical);
 		writer.close();
 
@@ -947,7 +938,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property, ICalVersion version) {
+		protected String _writeText(TestProperty property, WriteContext context) {
 			return property.getValue();
 		}
 
@@ -963,7 +954,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property, ICalVersion version) {
+		protected String _writeText(TestProperty property, WriteContext context) {
 			return property.getValue();
 		}
 
@@ -979,7 +970,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(ProductId property, ICalVersion version) {
+		protected String _writeText(ProductId property, WriteContext context) {
 			return property.getValue().toUpperCase();
 		}
 
@@ -1018,7 +1009,7 @@ public class ICalWriterTest {
 		}
 
 		@Override
-		protected String _writeText(TestProperty property, ICalVersion version) {
+		protected String _writeText(TestProperty property, WriteContext context) {
 			return property.getValue();
 		}
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.Warning;
+import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ListProperty;
 
@@ -43,7 +44,7 @@ public abstract class TextListPropertyScribe<T extends ListProperty<String>> ext
 	}
 
 	@Override
-	protected String writeValue(T property, String value) {
+	protected String writeValue(T property, String value, WriteContext context) {
 		return value;
 	}
 

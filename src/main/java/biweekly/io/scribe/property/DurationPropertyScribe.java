@@ -6,6 +6,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -47,7 +48,7 @@ public class DurationPropertyScribe extends ICalPropertyScribe<DurationProperty>
 	}
 
 	@Override
-	protected String _writeText(DurationProperty property, ICalVersion version) {
+	protected String _writeText(DurationProperty property, WriteContext context) {
 		Duration duration = property.getValue();
 		if (duration != null) {
 			return duration.toString();
@@ -63,7 +64,7 @@ public class DurationPropertyScribe extends ICalPropertyScribe<DurationProperty>
 	}
 
 	@Override
-	protected void _writeXml(DurationProperty property, XCalElement element) {
+	protected void _writeXml(DurationProperty property, XCalElement element, WriteContext context) {
 		String durationStr = null;
 
 		Duration duration = property.getValue();
@@ -85,7 +86,7 @@ public class DurationPropertyScribe extends ICalPropertyScribe<DurationProperty>
 	}
 
 	@Override
-	protected JCalValue _writeJson(DurationProperty property) {
+	protected JCalValue _writeJson(DurationProperty property, WriteContext context) {
 		Duration value = property.getValue();
 		if (value != null) {
 			return JCalValue.single(value.toString());

@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 
@@ -17,7 +18,9 @@ import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
+import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.parameter.ICalParameters;
@@ -182,6 +185,8 @@ public class Sensei<T extends ICalProperty> {
 	public class PrepareParamsTest {
 		protected final T property;
 		private ICalVersion versions[] = ICalVersion.values();
+		private TimeZone timezone;
+		private VTimezone vtimezone;
 		private ICalParameters expected = new ICalParameters();
 
 		public PrepareParamsTest(T property) {
@@ -206,12 +211,19 @@ public class Sensei<T extends ICalProperty> {
 			return this;
 		}
 
+		public PrepareParamsTest tz(TimeZone timezone, VTimezone vtimezone) {
+			this.timezone = timezone;
+			this.vtimezone = vtimezone;
+			return this;
+		}
+
 		/**
 		 * Runs the test.
 		 */
 		public void run() {
 			for (ICalVersion version : versions) {
-				ICalParameters actual = scribe.prepareParameters(property, version);
+				WriteContext context = new WriteContext(version, timezone, vtimezone);
+				ICalParameters actual = scribe.prepareParameters(property, context);
 				assertEquals("Actual: " + actual, expected.size(), actual.size());
 
 				for (Map.Entry<String, List<String>> entry : expected) {
@@ -235,6 +247,8 @@ public class Sensei<T extends ICalProperty> {
 	public class WriteTextTest {
 		protected final T property;
 		private ICalVersion version = ICalVersion.V2_0;
+		private TimeZone timezone;
+		private VTimezone vtimezone;
 
 		public WriteTextTest(T property) {
 			this.property = property;
@@ -245,12 +259,19 @@ public class Sensei<T extends ICalProperty> {
 			return this;
 		}
 
+		public WriteTextTest tz(TimeZone timezone, VTimezone vtimezone) {
+			this.timezone = timezone;
+			this.vtimezone = vtimezone;
+			return this;
+		}
+
 		/**
 		 * Runs the test.
 		 * @return the marshalled value
 		 */
 		public String run() {
-			return scribe.writeText(property, version);
+			WriteContext context = new WriteContext(version, timezone, vtimezone);
+			return scribe.writeText(property, context);
 		}
 
 		/**
@@ -269,9 +290,17 @@ public class Sensei<T extends ICalProperty> {
 	 */
 	public class WriteXmlTest {
 		protected final T property;
+		protected TimeZone timezone;
+		protected VTimezone vtimezone;
 
 		public WriteXmlTest(T property) {
 			this.property = property;
+		}
+
+		public WriteXmlTest tz(TimeZone timezone, VTimezone vtimezone) {
+			this.timezone = timezone;
+			this.vtimezone = vtimezone;
+			return this;
 		}
 
 		/**
@@ -281,7 +310,8 @@ public class Sensei<T extends ICalProperty> {
 		 */
 		public void run(String expectedInnerXml) {
 			Document actual = createXCalElement();
-			scribe.writeXml(property, XmlUtils.getRootElement(actual));
+			WriteContext context = new WriteContext(ICalVersion.V2_0, timezone, vtimezone);
+			scribe.writeXml(property, XmlUtils.getRootElement(actual), context);
 
 			Document expected = createXCalElement(expectedInnerXml);
 
@@ -295,9 +325,17 @@ public class Sensei<T extends ICalProperty> {
 	 */
 	public class WriteJsonTest {
 		protected final T property;
+		protected TimeZone timezone;
+		protected VTimezone vtimezone;
 
 		public WriteJsonTest(T property) {
 			this.property = property;
+		}
+
+		public WriteJsonTest tz(TimeZone timezone, VTimezone vtimezone) {
+			this.timezone = timezone;
+			this.vtimezone = vtimezone;
+			return this;
 		}
 
 		/**
@@ -305,7 +343,8 @@ public class Sensei<T extends ICalProperty> {
 		 * @return the marshalled value
 		 */
 		public JCalValue run() {
-			return scribe.writeJson(property);
+			WriteContext context = new WriteContext(ICalVersion.V2_0, timezone, vtimezone);
+			return scribe.writeJson(property, context);
 		}
 
 		/**

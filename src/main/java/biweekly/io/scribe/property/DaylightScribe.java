@@ -8,6 +8,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Daylight;
 import biweekly.util.UtcOffset;
@@ -47,7 +48,7 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 	}
 
 	@Override
-	protected String _writeText(Daylight property, ICalVersion version) {
+	protected String _writeText(Daylight property, WriteContext context) {
 		if (!property.isDaylight()) {
 			return "FALSE";
 		}
@@ -59,10 +60,10 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 		values.add((offset == null) ? "" : offset.toString());
 
 		Date start = property.getStart();
-		values.add((start == null) ? "" : date(start).localTz(true).write());
+		values.add((start == null) ? "" : date(start).floating(true).write());
 
 		Date end = property.getEnd();
-		values.add((end == null) ? "" : date(end).localTz(true).write());
+		values.add((end == null) ? "" : date(end).floating(true).write());
 
 		String standardName = property.getStandardName();
 		values.add((standardName == null) ? "" : standardName);

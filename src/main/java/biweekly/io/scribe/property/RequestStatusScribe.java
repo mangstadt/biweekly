@@ -5,6 +5,7 @@ import java.util.List;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -45,7 +46,7 @@ public class RequestStatusScribe extends ICalPropertyScribe<RequestStatus> {
 	}
 
 	@Override
-	protected String _writeText(RequestStatus property, ICalVersion version) {
+	protected String _writeText(RequestStatus property, WriteContext context) {
 		return structured(property.getStatusCode(), property.getDescription(), property.getExceptionText());
 	}
 
@@ -60,7 +61,7 @@ public class RequestStatusScribe extends ICalPropertyScribe<RequestStatus> {
 	}
 
 	@Override
-	protected void _writeXml(RequestStatus property, XCalElement element) {
+	protected void _writeXml(RequestStatus property, XCalElement element, WriteContext context) {
 		String code = property.getStatusCode();
 		element.append("code", code);
 
@@ -87,7 +88,7 @@ public class RequestStatusScribe extends ICalPropertyScribe<RequestStatus> {
 	}
 
 	@Override
-	protected JCalValue _writeJson(RequestStatus property) {
+	protected JCalValue _writeJson(RequestStatus property, WriteContext context) {
 		return JCalValue.structured(property.getStatusCode(), property.getDescription(), property.getExceptionText());
 	}
 

@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.OutputKeys;
@@ -39,9 +40,11 @@ import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
+import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseWarnings;
 import biweekly.io.SkipMeException;
+import biweekly.io.WriteContext;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.component.ICalendarScribe;
@@ -169,6 +172,10 @@ public class XCalDocument {
 	private final Document document;
 	private final ICalVersion targetVersion = ICalVersion.V2_0;
 	private Element root;
+
+	private WriteContext context;
+	private TimeZone timezone;
+	private VTimezone vtimezone;
 
 	/**
 	 * Parses an xCal document from a string.
@@ -346,6 +353,19 @@ public class XCalDocument {
 	}
 
 	/**
+	 * Sets the timezone to format all date/time property values in (defaults to
+	 * UTC).
+	 * @param timezone the timezone or null for UTC
+	 * @param vtimezone the VTIMEZONE component that this timezone corresponds
+	 * to, or null for floating time (floating time is a date-time value which
+	 * is not UTC and whose property does not have a TZID parameter)
+	 */
+	public void setTimezone(TimeZone timezone, VTimezone vtimezone) {
+		this.timezone = timezone;
+		this.vtimezone = vtimezone;
+	}
+
+	/**
 	 * Parses all the {@link ICalendar} objects from the xCal document.
 	 * @return the iCalendar objects
 	 */
@@ -401,6 +421,7 @@ public class XCalDocument {
 	 */
 	public void add(ICalendar ical) {
 		index.hasScribesFor(ical);
+		context = new WriteContext(targetVersion, timezone, vtimezone);
 		Element element = buildComponentElement(ical);
 
 		if (root == null) {
@@ -574,13 +595,13 @@ public class XCalDocument {
 
 			//marshal value
 			try {
-				propertyScribe.writeXml(property, propertyElement);
+				propertyScribe.writeXml(property, propertyElement, context);
 			} catch (SkipMeException e) {
 				return null;
 			}
 
 			//get parameters
-			parameters = propertyScribe.prepareParameters(property, targetVersion);
+			parameters = propertyScribe.prepareParameters(property, context);
 		}
 
 		//build parameters

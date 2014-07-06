@@ -41,15 +41,6 @@ public class ExceptionDatesTest {
 		assertValidate(property).run(26);
 
 		property = new ExceptionDates(true);
-		property.setTimezoneId("Foo/Bar");
-		assertValidate(property).run(26, 27);
-
-		property = new ExceptionDates(true);
-		property.setTimezoneId("Foo/Bar");
-		property.addValue(new Date());
-		assertValidate(property).run(27);
-
-		property = new ExceptionDates(true);
 		property.addValue(new Date());
 		assertValidate(property).run();
 	}

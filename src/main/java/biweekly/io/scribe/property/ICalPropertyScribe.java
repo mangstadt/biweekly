@@ -22,6 +22,7 @@ import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.text.ICalRawWriter;
 import biweekly.io.xml.XCalElement;
@@ -125,11 +126,11 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	/**
 	 * Sanitizes a property's parameters before the property is written.
 	 * @param property the property to write
-	 * @param version the version of the iCalendar object being generated
+	 * @param context the context
 	 * @return the sanitized parameters
 	 */
-	public final ICalParameters prepareParameters(T property, ICalVersion version) {
-		return _prepareParameters(property, version);
+	public final ICalParameters prepareParameters(T property, WriteContext context) {
+		return _prepareParameters(property, context);
 	}
 
 	/**
@@ -154,36 +155,37 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	/**
 	 * Marshals a property's value to a string.
 	 * @param property the property
-	 * @param version the version of the iCalendar object being generated
-	 * @return the marshalled value
+	 * @param context the context
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
 	 */
-	public final String writeText(T property, ICalVersion version) {
-		return _writeText(property, version);
+	public final String writeText(T property, WriteContext context) {
+		return _writeText(property, context);
 	}
 
 	/**
 	 * Marshals a property's value to an XML element (xCal).
 	 * @param property the property
 	 * @param element the property's XML element
+	 * @param context TODO
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
 	 */
-	public final void writeXml(T property, Element element) {
+	public final void writeXml(T property, Element element, WriteContext context) {
 		XCalElement xcalElement = new XCalElement(element);
-		_writeXml(property, xcalElement);
+		_writeXml(property, xcalElement, context);
 	}
 
 	/**
 	 * Marshals a property's value to a JSON data stream (jCal).
 	 * @param property the property
+	 * @param context TODO
 	 * @return the marshalled value
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
 	 */
-	public final JCalValue writeJson(T property) {
-		return _writeJson(property);
+	public final JCalValue writeJson(T property, WriteContext context) {
+		return _writeJson(property, context);
 	}
 
 	/**
@@ -255,11 +257,11 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * unmodified.
 	 * </p>
 	 * @param property the property to write
-	 * @param version the version of the iCalendar object being generated
+	 * @param context the context
 	 * @return the sanitized parameters (this should be a *copy* of the
 	 * property's parameters if modifications were made)
 	 */
-	protected ICalParameters _prepareParameters(T property, ICalVersion version) {
+	protected ICalParameters _prepareParameters(T property, WriteContext context) {
 		return property.getParameters();
 	}
 
@@ -299,12 +301,12 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	/**
 	 * Marshals a property's value to a string.
 	 * @param property the property
-	 * @param version the version of the iCalendar object being generated
+	 * @param context the write context
 	 * @return the marshalled value
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
 	 */
-	protected abstract String _writeText(T property, ICalVersion version);
+	protected abstract String _writeText(T property, WriteContext context);
 
 	/**
 	 * <p>
@@ -321,11 +323,12 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * </p>
 	 * @param property the property
 	 * @param element the property's XML element
+	 * @param context TODO
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
 	 */
-	protected void _writeXml(T property, XCalElement element) {
-		String value = writeText(property, ICalVersion.V2_0);
+	protected void _writeXml(T property, XCalElement element, WriteContext context) {
+		String value = writeText(property, context);
 		ICalDataType dataType = dataType(property, ICalVersion.V2_0);
 		element.append(dataType, value);
 	}
@@ -341,12 +344,13 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * {@link #writeText} method).
 	 * </p>
 	 * @param property the property
+	 * @param context TODO
 	 * @return the marshalled value
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
 	 */
-	protected JCalValue _writeJson(T property) {
-		String value = writeText(property, ICalVersion.V2_0);
+	protected JCalValue _writeJson(T property, WriteContext context) {
+		String value = writeText(property, context);
 		return JCalValue.single(value);
 	}
 
@@ -1157,24 +1161,35 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		}
 
 		/**
-		 * Outputs the date in local time (without a timezone). If no timezone
-		 * preference is specified, the date will be formatted as UTC.
-		 * @param localTz true to use local time, false not to
+		 * Outputs the date in floating time (a non-UTC date whose property
+		 * doesn't have a TZID parameter). If no timezone preference is
+		 * specified, the date will be formatted as UTC.
+		 * @param floating true to use floating time, false not to
 		 * @return this
 		 */
-		public DateWriter localTz(boolean localTz) {
-			return localTz ? tz(TimeZone.getDefault()) : this;
+		public DateWriter floating(boolean floating) {
+			return floating ? tz(TimeZone.getDefault()) : this;
 		}
 
 		/**
-		 * Convenience method that combines {@link #localTz(boolean)} and
+		 * Convenience method that combines {@link #floating(boolean)} and
 		 * {@link #tzid(String)} into one method.
 		 * @param localTz true to use local time, false not to
 		 * @param timezoneId the timezone ID
 		 * @return this
 		 */
 		public DateWriter tz(boolean localTz, String timezoneId) {
-			return localTz ? localTz(true) : tzid(timezoneId);
+			return localTz ? floating(true) : tzid(timezoneId);
+		}
+
+		/**
+		 * Sets the timezone.
+		 * @param floating true to use floating time, false not to
+		 * @param timezone the timezone
+		 * @return this
+		 */
+		public DateWriter tz(boolean floating, TimeZone timezone) {
+			return floating ? floating(true) : tz(timezone);
 		}
 
 		/**
@@ -1219,6 +1234,16 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 
 			return format.format(date, timezone);
 		}
+	}
+
+	protected static ICalParameters handleTzidParameter(ICalProperty property, boolean hasTime, boolean floating, WriteContext context) {
+		ICalParameters parameters = property.getParameters();
+		String tzid = context.getTimezoneId();
+		if (tzid != null && context.getVersion() != ICalVersion.V1_0 && hasTime && !floating) {
+			parameters = new ICalParameters(parameters);
+			parameters.setTimezoneId(tzid);
+		}
+		return parameters;
 	}
 
 	/**

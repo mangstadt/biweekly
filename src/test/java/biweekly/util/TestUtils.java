@@ -28,6 +28,7 @@ import biweekly.ICalVersion;
 import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
+import biweekly.io.WriteContext;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.parameter.ICalParameters;
@@ -202,7 +203,7 @@ public class TestUtils {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void assertWriteXml(String expectedInnerXml, ICalProperty propertyToWrite, ICalPropertyScribe marshaller) {
 		Document actual = xcalProperty(marshaller);
-		marshaller.writeXml(propertyToWrite, XmlUtils.getRootElement(actual));
+		marshaller.writeXml(propertyToWrite, XmlUtils.getRootElement(actual), new WriteContext(ICalVersion.V2_0, null, null));
 
 		Document expected = xcalProperty(marshaller, expectedInnerXml);
 		assertXMLEqual(expected, actual);
@@ -238,16 +239,42 @@ public class TestUtils {
 	 * @param text the date string (e.g. "2000-01-30", see code for acceptable
 	 * formats)
 	 * @return the parsed date or null if it couldn't be parsed
+	 * @throws IllegalArgumentExcpetion if it couldn't be parsed
 	 */
 	public static Date date(String text) {
+		return date(text, TimeZone.getDefault());
+	}
+
+	/**
+	 * Creates a {@link Date} object.
+	 * @param text the date string (e.g. "2000-01-30", see code for acceptable
+	 * formats)
+	 * @param timezone the timezone the date string is in
+	 * @return the parsed date
+	 * @throws IllegalArgumentExcpetion if it couldn't be parsed
+	 */
+	public static Date date(String text, TimeZone timezone) {
 		for (DateFormat df : dfs) {
 			try {
+				df.setTimeZone(timezone);
 				return df.parse(text);
 			} catch (ParseException e) {
 				//try the next date formatter
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("Invalid date string: " + text);
+	}
+
+	/**
+	 * Creates a {@link Date} object.
+	 * @param text the date string (e.g. "2000-01-30 02:21:00", see code for
+	 * acceptable formats)
+	 * @return the parsed date in the UTC timezone or null if it couldn't be
+	 * parsed
+	 * @throws IllegalArgumentExcpetion if it couldn't be parsed
+	 */
+	public static Date utc(String text) {
+		return date(text + " +0000");
 	}
 
 	/**

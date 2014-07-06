@@ -7,6 +7,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -48,7 +49,7 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 	}
 
 	@Override
-	protected String _writeText(Geo property, ICalVersion version) {
+	protected String _writeText(Geo property, WriteContext context) {
 		ICalFloatFormatter formatter = new ICalFloatFormatter();
 
 		Double latitude = property.getLatitude();
@@ -56,14 +57,14 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 			latitude = 0.0;
 		}
 		String latitudeStr = formatter.format(latitude);
-		
+
 		Double longitude = property.getLongitude();
 		if (longitude == null) {
 			longitude = 0.0;
 		}
 		String longitudeStr = formatter.format(longitude);
-		
-		switch (version){
+
+		switch (context.getVersion()) {
 		case V1_0:
 			return list(latitudeStr, longitudeStr);
 		default:
@@ -96,7 +97,7 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 	}
 
 	@Override
-	protected void _writeXml(Geo property, XCalElement element) {
+	protected void _writeXml(Geo property, XCalElement element, WriteContext context) {
 		ICalFloatFormatter formatter = new ICalFloatFormatter();
 
 		Double latitude = property.getLatitude();
@@ -130,7 +131,7 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 	}
 
 	@Override
-	protected JCalValue _writeJson(Geo property) {
+	protected JCalValue _writeJson(Geo property, WriteContext context) {
 		Double latitude = property.getLatitude();
 		if (latitude == null) {
 			latitude = 0.0;

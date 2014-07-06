@@ -1,10 +1,12 @@
 package biweekly.io.scribe.property;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -51,23 +53,48 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 	}
 
 	@Override
-	protected String _writeText(final T property, ICalVersion version) {
-		return list(property.getValues(), new ListCallback<V>() {
-			public String asString(V value) {
-				return writeValue(property, value);
-			}
-		});
+	protected String _writeText(final T property, WriteContext context) {
+		List<V> values = property.getValues();
+		List<String> valuesStr = new ArrayList<String>(values.size());
+		for (V value : values) {
+			String valueStr = writeValue(property, value, context);
+			valuesStr.add(valueStr);
+		}
+
+		switch (context.getVersion()) {
+		case V1_0:
+			Object[] valuesArray = valuesStr.toArray(new String[0]);
+			return structured(valuesArray);
+		default:
+			return list(valuesStr);
+		}
 	}
 
 	@Override
 	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
-		return parse(list(value), dataType, parameters, warnings);
+		List<String> values;
+		switch (version) {
+		case V1_0:
+			values = new ArrayList<String>();
+			if (value.length() > 0) {
+				SemiStructuredIterator it = semistructured(value);
+				while (it.hasNext()) {
+					values.add(it.next());
+				}
+			}
+			break;
+
+		default:
+			values = list(value);
+		}
+
+		return parse(values, dataType, parameters, warnings);
 	}
 
 	@Override
-	protected void _writeXml(T property, XCalElement element) {
+	protected void _writeXml(T property, XCalElement element, WriteContext context) {
 		for (V value : property.getValues()) {
-			String valueStr = writeValue(property, value);
+			String valueStr = writeValue(property, value, null);
 			element.append(dataType(property, null), valueStr);
 		}
 	}
@@ -83,7 +110,7 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 	}
 
 	@Override
-	protected JCalValue _writeJson(T property) {
+	protected JCalValue _writeJson(T property, WriteContext context) {
 		List<V> values = property.getValues();
 		if (!values.isEmpty()) {
 			return JCalValue.multi(property.getValues());
@@ -110,7 +137,7 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 
 	protected abstract T newInstance(ICalDataType dataType, ICalParameters parameters);
 
-	protected abstract String writeValue(T property, V value);
+	protected abstract String writeValue(T property, V value, WriteContext context);
 
 	protected abstract V readValue(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings);
 }

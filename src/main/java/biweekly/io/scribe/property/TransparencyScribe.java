@@ -1,6 +1,7 @@
 package biweekly.io.scribe.property;
 
 import biweekly.ICalVersion;
+import biweekly.io.WriteContext;
 import biweekly.property.Transparency;
 
 /*
@@ -38,8 +39,8 @@ public class TransparencyScribe extends TextPropertyScribe<Transparency> {
 	}
 
 	@Override
-	protected String _writeText(Transparency property, ICalVersion version) {
-		if (version == ICalVersion.V1_0) {
+	protected String _writeText(Transparency property, WriteContext context) {
+		if (context.getVersion() == ICalVersion.V1_0) {
 			if (property.isOpaque()) {
 				return "0";
 			}
@@ -48,7 +49,7 @@ public class TransparencyScribe extends TextPropertyScribe<Transparency> {
 			}
 		}
 
-		return super._writeText(property, version);
+		return super._writeText(property, context);
 	}
 
 	@Override

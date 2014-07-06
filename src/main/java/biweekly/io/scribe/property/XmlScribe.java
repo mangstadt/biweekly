@@ -14,6 +14,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
@@ -57,7 +58,7 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 	}
 
 	@Override
-	protected String _writeText(Xml property, ICalVersion version) {
+	protected String _writeText(Xml property, WriteContext context) {
 		Document value = property.getValue();
 		if (value != null) {
 			String xml = valueToString(value);
@@ -78,8 +79,8 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 	}
 
 	@Override
-	protected void _writeXml(Xml property, XCalElement element) {
-		super._writeXml(property, element);
+	protected void _writeXml(Xml property, XCalElement element, WriteContext context) {
+		super._writeXml(property, element, context);
 		//Xml properties are handled as a special case when writing xCal documents, so this method should never get called (see: "XCalDocument" class)
 	}
 
@@ -99,7 +100,7 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 	}
 
 	@Override
-	protected JCalValue _writeJson(Xml property) {
+	protected JCalValue _writeJson(Xml property, WriteContext context) {
 		Document value = property.getValue();
 		if (value != null) {
 			String xml = valueToString(value);

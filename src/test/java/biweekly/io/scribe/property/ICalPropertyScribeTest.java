@@ -18,6 +18,7 @@ import org.junit.Test;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.ICalPropertyScribe.SemiStructuredIterator;
 import biweekly.io.scribe.property.ICalPropertyScribe.StructuredIterator;
@@ -323,14 +324,14 @@ public class ICalPropertyScribeTest {
 	@Test
 	public void DateWriter_datetime_local_time() {
 		String expected = "20130611T144302";
-		String actual = ICalPropertyScribe.date(datetime).localTz(true).write();
+		String actual = ICalPropertyScribe.date(datetime).floating(true).write();
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void DateWriter_datetime_local_time_false() {
 		String expected = "20130611T134302Z";
-		String actual = ICalPropertyScribe.date(datetime).localTz(false).write(); //should ignore the method call
+		String actual = ICalPropertyScribe.date(datetime).floating(false).write(); //should ignore the method call
 		assertEquals(expected, actual);
 	}
 
@@ -584,14 +585,14 @@ public class ICalPropertyScribeTest {
 		}
 
 		@Override
-		protected ICalParameters _prepareParameters(TestProperty property, ICalVersion version) {
+		protected ICalParameters _prepareParameters(TestProperty property, WriteContext context) {
 			ICalParameters copy = new ICalParameters(property.getParameters());
 			copy.put("PARAM", "value");
 			return copy;
 		}
 
 		@Override
-		protected String _writeText(TestProperty property, ICalVersion version) {
+		protected String _writeText(TestProperty property, WriteContext context) {
 			return property.value;
 		}
 

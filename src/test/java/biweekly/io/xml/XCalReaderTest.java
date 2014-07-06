@@ -46,6 +46,7 @@ import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
+import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.CannotParseScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -1068,7 +1069,7 @@ public class XCalReaderTest {
 		}
 
 		@Override
-		protected String _writeText(Company property, ICalVersion version) {
+		protected String _writeText(Company property, WriteContext context) {
 			return property.getBoss();
 		}
 
@@ -1078,7 +1079,7 @@ public class XCalReaderTest {
 		}
 
 		@Override
-		protected void _writeXml(Company property, XCalElement element) {
+		protected void _writeXml(Company property, XCalElement element, WriteContext context) {
 			if (property.getBoss().equals("skip-me")) {
 				throw new SkipMeException("");
 			}

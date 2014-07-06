@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
+import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Organizer;
 
@@ -45,7 +46,7 @@ public class OrganizerScribe extends ICalPropertyScribe<Organizer> {
 	}
 
 	@Override
-	protected ICalParameters _prepareParameters(Organizer property, ICalVersion version) {
+	protected ICalParameters _prepareParameters(Organizer property, WriteContext context) {
 		//CN parameter
 		String name = property.getCommonName();
 		if (name != null) {
@@ -54,7 +55,7 @@ public class OrganizerScribe extends ICalPropertyScribe<Organizer> {
 			return copy;
 		}
 
-		return super._prepareParameters(property, version);
+		return super._prepareParameters(property, context);
 	}
 
 	@Override
@@ -79,7 +80,7 @@ public class OrganizerScribe extends ICalPropertyScribe<Organizer> {
 	}
 
 	@Override
-	protected String _writeText(Organizer property, ICalVersion version) {
+	protected String _writeText(Organizer property, WriteContext context) {
 		String uri = property.getUri();
 		if (uri != null) {
 			return uri;

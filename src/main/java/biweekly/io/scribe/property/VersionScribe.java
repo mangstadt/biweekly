@@ -6,6 +6,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -47,7 +48,7 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 	}
 
 	@Override
-	protected String _writeText(Version property, ICalVersion version) {
+	protected String _writeText(Version property, WriteContext context) {
 		StringBuilder sb = new StringBuilder();
 
 		if (property.getMinVersion() != null) {
@@ -78,7 +79,7 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 	}
 
 	@Override
-	protected void _writeXml(Version property, XCalElement element) {
+	protected void _writeXml(Version property, XCalElement element, WriteContext context) {
 		VersionNumber max = property.getMaxVersion();
 		String value = (max == null) ? null : max.toString();
 		element.append(dataType(property, null), value);
@@ -95,7 +96,7 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 	}
 
 	@Override
-	protected JCalValue _writeJson(Version property) {
+	protected JCalValue _writeJson(Version property, WriteContext context) {
 		VersionNumber max = property.getMaxVersion();
 		String value = (max == null) ? null : max.toString();
 		return JCalValue.single(value);

@@ -7,6 +7,7 @@ import org.w3c.dom.Element;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
+import biweekly.io.WriteContext;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
@@ -53,7 +54,7 @@ public class RawPropertyScribe extends ICalPropertyScribe<RawProperty> {
 	}
 
 	@Override
-	protected String _writeText(RawProperty property, ICalVersion version) {
+	protected String _writeText(RawProperty property, WriteContext context) {
 		String value = property.getValue();
 		if (value != null) {
 			return value;

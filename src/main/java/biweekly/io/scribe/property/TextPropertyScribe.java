@@ -5,6 +5,7 @@ import java.util.List;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
+import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
@@ -50,7 +51,7 @@ public abstract class TextPropertyScribe<T extends TextProperty> extends ICalPro
 	}
 
 	@Override
-	protected String _writeText(T property, ICalVersion version) {
+	protected String _writeText(T property, WriteContext context) {
 		String value = property.getValue();
 		if (value != null) {
 			return escape(value);
@@ -66,7 +67,7 @@ public abstract class TextPropertyScribe<T extends TextProperty> extends ICalPro
 	}
 
 	@Override
-	protected void _writeXml(T property, XCalElement element) {
+	protected void _writeXml(T property, XCalElement element, WriteContext context) {
 		element.append(dataType(property, ICalVersion.V2_0), property.getValue());
 	}
 
@@ -81,7 +82,7 @@ public abstract class TextPropertyScribe<T extends TextProperty> extends ICalPro
 	}
 
 	@Override
-	protected JCalValue _writeJson(T property) {
+	protected JCalValue _writeJson(T property, WriteContext context) {
 		return JCalValue.single(property.getValue());
 	}
 

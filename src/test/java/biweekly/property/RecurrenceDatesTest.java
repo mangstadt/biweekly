@@ -37,13 +37,5 @@ public class RecurrenceDatesTest {
 	public void validate() {
 		RecurrenceDates property = new RecurrenceDates(null);
 		assertValidate(property).run();
-
-		property = new RecurrenceDates(null);
-		property.setTimezoneId("Foo/Bar");
-		assertValidate(property).run(27);
-
-		property = new RecurrenceDates(null);
-		property.setTimezoneId("America/New_York");
-		assertValidate(property).run();
 	}
 }

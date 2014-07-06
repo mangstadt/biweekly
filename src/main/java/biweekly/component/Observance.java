@@ -69,7 +69,7 @@ public class Observance extends ICalComponent {
 	 */
 	public void setDateStart(DateStart dateStart) {
 		if (dateStart != null) {
-			dateStart.setLocalTime(true);
+			dateStart.setFloatingTime(true);
 		}
 		setProperty(DateStart.class, dateStart);
 	}
