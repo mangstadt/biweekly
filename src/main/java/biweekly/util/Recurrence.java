@@ -602,11 +602,14 @@ public final class Recurrence {
 
 		/**
 		 * Adds a BYDAY rule part.
-		 * @param byDay the value to add
+		 * @param byDay the value(s) to add
 		 * @return this
 		 */
-		public Builder byDay(DayOfWeek byDay) {
-			return byDay(null, byDay);
+		public Builder byDay(DayOfWeek... byDay) {
+			for (DayOfWeek day : byDay) {
+				byDay(null, day);
+			}
+			return this;
 		}
 
 		/**
