@@ -113,6 +113,7 @@ public class ICalendar extends ICalComponent {
 	 * @return the property instance or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545
 	 * p.78-9</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
 	 */
 	public ProductId getProductId() {
 		return getProperty(ProductId.class);
@@ -125,6 +126,7 @@ public class ICalendar extends ICalComponent {
 	 * @param prodId the property instance or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545
 	 * p.78-9</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
 	 */
 	public void setProductId(ProductId prodId) {
 		setProperty(ProductId.class, prodId);
@@ -139,6 +141,7 @@ public class ICalendar extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545
 	 * p.78-9</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
 	 */
 	public ProductId setProductId(String prodId) {
 		ProductId prop = (prodId == null) ? null : new ProductId(prodId);
@@ -207,6 +210,9 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the events.
 	 * @return the events
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-52">RFC 5545
+	 * p.52-5</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.13</a>
 	 */
 	public List<VEvent> getEvents() {
 		return getComponents(VEvent.class);
@@ -215,6 +221,9 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Adds an event.
 	 * @param event the event
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-52">RFC 5545
+	 * p.52-5</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.13</a>
 	 */
 	public void addEvent(VEvent event) {
 		addComponent(event);
@@ -223,6 +232,9 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the to-dos.
 	 * @return the to-dos
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545
+	 * p.55-7</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.14</a>
 	 */
 	public List<VTodo> getTodos() {
 		return getComponents(VTodo.class);
@@ -231,6 +243,9 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Adds a to-do.
 	 * @param todo the to-do
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545
+	 * p.55-7</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.14</a>
 	 */
 	public void addTodo(VTodo todo) {
 		addComponent(todo);
@@ -239,6 +254,8 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the journal entries.
 	 * @return the journal entries
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545
+	 * p.57-9</a>
 	 */
 	public List<VJournal> getJournals() {
 		return getComponents(VJournal.class);
@@ -247,6 +264,8 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Adds a journal entry.
 	 * @param journal the journal entry
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545
+	 * p.57-9</a>
 	 */
 	public void addJournal(VJournal journal) {
 		addComponent(journal);
@@ -255,6 +274,8 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the free/busy entries.
 	 * @return the free/busy entries
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-59">RFC 5545
+	 * p.59-62</a>
 	 */
 	public List<VFreeBusy> getFreeBusies() {
 		return getComponents(VFreeBusy.class);
@@ -263,6 +284,8 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Adds a free/busy entry.
 	 * @param freeBusy the free/busy entry
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-59">RFC 5545
+	 * p.59-62</a>
 	 */
 	public void addFreeBusy(VFreeBusy freeBusy) {
 		addComponent(freeBusy);
@@ -271,6 +294,8 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the timezones.
 	 * @return the timezones
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
+	 * p.62-71</a>	
 	 */
 	public List<VTimezone> getTimezones() {
 		return getComponents(VTimezone.class);
@@ -279,6 +304,8 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Adds a timezone.
 	 * @param timezone the timezone
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
+	 * p.62-71</a>	
 	 */
 	public void addTimezone(VTimezone timezone) {
 		addComponent(timezone);

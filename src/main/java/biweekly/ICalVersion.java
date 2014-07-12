@@ -38,7 +38,7 @@ public enum ICalVersion {
 	V1_0("1.0"),
 	
 	/**
-	 * Represents an older, deprecated version of the iCalendar specification.
+	 * Represents an older, deprecated version of the iCalendar specification (very similar to {@link #V2_0}).
 	 * @see <a href="https://tools.ietf.org/html/rfc2445">https://tools.ietf.org/html/rfc2445</a>
 	 */
 	V2_0_DEPRECATED("2.0"),

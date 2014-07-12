@@ -100,7 +100,7 @@ public abstract class ICalComponent {
 	 * Replaces all existing properties of the given class with a single
 	 * property instance. If the property instance is null, then all instances
 	 * of that property will be removed.
-	 * @param clazz the property class (e.g. "Version.class")
+	 * @param clazz the property class (e.g. "DateStart.class")
 	 * @param property the property or null to remove
 	 */
 	public <T extends ICalProperty> void setProperty(Class<T> clazz, T property) {
@@ -109,7 +109,8 @@ public abstract class ICalComponent {
 
 	/**
 	 * Removes properties from the iCalendar object.
-	 * @param clazz the class of the properties to remove (e.g. "Version.class")
+	 * @param clazz the class of the properties to remove (e.g.
+	 * "DateStart.class")
 	 */
 	public void removeProperties(Class<? extends ICalProperty> clazz) {
 		properties.removeAll(clazz);
