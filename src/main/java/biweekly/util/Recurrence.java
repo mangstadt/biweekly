@@ -1,6 +1,8 @@
 package biweekly.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -521,92 +523,173 @@ public final class Recurrence {
 		}
 
 		/**
-		 * Adds a BYSECOND rule part.
-		 * @param bySecond the value to add
+		 * Adds one or more BYSECOND rule parts.
+		 * @param seconds the seconds to add
 		 * @return this
 		 */
-		public Builder bySecond(Integer bySecond) {
-			this.bySecond.add(bySecond);
+		public Builder bySecond(Integer... seconds) {
+			return bySecond(Arrays.asList(seconds));
+		}
+
+		/**
+		 * Adds one or more BYSECOND rule parts.
+		 * @param seconds the seconds to add
+		 * @return this
+		 */
+		public Builder bySecond(Collection<Integer> seconds) {
+			bySecond.addAll(seconds);
 			return this;
 		}
 
 		/**
-		 * Adds a BYMINUTE rule part.
-		 * @param byMinute the value to add
+		 * Adds one or more BYMINUTE rule parts.
+		 * @param minutes the minutes to add
 		 * @return this
 		 */
-		public Builder byMinute(Integer byMinute) {
-			this.byMinute.add(byMinute);
+		public Builder byMinute(Integer... minutes) {
+			return byMinute(Arrays.asList(minutes));
+		}
+
+		/**
+		 * Adds one or more BYMINUTE rule parts.
+		 * @param minutes the minutes to add
+		 * @return this
+		 */
+		public Builder byMinute(Collection<Integer> minutes) {
+			byMinute.addAll(minutes);
 			return this;
 		}
 
 		/**
-		 * Adds a BYHOUR rule part.
-		 * @param byHour the value to add
+		 * Adds one or more BYHOUR rule parts.
+		 * @param hours the hours to add
 		 * @return this
 		 */
-		public Builder byHour(Integer byHour) {
-			this.byHour.add(byHour);
+		public Builder byHour(Integer... hours) {
+			return byHour(Arrays.asList(hours));
+		}
+
+		/**
+		 * Adds one or more BYHOUR rule parts.
+		 * @param hours the hours to add
+		 * @return this
+		 */
+		public Builder byHour(Collection<Integer> hours) {
+			this.byHour.addAll(hours);
 			return this;
 		}
 
 		/**
-		 * Adds a BYMONTHDAY rule part.
-		 * @param byMonthDay the value to add
+		 * Adds one or more BYMONTHDAY rule parts.
+		 * @param monthDays the month days to add
 		 * @return this
 		 */
-		public Builder byMonthDay(Integer byMonthDay) {
-			this.byMonthDay.add(byMonthDay);
+		public Builder byMonthDay(Integer... monthDays) {
+			return byMonthDay(Arrays.asList(monthDays));
+		}
+
+		/**
+		 * Adds one or more BYMONTHDAY rule parts.
+		 * @param monthDays the month days to add
+		 * @return this
+		 */
+		public Builder byMonthDay(Collection<Integer> monthDays) {
+			byMonthDay.addAll(monthDays);
 			return this;
 		}
 
 		/**
-		 * Adds a BYYEARDAY rule part.
-		 * @param byYearDay the value to add
+		 * Adds one or more BYYEARDAY rule parts.
+		 * @param yearDays the year days to add
 		 * @return this
 		 */
-		public Builder byYearDay(Integer byYearDay) {
-			this.byYearDay.add(byYearDay);
+		public Builder byYearDay(Integer... yearDays) {
+			return byYearDay(Arrays.asList(yearDays));
+		}
+
+		/**
+		 * Adds one or more BYYEARDAY rule parts.
+		 * @param yearDays the year days to add
+		 * @return this
+		 */
+		public Builder byYearDay(Collection<Integer> yearDays) {
+			byYearDay.addAll(yearDays);
 			return this;
 		}
 
 		/**
-		 * Adds a BYWEEKNO rule part.
-		 * @param byWeekNo the value to add
+		 * Adds one or more BYWEEKNO rule parts.
+		 * @param weekNumbers the week numbers to add
 		 * @return this
 		 */
-		public Builder byWeekNo(Integer byWeekNo) {
-			this.byWeekNo.add(byWeekNo);
+		public Builder byWeekNo(Integer... weekNumbers) {
+			return byWeekNo(Arrays.asList(weekNumbers));
+		}
+
+		/**
+		 * Adds one or more BYWEEKNO rule parts.
+		 * @param weekNumbers the week numbers to add
+		 * @return this
+		 */
+		public Builder byWeekNo(Collection<Integer> weekNumbers) {
+			byWeekNo.addAll(weekNumbers);
 			return this;
 		}
 
 		/**
-		 * Adds a BYMONTH rule part.
-		 * @param byMonth the value to add
+		 * Adds one or more BYMONTH rule parts.
+		 * @param months the months to add
 		 * @return this
 		 */
-		public Builder byMonth(Integer byMonth) {
-			this.byMonth.add(byMonth);
+		public Builder byMonth(Integer... months) {
+			return byMonth(Arrays.asList(months));
+		}
+
+		/**
+		 * Adds one or more BYMONTH rule parts.
+		 * @param months the months to add
+		 * @return this
+		 */
+		public Builder byMonth(Collection<Integer> months) {
+			byMonth.addAll(months);
 			return this;
 		}
 
 		/**
-		 * Adds a BYSETPOS rule part.
-		 * @param bySetPos the value to add
+		 * Adds one or more BYSETPOS rule parts.
+		 * @param positions the values to add
 		 * @return this
 		 */
-		public Builder bySetPos(Integer bySetPos) {
-			this.bySetPos.add(bySetPos);
+		public Builder bySetPos(Integer... positions) {
+			return bySetPos(Arrays.asList(positions));
+		}
+
+		/**
+		 * Adds one or more BYSETPOS rule parts.
+		 * @param positions the values to add
+		 * @return this
+		 */
+		public Builder bySetPos(Collection<Integer> positions) {
+			bySetPos.addAll(positions);
 			return this;
 		}
 
 		/**
-		 * Adds a BYDAY rule part.
-		 * @param byDay the value(s) to add
+		 * Adds one or more BYDAY rule parts.
+		 * @param days the days to add
 		 * @return this
 		 */
-		public Builder byDay(DayOfWeek... byDay) {
-			for (DayOfWeek day : byDay) {
+		public Builder byDay(DayOfWeek... days) {
+			return byDay(Arrays.asList(days));
+		}
+
+		/**
+		 * Adds one or more BYDAY rule parts.
+		 * @param days the days to add
+		 * @return this
+		 */
+		public Builder byDay(Collection<DayOfWeek> days) {
+			for (DayOfWeek day : days) {
 				byDay(null, day);
 			}
 			return this;
@@ -615,22 +698,22 @@ public final class Recurrence {
 		/**
 		 * Adds a BYDAY rule part.
 		 * @param prefix the numeric prefix
-		 * @param byDay the value to add
+		 * @param day the day to add
 		 * @return this
 		 */
-		public Builder byDay(Integer prefix, DayOfWeek byDay) {
-			this.byDayPrefixes.add(prefix);
-			this.byDay.add(byDay);
+		public Builder byDay(Integer prefix, DayOfWeek day) {
+			byDayPrefixes.add(prefix);
+			byDay.add(day);
 			return this;
 		}
 
 		/**
 		 * Sets the day that the work week starts.
-		 * @param workweekStarts the day
+		 * @param day the day
 		 * @return this
 		 */
-		public Builder workweekStarts(DayOfWeek workweekStarts) {
-			this.workweekStarts = workweekStarts;
+		public Builder workweekStarts(DayOfWeek day) {
+			workweekStarts = day;
 			return this;
 		}
 
