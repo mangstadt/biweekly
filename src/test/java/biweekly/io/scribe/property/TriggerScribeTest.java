@@ -1,15 +1,14 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.scribe.property.TriggerScribe;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.Related;
 import biweekly.property.Trigger;
@@ -51,18 +50,7 @@ public class TriggerScribeTest {
 	private final TriggerScribe marshaller = new TriggerScribe();
 	private final Sensei<Trigger> sensei = new Sensei<Trigger>(marshaller);
 
-	private final Date datetime;
-	{
-		Calendar c = Calendar.getInstance();
-		c.clear();
-		c.set(Calendar.YEAR, 2013);
-		c.set(Calendar.MONTH, Calendar.JUNE);
-		c.set(Calendar.DATE, 11);
-		c.set(Calendar.HOUR_OF_DAY, 13);
-		c.set(Calendar.MINUTE, 43);
-		c.set(Calendar.SECOND, 2);
-		datetime = c.getTime();
-	}
+	private final Date datetime = date("2013-06-11 13:43:02");
 	private final String datetimeStr = "20130611T124302Z";
 	private final String datetimeStrExt = "2013-06-11T12:43:02Z";
 

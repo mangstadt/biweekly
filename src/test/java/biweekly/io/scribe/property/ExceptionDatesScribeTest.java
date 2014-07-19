@@ -1,9 +1,9 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.ClassRule;
@@ -51,51 +51,19 @@ public class ExceptionDatesScribeTest {
 	private final ExceptionDatesScribe marshaller = new ExceptionDatesScribe();
 	private final Sensei<ExceptionDates> sensei = new Sensei<ExceptionDates>(marshaller);
 
-	private final Date date1;
-	{
-		Calendar c = Calendar.getInstance();
-		c.clear();
-		c.set(Calendar.YEAR, 2013);
-		c.set(Calendar.MONTH, Calendar.JUNE);
-		c.set(Calendar.DATE, 11);
-		date1 = c.getTime();
-	}
+	private final Date date1 = date("2013-06-11");
 	private final String date1Str = "20130611";
 	private final String date1StrExt = "2013-06-11";
 
-	private final Date datetime1;
-	{
-		Calendar c = Calendar.getInstance();
-		c.setTime(date1);
-		c.set(Calendar.HOUR_OF_DAY, 13);
-		c.set(Calendar.MINUTE, 43);
-		c.set(Calendar.SECOND, 2);
-		datetime1 = c.getTime();
-	}
+	private final Date datetime1 = date("2013-06-11 13:43:02");
 	private final String datetime1Str = date1Str + "T124302Z";
 	private final String datetime1StrExt = date1StrExt + "T12:43:02Z";
 
-	private final Date date2;
-	{
-		Calendar c = Calendar.getInstance();
-		c.clear();
-		c.set(Calendar.YEAR, 2000);
-		c.set(Calendar.MONTH, Calendar.NOVEMBER);
-		c.set(Calendar.DATE, 2);
-		date2 = c.getTime();
-	}
+	private final Date date2 = date("2000-11-02");
 	private final String date2Str = "20001102";
 	private final String date2StrExt = "2000-11-02";
 
-	private final Date datetime2;
-	{
-		Calendar c = Calendar.getInstance();
-		c.setTime(date2);
-		c.set(Calendar.HOUR_OF_DAY, 6);
-		c.set(Calendar.MINUTE, 2);
-		c.set(Calendar.SECOND, 11);
-		datetime2 = c.getTime();
-	}
+	private final Date datetime2 = date("2000-11-02 06:02:11");
 	private final String datetime2Str = date2Str + "T050211Z";
 	private final String datetime2StrExt = date2StrExt + "T05:02:11Z";
 

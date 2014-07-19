@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -11,7 +12,6 @@ import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
-import biweekly.io.scribe.property.RecurrenceDatesScribe;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.RecurrenceDates;
 import biweekly.util.DefaultTimezoneRule;
@@ -53,27 +53,11 @@ public class RecurrenceDatesScribeTest {
 	private final RecurrenceDatesScribe marshaller = new RecurrenceDatesScribe();
 	private final Sensei<RecurrenceDates> sensei = new Sensei<RecurrenceDates>(marshaller);
 
-	private final Date startDate;
-	{
-		Calendar c = Calendar.getInstance();
-		c.clear();
-		c.set(Calendar.YEAR, 2013);
-		c.set(Calendar.MONTH, Calendar.JUNE);
-		c.set(Calendar.DATE, 11);
-		startDate = c.getTime();
-	}
+	private final Date startDate = date("2013-06-11");
 	private final String startDateStr = "20130611";
 	private final String startDateStrExt = "2013-06-11";
 
-	private final Date startDateTime;
-	{
-		Calendar c = Calendar.getInstance();
-		c.setTime(startDate);
-		c.set(Calendar.HOUR_OF_DAY, 13);
-		c.set(Calendar.MINUTE, 43);
-		c.set(Calendar.SECOND, 2);
-		startDateTime = c.getTime();
-	}
+	private final Date startDateTime = date("2013-06-11 13:43:02");
 	private final String startDateTimeStr = startDateStr + "T124302Z";
 	private final String startDateTimeStrExt = startDateStrExt + "T12:43:02Z";
 

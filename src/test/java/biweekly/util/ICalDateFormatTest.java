@@ -1,12 +1,13 @@
 package biweekly.util;
 
 import static biweekly.util.TestUtils.buildTimezone;
+import static biweekly.util.TestUtils.date;
+import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -47,18 +48,7 @@ public class ICalDateFormatTest {
 
 	@Test
 	public void format() {
-		Date datetime;
-		{
-			Calendar cal = Calendar.getInstance();
-			cal.clear();
-			cal.set(Calendar.YEAR, 2006);
-			cal.set(Calendar.MONTH, Calendar.JANUARY);
-			cal.set(Calendar.DAY_OF_MONTH, 2);
-			cal.set(Calendar.HOUR_OF_DAY, 10);
-			cal.set(Calendar.MINUTE, 20);
-			cal.set(Calendar.SECOND, 30);
-			datetime = cal.getTime();
-		}
+		Date datetime = date("2006-01-02 10:20:30");
 
 		assertEquals("20060102", ICalDateFormat.DATE_BASIC.format(datetime));
 		assertEquals("2006-01-02", ICalDateFormat.DATE_EXTENDED.format(datetime));
@@ -74,46 +64,15 @@ public class ICalDateFormatTest {
 	public void format_timezone() {
 		TimeZone timezone = buildTimezone(-2, 0);
 
-		Date datetime;
-		{
-			Calendar cal = Calendar.getInstance();
-			cal.clear();
-			cal.set(Calendar.YEAR, 2006);
-			cal.set(Calendar.MONTH, Calendar.JANUARY);
-			cal.set(Calendar.DAY_OF_MONTH, 2);
-			cal.set(Calendar.HOUR_OF_DAY, 10);
-			cal.set(Calendar.MINUTE, 20);
-			cal.set(Calendar.SECOND, 30);
-			datetime = cal.getTime();
-		}
+		Date datetime = date("2006-01-02 10:20:30");
 
 		assertEquals("20060102T072030-0200", ICalDateFormat.DATE_TIME_BASIC.format(datetime, timezone));
 	}
 
 	@Test
 	public void parse() {
-		Date date;
-		{
-			Calendar c = Calendar.getInstance();
-			c.clear();
-			c.set(Calendar.YEAR, 2012);
-			c.set(Calendar.MONTH, Calendar.JULY);
-			c.set(Calendar.DAY_OF_MONTH, 1);
-			date = c.getTime();
-		}
-
-		Date datetime;
-		{
-			Calendar c = Calendar.getInstance();
-			c.clear();
-			c.set(Calendar.YEAR, 2012);
-			c.set(Calendar.MONTH, Calendar.JULY);
-			c.set(Calendar.DAY_OF_MONTH, 1);
-			c.set(Calendar.HOUR_OF_DAY, 8);
-			c.set(Calendar.MINUTE, 1);
-			c.set(Calendar.SECOND, 30);
-			datetime = c.getTime();
-		}
+		Date date = date("2012-07-01");
+		Date datetime = date("2012-07-01 08:01:30");
 
 		//basic, date
 		assertEquals(date, ICalDateFormat.parse("20120701"));
@@ -144,18 +103,7 @@ public class ICalDateFormatTest {
 	public void parse_timezone() {
 		TimeZone timezone = buildTimezone(-2, 0);
 
-		Date expected;
-		{
-			Calendar c = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-			c.clear();
-			c.set(Calendar.YEAR, 2012);
-			c.set(Calendar.MONTH, Calendar.JULY);
-			c.set(Calendar.DAY_OF_MONTH, 1);
-			c.set(Calendar.HOUR_OF_DAY, 8);
-			c.set(Calendar.MINUTE, 1);
-			c.set(Calendar.SECOND, 30);
-			expected = c.getTime();
-		}
+		Date expected = utc("2012-07-01 08:01:30");
 
 		Date actual = ICalDateFormat.parse("20120701T060130", timezone);
 		assertEquals(actual, expected);

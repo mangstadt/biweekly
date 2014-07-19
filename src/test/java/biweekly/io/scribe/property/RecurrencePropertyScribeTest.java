@@ -7,7 +7,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -63,27 +62,11 @@ public class RecurrencePropertyScribeTest {
 	private final RecurrencePropertyMarshallerImpl marshaller = new RecurrencePropertyMarshallerImpl();
 	private final Sensei<RecurrenceProperty> sensei = new Sensei<RecurrenceProperty>(marshaller);
 
-	private final Date date;
-	{
-		Calendar c = Calendar.getInstance();
-		c.clear();
-		c.set(Calendar.YEAR, 2013);
-		c.set(Calendar.MONTH, Calendar.JUNE);
-		c.set(Calendar.DATE, 11);
-		date = c.getTime();
-	}
+	private final Date date = date("2013-06-11");
 	private final String dateStr = "20130611";
 	private final String dateStrExt = "2013-06-11";
 
-	private final Date datetime;
-	{
-		Calendar c = Calendar.getInstance();
-		c.setTime(date);
-		c.set(Calendar.HOUR_OF_DAY, 13);
-		c.set(Calendar.MINUTE, 43);
-		c.set(Calendar.SECOND, 2);
-		datetime = c.getTime();
-	}
+	private final Date datetime = date("2013-06-11 13:43:02");
 	private final String dateTimeStr = dateStr + "T124302Z";
 	private final String dateTimeStrExt = dateStrExt + "T12:43:02Z";
 

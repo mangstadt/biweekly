@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -10,7 +11,6 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.io.json.JCalValue;
-import biweekly.io.scribe.property.FreeBusyScribe;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.FreeBusy;
 import biweekly.util.DefaultTimezoneRule;
@@ -52,18 +52,7 @@ public class FreeBusyScribeTest {
 	private final FreeBusyScribe marshaller = new FreeBusyScribe();
 	private final Sensei<FreeBusy> sensei = new Sensei<FreeBusy>(marshaller);
 
-	private final Date start;
-	{
-		Calendar c = Calendar.getInstance();
-		c.clear();
-		c.set(Calendar.YEAR, 2013);
-		c.set(Calendar.MONTH, Calendar.JUNE);
-		c.set(Calendar.DATE, 11);
-		c.set(Calendar.HOUR_OF_DAY, 13);
-		c.set(Calendar.MINUTE, 43);
-		c.set(Calendar.SECOND, 2);
-		start = c.getTime();
-	}
+	private final Date start = date("2013-06-11 13:43:02");
 	private final String startStr = "20130611T124302Z";
 	private final String startStrExt = "2013-06-11T12:43:02Z";
 

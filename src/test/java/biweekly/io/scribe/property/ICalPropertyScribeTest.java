@@ -2,12 +2,12 @@ package biweekly.io.scribe.property;
 
 import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -63,18 +63,7 @@ public class ICalPropertyScribeTest {
 	private final ICalPropertyMarshallerImpl marshaller = new ICalPropertyMarshallerImpl();
 	private final Sensei<TestProperty> sensei = new Sensei<TestProperty>(marshaller);
 
-	private final Date datetime;
-	{
-		Calendar c = Calendar.getInstance();
-		c.clear();
-		c.set(Calendar.YEAR, 2013);
-		c.set(Calendar.MONTH, Calendar.JUNE);
-		c.set(Calendar.DATE, 11);
-		c.set(Calendar.HOUR_OF_DAY, 14);
-		c.set(Calendar.MINUTE, 43);
-		c.set(Calendar.SECOND, 2);
-		datetime = c.getTime();
-	}
+	private final Date datetime = date("2013-06-11 14:43:02");
 
 	@Test
 	public void unescape() {
