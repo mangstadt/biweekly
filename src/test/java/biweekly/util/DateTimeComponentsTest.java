@@ -1,8 +1,9 @@
 package biweekly.util;
 
+import static biweekly.util.TestUtils.date;
+import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.junit.Test;
@@ -70,8 +71,8 @@ public class DateTimeComponentsTest {
 
 	@Test
 	public void toDate() throws Throwable {
-		assertToDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2013-07-22 15:06:30"), new DateTimeComponents(2013, 7, 22, 15, 6, 30, false));
-		assertToDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").parse("2013-07-22 15:06:30 +0000"), new DateTimeComponents(2013, 7, 22, 15, 6, 30, true));
+		assertToDate(date("2013-07-22 15:06:30"), new DateTimeComponents(2013, 7, 22, 15, 6, 30, false));
+		assertToDate(utc("2013-07-22 15:06:30"), new DateTimeComponents(2013, 7, 22, 15, 6, 30, true));
 	}
 
 	private void assertToDate(Date expected, DateTimeComponents components) {

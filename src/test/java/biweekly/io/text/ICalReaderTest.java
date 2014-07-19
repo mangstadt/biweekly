@@ -15,8 +15,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.Writer;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -1041,11 +1039,10 @@ public class ICalReaderTest {
 		assertSize(icalendar, 0, 3);
 		assertEquals(ICalVersion.V1_0, icalendar.getVersion());
 
-		DateFormat df = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
 		Iterator<RecurrenceRule> rrules = icalendar.getProperties(RecurrenceRule.class).iterator();
 		Recurrence expected = new Recurrence.Builder(Frequency.MONTHLY).interval(1).byMonthDay(1).count(1).build();
 		assertEquals(expected, rrules.next().getValue());
-		expected = new Recurrence.Builder(Frequency.DAILY).interval(2).until(df.parse("20000101T000000+0000")).build();
+		expected = new Recurrence.Builder(Frequency.DAILY).interval(2).until(utc("2000-01-01 00:00:00")).build();
 		assertEquals(expected, rrules.next().getValue());
 		expected = new Recurrence.Builder(Frequency.MINUTELY).interval(3).count(2).build();
 		assertEquals(expected, rrules.next().getValue());
@@ -1325,8 +1322,7 @@ public class ICalReaderTest {
 
 	@Test
 	public void example2() throws Throwable {
-		DateFormat nycFormatter = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
-		nycFormatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+		TimeZone nycTz = TimeZone.getTimeZone("America/New_York");
 
 		ICalReader reader = read("rfc5545-example2.ics");
 		ICalendar ical = reader.readNext();
@@ -1392,10 +1388,10 @@ public class ICalReaderTest {
 			assertDateEquals("19980309T130000Z", event.getCreated().getValue());
 			assertEquals("XYZ Project Review", event.getSummary().getValue());
 
-			assertEquals(nycFormatter.parse("19980312T083000"), event.getDateStart().getValue());
+			assertEquals(date("1998-03-12 08:30:00", nycTz), event.getDateStart().getValue());
 			assertEquals("America/New_York", event.getDateStart().getTimezoneId());
 
-			assertEquals(nycFormatter.parse("19980312T093000"), event.getDateEnd().getValue());
+			assertEquals(date("1998-03-12 09:30:00", nycTz), event.getDateEnd().getValue());
 			assertEquals("America/New_York", event.getDateEnd().getTimezoneId());
 
 			assertEquals("1CP Conference Room 4350", event.getLocation().getValue());

@@ -1,13 +1,12 @@
 package biweekly.util;
 
 import static biweekly.util.TestUtils.assertIntEquals;
+import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.junit.Test;
@@ -89,9 +88,8 @@ public class DurationTest {
 
 	@Test
 	public void diff() throws Throwable {
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date1 = df.parse("2013-09-12 09:49:21");
-		Date date2 = df.parse("2013-09-13 09:49:21");
+		Date date1 = date("2013-09-12 09:49:21");
+		Date date2 = date("2013-09-13 09:49:21");
 
 		Duration expected = Duration.builder().days(1).prior(false).build();
 		Duration actual = Duration.diff(date1, date2);
@@ -186,8 +184,7 @@ public class DurationTest {
 
 	@Test
 	public void add() throws Throwable {
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date date = df.parse("2013-09-12 09:49:21");
+		Date date = date("2013-09-12 09:49:21");
 
 		assertAdd(date, Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(5).prior(false), "2013-09-21 12:53:26");
 		assertAdd(date, Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(5).prior(true), "2013-09-03 06:45:16");
@@ -196,10 +193,9 @@ public class DurationTest {
 	}
 
 	private void assertAdd(Date input, Duration.Builder builder, String expectedStr) throws Throwable {
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Duration duration = builder.build();
 
-		Date expected = df.parse(expectedStr);
+		Date expected = date(expectedStr);
 		Date actual = duration.add(input);
 		assertEquals(expected, actual);
 	}

@@ -1,16 +1,14 @@
 package biweekly.io.scribe.component;
 
+import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 
 import biweekly.component.VFreeBusy;
-import biweekly.io.scribe.component.VFreeBusyScribe;
 import biweekly.property.Comment;
 import biweekly.property.FreeBusy;
 import biweekly.property.ICalProperty;
@@ -46,21 +44,19 @@ import biweekly.property.ICalProperty;
 public class VFreeBusyScribeTest {
 	@Test
 	public void sort_freeBusy_properties() throws Throwable {
-		DateFormat df = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
-
 		VFreeBusy freebusy = new VFreeBusy();
 
 		FreeBusy fb1 = new FreeBusy();
-		fb1.addValue(df.parse("20130605T000000"), df.parse("20130605T010000"));
+		fb1.addValue(date("2013-06-05 00:00:00"), date("2013-06-05 01:00:00"));
 		freebusy.addFreeBusy(fb1);
 
 		FreeBusy fb2 = new FreeBusy();
-		fb2.addValue(df.parse("20130610T000000"), df.parse("20130610T010000"));
-		fb2.addValue(df.parse("20130601T000000"), df.parse("20130601T010000"));
+		fb2.addValue(date("2013-06-10 00:00:00"), date("2013-06-10 01:00:00"));
+		fb2.addValue(date("2013-06-01 00:00:00"), date("2013-06-01 01:00:00"));
 		freebusy.addFreeBusy(fb2);
 
 		FreeBusy fb3 = new FreeBusy();
-		fb3.addValue(df.parse("20130701T000000"), df.parse("20130701T010000"));
+		fb3.addValue(date("2013-07-01 00:00:00"), date("2013-07-01 01:00:00"));
 		freebusy.addFreeBusy(fb3);
 
 		Comment comment = freebusy.addComment("comment");
