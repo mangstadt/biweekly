@@ -136,6 +136,14 @@ public final class UtcOffset {
 		return sb.toString();
 	}
 
+	/**
+	 * Converts the offset to milliseconds.
+	 * @return the offset in milliseconds.
+	 */
+	public long toMillis() {
+		return (hour * 60 + minute) * 60 * 1000;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
