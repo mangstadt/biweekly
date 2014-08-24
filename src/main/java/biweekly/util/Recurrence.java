@@ -2,6 +2,7 @@ package biweekly.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -365,12 +366,14 @@ public final class Recurrence {
 	 * @author Michael Angstadt
 	 */
 	public static enum DayOfWeek {
-		MONDAY("MO"), TUESDAY("TU"), WEDNESDAY("WE"), THURSDAY("TH"), FRIDAY("FR"), SATURDAY("SA"), SUNDAY("SU");
+		MONDAY("MO", Calendar.MONDAY), TUESDAY("TU", Calendar.TUESDAY), WEDNESDAY("WE", Calendar.WEDNESDAY), THURSDAY("TH", Calendar.THURSDAY), FRIDAY("FR", Calendar.FRIDAY), SATURDAY("SA", Calendar.SATURDAY), SUNDAY("SU", Calendar.SUNDAY);
 
 		private final String abbr;
+		private final int calendarConstant;
 
-		private DayOfWeek(String abbr) {
+		private DayOfWeek(String abbr, int calendarConstant) {
 			this.abbr = abbr;
+			this.calendarConstant = calendarConstant;
 		}
 
 		/**
@@ -379,6 +382,10 @@ public final class Recurrence {
 		 */
 		public String getAbbr() {
 			return abbr;
+		}
+
+		public int getCalendarConstant() {
+			return calendarConstant;
 		}
 
 		/**
