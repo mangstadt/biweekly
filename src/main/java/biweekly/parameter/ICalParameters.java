@@ -558,7 +558,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	public List<Warning> validate(ICalVersion version) {
 		List<Warning> warnings = new ArrayList<Warning>(0);
 
-		final int nonStandardCode = 1;
+		final int nonStandardCode = 1, deprecated = 47;
 
 		String value = first(RSVP);
 		if (value != null) {
@@ -598,7 +598,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 			}
 
 			if (range == Range.THIS_AND_PRIOR && version == ICalVersion.V2_0) {
-				//TODO deprecated
+				warnings.add(Warning.validate(deprecated, RANGE, value));
 			}
 		}
 

@@ -103,4 +103,12 @@ public class ICalParametersTest {
 
 		assertWarnings(0, params.validate(ICalVersion.V2_0));
 	}
+
+	@Test
+	public void validate_deprecated_values() {
+		params.put(ICalParameters.RANGE, Range.THIS_AND_PRIOR.getValue());
+		assertWarnings(0, params.validate(ICalVersion.V1_0));
+		assertWarnings(0, params.validate(ICalVersion.V2_0_DEPRECATED));
+		assertWarnings(1, params.validate(ICalVersion.V2_0));
+	}
 }
