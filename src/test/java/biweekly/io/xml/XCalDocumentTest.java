@@ -47,6 +47,7 @@ import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
+import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.CannotParseScribe;
@@ -968,7 +969,7 @@ public class XCalDocumentTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0).run();
-		assertExample(ical, "rfc6321-example1.xml", null, null);
+		assertExample(ical, "rfc6321-example1.xml", new TimezoneInfo());
 	}
 
 	@Test
@@ -1143,18 +1144,19 @@ public class XCalDocumentTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0).run();
-		assertExample(ical, "rfc6321-example2.xml", eastern, usEasternTz);
+		TimezoneInfo options = new TimezoneInfo();
+		options.assign(usEasternTz, eastern);
+		options.setDefaultTimezone(eastern);
+		assertExample(ical, "rfc6321-example2.xml", options);
 	}
 
 	private XCalDocument read(String file) throws SAXException, IOException {
 		return new XCalDocument(getClass().getResourceAsStream(file));
 	}
 
-	private void assertExample(ICalendar ical, String exampleFileName, TimeZone timezone, VTimezone vtimezone) {
+	private void assertExample(ICalendar ical, String exampleFileName, TimezoneInfo tzinfo) {
 		XCalDocument xcal = new XCalDocument();
-		if (timezone != null) {
-			xcal.setTimezone(timezone, vtimezone);
-		}
+		xcal.setTimezoneInfo(tzinfo);
 		xcal.add(ical);
 
 		try {

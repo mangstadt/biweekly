@@ -51,12 +51,6 @@ import biweekly.util.DateTimeComponents;
  * dtstart = new DateStart(date, false);
  * event.setDateStart(dtstart);
  * 
- * //date and time with timezone (Date object converted to the specified timezone when writing the iCalendar object)
- * Date datetime = ... 
- * dtstart = new DateStart(datetime); 
- * dtstart.setTimezoneId("America/New_York");
- * event.setDateStart(dtstart);
- * 
  * //raw date/time components 
  * DateTimeComponents components = new DateTimeComponents(1999, 4, 4, 2, 0, 0, false);
  * dtstart = new DateStart(components);
@@ -84,7 +78,7 @@ import biweekly.util.DateTimeComponents;
  *   if (dtstart.hasTime()){
  *     //the value includes a time component
  *     
- *     if (dtstart.isLocalTime()){
+ *     if (dtstart.isFloatingTime()){
  *       //timezone information was not provided
  *       //Java Date object was parsed under the local computer's default timezone
  *     } else {
@@ -96,6 +90,40 @@ import biweekly.util.DateTimeComponents;
  *     //Java Date object's time is set to "00:00:00" under the local computer's default timezone
  *   }
  * }
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <p>
+ * <b>Code sample (using timezones):</b>
+ * 
+ * <pre class="brush:java">
+ * //by default, values are formatted in UTC
+ * 
+ * ICalendar ical = new ICalendar();
+ * 
+ * VEvent event = new VEvent();
+ * Date datetime = ...
+ * DateStart dtstart = new DateStart(datetime);
+ * event.setDateStart(dtstart);
+ * ical.addEvent(event);
+ * 
+ * java.util.TimeZone tz = java.util.TimeZone.getTimeZone(...);
+ * ICalWriter writer = new ICalWriter(...);
+ * 
+ * //set the timezone for all date/time properties
+ * writer.getTimezoneInfo().setDefaultTimezone(tz);
+ * 
+ * //set the timezone for an individual property
+ * writer.getTimezoneInfo().setTimezone(dtstart, tz);
+ * 
+ * //format all date/time values in floating time (no timezone information, formatted in default JVM timezone)
+ * writer.getTimezoneInfo().setUseFloatingTime(true);
+ * 
+ * //format an individual property in floating time (no timezone information, formatted in default JVM timezone)
+ * writer.getTimezoneInfo().setUseFloatingTime(dtstart, true);
+ * 
+ * writer.write(ical);
  * </pre>
  * 
  * </p>

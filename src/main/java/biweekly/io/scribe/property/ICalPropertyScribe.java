@@ -1236,13 +1236,20 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		}
 	}
 
-	protected static ICalParameters handleTzidParameter(ICalProperty property, boolean hasTime, boolean floating, WriteContext context) {
+	protected static ICalParameters handleTzidParameter(ICalProperty property, boolean hasTime, WriteContext context) {
 		ICalParameters parameters = property.getParameters();
-		String tzid = context.getTimezoneId();
-		if (tzid != null && context.getVersion() != ICalVersion.V1_0 && hasTime && !floating) {
-			parameters = new ICalParameters(parameters);
-			parameters.setTimezoneId(tzid);
+		if (!hasTime || context.getVersion() == ICalVersion.V1_0) {
+			return parameters;
 		}
+
+		boolean floating = context.getTimezoneInfo().usesFloatingTime(property);
+		if (floating) {
+			return parameters;
+		}
+
+		String tzid = context.getTimezoneInfo().getTimezoneId(property);
+		parameters = new ICalParameters(parameters);
+		parameters.setTimezoneId(tzid);
 		return parameters;
 	}
 

@@ -28,6 +28,7 @@ import biweekly.ICalVersion;
 import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
+import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
@@ -203,7 +204,7 @@ public class TestUtils {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void assertWriteXml(String expectedInnerXml, ICalProperty propertyToWrite, ICalPropertyScribe marshaller) {
 		Document actual = xcalProperty(marshaller);
-		marshaller.writeXml(propertyToWrite, XmlUtils.getRootElement(actual), new WriteContext(ICalVersion.V2_0, null, null));
+		marshaller.writeXml(propertyToWrite, XmlUtils.getRootElement(actual), new WriteContext(ICalVersion.V2_0, new TimezoneInfo()));
 
 		Document expected = xcalProperty(marshaller, expectedInnerXml);
 		assertXMLEqual(expected, actual);

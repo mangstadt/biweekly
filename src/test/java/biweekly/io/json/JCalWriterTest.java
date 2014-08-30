@@ -26,6 +26,7 @@ import biweekly.component.ICalComponent;
 import biweekly.component.StandardTime;
 import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
+import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -528,7 +529,7 @@ public class JCalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0).run();
-		assertExample(ical, "jcal-draft-example1.json", null, null);
+		assertExample(ical, "jcal-draft-example1.json", new TimezoneInfo());
 	}
 
 	@Test
@@ -601,13 +602,16 @@ public class JCalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0).run();
-		assertExample(ical, "jcal-draft-example2.json", eastern, usEasternTz);
+		TimezoneInfo options = new TimezoneInfo();
+		options.assign(usEasternTz, eastern);
+		options.setDefaultTimezone(eastern);
+		assertExample(ical, "jcal-draft-example2.json", options);
 	}
 
-	private void assertExample(ICalendar ical, String exampleFileName, TimeZone timezone, VTimezone vtimezone) throws IOException {
+	private void assertExample(ICalendar ical, String exampleFileName, TimezoneInfo tzinfo) throws IOException {
 		StringWriter sw = new StringWriter();
 		JCalWriter writer = new JCalWriter(sw);
-		writer.setTimezone(timezone, vtimezone);
+		writer.setTimezoneInfo(tzinfo);
 		writer.write(ical);
 		writer.close();
 

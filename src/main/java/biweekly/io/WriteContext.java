@@ -1,10 +1,7 @@
 package biweekly.io;
 
-import java.util.TimeZone;
-
 import biweekly.ICalVersion;
-import biweekly.component.VTimezone;
-import biweekly.property.TimezoneId;
+import biweekly.component.ICalComponent;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -32,33 +29,48 @@ import biweekly.property.TimezoneId;
  */
 
 /**
+ * Stores information used to write the properties in an iCalendar object.
  * @author Michael Angstadt
  */
 public class WriteContext {
 	private final ICalVersion version;
-	private final TimeZone timezone;
-	private final VTimezone vtimezone;
+	private final TimezoneInfo timezoneOptions;
+	private ICalComponent parent;
 
-	public WriteContext(ICalVersion version, TimeZone timezone, VTimezone vtimezone) {
+	public WriteContext(ICalVersion version, TimezoneInfo timezoneOptions) {
 		this.version = version;
-		this.timezone = timezone;
-		this.vtimezone = vtimezone;
+		this.timezoneOptions = timezoneOptions;
 	}
 
+	/**
+	 * Gets the version of the iCalendar object that is being written.
+	 * @return the iCalendar version
+	 */
 	public ICalVersion getVersion() {
 		return version;
 	}
 
-	public TimeZone getTimeZone() {
-		return timezone;
+	/**
+	 * Gets the timezone options for this iCalendar object.
+	 * @return the timezone options
+	 */
+	public TimezoneInfo getTimezoneInfo() {
+		return timezoneOptions;
 	}
 
-	public String getTimezoneId() {
-		if (vtimezone == null) {
-			return null;
-		}
+	/**
+	 * Gets the parent component of the property that is being written.
+	 * @return the parent component
+	 */
+	public ICalComponent getParent() {
+		return parent;
+	}
 
-		TimezoneId id = vtimezone.getTimezoneId();
-		return (id == null) ? null : id.getValue();
+	/**
+	 * Sets the parent component of the property that is being written.
+	 * @param parent the parent component
+	 */
+	public void setParent(ICalComponent parent) {
+		this.parent = parent;
 	}
 }

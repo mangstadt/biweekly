@@ -2,10 +2,12 @@ package biweekly.io.scribe.property;
 
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
+import biweekly.component.Observance;
 import biweekly.io.CannotParseException;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
@@ -52,7 +54,7 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 
 	@Override
 	protected ICalParameters _prepareParameters(T property, WriteContext context) {
-		return handleTzidParameter(property, property.hasTime(), property.isFloatingTime(), context);
+		return handleTzidParameter(property, property.hasTime(), context);
 	}
 
 	@Override
@@ -69,7 +71,9 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 
 		Date value = property.getValue();
 		if (value != null) {
-			return date(value).time(property.hasTime()).tz(property.isFloatingTime(), context.getTimeZone()).write();
+			boolean floating = context.getTimezoneInfo().usesFloatingTime(property);
+			TimeZone tz = context.getTimezoneInfo().getTimeZone(property);
+			return date(value).time(property.hasTime()).tz(floating, tz).write();
 		}
 
 		return "";
@@ -90,7 +94,8 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 		if (components != null) {
 			dateStr = components.toString(true);
 		} else if (value != null) {
-			dateStr = date(value).time(property.hasTime()).tz(property.isFloatingTime(), context.getTimeZone()).extended(true).write();
+			boolean floating = (context.getParent() instanceof Observance) ? true : context.getTimezoneInfo().usesFloatingTime(property);
+			dateStr = date(value).time(property.hasTime()).tz(floating, context.getTimezoneInfo().getTimeZone(property)).extended(true).write();
 		}
 
 		element.append(dataType(property, null), dateStr);
@@ -119,7 +124,8 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 
 		Date value = property.getValue();
 		if (value != null) {
-			return JCalValue.single(date(value).time(property.hasTime()).tz(property.isFloatingTime(), context.getTimeZone()).extended(true).write());
+			boolean floating = (context.getParent() instanceof Observance) ? true : context.getTimezoneInfo().usesFloatingTime(property);
+			return JCalValue.single(date(value).time(property.hasTime()).tz(floating, context.getTimezoneInfo().getTimeZone(property)).extended(true).write());
 		}
 
 		return JCalValue.single("");
@@ -154,11 +160,11 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 		}
 
 		boolean hasTime = ICalDateFormat.dateHasTime(value);
-		boolean localTz = !ICalDateFormat.dateHasTimezone(value) && parameters.getTimezoneId() == null;
+		boolean floating = !ICalDateFormat.dateHasTimezone(value) && parameters.getTimezoneId() == null;
 
 		T prop = newInstance(date, hasTime);
 		prop.setRawComponents(components);
-		prop.setFloatingTime(localTz);
+		prop.setFloatingTime(floating);
 		return prop;
 	}
 }

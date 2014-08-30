@@ -50,7 +50,7 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 
 	@Override
 	protected ICalParameters _prepareParameters(ExceptionDates property, WriteContext context) {
-		return handleTzidParameter(property, property.hasTime(), false, context);
+		return handleTzidParameter(property, property.hasTime(), context);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 
 	@Override
 	protected String writeValue(ExceptionDates property, Date value, WriteContext context) {
-		return date(value).time(property.hasTime()).tz(context.getTimeZone()).write();
+		return date(value).time(property.hasTime()).tz(context.getTimezoneInfo().usesFloatingTime(property), context.getTimezoneInfo().getTimeZone(property)).write();
 	}
 
 	@Override

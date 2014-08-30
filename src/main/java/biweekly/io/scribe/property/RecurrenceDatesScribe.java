@@ -52,7 +52,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	@Override
 	protected ICalParameters _prepareParameters(RecurrenceDates property, WriteContext context) {
 		boolean hasTime = property.hasTime() || !property.getPeriods().isEmpty();
-		return handleTzidParameter(property, hasTime, false, context);
+		return handleTzidParameter(property, hasTime, context);
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		if (dates != null) {
 			return list(dates, new ListCallback<Date>() {
 				public String asString(Date date) {
-					return date(date).time(property.hasTime()).tz(context.getTimeZone()).write();
+					return date(date).time(property.hasTime()).tz(context.getTimezoneInfo().usesFloatingTime(property), context.getTimezoneInfo().getTimeZone(property)).write();
 				}
 			});
 		}
@@ -85,14 +85,14 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 					StringBuilder sb = new StringBuilder();
 
 					if (period.getStartDate() != null) {
-						String date = date(period.getStartDate()).tz(context.getTimeZone()).write();
+						String date = date(period.getStartDate()).tz(context.getTimezoneInfo().usesFloatingTime(property), context.getTimezoneInfo().getTimeZone(property)).write();
 						sb.append(date);
 					}
 
 					sb.append('/');
 
 					if (period.getEndDate() != null) {
-						String date = date(period.getEndDate()).tz(context.getTimeZone()).write();
+						String date = date(period.getEndDate()).tz(context.getTimezoneInfo().usesFloatingTime(property), context.getTimezoneInfo().getTimeZone(property)).write();
 						sb.append(date);
 					} else if (period.getDuration() != null) {
 						sb.append(period.getDuration());
@@ -120,7 +120,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 				element.append(dataType, "");
 			} else {
 				for (Date date : dates) {
-					String dateStr = date(date).time(property.hasTime()).tz(context.getTimeZone()).extended(true).write();
+					String dateStr = date(date).time(property.hasTime()).tz(context.getTimezoneInfo().usesFloatingTime(property), context.getTimezoneInfo().getTimeZone(property)).extended(true).write();
 					element.append(dataType, dateStr);
 				}
 			}
@@ -137,12 +137,12 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 					Date start = period.getStartDate();
 					if (start != null) {
-						periodElement.append("start", date(start).tz(context.getTimeZone()).extended(true).write());
+						periodElement.append("start", date(start).tz(context.getTimezoneInfo().usesFloatingTime(property), context.getTimezoneInfo().getTimeZone(property)).extended(true).write());
 					}
 
 					Date end = period.getEndDate();
 					if (end != null) {
-						periodElement.append("end", date(end).tz(context.getTimeZone()).extended(true).write());
+						periodElement.append("end", date(end).tz(context.getTimezoneInfo().usesFloatingTime(property), context.getTimezoneInfo().getTimeZone(property)).extended(true).write());
 					}
 
 					Duration duration = period.getDuration();
@@ -233,21 +233,21 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		List<Period> periods = property.getPeriods();
 		if (dates != null) {
 			for (Date date : dates) {
-				String dateStr = date(date).time(property.hasTime()).tz(context.getTimeZone()).extended(true).write();
+				String dateStr = date(date).time(property.hasTime()).tz(context.getTimezoneInfo().usesFloatingTime(property), context.getTimezoneInfo().getTimeZone(property)).extended(true).write();
 				values.add(dateStr);
 			}
 		} else if (periods != null) {
 			for (Period period : property.getPeriods()) {
 				StringBuilder sb = new StringBuilder();
 				if (period.getStartDate() != null) {
-					String value = date(period.getStartDate()).tz(context.getTimeZone()).extended(true).write();
+					String value = date(period.getStartDate()).tz(context.getTimezoneInfo().usesFloatingTime(property), context.getTimezoneInfo().getTimeZone(property)).extended(true).write();
 					sb.append(value);
 				}
 
 				sb.append('/');
 
 				if (period.getEndDate() != null) {
-					String value = date(period.getEndDate()).tz(context.getTimeZone()).extended(true).write();
+					String value = date(period.getEndDate()).tz(context.getTimezoneInfo().usesFloatingTime(property), context.getTimezoneInfo().getTimeZone(property)).extended(true).write();
 					sb.append(value);
 				} else if (period.getDuration() != null) {
 					sb.append(period.getDuration());

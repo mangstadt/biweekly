@@ -1,10 +1,16 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.util.TestUtils.date;
+
 import java.util.Date;
 
+import org.junit.ClassRule;
+import org.junit.Test;
+
+import biweekly.component.ICalComponent;
 import biweekly.component.Observance;
-import biweekly.io.WriteContext;
 import biweekly.property.DateStart;
+import biweekly.util.DefaultTimezoneRule;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -32,26 +38,39 @@ import biweekly.property.DateStart;
  */
 
 /**
- * Marshals {@link DateStart} properties.
  * @author Michael Angstadt
  */
-public class DateStartScribe extends DateOrDateTimePropertyScribe<DateStart> {
-	public DateStartScribe() {
-		super(DateStart.class, "DTSTART");
+public class DateStartPropertyScribeTest {
+	@ClassRule
+	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
+
+	private final DateStartScribe scribe = new DateStartScribe();
+	private final Sensei<DateStart> sensei = new Sensei<DateStart>(scribe);
+
+	private final Date datetime = date("2013-06-11 13:43:02");
+	private final String datetimeStr = "20130611T124302Z";
+	private final String datetimeFloatingStr = "20130611T134302";
+	private final String datetimeStrExt = "2013-06-11T12:43:02Z";
+	private final String datetimeFloatingStrExt = "2013-06-11T13:43:02";
+
+	private final DateStart withDateTime = new DateStart(datetime, true);
+	private final ICalComponent parent = new Observance();
+
+	@Test
+	public void writeText() {
+		sensei.assertWriteText(withDateTime).run(datetimeStr);
+		sensei.assertWriteText(withDateTime).parent(parent).run(datetimeFloatingStr);
 	}
 
-	@Override
-	protected String _writeText(DateStart property, WriteContext context) {
-		Date date = property.getValue();
-		if (date != null && context.getParent() instanceof Observance) {
-			return date(date).time(property.hasTime()).floating(true).write();
-		}
-
-		return super._writeText(property, context);
+	@Test
+	public void writeXml() {
+		sensei.assertWriteXml(withDateTime).run("<date-time>" + datetimeStrExt + "</date-time>");
+		sensei.assertWriteXml(withDateTime).parent(parent).run("<date-time>" + datetimeFloatingStrExt + "</date-time>");
 	}
 
-	@Override
-	protected DateStart newInstance(Date date, boolean hasTime) {
-		return new DateStart(date, hasTime);
+	@Test
+	public void writeJson() {
+		sensei.assertWriteJson(withDateTime).run(datetimeStrExt);
+		sensei.assertWriteJson(withDateTime).parent(parent).run(datetimeFloatingStrExt);
 	}
 }

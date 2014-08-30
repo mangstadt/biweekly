@@ -106,21 +106,19 @@ public class DateOrDateTimeProperty extends ICalProperty {
 	}
 
 	/**
-	 * Gets whether the date should be outputted in local time (without a
+	 * Gets whether the property value was in floating time (without a
 	 * timezone).
-	 * @return true to output the date without a timezone, false to include a
-	 * timezone
+	 * @return true if the property value was in floating time, false if not
 	 */
 	public boolean isFloatingTime() {
 		return floating;
 	}
 
 	/**
-	 * Sets whether the date should be outputted in floating time (a date-time
-	 * value that is not in UTC and whose property does not have a TZID
-	 * parameter).
-	 * @param floating true to output the date in floating time, false to
-	 * include a timezone (defaults to false)
+	 * Sets whether the property value was in floating time (without a
+	 * timezone).
+	 * @param floating true if the property value was in floating time, false if
+	 * not
 	 */
 	public void setFloatingTime(boolean floating) {
 		this.floating = floating;

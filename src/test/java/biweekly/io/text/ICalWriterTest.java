@@ -30,6 +30,7 @@ import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
 import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
+import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -721,7 +722,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example1.ics", null, null);
+		assertExample(ical, "rfc5545-example1.ics", new TimezoneInfo());
 	}
 
 	@Test
@@ -775,7 +776,10 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example2.ics", eastern, usEasternTz);
+		TimezoneInfo options = new TimezoneInfo();
+		options.assign(usEasternTz, eastern);
+		options.setDefaultTimezone(eastern);
+		assertExample(ical, "rfc5545-example2.ics", options);
 	}
 
 	@Test
@@ -811,7 +815,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example3.ics", null, null);
+		assertExample(ical, "rfc5545-example3.ics", new TimezoneInfo());
 	}
 
 	@Test
@@ -831,7 +835,7 @@ public class ICalWriterTest {
 			attendee.setParticipationStatus(ParticipationStatus.ACCEPTED);
 			todo.addAttendee(attendee);
 
-			todo.setDateDue(date("1998-04-15")).setFloatingTime(true);
+			todo.setDateDue(date("1998-04-15"));
 			todo.setStatus(Status.needsAction());
 			todo.setSummary("Submit Income Taxes");
 			{
@@ -847,7 +851,9 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example4.ics", null, null);
+		TimezoneInfo options = new TimezoneInfo();
+		options.setUseFloatingTime(ical.getTodos().get(0).getDateDue(), true);
+		assertExample(ical, "rfc5545-example4.ics", options);
 	}
 
 	@Test
@@ -869,7 +875,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example5.ics", null, null);
+		assertExample(ical, "rfc5545-example5.ics", new TimezoneInfo());
 	}
 
 	@Test
@@ -901,13 +907,13 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).warn(freebusy, 2, 2).run(); //UID and DTSTAMP missing
-		assertExample(ical, "rfc5545-example6.ics", null, null);
+		assertExample(ical, "rfc5545-example6.ics", new TimezoneInfo());
 	}
 
-	private void assertExample(ICalendar ical, String exampleFileName, TimeZone timezone, VTimezone vtimezone) throws IOException {
+	private void assertExample(ICalendar ical, String exampleFileName, TimezoneInfo timezoneOptions) throws IOException {
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0, null);
-		writer.setTimezone(timezone, vtimezone);
+		writer.setTimezoneInfo(timezoneOptions);
 		writer.write(ical);
 		writer.close();
 

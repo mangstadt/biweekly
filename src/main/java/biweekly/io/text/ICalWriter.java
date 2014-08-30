@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.List;
-import java.util.TimeZone;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -21,6 +21,7 @@ import biweekly.component.ICalComponent;
 import biweekly.component.VAlarm;
 import biweekly.component.VTimezone;
 import biweekly.io.SkipMeException;
+import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
@@ -85,8 +86,7 @@ public class ICalWriter implements Closeable, Flushable {
 	private final ICalRawWriter writer;
 
 	private WriteContext context;
-	private TimeZone timezone;
-	private VTimezone vtimezone;
+	private TimezoneInfo tzinfo = new TimezoneInfo();
 
 	/**
 	 * Creates an iCalendar writer that writes to an output stream. Uses the
@@ -273,6 +273,22 @@ public class ICalWriter implements Closeable, Flushable {
 	}
 
 	/**
+	 * Gets the timezone-related info for this writer.
+	 * @return the timezone-related info
+	 */
+	public TimezoneInfo getTimezoneInfo() {
+		return tzinfo;
+	}
+
+	/**
+	 * Sets the timezone-related info for this writer.
+	 * @param tzinfo the timezone-related info
+	 */
+	public void setTimezoneInfo(TimezoneInfo tzinfo) {
+		this.tzinfo = tzinfo;
+	}
+
+	/**
 	 * <p>
 	 * Registers an experimental property scribe. Can also be used to override
 	 * the scribe of a standard property (such as DTSTART). Calling this method
@@ -319,19 +335,6 @@ public class ICalWriter implements Closeable, Flushable {
 	}
 
 	/**
-	 * Sets the timezone to format all date/time property values in (defaults to
-	 * UTC).
-	 * @param timezone the timezone or null for UTC
-	 * @param vtimezone the VTIMEZONE component that this timezone corresponds
-	 * to, or null for floating time (floating time is a date-time value which
-	 * is not UTC and whose property does not have a TZID parameter)
-	 */
-	public void setTimezone(TimeZone timezone, VTimezone vtimezone) {
-		this.timezone = timezone;
-		this.vtimezone = vtimezone;
-	}
-
-	/**
 	 * Writes an iCalendar object to the data stream.
 	 * @param ical the iCalendar object to write
 	 * @throws IllegalArgumentException if the scribe class for a component or
@@ -342,7 +345,7 @@ public class ICalWriter implements Closeable, Flushable {
 	 */
 	public void write(ICalendar ical) throws IOException {
 		index.hasScribesFor(ical);
-		context = new WriteContext(writer.getVersion(), timezone, vtimezone);
+		context = new WriteContext(writer.getVersion(), tzinfo);
 		writeComponent(ical, null);
 	}
 
@@ -392,11 +395,23 @@ public class ICalWriter implements Closeable, Flushable {
 		}
 
 		for (Object propertyObj : propertyObjs) {
+			context.setParent(component); //set parent here incase a scribe resets the parent
 			ICalProperty property = (ICalProperty) propertyObj;
 			writeProperty(property);
 		}
 
-		for (Object subComponentObj : componentScribe.getComponents(component)) {
+		Collection subComponents = componentScribe.getComponents(component);
+		if (component instanceof ICalendar) {
+			//add the VTIMEZONE components that were auto-generated
+			Collection<VTimezone> timezones = tzinfo.getComponents();
+			for (VTimezone timezone : timezones) {
+				if (!subComponents.contains(timezone)) {
+					subComponents.add(timezone);
+				}
+			}
+		}
+
+		for (Object subComponentObj : subComponents) {
 			ICalComponent subComponent = (ICalComponent) subComponentObj;
 			writeComponent(subComponent, component);
 		}
