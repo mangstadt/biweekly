@@ -390,7 +390,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		for (String splitValue : splitValues) {
 			//TODO not sure how to handle the "$" symbol, ignore it
 			if (splitValue.endsWith("$")) {
-				warnings.add(new Warning("Unable to integrate \"$\" operator into iCalendar data model.  This data will be lost: " + splitValue));
+				warnings.add(Warning.parse(36, splitValue));
 				splitValue = splitValue.substring(0, splitValue.length() - 1);
 			}
 
