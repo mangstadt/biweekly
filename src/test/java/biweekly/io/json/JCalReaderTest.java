@@ -15,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.Writer;
 import java.util.Arrays;
-import java.util.List;
 import java.util.TimeZone;
 
 import org.junit.Rule;
@@ -25,22 +24,25 @@ import org.junit.rules.TemporaryFolder;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
-import biweekly.Warning;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.RawComponent;
 import biweekly.component.StandardTime;
 import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
+import biweekly.io.ParseContext;
+import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.CannotParseScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.SkipMeScribe;
 import biweekly.parameter.ICalParameters;
+import biweekly.property.DateStart;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceDates;
+import biweekly.property.RecurrenceId;
 import biweekly.property.Summary;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
@@ -591,7 +593,7 @@ public class JCalReaderTest {
 
 			assertDateEquals("20060206T001121Z", event.getDateTimeStamp().getValue());
 			assertEquals(date("2006-01-02 12:00:00", easternTz), event.getDateStart().getValue());
-			assertEquals("US/Eastern", event.getDateStart().getTimezoneId());
+			assertNull(event.getDateStart().getTimezoneId());
 			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
 
 			Recurrence rrule = event.getRecurrenceRule().getValue();
@@ -602,7 +604,7 @@ public class JCalReaderTest {
 			assertNull(rdate.getDates());
 			assertEquals(1, rdate.getPeriods().size());
 			assertEquals(new Period(date("2006-01-02 15:00:00", easternTz), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
-			assertEquals("US/Eastern", rdate.getTimezoneId());
+			assertNull(rdate.getTimezoneId());
 
 			assertEquals("Event #2", event.getSummary().getValue());
 			assertEquals("We are having a meeting all this week at 12 pm for one hour, with an additional meeting on the first day 2 hours long." + NEWLINE + "Please bring your own lunch for the 12 pm meetings.", event.getDescription().getValue());
@@ -614,14 +616,36 @@ public class JCalReaderTest {
 
 			assertDateEquals("20060206T001121Z", event.getDateTimeStamp().getValue());
 			assertEquals(date("2006-01-02 14:00:00", easternTz), event.getDateStart().getValue());
-			assertEquals("US/Eastern", event.getDateStart().getTimezoneId());
+			assertNull(event.getDateStart().getTimezoneId());
 			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
 
 			assertEquals(date("2006-01-04 12:00:00", easternTz), event.getRecurrenceId().getValue());
-			assertEquals("US/Eastern", event.getRecurrenceId().getTimezoneId());
+			assertNull(event.getRecurrenceId().getTimezoneId());
 			assertEquals("Event #2", event.getSummary().getValue());
 			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
 		}
+
+		TimezoneInfo tzinfo = reader.getTimezoneInfo();
+		VTimezone timezone = ical.getTimezones().get(0);
+		VEvent event = ical.getEvents().get(0);
+
+		DateStart dtstart = event.getDateStart();
+		assertEquals(timezone, tzinfo.getComponent(dtstart));
+		assertEquals(easternTz, tzinfo.getTimeZone(dtstart));
+
+		RecurrenceDates rdate = event.getRecurrenceDates().get(0);
+		assertEquals(timezone, tzinfo.getComponent(rdate));
+		assertEquals(easternTz, tzinfo.getTimeZone(rdate));
+
+		VEvent event2 = ical.getEvents().get(1);
+
+		dtstart = event2.getDateStart();
+		assertEquals(timezone, tzinfo.getComponent(dtstart));
+		assertEquals(easternTz, tzinfo.getTimeZone(dtstart));
+
+		RecurrenceId rid = event2.getRecurrenceId();
+		assertEquals(timezone, tzinfo.getComponent(rid));
+		assertEquals(easternTz, tzinfo.getTimeZone(rid));
 
 		assertValidate(ical).versions(ICalVersion.V2_0).run();
 
@@ -643,12 +667,12 @@ public class JCalReaderTest {
 		}
 
 		@Override
-		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 			return new Company(value);
 		}
 
 		@Override
-		protected Company _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+		protected Company _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 			String boss = value.asSingle();
 			return new Company(boss);
 		}

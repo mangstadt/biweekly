@@ -286,7 +286,16 @@ public enum ICalDateFormat {
 	 * @return true if it has a timezone, false if not
 	 */
 	public static boolean dateHasTimezone(String dateStr) {
-		return dateStr.endsWith("Z") || dateStr.matches(".*?[-+]\\d\\d:?\\d\\d");
+		return isUTC(dateStr) || dateStr.matches(".*?[-+]\\d\\d:?\\d\\d");
+	}
+
+	/**
+	 * Determines if a date string is in UTC time.
+	 * @param dateStr the date string (e.g. "20130601T120000Z")
+	 * @return true if it's in UTC, false if not
+	 */
+	public static boolean isUTC(String dateStr) {
+		return dateStr.endsWith("Z");
 	}
 
 	/**

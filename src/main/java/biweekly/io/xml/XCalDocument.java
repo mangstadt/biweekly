@@ -19,9 +19,11 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.OutputKeys;
@@ -42,6 +44,8 @@ import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
+import biweekly.io.ParseContext.TimezonedDate;
 import biweekly.io.ParseWarnings;
 import biweekly.io.SkipMeException;
 import biweekly.io.TimezoneInfo;
@@ -50,11 +54,12 @@ import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.component.ICalendarScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
-import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.TimezoneId;
 import biweekly.property.Version;
 import biweekly.property.Xml;
+import biweekly.util.ICalDateFormat;
 import biweekly.util.IOUtils;
 import biweekly.util.XmlUtils;
 
@@ -170,11 +175,12 @@ public class XCalDocument {
 
 	private ScribeIndex index = new ScribeIndex();
 	private final List<ParseWarnings> parseWarnings = new ArrayList<ParseWarnings>();
+	private ParseContext pcontext;
 	private final Document document;
 	private final ICalVersion targetVersion = ICalVersion.V2_0;
 	private Element root;
 
-	private WriteContext context;
+	private WriteContext wcontext;
 	private TimezoneInfo tzinfo = new TimezoneInfo();
 
 	/**
@@ -374,6 +380,8 @@ public class XCalDocument {
 	 */
 	public List<ICalendar> parseAll() {
 		parseWarnings.clear();
+		pcontext = new ParseContext();
+		tzinfo = new TimezoneInfo();
 
 		if (root == null) {
 			return Collections.emptyList();
@@ -383,6 +391,7 @@ public class XCalDocument {
 		for (Element vcalendarElement : getVCalendarElements()) {
 			ParseWarnings warnings = new ParseWarnings();
 			ICalendar ical = parseICal(vcalendarElement, warnings);
+			handleTimezones(ical, warnings);
 			icals.add(ical);
 			this.parseWarnings.add(warnings);
 		}
@@ -396,6 +405,8 @@ public class XCalDocument {
 	 */
 	public ICalendar parseFirst() {
 		parseWarnings.clear();
+		pcontext = new ParseContext();
+		tzinfo = new TimezoneInfo();
 
 		if (root == null) {
 			return null;
@@ -408,7 +419,75 @@ public class XCalDocument {
 		if (vcalendarElements.isEmpty()) {
 			return null;
 		}
-		return parseICal(vcalendarElements.get(0), warnings);
+
+		ICalendar ical = parseICal(vcalendarElements.get(0), warnings);
+		handleTimezones(ical, warnings);
+		return ical;
+	}
+
+	private void handleTimezones(ICalendar ical, ParseWarnings warnings) {
+		if (ical == null) {
+			return;
+		}
+
+		//handle timezones
+		for (Map.Entry<String, List<TimezonedDate>> entry : pcontext.getTimezonedDates()) {
+			//find the VTIMEZONE component with the given TZID
+			String tzid = entry.getKey();
+			VTimezone component = null;
+			for (VTimezone vtimezone : ical.getTimezones()) {
+				TimezoneId timezoneId = vtimezone.getTimezoneId();
+				if (timezoneId != null && tzid.equals(timezoneId.getValue())) {
+					component = vtimezone;
+					break;
+				}
+			}
+
+			TimeZone timezone = null;
+			if (component == null) {
+				//A VTIMEZONE component couldn't found
+				//so treat the TZID parameter value as an Olsen timezone ID
+				timezone = ICalDateFormat.parseTimeZoneId(tzid);
+				if (timezone == null) {
+					warnings.add(null, null, Warning.parse(38, tzid));
+				} else {
+					warnings.add(null, null, Warning.parse(37, tzid));
+				}
+			} else {
+				//TODO convert the VTIMEZONE component to a Java TimeZone object
+				//TODO for now, treat the TZID as an Olsen timezone (which is what biweekly used to do) 
+				timezone = ICalDateFormat.parseTimeZoneId(tzid);
+				if (timezone == null) {
+					timezone = TimeZone.getDefault();
+				}
+			}
+
+			if (timezone == null) {
+				//timezone could not be determined
+				continue;
+			}
+
+			//assign this VTIMEZONE component to the TimeZone object
+			tzinfo.assign(component, timezone);
+
+			List<TimezonedDate> timezonedDates = entry.getValue();
+			for (TimezonedDate timezonedDate : timezonedDates) {
+				//assign the property to the timezone
+				ICalProperty property = timezonedDate.getProperty();
+				tzinfo.setTimezone(property, timezone);
+				property.getParameters().setTimezoneId(null); //remove the TZID parameter
+
+				//parse the date string again under its real timezone
+				Date realDate = ICalDateFormat.parse(timezonedDate.getDateStr(), timezone);
+
+				//update the Date object with the new timestamp
+				timezonedDate.getDate().setTime(realDate.getTime()); //the one time I am glad that Date objects are mutable... xD
+			}
+		}
+
+		for (ICalProperty property : pcontext.getFloatingDates()) {
+			tzinfo.setUseFloatingTime(property, true);
+		}
 	}
 
 	/**
@@ -424,7 +503,7 @@ public class XCalDocument {
 	 */
 	public void add(ICalendar ical) {
 		index.hasScribesFor(ical);
-		context = new WriteContext(targetVersion, tzinfo);
+		wcontext = new WriteContext(targetVersion, tzinfo);
 		Element element = buildComponentElement(ical);
 
 		if (root == null) {
@@ -546,7 +625,7 @@ public class XCalDocument {
 		}
 
 		for (Object propertyObj : propertyObjs) {
-			context.setParent(component); //set parent here incase a scribe resets the parent
+			wcontext.setParent(component); //set parent here incase a scribe resets the parent
 			ICalProperty property = (ICalProperty) propertyObj;
 
 			//create property element
@@ -609,13 +688,13 @@ public class XCalDocument {
 
 			//marshal value
 			try {
-				propertyScribe.writeXml(property, propertyElement, context);
+				propertyScribe.writeXml(property, propertyElement, wcontext);
 			} catch (SkipMeException e) {
 				return null;
 			}
 
 			//get parameters
-			parameters = propertyScribe.prepareParameters(property, context);
+			parameters = propertyScribe.prepareParameters(property, wcontext);
 		}
 
 		//build parameters
@@ -707,13 +786,14 @@ public class XCalDocument {
 		String propertyName = propertyElement.getLocalName();
 		QName qname = new QName(propertyElement.getNamespaceURI(), propertyName);
 
+		pcontext.getWarnings().clear();
 		ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(qname);
 		try {
-			Result<? extends ICalProperty> result = scribe.parseXml(propertyElement, parameters);
-			for (Warning warning : result.getWarnings()) {
+			ICalProperty property = scribe.parseXml(propertyElement, parameters, pcontext);
+			for (Warning warning : pcontext.getWarnings()) {
 				warnings.add(null, propertyName, warning);
 			}
-			return result.getProperty();
+			return property;
 		} catch (SkipMeException e) {
 			warnings.add(null, propertyName, 0, e.getMessage());
 			return null;
@@ -721,8 +801,7 @@ public class XCalDocument {
 			warnings.add(null, propertyName, 16, e.getMessage());
 
 			scribe = index.getPropertyScribe(Xml.class);
-			Result<? extends ICalProperty> result = scribe.parseXml(propertyElement, parameters);
-			return result.getProperty();
+			return scribe.parseXml(propertyElement, parameters, pcontext);
 		}
 	}
 

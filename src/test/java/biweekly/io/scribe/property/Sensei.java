@@ -21,10 +21,10 @@ import biweekly.ICalVersion;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
-import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.util.XmlUtils;
@@ -477,17 +477,19 @@ public class Sensei<T extends ICalProperty> {
 		@Override
 		protected void run(Check<T> check, Class<? extends RuntimeException> exception) {
 			for (ICalVersion version : versions) {
+				ParseContext context = new ParseContext();
+				context.setVersion(version);
 				try {
-					Result<T> result = scribe.parseText(value, dataType, new ICalParameters(parameters), version);
+					T property = scribe.parseText(value, dataType, new ICalParameters(parameters), context);
 
 					if (exception != null) {
 						fail("Expected " + exception.getSimpleName() + " to be thrown.");
 					}
 					if (check != null) {
-						check.check(result.getProperty());
+						check.check(property);
 					}
 
-					assertWarnings(warnings, result.getWarnings());
+					assertWarnings(warnings, context.getWarnings());
 				} catch (RuntimeException t) {
 					if (exception == null) {
 						throw t;
@@ -515,18 +517,19 @@ public class Sensei<T extends ICalProperty> {
 		@Override
 		protected void run(Check<T> check, Class<? extends RuntimeException> exception) {
 			try {
+				ParseContext context = new ParseContext();
 				Document document = createXCalElement(innerXml);
 				Element element = XmlUtils.getRootElement(document);
-				Result<T> result = scribe.parseXml(element, parameters);
+				T property = scribe.parseXml(element, parameters, context);
 
 				if (exception != null) {
 					fail("Expected " + exception.getSimpleName() + " to be thrown.");
 				}
 				if (check != null) {
-					check.check(result.getProperty());
+					check.check(property);
 				}
 
-				assertWarnings(warnings, result.getWarnings());
+				assertWarnings(warnings, context.getWarnings());
 			} catch (RuntimeException t) {
 				if (exception == null) {
 					throw t;
@@ -564,16 +567,17 @@ public class Sensei<T extends ICalProperty> {
 		@Override
 		protected void run(Check<T> check, Class<? extends RuntimeException> exception) {
 			try {
-				Result<T> result = scribe.parseJson(value, dataType, parameters);
+				ParseContext context = new ParseContext();
+				T property = scribe.parseJson(value, dataType, parameters, context);
 
 				if (exception != null) {
 					fail("Expected " + exception.getSimpleName() + " to be thrown.");
 				}
 				if (check != null) {
-					check.check(result.getProperty());
+					check.check(property);
 				}
 
-				assertWarnings(warnings, result.getWarnings());
+				assertWarnings(warnings, context.getWarnings());
 			} catch (RuntimeException t) {
 				if (exception == null) {
 					throw t;

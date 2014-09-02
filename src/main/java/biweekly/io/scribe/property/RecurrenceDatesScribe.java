@@ -6,13 +6,14 @@ import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RecurrenceDates;
 import biweekly.util.Duration;
+import biweekly.util.ICalDateFormat;
 import biweekly.util.Period;
 
 /*
@@ -107,8 +108,8 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	}
 
 	@Override
-	protected RecurrenceDates _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
-		return parse(list(value), dataType, parameters, warnings);
+	protected RecurrenceDates _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
+		return parse(list(value), dataType, parameters, context);
 	}
 
 	@Override
@@ -158,33 +159,52 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	}
 
 	@Override
-	protected RecurrenceDates _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected RecurrenceDates _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
+		String tzid = parameters.getTimezoneId();
+
 		//parse as periods
 		List<XCalElement> periodElements = element.children(ICalDataType.PERIOD);
 		if (!periodElements.isEmpty()) {
 			List<Period> periods = new ArrayList<Period>(periodElements.size());
+			RecurrenceDates property = new RecurrenceDates(periods);
 			for (XCalElement periodElement : periodElements) {
 				String startStr = periodElement.first("start");
 				if (startStr == null) {
-					warnings.add(Warning.parse(9));
+					context.addWarning(9);
 					continue;
 				}
 
 				Date start = null;
 				try {
-					start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
+					start = ICalDateFormat.parse(startStr);
 				} catch (IllegalArgumentException e) {
-					warnings.add(Warning.parse(10, startStr));
+					context.addWarning(10, startStr);
 					continue;
 				}
 
 				String endStr = periodElement.first("end");
 				if (endStr != null) {
 					try {
-						Date end = date(endStr).tzid(parameters.getTimezoneId(), warnings).parse();
+						Date end = ICalDateFormat.parse(endStr);
 						periods.add(new Period(start, end));
+
+						if (!ICalDateFormat.isUTC(startStr)) {
+							if (tzid == null) {
+								context.addFloatingDate(property);
+							} else {
+								context.addTimezonedDate(tzid, property, start, startStr);
+							}
+						}
+
+						if (end != null && !ICalDateFormat.isUTC(endStr)) {
+							if (tzid == null) {
+								context.addFloatingDate(property);
+							} else {
+								context.addTimezonedDate(tzid, property, end, endStr);
+							}
+						}
 					} catch (IllegalArgumentException e) {
-						warnings.add(Warning.parse(11, endStr));
+						context.addWarning(11, endStr);
 					}
 					continue;
 				}
@@ -194,15 +214,23 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 					try {
 						Duration duration = Duration.parse(durationStr);
 						periods.add(new Period(start, duration));
+
+						if (!ICalDateFormat.isUTC(startStr)) {
+							if (tzid == null) {
+								context.addFloatingDate(property);
+							} else {
+								context.addTimezonedDate(tzid, property, start, startStr);
+							}
+						}
 					} catch (IllegalArgumentException e) {
-						warnings.add(Warning.parse(12, durationStr));
+						context.addWarning(12, durationStr);
 					}
 					continue;
 				}
 
-				warnings.add(Warning.parse(13));
+				context.addWarning(13);
 			}
-			return new RecurrenceDates(periods);
+			return property;
 		}
 
 		//parse as dates
@@ -211,15 +239,24 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		dateStrs.addAll(element.all(ICalDataType.DATE));
 		if (!dateStrs.isEmpty()) {
 			List<Date> dates = new ArrayList<Date>(dateStrs.size());
+			RecurrenceDates property = new RecurrenceDates(dates, hasTime);
 			for (String dateStr : dateStrs) {
 				try {
-					Date date = date(dateStr).tzid(parameters.getTimezoneId(), warnings).parse();
+					Date date = ICalDateFormat.parse(dateStr);
 					dates.add(date);
+
+					if (hasTime && !ICalDateFormat.isUTC(dateStr)) {
+						if (tzid == null) {
+							context.addFloatingDate(property);
+						} else {
+							context.addTimezonedDate(tzid, property, date, dateStr);
+						}
+					}
 				} catch (IllegalArgumentException e) {
-					warnings.add(Warning.parse(15, dateStr));
+					context.addWarning(15, dateStr);
 				}
 			}
-			return new RecurrenceDates(dates, hasTime);
+			return property;
 		}
 
 		throw missingXmlElements(ICalDataType.PERIOD, ICalDataType.DATE_TIME, ICalDataType.DATE);
@@ -264,34 +301,38 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	}
 
 	@Override
-	protected RecurrenceDates _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
-		return parse(value.asMulti(), dataType, parameters, warnings);
+	protected RecurrenceDates _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
+		return parse(value.asMulti(), dataType, parameters, context);
 	}
 
-	private RecurrenceDates parse(List<String> valueStrs, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	private RecurrenceDates parse(List<String> valueStrs, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
+		String tzid = parameters.getTimezoneId();
+
 		if (dataType == ICalDataType.PERIOD) {
 			//parse as periods
 			List<Period> periods = new ArrayList<Period>(valueStrs.size());
+			RecurrenceDates property = new RecurrenceDates(periods);
 			for (String timePeriodStr : valueStrs) {
 				String timePeriodStrSplit[] = timePeriodStr.split("/");
 
 				if (timePeriodStrSplit.length < 2) {
-					warnings.add(Warning.parse(13));
+					context.addWarning(13);
 					continue;
 				}
 
 				String startStr = timePeriodStrSplit[0];
 				Date start;
 				try {
-					start = date(startStr).tzid(parameters.getTimezoneId(), warnings).parse();
+					start = ICalDateFormat.parse(startStr);
 				} catch (IllegalArgumentException e) {
-					warnings.add(Warning.parse(10, startStr));
+					context.addWarning(10, startStr);
 					continue;
 				}
 
 				String endStr = timePeriodStrSplit[1];
+				Date end = null;
 				try {
-					Date end = date(endStr).tzid(parameters.getTimezoneId(), warnings).parse();
+					end = ICalDateFormat.parse(endStr);
 					periods.add(new Period(start, end));
 				} catch (IllegalArgumentException e) {
 					//must be a duration
@@ -299,25 +340,53 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 						Duration duration = Duration.parse(endStr);
 						periods.add(new Period(start, duration));
 					} catch (IllegalArgumentException e2) {
-						warnings.add(Warning.parse(14, endStr));
+						context.addWarning(14, endStr);
 						continue;
 					}
 				}
+
+				if (!ICalDateFormat.isUTC(startStr)) {
+					if (tzid == null) {
+						context.addFloatingDate(property);
+					} else {
+						context.addTimezonedDate(tzid, property, start, startStr);
+					}
+				}
+
+				if (end != null && !ICalDateFormat.isUTC(endStr)) {
+					if (tzid == null) {
+						context.addFloatingDate(property);
+					} else {
+						context.addTimezonedDate(tzid, property, end, endStr);
+					}
+				}
 			}
-			return new RecurrenceDates(periods);
+			return property;
 		}
 
 		//parse as dates
 		boolean hasTime = (dataType == ICalDataType.DATE_TIME);
 		List<Date> dates = new ArrayList<Date>(valueStrs.size());
+		RecurrenceDates property = new RecurrenceDates(dates, hasTime);
 		for (String s : valueStrs) {
+			Date date;
 			try {
-				Date date = date(s).tzid(parameters.getTimezoneId(), warnings).parse();
-				dates.add(date);
+				date = ICalDateFormat.parse(s);
 			} catch (IllegalArgumentException e) {
-				warnings.add(Warning.parse(15, s));
+				context.addWarning(15, s);
+				continue;
+			}
+
+			dates.add(date);
+
+			if (hasTime && !ICalDateFormat.isUTC(s)) {
+				if (tzid == null) {
+					context.addFloatingDate(property);
+				} else {
+					context.addTimezonedDate(tzid, property, date, s);
+				}
 			}
 		}
-		return new RecurrenceDates(dates, hasTime);
+		return property;
 	}
 }

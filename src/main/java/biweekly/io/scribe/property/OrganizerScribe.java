@@ -1,12 +1,10 @@
 package biweekly.io.scribe.property;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Organizer;
@@ -59,7 +57,7 @@ public class OrganizerScribe extends ICalPropertyScribe<Organizer> {
 	}
 
 	@Override
-	protected Organizer _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected Organizer _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		String name = parameters.first(ICalParameters.CN);
 		if (name != null) {
 			parameters.remove(ICalParameters.CN, name);

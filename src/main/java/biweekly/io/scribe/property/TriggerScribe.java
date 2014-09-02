@@ -1,18 +1,18 @@
 package biweekly.io.scribe.property;
 
 import java.util.Date;
-import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Trigger;
 import biweekly.util.Duration;
+import biweekly.util.ICalDateFormat;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -69,12 +69,23 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 	}
 
 	@Override
-	protected Trigger _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected Trigger _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		value = unescape(value);
 
 		try {
-			Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
-			return new Trigger(date);
+			Date date = ICalDateFormat.parse(value);
+			Trigger property = new Trigger(date);
+
+			if (!ICalDateFormat.isUTC(value)) {
+				String tzid = parameters.getTimezoneId();
+				if (tzid == null) {
+					context.addFloatingDate(property);
+				} else {
+					context.addTimezonedDate(tzid, property, date, value);
+				}
+			}
+
+			return property;
 		} catch (IllegalArgumentException e) {
 			//unable to parse value as date, must be a duration
 		}
@@ -106,7 +117,7 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 	}
 
 	@Override
-	protected Trigger _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected Trigger _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		String value = element.first(ICalDataType.DURATION);
 		if (value != null) {
 			try {
@@ -119,8 +130,19 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 		value = element.first(ICalDataType.DATE_TIME);
 		if (value != null) {
 			try {
-				Date date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
-				return new Trigger(date);
+				Date date = ICalDateFormat.parse(value);
+				Trigger property = new Trigger(date);
+
+				if (!ICalDateFormat.isUTC(value)) {
+					String tzid = parameters.getTimezoneId();
+					if (tzid == null) {
+						context.addFloatingDate(property);
+					} else {
+						context.addTimezonedDate(tzid, property, date, value);
+					}
+				}
+
+				return property;
 			} catch (IllegalArgumentException e) {
 				throw new CannotParseException(27, value);
 			}
@@ -145,12 +167,23 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 	}
 
 	@Override
-	protected Trigger _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected Trigger _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		String valueStr = value.asSingle();
 
 		try {
-			Date date = date(valueStr).tzid(parameters.getTimezoneId(), warnings).parse();
-			return new Trigger(date);
+			Date date = ICalDateFormat.parse(valueStr);
+			Trigger property = new Trigger(date);
+
+			if (!ICalDateFormat.isUTC(valueStr)) {
+				String tzid = parameters.getTimezoneId();
+				if (tzid == null) {
+					context.addFloatingDate(property);
+				} else {
+					context.addTimezonedDate(tzid, property, date, valueStr);
+				}
+			}
+
+			return property;
 		} catch (IllegalArgumentException e) {
 			//must be a duration
 		}

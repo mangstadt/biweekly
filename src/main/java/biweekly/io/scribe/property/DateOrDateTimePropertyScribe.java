@@ -1,14 +1,13 @@
 package biweekly.io.scribe.property;
 
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.Warning;
 import biweekly.component.Observance;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -80,9 +79,9 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		value = unescape(value);
-		return parse(value, parameters, warnings);
+		return parse(value, parameters, context);
 	}
 
 	@Override
@@ -102,14 +101,14 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 	}
 
 	@Override
-	protected T _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected T _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		String value = element.first(ICalDataType.DATE_TIME);
 		if (value == null) {
 			value = element.first(ICalDataType.DATE);
 		}
 
 		if (value != null) {
-			return parse(value, parameters, warnings);
+			return parse(value, parameters, context);
 		}
 
 		throw missingXmlElements(ICalDataType.DATE_TIME, ICalDataType.DATE);
@@ -132,21 +131,21 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		String valueStr = value.asSingle();
-		return parse(valueStr, parameters, warnings);
+		return parse(valueStr, parameters, context);
 	}
 
 	protected abstract T newInstance(Date date, boolean hasTime);
 
-	private T parse(String value, ICalParameters parameters, List<Warning> warnings) {
+	private T parse(String value, ICalParameters parameters, ParseContext context) {
 		if (value == null) {
 			return newInstance(null, true);
 		}
 
 		Date date;
 		try {
-			date = date(value).tzid(parameters.getTimezoneId(), warnings).parse();
+			date = ICalDateFormat.parse(value);
 		} catch (IllegalArgumentException e) {
 			throw new CannotParseException(17);
 		}
@@ -155,16 +154,24 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 		try {
 			components = DateTimeComponents.parse(value);
 		} catch (IllegalArgumentException e) {
-			warnings.add(Warning.parse(6, value));
+			context.addWarning(6, value);
 			components = null;
 		}
 
 		boolean hasTime = ICalDateFormat.dateHasTime(value);
-		boolean floating = !ICalDateFormat.dateHasTimezone(value) && parameters.getTimezoneId() == null;
+		T property = newInstance(date, hasTime);
+		property.setRawComponents(components);
 
-		T prop = newInstance(date, hasTime);
-		prop.setRawComponents(components);
-		prop.setFloatingTime(floating);
-		return prop;
+		String tzid = parameters.getTimezoneId();
+		if (!ICalDateFormat.isUTC(value)) {
+			//TODO handle UTC offsets within the date strings (not part of iCal standard)
+			if (tzid == null) {
+				context.addFloatingDate(property);
+			} else if (hasTime) {
+				context.addTimezonedDate(tzid, property, date, value);
+			}
+		}
+
+		return property;
 	}
 }

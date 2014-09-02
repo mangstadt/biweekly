@@ -5,9 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
-import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.VCalAlarmProperty;
@@ -70,7 +69,7 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		SemiStructuredIterator it = semistructured(value);
 
 		String next = next(it);

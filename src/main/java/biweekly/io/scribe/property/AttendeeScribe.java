@@ -1,12 +1,11 @@
 package biweekly.io.scribe.property;
 
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.ParticipationLevel;
@@ -153,7 +152,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 	}
 
 	@Override
-	protected Attendee _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected Attendee _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		String uri = null, name = null, email = null;
 
 		Boolean rsvp = null;
@@ -165,7 +164,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 		ParticipationLevel level = null;
 		ParticipationStatus status = null;
 
-		switch (version) {
+		switch (context.getVersion()) {
 		case V1_0:
 			if (rsvpStr != null) {
 				if ("YES".equalsIgnoreCase(rsvpStr)) {

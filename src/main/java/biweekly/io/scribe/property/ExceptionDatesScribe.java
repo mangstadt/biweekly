@@ -6,13 +6,14 @@ import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ExceptionDates;
+import biweekly.util.ICalDateFormat;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -69,12 +70,24 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 	}
 
 	@Override
-	protected Date readValue(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected Date readValue(ExceptionDates property, String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
+		Date date;
 		try {
-			return date(value).tzid(parameters.getTimezoneId(), warnings).parse();
+			date = ICalDateFormat.parse(value);
 		} catch (IllegalArgumentException e) {
 			throw new CannotParseException(19);
 		}
+
+		String tzid = parameters.getTimezoneId();
+		if (!ICalDateFormat.isUTC(value)) {
+			if (tzid == null) {
+				context.addFloatingDate(property);
+			} else {
+				context.addTimezonedDate(tzid, property, date, value);
+			}
+		}
+
+		return date;
 	}
 
 	@Override
@@ -87,7 +100,7 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 	}
 
 	@Override
-	protected ExceptionDates _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected ExceptionDates _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		List<String> values = element.all(ICalDataType.DATE_TIME);
 		ICalDataType dataType = values.isEmpty() ? ICalDataType.DATE : ICalDataType.DATE_TIME;
 		values.addAll(element.all(ICalDataType.DATE));
@@ -97,7 +110,7 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 
 		ExceptionDates prop = new ExceptionDates(dataType == ICalDataType.DATE_TIME);
 		for (String value : values) {
-			Date date = readValue(value, dataType, parameters, warnings);
+			Date date = readValue(prop, value, dataType, parameters, context);
 			prop.addValue(date);
 		}
 		return prop;
@@ -119,12 +132,12 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 	}
 
 	@Override
-	protected ExceptionDates _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected ExceptionDates _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		List<String> valueStrs = value.asMulti();
 
 		ExceptionDates prop = new ExceptionDates(dataType == ICalDataType.DATE_TIME);
 		for (String valueStr : valueStrs) {
-			Date date = readValue(valueStr, dataType, parameters, warnings);
+			Date date = readValue(prop, valueStr, dataType, parameters, context);
 			prop.addValue(date);
 		}
 		return prop;

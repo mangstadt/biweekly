@@ -1,9 +1,7 @@
 package biweekly.io.scribe.property;
 
-import java.util.List;
-
 import biweekly.ICalDataType;
-import biweekly.Warning;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ListProperty;
@@ -49,7 +47,7 @@ public abstract class TextListPropertyScribe<T extends ListProperty<String>> ext
 	}
 
 	@Override
-	protected String readValue(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected String readValue(T property, String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		return value;
 	}
 }

@@ -1,10 +1,7 @@
 package biweekly.io.scribe.property;
 
-import java.util.List;
-
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.io.ParseContext;
 import biweekly.io.SkipMeException;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
@@ -56,7 +53,7 @@ public class SkipMeScribe extends ICalPropertyScribe<SkipMeProperty> {
 	}
 
 	@Override
-	protected SkipMeProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected SkipMeProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		throw new SkipMeException("");
 	}
 
@@ -66,7 +63,7 @@ public class SkipMeScribe extends ICalPropertyScribe<SkipMeProperty> {
 	}
 
 	@Override
-	protected SkipMeProperty _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected SkipMeProperty _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		throw new SkipMeException("");
 	}
 
@@ -76,7 +73,7 @@ public class SkipMeScribe extends ICalPropertyScribe<SkipMeProperty> {
 	}
 
 	@Override
-	protected SkipMeProperty _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected SkipMeProperty _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		throw new SkipMeException("");
 	}
 }

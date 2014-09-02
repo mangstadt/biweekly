@@ -1,10 +1,7 @@
 package biweekly.io.scribe.property;
 
-import java.util.List;
-
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -51,7 +48,7 @@ public class RequestStatusScribe extends ICalPropertyScribe<RequestStatus> {
 	}
 
 	@Override
-	protected RequestStatus _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected RequestStatus _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		SemiStructuredIterator it = semistructured(value, true);
 
 		RequestStatus requestStatus = new RequestStatus(it.next());
@@ -75,7 +72,7 @@ public class RequestStatusScribe extends ICalPropertyScribe<RequestStatus> {
 	}
 
 	@Override
-	protected RequestStatus _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected RequestStatus _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		String code = element.first("code");
 		if (code == null) {
 			throw missingXmlElements("code");
@@ -93,7 +90,7 @@ public class RequestStatusScribe extends ICalPropertyScribe<RequestStatus> {
 	}
 
 	@Override
-	protected RequestStatus _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected RequestStatus _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		StructuredIterator it = structured(value);
 
 		RequestStatus requestStatus = new RequestStatus(it.nextString());

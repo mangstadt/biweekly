@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Arrays;
-import java.util.List;
 import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
@@ -32,13 +31,13 @@ import org.xml.sax.SAXException;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
-import biweekly.Warning;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.StandardTime;
 import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
 import biweekly.io.SkipMeException;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
@@ -758,7 +757,7 @@ public class XCalWriterTest {
 		}
 
 		@Override
-		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+		protected Company _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 			return new Company(value);
 		}
 
@@ -773,7 +772,7 @@ public class XCalWriterTest {
 		}
 
 		@Override
-		protected Company _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+		protected Company _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 			String boss = XmlUtils.getFirstChildElement(element.getElement()).getTextContent();
 			if (boss.equals("skip-me")) {
 				throw new SkipMeException("");

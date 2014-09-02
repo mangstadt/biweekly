@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.TimeZone;
 
 import org.junit.Rule;
@@ -38,6 +37,8 @@ import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
 import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
+import biweekly.io.ParseContext;
+import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.CannotParseScribe;
@@ -51,6 +52,8 @@ import biweekly.parameter.Role;
 import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.Created;
+import biweekly.property.DateEnd;
+import biweekly.property.DateStart;
 import biweekly.property.ICalProperty;
 import biweekly.property.ProductId;
 import biweekly.property.RawProperty;
@@ -1237,12 +1240,12 @@ public class ICalReaderTest {
 			assertEquals("Meeting will discuss objectives for next project." + NEWLINE + "Will include a presentation and food.", event.getDescription().getValue());
 
 			assertDateEquals("20130610T130000", event.getDateEnd().getValue());
-			assertEquals("Eastern Standard Time", event.getDateEnd().getTimezoneId());
+			assertNull(event.getDateEnd().getTimezoneId());
 
 			assertDateEquals("20130425T155807Z", event.getDateTimeStamp().getValue());
 
 			assertDateEquals("20130610T120000", event.getDateStart().getValue());
-			assertEquals("Eastern Standard Time", event.getDateStart().getTimezoneId());
+			assertNull(event.getDateStart().getTimezoneId());
 
 			assertDateEquals("20130608T200410Z", event.getLastModified().getValue());
 
@@ -1285,6 +1288,19 @@ public class ICalReaderTest {
 			assertEquals("20130425T124303Z", event.getExperimentalProperty("X-MS-OLK-APPTSEQTIME").getValue());
 			assertEquals("0", event.getExperimentalProperty("X-MS-OLK-CONFTYPE").getValue());
 		}
+
+		TimeZone tz = TimeZone.getDefault();
+		TimezoneInfo tzinfo = reader.getTimezoneInfo();
+		VTimezone timezone = ical.getTimezones().get(0);
+		VEvent event = ical.getEvents().get(0);
+
+		DateStart dtstart = event.getDateStart();
+		assertEquals(timezone, tzinfo.getComponent(dtstart));
+		assertEquals(tz, tzinfo.getTimeZone(dtstart));
+
+		DateEnd dtend = event.getDateEnd();
+		assertEquals(timezone, tzinfo.getComponent(dtend));
+		assertEquals(tz, tzinfo.getTimeZone(dtend));
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 
@@ -1389,13 +1405,25 @@ public class ICalReaderTest {
 			assertEquals("XYZ Project Review", event.getSummary().getValue());
 
 			assertEquals(date("1998-03-12 08:30:00", nycTz), event.getDateStart().getValue());
-			assertEquals("America/New_York", event.getDateStart().getTimezoneId());
+			assertNull(event.getDateStart().getTimezoneId());
 
 			assertEquals(date("1998-03-12 09:30:00", nycTz), event.getDateEnd().getValue());
-			assertEquals("America/New_York", event.getDateEnd().getTimezoneId());
+			assertNull(event.getDateEnd().getTimezoneId());
 
 			assertEquals("1CP Conference Room 4350", event.getLocation().getValue());
 		}
+
+		TimezoneInfo tzinfo = reader.getTimezoneInfo();
+		VTimezone timezone = ical.getTimezones().get(0);
+		VEvent event = ical.getEvents().get(0);
+
+		DateStart dtstart = event.getDateStart();
+		assertEquals(timezone, tzinfo.getComponent(dtstart));
+		assertEquals(nycTz, tzinfo.getTimeZone(dtstart));
+
+		DateEnd dtend = event.getDateEnd();
+		assertEquals(timezone, tzinfo.getComponent(dtend));
+		assertEquals(nycTz, tzinfo.getTimeZone(dtend));
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 
@@ -1555,7 +1583,7 @@ public class ICalReaderTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 			TestProperty prop = new TestProperty();
 			Integer number = null;
 			if (value.equals("one")) {
@@ -1566,7 +1594,7 @@ public class ICalReaderTest {
 				number = 3;
 			} else if (value.equals("four")) {
 				number = 4;
-				warnings.add(new Warning("too high"));
+				context.getWarnings().add(new Warning("too high"));
 			}
 			prop.number = number;
 			prop.parsedDataType = dataType;
@@ -1605,7 +1633,7 @@ public class ICalReaderTest {
 		}
 
 		@Override
-		protected ProductId _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+		protected ProductId _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 			return new ProductId(value.toUpperCase());
 		}
 	}

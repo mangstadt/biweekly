@@ -105,25 +105,6 @@ public class DateOrDateTimeProperty extends ICalProperty {
 		return hasTime;
 	}
 
-	/**
-	 * Gets whether the property value was in floating time (without a
-	 * timezone).
-	 * @return true if the property value was in floating time, false if not
-	 */
-	public boolean isFloatingTime() {
-		return floating;
-	}
-
-	/**
-	 * Sets whether the property value was in floating time (without a
-	 * timezone).
-	 * @param floating true if the property value was in floating time, false if
-	 * not
-	 */
-	public void setFloatingTime(boolean floating) {
-		this.floating = floating;
-	}
-
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		if (value == null && rawComponents == null) {

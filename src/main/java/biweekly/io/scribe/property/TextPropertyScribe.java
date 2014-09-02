@@ -1,10 +1,8 @@
 package biweekly.io.scribe.property;
 
-import java.util.List;
-
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -61,9 +59,9 @@ public abstract class TextPropertyScribe<T extends TextProperty> extends ICalPro
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		value = unescape(value);
-		return newInstance(value, version);
+		return newInstance(value, context.getVersion());
 	}
 
 	@Override
@@ -72,7 +70,7 @@ public abstract class TextPropertyScribe<T extends TextProperty> extends ICalPro
 	}
 
 	@Override
-	protected T _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected T _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		String value = element.first(defaultDataType);
 		if (value != null) {
 			return newInstance(value, ICalVersion.V2_0);
@@ -87,7 +85,7 @@ public abstract class TextPropertyScribe<T extends TextProperty> extends ICalPro
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		return newInstance(value.asSingle(), ICalVersion.V2_0);
 	}
 

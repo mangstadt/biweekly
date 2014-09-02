@@ -3,13 +3,12 @@ package biweekly.io.scribe.property;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -151,7 +150,7 @@ public class ListPropertyScribeTest {
 		}
 
 		@Override
-		protected String readValue(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+		protected String readValue(ListPropertyImpl property, String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 			return value;
 		}
 	}

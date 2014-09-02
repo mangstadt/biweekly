@@ -5,9 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
-import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Daylight;
@@ -75,7 +74,7 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 	}
 
 	@Override
-	protected Daylight _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected Daylight _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		StructuredIterator it = structured(value);
 
 		String next = it.nextString();

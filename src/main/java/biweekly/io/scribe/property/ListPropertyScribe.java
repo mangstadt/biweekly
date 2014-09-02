@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -71,9 +70,9 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		List<String> values;
-		switch (version) {
+		switch (context.getVersion()) {
 		case V1_0:
 			values = new ArrayList<String>();
 			if (value.length() > 0) {
@@ -88,7 +87,7 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 			values = list(value);
 		}
 
-		return parse(values, dataType, parameters, warnings);
+		return parse(values, dataType, parameters, context);
 	}
 
 	@Override
@@ -100,10 +99,10 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 	}
 
 	@Override
-	protected T _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected T _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		List<String> values = element.all(defaultDataType);
 		if (!values.isEmpty()) {
-			return parse(values, defaultDataType, parameters, warnings);
+			return parse(values, defaultDataType, parameters, context);
 		}
 
 		throw missingXmlElements(defaultDataType);
@@ -120,15 +119,15 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
-		return parse(value.asMulti(), dataType, parameters, warnings);
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
+		return parse(value.asMulti(), dataType, parameters, context);
 	}
 
-	private T parse(List<String> valueStrs, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	private T parse(List<String> valueStrs, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		T property = newInstance(dataType, parameters);
 
 		for (String valueStr : valueStrs) {
-			V value = readValue(valueStr, dataType, parameters, warnings);
+			V value = readValue(property, valueStr, dataType, parameters, context);
 			property.addValue(value);
 		}
 
@@ -139,5 +138,5 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 
 	protected abstract String writeValue(T property, V value, WriteContext context);
 
-	protected abstract V readValue(String value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings);
+	protected abstract V readValue(T property, String value, ICalDataType dataType, ICalParameters parameters, ParseContext context);
 }

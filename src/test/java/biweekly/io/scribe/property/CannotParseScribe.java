@@ -1,11 +1,8 @@
 package biweekly.io.scribe.property;
 
-import java.util.List;
-
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
-import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -56,17 +53,17 @@ public class CannotParseScribe extends ICalPropertyScribe<CannotParseProperty> {
 	}
 
 	@Override
-	protected CannotParseProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected CannotParseProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		throw new CannotParseException("");
 	}
 
 	@Override
-	protected CannotParseProperty _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected CannotParseProperty _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		throw new CannotParseException("");
 	}
 
 	@Override
-	protected CannotParseProperty _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected CannotParseProperty _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		throw new CannotParseException("");
 	}
 }

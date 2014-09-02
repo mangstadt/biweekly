@@ -15,6 +15,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -176,16 +177,17 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	}
 
 	@Override
-	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, final List<Warning> warnings) {
+	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		final Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
 
 		if (value.length() == 0) {
 			return newInstance(builder.build());
 		}
 
-		if (version != ICalVersion.V1_0) {
+		if (context.getVersion() != ICalVersion.V1_0) {
 			ListMultimap<String, String> rules = object(value);
 
+			List<Warning> warnings = context.getWarnings();
 			parseFreq(rules, builder, warnings);
 			parseUntil(rules, builder, warnings);
 			parseCount(rules, builder, warnings);
@@ -390,7 +392,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		for (String splitValue : splitValues) {
 			//TODO not sure how to handle the "$" symbol, ignore it
 			if (splitValue.endsWith("$")) {
-				warnings.add(Warning.parse(36, splitValue));
+				context.addWarning(36, splitValue);
 				splitValue = splitValue.substring(0, splitValue.length() - 1);
 			}
 
@@ -453,7 +455,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	}
 
 	@Override
-	protected T _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected T _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		XCalElement value = element.child(defaultDataType);
 		if (value == null) {
 			throw missingXmlElements(defaultDataType);
@@ -472,6 +474,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 		Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
 
+		List<Warning> warnings = context.getWarnings();
 		parseFreq(rules, builder, warnings);
 		parseUntil(rules, builder, warnings);
 		parseCount(rules, builder, warnings);
@@ -511,7 +514,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	}
 
 	@Override
-	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
 
 		//upper-case the keys
@@ -522,6 +525,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			rules.putAll(key, entry.getValue());
 		}
 
+		List<Warning> warnings = context.getWarnings();
 		parseFreq(rules, builder, warnings);
 		parseUntil(rules, builder, warnings);
 		parseCount(rules, builder, warnings);

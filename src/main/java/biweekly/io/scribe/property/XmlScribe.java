@@ -1,7 +1,6 @@
 package biweekly.io.scribe.property;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.transform.OutputKeys;
@@ -11,9 +10,8 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
-import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -69,7 +67,7 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 	}
 
 	@Override
-	protected Xml _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected Xml _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		value = unescape(value);
 		try {
 			return new Xml(value);
@@ -85,7 +83,7 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 	}
 
 	@Override
-	protected Xml _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected Xml _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		Xml xml = new Xml(element.getElement());
 
 		//remove the <parameters> element
@@ -111,7 +109,7 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 	}
 
 	@Override
-	protected Xml _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected Xml _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		try {
 			String xml = value.asSingle();
 			return new Xml(xml);

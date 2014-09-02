@@ -12,7 +12,10 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,8 +27,11 @@ import biweekly.component.ICalComponent;
 import biweekly.component.VAlarm;
 import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
+import biweekly.io.ParseContext.TimezonedDate;
 import biweekly.io.ParseWarnings;
 import biweekly.io.SkipMeException;
+import biweekly.io.TimezoneInfo;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.component.ICalendarScribe;
@@ -45,6 +51,8 @@ import biweekly.property.DisplayAlarm;
 import biweekly.property.EmailAlarm;
 import biweekly.property.ICalProperty;
 import biweekly.property.ProcedureAlarm;
+import biweekly.property.TimezoneId;
+import biweekly.util.ICalDateFormat;
 import biweekly.util.org.apache.commons.codec.DecoderException;
 import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
 
@@ -95,12 +103,18 @@ import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalReader implements Closeable {
-	private static final ICalendarScribe icalMarshaller = ScribeIndex.getICalendarScribe();
-	private static final String icalComponentName = icalMarshaller.getComponentName();
+	private static final String icalComponentName;
+	static {
+		ICalendarScribe scribe = ScribeIndex.getICalendarScribe();
+		icalComponentName = scribe.getComponentName();
+	}
+
 	private final ParseWarnings warnings = new ParseWarnings();
+	private TimezoneInfo tzinfo;
 	private ScribeIndex index = new ScribeIndex();
 	private Charset defaultQuotedPrintableCharset;
 	private final ICalRawReader reader;
+	private ParseContext context;
 
 	/**
 	 * Creates a reader that parses iCalendar objects from a string.
@@ -242,12 +256,21 @@ public class ICalReader implements Closeable {
 	}
 
 	/**
-	 * Gets the warnings from the last iCalendar object that was unmarshalled.
-	 * This list is reset every time a new iCalendar object is read.
+	 * Gets the warnings from the last iCalendar object that was read. This list
+	 * is reset every time a new iCalendar object is read.
 	 * @return the warnings or empty list if there were no warnings
 	 */
 	public List<String> getWarnings() {
 		return warnings.copy();
+	}
+
+	/**
+	 * Gets the timezone info of the last iCalendar object that was read. This
+	 * object is recreated every time a new iCalendar object is read.
+	 * @return the timezone info
+	 */
+	public TimezoneInfo getTimezoneInfo() {
+		return tzinfo;
 	}
 
 	/**
@@ -257,6 +280,8 @@ public class ICalReader implements Closeable {
 	 */
 	public ICalendar readNext() throws IOException {
 		warnings.clear();
+		context = new ParseContext();
+		tzinfo = new TimezoneInfo();
 
 		ICalendar ical = null;
 		List<String> values = new ArrayList<String>();
@@ -399,31 +424,31 @@ public class ICalReader implements Closeable {
 				values.add(value);
 			}
 
-			List<Result<? extends ICalProperty>> propertiesToAdd = new ArrayList<Result<? extends ICalProperty>>();
+			context.setVersion(reader.getVersion());
+			context.getWarnings().clear();
+			List<ICalProperty> propertiesToAdd = new ArrayList<ICalProperty>();
 			List<Result<? extends ICalComponent>> componentsToAdd = new ArrayList<Result<? extends ICalComponent>>();
 			for (String v : values) {
 				try {
-					Result<? extends ICalProperty> result = scribe.parseText(v, dataType, parameters, reader.getVersion());
-					propertiesToAdd.add(result);
+					ICalProperty property = scribe.parseText(v, dataType, parameters, context);
+					propertiesToAdd.add(property);
 				} catch (SkipMeException e) {
 					warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());
 					continue;
 				} catch (CannotParseException e) {
 					warnings.add(reader.getLineNum(), propertyName, 1, v, e.getMessage());
 
-					Result<? extends ICalProperty> result = new RawPropertyScribe(propertyName).parseText(v, dataType, parameters, reader.getVersion());
-					propertiesToAdd.add(result);
+					ICalProperty property = new RawPropertyScribe(propertyName).parseText(v, dataType, parameters, context);
+					propertiesToAdd.add(property);
 				}
 			}
 
 			//add the properties to the iCalendar object
 			ICalComponent parentComponent = componentStack.get(componentStack.size() - 1);
-			for (Result<? extends ICalProperty> result : propertiesToAdd) {
-				for (Warning warning : result.getWarnings()) {
+			for (ICalProperty property : propertiesToAdd) {
+				for (Warning warning : context.getWarnings()) {
 					warnings.add(reader.getLineNum(), propertyName, warning);
 				}
-
-				ICalProperty property = result.getProperty();
 
 				if (reader.getVersion() == null || reader.getVersion() == ICalVersion.V1_0) {
 					//DAYLIGHT property => VTIMEZONE component
@@ -488,10 +513,70 @@ public class ICalReader implements Closeable {
 			}
 		}
 
-		if (ical != null) {
-			ical.setVersion(reader.getVersion());
+		if (ical == null) {
+			return null;
 		}
 
+		//handle timezones
+		for (Map.Entry<String, List<TimezonedDate>> entry : context.getTimezonedDates()) {
+			//find the VTIMEZONE component with the given TZID
+			String tzid = entry.getKey();
+			VTimezone component = null;
+			for (VTimezone vtimezone : ical.getTimezones()) {
+				TimezoneId timezoneId = vtimezone.getTimezoneId();
+				if (timezoneId != null && tzid.equals(timezoneId.getValue())) {
+					component = vtimezone;
+					break;
+				}
+			}
+
+			TimeZone timezone = null;
+			if (component == null) {
+				//A VTIMEZONE component couldn't found
+				//so treat the TZID parameter value as an Olsen timezone ID
+				timezone = ICalDateFormat.parseTimeZoneId(tzid);
+				if (timezone == null) {
+					warnings.add(null, null, Warning.parse(38, tzid));
+				} else {
+					warnings.add(null, null, Warning.parse(37, tzid));
+				}
+			} else {
+				//TODO convert the VTIMEZONE component to a Java TimeZone object
+				//TODO for now, treat the TZID as an Olsen timezone (which is what biweekly used to do) 
+				timezone = ICalDateFormat.parseTimeZoneId(tzid);
+				if (timezone == null) {
+					timezone = TimeZone.getDefault();
+				}
+			}
+
+			if (timezone == null) {
+				//timezone could not be determined
+				continue;
+			}
+
+			//assign this VTIMEZONE component to the TimeZone object
+			tzinfo.assign(component, timezone);
+
+			List<TimezonedDate> timezonedDates = entry.getValue();
+			for (TimezonedDate timezonedDate : timezonedDates) {
+				//assign the property to the timezone
+				ICalProperty property = timezonedDate.getProperty();
+				tzinfo.setTimezone(property, timezone);
+				property.getParameters().setTimezoneId(null); //remove the TZID parameter
+
+				//parse the date string again under its real timezone
+				Date realDate = ICalDateFormat.parse(timezonedDate.getDateStr(), timezone);
+
+				//update the Date object with the new timestamp
+				timezonedDate.getDate().setTime(realDate.getTime()); //the one time I am glad that Date objects are mutable... xD
+			}
+		}
+
+		for (ICalProperty property : context.getFloatingDates()) {
+			tzinfo.setUseFloatingTime(property, true);
+		}
+
+		ical.setVersion(reader.getVersion());
 		return ical;
 	}
 

@@ -6,7 +6,7 @@ import org.w3c.dom.Element;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
@@ -64,12 +64,12 @@ public class RawPropertyScribe extends ICalPropertyScribe<RawProperty> {
 	}
 
 	@Override
-	protected RawProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected RawProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		return new RawProperty(propertyName, dataType, value);
 	}
 
 	@Override
-	protected RawProperty _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected RawProperty _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		Element rawElement = element.getElement();
 		String name = rawElement.getLocalName();
 

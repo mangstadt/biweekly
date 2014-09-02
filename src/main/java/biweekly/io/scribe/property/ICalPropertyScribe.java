@@ -21,6 +21,7 @@ import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
 import biweekly.io.SkipMeException;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
@@ -167,7 +168,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * Marshals a property's value to an XML element (xCal).
 	 * @param property the property
 	 * @param element the property's XML element
-	 * @param context TODO
+	 * @param context the context
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
 	 */
@@ -179,7 +180,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	/**
 	 * Marshals a property's value to a JSON data stream (jCal).
 	 * @param property the property
-	 * @param context TODO
+	 * @param context the context
 	 * @return the marshalled value
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
@@ -197,35 +198,34 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * default datatype. Note that the VALUE parameter is removed from the
 	 * property's parameter list after it has been read.
 	 * @param parameters the parsed parameters
-	 * @param version the version of the iCalendar object being generated
-	 * @return the unmarshalled property and its warnings
+	 * @param context the parse context
+	 * @return the unmarshalled property
 	 * @throws CannotParseException if the scribe could not parse the property's
 	 * value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	public final Result<T> parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version) {
-		List<Warning> warnings = new ArrayList<Warning>(0);
-		T property = _parseText(value, dataType, parameters, version, warnings);
+	public final T parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
+		T property = _parseText(value, dataType, parameters, context);
 		property.setParameters(parameters);
-		return new Result<T>(property, warnings);
+		return property;
 	}
 
 	/**
 	 * Unmarshals a property's value from an XML document (xCal).
 	 * @param element the property's XML element
 	 * @param parameters the property's parameters
-	 * @return the unmarshalled property and its warnings
+	 * @param context the context
+	 * @return the unmarshalled property
 	 * @throws CannotParseException if the scribe could not parse the property's
 	 * value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	public final Result<T> parseXml(Element element, ICalParameters parameters) {
-		List<Warning> warnings = new ArrayList<Warning>(0);
-		T property = _parseXml(new XCalElement(element), parameters, warnings);
+	public final T parseXml(Element element, ICalParameters parameters, ParseContext context) {
+		T property = _parseXml(new XCalElement(element), parameters, context);
 		property.setParameters(parameters);
-		return new Result<T>(property, warnings);
+		return property;
 	}
 
 	/**
@@ -233,17 +233,17 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param value the property's JSON value
 	 * @param dataType the data type
 	 * @param parameters the parsed parameters
-	 * @return the unmarshalled property and its warnings
+	 * @param context the context
+	 * @return the unmarshalled property
 	 * @throws CannotParseException if the scribe could not parse the property's
 	 * value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	public final Result<T> parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters) {
-		List<Warning> warnings = new ArrayList<Warning>(0);
-		T property = _parseJson(value, dataType, parameters, warnings);
+	public final T parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
+		T property = _parseJson(value, dataType, parameters, context);
 		property.setParameters(parameters);
-		return new Result<T>(property, warnings);
+		return property;
 	}
 
 	/**
@@ -323,7 +323,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * </p>
 	 * @param property the property
 	 * @param element the property's XML element
-	 * @param context TODO
+	 * @param context the context
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
 	 */
@@ -344,7 +344,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * {@link #writeText} method).
 	 * </p>
 	 * @param property the property
-	 * @param context TODO
+	 * @param context the context
 	 * @return the marshalled value
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
@@ -366,17 +366,14 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * assigned to the property object once this method returns. Therefore, do
 	 * not assign any parameters to the property object itself whilst inside of
 	 * this method, or else they will be overwritten.
-	 * @param version the version of the iCalendar object being generated
-	 * @param warnings allows the programmer to alert the user to any
-	 * note-worthy (but non-critical) issues that occurred during the
-	 * unmarshalling process
+	 * @param context the parse context
 	 * @return the unmarshalled property object
 	 * @throws CannotParseException if the scribe could not parse the property's
 	 * value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	protected abstract T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings);
+	protected abstract T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context);
 
 	/**
 	 * <p>
@@ -396,16 +393,14 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * assigned to the property object once this method returns. Therefore, do
 	 * not assign any parameters to the property object itself whilst inside of
 	 * this method, or else they will be overwritten.
-	 * @param warnings allows the programmer to alert the user to any
-	 * note-worthy (but non-critical) issues that occurred during the
-	 * unmarshalling process
+	 * @param context the context
 	 * @return the unmarshalled property object
 	 * @throws CannotParseException if the scribe could not parse the property's
 	 * value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	protected T _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected T _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		String value = null;
 		ICalDataType dataType = null;
 		Element rawElement = element.getElement();
@@ -429,7 +424,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		}
 
 		value = escape(value);
-		return _parseText(value, dataType, parameters, ICalVersion.V2_0, warnings);
+		return _parseText(value, dataType, parameters, context);
 	}
 
 	/**
@@ -493,17 +488,15 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * assigned to the property object once this method returns. Therefore, do
 	 * not assign any parameters to the property object itself whilst inside of
 	 * this method, or else they will be overwritten.
-	 * @param warnings allows the programmer to alert the user to any
-	 * note-worthy (but non-critical) issues that occurred during the
-	 * unmarshalling process
+	 * @param context the context
 	 * @return the unmarshalled property object
 	 * @throws CannotParseException if the scribe could not parse the property's
 	 * value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
 	 */
-	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
-		return _parseText(jcalValueToString(value), dataType, parameters, ICalVersion.V2_0, warnings);
+	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
+		return _parseText(jcalValueToString(value), dataType, parameters, context);
 	}
 
 	private String jcalValueToString(JCalValue value) {

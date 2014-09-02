@@ -16,8 +16,8 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
 import biweekly.Warning;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.ICalPropertyScribe.SemiStructuredIterator;
@@ -586,8 +586,8 @@ public class ICalPropertyScribeTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
-			warnings.add(new Warning("parseText"));
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
+			context.addWarning("parseText");
 			return new TestProperty(value, dataType);
 		}
 	}

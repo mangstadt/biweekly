@@ -7,8 +7,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import biweekly.io.scribe.property.XmlScribe;
-import biweekly.io.scribe.property.ICalPropertyScribe.Result;
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
@@ -80,11 +79,11 @@ public class XmlScribeTest {
 
 	@Test
 	public void parseXml() {
-		Result<Xml> result = marshaller.parseXml(XmlUtils.getRootElement(value), new ICalParameters());
+		ParseContext context = new ParseContext();
+		Xml prop = marshaller.parseXml(XmlUtils.getRootElement(value), new ICalParameters(), context);
 
-		Xml prop = result.getProperty();
 		assertXMLEqual(value, prop.getValue());
-		assertWarnings(0, result.getWarnings());
+		assertWarnings(0, context.getWarnings());
 	}
 
 	@Test
@@ -104,11 +103,11 @@ public class XmlScribeTest {
 
 		ICalParameters parameters = new ICalParameters();
 		parameters.put("x-foo", "value");
-		Result<Xml> result = marshaller.parseXml(XmlUtils.getRootElement(doc), parameters);
+		ParseContext context = new ParseContext();
+		Xml prop = marshaller.parseXml(XmlUtils.getRootElement(doc), parameters, context);
 
-		Xml prop = result.getProperty();
 		assertXMLEqual(value, prop.getValue());
-		assertWarnings(0, result.getWarnings());
+		assertWarnings(0, context.getWarnings());
 	}
 
 	@Test

@@ -186,6 +186,15 @@ public class TimezoneInfo {
 	}
 
 	/**
+	 * Gets the {@link VTimezone} component that a property is assigned to.
+	 * @param property the property
+	 * @return the component or null if it is not assigned to one
+	 */
+	public VTimezone getComponent(ICalProperty property) {
+		return propertyTimezones.get(property);
+	}
+
+	/**
 	 * Gets the ID of the {@link VTimezone} component that the given property is
 	 * linked to.
 	 * @param property the property
@@ -193,7 +202,7 @@ public class TimezoneInfo {
 	 * for UTC
 	 */
 	public String getTimezoneId(ICalProperty property) {
-		VTimezone component = propertyTimezones.get(property);
+		VTimezone component = getComponent(property);
 		if (component == null) {
 			component = defaultTimezoneComponent;
 		}

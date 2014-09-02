@@ -1,11 +1,8 @@
 package biweekly.io.scribe.property;
 
-import java.util.List;
-
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
-import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -62,7 +59,7 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 	}
 
 	@Override
-	protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		SemiStructuredIterator it = semistructured(value, true);
 		String one = it.next();
 		String two = it.next();
@@ -86,7 +83,7 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 	}
 
 	@Override
-	protected Version _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected Version _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		String value = element.first(defaultDataType);
 		if (value != null) {
 			return parse(null, value);
@@ -103,7 +100,7 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 	}
 
 	@Override
-	protected Version _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected Version _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		return parse(null, value.asSingle());
 	}
 

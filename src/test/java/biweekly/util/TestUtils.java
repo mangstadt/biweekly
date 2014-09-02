@@ -31,8 +31,6 @@ import biweekly.component.ICalComponent;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.property.ICalPropertyScribe;
-import biweekly.io.scribe.property.ICalPropertyScribe.Result;
-import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 
 /*
@@ -208,19 +206,6 @@ public class TestUtils {
 
 		Document expected = xcalProperty(marshaller, expectedInnerXml);
 		assertXMLEqual(expected, actual);
-	}
-
-	/**
-	 * Unmarshals an xCal property element.
-	 * @param <T> the property class
-	 * @param innerXml the inner XML of the property element
-	 * @param marshaller the marshaller object
-	 * @return the unmarshal result
-	 */
-	public static <T extends ICalProperty> Result<T> parseXCalProperty(String innerXml, ICalPropertyScribe<T> marshaller) {
-		Document document = xcalProperty(marshaller, innerXml);
-		Element element = XmlUtils.getRootElement(document);
-		return marshaller.parseXml(element, new ICalParameters());
 	}
 
 	public static <T> T[] each(T... values) {

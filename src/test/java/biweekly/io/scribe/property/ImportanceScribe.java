@@ -1,11 +1,9 @@
 package biweekly.io.scribe.property;
 
-import java.util.List;
-
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
 import biweekly.io.SkipMeException;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
@@ -79,7 +77,7 @@ public class ImportanceScribe extends ICalPropertyScribe<Importance> {
 	//required
 	//parses the property from a plain-text iCal
 	@Override
-	protected Importance _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected Importance _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		value = unescape(value);
 		return parse(value, dataType);
 	}
@@ -107,7 +105,7 @@ public class ImportanceScribe extends ICalPropertyScribe<Importance> {
 	//optional
 	//reads the property from an XML document (xCal)
 	@Override
-	protected Importance _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected Importance _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		String text = element.first(ICalDataType.TEXT);
 		if (text != null) {
 			return new Importance(text);
@@ -135,7 +133,7 @@ public class ImportanceScribe extends ICalPropertyScribe<Importance> {
 	//optional
 	//reads the property from a JSON document (jCal)
 	@Override
-	protected Importance _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected Importance _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		String valueStr = value.asSingle();
 		return parse(valueStr, dataType);
 	}

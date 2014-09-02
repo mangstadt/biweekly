@@ -1,12 +1,10 @@
 package biweekly.io.scribe.property;
 
 import java.util.Iterator;
-import java.util.List;
 
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
-import biweekly.Warning;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -73,9 +71,9 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 	}
 
 	@Override
-	protected Geo _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected Geo _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		String latitudeStr, longitudeStr;
-		switch (version) {
+		switch (context.getVersion()) {
 		case V1_0:
 			Iterator<String> it1 = list(value).iterator();
 			latitudeStr = it1.hasNext() ? it1.next() : null;
@@ -114,7 +112,7 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 	}
 
 	@Override
-	protected Geo _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected Geo _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		String latitudeStr = element.first("latitude");
 		String longitudeStr = element.first("longitude");
 		if (latitudeStr == null && longitudeStr == null) {
@@ -146,7 +144,7 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 	}
 
 	@Override
-	protected Geo _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected Geo _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		StructuredIterator it = structured(value);
 		String latitudeStr = it.nextString();
 		String longitudeStr = it.nextString();

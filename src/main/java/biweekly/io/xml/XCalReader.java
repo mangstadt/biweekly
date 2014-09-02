@@ -16,8 +16,11 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -43,17 +46,22 @@ import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
+import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseContext;
+import biweekly.io.ParseContext.TimezonedDate;
 import biweekly.io.ParseWarnings;
 import biweekly.io.SkipMeException;
+import biweekly.io.TimezoneInfo;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
-import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.TimezoneId;
 import biweekly.property.Version;
 import biweekly.property.Xml;
+import biweekly.util.ICalDateFormat;
 import biweekly.util.XmlUtils;
 
 /*
@@ -112,8 +120,10 @@ public class XCalReader implements Closeable {
 
 	private volatile ICalendar readICal;
 	private final ParseWarnings warnings = new ParseWarnings();
+	private TimezoneInfo tzinfo;
 	private volatile TransformerException thrown;
 	private volatile ScribeIndex index = new ScribeIndex();
+	private ParseContext context;
 
 	private final ReadThread thread = new ReadThread();
 	private final Object lock = new Object();
@@ -216,6 +226,15 @@ public class XCalReader implements Closeable {
 	}
 
 	/**
+	 * Gets the timezone info of the last iCalendar object that was read. This
+	 * object is recreated every time a new iCalendar object is read.
+	 * @return the timezone info
+	 */
+	public TimezoneInfo getTimezoneInfo() {
+		return tzinfo;
+	}
+
+	/**
 	 * Reads the next iCalendar object from the xCal stream.
 	 * @return the next iCalendar object or null if there are no more
 	 * @throws TransformerException if there's a problem reading from the stream
@@ -223,6 +242,8 @@ public class XCalReader implements Closeable {
 	public ICalendar readNext() throws TransformerException {
 		readICal = null;
 		warnings.clear();
+		context = new ParseContext();
+		tzinfo = new TimezoneInfo();
 		thrown = null;
 
 		if (!thread.started) {
@@ -248,6 +269,69 @@ public class XCalReader implements Closeable {
 
 		if (thrown != null) {
 			throw thrown;
+		}
+
+		if (readICal == null) {
+			return null;
+		}
+
+		//handle timezones
+		for (Map.Entry<String, List<TimezonedDate>> entry : context.getTimezonedDates()) {
+			//find the VTIMEZONE component with the given TZID
+			String tzid = entry.getKey();
+			VTimezone component = null;
+			for (VTimezone vtimezone : readICal.getTimezones()) {
+				TimezoneId timezoneId = vtimezone.getTimezoneId();
+				if (timezoneId != null && tzid.equals(timezoneId.getValue())) {
+					component = vtimezone;
+					break;
+				}
+			}
+
+			TimeZone timezone = null;
+			if (component == null) {
+				//A VTIMEZONE component couldn't found
+				//so treat the TZID parameter value as an Olsen timezone ID
+				timezone = ICalDateFormat.parseTimeZoneId(tzid);
+				if (timezone == null) {
+					warnings.add(null, null, Warning.parse(38, tzid));
+				} else {
+					warnings.add(null, null, Warning.parse(37, tzid));
+				}
+			} else {
+				//TODO convert the VTIMEZONE component to a Java TimeZone object
+				//TODO for now, treat the TZID as an Olsen timezone (which is what biweekly used to do) 
+				timezone = ICalDateFormat.parseTimeZoneId(tzid);
+				if (timezone == null) {
+					timezone = TimeZone.getDefault();
+				}
+			}
+
+			if (timezone == null) {
+				//timezone could not be determined
+				continue;
+			}
+
+			//assign this VTIMEZONE component to the TimeZone object
+			tzinfo.assign(component, timezone);
+
+			List<TimezonedDate> timezonedDates = entry.getValue();
+			for (TimezonedDate timezonedDate : timezonedDates) {
+				//assign the property to the timezone
+				ICalProperty property = timezonedDate.getProperty();
+				tzinfo.setTimezone(property, timezone);
+				property.getParameters().setTimezoneId(null); //remove the TZID parameter
+
+				//parse the date string again under its real timezone
+				Date realDate = ICalDateFormat.parse(timezonedDate.getDateStr(), timezone);
+
+				//update the Date object with the new timestamp
+				timezonedDate.getDate().setTime(realDate.getTime()); //the one time I am glad that Date objects are mutable... xD
+			}
+		}
+
+		for (ICalProperty property : context.getFloatingDates()) {
+			tzinfo.setUseFloatingTime(property, true);
 		}
 
 		return readICal;
@@ -463,6 +547,8 @@ public class XCalReader implements Closeable {
 					break;
 
 				case property:
+					context.getWarnings().clear();
+
 					propertyElement.appendChild(DOC.createTextNode(textContent));
 
 					//unmarshal property and add to parent component
@@ -470,15 +556,14 @@ public class XCalReader implements Closeable {
 					String propertyName = localName;
 					ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyQName);
 					try {
-						Result<? extends ICalProperty> result = scribe.parseXml(propertyElement, parameters);
-						ICalProperty property = result.getProperty();
-
+						ICalProperty property = scribe.parseXml(propertyElement, parameters, context);
 						if (property instanceof Version && curComponent instanceof ICalendar) {
 							Version versionProp = (Version) property;
 							ICalVersion version = versionProp.toICalVersion();
 							if (version != null) {
 								ICalendar ical = (ICalendar) curComponent;
 								ical.setVersion(version);
+								context.setVersion(version);
 
 								propertyElement = null;
 								break;
@@ -486,7 +571,7 @@ public class XCalReader implements Closeable {
 						}
 
 						curComponent.addProperty(property);
-						for (Warning warning : result.getWarnings()) {
+						for (Warning warning : context.getWarnings()) {
 							warnings.add(null, propertyName, warning);
 						}
 					} catch (SkipMeException e) {
@@ -496,8 +581,7 @@ public class XCalReader implements Closeable {
 						warnings.add(null, propertyName, 33, xml, e.getMessage());
 
 						scribe = index.getPropertyScribe(Xml.class);
-						Result<? extends ICalProperty> result = scribe.parseXml(propertyElement, parameters);
-						ICalProperty property = result.getProperty();
+						ICalProperty property = scribe.parseXml(propertyElement, parameters, context);
 						curComponent.addProperty(property);
 					}
 

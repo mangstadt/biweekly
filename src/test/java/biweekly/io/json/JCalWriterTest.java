@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Arrays;
-import java.util.List;
 import java.util.TimeZone;
 
 import org.junit.Rule;
@@ -20,12 +19,12 @@ import org.junit.rules.TemporaryFolder;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
-import biweekly.Warning;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.StandardTime;
 import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
+import biweekly.io.ParseContext;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
@@ -646,7 +645,7 @@ public class JCalWriterTest {
 		}
 
 		@Override
-		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+		protected TestProperty _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 			return new TestProperty(value);
 		}
 
@@ -667,7 +666,7 @@ public class JCalWriterTest {
 		}
 
 		@Override
-		protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+		protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 			return new Version(value);
 		}
 

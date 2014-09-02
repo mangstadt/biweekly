@@ -1,10 +1,8 @@
 package biweekly.io.scribe.property;
 
-import java.util.List;
-
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -95,7 +93,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 	}
 
 	@Override
-	protected Attachment _parseText(String value, ICalDataType dataType, ICalParameters parameters, ICalVersion version, List<Warning> warnings) {
+	protected Attachment _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		value = unescape(value);
 
 		if (dataType == ICalDataType.BINARY || parameters.getEncoding() == Encoding.BASE64) {
@@ -122,7 +120,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 	}
 
 	@Override
-	protected Attachment _parseXml(XCalElement element, ICalParameters parameters, List<Warning> warnings) {
+	protected Attachment _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		String uri = element.first(ICalDataType.URI);
 		if (uri != null) {
 			return new Attachment(null, uri);
@@ -152,7 +150,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 	}
 
 	@Override
-	protected Attachment _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, List<Warning> warnings) {
+	protected Attachment _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		String valueStr = value.asSingle();
 
 		if (dataType == ICalDataType.BINARY) {
