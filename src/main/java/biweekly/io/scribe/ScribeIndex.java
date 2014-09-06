@@ -1,12 +1,7 @@
 package biweekly.io.scribe;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.namespace.QName;
 
@@ -114,7 +109,7 @@ import biweekly.property.Xml;
  * <p>
  * Manages a listing of component and property scribes. This is useful for
  * injecting the scribes of any experimental components or properties you have
- * defined into a reader or writer object. The same object instance can be
+ * defined into a reader or writer object. The same ScribeIndex instance can be
  * reused and injected into multiple reader/writer classes.
  * </p>
  * <p>
@@ -128,17 +123,17 @@ import biweekly.property.Xml;
  * index.register(new CustomComponentScribe());
  * 
  * //inject into a reader class
- * ICalReader textReader = new ICalReader(...);
- * textReader.setRegistrar(index);
+ * ICalReader reader = new ICalReader(...);
+ * textReader.setScribeIndex(index);
  * List&lt;ICalendar&gt; icals = new ArrayList&lt;ICalendar&gt;();
  * ICalendar ical;
- * while ((ical = textReader.readNext()) != null){
+ * while ((ical = reader.readNext()) != null){
  *   icals.add(ical);
  * }
  * 
  * //inject the same instance in another reader/writer class
  * JCalWriter writer = new JCalWriter(...);
- * writer.setRegistrar(index);
+ * writer.setScribeIndex(index);
  * for (ICalendar ical : icals){
  *   writer.write(ical);
  * }
@@ -246,14 +241,14 @@ public class ScribeIndex {
 	public ICalComponentScribe<? extends ICalComponent> getComponentScribe(String componentName) {
 		componentName = componentName.toUpperCase();
 
-		ICalComponentScribe<? extends ICalComponent> marshaller = experimentalCompByName.get(componentName);
-		if (marshaller != null) {
-			return marshaller;
+		ICalComponentScribe<? extends ICalComponent> scribe = experimentalCompByName.get(componentName);
+		if (scribe != null) {
+			return scribe;
 		}
 
-		marshaller = standardCompByName.get(componentName);
-		if (marshaller != null) {
-			return marshaller;
+		scribe = standardCompByName.get(componentName);
+		if (scribe != null) {
+			return scribe;
 		}
 
 		return new RawComponentScribe(componentName);
@@ -267,14 +262,14 @@ public class ScribeIndex {
 	public ICalPropertyScribe<? extends ICalProperty> getPropertyScribe(String propertyName) {
 		propertyName = propertyName.toUpperCase();
 
-		ICalPropertyScribe<? extends ICalProperty> marshaller = experimentalPropByName.get(propertyName);
-		if (marshaller != null) {
-			return marshaller;
+		ICalPropertyScribe<? extends ICalProperty> scribe = experimentalPropByName.get(propertyName);
+		if (scribe != null) {
+			return scribe;
 		}
 
-		marshaller = standardPropByName.get(propertyName);
-		if (marshaller != null) {
-			return marshaller;
+		scribe = standardPropByName.get(propertyName);
+		if (scribe != null) {
+			return scribe;
 		}
 
 		return new RawPropertyScribe(propertyName);
@@ -286,9 +281,9 @@ public class ScribeIndex {
 	 * @return the component scribe or null if not found
 	 */
 	public ICalComponentScribe<? extends ICalComponent> getComponentScribe(Class<? extends ICalComponent> clazz) {
-		ICalComponentScribe<? extends ICalComponent> marshaller = experimentalCompByClass.get(clazz);
-		if (marshaller != null) {
-			return marshaller;
+		ICalComponentScribe<? extends ICalComponent> scribe = experimentalCompByClass.get(clazz);
+		if (scribe != null) {
+			return scribe;
 		}
 
 		return standardCompByClass.get(clazz);
@@ -300,9 +295,9 @@ public class ScribeIndex {
 	 * @return the property scribe or null if not found
 	 */
 	public ICalPropertyScribe<? extends ICalProperty> getPropertyScribe(Class<? extends ICalProperty> clazz) {
-		ICalPropertyScribe<? extends ICalProperty> marshaller = experimentalPropByClass.get(clazz);
-		if (marshaller != null) {
-			return marshaller;
+		ICalPropertyScribe<? extends ICalProperty> scribe = experimentalPropByClass.get(clazz);
+		if (scribe != null) {
+			return scribe;
 		}
 
 		return standardPropByClass.get(clazz);
@@ -342,14 +337,14 @@ public class ScribeIndex {
 	 * @return the property scribe or a {@link XmlScribe} if not found
 	 */
 	public ICalPropertyScribe<? extends ICalProperty> getPropertyScribe(QName qname) {
-		ICalPropertyScribe<? extends ICalProperty> marshaller = experimentalPropByQName.get(qname);
-		if (marshaller != null) {
-			return marshaller;
+		ICalPropertyScribe<? extends ICalProperty> scribe = experimentalPropByQName.get(qname);
+		if (scribe != null) {
+			return scribe;
 		}
 
-		marshaller = standardPropByQName.get(qname);
-		if (marshaller != null) {
-			return marshaller;
+		scribe = standardPropByQName.get(qname);
+		if (scribe != null) {
+			return scribe;
 		}
 
 		if (XCalNamespaceContext.XCAL_NS.equals(qname.getNamespaceURI())) {
@@ -398,43 +393,6 @@ public class ScribeIndex {
 	}
 
 	/**
-	 * Checks to see if this scribe index has scribes registered for all of the
-	 * components/properties in an iCalendar object.
-	 * @param ical the iCalendar object
-	 * @return the component/property classes that do *not* have scribes
-	 */
-	public Collection<Class<? extends Object>> hasScribesFor(ICalendar ical) {
-		Set<Class<? extends Object>> unregistered = new HashSet<Class<? extends Object>>();
-		List<ICalComponent> components = new ArrayList<ICalComponent>();
-		components.add(ical);
-
-		while (!components.isEmpty()) {
-			ICalComponent component = components.remove(components.size() - 1);
-
-			Class<? extends ICalComponent> componentClass = component.getClass();
-			if (componentClass != RawComponent.class && getComponentScribe(componentClass) == null) {
-				unregistered.add(componentClass);
-			}
-
-			for (Map.Entry<Class<? extends ICalProperty>, List<ICalProperty>> entry : component.getProperties()) {
-				List<ICalProperty> properties = entry.getValue();
-				if (properties.isEmpty()) {
-					continue;
-				}
-
-				Class<? extends ICalProperty> clazz = entry.getKey();
-				if (clazz != RawProperty.class && getPropertyScribe(clazz) == null) {
-					unregistered.add(clazz);
-				}
-			}
-
-			components.addAll(component.getComponents().values());
-		}
-
-		return unregistered;
-	}
-
-	/**
 	 * Convenience method for getting the scribe of the root iCalendar component
 	 * ("VCALENDAR").
 	 * @return the scribe
@@ -443,14 +401,14 @@ public class ScribeIndex {
 		return (ICalendarScribe) standardCompByClass.get(ICalendar.class);
 	}
 
-	private static void registerStandard(ICalComponentScribe<? extends ICalComponent> marshaller) {
-		standardCompByName.put(marshaller.getComponentName().toUpperCase(), marshaller);
-		standardCompByClass.put(marshaller.getComponentClass(), marshaller);
+	private static void registerStandard(ICalComponentScribe<? extends ICalComponent> scribe) {
+		standardCompByName.put(scribe.getComponentName().toUpperCase(), scribe);
+		standardCompByClass.put(scribe.getComponentClass(), scribe);
 	}
 
-	private static void registerStandard(ICalPropertyScribe<? extends ICalProperty> marshaller) {
-		standardPropByName.put(marshaller.getPropertyName().toUpperCase(), marshaller);
-		standardPropByClass.put(marshaller.getPropertyClass(), marshaller);
-		standardPropByQName.put(marshaller.getQName(), marshaller);
+	private static void registerStandard(ICalPropertyScribe<? extends ICalProperty> scribe) {
+		standardPropByName.put(scribe.getPropertyName().toUpperCase(), scribe);
+		standardPropByClass.put(scribe.getPropertyClass(), scribe);
+		standardPropByQName.put(scribe.getQName(), scribe);
 	}
 }

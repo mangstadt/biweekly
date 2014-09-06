@@ -1,17 +1,19 @@
 package biweekly.io;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.IOException;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
 import biweekly.component.VEvent;
-import biweekly.io.scribe.ScribeIndex;
 import biweekly.property.ICalProperty;
 
 /*
@@ -42,56 +44,81 @@ import biweekly.property.ICalProperty;
 /**
  * @author Michael Angstadt
  */
-public class ScribeIndexTest {
-	private final ScribeIndex index = new ScribeIndex();
+public class StreamWriterTest {
+	private StreamWriterImpl writer;
+	private ICalendar ical;
 
-	@Test
-	public void hasScribesFor_no_missing_scribes() {
-		ICalendar ical = new ICalendar();
-
-		assertHasScribesFor(ical);
+	@Before
+	public void before() {
+		writer = spy(new StreamWriterImpl());
+		ical = new ICalendar();
 	}
 
 	@Test
-	public void hasScribesFor_property_root() {
-		ICalendar ical = new ICalendar();
+	public void empty_ical() throws Exception {
+		writer.write(ical);
+
+		verify(writer)._write(ical);
+	}
+
+	@Test
+	public void unregistered_property() throws Exception {
 		ical.addProperty(new TestProperty());
 
-		assertHasScribesFor(ical, TestProperty.class);
+		try {
+			writer.write(ical);
+			fail("Expected IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			//expected
+		}
+
+		verify(writer, never())._write(ical);
 	}
 
 	@Test
-	public void hasScribesFor_property_in_component() {
-		ICalendar ical = new ICalendar();
-		VEvent event = new VEvent();
-		event.addProperty(new TestProperty());
-		ical.addComponent(event);
+	public void registered_property() throws Exception {
+		ical.setProductId("value");
+		writer.write(ical);
 
-		assertHasScribesFor(ical, TestProperty.class);
+		verify(writer)._write(ical);
 	}
 
 	@Test
-	public void hasScribesFor_component_root() {
-		ICalendar ical = new ICalendar();
+	public void unregistered_component() throws Exception {
 		ical.addComponent(new TestComponent());
 
-		assertHasScribesFor(ical, TestComponent.class);
+		try {
+			writer.write(ical);
+			fail("Expected IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			//expected
+		}
+
+		verify(writer, never())._write(ical);
 	}
 
 	@Test
-	public void hasScribesFor_component_in_component() {
-		ICalendar ical = new ICalendar();
-		VEvent event = new VEvent();
-		event.addComponent(new TestComponent());
-		ical.addComponent(event);
+	public void registered_component() throws Exception {
+		ical.addEvent(new VEvent());
+		writer.write(ical);
 
-		assertHasScribesFor(ical, TestComponent.class);
+		verify(writer)._write(ical);
 	}
 
-	private void assertHasScribesFor(ICalendar ical, Object... propertiesAndComponents) {
-		List<Object> actual = new ArrayList<Object>(index.hasScribesFor(ical));
-		List<Object> expected = Arrays.<Object> asList(propertiesAndComponents);
-		assertEquals(expected, actual);
+	private class StreamWriterImpl extends StreamWriter {
+		@Override
+		protected ICalVersion getTargetVersion() {
+			return ICalVersion.V2_0;
+		}
+
+		@Override
+		protected void _write(ICalendar ical) throws IOException {
+			//empty
+		}
+
+		public void close() throws IOException {
+			//empty
+		}
 	}
 
 	private class TestProperty extends ICalProperty {

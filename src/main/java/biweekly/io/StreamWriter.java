@@ -2,15 +2,22 @@ package biweekly.io;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
+import biweekly.component.RawComponent;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.property.ICalProperty;
+import biweekly.property.RawProperty;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -56,7 +63,7 @@ public abstract class StreamWriter implements Closeable {
 	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	public void write(ICalendar ical) throws IOException {
-		Collection<Class<? extends Object>> unregistered = index.hasScribesFor(ical);
+		Collection<Class<? extends Object>> unregistered = findScribeless(ical);
 		if (!unregistered.isEmpty()) {
 			throw new IllegalArgumentException("No scribes were found the following component/property classes: " + unregistered);
 		}
@@ -138,5 +145,42 @@ public abstract class StreamWriter implements Closeable {
 	 */
 	public void setScribeIndex(ScribeIndex scribe) {
 		this.index = scribe;
+	}
+
+	/**
+	 * Gets the component/property classes that don't have scribes associated
+	 * with them.
+	 * @param ical the iCalendar object
+	 * @return the component/property classes
+	 */
+	private Collection<Class<? extends Object>> findScribeless(ICalendar ical) {
+		Set<Class<? extends Object>> unregistered = new HashSet<Class<? extends Object>>();
+		List<ICalComponent> components = new ArrayList<ICalComponent>();
+		components.add(ical);
+
+		while (!components.isEmpty()) {
+			ICalComponent component = components.remove(components.size() - 1);
+
+			Class<? extends ICalComponent> componentClass = component.getClass();
+			if (componentClass != RawComponent.class && index.getComponentScribe(componentClass) == null) {
+				unregistered.add(componentClass);
+			}
+
+			for (Map.Entry<Class<? extends ICalProperty>, List<ICalProperty>> entry : component.getProperties()) {
+				List<ICalProperty> properties = entry.getValue();
+				if (properties.isEmpty()) {
+					continue;
+				}
+
+				Class<? extends ICalProperty> clazz = entry.getKey();
+				if (clazz != RawProperty.class && index.getPropertyScribe(clazz) == null) {
+					unregistered.add(clazz);
+				}
+			}
+
+			components.addAll(component.getComponents().values());
+		}
+
+		return unregistered;
 	}
 }
