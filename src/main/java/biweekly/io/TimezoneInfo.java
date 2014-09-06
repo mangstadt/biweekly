@@ -37,7 +37,7 @@ import biweekly.property.TimezoneId;
  */
 
 /**
- * Holds timezone-related settings that are used when writing iCalendar objects.
+ * Holds the timezone-related settings of an iCalendar object.
  * @author Michael Angstadt
  */
 public class TimezoneInfo {
