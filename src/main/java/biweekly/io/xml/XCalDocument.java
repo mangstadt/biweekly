@@ -19,11 +19,10 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.OutputKeys;
@@ -44,10 +43,8 @@ import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
-import biweekly.io.ParseContext;
-import biweekly.io.ParseContext.TimezonedDate;
-import biweekly.io.ParseWarnings;
 import biweekly.io.SkipMeException;
+import biweekly.io.StreamReader;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.ScribeIndex;
@@ -56,10 +53,8 @@ import biweekly.io.scribe.component.ICalendarScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.property.TimezoneId;
 import biweekly.property.Version;
 import biweekly.property.Xml;
-import biweekly.util.ICalDateFormat;
 import biweekly.util.IOUtils;
 import biweekly.util.XmlUtils;
 
@@ -174,8 +169,6 @@ public class XCalDocument {
 	}
 
 	private ScribeIndex index = new ScribeIndex();
-	private final List<ParseWarnings> parseWarnings = new ArrayList<ParseWarnings>();
-	private ParseContext pcontext;
 	private final Document document;
 	private final ICalVersion targetVersion = ICalVersion.V2_0;
 	private Element root;
@@ -344,21 +337,6 @@ public class XCalDocument {
 	}
 
 	/**
-	 * Gets the warnings from the last parse operation.
-	 * @return the warnings (it is a "list of lists"--each parsed
-	 * {@link ICalendar} object has its own warnings list)
-	 * @see #parseAll
-	 * @see #parseFirst
-	 */
-	public List<List<String>> getParseWarnings() {
-		List<List<String>> warnings = new ArrayList<List<String>>();
-		for (ParseWarnings pw : parseWarnings) {
-			warnings.add(pw.copy());
-		}
-		return warnings;
-	}
-
-	/**
 	 * Gets the timezone-related info for this writer.
 	 * @return the timezone-related info
 	 */
@@ -375,119 +353,12 @@ public class XCalDocument {
 	}
 
 	/**
-	 * Parses all the {@link ICalendar} objects from the xCal document.
-	 * @return the iCalendar objects
+	 * Creates a {@link StreamReader} object that parses the iCalendar objects
+	 * from this XML document.
+	 * @return the reader
 	 */
-	public List<ICalendar> parseAll() {
-		parseWarnings.clear();
-		pcontext = new ParseContext();
-		tzinfo = new TimezoneInfo();
-
-		if (root == null) {
-			return Collections.emptyList();
-		}
-
-		List<ICalendar> icals = new ArrayList<ICalendar>();
-		for (Element vcalendarElement : getVCalendarElements()) {
-			ParseWarnings warnings = new ParseWarnings();
-			ICalendar ical = parseICal(vcalendarElement, warnings);
-			handleTimezones(ical, warnings);
-			icals.add(ical);
-			this.parseWarnings.add(warnings);
-		}
-
-		return icals;
-	}
-
-	/**
-	 * Parses the first {@link ICalendar} object from the xCal document.
-	 * @return the iCalendar object or null if there are none
-	 */
-	public ICalendar parseFirst() {
-		parseWarnings.clear();
-		pcontext = new ParseContext();
-		tzinfo = new TimezoneInfo();
-
-		if (root == null) {
-			return null;
-		}
-
-		ParseWarnings warnings = new ParseWarnings();
-		parseWarnings.add(warnings);
-
-		List<Element> vcalendarElements = getVCalendarElements();
-		if (vcalendarElements.isEmpty()) {
-			return null;
-		}
-
-		ICalendar ical = parseICal(vcalendarElements.get(0), warnings);
-		handleTimezones(ical, warnings);
-		return ical;
-	}
-
-	private void handleTimezones(ICalendar ical, ParseWarnings warnings) {
-		if (ical == null) {
-			return;
-		}
-
-		//handle timezones
-		for (Map.Entry<String, List<TimezonedDate>> entry : pcontext.getTimezonedDates()) {
-			//find the VTIMEZONE component with the given TZID
-			String tzid = entry.getKey();
-			VTimezone component = null;
-			for (VTimezone vtimezone : ical.getTimezones()) {
-				TimezoneId timezoneId = vtimezone.getTimezoneId();
-				if (timezoneId != null && tzid.equals(timezoneId.getValue())) {
-					component = vtimezone;
-					break;
-				}
-			}
-
-			TimeZone timezone = null;
-			if (component == null) {
-				//A VTIMEZONE component couldn't found
-				//so treat the TZID parameter value as an Olsen timezone ID
-				timezone = ICalDateFormat.parseTimeZoneId(tzid);
-				if (timezone == null) {
-					warnings.add(null, null, Warning.parse(38, tzid));
-				} else {
-					warnings.add(null, null, Warning.parse(37, tzid));
-				}
-			} else {
-				//TODO convert the VTIMEZONE component to a Java TimeZone object
-				//TODO for now, treat the TZID as an Olsen timezone (which is what biweekly used to do) 
-				timezone = ICalDateFormat.parseTimeZoneId(tzid);
-				if (timezone == null) {
-					timezone = TimeZone.getDefault();
-				}
-			}
-
-			if (timezone == null) {
-				//timezone could not be determined
-				continue;
-			}
-
-			//assign this VTIMEZONE component to the TimeZone object
-			tzinfo.assign(component, timezone);
-
-			List<TimezonedDate> timezonedDates = entry.getValue();
-			for (TimezonedDate timezonedDate : timezonedDates) {
-				//assign the property to the timezone
-				ICalProperty property = timezonedDate.getProperty();
-				tzinfo.setTimezone(property, timezone);
-				property.getParameters().setTimezoneId(null); //remove the TZID parameter
-
-				//parse the date string again under its real timezone
-				Date realDate = ICalDateFormat.parse(timezonedDate.getDateStr(), timezone);
-
-				//update the Date object with the new timestamp
-				timezonedDate.getDate().setTime(realDate.getTime()); //the one time I am glad that Date objects are mutable... xD
-			}
-		}
-
-		for (ICalProperty property : pcontext.getFloatingDates()) {
-			tzinfo.setUseFloatingTime(property, true);
-		}
+	public StreamReader reader() {
+		return new XCalDocumentStreamReader();
 	}
 
 	/**
@@ -724,120 +595,6 @@ public class XCalDocument {
 		return parametersWrapperElement;
 	}
 
-	private ICalendar parseICal(Element icalElement, ParseWarnings warnings) {
-		ICalComponent root = parseComponent(icalElement, warnings);
-		if (root instanceof ICalendar) {
-			return (ICalendar) root;
-		}
-
-		//shouldn't happen, since only <vcalendar> elements are passed into this method
-		ICalendar ical = icalMarshaller.emptyInstance();
-		ical.addComponent(root);
-		return ical;
-	}
-
-	private ICalComponent parseComponent(Element componentElement, ParseWarnings warnings) {
-		//create the component object
-		ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(componentElement.getLocalName());
-		ICalComponent component = scribe.emptyInstance();
-		boolean isICalendar = component instanceof ICalendar;
-
-		//parse properties
-		for (Element propertyWrapperElement : getChildElements(componentElement, PROPERTIES)) { //there should be only one <properties> element, but parse them all incase there are more
-			for (Element propertyElement : XmlUtils.toElementList(propertyWrapperElement.getChildNodes())) {
-				ICalProperty property = parseProperty(propertyElement, warnings);
-				if (property == null) {
-					continue;
-				}
-
-				//set "ICalendar.version" if the value of the VERSION property is recognized
-				//otherwise, unmarshal VERSION like a normal property
-				if (isICalendar && property instanceof Version) {
-					Version version = (Version) property;
-					ICalVersion icalVersion = version.toICalVersion();
-					if (icalVersion != null) {
-						ICalendar ical = (ICalendar) component;
-						ical.setVersion(icalVersion);
-						continue;
-					}
-				}
-
-				component.addProperty(property);
-			}
-		}
-
-		//parse sub-components
-		for (Element componentWrapperElement : getChildElements(componentElement, COMPONENTS)) { //there should be only one <components> element, but parse them all incase there are more
-			for (Element subComponentElement : XmlUtils.toElementList(componentWrapperElement.getChildNodes())) {
-				if (!XCAL_NS.equals(subComponentElement.getNamespaceURI())) {
-					continue;
-				}
-
-				ICalComponent subComponent = parseComponent(subComponentElement, warnings);
-				component.addComponent(subComponent);
-			}
-		}
-
-		return component;
-	}
-
-	private ICalProperty parseProperty(Element propertyElement, ParseWarnings warnings) {
-		ICalParameters parameters = parseParameters(propertyElement);
-		String propertyName = propertyElement.getLocalName();
-		QName qname = new QName(propertyElement.getNamespaceURI(), propertyName);
-
-		pcontext.getWarnings().clear();
-		ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(qname);
-		try {
-			ICalProperty property = scribe.parseXml(propertyElement, parameters, pcontext);
-			for (Warning warning : pcontext.getWarnings()) {
-				warnings.add(null, propertyName, warning);
-			}
-			return property;
-		} catch (SkipMeException e) {
-			warnings.add(null, propertyName, 0, e.getMessage());
-			return null;
-		} catch (CannotParseException e) {
-			warnings.add(null, propertyName, 16, e.getMessage());
-
-			scribe = index.getPropertyScribe(Xml.class);
-			return scribe.parseXml(propertyElement, parameters, pcontext);
-		}
-	}
-
-	private ICalParameters parseParameters(Element propertyElement) {
-		ICalParameters parameters = new ICalParameters();
-
-		for (Element parametersElement : getChildElements(propertyElement, PARAMETERS)) { //there should be only one <parameters> element, but parse them all incase there are more
-			List<Element> paramElements = XmlUtils.toElementList(parametersElement.getChildNodes());
-			for (Element paramElement : paramElements) {
-				if (!XCAL_NS.equals(paramElement.getNamespaceURI())) {
-					continue;
-				}
-
-				String name = paramElement.getLocalName().toUpperCase();
-				List<Element> valueElements = XmlUtils.toElementList(paramElement.getChildNodes());
-				if (valueElements.isEmpty()) {
-					//this should never be true if the xCal follows the specs
-					String value = paramElement.getTextContent();
-					parameters.put(name, value);
-					continue;
-				}
-
-				for (Element valueElement : valueElements) {
-					if (!XCAL_NS.equals(valueElement.getNamespaceURI())) {
-						continue;
-					}
-
-					String value = valueElement.getTextContent();
-					parameters.put(name, value);
-				}
-			}
-		}
-
-		return parameters;
-	}
-
 	private Element buildElement(String localName) {
 		return buildElement(new QName(XCAL_NS, localName));
 	}
@@ -857,7 +614,7 @@ public class XCalDocument {
 	}
 
 	private List<Element> getVCalendarElements() {
-		return getChildElements(root, VCALENDAR);
+		return (root == null) ? Collections.<Element> emptyList() : getChildElements(root, VCALENDAR);
 	}
 
 	private List<Element> getChildElements(Element parent, QName qname) {
@@ -874,5 +631,137 @@ public class XCalDocument {
 	@Override
 	public String toString() {
 		return write(2);
+	}
+
+	private class XCalDocumentStreamReader extends StreamReader {
+		private final Iterator<Element> vcalendarElements = getVCalendarElements().iterator();
+
+		@Override
+		protected ICalendar _readNext() throws IOException {
+			if (!vcalendarElements.hasNext()) {
+				return null;
+			}
+
+			context.setVersion(ICalVersion.V2_0);
+			Element vcalendarElement = vcalendarElements.next();
+			return parseICal(vcalendarElement);
+		}
+
+		private ICalendar parseICal(Element icalElement) {
+			ICalComponent root = parseComponent(icalElement);
+			if (root instanceof ICalendar) {
+				return (ICalendar) root;
+			}
+
+			//shouldn't happen, since only <vcalendar> elements are passed into this method
+			ICalendar ical = icalMarshaller.emptyInstance();
+			ical.addComponent(root);
+			return ical;
+		}
+
+		private ICalComponent parseComponent(Element componentElement) {
+			//create the component object
+			ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(componentElement.getLocalName());
+			ICalComponent component = scribe.emptyInstance();
+			boolean isICalendar = component instanceof ICalendar;
+
+			//parse properties
+			for (Element propertyWrapperElement : getChildElements(componentElement, PROPERTIES)) { //there should be only one <properties> element, but parse them all incase there are more
+				for (Element propertyElement : XmlUtils.toElementList(propertyWrapperElement.getChildNodes())) {
+					ICalProperty property = parseProperty(propertyElement);
+					if (property == null) {
+						continue;
+					}
+
+					//set "ICalendar.version" if the value of the VERSION property is recognized
+					//otherwise, unmarshal VERSION like a normal property
+					if (isICalendar && property instanceof Version) {
+						Version version = (Version) property;
+						ICalVersion icalVersion = version.toICalVersion();
+						if (icalVersion != null) {
+							context.setVersion(icalVersion);
+							continue;
+						}
+					}
+
+					component.addProperty(property);
+				}
+			}
+
+			//parse sub-components
+			for (Element componentWrapperElement : getChildElements(componentElement, COMPONENTS)) { //there should be only one <components> element, but parse them all incase there are more
+				for (Element subComponentElement : XmlUtils.toElementList(componentWrapperElement.getChildNodes())) {
+					if (!XCAL_NS.equals(subComponentElement.getNamespaceURI())) {
+						continue;
+					}
+
+					ICalComponent subComponent = parseComponent(subComponentElement);
+					component.addComponent(subComponent);
+				}
+			}
+
+			return component;
+		}
+
+		private ICalProperty parseProperty(Element propertyElement) {
+			ICalParameters parameters = parseParameters(propertyElement);
+			String propertyName = propertyElement.getLocalName();
+			QName qname = new QName(propertyElement.getNamespaceURI(), propertyName);
+
+			context.getWarnings().clear();
+			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(qname);
+			try {
+				ICalProperty property = scribe.parseXml(propertyElement, parameters, context);
+				for (Warning warning : context.getWarnings()) {
+					warnings.add(null, propertyName, warning);
+				}
+				return property;
+			} catch (SkipMeException e) {
+				warnings.add(null, propertyName, 0, e.getMessage());
+				return null;
+			} catch (CannotParseException e) {
+				warnings.add(null, propertyName, 16, e.getMessage());
+
+				scribe = index.getPropertyScribe(Xml.class);
+				return scribe.parseXml(propertyElement, parameters, context);
+			}
+		}
+
+		private ICalParameters parseParameters(Element propertyElement) {
+			ICalParameters parameters = new ICalParameters();
+
+			for (Element parametersElement : getChildElements(propertyElement, PARAMETERS)) { //there should be only one <parameters> element, but parse them all incase there are more
+				List<Element> paramElements = XmlUtils.toElementList(parametersElement.getChildNodes());
+				for (Element paramElement : paramElements) {
+					if (!XCAL_NS.equals(paramElement.getNamespaceURI())) {
+						continue;
+					}
+
+					String name = paramElement.getLocalName().toUpperCase();
+					List<Element> valueElements = XmlUtils.toElementList(paramElement.getChildNodes());
+					if (valueElements.isEmpty()) {
+						//this should never be true if the xCal follows the specs
+						String value = paramElement.getTextContent();
+						parameters.put(name, value);
+						continue;
+					}
+
+					for (Element valueElement : valueElements) {
+						if (!XCAL_NS.equals(valueElement.getNamespaceURI())) {
+							continue;
+						}
+
+						String value = valueElement.getTextContent();
+						parameters.put(name, value);
+					}
+				}
+			}
+
+			return parameters;
+		}
+
+		public void close() throws IOException {
+			//do nothing
+		}
 	}
 }

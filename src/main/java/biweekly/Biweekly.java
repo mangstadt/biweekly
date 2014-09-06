@@ -21,6 +21,7 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import biweekly.component.ICalComponent;
+import biweekly.io.StreamReader;
 import biweekly.io.json.JCalParseException;
 import biweekly.io.json.JCalReader;
 import biweekly.io.json.JCalWriter;
@@ -706,28 +707,33 @@ public class Biweekly {
 	static abstract class ParserChainXml<T> extends ParserChain<T> {
 		@Override
 		public ICalendar first() throws IOException, SAXException {
-			XCalDocument document = constructDocument();
-			ICalendar ical = document.parseFirst();
+			StreamReader reader = constructStreamReader();
+			ICalendar ical = reader.readNext();
 			if (warnings != null) {
-				warnings.addAll(document.getParseWarnings());
+				warnings.add(reader.getWarnings());
 			}
 			return ical;
 		}
 
 		@Override
 		public List<ICalendar> all() throws IOException, SAXException {
-			XCalDocument document = constructDocument();
-			List<ICalendar> icals = document.parseAll();
-			if (warnings != null) {
-				warnings.addAll(document.getParseWarnings());
+			StreamReader reader = constructStreamReader();
+			List<ICalendar> icals = new ArrayList<ICalendar>();
+			ICalendar ical = null;
+			while ((ical = reader.readNext()) != null) {
+				icals.add(ical);
+				if (warnings != null) {
+					warnings.add(reader.getWarnings());
+				}
 			}
 			return icals;
 		}
 
-		private XCalDocument constructDocument() throws SAXException, IOException {
+		private StreamReader constructStreamReader() throws SAXException, IOException {
 			XCalDocument parser = _constructDocument();
-			parser.setScribeIndex(index);
-			return parser;
+			StreamReader reader = parser.reader();
+			reader.setScribeIndex(index);
+			return reader;
 		}
 
 		abstract XCalDocument _constructDocument() throws IOException, SAXException;

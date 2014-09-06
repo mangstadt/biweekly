@@ -6,12 +6,11 @@ import static biweekly.util.TestUtils.assertDateEquals;
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertValidate;
-import static biweekly.util.TestUtils.assertWarningsLists;
+import static biweekly.util.TestUtils.assertWarnings;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -46,6 +45,7 @@ import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.SkipMeException;
+import biweekly.io.StreamReader;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
@@ -112,7 +112,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parseAll() throws Exception {
+	public void parse_multiple() throws Exception {
 		//@formatter:off
 		String xml =
 		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
@@ -147,10 +147,10 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		Iterator<ICalendar> it = xcal.parseAll().iterator();
+		StreamReader reader = xcal.reader();
 
 		{
-			ICalendar ical = it.next();
+			ICalendar ical = reader.readNext();
 			assertSize(ical, 1, 1);
 
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
@@ -159,10 +159,12 @@ public class XCalDocumentTest {
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
 			assertEquals("Team Meeting", event.getSummary().getValue());
+
+			assertWarnings(0, reader.getWarnings());
 		}
 
 		{
-			ICalendar ical = it.next();
+			ICalendar ical = reader.readNext();
 			assertSize(ical, 1, 1);
 
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
@@ -171,11 +173,11 @@ public class XCalDocumentTest {
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
 			assertEquals("Team Happy Hour", event.getSummary().getValue());
+
+			assertWarnings(0, reader.getWarnings());
 		}
 
-		assertFalse(it.hasNext());
-
-		assertWarningsLists(xcal.getParseWarnings(), 0, 0);
+		assertNull(reader.readNext());
 	}
 
 	@Test
@@ -193,9 +195,10 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		ICalendar ical = xcal.parseFirst();
+		StreamReader reader = xcal.reader();
+		ICalendar ical = reader.readNext();
 		assertNull(ical);
-		assertWarningsLists(xcal.getParseWarnings());
+		assertWarnings(0, reader.getWarnings());
 	}
 
 	@Test
@@ -213,9 +216,12 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		ICalendar ical = xcal.parseFirst();
+		StreamReader reader = xcal.reader();
+		ICalendar ical = reader.readNext();
 		assertNull(ical);
-		assertWarningsLists(xcal.getParseWarnings());
+
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
 	}
 
 	@Test
@@ -254,10 +260,10 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		Iterator<ICalendar> it = xcal.parseAll().iterator();
+		StreamReader reader = xcal.reader();
 
 		{
-			ICalendar ical = it.next();
+			ICalendar ical = reader.readNext();
 			assertSize(ical, 1, 1);
 
 			ProductId productId = ical.getProductId();
@@ -271,9 +277,8 @@ public class XCalDocumentTest {
 			assertEquals("Team Meeting", event.getSummary().getValue());
 		}
 
-		assertFalse(it.hasNext());
-
-		assertWarningsLists(xcal.getParseWarnings(), 0);
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
 	}
 
 	@Test
@@ -290,13 +295,16 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		ICalendar ical = xcal.parseFirst();
+		StreamReader reader = xcal.reader();
+
+		ICalendar ical = reader.readNext();
 		assertSize(ical, 0, 1);
 
 		Summary prop = ical.getProperty(Summary.class);
 		assertEquals("  This \t  is \n   a   note ", prop.getValue());
 
-		assertWarningsLists(xcal.getParseWarnings(), 0);
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
 	}
 
 	@Test
@@ -344,7 +352,9 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		ICalendar ical = xcal.parseFirst();
+		StreamReader reader = xcal.reader();
+
+		ICalendar ical = reader.readNext();
 		assertSize(ical, 0, 4);
 
 		Iterator<Summary> propIt = ical.getProperties(Summary.class).iterator();
@@ -369,8 +379,8 @@ public class XCalDocumentTest {
 		assertEquals(2, prop.getParameters().size());
 		assertEquals(Arrays.asList("a", "b"), prop.getParameters("X-FOO"));
 
-		assertFalse(propIt.hasNext());
-		assertWarningsLists(xcal.getParseWarnings(), 0);
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
 	}
 
 	@Test
@@ -391,7 +401,9 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		ICalendar ical = xcal.parseFirst();
+		StreamReader reader = xcal.reader();
+
+		ICalendar ical = reader.readNext();
 		assertSize(ical, 1, 0);
 
 		RawComponent comp = ical.getExperimentalComponent("x-party");
@@ -399,7 +411,8 @@ public class XCalDocumentTest {
 		Summary prop = comp.getProperty(Summary.class);
 		assertEquals("Party", prop.getValue());
 
-		assertWarningsLists(xcal.getParseWarnings(), 0);
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
 	}
 
 	@Test
@@ -419,12 +432,15 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		ICalendar ical = xcal.parseFirst();
+		StreamReader reader = xcal.reader();
+
+		ICalendar ical = reader.readNext();
 		assertSize(ical, 1, 0);
 
 		assertNotNull(ical.getExperimentalComponent("x-party"));
 
-		assertWarningsLists(xcal.getParseWarnings(), 0);
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
 	}
 
 	@Test
@@ -441,14 +457,17 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		ICalendar ical = xcal.parseFirst();
+		StreamReader reader = xcal.reader();
+
+		ICalendar ical = reader.readNext();
 		assertSize(ical, 0, 1);
 
 		RawProperty prop = ical.getExperimentalProperty("X-BOSS");
 		assertEquals("John Doe", prop.getValue());
 		assertEquals(ICalDataType.TEXT, prop.getDataType());
 
-		assertWarningsLists(xcal.getParseWarnings(), 0);
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
 	}
 
 	@Test
@@ -467,14 +486,17 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		xcal.registerScribe(new CompanyScribe());
-		ICalendar ical = xcal.parseFirst();
+		StreamReader reader = xcal.reader();
+		reader.registerScribe(new CompanyScribe());
+
+		ICalendar ical = reader.readNext();
 		assertSize(ical, 0, 1);
 
 		Company prop = ical.getProperty(Company.class);
 		assertEquals("John Doe", prop.getBoss());
 
-		assertWarningsLists(xcal.getParseWarnings(), 0);
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
 	}
 
 	@Test
@@ -493,14 +515,17 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		ICalendar ical = xcal.parseFirst();
+		StreamReader reader = xcal.reader();
+
+		ICalendar ical = reader.readNext();
 		assertSize(ical, 0, 1);
 
 		Xml prop = ical.getProperty(Xml.class);
 		Document expected = XmlUtils.toDocument("<m:company xmlns:m=\"http://example.com\"><m:boss>John Doe</m:boss></m:company>");
 		assertXMLEqual(expected, prop.getValue());
 
-		assertWarningsLists(xcal.getParseWarnings(), 0);
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
 	}
 
 	@Test
@@ -518,8 +543,10 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		xcal.registerScribe(new SkipMeScribe());
-		ICalendar ical = xcal.parseFirst();
+		StreamReader reader = xcal.reader();
+		reader.registerScribe(new SkipMeScribe());
+
+		ICalendar ical = reader.readNext();
 		assertSize(ical, 0, 1);
 
 		RawProperty property = ical.getExperimentalProperty("X-FOO");
@@ -527,7 +554,8 @@ public class XCalDocumentTest {
 		assertEquals("x-foo", property.getName());
 		assertEquals("bar", property.getValue());
 
-		assertWarningsLists(xcal.getParseWarnings(), 1);
+		assertWarnings(1, reader.getWarnings());
+		assertNull(reader.readNext());
 	}
 
 	@Test
@@ -545,8 +573,10 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		xcal.registerScribe(new CannotParseScribe());
-		ICalendar ical = xcal.parseFirst();
+		StreamReader reader = xcal.reader();
+		reader.registerScribe(new CannotParseScribe());
+
+		ICalendar ical = reader.readNext();
 		assertSize(ical, 0, 2);
 
 		RawProperty property = ical.getExperimentalProperty("x-foo");
@@ -558,7 +588,8 @@ public class XCalDocumentTest {
 		Document expected = XmlUtils.toDocument("<cannotparse xmlns=\"" + XCAL_NS + "\"><unknown>value</unknown></cannotparse>");
 		assertXMLEqual(expected, prop.getValue());
 
-		assertWarningsLists(xcal.getParseWarnings(), 1);
+		assertWarnings(1, reader.getWarnings());
+		assertNull(reader.readNext());
 	}
 
 	@Test
@@ -577,13 +608,16 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		XCalDocument xcal = new XCalDocument(xml);
-		ICalendar ical = xcal.parseFirst();
+		StreamReader reader = xcal.reader();
+
+		ICalendar ical = reader.readNext();
 		assertSize(ical, 0, 1);
 
 		Summary prop = ical.getProperty(Summary.class);
 		assertEquals("summary", prop.getValue());
 
-		assertWarningsLists(xcal.getParseWarnings(), 0);
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
 	}
 
 	@Test
@@ -604,13 +638,16 @@ public class XCalDocumentTest {
 		writer.close();
 
 		XCalDocument xcal = new XCalDocument(file);
-		ICalendar ical = xcal.parseFirst();
+		StreamReader reader = xcal.reader();
+
+		ICalendar ical = reader.readNext();
 		assertSize(ical, 0, 1);
 
 		Summary prop = ical.getProperty(Summary.class);
 		assertEquals("\u1e66ummary", prop.getValue());
 
-		assertWarningsLists(xcal.getParseWarnings(), 0);
+		assertWarnings(0, reader.getWarnings());
+		assertNull(reader.readNext());
 	}
 
 	@Test
@@ -928,10 +965,9 @@ public class XCalDocumentTest {
 	@Test
 	public void read_example1() throws Throwable {
 		XCalDocument xcal = read("rfc6321-example1.xml");
+		StreamReader reader = xcal.reader();
 
-		Iterator<ICalendar> it = xcal.parseAll().iterator();
-
-		ICalendar ical = it.next();
+		ICalendar ical = reader.readNext();
 		assertSize(ical, 1, 2);
 		assertTrue(ical.getCalendarScale().isGregorian());
 		assertEquals("-//Example Inc.//Example Calendar//EN", ical.getProductId().getValue());
@@ -949,7 +985,7 @@ public class XCalDocumentTest {
 
 		assertValidate(ical).versions(ICalVersion.V2_0).run();
 
-		assertFalse(it.hasNext());
+		assertNull(reader.readNext());
 	}
 
 	@Test
@@ -978,10 +1014,9 @@ public class XCalDocumentTest {
 		TimeZone easternTz = TimeZone.getTimeZone("US/Eastern");
 
 		XCalDocument xcal = read("rfc6321-example2.xml");
+		StreamReader reader = xcal.reader();
 
-		Iterator<ICalendar> it = xcal.parseAll().iterator();
-
-		ICalendar ical = it.next();
+		ICalendar ical = reader.readNext();
 		assertSize(ical, 3, 1);
 		assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
 		assertEquals(ICalVersion.V2_0, ical.getVersion());
@@ -1070,7 +1105,7 @@ public class XCalDocumentTest {
 			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
 		}
 
-		TimezoneInfo tzinfo = xcal.getTimezoneInfo();
+		TimezoneInfo tzinfo = reader.getTimezoneInfo();
 		VTimezone timezone = ical.getTimezones().get(0);
 		VEvent event = ical.getEvents().get(0);
 
@@ -1094,7 +1129,7 @@ public class XCalDocumentTest {
 
 		assertValidate(ical).versions(ICalVersion.V2_0).run();
 
-		assertFalse(it.hasNext());
+		assertNull(reader.readNext());
 	}
 
 	@Test

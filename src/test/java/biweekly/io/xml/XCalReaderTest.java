@@ -478,8 +478,12 @@ public class XCalReaderTest {
 		try {
 			reader.readNext();
 			fail();
-		} catch (TransformerException e) {
-			assertTrue(e.getCause() instanceof SAXException);
+		} catch (IOException e) {
+			Throwable cause = e.getCause();
+			assertTrue(cause instanceof TransformerException);
+
+			cause = cause.getCause();
+			assertTrue(cause instanceof SAXException);
 		}
 
 		assertNull(reader.readNext());

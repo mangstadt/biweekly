@@ -2,7 +2,6 @@ package biweekly.io.json;
 
 import static biweekly.util.IOUtils.utf8Reader;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,24 +10,18 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
-import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
-import biweekly.io.ParseContext;
-import biweekly.io.ParseContext.TimezonedDate;
-import biweekly.io.ParseWarnings;
 import biweekly.io.SkipMeException;
-import biweekly.io.TimezoneInfo;
+import biweekly.io.StreamReader;
 import biweekly.io.json.JCalRawReader.JCalDataStreamListener;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
@@ -38,9 +31,7 @@ import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
-import biweekly.property.TimezoneId;
 import biweekly.property.Version;
-import biweekly.util.ICalDateFormat;
 
 import com.fasterxml.jackson.core.JsonParseException;
 
@@ -90,13 +81,9 @@ import com.fasterxml.jackson.core.JsonParseException;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc7265">RFC 7265</a>
  */
-public class JCalReader implements Closeable {
+public class JCalReader extends StreamReader {
 	private static final ICalendarScribe icalScribe = ScribeIndex.getICalendarScribe();
-	private ScribeIndex index = new ScribeIndex();
 	private final JCalRawReader reader;
-	private final ParseWarnings warnings = new ParseWarnings();
-	private TimezoneInfo tzinfo;
-	private ParseContext context;
 
 	/**
 	 * Creates a jCard reader.
@@ -132,70 +119,6 @@ public class JCalReader implements Closeable {
 	}
 
 	/**
-	 * Gets the warnings from the last iCalendar object that was unmarshalled.
-	 * This list is reset every time a new iCalendar object is read.
-	 * @return the warnings or empty list if there were no warnings
-	 */
-	public List<String> getWarnings() {
-		return warnings.copy();
-	}
-
-	/**
-	 * <p>
-	 * Registers an experimental property scribe. Can also be used to override
-	 * the scribe of a standard property (such as DTSTART). Calling this method
-	 * is the same as calling:
-	 * </p>
-	 * <p>
-	 * {@code getScribeIndex().register(scribe)}.
-	 * </p>
-	 * @param scribe the scribe to register
-	 */
-	public void registerScribe(ICalPropertyScribe<? extends ICalProperty> scribe) {
-		index.register(scribe);
-	}
-
-	/**
-	 * <p>
-	 * Registers an experimental component scribe. Can also be used to override
-	 * the scribe of a standard component (such as VEVENT). Calling this method
-	 * is the same as calling:
-	 * </p>
-	 * <p>
-	 * {@code getScribeIndex().register(scribe)}.
-	 * </p>
-	 * @param scribe the scribe to register
-	 */
-	public void registerScribe(ICalComponentScribe<? extends ICalComponent> scribe) {
-		index.register(scribe);
-	}
-
-	/**
-	 * Gets the object that manages the component/property scribes.
-	 * @return the scribe index
-	 */
-	public ScribeIndex getScribeIndex() {
-		return index;
-	}
-
-	/**
-	 * Sets the object that manages the component/property scribes.
-	 * @param index the scribe index
-	 */
-	public void setScribeIndex(ScribeIndex index) {
-		this.index = index;
-	}
-
-	/**
-	 * Gets the timezone info of the last iCalendar object that was read. This
-	 * object is recreated every time a new iCalendar object is read.
-	 * @return the timezone info
-	 */
-	public TimezoneInfo getTimezoneInfo() {
-		return tzinfo;
-	}
-
-	/**
 	 * Reads the next iCalendar object from the JSON data stream.
 	 * @return the iCalendar object or null if there are no more
 	 * @throws JCalParseException if the jCal syntax is incorrect (the JSON
@@ -203,83 +126,18 @@ public class JCalReader implements Closeable {
 	 * @throws JsonParseException if the JSON syntax is incorrect
 	 * @throws IOException if there is a problem reading from the data stream
 	 */
-	public ICalendar readNext() throws IOException {
+	@Override
+	public ICalendar _readNext() throws IOException {
 		if (reader.eof()) {
 			return null;
 		}
 
-		warnings.clear();
-		context = new ParseContext();
-		tzinfo = new TimezoneInfo();
+		context.setVersion(ICalVersion.V2_0);
 
 		JCalDataStreamListenerImpl listener = new JCalDataStreamListenerImpl();
 		reader.readNext(listener);
 
-		ICalendar ical = listener.getICalendar();
-		if (ical == null) {
-			return null;
-		}
-
-		//handle timezones
-		for (Map.Entry<String, List<TimezonedDate>> entry : context.getTimezonedDates()) {
-			//find the VTIMEZONE component with the given TZID
-			String tzid = entry.getKey();
-			VTimezone component = null;
-			for (VTimezone vtimezone : ical.getTimezones()) {
-				TimezoneId timezoneId = vtimezone.getTimezoneId();
-				if (timezoneId != null && tzid.equals(timezoneId.getValue())) {
-					component = vtimezone;
-					break;
-				}
-			}
-
-			TimeZone timezone = null;
-			if (component == null) {
-				//A VTIMEZONE component couldn't found
-				//so treat the TZID parameter value as an Olsen timezone ID
-				timezone = ICalDateFormat.parseTimeZoneId(tzid);
-				if (timezone == null) {
-					warnings.add(null, null, Warning.parse(38, tzid));
-				} else {
-					warnings.add(null, null, Warning.parse(37, tzid));
-				}
-			} else {
-				//TODO convert the VTIMEZONE component to a Java TimeZone object
-				//TODO for now, treat the TZID as an Olsen timezone (which is what biweekly used to do) 
-				timezone = ICalDateFormat.parseTimeZoneId(tzid);
-				if (timezone == null) {
-					timezone = TimeZone.getDefault();
-				}
-			}
-
-			if (timezone == null) {
-				//timezone could not be determined
-				continue;
-			}
-
-			//assign this VTIMEZONE component to the TimeZone object
-			tzinfo.assign(component, timezone);
-
-			List<TimezonedDate> timezonedDates = entry.getValue();
-			for (TimezonedDate timezonedDate : timezonedDates) {
-				//assign the property to the timezone
-				ICalProperty property = timezonedDate.getProperty();
-				tzinfo.setTimezone(property, timezone);
-				property.getParameters().setTimezoneId(null); //remove the TZID parameter
-
-				//parse the date string again under its real timezone
-				Date realDate = ICalDateFormat.parse(timezonedDate.getDateStr(), timezone);
-
-				//update the Date object with the new timestamp
-				timezonedDate.getDate().setTime(realDate.getTime()); //the one time I am glad that Date objects are mutable... xD
-			}
-		}
-
-		for (ICalProperty property : context.getFloatingDates()) {
-			tzinfo.setUseFloatingTime(property, true);
-		}
-
-		return ical;
+		return listener.getICalendar();
 	}
 
 	//@Override
@@ -310,8 +168,6 @@ public class JCalReader implements Closeable {
 					Version version = (Version) property;
 					ICalVersion icalVersion = version.toICalVersion();
 					if (icalVersion != null) {
-						ICalendar ical = (ICalendar) parent;
-						ical.setVersion(icalVersion);
 						context.setVersion(icalVersion);
 						return;
 					}
