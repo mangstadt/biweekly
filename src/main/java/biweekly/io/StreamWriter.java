@@ -38,7 +38,7 @@ import biweekly.property.ICalProperty;
  */
 
 /**
- * Writes iCalendar objects to an output stream.
+ * Writes iCalendar objects to a data stream.
  * @author Michael Angstadt
  */
 public abstract class StreamWriter implements Closeable {
@@ -65,6 +65,10 @@ public abstract class StreamWriter implements Closeable {
 		_write(ical);
 	}
 
+	/**
+	 * Gets the version that the next iCalendar object will be written as.
+	 * @return the version
+	 */
 	protected abstract ICalVersion getTargetVersion();
 
 	/**

@@ -45,7 +45,7 @@ import biweekly.util.ICalDateFormat;
  */
 
 /**
- * Parses iCalendar objects from an input stream.
+ * Parses iCalendar objects from a data stream.
  * @author Michael Angstadt
  */
 public abstract class StreamReader implements Closeable {
@@ -123,7 +123,7 @@ public abstract class StreamReader implements Closeable {
 	 * @return the next iCalendar object or null if there are no more
 	 * @throws IOException if there's a problem reading from the stream
 	 */
-	public final ICalendar readNext() throws IOException {
+	public ICalendar readNext() throws IOException {
 		warnings.clear();
 		context = new ParseContext();
 		tzinfo = new TimezoneInfo();
@@ -146,7 +146,6 @@ public abstract class StreamReader implements Closeable {
 	protected abstract ICalendar _readNext() throws IOException;
 
 	private void handleTimezones(ICalendar ical) {
-		//handle timezones
 		for (Map.Entry<String, List<TimezonedDate>> entry : context.getTimezonedDates()) {
 			//find the VTIMEZONE component with the given TZID
 			String tzid = entry.getKey();
