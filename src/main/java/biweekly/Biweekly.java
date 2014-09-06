@@ -33,6 +33,7 @@ import biweekly.io.text.ICalRawWriter;
 import biweekly.io.text.ICalReader;
 import biweekly.io.text.ICalWriter;
 import biweekly.io.xml.XCalDocument;
+import biweekly.io.xml.XCalDocument.XCalDocumentStreamWriter;
 import biweekly.property.ICalProperty;
 import biweekly.util.IOUtils;
 
@@ -1375,13 +1376,14 @@ public class Biweekly {
 
 		private XCalDocument constructDocument() {
 			XCalDocument document = new XCalDocument();
-			document.setScribeIndex(index);
-			for (Map.Entry<String, ICalDataType> entry : parameterDataTypes.entrySet()) {
-				document.registerParameterDataType(entry.getKey(), entry.getValue());
-			}
+			XCalDocumentStreamWriter writer = document.writer();
+			writer.setScribeIndex(index);
 
+			for (Map.Entry<String, ICalDataType> entry : parameterDataTypes.entrySet()) {
+				writer.registerParameterDataType(entry.getKey(), entry.getValue());
+			}
 			for (ICalendar ical : icals) {
-				document.add(ical);
+				writer.write(ical);
 			}
 
 			return document;

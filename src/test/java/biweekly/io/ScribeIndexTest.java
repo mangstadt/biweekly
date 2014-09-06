@@ -1,5 +1,11 @@
 package biweekly.io;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 
 import biweekly.ICalendar;
@@ -43,43 +49,49 @@ public class ScribeIndexTest {
 	public void hasScribesFor_no_missing_scribes() {
 		ICalendar ical = new ICalendar();
 
-		index.hasScribesFor(ical);
+		assertHasScribesFor(ical);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void hasScribesFor_property_root() {
 		ICalendar ical = new ICalendar();
 		ical.addProperty(new TestProperty());
 
-		index.hasScribesFor(ical);
+		assertHasScribesFor(ical, TestProperty.class);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void hasScribesFor_property_in_component() {
 		ICalendar ical = new ICalendar();
 		VEvent event = new VEvent();
 		event.addProperty(new TestProperty());
 		ical.addComponent(event);
 
-		index.hasScribesFor(ical);
+		assertHasScribesFor(ical, TestProperty.class);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void hasScribesFor_component_root() {
 		ICalendar ical = new ICalendar();
 		ical.addComponent(new TestComponent());
 
-		index.hasScribesFor(ical);
+		assertHasScribesFor(ical, TestComponent.class);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void hasScribesFor_component_in_component() {
 		ICalendar ical = new ICalendar();
 		VEvent event = new VEvent();
 		event.addComponent(new TestComponent());
 		ical.addComponent(event);
 
-		index.hasScribesFor(ical);
+		assertHasScribesFor(ical, TestComponent.class);
+	}
+
+	private void assertHasScribesFor(ICalendar ical, Object... propertiesAndComponents) {
+		List<Object> actual = new ArrayList<Object>(index.hasScribesFor(ical));
+		List<Object> expected = Arrays.<Object> asList(propertiesAndComponents);
+		assertEquals(expected, actual);
 	}
 
 	private class TestProperty extends ICalProperty {

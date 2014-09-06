@@ -2,7 +2,6 @@ package biweekly.io.json;
 
 import static biweekly.util.IOUtils.utf8Writer;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.Flushable;
 import java.io.IOException;
@@ -17,9 +16,7 @@ import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
 import biweekly.io.SkipMeException;
-import biweekly.io.TimezoneInfo;
-import biweekly.io.WriteContext;
-import biweekly.io.scribe.ScribeIndex;
+import biweekly.io.StreamWriter;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
@@ -72,13 +69,9 @@ import biweekly.property.Version;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc7265">RFC 7265</a>
  */
-public class JCalWriter implements Closeable, Flushable {
-	private ScribeIndex index = new ScribeIndex();
+public class JCalWriter extends StreamWriter implements Flushable {
 	private final JCalRawWriter writer;
 	private final ICalVersion targetVersion = ICalVersion.V2_0;
-
-	private WriteContext context;
-	private TimezoneInfo tzinfo = new TimezoneInfo();
 
 	/**
 	 * Creates a jCal writer that writes to an output stream.
@@ -137,52 +130,6 @@ public class JCalWriter implements Closeable, Flushable {
 	}
 
 	/**
-	 * <p>
-	 * Registers an experimental property scribe. Can also be used to override
-	 * the scribe of a standard property (such as DTSTART). Calling this method
-	 * is the same as calling:
-	 * </p>
-	 * <p>
-	 * {@code getScribeIndex().register(scribe)}.
-	 * </p>
-	 * @param scribe the scribe to register
-	 */
-	public void registerScribe(ICalPropertyScribe<? extends ICalProperty> scribe) {
-		index.register(scribe);
-	}
-
-	/**
-	 * <p>
-	 * Registers an experimental component scribe. Can also be used to override
-	 * the scribe of a standard component (such as VEVENT). Calling this method
-	 * is the same as calling:
-	 * </p>
-	 * <p>
-	 * {@code getScribeIndex().register(scribe)}.
-	 * </p>
-	 * @param scribe the scribe to register
-	 */
-	public void registerScribe(ICalComponentScribe<? extends ICalComponent> scribe) {
-		index.register(scribe);
-	}
-
-	/**
-	 * Gets the object that manages the component/property scribes.
-	 * @return the scribe index
-	 */
-	public ScribeIndex getScribeIndex() {
-		return index;
-	}
-
-	/**
-	 * Sets the object that manages the component/property scribes.
-	 * @param index the scribe index
-	 */
-	public void setScribeIndex(ScribeIndex index) {
-		this.index = index;
-	}
-
-	/**
 	 * Gets whether or not the JSON will be pretty-printed.
 	 * @return true if it will be pretty-printed, false if not (defaults to
 	 * false)
@@ -199,35 +146,14 @@ public class JCalWriter implements Closeable, Flushable {
 		writer.setIndent(indent);
 	}
 
-	/**
-	 * Gets the timezone-related info for this writer.
-	 * @return the timezone-related info
-	 */
-	public TimezoneInfo getTimezoneInfo() {
-		return tzinfo;
-	}
-
-	/**
-	 * Sets the timezone-related info for this writer.
-	 * @param tzinfo the timezone-related info
-	 */
-	public void setTimezoneInfo(TimezoneInfo tzinfo) {
-		this.tzinfo = tzinfo;
-	}
-
-	/**
-	 * Writes an iCalendar object to the data stream.
-	 * @param ical the iCalendar object to write
-	 * @throws IllegalArgumentException if the scribe class for a component or
-	 * property object cannot be found (only happens when an experimental
-	 * property/component scribe is not registered with the
-	 * {@code registerScribe} method.)
-	 * @throws IOException if there's a problem writing to the data stream
-	 */
-	public void write(ICalendar ical) throws IOException {
-		index.hasScribesFor(ical);
-		context = new WriteContext(targetVersion, tzinfo);
+	@Override
+	protected void _write(ICalendar ical) throws IOException {
 		writeComponent(ical);
+	}
+
+	@Override
+	protected ICalVersion getTargetVersion() {
+		return targetVersion;
 	}
 
 	/**

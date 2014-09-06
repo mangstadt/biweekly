@@ -1,6 +1,7 @@
 package biweekly.io.scribe;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -400,10 +401,9 @@ public class ScribeIndex {
 	 * Checks to see if this scribe index has scribes registered for all of the
 	 * components/properties in an iCalendar object.
 	 * @param ical the iCalendar object
-	 * @throws IllegalArgumentException if the scribe index is missing scribes
-	 * for one or more properties/components.
+	 * @return the component/property classes that do *not* have scribes
 	 */
-	public void hasScribesFor(ICalendar ical) {
+	public Collection<Class<? extends Object>> hasScribesFor(ICalendar ical) {
 		Set<Class<? extends Object>> unregistered = new HashSet<Class<? extends Object>>();
 		List<ICalComponent> components = new ArrayList<ICalComponent>();
 		components.add(ical);
@@ -431,10 +431,7 @@ public class ScribeIndex {
 			components.addAll(component.getComponents().values());
 		}
 
-		if (!unregistered.isEmpty()) {
-			//all code that calls this method needs to throw an exception, so an exception is thrown here instead of returning some value
-			throw new IllegalArgumentException("No scribes were found the following component/property classes: " + unregistered);
-		}
+		return unregistered;
 	}
 
 	/**

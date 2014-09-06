@@ -8,7 +8,6 @@ import static biweekly.io.xml.XCalQNames.PROPERTIES;
 import static biweekly.util.IOUtils.utf8Writer;
 import static biweekly.util.StringUtils.NEWLINE;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -43,9 +42,7 @@ import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
 import biweekly.io.SkipMeException;
-import biweekly.io.TimezoneInfo;
-import biweekly.io.WriteContext;
-import biweekly.io.scribe.ScribeIndex;
+import biweekly.io.StreamWriter;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
@@ -103,7 +100,7 @@ import biweekly.util.XmlUtils;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc6351">RFC 6351</a>
  */
-public class XCalWriter implements Closeable {
+public class XCalWriter extends StreamWriter {
 	//how to use SAX to write XML: http://stackoverflow.com/questions/4898590/generating-xml-using-sax-and-java
 	private final Document DOC = XmlUtils.createDocument();
 
@@ -141,10 +138,6 @@ public class XCalWriter implements Closeable {
 	private final boolean icalendarElementExists;
 	private int level = 0;
 	private boolean textNodeJustPrinted = false, started = false;
-	private ScribeIndex index = new ScribeIndex();
-
-	private WriteContext context;
-	private TimezoneInfo tzinfo = new TimezoneInfo();
 
 	/**
 	 * Creates an xCard writer (UTF-8 encoding will be used).
@@ -246,52 +239,6 @@ public class XCalWriter implements Closeable {
 	}
 
 	/**
-	 * <p>
-	 * Registers an experimental property scribe. Can also be used to override
-	 * the scribe of a standard property (such as DTSTART). Calling this method
-	 * is the same as calling:
-	 * </p>
-	 * <p>
-	 * {@code getScribeIndex().register(scribe)}.
-	 * </p>
-	 * @param scribe the scribe to register
-	 */
-	public void registerScribe(ICalPropertyScribe<? extends ICalProperty> scribe) {
-		index.register(scribe);
-	}
-
-	/**
-	 * <p>
-	 * Registers an experimental component scribe. Can also be used to override
-	 * the scribe of a standard component (such as VEVENT). Calling this method
-	 * is the same as calling:
-	 * </p>
-	 * <p>
-	 * {@code getScribeIndex().register(scribe)}.
-	 * </p>
-	 * @param scribe the scribe to register
-	 */
-	public void registerScribe(ICalComponentScribe<? extends ICalComponent> scribe) {
-		index.register(scribe);
-	}
-
-	/**
-	 * Gets the object that manages the component/property scribes.
-	 * @return the scribe index
-	 */
-	public ScribeIndex getScribeIndex() {
-		return index;
-	}
-
-	/**
-	 * Sets the object that manages the component/property scribes.
-	 * @param scribe the scribe index
-	 */
-	public void setScribeIndex(ScribeIndex scribe) {
-		this.index = scribe;
-	}
-
-	/**
 	 * Registers the data type of an experimental parameter. Experimental
 	 * parameters use the "unknown" data type by default.
 	 * @param parameterName the parameter name (e.g. "x-foo")
@@ -306,46 +253,30 @@ public class XCalWriter implements Closeable {
 		}
 	}
 
-	/**
-	 * Gets the timezone-related info for this writer.
-	 * @return the timezone-related info
-	 */
-	public TimezoneInfo getTimezoneInfo() {
-		return tzinfo;
-	}
+	@Override
+	protected void _write(ICalendar ical) throws IOException {
+		try {
+			if (!started) {
+				handler.startDocument();
 
-	/**
-	 * Sets the timezone-related info for this writer.
-	 * @param tzinfo the timezone-related info
-	 */
-	public void setTimezoneInfo(TimezoneInfo tzinfo) {
-		this.tzinfo = tzinfo;
-	}
+				if (!icalendarElementExists) {
+					//don't output a <icalendar> element if the parent is a <icalendar> element
+					start(ICALENDAR);
+					level++;
+				}
 
-	/**
-	 * Writes an iCalendar object.
-	 * @param ical the iCalendar object to write
-	 * @throws SAXException if there's a problem writing the iCalendar object
-	 * @throws IllegalArgumentException if the scribe index is missing scribes
-	 * for one or more properties/components.
-	 */
-	public void write(ICalendar ical) throws SAXException {
-		index.hasScribesFor(ical);
-		context = new WriteContext(targetVersion, tzinfo);
-
-		if (!started) {
-			handler.startDocument();
-
-			if (!icalendarElementExists) {
-				//don't output a <icalendar> element if the parent is a <icalendar> element
-				start(ICALENDAR);
-				level++;
+				started = true;
 			}
 
-			started = true;
+			write((ICalComponent) ical);
+		} catch (SAXException e) {
+			throw new IOException(e);
 		}
+	}
 
-		write((ICalComponent) ical);
+	@Override
+	protected ICalVersion getTargetVersion() {
+		return targetVersion;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

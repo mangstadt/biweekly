@@ -46,12 +46,14 @@ import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamReader;
+import biweekly.io.StreamWriter;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.CannotParseScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.SkipMeScribe;
+import biweekly.io.xml.XCalDocument.XCalDocumentStreamWriter;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.CalendarScale;
 import biweekly.property.DateStart;
@@ -713,8 +715,9 @@ public class XCalDocumentTest {
 		ical.addComponent(party);
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.registerScribe(new PartyScribe());
-		xcal.add(ical);
+		StreamWriter writer = xcal.writer();
+		writer.registerScribe(new PartyScribe());
+		writer.write(ical);
 
 		Document actual = xcal.getDocument();
 		//@formatter:off
@@ -744,8 +747,9 @@ public class XCalDocumentTest {
 		ical.addProperty(new Company("John Doe"));
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.registerScribe(new CompanyScribe());
-		xcal.add(ical);
+		StreamWriter writer = xcal.writer();
+		writer.registerScribe(new CompanyScribe());
+		writer.write(ical);
 
 		Document actual = xcal.getDocument();
 		//@formatter:off
@@ -774,8 +778,9 @@ public class XCalDocumentTest {
 		ical.addProperty(summary);
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.registerParameterDataType("X-ONE", ICalDataType.TEXT);
-		xcal.add(ical);
+		XCalDocumentStreamWriter writer = xcal.writer();
+		writer.registerParameterDataType("X-ONE", ICalDataType.TEXT);
+		writer.write(ical);
 
 		Document actual = xcal.getDocument();
 		//@formatter:off
@@ -806,8 +811,9 @@ public class XCalDocumentTest {
 		ical.addExperimentalProperty("X-FOO", "bar");
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.registerScribe(new SkipMeScribe());
-		xcal.add(ical);
+		StreamWriter writer = xcal.writer();
+		writer.registerScribe(new SkipMeScribe());
+		writer.write(ical);
 
 		Document actual = xcal.getDocument();
 		//@formatter:off
@@ -1213,8 +1219,9 @@ public class XCalDocumentTest {
 
 	private void assertExample(ICalendar ical, String exampleFileName, TimezoneInfo tzinfo) {
 		XCalDocument xcal = new XCalDocument();
-		xcal.setTimezoneInfo(tzinfo);
-		xcal.add(ical);
+		XCalDocumentStreamWriter writer = xcal.writer();
+		writer.setTimezoneInfo(tzinfo);
+		writer.write(ical);
 
 		try {
 			Document expected = XmlUtils.toDocument(getClass().getResourceAsStream(exampleFileName));

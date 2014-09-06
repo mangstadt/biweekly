@@ -45,8 +45,7 @@ import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamReader;
-import biweekly.io.TimezoneInfo;
-import biweekly.io.WriteContext;
+import biweekly.io.StreamWriter;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.component.ICalendarScribe;
@@ -141,40 +140,9 @@ public class XCalDocument {
 	private static final ICalendarScribe icalMarshaller = ScribeIndex.getICalendarScribe();
 	private static final XCalNamespaceContext nsContext = new XCalNamespaceContext("xcal");
 
-	/**
-	 * Defines the names of the XML elements that are used to hold each
-	 * parameter's value.
-	 */
-	private final Map<String, ICalDataType> parameterDataTypes = new HashMap<String, ICalDataType>();
-	{
-		registerParameterDataType(ICalParameters.CN, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.ALTREP, ICalDataType.URI);
-		registerParameterDataType(ICalParameters.CUTYPE, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.DELEGATED_FROM, ICalDataType.CAL_ADDRESS);
-		registerParameterDataType(ICalParameters.DELEGATED_TO, ICalDataType.CAL_ADDRESS);
-		registerParameterDataType(ICalParameters.DIR, ICalDataType.URI);
-		registerParameterDataType(ICalParameters.ENCODING, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.FMTTYPE, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.FBTYPE, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.LANGUAGE, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.MEMBER, ICalDataType.CAL_ADDRESS);
-		registerParameterDataType(ICalParameters.PARTSTAT, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.RANGE, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.RELATED, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.RELTYPE, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.ROLE, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.RSVP, ICalDataType.BOOLEAN);
-		registerParameterDataType(ICalParameters.SENT_BY, ICalDataType.CAL_ADDRESS);
-		registerParameterDataType(ICalParameters.TZID, ICalDataType.TEXT);
-	}
-
-	private ScribeIndex index = new ScribeIndex();
 	private final Document document;
 	private final ICalVersion targetVersion = ICalVersion.V2_0;
 	private Element root;
-
-	private WriteContext wcontext;
-	private TimezoneInfo tzinfo = new TimezoneInfo();
 
 	/**
 	 * Parses an xCal document from a string.
@@ -268,67 +236,6 @@ public class XCalDocument {
 	}
 
 	/**
-	 * <p>
-	 * Registers an experimental property scribe. Can also be used to override
-	 * the scribe of a standard property (such as DTSTART). Calling this method
-	 * is the same as calling:
-	 * </p>
-	 * <p>
-	 * {@code getScribeIndex().register(scribe)}.
-	 * </p>
-	 * @param scribe the scribe to register
-	 */
-	public void registerScribe(ICalPropertyScribe<? extends ICalProperty> scribe) {
-		index.register(scribe);
-	}
-
-	/**
-	 * <p>
-	 * Registers an experimental component scribe. Can also be used to override
-	 * the scribe of a standard component (such as VEVENT). Calling this method
-	 * is the same as calling:
-	 * </p>
-	 * <p>
-	 * {@code getScribeIndex().register(scribe)}.
-	 * </p>
-	 * @param scribe the scribe to register
-	 */
-	public void registerScribe(ICalComponentScribe<? extends ICalComponent> scribe) {
-		index.register(scribe);
-	}
-
-	/**
-	 * Gets the object that manages the component/property scribes.
-	 * @return the scribe index
-	 */
-	public ScribeIndex getScribeIndex() {
-		return index;
-	}
-
-	/**
-	 * Sets the object that manages the component/property scribes.
-	 * @param index the scribe index
-	 */
-	public void setScribeIndex(ScribeIndex index) {
-		this.index = index;
-	}
-
-	/**
-	 * Registers the data type of an experimental parameter. Experimental
-	 * parameters use the "unknown" xCal data type by default.
-	 * @param parameterName the parameter name (e.g. "x-foo")
-	 * @param dataType the data type or null to remove
-	 */
-	public void registerParameterDataType(String parameterName, ICalDataType dataType) {
-		parameterName = parameterName.toLowerCase();
-		if (dataType == null) {
-			parameterDataTypes.remove(parameterName);
-		} else {
-			parameterDataTypes.put(parameterName, dataType);
-		}
-	}
-
-	/**
 	 * Gets the raw XML DOM object.
 	 * @return the XML DOM
 	 */
@@ -337,24 +244,16 @@ public class XCalDocument {
 	}
 
 	/**
-	 * Gets the timezone-related info for this writer.
-	 * @return the timezone-related info
+	 * Adds an iCalendar object to this XML document.
+	 * @param ical the iCalendar object to add
 	 */
-	public TimezoneInfo getTimezoneInfo() {
-		return tzinfo;
+	public void add(ICalendar ical) {
+		writer().write(ical);
 	}
 
 	/**
-	 * Sets the timezone-related info for this writer.
-	 * @param tzinfo the timezone-related info
-	 */
-	public void setTimezoneInfo(TimezoneInfo tzinfo) {
-		this.tzinfo = tzinfo;
-	}
-
-	/**
-	 * Creates a {@link StreamReader} object that parses the iCalendar objects
-	 * from this XML document.
+	 * Creates a {@link StreamReader} object that parses iCalendar objects from
+	 * this XML document.
 	 * @return the reader
 	 */
 	public StreamReader reader() {
@@ -362,31 +261,12 @@ public class XCalDocument {
 	}
 
 	/**
-	 * Adds an iCalendar object to the xCal document. This marshals the
-	 * {@link ICalendar} object to the XML DOM. This means that any changes that
-	 * are made to the {@link ICalendar} object after calling this method will
-	 * NOT be applied to the xCal document.
-	 * @param ical the iCalendar object to add
-	 * @throws IllegalArgumentException if the scribe class for a component or
-	 * property object cannot be found (only happens when an experimental
-	 * property/component scribe is not registered with the
-	 * {@code registerScribe} method.)
+	 * Creates a {@link StreamWriter} object that adds iCalendar objects to this
+	 * XML document.
+	 * @return the writer
 	 */
-	public void add(ICalendar ical) {
-		index.hasScribesFor(ical);
-		wcontext = new WriteContext(targetVersion, tzinfo);
-		Element element = buildComponentElement(ical);
-
-		if (root == null) {
-			root = buildElement(ICALENDAR);
-			Element documentRoot = XmlUtils.getRootElement(document);
-			if (documentRoot == null) {
-				document.appendChild(root);
-			} else {
-				documentRoot.appendChild(root);
-			}
-		}
-		root.appendChild(element);
+	public XCalDocumentStreamWriter writer() {
+		return new XCalDocumentStreamWriter();
 	}
 
 	/**
@@ -481,118 +361,6 @@ public class XCalDocument {
 			properties.put("{http://xml.apache.org/xslt}indent-amount", indent + "");
 		}
 		XmlUtils.toWriter(document, writer, properties);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Element buildComponentElement(ICalComponent component) {
-		ICalComponentScribe componentScribe = index.getComponentScribe(component);
-		Element componentElement = buildElement(componentScribe.getComponentName().toLowerCase());
-
-		Element propertiesWrapperElement = buildElement(PROPERTIES);
-		List propertyObjs = componentScribe.getProperties(component);
-		if (component instanceof ICalendar && component.getProperty(Version.class) == null) {
-			//add a version property
-			propertyObjs.add(0, new Version(targetVersion));
-		}
-
-		for (Object propertyObj : propertyObjs) {
-			wcontext.setParent(component); //set parent here incase a scribe resets the parent
-			ICalProperty property = (ICalProperty) propertyObj;
-
-			//create property element
-			Element propertyElement = buildPropertyElement(property);
-			if (propertyElement != null) {
-				propertiesWrapperElement.appendChild(propertyElement);
-			}
-		}
-		if (propertiesWrapperElement.hasChildNodes()) {
-			componentElement.appendChild(propertiesWrapperElement);
-		}
-
-		Collection subComponents = componentScribe.getComponents(component);
-		if (component instanceof ICalendar) {
-			//add the VTIMEZONE components that were auto-generated by TimezoneOptions
-			Collection<VTimezone> tzs = tzinfo.getComponents();
-			for (VTimezone tz : tzs) {
-				if (!subComponents.contains(tz)) {
-					subComponents.add(tz);
-				}
-			}
-		}
-		Element componentsWrapperElement = buildElement(COMPONENTS);
-		for (Object subComponentObj : subComponents) {
-			ICalComponent subComponent = (ICalComponent) subComponentObj;
-			Element subComponentElement = buildComponentElement(subComponent);
-			if (subComponentElement != null) {
-				componentsWrapperElement.appendChild(subComponentElement);
-			}
-		}
-		if (componentsWrapperElement.hasChildNodes()) {
-			componentElement.appendChild(componentsWrapperElement);
-		}
-
-		return componentElement;
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private Element buildPropertyElement(ICalProperty property) {
-		Element propertyElement;
-		ICalParameters parameters;
-
-		if (property instanceof Xml) {
-			Xml xml = (Xml) property;
-
-			Document value = xml.getValue();
-			if (value == null) {
-				return null;
-			}
-
-			//import the XML element into the xCal DOM
-			propertyElement = XmlUtils.getRootElement(value);
-			propertyElement = (Element) document.importNode(propertyElement, true);
-
-			//get parameters
-			parameters = property.getParameters();
-		} else {
-			ICalPropertyScribe propertyScribe = index.getPropertyScribe(property);
-			propertyElement = buildElement(propertyScribe.getQName());
-
-			//marshal value
-			try {
-				propertyScribe.writeXml(property, propertyElement, wcontext);
-			} catch (SkipMeException e) {
-				return null;
-			}
-
-			//get parameters
-			parameters = propertyScribe.prepareParameters(property, wcontext);
-		}
-
-		//build parameters
-		Element parametersWrapperElement = buildParametersElement(parameters);
-		if (parametersWrapperElement.hasChildNodes()) {
-			propertyElement.insertBefore(parametersWrapperElement, propertyElement.getFirstChild());
-		}
-
-		return propertyElement;
-	}
-
-	private Element buildParametersElement(ICalParameters parameters) {
-		Element parametersWrapperElement = buildElement(PARAMETERS);
-
-		for (Map.Entry<String, List<String>> parameter : parameters) {
-			String name = parameter.getKey().toLowerCase();
-			ICalDataType dataType = parameterDataTypes.get(name);
-			String dataTypeStr = (dataType == null) ? "unknown" : dataType.getName().toLowerCase();
-
-			Element parameterElement = buildAndAppendElement(name, parametersWrapperElement);
-			for (String parameterValue : parameter.getValue()) {
-				Element parameterValueElement = buildAndAppendElement(dataTypeStr, parameterElement);
-				parameterValueElement.setTextContent(parameterValue);
-			}
-		}
-
-		return parametersWrapperElement;
 	}
 
 	private Element buildElement(String localName) {
@@ -758,6 +526,196 @@ public class XCalDocument {
 			}
 
 			return parameters;
+		}
+
+		public void close() throws IOException {
+			//do nothing
+		}
+	}
+
+	public class XCalDocumentStreamWriter extends StreamWriter {
+		/**
+		 * Defines the names of the XML elements that are used to hold each
+		 * parameter's value.
+		 */
+		private final Map<String, ICalDataType> parameterDataTypes = new HashMap<String, ICalDataType>();
+		{
+			registerParameterDataType(ICalParameters.CN, ICalDataType.TEXT);
+			registerParameterDataType(ICalParameters.ALTREP, ICalDataType.URI);
+			registerParameterDataType(ICalParameters.CUTYPE, ICalDataType.TEXT);
+			registerParameterDataType(ICalParameters.DELEGATED_FROM, ICalDataType.CAL_ADDRESS);
+			registerParameterDataType(ICalParameters.DELEGATED_TO, ICalDataType.CAL_ADDRESS);
+			registerParameterDataType(ICalParameters.DIR, ICalDataType.URI);
+			registerParameterDataType(ICalParameters.ENCODING, ICalDataType.TEXT);
+			registerParameterDataType(ICalParameters.FMTTYPE, ICalDataType.TEXT);
+			registerParameterDataType(ICalParameters.FBTYPE, ICalDataType.TEXT);
+			registerParameterDataType(ICalParameters.LANGUAGE, ICalDataType.TEXT);
+			registerParameterDataType(ICalParameters.MEMBER, ICalDataType.CAL_ADDRESS);
+			registerParameterDataType(ICalParameters.PARTSTAT, ICalDataType.TEXT);
+			registerParameterDataType(ICalParameters.RANGE, ICalDataType.TEXT);
+			registerParameterDataType(ICalParameters.RELATED, ICalDataType.TEXT);
+			registerParameterDataType(ICalParameters.RELTYPE, ICalDataType.TEXT);
+			registerParameterDataType(ICalParameters.ROLE, ICalDataType.TEXT);
+			registerParameterDataType(ICalParameters.RSVP, ICalDataType.BOOLEAN);
+			registerParameterDataType(ICalParameters.SENT_BY, ICalDataType.CAL_ADDRESS);
+			registerParameterDataType(ICalParameters.TZID, ICalDataType.TEXT);
+		}
+
+		@Override
+		public void write(ICalendar ical) {
+			try {
+				super.write(ical);
+			} catch (IOException e) {
+				//won't be thrown because we're writing to DOM
+			}
+		}
+
+		@Override
+		protected void _write(ICalendar ical) {
+			Element element = buildComponentElement(ical);
+
+			if (root == null) {
+				root = buildElement(ICALENDAR);
+				Element documentRoot = XmlUtils.getRootElement(document);
+				if (documentRoot == null) {
+					document.appendChild(root);
+				} else {
+					documentRoot.appendChild(root);
+				}
+			}
+			root.appendChild(element);
+		}
+
+		/**
+		 * Registers the data type of an experimental parameter. Experimental
+		 * parameters use the "unknown" xCal data type by default.
+		 * @param parameterName the parameter name (e.g. "x-foo")
+		 * @param dataType the data type or null to remove
+		 */
+		public void registerParameterDataType(String parameterName, ICalDataType dataType) {
+			parameterName = parameterName.toLowerCase();
+			if (dataType == null) {
+				parameterDataTypes.remove(parameterName);
+			} else {
+				parameterDataTypes.put(parameterName, dataType);
+			}
+		}
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		private Element buildComponentElement(ICalComponent component) {
+			ICalComponentScribe componentScribe = index.getComponentScribe(component);
+			Element componentElement = buildElement(componentScribe.getComponentName().toLowerCase());
+
+			Element propertiesWrapperElement = buildElement(PROPERTIES);
+			List propertyObjs = componentScribe.getProperties(component);
+			if (component instanceof ICalendar && component.getProperty(Version.class) == null) {
+				//add a version property
+				propertyObjs.add(0, new Version(targetVersion));
+			}
+
+			for (Object propertyObj : propertyObjs) {
+				context.setParent(component); //set parent here incase a scribe resets the parent
+				ICalProperty property = (ICalProperty) propertyObj;
+
+				//create property element
+				Element propertyElement = buildPropertyElement(property);
+				if (propertyElement != null) {
+					propertiesWrapperElement.appendChild(propertyElement);
+				}
+			}
+			if (propertiesWrapperElement.hasChildNodes()) {
+				componentElement.appendChild(propertiesWrapperElement);
+			}
+
+			Collection subComponents = componentScribe.getComponents(component);
+			if (component instanceof ICalendar) {
+				//add the VTIMEZONE components that were auto-generated by TimezoneOptions
+				Collection<VTimezone> tzs = tzinfo.getComponents();
+				for (VTimezone tz : tzs) {
+					if (!subComponents.contains(tz)) {
+						subComponents.add(tz);
+					}
+				}
+			}
+			Element componentsWrapperElement = buildElement(COMPONENTS);
+			for (Object subComponentObj : subComponents) {
+				ICalComponent subComponent = (ICalComponent) subComponentObj;
+				Element subComponentElement = buildComponentElement(subComponent);
+				if (subComponentElement != null) {
+					componentsWrapperElement.appendChild(subComponentElement);
+				}
+			}
+			if (componentsWrapperElement.hasChildNodes()) {
+				componentElement.appendChild(componentsWrapperElement);
+			}
+
+			return componentElement;
+		}
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		private Element buildPropertyElement(ICalProperty property) {
+			Element propertyElement;
+			ICalParameters parameters;
+
+			if (property instanceof Xml) {
+				Xml xml = (Xml) property;
+
+				Document value = xml.getValue();
+				if (value == null) {
+					return null;
+				}
+
+				//import the XML element into the xCal DOM
+				propertyElement = XmlUtils.getRootElement(value);
+				propertyElement = (Element) document.importNode(propertyElement, true);
+
+				//get parameters
+				parameters = property.getParameters();
+			} else {
+				ICalPropertyScribe propertyScribe = index.getPropertyScribe(property);
+				propertyElement = buildElement(propertyScribe.getQName());
+
+				//marshal value
+				try {
+					propertyScribe.writeXml(property, propertyElement, context);
+				} catch (SkipMeException e) {
+					return null;
+				}
+
+				//get parameters
+				parameters = propertyScribe.prepareParameters(property, context);
+			}
+
+			//build parameters
+			Element parametersWrapperElement = buildParametersElement(parameters);
+			if (parametersWrapperElement.hasChildNodes()) {
+				propertyElement.insertBefore(parametersWrapperElement, propertyElement.getFirstChild());
+			}
+
+			return propertyElement;
+		}
+
+		private Element buildParametersElement(ICalParameters parameters) {
+			Element parametersWrapperElement = buildElement(PARAMETERS);
+
+			for (Map.Entry<String, List<String>> parameter : parameters) {
+				String name = parameter.getKey().toLowerCase();
+				ICalDataType dataType = parameterDataTypes.get(name);
+				String dataTypeStr = (dataType == null) ? "unknown" : dataType.getName().toLowerCase();
+
+				Element parameterElement = buildAndAppendElement(name, parametersWrapperElement);
+				for (String parameterValue : parameter.getValue()) {
+					Element parameterValueElement = buildAndAppendElement(dataTypeStr, parameterElement);
+					parameterValueElement.setTextContent(parameterValue);
+				}
+			}
+
+			return parametersWrapperElement;
+		}
+
+		@Override
+		protected ICalVersion getTargetVersion() {
+			return ICalVersion.V2_0;
 		}
 
 		public void close() throws IOException {
