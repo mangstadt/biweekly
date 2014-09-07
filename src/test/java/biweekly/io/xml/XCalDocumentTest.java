@@ -161,7 +161,7 @@ public class XCalDocumentTest {
 			assertSize(event, 0, 1);
 			assertEquals("Team Meeting", event.getSummary().getValue());
 
-			assertWarnings(0, reader.getWarnings());
+			assertWarnings(0, reader);
 		}
 
 		{
@@ -175,7 +175,7 @@ public class XCalDocumentTest {
 			assertSize(event, 0, 1);
 			assertEquals("Team Happy Hour", event.getSummary().getValue());
 
-			assertWarnings(0, reader.getWarnings());
+			assertWarnings(0, reader);
 		}
 
 		assertNull(reader.readNext());
@@ -199,7 +199,7 @@ public class XCalDocumentTest {
 		StreamReader reader = xcal.reader();
 		ICalendar ical = reader.readNext();
 		assertNull(ical);
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 	}
 
 	@Test
@@ -221,7 +221,7 @@ public class XCalDocumentTest {
 		ICalendar ical = reader.readNext();
 		assertNull(ical);
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -278,7 +278,7 @@ public class XCalDocumentTest {
 			assertEquals("Team Meeting", event.getSummary().getValue());
 		}
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -304,7 +304,7 @@ public class XCalDocumentTest {
 		Summary prop = ical.getProperty(Summary.class);
 		assertEquals("  This \t  is \n   a   note ", prop.getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -380,7 +380,7 @@ public class XCalDocumentTest {
 		assertEquals(2, prop.getParameters().size());
 		assertEquals(Arrays.asList("a", "b"), prop.getParameters("X-FOO"));
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -412,7 +412,7 @@ public class XCalDocumentTest {
 		Summary prop = comp.getProperty(Summary.class);
 		assertEquals("Party", prop.getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -440,7 +440,7 @@ public class XCalDocumentTest {
 
 		assertNotNull(ical.getExperimentalComponent("x-party"));
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -467,7 +467,7 @@ public class XCalDocumentTest {
 		assertEquals("John Doe", prop.getValue());
 		assertEquals(ICalDataType.TEXT, prop.getDataType());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -496,7 +496,7 @@ public class XCalDocumentTest {
 		Company prop = ical.getProperty(Company.class);
 		assertEquals("John Doe", prop.getBoss());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -525,7 +525,7 @@ public class XCalDocumentTest {
 		Document expected = XmlUtils.toDocument("<m:company xmlns:m=\"http://example.com\"><m:boss>John Doe</m:boss></m:company>");
 		assertXMLEqual(expected, prop.getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -555,7 +555,7 @@ public class XCalDocumentTest {
 		assertEquals("x-foo", property.getName());
 		assertEquals("bar", property.getValue());
 
-		assertWarnings(1, reader.getWarnings());
+		assertWarnings(1, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -589,7 +589,7 @@ public class XCalDocumentTest {
 		Document expected = XmlUtils.toDocument("<cannotparse xmlns=\"" + XCAL_NS + "\"><unknown>value</unknown></cannotparse>");
 		assertXMLEqual(expected, prop.getValue());
 
-		assertWarnings(1, reader.getWarnings());
+		assertWarnings(1, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -617,7 +617,7 @@ public class XCalDocumentTest {
 		Summary prop = ical.getProperty(Summary.class);
 		assertEquals("summary", prop.getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -647,7 +647,7 @@ public class XCalDocumentTest {
 		Summary prop = ical.getProperty(Summary.class);
 		assertEquals("\u1e66ummary", prop.getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 

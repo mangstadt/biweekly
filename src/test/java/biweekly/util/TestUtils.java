@@ -28,6 +28,7 @@ import biweekly.ICalVersion;
 import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
+import biweekly.io.StreamReader;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -70,6 +71,15 @@ public class TestUtils {
 	 */
 	public static void assertWarnings(int expectedSize, List<?> warnings) {
 		assertEquals(warnings.toString(), expectedSize, warnings.size());
+	}
+
+	/**
+	 * Asserts that a StreamReader's warnings list is a certain size.
+	 * @param expectedSize the expected size of the warnings list
+	 * @param reader the reader
+	 */
+	public static void assertWarnings(int expectedSize, StreamReader reader) {
+		assertWarnings(expectedSize, reader.getWarnings());
 	}
 
 	/**

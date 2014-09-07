@@ -125,7 +125,7 @@ public class JCalReaderTest {
 		assertEquals("Networld+Interop Conference" + NEWLINE + "and Exhibit" + NEWLINE + "Atlanta World Congress Center" + NEWLINE + "Atlanta, Georgia", event.getDescription().getValue());
 
 		assertNull(reader.readNext());
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 	}
 
 	@Test
@@ -182,7 +182,7 @@ public class JCalReaderTest {
 			assertEquals("summary1", event.getSummary().getValue());
 			assertEquals("description1", event.getDescription().getValue());
 
-			assertWarnings(0, reader.getWarnings());
+			assertWarnings(0, reader);
 		}
 
 		{
@@ -197,7 +197,7 @@ public class JCalReaderTest {
 			assertEquals("summary2", event.getSummary().getValue());
 			assertEquals("description2", event.getDescription().getValue());
 
-			assertWarnings(0, reader.getWarnings());
+			assertWarnings(0, reader);
 		}
 
 		assertNull(reader.readNext());
@@ -230,7 +230,7 @@ public class JCalReaderTest {
 		assertSize(event, 0, 1);
 		assertEquals("summary", event.getSummary().getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 
 		assertNull(reader.readNext());
 	}
@@ -254,7 +254,7 @@ public class JCalReaderTest {
 
 		assertEquals("prodid", ical.getProductId().getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 
 		assertNull(reader.readNext());
 	}
@@ -275,7 +275,7 @@ public class JCalReaderTest {
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 0, 0);
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 
 		assertNull(reader.readNext());
 	}
@@ -307,7 +307,7 @@ public class JCalReaderTest {
 		assertSize(party, 0, 1);
 		assertEquals("summary", party.getProperty(Summary.class).getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 
 		assertNull(reader.readNext());
 	}
@@ -340,7 +340,7 @@ public class JCalReaderTest {
 		assertSize(party, 0, 1);
 		assertEquals("summary", party.getProperty(Summary.class).getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 
 		assertNull(reader.readNext());
 	}
@@ -371,7 +371,7 @@ public class JCalReaderTest {
 		assertNull(company.getDataType());
 		assertEquals("value", company.getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 
 		assertNull(reader.readNext());
 	}
@@ -397,7 +397,7 @@ public class JCalReaderTest {
 		Company company = ical.getProperty(Company.class);
 		assertEquals("value", company.getBoss());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 
 		assertNull(reader.readNext());
 	}
@@ -426,7 +426,7 @@ public class JCalReaderTest {
 		assertEquals("X-FOO", property.getName());
 		assertEquals("bar", property.getValue());
 
-		assertWarnings(1, reader.getWarnings());
+		assertWarnings(1, reader);
 
 		assertNull(reader.readNext());
 	}
@@ -460,7 +460,7 @@ public class JCalReaderTest {
 		assertEquals("X-FOO", property.getName());
 		assertEquals("bar", property.getValue());
 
-		assertWarnings(1, reader.getWarnings());
+		assertWarnings(1, reader);
 
 		assertNull(reader.readNext());
 	}
@@ -498,7 +498,7 @@ public class JCalReaderTest {
 		assertSize(icalendar, 0, 1);
 		assertEquals("\u1e66ummary", icalendar.getProperty(Summary.class).getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 

@@ -136,7 +136,7 @@ public class ICalReaderTest {
 			assertEquals("Networld+Interop Conferenceand Exhibit" + NEWLINE + "Atlanta World Congress Center" + NEWLINE + "Atlanta, Georgia", event.getDescription().getValue());
 		}
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -173,7 +173,7 @@ public class ICalReaderTest {
 			assertSize(event, 0, 1);
 			assertEquals("event summary", event.getSummary().getValue());
 
-			assertWarnings(0, reader.getWarnings());
+			assertWarnings(0, reader);
 		}
 
 		{
@@ -187,7 +187,7 @@ public class ICalReaderTest {
 			assertSize(todo, 0, 1);
 			assertEquals("todo summary", todo.getSummary().getValue());
 
-			assertWarnings(0, reader.getWarnings());
+			assertWarnings(0, reader);
 		}
 
 		assertNull(reader.readNext());
@@ -213,7 +213,7 @@ public class ICalReaderTest {
 		assertEquals("3.0", icalendar.getProperty(Version.class).getMaxVersion().toString());
 		assertNull(icalendar.getVersion());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -236,7 +236,7 @@ public class ICalReaderTest {
 		assertEquals("invalid", icalendar.getExperimentalProperty("VERSION").getValue());
 		assertNull(icalendar.getVersion());
 
-		assertWarnings(1, reader.getWarnings());
+		assertWarnings(1, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -261,7 +261,7 @@ public class ICalReaderTest {
 		assertEquals("\"test\"", icalendar.getProductId().getParameter("X-TEST"));
 		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -286,7 +286,7 @@ public class ICalReaderTest {
 		assertEquals("^'test^'", icalendar.getProductId().getParameter("X-TEST"));
 		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -373,7 +373,7 @@ public class ICalReaderTest {
 
 		assertEquals("one", event.getComponent(VTodo.class).getSummary().getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -402,7 +402,7 @@ public class ICalReaderTest {
 		assertSize(event, 0, 1);
 		assertEquals("summary", event.getSummary().getValue());
 
-		assertWarnings(1, reader.getWarnings());
+		assertWarnings(1, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -436,7 +436,7 @@ public class ICalReaderTest {
 		assertEquals("summary", event.getSummary().getValue());
 		assertEquals("two", event.getExperimentalProperty("X-TEST2").getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -472,7 +472,7 @@ public class ICalReaderTest {
 		assertEquals("summary", event.getSummary().getValue());
 		assertIntEquals(3, event.getProperty(TestProperty.class).number);
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -500,7 +500,7 @@ public class ICalReaderTest {
 		assertSize(component, 0, 1);
 		assertEquals("Johnny D", component.getExperimentalProperty("X-DJ").getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -529,7 +529,7 @@ public class ICalReaderTest {
 		assertSize(component, 0, 1);
 		assertEquals("Johnny D", component.getExperimentalProperty("X-DJ").getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -551,7 +551,7 @@ public class ICalReaderTest {
 		assertEquals("THE PRODUCT ID", icalendar.getProductId().getValue());
 		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -581,7 +581,7 @@ public class ICalReaderTest {
 		assertSize(event, 0, 1);
 		assertEquals("event summary", event.getProperty(Summary.class).getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -605,7 +605,7 @@ public class ICalReaderTest {
 		assertEquals("prodid", icalendar.getProductId().getValue());
 		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 
-		assertWarnings(1, reader.getWarnings());
+		assertWarnings(1, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -630,7 +630,7 @@ public class ICalReaderTest {
 		assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 		assertIntEquals(4, icalendar.getProperty(TestProperty.class).number);
 
-		assertWarnings(1, reader.getWarnings());
+		assertWarnings(1, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -661,7 +661,7 @@ public class ICalReaderTest {
 			assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 			assertIntEquals(4, icalendar.getProperty(TestProperty.class).number);
 
-			assertWarnings(1, reader.getWarnings());
+			assertWarnings(1, reader);
 		}
 
 		{
@@ -672,7 +672,7 @@ public class ICalReaderTest {
 			assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 			assertIntEquals(4, icalendar.getProperty(TestProperty.class).number);
 
-			assertWarnings(1, reader.getWarnings());
+			assertWarnings(1, reader);
 		}
 
 		assertNull(reader.readNext());
@@ -699,7 +699,7 @@ public class ICalReaderTest {
 		assertEquals("X-FOO", property.getName());
 		assertEquals("bar", property.getValue());
 
-		assertWarnings(1, reader.getWarnings());
+		assertWarnings(1, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -729,7 +729,7 @@ public class ICalReaderTest {
 		assertEquals("X-FOO", property.getName());
 		assertEquals("bar", property.getValue());
 
-		assertWarnings(1, reader.getWarnings());
+		assertWarnings(1, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -753,7 +753,7 @@ public class ICalReaderTest {
 			assertEquals(Arrays.asList(), icalendar.getProductId().getParameters(null));
 			assertEquals(Arrays.asList("PARAM"), icalendar.getProductId().getParameters("TYPE"));
 
-			assertWarnings(0, reader.getWarnings());
+			assertWarnings(0, reader);
 			assertNull(reader.readNext());
 		}
 
@@ -775,7 +775,7 @@ public class ICalReaderTest {
 			assertEquals(Arrays.asList(), icalendar.getProductId().getParameters(null));
 			assertEquals(Arrays.asList("PARAM"), icalendar.getProductId().getParameters("TYPE"));
 
-			assertWarnings(1, reader.getWarnings());
+			assertWarnings(1, reader);
 			assertNull(reader.readNext());
 		}
 	}
@@ -813,7 +813,7 @@ public class ICalReaderTest {
 
 		assertFalse(it.hasNext());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -836,7 +836,7 @@ public class ICalReaderTest {
 		assertSize(icalendar, 0, 1);
 		assertEquals("\u1e66ummary", icalendar.getProperty(Summary.class).getValue());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -1050,7 +1050,7 @@ public class ICalReaderTest {
 		assertEquals(expected, rrules.next().getValue());
 		assertFalse(rrules.hasNext());
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -1095,7 +1095,7 @@ public class ICalReaderTest {
 			}
 		}
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -1120,7 +1120,7 @@ public class ICalReaderTest {
 			assertEquals("TZ1", timezone.getTimezoneId().getValue());
 		}
 
-		assertWarnings(0, reader.getWarnings());
+		assertWarnings(0, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -1141,7 +1141,7 @@ public class ICalReaderTest {
 			assertEquals(ICalVersion.V1_0, icalendar.getVersion());
 			assertEquals(date("2014-01-01 01:00:00"), icalendar.getProperty(Created.class).getValue());
 
-			assertWarnings(0, reader.getWarnings());
+			assertWarnings(0, reader);
 			assertNull(reader.readNext());
 		}
 
@@ -1160,7 +1160,7 @@ public class ICalReaderTest {
 			assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 			assertEquals("20140101T010000", icalendar.getExperimentalProperty("DCREATED").getValue());
 
-			assertWarnings(0, reader.getWarnings());
+			assertWarnings(0, reader);
 			assertNull(reader.readNext());
 		}
 	}
