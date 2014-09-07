@@ -1,7 +1,6 @@
 package biweekly.io.text;
 
 import static biweekly.util.StringUtils.NEWLINE;
-import static biweekly.util.TestUtils.assertDateEquals;
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertValidate;
@@ -1186,7 +1185,7 @@ public class ICalReaderTest {
 				StandardTime standard = timezone.getStandardTimes().get(0);
 				assertSize(standard, 0, 4);
 
-				assertDateEquals("16011104T020000", standard.getDateStart().getValue());
+				assertEquals(date("1601-11-04 02:00:00"), standard.getDateStart().getValue());
 
 				Recurrence rrule = standard.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
@@ -1204,7 +1203,7 @@ public class ICalReaderTest {
 				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
 				assertSize(daylight, 0, 4);
 
-				assertDateEquals("16010311T020000", daylight.getDateStart().getValue());
+				assertEquals(date("1601-03-11 02:00:00"), daylight.getDateStart().getValue());
 
 				Recurrence rrule = daylight.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
@@ -1236,18 +1235,18 @@ public class ICalReaderTest {
 			assertEquals("janedoe@example.com", attendee.getEmail());
 
 			assertEquals("PUBLIC", event.getClassification().getValue());
-			assertDateEquals("20130608T200410Z", event.getCreated().getValue());
+			assertEquals(utc("2013-06-08 20:04:10"), event.getCreated().getValue());
 			assertEquals("Meeting will discuss objectives for next project." + NEWLINE + "Will include a presentation and food.", event.getDescription().getValue());
 
-			assertDateEquals("20130610T130000", event.getDateEnd().getValue());
+			assertEquals(date("2013-06-10 13:00:00"), event.getDateEnd().getValue());
 			assertNull(event.getDateEnd().getTimezoneId());
 
-			assertDateEquals("20130425T155807Z", event.getDateTimeStamp().getValue());
+			assertEquals(utc("2013-04-25 15:58:07"), event.getDateTimeStamp().getValue());
 
-			assertDateEquals("20130610T120000", event.getDateStart().getValue());
+			assertEquals(date("2013-06-10 12:00:00"), event.getDateStart().getValue());
 			assertNull(event.getDateStart().getTimezoneId());
 
-			assertDateEquals("20130608T200410Z", event.getLastModified().getValue());
+			assertEquals(utc("2013-06-08 20:04:10"), event.getLastModified().getValue());
 
 			assertEquals("Auditorium 16", event.getLocation().getValue());
 
@@ -1320,11 +1319,11 @@ public class ICalReaderTest {
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 9);
 
-			assertDateEquals("19960704T120000Z", event.getDateTimeStamp().getValue());
+			assertEquals(utc("1996-07-04 12:00:00"), event.getDateTimeStamp().getValue());
 			assertEquals("uid1@example.com", event.getUid().getValue());
 			assertEquals("jsmith@example.com", event.getOrganizer().getEmail());
-			assertDateEquals("19960918T143000Z", event.getDateStart().getValue());
-			assertDateEquals("19960920T220000Z", event.getDateEnd().getValue());
+			assertEquals(utc("1996-09-18 14:30:00"), event.getDateStart().getValue());
+			assertEquals(utc("1996-09-20 22:00:00"), event.getDateEnd().getValue());
 			assertTrue(event.getStatus().isConfirmed());
 			assertEquals(Arrays.asList("CONFERENCE"), event.getCategories().get(0).getValues());
 			assertEquals("Networld+Interop Conference", event.getSummary().getValue());
@@ -1357,7 +1356,7 @@ public class ICalReaderTest {
 				StandardTime standard = timezone.getStandardTimes().get(0);
 				assertSize(standard, 0, 4);
 
-				assertDateEquals("19981025T020000", standard.getDateStart().getValue());
+				assertEquals(date("1998-10-25 02:00:00"), standard.getDateStart().getValue());
 				assertEquals(new DateTimeComponents(1998, 10, 25, 2, 0, 0, false), standard.getDateStart().getRawComponents());
 
 				assertIntEquals(-4, standard.getTimezoneOffsetFrom().getHourOffset());
@@ -1372,7 +1371,7 @@ public class ICalReaderTest {
 				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
 				assertSize(daylight, 0, 4);
 
-				assertDateEquals("19990404T020000", daylight.getDateStart().getValue());
+				assertEquals(date("1999-04-04 02:00:00"), daylight.getDateStart().getValue());
 				assertEquals(new DateTimeComponents(1999, 04, 04, 2, 0, 0, false), daylight.getDateStart().getRawComponents());
 
 				assertIntEquals(-5, daylight.getTimezoneOffsetFrom().getHourOffset());
@@ -1388,7 +1387,7 @@ public class ICalReaderTest {
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 12);
 
-			assertDateEquals("19980309T231000Z", event.getDateTimeStamp().getValue());
+			assertEquals(utc("1998-03-09 23:10:00"), event.getDateTimeStamp().getValue());
 			assertEquals("guid-1.example.com", event.getUid().getValue());
 			assertEquals("mrbig@example.com", event.getOrganizer().getEmail());
 
@@ -1401,7 +1400,7 @@ public class ICalReaderTest {
 			assertEquals("Project XYZ Review Meeting", event.getDescription().getValue());
 			assertEquals(Arrays.asList("MEETING"), event.getCategories().get(0).getValues());
 			assertTrue(event.getClassification().isPublic());
-			assertDateEquals("19980309T130000Z", event.getCreated().getValue());
+			assertEquals(utc("1998-03-09 13:00:00"), event.getCreated().getValue());
 			assertEquals("XYZ Project Review", event.getSummary().getValue());
 
 			assertEquals(date("1998-03-12 08:30:00", nycTz), event.getDateStart().getValue());
@@ -1444,12 +1443,12 @@ public class ICalReaderTest {
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 13);
 
-			assertDateEquals("19970324T120000Z", event.getDateTimeStamp().getValue());
+			assertEquals(utc("1997-03-24 12:00:00"), event.getDateTimeStamp().getValue());
 			assertIntEquals(0, event.getSequence().getValue());
 			assertEquals("uid3@example.com", event.getUid().getValue());
 			assertEquals("jdoe@example.com", event.getOrganizer().getEmail());
-			assertDateEquals("19970324T123000Z", event.getDateStart().getValue());
-			assertDateEquals("19970324T210000Z", event.getDateEnd().getValue());
+			assertEquals(utc("1997-03-24 12:30:00"), event.getDateStart().getValue());
+			assertEquals(utc("1997-03-24 21:00:00"), event.getDateEnd().getValue());
 			assertEquals(Arrays.asList("MEETING", "PROJECT"), event.getCategories().get(0).getValues());
 			assertTrue(event.getClassification().isPublic());
 			assertEquals("Calendaring Interoperability Planning Meeting", event.getSummary().getValue());
@@ -1479,7 +1478,7 @@ public class ICalReaderTest {
 			VTodo todo = ical.getTodos().get(0);
 			assertSize(todo, 1, 8);
 
-			assertDateEquals("19980130T134500Z", todo.getDateTimeStamp().getValue());
+			assertEquals(utc("1998-01-30 13:45:00"), todo.getDateTimeStamp().getValue());
 			assertIntEquals(2, todo.getSequence().getValue());
 			assertEquals("uid4@example.com", todo.getUid().getValue());
 			assertEquals("unclesam@example.com", todo.getOrganizer().getEmail());
@@ -1488,7 +1487,7 @@ public class ICalReaderTest {
 			assertEquals("jqpublic@example.com", attendee.getEmail());
 			assertEquals(ParticipationStatus.ACCEPTED, attendee.getParticipationStatus());
 
-			assertDateEquals("19980415T000000", todo.getDateDue().getValue());
+			assertEquals(date("1998-04-15"), todo.getDateDue().getValue());
 			assertTrue(todo.getStatus().isNeedsAction());
 			assertEquals("Submit Income Taxes", todo.getSummary().getValue());
 
@@ -1497,7 +1496,7 @@ public class ICalReaderTest {
 				assertSize(alarm, 0, 5);
 
 				assertTrue(alarm.getAction().isAudio());
-				assertDateEquals("19980403T120000Z", alarm.getTrigger().getDate());
+				assertEquals(utc("1998-04-03 12:00:00"), alarm.getTrigger().getDate());
 
 				Attachment attach = alarm.getAttachments().get(0);
 				assertEquals("http://example.com/pub/audio-files/ssbanner.aud", attach.getUri());
@@ -1526,7 +1525,7 @@ public class ICalReaderTest {
 			VJournal journal = ical.getJournals().get(0);
 			assertSize(journal, 0, 7);
 
-			assertDateEquals("19970324T120000Z", journal.getDateTimeStamp().getValue());
+			assertEquals(utc("1997-03-24 12:00:00"), journal.getDateTimeStamp().getValue());
 			assertEquals("uid5@example.com", journal.getUid().getValue());
 			assertEquals("jsmith@example.com", journal.getOrganizer().getEmail());
 			assertTrue(journal.getStatus().isDraft());
@@ -1554,8 +1553,8 @@ public class ICalReaderTest {
 			assertSize(freebusy, 0, 7);
 
 			assertEquals("jsmith@example.com", freebusy.getOrganizer().getEmail());
-			assertDateEquals("19980313T141711Z", freebusy.getDateStart().getValue());
-			assertDateEquals("19980410T141711Z", freebusy.getDateEnd().getValue());
+			assertEquals(utc("1998-03-13 14:17:11"), freebusy.getDateStart().getValue());
+			assertEquals(utc("1998-04-10 14:17:11"), freebusy.getDateEnd().getValue());
 			assertEquals(Arrays.asList(new Period(utc("1998-03-14 23:30:00"), utc("1998-03-15 00:30:00"))), freebusy.getFreeBusy().get(0).getValues());
 			assertEquals(Arrays.asList(new Period(utc("1998-03-16 15:30:00"), utc("1998-03-16 16:30:00"))), freebusy.getFreeBusy().get(1).getValues());
 			assertEquals(Arrays.asList(new Period(utc("1998-03-18 03:00:00"), utc("1998-03-18 04:00:00"))), freebusy.getFreeBusy().get(2).getValues());

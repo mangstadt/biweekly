@@ -99,35 +99,6 @@ public class TestUtils {
 	}
 
 	/**
-	 * Asserts the value of a {@link Date} object.
-	 * @param expected the expected value of the date, in string form (e.g.
-	 * "20130610T102301")
-	 * @param actual the actual date object
-	 */
-	public static void assertDateEquals(String expected, Date actual) {
-		if (expected.contains("Z")) {
-			expected = expected.replace("Z", "+0000");
-		}
-
-		SimpleDateFormat df;
-		if (ICalDateFormat.dateHasTime(expected)) {
-			if (expected.contains("-") || expected.contains("+")) {
-				df = new SimpleDateFormat("yyyyMMdd'T'HHmmssZ");
-			} else {
-				df = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
-			}
-		} else {
-			df = new SimpleDateFormat("yyyyMMdd");
-		}
-
-		try {
-			assertEquals(df.parse(expected), actual);
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	/**
 	 * Asserts the value of an {@link Integer} object.
 	 * @param expected the expected value
 	 * @param actual the actual value
