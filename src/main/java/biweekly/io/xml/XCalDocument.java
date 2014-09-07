@@ -244,6 +244,19 @@ public class XCalDocument {
 	}
 
 	/**
+	 * Parses all iCalendar objects from this XML document.
+	 * @return the parsed iCalendar objects
+	 */
+	public List<ICalendar> getICalendars() {
+		try {
+			return reader().readAll();
+		} catch (IOException e) {
+			//not thrown because reading from DOM
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
 	 * Adds an iCalendar object to this XML document.
 	 * @param ical the iCalendar object to add
 	 */
@@ -361,39 +374,6 @@ public class XCalDocument {
 			properties.put("{http://xml.apache.org/xslt}indent-amount", indent + "");
 		}
 		XmlUtils.toWriter(document, writer, properties);
-	}
-
-	private Element buildElement(String localName) {
-		return buildElement(new QName(XCAL_NS, localName));
-	}
-
-	private Element buildElement(QName qname) {
-		return document.createElementNS(qname.getNamespaceURI(), qname.getLocalPart());
-	}
-
-	private Element buildAndAppendElement(String localName, Element parent) {
-		return buildAndAppendElement(new QName(XCAL_NS, localName), parent);
-	}
-
-	private Element buildAndAppendElement(QName qname, Element parent) {
-		Element child = document.createElementNS(qname.getNamespaceURI(), qname.getLocalPart());
-		parent.appendChild(child);
-		return child;
-	}
-
-	private List<Element> getVCalendarElements() {
-		return (root == null) ? Collections.<Element> emptyList() : getChildElements(root, VCALENDAR);
-	}
-
-	private List<Element> getChildElements(Element parent, QName qname) {
-		List<Element> elements = new ArrayList<Element>();
-		for (Element child : XmlUtils.toElementList(parent.getChildNodes())) {
-			QName childQName = new QName(child.getNamespaceURI(), child.getLocalName());
-			if (qname.equals(childQName)) {
-				elements.add(child);
-			}
-		}
-		return elements;
 	}
 
 	@Override
@@ -528,7 +508,22 @@ public class XCalDocument {
 			return parameters;
 		}
 
-		public void close() throws IOException {
+		private List<Element> getVCalendarElements() {
+			return (root == null) ? Collections.<Element> emptyList() : getChildElements(root, VCALENDAR);
+		}
+
+		private List<Element> getChildElements(Element parent, QName qname) {
+			List<Element> elements = new ArrayList<Element>();
+			for (Element child : XmlUtils.toElementList(parent.getChildNodes())) {
+				QName childQName = new QName(child.getNamespaceURI(), child.getLocalName());
+				if (qname.equals(childQName)) {
+					elements.add(child);
+				}
+			}
+			return elements;
+		}
+
+		public void close() {
 			//do nothing
 		}
 	}
@@ -713,12 +708,30 @@ public class XCalDocument {
 			return parametersWrapperElement;
 		}
 
+		private Element buildElement(String localName) {
+			return buildElement(new QName(XCAL_NS, localName));
+		}
+
+		private Element buildElement(QName qname) {
+			return document.createElementNS(qname.getNamespaceURI(), qname.getLocalPart());
+		}
+
+		private Element buildAndAppendElement(String localName, Element parent) {
+			return buildAndAppendElement(new QName(XCAL_NS, localName), parent);
+		}
+
+		private Element buildAndAppendElement(QName qname, Element parent) {
+			Element child = document.createElementNS(qname.getNamespaceURI(), qname.getLocalPart());
+			parent.appendChild(child);
+			return child;
+		}
+
 		@Override
 		protected ICalVersion getTargetVersion() {
 			return ICalVersion.V2_0;
 		}
 
-		public void close() throws IOException {
+		public void close() {
 			//do nothing
 		}
 	}

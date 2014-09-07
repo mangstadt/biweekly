@@ -2,6 +2,7 @@ package biweekly.io;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -116,6 +117,20 @@ public abstract class StreamReader implements Closeable {
 	 */
 	public TimezoneInfo getTimezoneInfo() {
 		return tzinfo;
+	}
+
+	/**
+	 * Reads all iCalendar objects from the data stream.
+	 * @return the iCalendar objects
+	 * @throws IOException if there's a problem reading from the stream
+	 */
+	public List<ICalendar> readAll() throws IOException {
+		List<ICalendar> icals = new ArrayList<ICalendar>();
+		ICalendar ical = null;
+		while ((ical = readNext()) != null) {
+			icals.add(ical);
+		}
+		return icals;
 	}
 
 	/**
