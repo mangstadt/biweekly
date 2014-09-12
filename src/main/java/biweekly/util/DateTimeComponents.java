@@ -60,7 +60,7 @@ import java.util.regex.Pattern;
  * </p>
  * @author Michael Angstadt
  */
-public final class DateTimeComponents {
+public final class DateTimeComponents implements Comparable<DateTimeComponents> {
 	private static final Pattern regex = Pattern.compile("^(\\d{4})-?(\\d{2})-?(\\d{2})(T(\\d{2}):?(\\d{2}):?(\\d{2})(Z?))?.*");
 	private final int year, month, date, hour, minute, second;
 	private final boolean utc;
@@ -282,5 +282,47 @@ public final class DateTimeComponents {
 		if (year != other.year)
 			return false;
 		return true;
+	}
+
+	public int compareTo(DateTimeComponents that) {
+		int c = this.year - that.year;
+		if (c != 0) {
+			return c;
+		}
+
+		c = this.month - that.month;
+		if (c != 0) {
+			return c;
+		}
+
+		c = this.date - that.date;
+		if (c != 0) {
+			return c;
+		}
+
+		c = this.hour - that.hour;
+		if (c != 0) {
+			return c;
+		}
+
+		c = this.minute - that.minute;
+		if (c != 0) {
+			return c;
+		}
+
+		c = this.second - that.second;
+		if (c != 0) {
+			return c;
+		}
+
+		return 0;
+	}
+
+	public boolean before(DateTimeComponents that) {
+		return this.compareTo(that) < 0;
+	}
+
+	public boolean after(DateTimeComponents that) {
+		return this.compareTo(that) > 0;
 	}
 }
