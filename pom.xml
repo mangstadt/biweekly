@@ -177,8 +177,9 @@
 					</links>
 					<quiet>true</quiet>
 					
-					<!-- exclude commons-codec source -->
+					<!-- exclude commons-codec and google-rfc-2445 source -->
 					<excludePackageNames>biweekly.util.org.*</excludePackageNames>
+					<excludePackageNames>com.*</excludePackageNames>
 					
 					<!-- Add Javascript syntax highlighter -->
 					<top><![CDATA[
