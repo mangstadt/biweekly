@@ -176,7 +176,7 @@ public class ICalTimeZone extends TimeZone {
 
 		List<Observance> observances = getSortedObservances();
 		Observance closest = null;
-		long closestDiff = Long.MAX_VALUE;
+		DateValue closestValue = null;
 		for (Observance observance : observances) {
 			//skip observances that don't have DTSTART properties
 			DateStart dtstart = observance.getDateStart();
@@ -190,10 +190,17 @@ public class ICalTimeZone extends TimeZone {
 				continue;
 			}
 
+			//System.out.println("DTSTART:" + dtstartValue);
+
 			RecurrenceIterator it = createIterator(observance);
 			DateValue prev = null;
 			while (it.hasNext()) {
 				DateValue cur = it.next();
+
+				//the iterator seems to apply the default timezone's offset to the DateValue
+				//so, undo this
+				cur = removeDefaultTzOffset(cur);
+
 				if (givenTime.compareTo(cur) < 0) {
 					//break if we have passed the given time
 					break;
@@ -202,14 +209,19 @@ public class ICalTimeZone extends TimeZone {
 				prev = cur;
 			}
 
-			if (prev != null) {
-				long diff = diff(givenTime, prev);
-				if (diff < closestDiff) {
-					closestDiff = diff;
-					closest = observance;
-				}
+			//System.out.println("prev:" + prev);
+			if (prev != null && (closestValue == null || closestValue.compareTo(prev) < 0)) {
+				closestValue = prev;
+				closest = observance;
 			}
 		}
+
+		//		System.out.println("\nGiven Date:" + givenTime);
+		//		System.out.println("Closest Observance");
+		//		System.out.println("   DTSTART:" + closest.getDateStart().getRawComponents());
+		//		System.out.println("   FROM:" + closest.getTimezoneOffsetFrom().getValue());
+		//		System.out.println("   TO:" + closest.getTimezoneOffsetTo().getValue());
+		//		System.out.println("Closest RDATE:" + closestValue);
 
 		UtcOffsetProperty offset;
 		if (closest == null) {
@@ -221,40 +233,65 @@ public class ICalTimeZone extends TimeZone {
 		return new Result(closest, offset.getValue().toMillis());
 	}
 
-	/**
-	 * Calculates the difference between two {@link DateValue} objects.
-	 * @param a the first
-	 * @param b the second
-	 * @return the difference in milliseconds
-	 */
-	private long diff(DateValue a, DateValue b) {
+	private DateValue removeDefaultTzOffset(DateValue value) {
 		Calendar c = Calendar.getInstance();
-
 		c.clear();
-		c.set(Calendar.YEAR, a.year());
-		c.set(Calendar.MONTH, a.month() - 1);
-		c.set(Calendar.DATE, a.day());
-		if (a instanceof DateTimeValue) {
-			DateTimeValue a2 = (DateTimeValue) a;
-			c.set(Calendar.HOUR, a2.hour());
-			c.set(Calendar.MINUTE, a2.minute());
-			c.set(Calendar.SECOND, a2.second());
-		}
-		Date d1 = c.getTime();
 
+		c.set(Calendar.YEAR, value.year());
+		c.set(Calendar.MONTH, value.month() - 1);
+		c.set(Calendar.DATE, value.day());
+		if (value instanceof DateTimeValue) {
+			DateTimeValue dt = (DateTimeValue) value;
+			c.set(Calendar.HOUR_OF_DAY, dt.hour());
+			c.set(Calendar.MINUTE, dt.minute());
+			c.set(Calendar.SECOND, dt.second());
+		}
+
+		Date d = c.getTime();
+		TimeZone tz = TimeZone.getDefault();
+		int offset = tz.getOffset(d.getTime());
+
+		c.add(Calendar.MILLISECOND, offset);
+
+		//@formatter:off
+		return new DateTimeValueImpl(
+			c.get(Calendar.YEAR),
+			c.get(Calendar.MONTH)+1,
+			c.get(Calendar.DATE),
+			c.get(Calendar.HOUR_OF_DAY),
+			c.get(Calendar.MINUTE),
+			c.get(Calendar.SECOND)
+		);
+		//@formatter:on
+	}
+
+	private DateTimeValue toUtc(DateTimeValue value) {
+		Calendar c = Calendar.getInstance();
 		c.clear();
-		c.set(Calendar.YEAR, b.year());
-		c.set(Calendar.MONTH, b.month() - 1);
-		c.set(Calendar.DATE, b.day());
-		if (b instanceof DateTimeValue) {
-			DateTimeValue b2 = (DateTimeValue) b;
-			c.set(Calendar.HOUR, b2.hour());
-			c.set(Calendar.MINUTE, b2.minute());
-			c.set(Calendar.SECOND, b2.second());
-		}
-		Date d2 = c.getTime();
 
-		return d1.getTime() - d2.getTime();
+		c.set(Calendar.YEAR, value.year());
+		c.set(Calendar.MONTH, value.month() - 1);
+		c.set(Calendar.DATE, value.day());
+		c.set(Calendar.HOUR_OF_DAY, value.hour());
+		c.set(Calendar.MINUTE, value.minute());
+		c.set(Calendar.SECOND, value.second());
+
+		Date d = c.getTime();
+		TimeZone tz = TimeZone.getDefault();
+		int offset = tz.getOffset(d.getTime());
+
+		c.add(Calendar.MILLISECOND, -offset);
+
+		//@formatter:off
+		return new DateTimeValueImpl(
+			c.get(Calendar.YEAR),
+			c.get(Calendar.MONTH)+1,
+			c.get(Calendar.DATE),
+			c.get(Calendar.HOUR_OF_DAY),
+			c.get(Calendar.MINUTE),
+			c.get(Calendar.SECOND)
+		);
+		//@formatter:on
 	}
 
 	/**
@@ -301,9 +338,11 @@ public class ICalTimeZone extends TimeZone {
 
 		List<RecurrenceIterator> inclusions = new ArrayList<RecurrenceIterator>();
 		List<RecurrenceIterator> exclusions = new ArrayList<RecurrenceIterator>();
-		TimeZone utc = TimeZone.getTimeZone("UTC");
+		//TimeZone utc = TimeZone.getTimeZone("UTC");
+		TimeZone utc = TimeZone.getDefault();
 
 		DateTimeValue dtstart = convert(start);
+		dtstart = toUtc(dtstart);
 		RDateList dtstartrdate = new RDateList(utc);
 		dtstartrdate.setDatesUtc(new DateValue[] { dtstart });
 		inclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(dtstartrdate)); //TODO need to include this?
@@ -314,7 +353,7 @@ public class ICalTimeZone extends TimeZone {
 				inclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(rruleValue, dtstart, utc)); //TODO should this be UTC or default timezone?
 			}
 			for (RecurrenceDates rdate : observance.getRecurrenceDates()) {
-				RDateList rdateValue = convert(rdate);
+				RDateList rdateValue = convert(rdate, utc);
 				inclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(rdateValue));
 			}
 
@@ -323,7 +362,7 @@ public class ICalTimeZone extends TimeZone {
 				exclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(exruleValue, dtstart, utc));
 			}
 			for (ExceptionDates exdate : observance.getProperties(ExceptionDates.class)) {
-				RDateList exdateValue = convert(exdate);
+				RDateList exdateValue = convert(exdate, utc);
 				exclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(exdateValue));
 			}
 		} catch (ParseException e) {
@@ -398,26 +437,28 @@ public class ICalTimeZone extends TimeZone {
 	 * Converts a biweekly {@link RecurrenceDates} object to a google-rfc-2445
 	 * {@link RDateList} object.
 	 * @param rdate the biweekly object
+	 * @param tz the timezone the date values are in
 	 * @return the google-rfc-2445 object
 	 * @throws ParseException if there's a problem with the conversion
 	 */
-	private RDateList convert(RecurrenceDates rdate) throws ParseException {
+	private RDateList convert(RecurrenceDates rdate, TimeZone tz) throws ParseException {
 		RecurrenceDatesScribe scribe = (RecurrenceDatesScribe) new ScribeIndex().getPropertyScribe(RecurrenceDates.class);
 		String text = scribe.getPropertyName() + ":" + scribe.writeText(rdate, new WriteContext(ICalVersion.V2_0, new TimezoneInfo()));
-		return new RDateList(text, TimeZone.getTimeZone("UTC"));
+		return new RDateList(text, tz);
 	}
 
 	/**
 	 * Converts a biweekly {@link ExceptionDates} object to a google-rfc-2445
 	 * {@link RDateList} object.
 	 * @param rdate the biweekly object
+	 * @param tz the timezone the date values are in
 	 * @return the google-rfc-2445 object
 	 * @throws ParseException if there's a problem with the conversion
 	 */
-	private RDateList convert(ExceptionDates exdate) throws ParseException {
+	private RDateList convert(ExceptionDates exdate, TimeZone tz) throws ParseException {
 		ExceptionDatesScribe scribe = (ExceptionDatesScribe) new ScribeIndex().getPropertyScribe(ExceptionDates.class);
 		String text = scribe.getPropertyName() + ":" + scribe.writeText(exdate, new WriteContext(ICalVersion.V2_0, new TimezoneInfo()));
-		return new RDateList(text, TimeZone.getTimeZone("UTC"));
+		return new RDateList(text, tz);
 	}
 
 	private static class Result {

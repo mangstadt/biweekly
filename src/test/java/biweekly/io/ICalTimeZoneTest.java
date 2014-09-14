@@ -2,6 +2,7 @@ package biweekly.io;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.Biweekly;
@@ -10,6 +11,7 @@ import biweekly.component.DaylightSavingsTime;
 import biweekly.component.StandardTime;
 import biweekly.component.VTimezone;
 import biweekly.util.DateTimeComponents;
+import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.UtcOffset;
 
 /*
@@ -41,6 +43,9 @@ import biweekly.util.UtcOffset;
  * @author Michael Angstadt
  */
 public class ICalTimeZoneTest {
+	@ClassRule
+	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(3, 0);
+
 	@Test
 	public void getOffset_no_rdates_or_rrules() {
 		VTimezone component = new VTimezone("America/New_York");
@@ -63,7 +68,10 @@ public class ICalTimeZoneTest {
 		assertEquals(component.getTimezoneId().getValue(), tz.getID());
 
 		assertOffset(-4, 0, tz.getOffset(0, 1997, 9, 24, 0, 0));
+		assertOffset(-4, 0, tz.getOffset(0, 1997, 9, 25, 0, ms(1, 59, 59)));
+		assertOffset(-5, 0, tz.getOffset(0, 1998, 9, 25, 0, ms(2, 0, 1)));
 		assertOffset(-5, 0, tz.getOffset(0, 1998, 9, 26, 0, 0));
+
 		assertOffset(-4, 0, tz.getOffset(0, 1999, 3, 5, 0, 0));
 		assertOffset(-4, 0, tz.getOffset(0, 2010, 9, 24, 0, 0));
 	}
@@ -107,7 +115,22 @@ public class ICalTimeZoneTest {
 
 		//19240427T020000
 		assertOffset(-5, 0, tz.getOffset(0, 1924, 3, 27, 0, ms(1, 59, 59)));
-		//assertOffset(-4, 0, tz.getOffset(0, 1924, 3, 27, 0, ms(6, 59, 0)));
+		assertOffset(-4, 0, tz.getOffset(0, 1924, 3, 27, 0, ms(2, 0, 0)));
+		assertOffset(-4, 0, tz.getOffset(0, 1924, 3, 27, 0, ms(2, 0, 1)));
+
+		//19420101T000000
+		assertOffset(-5, 0, tz.getOffset(0, 1941, 11, 31, 0, ms(23, 59, 59)));
+		assertOffset(-5, 0, tz.getOffset(0, 1942, 0, 1, 0, ms(0, 0, 0)));
+		assertOffset(-5, 0, tz.getOffset(0, 1942, 0, 1, 0, ms(0, 0, 1)));
+
+		assertOffset(-5, 0, tz.getOffset(0, 2014, 2, 9, 0, ms(1, 59, 59)));
+		assertOffset(-4, 0, tz.getOffset(0, 2014, 2, 9, 0, ms(2, 0, 0)));
+		assertOffset(-4, 0, tz.getOffset(0, 2014, 2, 9, 0, ms(2, 0, 1)));
+	}
+
+	@Test
+	public void getOffset_no_dtstart() {
+		//TODO
 	}
 
 	private void assertOffset(int expectedHours, int expectedMinutes, int actualMillis) {
