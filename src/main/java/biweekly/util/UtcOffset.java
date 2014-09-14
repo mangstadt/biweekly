@@ -47,13 +47,23 @@ public final class UtcOffset {
 	}
 
 	/**
+	 * Creates a new UTC offset.
+	 * @param millis the offset in milliseconds
+	 */
+	public UtcOffset(int millis) {
+		hour = millis / 1000 / 60 / 60;
+		millis -= hour * 1000 * 60 * 60;
+		minute = Math.abs(millis / 1000 / 60);
+	}
+
+	/**
 	 * Parses a UTC offset from a string.
 	 * @param text the text to parse (e.g. "-0500")
 	 * @return the parsed UTC offset
 	 * @throws IllegalArgumentException if the text cannot be parsed
 	 */
 	public static UtcOffset parse(String text) {
-		Pattern timeZoneRegex = Pattern.compile("^([-\\+])?(\\d{1,2})(:?(\\d{2}))?$");
+		Pattern timeZoneRegex = Pattern.compile("^([-\\+])?(\\d{1,2})(:?(\\d{2}))?(:?(\\d{2}))?$");
 		Matcher m = timeZoneRegex.matcher(text);
 
 		if (!m.find()) {
@@ -138,10 +148,12 @@ public final class UtcOffset {
 
 	/**
 	 * Converts the offset to milliseconds.
-	 * @return the offset in milliseconds.
+	 * @return the offset in milliseconds
 	 */
-	public long toMillis() {
-		return (hour * 60 + minute) * 60 * 1000;
+	public int toMillis() {
+		int millis = Math.abs(hour) * 60 * 60 * 1000;
+		millis += minute * 60 * 1000;
+		return millis * ((hour < 0) ? -1 : 1);
 	}
 
 	@Override

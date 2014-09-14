@@ -86,6 +86,7 @@ public class UtcOffsetTest {
 		assertParse("+10:30", 10, 30);
 		assertParse("-05:30", -5, 30);
 		assertParse("-10:30", -10, 30);
+		assertParse("-100030", -10, 0);
 	}
 
 	private void assertParse(String input, int expectedHour, int expectedMinute) {
@@ -130,5 +131,20 @@ public class UtcOffsetTest {
 		UtcOffset offset = new UtcOffset(hour, minute);
 		String actual = offset.toString(extended);
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void toMillis() {
+		assertToMillis(0, 0, 0);
+		assertToMillis(-4, 0, -4 * 1000 * 60 * 60);
+		assertToMillis(-4, 30, -(4 * 1000 * 60 * 60 + 30 * 1000 * 60));
+		assertToMillis(4, 0, 4 * 1000 * 60 * 60);
+		assertToMillis(4, 30, 4 * 1000 * 60 * 60 + 30 * 1000 * 60);
+		assertToMillis(0, 30, 30 * 1000 * 60);
+	}
+
+	private void assertToMillis(int hour, int minute, int expected) {
+		UtcOffset offset = new UtcOffset(hour, minute);
+		assertEquals(expected, offset.toMillis());
 	}
 }
