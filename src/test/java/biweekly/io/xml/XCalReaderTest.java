@@ -64,6 +64,7 @@ import biweekly.util.Duration;
 import biweekly.util.IOUtils;
 import biweekly.util.Period;
 import biweekly.util.Recurrence;
+import biweekly.util.Recurrence.ByDay;
 import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
 import biweekly.util.XmlUtils;
@@ -988,8 +989,7 @@ public class XCalReaderTest {
 
 					Recurrence rrule = daylight.getRecurrenceRule().getValue();
 					assertEquals(Frequency.YEARLY, rrule.getFrequency());
-					assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());
-					assertEquals(Arrays.asList(1), rrule.getByDayPrefixes());
+					assertEquals(Arrays.asList(new ByDay(1, DayOfWeek.SUNDAY)), rrule.getByDay());
 					assertEquals(Arrays.asList(4), rrule.getByMonth());
 
 					assertEquals("EDT", daylight.getTimezoneNames().get(0).getValue());
@@ -1007,8 +1007,7 @@ public class XCalReaderTest {
 
 					Recurrence rrule = standard.getRecurrenceRule().getValue();
 					assertEquals(Frequency.YEARLY, rrule.getFrequency());
-					assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());
-					assertEquals(Arrays.asList(-1), rrule.getByDayPrefixes());
+					assertEquals(Arrays.asList(new ByDay(-1, DayOfWeek.SUNDAY)), rrule.getByDay());
 					assertEquals(Arrays.asList(10), rrule.getByMonth());
 
 					assertEquals("EST", standard.getTimezoneNames().get(0).getValue());

@@ -3,7 +3,6 @@ package biweekly.io.scribe.property;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -25,6 +24,7 @@ import biweekly.property.RecurrenceProperty;
 import biweekly.util.ICalDateFormat;
 import biweekly.util.ListMultimap;
 import biweekly.util.Recurrence;
+import biweekly.util.Recurrence.ByDay;
 import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
 import biweekly.util.XmlUtils;
@@ -126,12 +126,13 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 				}
 			} else {
 				sb.append("MP").append(interval);
-				for (int i = 0; i < recur.getByDay().size(); i++) {
-					DayOfWeek day = recur.getByDay().get(i);
-					Integer prefix = recur.getByDayPrefixes().get(i);
+				for (ByDay byDay : recur.getByDay()) {
+					DayOfWeek day = byDay.getDay();
+					Integer prefix = byDay.getNum();
 					if (prefix == null) {
 						prefix = 1;
 					}
+
 					sb.append(' ').append(writeVCalInt(prefix)).append(' ').append(day.getAbbr());
 				}
 			}
@@ -139,8 +140,8 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 		case WEEKLY:
 			sb.append("W").append(interval);
-			for (DayOfWeek day : recur.getByDay()) {
-				sb.append(' ').append(day.getAbbr());
+			for (ByDay byDay : recur.getByDay()) {
+				sb.append(' ').append(byDay.getDay().getAbbr());
 			}
 			break;
 
@@ -741,11 +742,9 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		addIntegerListComponent(components, BYMINUTE, recur.getByMinute());
 		addIntegerListComponent(components, BYHOUR, recur.getByHour());
 
-		Iterator<Integer> prefixIt = recur.getByDayPrefixes().iterator();
-		Iterator<DayOfWeek> dayIt = recur.getByDay().iterator();
-		while (prefixIt.hasNext() && dayIt.hasNext()) {
-			Integer prefix = prefixIt.next();
-			DayOfWeek day = dayIt.next();
+		for (ByDay byDay : recur.getByDay()) {
+			Integer prefix = byDay.getNum();
+			DayOfWeek day = byDay.getDay();
 
 			String value = day.getAbbr();
 			if (prefix != null) {

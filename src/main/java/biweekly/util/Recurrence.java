@@ -69,8 +69,7 @@ public final class Recurrence {
 	private final List<Integer> byWeekNo;
 	private final List<Integer> byMonth;
 	private final List<Integer> bySetPos;
-	private final List<DayOfWeek> byDay;
-	private final List<Integer> byDayPrefixes;
+	private final List<ByDay> byDay;
 	private final DayOfWeek workweekStarts;
 	private final Map<String, List<String>> xrules;
 
@@ -89,7 +88,6 @@ public final class Recurrence {
 		byMonth = Collections.unmodifiableList(builder.byMonth);
 		bySetPos = Collections.unmodifiableList(builder.bySetPos);
 		byDay = Collections.unmodifiableList(builder.byDay);
-		byDayPrefixes = Collections.unmodifiableList(builder.byDayPrefixes);
 		workweekStarts = builder.workweekStarts;
 
 		Map<String, List<String>> map = builder.xrules.getMap();
@@ -171,18 +169,8 @@ public final class Recurrence {
 	 * @return the day components of the BYDAY rule part or empty list if not
 	 * set
 	 */
-	public List<DayOfWeek> getByDay() {
+	public List<ByDay> getByDay() {
 		return byDay;
-	}
-
-	/**
-	 * Gets the numeric components of the BYDAY rule part.
-	 * @return the numeric components of the BYDAY rule part or empty list if
-	 * not set (BYDAY values without numeric components will have a "null"
-	 * number)
-	 */
-	public List<Integer> getByDayPrefixes() {
-		return byDayPrefixes;
 	}
 
 	/**
@@ -246,7 +234,6 @@ public final class Recurrence {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((byDay == null) ? 0 : byDay.hashCode());
-		result = prime * result + ((byDayPrefixes == null) ? 0 : byDayPrefixes.hashCode());
 		result = prime * result + ((byHour == null) ? 0 : byHour.hashCode());
 		result = prime * result + ((byMinute == null) ? 0 : byMinute.hashCode());
 		result = prime * result + ((byMonth == null) ? 0 : byMonth.hashCode());
@@ -267,89 +254,52 @@ public final class Recurrence {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
 		Recurrence other = (Recurrence) obj;
 		if (byDay == null) {
-			if (other.byDay != null)
-				return false;
-		} else if (!byDay.equals(other.byDay))
-			return false;
-		if (byDayPrefixes == null) {
-			if (other.byDayPrefixes != null)
-				return false;
-		} else if (!byDayPrefixes.equals(other.byDayPrefixes))
-			return false;
+			if (other.byDay != null) return false;
+		} else if (!byDay.equals(other.byDay)) return false;
 		if (byHour == null) {
-			if (other.byHour != null)
-				return false;
-		} else if (!byHour.equals(other.byHour))
-			return false;
+			if (other.byHour != null) return false;
+		} else if (!byHour.equals(other.byHour)) return false;
 		if (byMinute == null) {
-			if (other.byMinute != null)
-				return false;
-		} else if (!byMinute.equals(other.byMinute))
-			return false;
+			if (other.byMinute != null) return false;
+		} else if (!byMinute.equals(other.byMinute)) return false;
 		if (byMonth == null) {
-			if (other.byMonth != null)
-				return false;
-		} else if (!byMonth.equals(other.byMonth))
-			return false;
+			if (other.byMonth != null) return false;
+		} else if (!byMonth.equals(other.byMonth)) return false;
 		if (byMonthDay == null) {
-			if (other.byMonthDay != null)
-				return false;
-		} else if (!byMonthDay.equals(other.byMonthDay))
-			return false;
+			if (other.byMonthDay != null) return false;
+		} else if (!byMonthDay.equals(other.byMonthDay)) return false;
 		if (bySecond == null) {
-			if (other.bySecond != null)
-				return false;
-		} else if (!bySecond.equals(other.bySecond))
-			return false;
+			if (other.bySecond != null) return false;
+		} else if (!bySecond.equals(other.bySecond)) return false;
 		if (bySetPos == null) {
-			if (other.bySetPos != null)
-				return false;
-		} else if (!bySetPos.equals(other.bySetPos))
-			return false;
+			if (other.bySetPos != null) return false;
+		} else if (!bySetPos.equals(other.bySetPos)) return false;
 		if (byWeekNo == null) {
-			if (other.byWeekNo != null)
-				return false;
-		} else if (!byWeekNo.equals(other.byWeekNo))
-			return false;
+			if (other.byWeekNo != null) return false;
+		} else if (!byWeekNo.equals(other.byWeekNo)) return false;
 		if (byYearDay == null) {
-			if (other.byYearDay != null)
-				return false;
-		} else if (!byYearDay.equals(other.byYearDay))
-			return false;
+			if (other.byYearDay != null) return false;
+		} else if (!byYearDay.equals(other.byYearDay)) return false;
 		if (count == null) {
-			if (other.count != null)
-				return false;
-		} else if (!count.equals(other.count))
-			return false;
+			if (other.count != null) return false;
+		} else if (!count.equals(other.count)) return false;
 		if (xrules == null) {
-			if (other.xrules != null)
-				return false;
-		} else if (!xrules.equals(other.xrules))
-			return false;
-		if (frequency != other.frequency)
-			return false;
+			if (other.xrules != null) return false;
+		} else if (!xrules.equals(other.xrules)) return false;
+		if (frequency != other.frequency) return false;
 		if (interval == null) {
-			if (other.interval != null)
-				return false;
-		} else if (!interval.equals(other.interval))
-			return false;
+			if (other.interval != null) return false;
+		} else if (!interval.equals(other.interval)) return false;
 		if (until == null) {
-			if (other.until != null)
-				return false;
-		} else if (!until.equals(other.until))
-			return false;
-		if (untilHasTime != other.untilHasTime)
-			return false;
-		if (workweekStarts != other.workweekStarts)
-			return false;
+			if (other.until != null) return false;
+		} else if (!until.equals(other.until)) return false;
+		if (untilHasTime != other.untilHasTime) return false;
+		if (workweekStarts != other.workweekStarts) return false;
 		return true;
 	}
 
@@ -403,6 +353,50 @@ public final class Recurrence {
 		}
 	}
 
+	public static class ByDay {
+		private final Integer num;
+		private final DayOfWeek day;
+
+		public ByDay(DayOfWeek day) {
+			this(null, day);
+		}
+
+		public ByDay(Integer num, DayOfWeek day) {
+			this.num = num;
+			this.day = day;
+		}
+
+		public Integer getNum() {
+			return num;
+		}
+
+		public DayOfWeek getDay() {
+			return day;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((day == null) ? 0 : day.hashCode());
+			result = prime * result + ((num == null) ? 0 : num.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) return true;
+			if (obj == null) return false;
+			if (getClass() != obj.getClass()) return false;
+			ByDay other = (ByDay) obj;
+			if (day != other.day) return false;
+			if (num == null) {
+				if (other.num != null) return false;
+			} else if (!num.equals(other.num)) return false;
+			return true;
+		}
+	}
+
 	/**
 	 * Constructs {@link Recurrence} objects.
 	 * @author Michael Angstadt
@@ -416,8 +410,7 @@ public final class Recurrence {
 		private List<Integer> bySecond;
 		private List<Integer> byMinute;
 		private List<Integer> byHour;
-		private List<DayOfWeek> byDay;
-		private List<Integer> byDayPrefixes;
+		private List<ByDay> byDay;
 		private List<Integer> byMonthDay;
 		private List<Integer> byYearDay;
 		private List<Integer> byWeekNo;
@@ -435,8 +428,7 @@ public final class Recurrence {
 			bySecond = new ArrayList<Integer>(0);
 			byMinute = new ArrayList<Integer>(0);
 			byHour = new ArrayList<Integer>(0);
-			byDay = new ArrayList<DayOfWeek>(0);
-			byDayPrefixes = new ArrayList<Integer>(0);
+			byDay = new ArrayList<ByDay>(0);
 			byMonthDay = new ArrayList<Integer>(0);
 			byYearDay = new ArrayList<Integer>(0);
 			byWeekNo = new ArrayList<Integer>(0);
@@ -458,8 +450,7 @@ public final class Recurrence {
 			bySecond = new ArrayList<Integer>(recur.bySecond);
 			byMinute = new ArrayList<Integer>(recur.byMinute);
 			byHour = new ArrayList<Integer>(recur.byHour);
-			byDay = new ArrayList<DayOfWeek>(recur.byDay);
-			byDayPrefixes = new ArrayList<Integer>(recur.byDayPrefixes);
+			byDay = new ArrayList<ByDay>(recur.byDay);
 			byMonthDay = new ArrayList<Integer>(recur.byMonthDay);
 			byYearDay = new ArrayList<Integer>(recur.byYearDay);
 			byWeekNo = new ArrayList<Integer>(recur.byWeekNo);
@@ -704,13 +695,12 @@ public final class Recurrence {
 
 		/**
 		 * Adds a BYDAY rule part.
-		 * @param prefix the numeric prefix
+		 * @param num the numeric component
 		 * @param day the day to add
 		 * @return this
 		 */
-		public Builder byDay(Integer prefix, DayOfWeek day) {
-			byDayPrefixes.add(prefix);
-			byDay.add(day);
+		public Builder byDay(Integer num, DayOfWeek day) {
+			byDay.add(new ByDay(num, day));
 			return this;
 		}
 

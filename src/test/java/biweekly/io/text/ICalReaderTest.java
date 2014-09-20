@@ -64,6 +64,7 @@ import biweekly.util.Duration;
 import biweekly.util.IOUtils;
 import biweekly.util.Period;
 import biweekly.util.Recurrence;
+import biweekly.util.Recurrence.ByDay;
 import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
 import biweekly.util.UtcOffset;
@@ -1189,8 +1190,7 @@ public class ICalReaderTest {
 
 				Recurrence rrule = standard.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
-				assertEquals(Arrays.asList(1), rrule.getByDayPrefixes());
-				assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());
+				assertEquals(Arrays.asList(new ByDay(1, DayOfWeek.SUNDAY)), rrule.getByDay());
 				assertEquals(Arrays.asList(11), rrule.getByMonth());
 
 				assertIntEquals(-4, standard.getTimezoneOffsetFrom().getHourOffset());
@@ -1207,8 +1207,7 @@ public class ICalReaderTest {
 
 				Recurrence rrule = daylight.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
-				assertEquals(Arrays.asList(2), rrule.getByDayPrefixes());
-				assertEquals(Arrays.asList(DayOfWeek.SUNDAY), rrule.getByDay());
+				assertEquals(Arrays.asList(new ByDay(2, DayOfWeek.SUNDAY)), rrule.getByDay());
 				assertEquals(Arrays.asList(3), rrule.getByMonth());
 
 				assertIntEquals(-5, daylight.getTimezoneOffsetFrom().getHourOffset());

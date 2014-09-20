@@ -24,6 +24,7 @@ import biweekly.property.RecurrenceProperty;
 import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.ListMultimap;
 import biweekly.util.Recurrence;
+import biweekly.util.Recurrence.ByDay;
 import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
 
@@ -338,7 +339,6 @@ public class RecurrencePropertyScribeTest {
 				assertEquals(Arrays.asList(), recur.getByMinute());
 				assertEquals(Arrays.asList(), recur.getByHour());
 				assertEquals(Arrays.asList(), recur.getByDay());
-				assertEquals(Arrays.asList(), recur.getByDayPrefixes());
 				assertEquals(Arrays.asList(), recur.getByMonthDay());
 				assertEquals(Arrays.asList(), recur.getByYearDay());
 				assertEquals(Arrays.asList(), recur.getByMonth());
@@ -730,8 +730,20 @@ public class RecurrencePropertyScribeTest {
 			assertEquals(datetime, recur.getUntil());
 			assertEquals(Arrays.asList(3, 4), recur.getByMinute());
 			assertEquals(Arrays.asList(1, 2), recur.getByHour());
-			assertEquals(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.FRIDAY), recur.getByDay());
-			assertEquals(Arrays.asList(null, null, null, null, null, null, null, Integer.valueOf(5)), recur.getByDayPrefixes());
+
+			//@formatter:off
+			assertEquals(Arrays.asList(
+				new ByDay(DayOfWeek.MONDAY),
+				new ByDay(DayOfWeek.TUESDAY),
+				new ByDay(DayOfWeek.WEDNESDAY),
+				new ByDay(DayOfWeek.THURSDAY),
+				new ByDay(DayOfWeek.FRIDAY),
+				new ByDay(DayOfWeek.SATURDAY),
+				new ByDay(DayOfWeek.SUNDAY),
+				new ByDay(5, DayOfWeek.FRIDAY)
+			), recur.getByDay());
+			//@formatter:on
+
 			assertEquals(Arrays.asList(1, 2), recur.getByMonthDay());
 			assertEquals(Arrays.asList(100, 101), recur.getByYearDay());
 			assertEquals(Arrays.asList(5, 6), recur.getByMonth());
@@ -755,8 +767,20 @@ public class RecurrencePropertyScribeTest {
 			assertNull(recur.getUntil());
 			assertEquals(Arrays.asList(3, 4), recur.getByMinute());
 			assertEquals(Arrays.asList(1, 2), recur.getByHour());
-			assertEquals(Arrays.asList(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.FRIDAY), recur.getByDay());
-			assertEquals(Arrays.asList(null, null, null, null, null, null, null, Integer.valueOf(5)), recur.getByDayPrefixes());
+
+			//@formatter:off
+			assertEquals(Arrays.asList(
+				new ByDay(DayOfWeek.MONDAY),
+				new ByDay(DayOfWeek.TUESDAY),
+				new ByDay(DayOfWeek.WEDNESDAY),
+				new ByDay(DayOfWeek.THURSDAY),
+				new ByDay(DayOfWeek.FRIDAY),
+				new ByDay(DayOfWeek.SATURDAY),
+				new ByDay(DayOfWeek.SUNDAY),
+				new ByDay(5, DayOfWeek.FRIDAY)
+			), recur.getByDay());
+			//@formatter:on
+
 			assertEquals(Arrays.asList(1, 2), recur.getByMonthDay());
 			assertEquals(Arrays.asList(100, 101), recur.getByYearDay());
 			assertEquals(Arrays.asList(5, 6), recur.getByMonth());
@@ -777,7 +801,6 @@ public class RecurrencePropertyScribeTest {
 			assertEquals(Arrays.asList(), recur.getByMinute());
 			assertEquals(Arrays.asList(), recur.getByHour());
 			assertEquals(Arrays.asList(), recur.getByDay());
-			assertEquals(Arrays.asList(), recur.getByDayPrefixes());
 			assertEquals(Arrays.asList(), recur.getByMonthDay());
 			assertEquals(Arrays.asList(), recur.getByYearDay());
 			assertEquals(Arrays.asList(), recur.getByMonth());
