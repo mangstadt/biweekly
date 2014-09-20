@@ -2,10 +2,12 @@ package biweekly.io;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.TimeZone;
@@ -16,9 +18,7 @@ import biweekly.component.Observance;
 import biweekly.component.StandardTime;
 import biweekly.component.VTimezone;
 import biweekly.io.scribe.ScribeIndex;
-import biweekly.io.scribe.property.ExceptionDatesScribe;
 import biweekly.io.scribe.property.ExceptionRuleScribe;
-import biweekly.io.scribe.property.RecurrenceDatesScribe;
 import biweekly.io.scribe.property.RecurrenceRuleScribe;
 import biweekly.property.DateStart;
 import biweekly.property.ExceptionDates;
@@ -33,7 +33,6 @@ import com.google.ical.iter.RecurrenceIteratorFactory;
 import com.google.ical.values.DateTimeValue;
 import com.google.ical.values.DateTimeValueImpl;
 import com.google.ical.values.DateValue;
-import com.google.ical.values.RDateList;
 import com.google.ical.values.RRule;
 
 /*
@@ -98,7 +97,7 @@ public class ICalTimeZone extends TimeZone {
 		int second = millis / 1000;
 
 		Result result = getObservance(year, month + 1, day, hour, minute, second);
-		return result.offset;
+		return (result == null) ? 0 : result.offset;
 	}
 
 	public void printBoundaries() {
@@ -119,6 +118,10 @@ public class ICalTimeZone extends TimeZone {
 	@Override
 	public int getRawOffset() {
 		Result result = getObservance(new Date());
+		if (result == null) {
+			return 0;
+		}
+
 		Observance observance = result.observance;
 		if (observance == null) {
 			//return the offset of the first STANDARD component
@@ -144,6 +147,10 @@ public class ICalTimeZone extends TimeZone {
 	@Override
 	public boolean inDaylightTime(Date date) {
 		Result result = getObservance(date);
+		if (result == null) {
+			return false;
+		}
+
 		Observance observance = result.observance;
 		return (observance == null) ? false : observance instanceof DaylightSavingsTime;
 	}
@@ -172,15 +179,18 @@ public class ICalTimeZone extends TimeZone {
 	}
 
 	private Result getObservance(int year, int month, int day, int hour, int minute, int second) {
-		DateValue givenTime = new DateTimeValueImpl(year, month, day, hour, minute, second);
-
 		List<Observance> observances = getSortedObservances();
+		if (observances.isEmpty()) {
+			return null;
+		}
+
+		DateValue givenTime = new DateTimeValueImpl(year, month, day, hour, minute, second);
 		Observance closest = null;
 		DateValue closestValue = null;
 		for (Observance observance : observances) {
 			//skip observances that don't have DTSTART properties
 			DateStart dtstart = observance.getDateStart();
-			if (dtstart == null) {
+			if (dtstart == null || dtstart.getRawComponents() == null) {
 				continue;
 			}
 
@@ -190,16 +200,13 @@ public class ICalTimeZone extends TimeZone {
 				continue;
 			}
 
-			//System.out.println("DTSTART:" + dtstartValue);
+			System.out.println("DTSTART = " + dtstartValue);
 
 			RecurrenceIterator it = createIterator(observance);
 			DateValue prev = null;
 			while (it.hasNext()) {
 				DateValue cur = it.next();
-
-				//the iterator seems to apply the default timezone's offset to the DateValue
-				//so, undo this
-				cur = removeDefaultTzOffset(cur);
+				System.out.println("   it.next() = " + cur);
 
 				if (givenTime.compareTo(cur) < 0) {
 					//break if we have passed the given time
@@ -298,7 +305,7 @@ public class ICalTimeZone extends TimeZone {
 	 * Gets all observances sorted by {@link DateStart}.
 	 * @return the sorted observances
 	 */
-	private List<Observance> getSortedObservances() {
+	public List<Observance> getSortedObservances() {
 		List<Observance> observances = new ArrayList<Observance>();
 		observances.addAll(component.getStandardTimes());
 		observances.addAll(component.getDaylightSavingsTime());
@@ -330,31 +337,44 @@ public class ICalTimeZone extends TimeZone {
 	 * @param observance the observance
 	 * @return the iterator
 	 */
-	private RecurrenceIterator createIterator(Observance observance) {
+	public RecurrenceIterator createIterator(Observance observance) {
 		DateStart start = observance.getDateStart();
-		if (start == null) {
+		if (start == null || start.getRawComponents() == null) {
 			return new EmptyRecurrenceIterator();
 		}
 
 		List<RecurrenceIterator> inclusions = new ArrayList<RecurrenceIterator>();
 		List<RecurrenceIterator> exclusions = new ArrayList<RecurrenceIterator>();
-		//TimeZone utc = TimeZone.getTimeZone("UTC");
-		TimeZone utc = TimeZone.getDefault();
+		TimeZone utc = TimeZone.getTimeZone("UTC");
 
-		DateTimeValue dtstart = convert(start);
-		dtstart = toUtc(dtstart);
-		RDateList dtstartrdate = new RDateList(utc);
-		dtstartrdate.setDatesUtc(new DateValue[] { dtstart });
-		inclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(dtstartrdate)); //TODO need to include this?
+		final DateValue dtstart = convert(start);
+		inclusions.add(new RecurrenceIterator() {
+			private final Iterator<DateValue> it = Arrays.asList(dtstart).iterator();
+
+			public boolean hasNext() {
+				return it.hasNext();
+			}
+
+			public DateValue next() {
+				return it.next();
+			}
+
+			public void advanceTo(DateValue newStartUtc) {
+				throw new UnsupportedOperationException();
+			}
+
+			public void remove() {
+				it.remove();
+			}
+		});
 
 		try {
 			for (RecurrenceRule rrule : observance.getProperties(RecurrenceRule.class)) {
 				RRule rruleValue = convert(rrule);
-				inclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(rruleValue, dtstart, utc)); //TODO should this be UTC or default timezone?
+				inclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(rruleValue, dtstart, utc));
 			}
 			for (RecurrenceDates rdate : observance.getRecurrenceDates()) {
-				RDateList rdateValue = convert(rdate, utc);
-				inclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(rdateValue));
+				inclusions.add(new RDateIterator(rdate));
 			}
 
 			for (ExceptionRule exrule : observance.getProperties(ExceptionRule.class)) {
@@ -362,8 +382,7 @@ public class ICalTimeZone extends TimeZone {
 				exclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(exruleValue, dtstart, utc));
 			}
 			for (ExceptionDates exdate : observance.getProperties(ExceptionDates.class)) {
-				RDateList exdateValue = convert(exdate, utc);
-				exclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(exdateValue));
+				exclusions.add(new RDateIterator(exdate));
 			}
 		} catch (ParseException e) {
 			throw new RuntimeException("google-rfc-2445 is unable to parse a marshalled property value created by biweekly.", e);
@@ -373,7 +392,7 @@ public class ICalTimeZone extends TimeZone {
 			throw new IllegalArgumentException("No inclusion dates found.");
 		}
 
-		RecurrenceIterator included = join(inclusions);
+		final RecurrenceIterator included = join(inclusions);
 		if (exclusions.isEmpty()) {
 			return included;
 		}
@@ -433,34 +452,6 @@ public class ICalTimeZone extends TimeZone {
 		return new RRule(text);
 	}
 
-	/**
-	 * Converts a biweekly {@link RecurrenceDates} object to a google-rfc-2445
-	 * {@link RDateList} object.
-	 * @param rdate the biweekly object
-	 * @param tz the timezone the date values are in
-	 * @return the google-rfc-2445 object
-	 * @throws ParseException if there's a problem with the conversion
-	 */
-	private RDateList convert(RecurrenceDates rdate, TimeZone tz) throws ParseException {
-		RecurrenceDatesScribe scribe = (RecurrenceDatesScribe) new ScribeIndex().getPropertyScribe(RecurrenceDates.class);
-		String text = scribe.getPropertyName() + ":" + scribe.writeText(rdate, new WriteContext(ICalVersion.V2_0, new TimezoneInfo()));
-		return new RDateList(text, tz);
-	}
-
-	/**
-	 * Converts a biweekly {@link ExceptionDates} object to a google-rfc-2445
-	 * {@link RDateList} object.
-	 * @param rdate the biweekly object
-	 * @param tz the timezone the date values are in
-	 * @return the google-rfc-2445 object
-	 * @throws ParseException if there's a problem with the conversion
-	 */
-	private RDateList convert(ExceptionDates exdate, TimeZone tz) throws ParseException {
-		ExceptionDatesScribe scribe = (ExceptionDatesScribe) new ScribeIndex().getPropertyScribe(ExceptionDates.class);
-		String text = scribe.getPropertyName() + ":" + scribe.writeText(exdate, new WriteContext(ICalVersion.V2_0, new TimezoneInfo()));
-		return new RDateList(text, tz);
-	}
-
 	private static class Result {
 		private final Observance observance;
 		private final int offset;
@@ -489,6 +480,48 @@ public class ICalTimeZone extends TimeZone {
 
 		public void remove() {
 			//empty
+		}
+	}
+
+	private static class RDateIterator implements RecurrenceIterator {
+		private final Calendar cal = Calendar.getInstance();
+		private final Iterator<Date> it;
+
+		public RDateIterator(RecurrenceDates rdate) {
+			it = rdate.getDates().iterator();
+			//TODO handle periods
+		}
+
+		public RDateIterator(ExceptionDates exdate) {
+			it = exdate.getValues().iterator();
+		}
+
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+
+		public DateValue next() {
+			Date value = (Date) it.next();
+			cal.setTime(value);
+
+			//@formatter:off
+			return new DateTimeValueImpl(
+				cal.get(Calendar.YEAR),
+				cal.get(Calendar.MONTH)+1,
+				cal.get(Calendar.DATE),
+				cal.get(Calendar.HOUR_OF_DAY),
+				cal.get(Calendar.MINUTE),
+				cal.get(Calendar.SECOND)
+			);
+			//@formatter:on
+		}
+
+		public void advanceTo(DateValue newStartUtc) {
+			throw new UnsupportedOperationException();
+		}
+
+		public void remove() {
+			it.remove();
 		}
 	}
 }
