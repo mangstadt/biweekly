@@ -148,6 +148,23 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents> 
 		this.utc = utc;
 	}
 
+	public DateTimeComponents(Date date) {
+		this(date, TimeZone.getDefault());
+	}
+
+	public DateTimeComponents(Date date, TimeZone timezone) {
+		Calendar cal = Calendar.getInstance(timezone);
+		cal.setTime(date);
+
+		year = cal.get(Calendar.YEAR);
+		month = cal.get(Calendar.MONTH) + 1;
+		this.date = cal.get(Calendar.DATE);
+		hour = cal.get(Calendar.HOUR_OF_DAY);
+		minute = cal.get(Calendar.MINUTE);
+		second = cal.get(Calendar.SECOND);
+		utc = false;
+	}
+
 	/**
 	 * Gets the year component.
 	 * @return the year
@@ -260,27 +277,17 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents> 
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
 		DateTimeComponents other = (DateTimeComponents) obj;
-		if (date != other.date)
-			return false;
-		if (hour != other.hour)
-			return false;
-		if (minute != other.minute)
-			return false;
-		if (month != other.month)
-			return false;
-		if (second != other.second)
-			return false;
-		if (utc != other.utc)
-			return false;
-		if (year != other.year)
-			return false;
+		if (date != other.date) return false;
+		if (hour != other.hour) return false;
+		if (minute != other.minute) return false;
+		if (month != other.month) return false;
+		if (second != other.second) return false;
+		if (utc != other.utc) return false;
+		if (year != other.year) return false;
 		return true;
 	}
 
