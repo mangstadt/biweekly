@@ -2,9 +2,9 @@ package biweekly.io;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -155,11 +155,11 @@ public abstract class StreamWriter implements Closeable {
 	 */
 	private Collection<Class<? extends Object>> findScribeless(ICalendar ical) {
 		Set<Class<? extends Object>> unregistered = new HashSet<Class<? extends Object>>();
-		List<ICalComponent> components = new ArrayList<ICalComponent>();
+		LinkedList<ICalComponent> components = new LinkedList<ICalComponent>();
 		components.add(ical);
 
 		while (!components.isEmpty()) {
-			ICalComponent component = components.remove(components.size() - 1);
+			ICalComponent component = components.removeLast();
 
 			Class<? extends ICalComponent> componentClass = component.getClass();
 			if (componentClass != RawComponent.class && index.getComponentScribe(componentClass) == null) {
