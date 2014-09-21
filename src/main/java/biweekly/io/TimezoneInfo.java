@@ -44,6 +44,7 @@ public class TimezoneInfo {
 	private final Map<VTimezone, TimeZone> assignments = new HashMap<VTimezone, TimeZone>();
 	private final Map<TimeZone, VTimezone> assignmentsReverse = new HashMap<TimeZone, VTimezone>();
 	private final Map<ICalProperty, VTimezone> propertyTimezones = new HashMap<ICalProperty, VTimezone>();
+	private final Map<ICalProperty, TimeZone> propertyTimeZones = new HashMap<ICalProperty, TimeZone>();
 	private final Set<ICalProperty> floatingProperties = new HashSet<ICalProperty>();
 	private TimezoneTranslator translator = new TzUrlDotOrgTranslator(false);
 
@@ -106,7 +107,7 @@ public class TimezoneInfo {
 
 		TimeZone timezone = assignments.get(component);
 		if (timezone == null) {
-			timezone = translator.toJavaTimeZone(component);
+			timezone = new ICalTimeZone(component);
 			assign(component, timezone);
 		}
 
@@ -133,17 +134,11 @@ public class TimezoneInfo {
 	 */
 	public void setTimezone(ICalProperty property, TimeZone timezone) {
 		if (timezone == null) {
-			propertyTimezones.remove(property);
+			propertyTimeZones.remove(property);
 			return;
 		}
 
-		VTimezone component = assignmentsReverse.get(timezone);
-		if (component == null) {
-			component = translator.toICalVTimezone(timezone);
-			assign(component, timezone);
-		}
-
-		propertyTimezones.put(property, component);
+		propertyTimeZones.put(property, timezone);
 	}
 
 	/**
@@ -162,12 +157,7 @@ public class TimezoneInfo {
 			return;
 		}
 
-		checkForId(component);
-		if (!assignments.containsKey(component)) {
-			TimeZone timezone = translator.toJavaTimeZone(component);
-			assign(component, timezone);
-		}
-
+		checkForId(component); //TODO remove?
 		propertyTimezones.put(property, component);
 	}
 
@@ -177,12 +167,8 @@ public class TimezoneInfo {
 	 * @return the timezone or null for UTC
 	 */
 	public TimeZone getTimeZone(ICalProperty property) {
-		VTimezone timezone = propertyTimezones.get(property);
-		if (timezone != null) {
-			return assignments.get(timezone);
-		}
-
-		return defaultTimezone;
+		TimeZone tz = propertyTimeZones.get(property);
+		return (tz == null) ? defaultTimezone : tz;
 	}
 
 	/**

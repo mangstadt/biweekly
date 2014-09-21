@@ -30,6 +30,7 @@ import biweekly.component.RawComponent;
 import biweekly.component.StandardTime;
 import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
+import biweekly.io.ICalTimeZone;
 import biweekly.io.ParseContext;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
@@ -535,8 +536,6 @@ public class JCalReaderTest {
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 3, 1);
 
-		TimeZone easternTz = TimeZone.getTimeZone("US/Eastern");
-
 		assertEquals("-//Example Corp.//Example Client//EN", ical.getProductId().getValue());
 		assertEquals(ICalVersion.V2_0, ical.getVersion());
 
@@ -591,7 +590,7 @@ public class JCalReaderTest {
 			assertSize(event, 0, 8);
 
 			assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
-			assertEquals(date("2006-01-02 12:00:00", easternTz), event.getDateStart().getValue());
+			assertEquals(utc("2006-01-02 17:00:00"), event.getDateStart().getValue());
 			assertNull(event.getDateStart().getTimezoneId());
 			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
 
@@ -602,7 +601,7 @@ public class JCalReaderTest {
 			RecurrenceDates rdate = event.getRecurrenceDates().get(0);
 			assertNull(rdate.getDates());
 			assertEquals(1, rdate.getPeriods().size());
-			assertEquals(new Period(date("2006-01-02 15:00:00", easternTz), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
+			assertEquals(new Period(utc("2006-01-02 20:00:00"), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
 			assertNull(rdate.getTimezoneId());
 
 			assertEquals("Event #2", event.getSummary().getValue());
@@ -614,11 +613,11 @@ public class JCalReaderTest {
 			assertSize(event, 0, 6);
 
 			assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
-			assertEquals(date("2006-01-02 14:00:00", easternTz), event.getDateStart().getValue());
+			assertEquals(utc("2006-01-02 19:00:00"), event.getDateStart().getValue());
 			assertNull(event.getDateStart().getTimezoneId());
 			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
 
-			assertEquals(date("2006-01-04 12:00:00", easternTz), event.getRecurrenceId().getValue());
+			assertEquals(utc("2006-01-04 17:00:00"), event.getRecurrenceId().getValue());
 			assertNull(event.getRecurrenceId().getTimezoneId());
 			assertEquals("Event #2", event.getSummary().getValue());
 			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
@@ -630,21 +629,23 @@ public class JCalReaderTest {
 
 		DateStart dtstart = event.getDateStart();
 		assertEquals(timezone, tzinfo.getComponent(dtstart));
-		assertEquals(easternTz, tzinfo.getTimeZone(dtstart));
+		TimeZone dtstartTz = tzinfo.getTimeZone(dtstart);
+		assertEquals("US/Eastern", dtstartTz.getID());
+		assertTrue(dtstartTz instanceof ICalTimeZone);
 
 		RecurrenceDates rdate = event.getRecurrenceDates().get(0);
 		assertEquals(timezone, tzinfo.getComponent(rdate));
-		assertEquals(easternTz, tzinfo.getTimeZone(rdate));
+		assertEquals(dtstartTz, tzinfo.getTimeZone(rdate));
 
 		VEvent event2 = ical.getEvents().get(1);
 
 		dtstart = event2.getDateStart();
 		assertEquals(timezone, tzinfo.getComponent(dtstart));
-		assertEquals(easternTz, tzinfo.getTimeZone(dtstart));
+		assertEquals(dtstartTz, tzinfo.getTimeZone(dtstart));
 
 		RecurrenceId rid = event2.getRecurrenceId();
 		assertEquals(timezone, tzinfo.getComponent(rid));
-		assertEquals(easternTz, tzinfo.getTimeZone(rid));
+		assertEquals(dtstartTz, tzinfo.getTimeZone(rid));
 
 		assertValidate(ical).versions(ICalVersion.V2_0).run();
 

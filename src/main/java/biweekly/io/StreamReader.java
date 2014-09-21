@@ -179,32 +179,27 @@ public abstract class StreamReader implements Closeable {
 				//so treat the TZID parameter value as an Olsen timezone ID
 				timezone = ICalDateFormat.parseTimeZoneId(tzid);
 				if (timezone == null) {
+					//timezone could not be determined
 					warnings.add(null, null, Warning.parse(38, tzid));
-				} else {
-					warnings.add(null, null, Warning.parse(37, tzid));
+					continue;
 				}
+
+				warnings.add(null, null, Warning.parse(37, tzid));
 			} else {
-				//TODO convert the VTIMEZONE component to a Java TimeZone object
-				//TODO for now, treat the TZID as an Olsen timezone (which is what biweekly used to do) 
-				timezone = ICalDateFormat.parseTimeZoneId(tzid);
-				if (timezone == null) {
-					timezone = TimeZone.getDefault();
-				}
-			}
+				timezone = new ICalTimeZone(component);
 
-			if (timezone == null) {
-				//timezone could not be determined
-				continue;
+				//assign this VTIMEZONE component to the TimeZone object
+				tzinfo.assign(component, timezone);
 			}
-
-			//assign this VTIMEZONE component to the TimeZone object
-			tzinfo.assign(component, timezone);
 
 			List<TimezonedDate> timezonedDates = entry.getValue();
 			for (TimezonedDate timezonedDate : timezonedDates) {
 				//assign the property to the timezone
 				ICalProperty property = timezonedDate.getProperty();
 				tzinfo.setTimezone(property, timezone);
+				if (component != null) {
+					tzinfo.setTimezone(property, component);
+				}
 				property.getParameters().setTimezoneId(null); //remove the TZID parameter
 
 				//parse the date string again under its real timezone

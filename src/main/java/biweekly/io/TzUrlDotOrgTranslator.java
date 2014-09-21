@@ -76,9 +76,4 @@ public class TzUrlDotOrgTranslator implements TimezoneTranslator {
 			IOUtils.closeQuietly(response);
 		}
 	}
-
-	public TimeZone toJavaTimeZone(VTimezone timezone) throws IllegalArgumentException {
-		throw new IllegalArgumentException("Not implemented.");
-		//TODO implement
-	}
 }

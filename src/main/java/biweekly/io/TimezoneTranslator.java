@@ -19,14 +19,4 @@ public interface TimezoneTranslator {
 	 * converted
 	 */
 	VTimezone toICalVTimezone(TimeZone timezone) throws IllegalArgumentException;
-
-	/**
-	 * Converts an iCalendar {@link VTimezone} component to a Java
-	 * {@link TimeZone} object.
-	 * @param timezone the timezone component
-	 * @return the timezone object
-	 * @throws IllegalArgumentException if the timezone component cannot be
-	 * converted
-	 */
-	TimeZone toJavaTimeZone(VTimezone timezone) throws IllegalArgumentException;
 }

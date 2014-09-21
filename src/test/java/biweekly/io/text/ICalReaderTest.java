@@ -36,6 +36,7 @@ import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
 import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
+import biweekly.io.ICalTimeZone;
 import biweekly.io.ParseContext;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
@@ -1287,18 +1288,18 @@ public class ICalReaderTest {
 			assertEquals("0", event.getExperimentalProperty("X-MS-OLK-CONFTYPE").getValue());
 		}
 
-		TimeZone tz = TimeZone.getDefault();
 		TimezoneInfo tzinfo = reader.getTimezoneInfo();
 		VTimezone timezone = ical.getTimezones().get(0);
 		VEvent event = ical.getEvents().get(0);
 
 		DateStart dtstart = event.getDateStart();
 		assertEquals(timezone, tzinfo.getComponent(dtstart));
-		assertEquals(tz, tzinfo.getTimeZone(dtstart));
+		TimeZone dtstartTz = tzinfo.getTimeZone(dtstart);
+		assertTrue(dtstartTz instanceof ICalTimeZone);
 
 		DateEnd dtend = event.getDateEnd();
 		assertEquals(timezone, tzinfo.getComponent(dtend));
-		assertEquals(tz, tzinfo.getTimeZone(dtend));
+		assertEquals(dtstartTz, tzinfo.getTimeZone(dtend));
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 
@@ -1336,8 +1337,6 @@ public class ICalReaderTest {
 
 	@Test
 	public void example2() throws Throwable {
-		TimeZone nycTz = TimeZone.getTimeZone("America/New_York");
-
 		ICalReader reader = read("rfc5545-example2.ics");
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 2, 1);
@@ -1402,10 +1401,10 @@ public class ICalReaderTest {
 			assertEquals(utc("1998-03-09 13:00:00"), event.getCreated().getValue());
 			assertEquals("XYZ Project Review", event.getSummary().getValue());
 
-			assertEquals(date("1998-03-12 08:30:00", nycTz), event.getDateStart().getValue());
+			assertEquals(utc("1998-03-12 13:30:00"), event.getDateStart().getValue());
 			assertNull(event.getDateStart().getTimezoneId());
 
-			assertEquals(date("1998-03-12 09:30:00", nycTz), event.getDateEnd().getValue());
+			assertEquals(utc("1998-03-12 14:30:00"), event.getDateEnd().getValue());
 			assertNull(event.getDateEnd().getTimezoneId());
 
 			assertEquals("1CP Conference Room 4350", event.getLocation().getValue());
@@ -1417,11 +1416,13 @@ public class ICalReaderTest {
 
 		DateStart dtstart = event.getDateStart();
 		assertEquals(timezone, tzinfo.getComponent(dtstart));
-		assertEquals(nycTz, tzinfo.getTimeZone(dtstart));
+		TimeZone dtstartTz = tzinfo.getTimeZone(dtstart);
+		assertEquals("America/New_York", dtstartTz.getID());
+		assertTrue(dtstartTz instanceof ICalTimeZone);
 
 		DateEnd dtend = event.getDateEnd();
 		assertEquals(timezone, tzinfo.getComponent(dtend));
-		assertEquals(nycTz, tzinfo.getTimeZone(dtend));
+		assertEquals(dtstartTz, tzinfo.getTimeZone(dtend));
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 
