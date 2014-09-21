@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
 
@@ -17,6 +18,8 @@ import biweekly.component.DaylightSavingsTime;
 import biweekly.component.Observance;
 import biweekly.component.StandardTime;
 import biweekly.component.VTimezone;
+import biweekly.property.TimezoneOffsetFrom;
+import biweekly.property.TimezoneOffsetTo;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.UtcOffset;
@@ -58,7 +61,7 @@ public class ICalTimeZoneTest {
 	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(3, 0);
 
 	@Test
-	public void getOffset_no_rdates_or_rrules() {
+	public void getOffset_simple_example() {
 		VTimezone component = new VTimezone("America/New_York");
 		{
 			StandardTime standard = new StandardTime();
@@ -78,17 +81,17 @@ public class ICalTimeZoneTest {
 		assertEquals(component.getTimezoneId().getValue(), tz.getID());
 		assertTrue(tz.useDaylightTime());
 
-		assertOffset(-4, 0, false, tz, 1998, 10, 24, 0, 0, 0);
+		assertOffset(-4, 0, false, tz, 1998, 10, 24);
 		assertOffset(-4, 0, false, tz, 1998, 10, 25, 1, 59, 59);
 		assertOffset(-5, 0, false, tz, 1998, 10, 25, 2, 0, 0);
 		assertOffset(-5, 0, false, tz, 1998, 10, 25, 2, 0, 1);
-		assertOffset(-5, 0, false, tz, 1998, 10, 26, 0, 0, 0);
+		assertOffset(-5, 0, false, tz, 1998, 10, 26);
 
-		assertOffset(-5, 0, false, tz, 1999, 4, 3, 0, 0, 0);
+		assertOffset(-5, 0, false, tz, 1999, 4, 3);
 		assertOffset(-5, 0, false, tz, 1999, 4, 4, 1, 59, 59);
 		assertOffset(-4, 0, true, tz, 1999, 4, 4, 2, 0, 0);
 		assertOffset(-4, 0, true, tz, 1999, 4, 4, 2, 0, 1);
-		assertOffset(-4, 0, true, tz, 1999, 4, 5, 0, 0, 0);
+		assertOffset(-4, 0, true, tz, 1999, 4, 5);
 	}
 
 	@Test
@@ -110,17 +113,17 @@ public class ICalTimeZoneTest {
 		assertEquals(component.getTimezoneId().getValue(), tz.getID());
 		assertTrue(tz.useDaylightTime());
 
-		assertOffset(0, 0, false, tz, 1998, 10, 24, 0, 0, 0);
+		assertOffset(0, 0, false, tz, 1998, 10, 24);
 		assertOffset(0, 0, false, tz, 1998, 10, 25, 1, 59, 59);
 		assertOffset(0, 0, false, tz, 1998, 10, 25, 2, 0, 0);
 		assertOffset(0, 0, false, tz, 1998, 10, 25, 2, 0, 1);
-		assertOffset(0, 0, false, tz, 1998, 10, 26, 0, 0, 0);
+		assertOffset(0, 0, false, tz, 1998, 10, 26);
 
-		assertOffset(0, 0, false, tz, 1999, 4, 3, 0, 0, 0);
+		assertOffset(0, 0, false, tz, 1999, 4, 3);
 		assertOffset(0, 0, false, tz, 1999, 4, 4, 1, 59, 59);
 		assertOffset(0, 0, false, tz, 1999, 4, 4, 2, 0, 0);
 		assertOffset(0, 0, false, tz, 1999, 4, 4, 2, 0, 1);
-		assertOffset(0, 0, false, tz, 1999, 4, 5, 0, 0, 0);
+		assertOffset(0, 0, false, tz, 1999, 4, 5);
 	}
 
 	@Test
@@ -138,17 +141,17 @@ public class ICalTimeZoneTest {
 		assertEquals(component.getTimezoneId().getValue(), tz.getID());
 		assertTrue(tz.useDaylightTime());
 
-		assertOffset(-5, 0, false, tz, 1998, 10, 24, 0, 0, 0);
+		assertOffset(-5, 0, false, tz, 1998, 10, 24);
 		assertOffset(-5, 0, false, tz, 1998, 10, 25, 1, 59, 59);
 		assertOffset(-5, 0, false, tz, 1998, 10, 25, 2, 0, 0);
 		assertOffset(-5, 0, false, tz, 1998, 10, 25, 2, 0, 1);
-		assertOffset(-5, 0, false, tz, 1998, 10, 26, 0, 0, 0);
+		assertOffset(-5, 0, false, tz, 1998, 10, 26);
 
-		assertOffset(-5, 0, false, tz, 1999, 4, 3, 0, 0, 0);
+		assertOffset(-5, 0, false, tz, 1999, 4, 3);
 		assertOffset(-5, 0, false, tz, 1999, 4, 4, 1, 59, 59);
 		assertOffset(-4, 0, true, tz, 1999, 4, 4, 2, 0, 0);
 		assertOffset(-4, 0, true, tz, 1999, 4, 4, 2, 0, 1);
-		assertOffset(-4, 0, true, tz, 1999, 4, 5, 0, 0, 0);
+		assertOffset(-4, 0, true, tz, 1999, 4, 5);
 	}
 
 	@Test
@@ -166,17 +169,85 @@ public class ICalTimeZoneTest {
 		assertEquals(component.getTimezoneId().getValue(), tz.getID());
 		assertFalse(tz.useDaylightTime());
 
-		assertOffset(-4, 0, false, tz, 1998, 10, 24, 0, 0, 0);
+		assertOffset(-4, 0, false, tz, 1998, 10, 24);
 		assertOffset(-4, 0, false, tz, 1998, 10, 25, 1, 59, 59);
 		assertOffset(-5, 0, false, tz, 1998, 10, 25, 2, 0, 0);
 		assertOffset(-5, 0, false, tz, 1998, 10, 25, 2, 0, 1);
-		assertOffset(-5, 0, false, tz, 1998, 10, 26, 0, 0, 0);
+		assertOffset(-5, 0, false, tz, 1998, 10, 26);
 
-		assertOffset(-5, 0, false, tz, 1999, 4, 3, 0, 0, 0);
+		assertOffset(-5, 0, false, tz, 1999, 4, 3);
 		assertOffset(-5, 0, false, tz, 1999, 4, 4, 1, 59, 59);
 		assertOffset(-5, 0, false, tz, 1999, 4, 4, 2, 0, 0);
 		assertOffset(-5, 0, false, tz, 1999, 4, 4, 2, 0, 1);
-		assertOffset(-5, 0, false, tz, 1999, 4, 5, 0, 0, 0);
+		assertOffset(-5, 0, false, tz, 1999, 4, 5);
+	}
+
+	@Test
+	public void getOffset_empty_dtstart() {
+		VTimezone component = new VTimezone("America/New_York");
+		{
+			StandardTime standard = new StandardTime();
+			standard.setDateStart((Date) null);
+			standard.setTimezoneOffsetFrom(-4, 0);
+			standard.setTimezoneOffsetTo(-5, 0);
+			component.addStandardTime(standard);
+
+			DaylightSavingsTime daylight = new DaylightSavingsTime();
+			daylight.setDateStart((Date) null);
+			daylight.setTimezoneOffsetFrom(-5, 0);
+			daylight.setTimezoneOffsetTo(-4, 0);
+			component.addDaylightSavingsTime(daylight);
+		}
+
+		ICalTimeZone tz = new ICalTimeZone(component);
+		assertEquals(component.getTimezoneId().getValue(), tz.getID());
+		assertTrue(tz.useDaylightTime());
+
+		assertOffset(0, 0, false, tz, 1998, 10, 24);
+		assertOffset(0, 0, false, tz, 1998, 10, 25, 1, 59, 59);
+		assertOffset(0, 0, false, tz, 1998, 10, 25, 2, 0, 0);
+		assertOffset(0, 0, false, tz, 1998, 10, 25, 2, 0, 1);
+		assertOffset(0, 0, false, tz, 1998, 10, 26);
+
+		assertOffset(0, 0, false, tz, 1999, 4, 3);
+		assertOffset(0, 0, false, tz, 1999, 4, 4, 1, 59, 59);
+		assertOffset(0, 0, false, tz, 1999, 4, 4, 2, 0, 0);
+		assertOffset(0, 0, false, tz, 1999, 4, 4, 2, 0, 1);
+		assertOffset(0, 0, false, tz, 1999, 4, 5);
+	}
+
+	@Test
+	public void getOffset_empty_offsets() {
+		VTimezone component = new VTimezone("America/New_York");
+		{
+			StandardTime standard = new StandardTime();
+			standard.setDateStart(new DateTimeComponents(1998, 10, 25, 2, 0, 0, false));
+			standard.setTimezoneOffsetFrom(new TimezoneOffsetFrom(null));
+			standard.setTimezoneOffsetTo(new TimezoneOffsetTo(null));
+			component.addStandardTime(standard);
+
+			DaylightSavingsTime daylight = new DaylightSavingsTime();
+			daylight.setDateStart(new DateTimeComponents(1999, 4, 4, 2, 0, 0, false));
+			daylight.setTimezoneOffsetFrom(new TimezoneOffsetFrom(null));
+			daylight.setTimezoneOffsetTo(new TimezoneOffsetTo(null));
+			component.addDaylightSavingsTime(daylight);
+		}
+
+		ICalTimeZone tz = new ICalTimeZone(component);
+		assertEquals(component.getTimezoneId().getValue(), tz.getID());
+		assertTrue(tz.useDaylightTime());
+
+		assertOffset(0, 0, false, tz, 1998, 10, 24);
+		assertOffset(0, 0, false, tz, 1998, 10, 25, 1, 59, 59);
+		assertOffset(0, 0, false, tz, 1998, 10, 25, 2, 0, 0);
+		assertOffset(0, 0, false, tz, 1998, 10, 25, 2, 0, 1);
+		assertOffset(0, 0, false, tz, 1998, 10, 26);
+
+		assertOffset(0, 0, false, tz, 1999, 4, 3);
+		assertOffset(0, 0, false, tz, 1999, 4, 4, 1, 59, 59);
+		assertOffset(0, 0, true, tz, 1999, 4, 4, 2, 0, 0);
+		assertOffset(0, 0, true, tz, 1999, 4, 4, 2, 0, 1);
+		assertOffset(0, 0, true, tz, 1999, 4, 5);
 	}
 
 	@Test
@@ -186,17 +257,17 @@ public class ICalTimeZoneTest {
 		assertEquals(component.getTimezoneId().getValue(), tz.getID());
 		assertFalse(tz.useDaylightTime());
 
-		assertOffset(0, 0, false, tz, 1998, 10, 24, 0, 0, 0);
+		assertOffset(0, 0, false, tz, 1998, 10, 24);
 		assertOffset(0, 0, false, tz, 1998, 10, 25, 1, 59, 59);
 		assertOffset(0, 0, false, tz, 1998, 10, 25, 2, 0, 0);
 		assertOffset(0, 0, false, tz, 1998, 10, 25, 2, 0, 1);
-		assertOffset(0, 0, false, tz, 1998, 10, 26, 0, 0, 0);
+		assertOffset(0, 0, false, tz, 1998, 10, 26);
 
-		assertOffset(0, 0, false, tz, 1999, 4, 3, 0, 0, 0);
+		assertOffset(0, 0, false, tz, 1999, 4, 3);
 		assertOffset(0, 0, false, tz, 1999, 4, 4, 1, 59, 59);
 		assertOffset(0, 0, false, tz, 1999, 4, 4, 2, 0, 0);
 		assertOffset(0, 0, false, tz, 1999, 4, 4, 2, 0, 1);
-		assertOffset(0, 0, false, tz, 1999, 4, 5, 0, 0, 0);
+		assertOffset(0, 0, false, tz, 1999, 4, 5);
 	}
 
 	@Test
@@ -211,44 +282,55 @@ public class ICalTimeZoneTest {
 		assertEquals(component.getTimezoneId().getValue(), tz.getID());
 		assertTrue(tz.useDaylightTime());
 
-		assertOffset(-4, 56, false, tz, 1883, 11, 17, 0, 0, 0);
-		assertOffset(-5, 0, false, tz, 1883, 11, 19, 0, 0, 0);
+		assertOffset(-4, 0, true, tz, 1918, 4, 1);
+		assertOffset(-5, 0, false, tz, 1918, 10, 28);
 
-		assertOffset(-5, 0, false, tz, 1918, 3, 30, 0, 0, 0);
-		assertOffset(-4, 0, true, tz, 1918, 4, 1, 0, 0, 0);
-		assertOffset(-5, 0, false, tz, 1918, 10, 28, 0, 0, 0);
+		assertOffset(-5, 0, false, tz, 1977, 1, 1);
+		assertOffset(-4, 0, true, tz, 1977, 4, 25);
 
-		assertOffset(-5, 0, false, tz, 1977, 1, 1, 0, 0, 0);
-		assertOffset(-4, 0, true, tz, 1977, 4, 25, 0, 0, 0);
+		assertOffset(-5, 0, false, tz, 2006, 10, 30);
 
-		assertOffset(-5, 0, false, tz, 2006, 10, 30, 0, 0, 0);
+		assertOffset(-4, 0, true, tz, 2007, 3, 12);
+		assertOffset(-5, 0, false, tz, 2007, 11, 5);
 
-		assertOffset(-4, 0, true, tz, 2007, 3, 12, 0, 0, 0);
-		assertOffset(-5, 0, false, tz, 2007, 11, 5, 0, 0, 0);
-
-		assertOffset(-4, 0, true, tz, 2014, 3, 10, 0, 0, 0);
-		assertOffset(-5, 0, false, tz, 2014, 11, 3, 0, 0, 0);
+		assertOffset(-4, 0, true, tz, 2014, 3, 10);
+		assertOffset(-5, 0, false, tz, 2014, 11, 3);
 
 		/////////////////////////////////////
 
 		//18831118T120358
+		assertOffset(-4, 56, false, tz, 1883, 11, 17);
 		assertOffset(-4, 56, false, tz, 1883, 11, 18, 12, 3, 57);
 		assertOffset(-5, 0, false, tz, 1883, 11, 18, 12, 3, 58);
-		assertOffset(-5, 0, false, tz, 1883, 11, 19, 12, 3, 59);
+		assertOffset(-5, 0, false, tz, 1883, 11, 19);
 
 		//19240427T020000
+		assertOffset(-5, 0, false, tz, 1924, 4, 26);
 		assertOffset(-5, 0, false, tz, 1924, 4, 27, 1, 59, 59);
 		assertOffset(-4, 0, true, tz, 1924, 4, 27, 2, 0, 0);
 		assertOffset(-4, 0, true, tz, 1924, 4, 27, 2, 0, 1);
+		assertOffset(-4, 0, true, tz, 1924, 4, 28);
+
+		//19240928T020000
+		assertOffset(-4, 0, true, tz, 1924, 9, 27);
+		assertOffset(-4, 0, true, tz, 1924, 9, 28, 1, 59, 59);
+		assertOffset(-5, 0, false, tz, 1924, 9, 28, 2, 0, 0);
+		assertOffset(-5, 0, false, tz, 1924, 9, 28, 2, 0, 1);
+		assertOffset(-5, 0, false, tz, 1924, 9, 29);
 
 		//19420101T000000
+		assertOffset(-5, 0, false, tz, 1941, 12, 31);
 		assertOffset(-5, 0, false, tz, 1941, 12, 31, 23, 59, 59);
-		assertOffset(-5, 0, false, tz, 1942, 1, 1, 0, 0, 0);
+		assertOffset(-5, 0, false, tz, 1942, 1, 1);
 		assertOffset(-5, 0, false, tz, 1942, 1, 1, 0, 0, 1);
+		assertOffset(-5, 0, false, tz, 1942, 1, 2);
 
+		//20140309T020000
+		assertOffset(-5, 0, false, tz, 2014, 3, 8);
 		assertOffset(-5, 0, false, tz, 2014, 3, 9, 1, 59, 59);
 		assertOffset(-4, 0, true, tz, 2014, 3, 9, 2, 0, 0);
 		assertOffset(-4, 0, true, tz, 2014, 3, 9, 2, 0, 1);
+		assertOffset(-4, 0, true, tz, 2014, 3, 10);
 	}
 
 	@Test
@@ -497,6 +579,10 @@ public class ICalTimeZoneTest {
 			assertEquals(value, it.next());
 		}
 		assertFalse(it.hasNext());
+	}
+
+	private void assertOffset(int expectedHours, int expectedMinutes, boolean expectedInDaylight, ICalTimeZone tz, int year, int month, int date) {
+		assertOffset(expectedHours, expectedMinutes, expectedInDaylight, tz, year, month, date, 0, 0, 0);
 	}
 
 	private void assertOffset(int expectedHours, int expectedMinutes, boolean expectedInDaylight, ICalTimeZone tz, int year, int month, int date, int hour, int minute, int second) {
