@@ -67,7 +67,7 @@ import biweekly.property.Version;
  * <pre class="brush:java">
  * List&lt;ICalendar&gt; icals = ... 
  * OutputStream out = ...
- * ICalWriter icalWriter = new ICalWriter(out);
+ * ICalWriter icalWriter = new ICalWriter(out, ICalVersion.V2_0);
  * for (ICalendar ical : icals){
  *   icalWriter.write(ical);
  * }
@@ -82,8 +82,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	private final ICalRawWriter writer;
 
 	/**
-	 * Creates an iCalendar writer that writes to an output stream. Uses the
-	 * standard folding scheme and newline sequence.
+	 * Creates an iCalendar writer that writes to an output stream.
 	 * @param outputStream the output stream to write to
 	 * @param version the iCalendar version to adhere to
 	 */
@@ -92,41 +91,17 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	}
 
 	/**
-	 * Creates an iCalendar writer that writes to an output stream. Uses the
-	 * standard newline sequence.
-	 * @param outputStream the output stream to write to
-	 * @param version the iCalendar version to adhere to
-	 * @param foldingScheme the folding scheme to use or null not to fold at all
-	 */
-	public ICalWriter(OutputStream outputStream, ICalVersion version, FoldingScheme foldingScheme) {
-		this((version == ICalVersion.V1_0) ? new OutputStreamWriter(outputStream) : utf8Writer(outputStream), version, foldingScheme);
-	}
-
-	/**
-	 * Creates an iCalendar writer that writes to an output stream.
-	 * @param outputStream the output stream to write to
-	 * @param version the iCalendar version to adhere to
-	 * @param foldingScheme the folding scheme to use or null not to fold at all
-	 * @param newline the newline sequence to use
-	 */
-	public ICalWriter(OutputStream outputStream, ICalVersion version, FoldingScheme foldingScheme, String newline) {
-		this((version == ICalVersion.V1_0) ? new OutputStreamWriter(outputStream) : utf8Writer(outputStream), version, foldingScheme, newline);
-	}
-
-	/**
-	 * Creates an iCalendar writer that writes to a file. Uses the standard
-	 * folding scheme and newline sequence.
+	 * Creates an iCalendar writer that writes to a file.
 	 * @param file the file to write to
 	 * @param version the iCalendar version to adhere to
 	 * @throws IOException if the file cannot be written to
 	 */
 	public ICalWriter(File file, ICalVersion version) throws IOException {
-		this((version == ICalVersion.V1_0) ? new FileWriter(file) : utf8Writer(file), version);
+		this(file, false, version);
 	}
 
 	/**
-	 * Creates an iCalendar writer that writes to a file. Uses the standard
-	 * folding scheme and newline sequence.
+	 * Creates an iCalendar writer that writes to a file.
 	 * @param file the file to write to
 	 * @param version the iCalendar version to adhere to
 	 * @param append true to append to the end of the file, false to overwrite
@@ -138,63 +113,21 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	}
 
 	/**
-	 * Creates an iCalendar writer that writes to a file. Uses the standard
-	 * newline sequence.
-	 * @param file the file to write to
-	 * @param version the iCalendar version to adhere to
-	 * @param append true to append to the end of the file, false to overwrite
-	 * it
-	 * @param foldingScheme the folding scheme to use or null not to fold at all
-	 * @throws IOException if the file cannot be written to
-	 */
-	public ICalWriter(File file, boolean append, ICalVersion version, FoldingScheme foldingScheme) throws IOException {
-		this((version == ICalVersion.V1_0) ? new FileWriter(file, append) : utf8Writer(file, append), version, foldingScheme);
-	}
-
-	/**
-	 * Creates an iCalendar writer that writes to a file.
-	 * @param file the file to write to
-	 * @param version the iCalendar version to adhere to
-	 * @param append true to append to the end of the file, false to overwrite
-	 * it
-	 * @param foldingScheme the folding scheme to use or null not to fold at all
-	 * @param newline the newline sequence to use
-	 * @throws IOException if the file cannot be written to
-	 */
-	public ICalWriter(File file, boolean append, ICalVersion version, FoldingScheme foldingScheme, String newline) throws IOException {
-		this((version == ICalVersion.V1_0) ? new FileWriter(file, append) : utf8Writer(file, append), version, foldingScheme, newline);
-	}
-
-	/**
-	 * Creates an iCalendar writer that writes to a writer. Uses the standard
-	 * folding scheme and newline sequence.
-	 * @param writer the writer to the data stream
+	 * Creates an iCalendar writer that writes to a writer.
+	 * @param writer the output stream to write to
 	 * @param version the iCalendar version to adhere to
 	 */
 	public ICalWriter(Writer writer, ICalVersion version) {
-		this(writer, version, FoldingScheme.DEFAULT);
+		this.writer = new ICalRawWriter(writer, version);
 	}
 
 	/**
-	 * Creates an iCalendar writer that writes to a writer. Uses the standard
-	 * newline sequence.
-	 * @param writer the writer to the data stream
-	 * @param version the iCalendar version to adhere to
-	 * @param foldingScheme the folding scheme to use or null not to fold at all
+	 * Gets the writer object that is used internally to write to the output
+	 * stream.
+	 * @return the raw writer
 	 */
-	public ICalWriter(Writer writer, ICalVersion version, FoldingScheme foldingScheme) {
-		this(writer, version, foldingScheme, "\r\n");
-	}
-
-	/**
-	 * Creates an iCalendar writer that writes to a writer.
-	 * @param writer the writer to the data stream
-	 * @param version the iCalendar version to adhere to
-	 * @param foldingScheme the folding scheme to use or null not to fold at all
-	 * @param newline the newline sequence to use
-	 */
-	public ICalWriter(Writer writer, ICalVersion version, FoldingScheme foldingScheme, String newline) {
-		this.writer = new ICalRawWriter(writer, version, foldingScheme, newline);
+	public ICalRawWriter getRawWriter() {
+		return writer;
 	}
 
 	/**
@@ -248,22 +181,6 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	 */
 	public void setCaretEncodingEnabled(boolean enable) {
 		writer.setCaretEncodingEnabled(enable);
-	}
-
-	/**
-	 * Gets the newline sequence that is used to separate lines.
-	 * @return the newline sequence
-	 */
-	public String getNewline() {
-		return writer.getNewline();
-	}
-
-	/**
-	 * Gets the rules for how each line is folded.
-	 * @return the folding scheme or null if the lines are not folded
-	 */
-	public FoldingScheme getFoldingScheme() {
-		return writer.getFoldingScheme();
 	}
 
 	@Override

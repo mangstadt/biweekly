@@ -134,7 +134,10 @@ public class ICalRawWriterTest {
 
 	@Test
 	public void custom_foldingScheme_and_newline() throws Exception {
-		writer = new ICalRawWriter(sw, ICalVersion.V2_0, new FoldingScheme(100, "\t"), "*");
+		writer = new ICalRawWriter(sw, ICalVersion.V2_0);
+		writer.getFoldedLineWriter().setIndent("\t");
+		writer.getFoldedLineWriter().setLineLength(100);
+		writer.getFoldedLineWriter().setNewline("*");
 
 		writer.writeProperty("PROP", "The use of calendaring and scheduling has grown considerably in the last decade. Enterprise and inter-enterprise business has become dependent on rapid scheduling of events and actions using this information technology.");
 		writer.close();
@@ -151,7 +154,9 @@ public class ICalRawWriterTest {
 
 	@Test
 	public void no_foldingScheme() throws Exception {
-		writer = new ICalRawWriter(sw, ICalVersion.V2_0, null, "*");
+		writer = new ICalRawWriter(sw, ICalVersion.V2_0);
+		writer.getFoldedLineWriter().setLineLength(null);
+		writer.getFoldedLineWriter().setNewline("*");
 
 		writer.writeProperty("PROP", "The use of calendaring and scheduling has grown considerably in the last decade. Enterprise and inter-enterprise business has become dependent on rapid scheduling of events and actions using this information technology.");
 		writer.close();
@@ -167,7 +172,8 @@ public class ICalRawWriterTest {
 	@Test
 	public void newline() throws Throwable {
 		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw, ICalVersion.V1_0, FoldingScheme.DEFAULT, "*");
+		ICalRawWriter writer = new ICalRawWriter(sw, ICalVersion.V1_0);
+		writer.getFoldedLineWriter().setNewline("*");
 
 		writer.writeProperty("PROP", "one");
 		writer.writeProperty("PROP", "two");
@@ -291,7 +297,8 @@ public class ICalRawWriterTest {
 	@Test
 	public void quoted_printable_line() throws Throwable {
 		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw, ICalVersion.V1_0, new FoldingScheme(60, " "));
+		ICalRawWriter writer = new ICalRawWriter(sw, ICalVersion.V1_0);
+		writer.getFoldedLineWriter().setLineLength(60);
 
 		ICalParameters parameters = new ICalParameters();
 		parameters.setEncoding(Encoding.QUOTED_PRINTABLE);

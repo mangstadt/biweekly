@@ -911,7 +911,8 @@ public class ICalWriterTest {
 
 	private void assertExample(ICalendar ical, String exampleFileName, TimezoneInfo timezoneOptions) throws IOException {
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0, null);
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		writer.getRawWriter().getFoldedLineWriter().setLineLength(null);
 		writer.setTimezoneInfo(timezoneOptions);
 		writer.write(ical);
 		writer.close();

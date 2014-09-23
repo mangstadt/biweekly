@@ -41,7 +41,8 @@ public class FoldedLineWriterTest {
 	@Test
 	public void write() throws Throwable {
 		StringWriter sw = new StringWriter();
-		FoldedLineWriter writer = new FoldedLineWriter(sw, 10, " ", "\r\n");
+		FoldedLineWriter writer = new FoldedLineWriter(sw);
+		writer.setLineLength(10);
 
 		writer.write("line\r\nThis line should be    ");
 		writer.write("new line");
@@ -87,7 +88,8 @@ public class FoldedLineWriterTest {
 	@Test
 	public void write_sub_array() throws Throwable {
 		StringWriter sw = new StringWriter();
-		FoldedLineWriter writer = new FoldedLineWriter(sw, 10, " ", "\r\n");
+		FoldedLineWriter writer = new FoldedLineWriter(sw);
+		writer.setLineLength(10);
 
 		String str = "This line should be folded.";
 		writer.write(str, 5, 14);
@@ -107,7 +109,8 @@ public class FoldedLineWriterTest {
 	@Test
 	public void write_charset() throws Throwable {
 		StringWriter sw = new StringWriter();
-		FoldedLineWriter writer = new FoldedLineWriter(sw, 10, " ", "\r\n");
+		FoldedLineWriter writer = new FoldedLineWriter(sw);
+		writer.setLineLength(10);
 
 		String str = "test\n\u00e4\u00f6\u00fc\u00df\ntest";
 		writer.write(str, true, Charset.forName("ISO-8859-1"));

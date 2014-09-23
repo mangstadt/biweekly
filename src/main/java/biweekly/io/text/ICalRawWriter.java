@@ -106,48 +106,26 @@ public class ICalRawWriter implements Closeable, Flushable {
 		invalidParamValueChars = Collections.unmodifiableMap(map);
 	}
 
-	private final String newline;
-	private boolean caretEncodingEnabled = false;
-	private final FoldingScheme foldingScheme;
 	private final FoldedLineWriter writer;
+	private boolean caretEncodingEnabled = false;
 	private ICalVersion version;
-
-	/**
-	 * Creates an iCalendar raw writer using the standard folding scheme and
-	 * newline sequence.
-	 * @param writer the writer to the data stream
-	 * @param version the version to adhere to
-	 */
-	public ICalRawWriter(Writer writer, ICalVersion version) {
-		this(writer, version, FoldingScheme.DEFAULT);
-	}
-
-	/**
-	 * Creates an iCalendar raw writer using the standard newline sequence.
-	 * @param writer the writer to the data stream
-	 * @param version the version to adhere to
-	 * @param foldingScheme the folding scheme to use or null not to fold at all
-	 */
-	public ICalRawWriter(Writer writer, ICalVersion version, FoldingScheme foldingScheme) {
-		this(writer, version, foldingScheme, "\r\n");
-	}
 
 	/**
 	 * Creates an iCalendar raw writer.
 	 * @param writer the writer to the data stream
 	 * @param version the version to adhere to
-	 * @param foldingScheme the folding scheme to use or null not to fold at all
-	 * @param newline the newline sequence to use
 	 */
-	public ICalRawWriter(Writer writer, ICalVersion version, FoldingScheme foldingScheme, String newline) {
-		if (foldingScheme == null) {
-			this.writer = new FoldedLineWriter(writer, null, "", newline);
-		} else {
-			this.writer = new FoldedLineWriter(writer, foldingScheme.getLineLength(), foldingScheme.getIndent(), newline);
-		}
+	public ICalRawWriter(Writer writer, ICalVersion version) {
+		this.writer = new FoldedLineWriter(writer);
 		this.version = version;
-		this.foldingScheme = foldingScheme;
-		this.newline = newline;
+	}
+
+	/**
+	 * Gets the writer that this object wraps.
+	 * @return the folded line writer
+	 */
+	public FoldedLineWriter getFoldedLineWriter() {
+		return writer;
 	}
 
 	/**
@@ -273,22 +251,6 @@ public class ICalRawWriter implements Closeable, Flushable {
 	}
 
 	/**
-	 * Gets the newline sequence that is used to separate lines.
-	 * @return the newline sequence
-	 */
-	public String getNewline() {
-		return newline;
-	}
-
-	/**
-	 * Gets the rules for how each line is folded.
-	 * @return the folding scheme or null if the lines are not folded
-	 */
-	public FoldingScheme getFoldingScheme() {
-		return foldingScheme;
-	}
-
-	/**
 	 * Writes a property marking the beginning of a component (in other words,
 	 * writes a "BEGIN:NAME" property).
 	 * @param componentName the component name (e.g. "VEVENT")
@@ -411,7 +373,7 @@ public class ICalRawWriter implements Closeable, Flushable {
 
 		//write the property value
 		writer.append(value, quotedPrintable, charset);
-		writer.append(newline);
+		writer.append(writer.getNewline());
 	}
 
 	/**
