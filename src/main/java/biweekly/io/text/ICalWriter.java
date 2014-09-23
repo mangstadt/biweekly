@@ -75,6 +75,27 @@ import biweekly.property.Version;
  * </pre>
  * 
  * </p>
+ * 
+ * <p>
+ * <b>Changing the line folding settings:</b>
+ * 
+ * <pre class="brush:java">
+ * ICalWriter writer = new ICalWriter(...);
+ * 
+ * //disable line folding
+ * writer.getRawWriter().getFoldedLineWriter().setLineLength(null);
+ * 
+ * //change line length
+ * writer.getRawWriter().getFoldedLineWriter().setLineLength(50);
+ * 
+ * //change folded line indent string
+ * writer.getRawWriter().getFoldedLineWriter().setIndent("\t");
+ * 
+ * //change newline character
+ * writer.getRawWriter().getFoldedLineWriter().setNewline("**");
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
