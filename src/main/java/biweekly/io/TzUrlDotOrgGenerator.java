@@ -2,14 +2,13 @@ package biweekly.io;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.NoSuchElementException;
 import java.util.TimeZone;
 
-import biweekly.Biweekly;
-import biweekly.ICalendar;
 import biweekly.component.VTimezone;
+import biweekly.io.text.ICalReader;
 import biweekly.util.IOUtils;
 
 /*
@@ -38,11 +37,11 @@ import biweekly.util.IOUtils;
  */
 
 /**
- * Downloads {@link VTimezone} components from tzurl.org.
+ * Downloads {@link VTimezone} components from <a
+ * href="http://www.tzurl.org">tzurl.org</a>.
  * @author Michael Angstadt
- * @see <a href="http://www.tzurl.org">http://www.tzurl.org</a>
  */
-public class TzUrlDotOrgTranslator implements TimezoneTranslator {
+public class TzUrlDotOrgGenerator implements VTimezoneGenerator {
 	private final String baseUrl;
 
 	/**
@@ -50,11 +49,11 @@ public class TzUrlDotOrgTranslator implements TimezoneTranslator {
 	 * @param outlook true to generate Outlook-compatible {@link VTimezone}
 	 * components, false to use standards-based ones
 	 */
-	public TzUrlDotOrgTranslator(boolean outlook) {
+	public TzUrlDotOrgGenerator(boolean outlook) {
 		baseUrl = "http://www.tzurl.org/zoneinfo" + (outlook ? "-outlook" : "") + "/";
 	}
 
-	public VTimezone toICalVTimezone(TimeZone timezone) throws IllegalArgumentException {
+	public VTimezone generate(TimeZone timezone) throws IllegalArgumentException {
 		URL url;
 		try {
 			url = new URL(baseUrl + timezone.getID());
@@ -62,18 +61,25 @@ public class TzUrlDotOrgTranslator implements TimezoneTranslator {
 			throw new IllegalArgumentException(e);
 		}
 
-		InputStream response = null;
+		ICalReader reader = null;
 		try {
-			response = url.openStream();
-			ICalendar ical = Biweekly.parse(response).first();
-			return ical.getTimezones().get(0);
+			reader = new ICalReader(url.openStream());
+			reader.readNext();
+
+			TimezoneInfo tzinfo = reader.getTimezoneInfo();
+			return tzinfo.getComponents().iterator().next();
 		} catch (FileNotFoundException e) {
-			//could not find the timezone
-			throw new IllegalArgumentException(e);
+			throw notFound(e);
+		} catch (NoSuchElementException e) {
+			throw notFound(e);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
-			IOUtils.closeQuietly(response);
+			IOUtils.closeQuietly(reader);
 		}
+	}
+
+	private IllegalArgumentException notFound(Exception e) {
+		return new IllegalArgumentException("Timezone ID not recognized.", e);
 	}
 }

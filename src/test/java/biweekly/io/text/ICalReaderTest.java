@@ -1068,11 +1068,14 @@ public class ICalReaderTest {
 
 		ICalReader reader = new ICalReader(ical);
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 1, 0);
+		assertSize(icalendar, 0, 0);
 		assertEquals(ICalVersion.V1_0, icalendar.getVersion());
 
+		TimezoneInfo tzinfo = reader.getTimezoneInfo();
 		{
-			VTimezone timezone = icalendar.getTimezones().get(0);
+			Iterator<VTimezone> it = tzinfo.getComponents().iterator();
+
+			VTimezone timezone = it.next();
 			assertSize(timezone, 2, 1);
 			assertEquals("TZ1", timezone.getTimezoneId().getValue());
 
@@ -1095,6 +1098,8 @@ public class ICalReaderTest {
 				assertEquals(new UtcOffset(-4, 0), daylight.getTimezoneOffsetTo().getValue());
 				assertEquals("EDT", daylight.getTimezoneNames().get(0).getValue());
 			}
+
+			assertFalse(it.hasNext());
 		}
 
 		assertWarnings(0, reader);
@@ -1113,13 +1118,18 @@ public class ICalReaderTest {
 
 		ICalReader reader = new ICalReader(ical);
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 1, 0);
+		assertSize(icalendar, 0, 0);
 		assertEquals(ICalVersion.V1_0, icalendar.getVersion());
 
+		TimezoneInfo tzinfo = reader.getTimezoneInfo();
 		{
-			VTimezone timezone = icalendar.getTimezones().get(0);
+			Iterator<VTimezone> it = tzinfo.getComponents().iterator();
+
+			VTimezone timezone = it.next();
 			assertSize(timezone, 0, 1);
 			assertEquals("TZ1", timezone.getTimezoneId().getValue());
+
+			assertFalse(it.hasNext());
 		}
 
 		assertWarnings(0, reader);
@@ -1171,53 +1181,13 @@ public class ICalReaderTest {
 	public void outlook2010() throws Throwable {
 		ICalReader reader = read("outlook-2010.ics");
 		ICalendar ical = reader.readNext();
-		assertSize(ical, 2, 3);
+		assertSize(ical, 1, 3);
 
 		assertEquals("-//Microsoft Corporation//Outlook 14.0 MIMEDIR//EN", ical.getProductId().getValue());
 		assertEquals(ICalVersion.V2_0, ical.getVersion());
 		assertEquals("REQUEST", ical.getMethod().getValue());
 		assertEquals("TRUE", ical.getExperimentalProperty("X-MS-OLK-FORCEINSPECTOROPEN").getValue());
 
-		{
-			VTimezone timezone = ical.getTimezones().get(0);
-			assertSize(timezone, 2, 1);
-
-			assertEquals("Eastern Standard Time", timezone.getTimezoneId().getValue());
-			{
-				StandardTime standard = timezone.getStandardTimes().get(0);
-				assertSize(standard, 0, 4);
-
-				assertEquals(date("1601-11-04 02:00:00"), standard.getDateStart().getValue());
-
-				Recurrence rrule = standard.getRecurrenceRule().getValue();
-				assertEquals(Frequency.YEARLY, rrule.getFrequency());
-				assertEquals(Arrays.asList(new ByDay(1, DayOfWeek.SUNDAY)), rrule.getByDay());
-				assertEquals(Arrays.asList(11), rrule.getByMonth());
-
-				assertIntEquals(-4, standard.getTimezoneOffsetFrom().getHourOffset());
-				assertIntEquals(0, standard.getTimezoneOffsetFrom().getMinuteOffset());
-
-				assertIntEquals(-5, standard.getTimezoneOffsetTo().getHourOffset());
-				assertIntEquals(0, standard.getTimezoneOffsetTo().getMinuteOffset());
-			}
-			{
-				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
-				assertSize(daylight, 0, 4);
-
-				assertEquals(date("1601-03-11 02:00:00"), daylight.getDateStart().getValue());
-
-				Recurrence rrule = daylight.getRecurrenceRule().getValue();
-				assertEquals(Frequency.YEARLY, rrule.getFrequency());
-				assertEquals(Arrays.asList(new ByDay(2, DayOfWeek.SUNDAY)), rrule.getByDay());
-				assertEquals(Arrays.asList(3), rrule.getByMonth());
-
-				assertIntEquals(-5, daylight.getTimezoneOffsetFrom().getHourOffset());
-				assertIntEquals(0, daylight.getTimezoneOffsetFrom().getMinuteOffset());
-
-				assertIntEquals(-4, daylight.getTimezoneOffsetTo().getHourOffset());
-				assertIntEquals(0, daylight.getTimezoneOffsetTo().getMinuteOffset());
-			}
-		}
 		{
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 24);
@@ -1289,7 +1259,54 @@ public class ICalReaderTest {
 		}
 
 		TimezoneInfo tzinfo = reader.getTimezoneInfo();
-		VTimezone timezone = ical.getTimezones().get(0);
+		{
+			Iterator<VTimezone> it = tzinfo.getComponents().iterator();
+
+			VTimezone timezone = it.next();
+			assertSize(timezone, 2, 1);
+
+			assertEquals("Eastern Standard Time", timezone.getTimezoneId().getValue());
+			{
+				StandardTime standard = timezone.getStandardTimes().get(0);
+				assertSize(standard, 0, 4);
+
+				assertEquals(date("1601-11-04 02:00:00"), standard.getDateStart().getValue());
+
+				Recurrence rrule = standard.getRecurrenceRule().getValue();
+				assertEquals(Frequency.YEARLY, rrule.getFrequency());
+				assertEquals(Arrays.asList(new ByDay(1, DayOfWeek.SUNDAY)), rrule.getByDay());
+				assertEquals(Arrays.asList(11), rrule.getByMonth());
+
+				assertIntEquals(-4, standard.getTimezoneOffsetFrom().getHourOffset());
+				assertIntEquals(0, standard.getTimezoneOffsetFrom().getMinuteOffset());
+
+				assertIntEquals(-5, standard.getTimezoneOffsetTo().getHourOffset());
+				assertIntEquals(0, standard.getTimezoneOffsetTo().getMinuteOffset());
+			}
+			{
+				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
+				assertSize(daylight, 0, 4);
+
+				assertEquals(date("1601-03-11 02:00:00"), daylight.getDateStart().getValue());
+
+				Recurrence rrule = daylight.getRecurrenceRule().getValue();
+				assertEquals(Frequency.YEARLY, rrule.getFrequency());
+				assertEquals(Arrays.asList(new ByDay(2, DayOfWeek.SUNDAY)), rrule.getByDay());
+				assertEquals(Arrays.asList(3), rrule.getByMonth());
+
+				assertIntEquals(-5, daylight.getTimezoneOffsetFrom().getHourOffset());
+				assertIntEquals(0, daylight.getTimezoneOffsetFrom().getMinuteOffset());
+
+				assertIntEquals(-4, daylight.getTimezoneOffsetTo().getHourOffset());
+				assertIntEquals(0, daylight.getTimezoneOffsetTo().getMinuteOffset());
+			}
+
+			assertFalse(it.hasNext());
+		}
+
+		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
+
+		VTimezone timezone = tzinfo.getComponents().iterator().next();
 		VEvent event = ical.getEvents().get(0);
 
 		DateStart dtstart = event.getDateStart();
@@ -1300,8 +1317,6 @@ public class ICalReaderTest {
 		DateEnd dtend = event.getDateEnd();
 		assertEquals(timezone, tzinfo.getComponent(dtend));
 		assertEquals(dtstartTz, tzinfo.getTimeZone(dtend));
-
-		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 
 		assertNull(reader.readNext());
 	}
@@ -1339,13 +1354,44 @@ public class ICalReaderTest {
 	public void example2() throws Throwable {
 		ICalReader reader = read("rfc5545-example2.ics");
 		ICalendar ical = reader.readNext();
-		assertSize(ical, 2, 1);
+		assertSize(ical, 1, 1);
 
 		assertEquals("-//RDU Software//NONSGML HandCal//EN", ical.getProductId().getValue());
 		assertEquals(ICalVersion.V2_0, ical.getVersion());
-
 		{
-			VTimezone timezone = ical.getTimezones().get(0);
+			VEvent event = ical.getEvents().get(0);
+			assertSize(event, 0, 12);
+
+			assertEquals(utc("1998-03-09 23:10:00"), event.getDateTimeStamp().getValue());
+			assertEquals("guid-1.example.com", event.getUid().getValue());
+			assertEquals("mrbig@example.com", event.getOrganizer().getEmail());
+
+			Attendee attendee = event.getAttendees().get(0);
+			assertEquals("employee-A@example.com", attendee.getEmail());
+			assertTrue(attendee.getRsvp());
+			assertEquals(ParticipationLevel.REQUIRED, attendee.getParticipationLevel());
+			assertEquals(CalendarUserType.GROUP, attendee.getCalendarUserType());
+
+			assertEquals("Project XYZ Review Meeting", event.getDescription().getValue());
+			assertEquals(Arrays.asList("MEETING"), event.getCategories().get(0).getValues());
+			assertTrue(event.getClassification().isPublic());
+			assertEquals(utc("1998-03-09 13:00:00"), event.getCreated().getValue());
+			assertEquals("XYZ Project Review", event.getSummary().getValue());
+
+			assertEquals(utc("1998-03-12 13:30:00"), event.getDateStart().getValue());
+			assertNull(event.getDateStart().getTimezoneId());
+
+			assertEquals(utc("1998-03-12 14:30:00"), event.getDateEnd().getValue());
+			assertNull(event.getDateEnd().getTimezoneId());
+
+			assertEquals("1CP Conference Room 4350", event.getLocation().getValue());
+		}
+
+		TimezoneInfo tzinfo = reader.getTimezoneInfo();
+		{
+			Iterator<VTimezone> it = tzinfo.getComponents().iterator();
+
+			VTimezone timezone = it.next();
 			assertSize(timezone, 2, 1);
 
 			assertEquals("America/New_York", timezone.getTimezoneId().getValue());
@@ -1380,38 +1426,13 @@ public class ICalReaderTest {
 
 				assertEquals("EDT", daylight.getTimezoneNames().get(0).getValue());
 			}
-		}
-		{
-			VEvent event = ical.getEvents().get(0);
-			assertSize(event, 0, 12);
 
-			assertEquals(utc("1998-03-09 23:10:00"), event.getDateTimeStamp().getValue());
-			assertEquals("guid-1.example.com", event.getUid().getValue());
-			assertEquals("mrbig@example.com", event.getOrganizer().getEmail());
-
-			Attendee attendee = event.getAttendees().get(0);
-			assertEquals("employee-A@example.com", attendee.getEmail());
-			assertTrue(attendee.getRsvp());
-			assertEquals(ParticipationLevel.REQUIRED, attendee.getParticipationLevel());
-			assertEquals(CalendarUserType.GROUP, attendee.getCalendarUserType());
-
-			assertEquals("Project XYZ Review Meeting", event.getDescription().getValue());
-			assertEquals(Arrays.asList("MEETING"), event.getCategories().get(0).getValues());
-			assertTrue(event.getClassification().isPublic());
-			assertEquals(utc("1998-03-09 13:00:00"), event.getCreated().getValue());
-			assertEquals("XYZ Project Review", event.getSummary().getValue());
-
-			assertEquals(utc("1998-03-12 13:30:00"), event.getDateStart().getValue());
-			assertNull(event.getDateStart().getTimezoneId());
-
-			assertEquals(utc("1998-03-12 14:30:00"), event.getDateEnd().getValue());
-			assertNull(event.getDateEnd().getTimezoneId());
-
-			assertEquals("1CP Conference Room 4350", event.getLocation().getValue());
+			assertFalse(it.hasNext());
 		}
 
-		TimezoneInfo tzinfo = reader.getTimezoneInfo();
-		VTimezone timezone = ical.getTimezones().get(0);
+		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
+
+		VTimezone timezone = tzinfo.getComponents().iterator().next();
 		VEvent event = ical.getEvents().get(0);
 
 		DateStart dtstart = event.getDateStart();
@@ -1423,8 +1444,6 @@ public class ICalReaderTest {
 		DateEnd dtend = event.getDateEnd();
 		assertEquals(timezone, tzinfo.getComponent(dtend));
 		assertEquals(dtstartTz, tzinfo.getTimeZone(dtend));
-
-		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 
 		assertNull(reader.readNext());
 	}

@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import biweekly.ICalendar;
-import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
 import biweekly.io.ParseContext.TimezonedDate;
@@ -111,8 +110,7 @@ public abstract class StreamReader implements Closeable {
 	}
 
 	/**
-	 * Gets the timezone info of the last iCalendar object that was read. This
-	 * object is recreated every time a new iCalendar object is read.
+	 * Gets the timezone info of the last iCalendar object that was read.
 	 * @return the timezone info
 	 */
 	public TimezoneInfo getTimezoneInfo() {
@@ -161,35 +159,43 @@ public abstract class StreamReader implements Closeable {
 	protected abstract ICalendar _readNext() throws IOException;
 
 	private void handleTimezones(ICalendar ical) {
+		//create a TimeZone object for each VTIMEZONE component.
+		List<ICalComponent> toKeep = new ArrayList<ICalComponent>(0);
+		for (VTimezone component : ical.getComponents(VTimezone.class)) {
+			//make sure the component has an ID
+			TimezoneId id = component.getTimezoneId();
+			if (id == null || id.getValue() == null) {
+				warnings.add(null, null, 39);
+				toKeep.add(component);
+				continue;
+			}
+
+			TimeZone timezone = new ICalTimeZone(component);
+			tzinfo.assign(component, timezone);
+		}
+
+		//remove the VTIMEZONE components from the iCalendar object
+		if (toKeep.isEmpty()) {
+			ical.removeComponents(VTimezone.class);
+		} else {
+			ical.getComponents().replace(VTimezone.class, toKeep);
+		}
+
 		for (Map.Entry<String, List<TimezonedDate>> entry : context.getTimezonedDates()) {
 			//find the VTIMEZONE component with the given TZID
 			String tzid = entry.getKey();
-			VTimezone component = null;
-			for (VTimezone vtimezone : ical.getTimezones()) {
-				TimezoneId timezoneId = vtimezone.getTimezoneId();
-				if (timezoneId != null && tzid.equals(timezoneId.getValue())) {
-					component = vtimezone;
-					break;
-				}
-			}
-
-			TimeZone timezone = null;
-			if (component == null) {
+			TimeZone timezone = tzinfo.getTimeZoneById(tzid);
+			if (timezone == null) {
 				//A VTIMEZONE component couldn't found
 				//so treat the TZID parameter value as an Olsen timezone ID
 				timezone = ICalDateFormat.parseTimeZoneId(tzid);
 				if (timezone == null) {
 					//timezone could not be determined
-					warnings.add(null, null, Warning.parse(38, tzid));
+					warnings.add(null, null, 38, tzid);
 					continue;
 				}
 
-				warnings.add(null, null, Warning.parse(37, tzid));
-			} else {
-				timezone = new ICalTimeZone(component);
-
-				//assign this VTIMEZONE component to the TimeZone object
-				tzinfo.assign(component, timezone);
+				warnings.add(null, null, 37, tzid);
 			}
 
 			List<TimezonedDate> timezonedDates = entry.getValue();
@@ -197,21 +203,20 @@ public abstract class StreamReader implements Closeable {
 				//assign the property to the timezone
 				ICalProperty property = timezonedDate.getProperty();
 				tzinfo.setTimezone(property, timezone);
-				if (component != null) {
-					tzinfo.setTimezone(property, component);
-				}
-				property.getParameters().setTimezoneId(null); //remove the TZID parameter
 
 				//parse the date string again under its real timezone
 				Date realDate = ICalDateFormat.parse(timezonedDate.getDateStr(), timezone);
 
 				//update the Date object with the new timestamp
-				timezonedDate.getDate().setTime(realDate.getTime()); //the one time I am glad that Date objects are mutable... xD
+				timezonedDate.getDate().setTime(realDate.getTime());
+
+				//remove the TZID parameter
+				property.getParameters().setTimezoneId(null);
 			}
 		}
 
 		for (ICalProperty property : context.getFloatingDates()) {
-			tzinfo.setUseFloatingTime(property, true);
+			tzinfo.setFloating(property, true);
 		}
 	}
 }

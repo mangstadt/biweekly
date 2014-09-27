@@ -12,12 +12,11 @@ import java.util.TimeZone;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-import biweekly.Biweekly;
-import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.Observance;
 import biweekly.component.StandardTime;
 import biweekly.component.VTimezone;
+import biweekly.io.text.ICalReader;
 import biweekly.property.TimezoneOffsetFrom;
 import biweekly.property.TimezoneOffsetTo;
 import biweekly.util.DateTimeComponents;
@@ -274,8 +273,11 @@ public class ICalTimeZoneTest {
 	public void getOffset() throws Exception {
 		VTimezone component;
 		{
-			ICalendar ical = Biweekly.parse(getClass().getResourceAsStream("New_York.ics")).first();
-			component = ical.getTimezones().get(0);
+			ICalReader reader = new ICalReader(getClass().getResourceAsStream("New_York.ics"));
+			reader.readNext();
+			TimezoneInfo tzinfo = reader.getTimezoneInfo();
+			component = tzinfo.getComponents().iterator().next();
+			reader.close();
 		}
 
 		ICalTimeZone tz = new ICalTimeZone(component);
@@ -337,8 +339,11 @@ public class ICalTimeZoneTest {
 	public void createIterator() throws Exception {
 		VTimezone component;
 		{
-			ICalendar ical = Biweekly.parse(getClass().getResourceAsStream("New_York.ics")).first();
-			component = ical.getTimezones().get(0);
+			ICalReader reader = new ICalReader(getClass().getResourceAsStream("New_York.ics"));
+			reader.readNext();
+			TimezoneInfo tzinfo = reader.getTimezoneInfo();
+			component = tzinfo.getComponents().iterator().next();
+			reader.close();
 		}
 
 		ICalTimeZone tz = new ICalTimeZone(component);

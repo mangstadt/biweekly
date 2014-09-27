@@ -10,6 +10,7 @@ import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -18,10 +19,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
+import javax.xml.transform.OutputKeys;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.BeforeClass;
@@ -106,8 +110,6 @@ import biweekly.util.XmlUtils;
 public class XCalDocumentTest {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
-
-	private final TimeZone eastern = TimeZone.getTimeZone("America/New_York");
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -1020,13 +1022,55 @@ public class XCalDocumentTest {
 		XCalDocument xcal = read("rfc6321-example2.xml");
 		StreamReader reader = xcal.reader();
 
+		//assert the iCalendar object
 		ICalendar ical = reader.readNext();
-		assertSize(ical, 3, 1);
+		assertSize(ical, 2, 1);
 		assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
 		assertEquals(ICalVersion.V2_0, ical.getVersion());
-
 		{
-			VTimezone timezone = ical.getTimezones().get(0);
+			VEvent event = ical.getEvents().get(0);
+			assertSize(event, 0, 8);
+
+			assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
+			assertEquals(utc("2006-01-02 17:00:00"), event.getDateStart().getValue());
+			assertNull(event.getDateStart().getTimezoneId());
+			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
+
+			Recurrence rrule = event.getRecurrenceRule().getValue();
+			assertEquals(Frequency.DAILY, rrule.getFrequency());
+			assertIntEquals(5, rrule.getCount());
+
+			RecurrenceDates rdate = event.getRecurrenceDates().get(0);
+			assertNull(rdate.getDates());
+			assertEquals(1, rdate.getPeriods().size());
+			assertEquals(new Period(utc("2006-01-02 20:00:00"), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
+			assertNull(rdate.getTimezoneId());
+
+			assertEquals("Event #2", event.getSummary().getValue());
+			assertEquals("We are having a meeting all this week at 12pm for one hour, with an additional meeting on the first day 2 hours long.\nPlease bring your own lunch for the 12 pm meetings.", event.getDescription().getValue());
+			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
+		}
+		{
+			VEvent event = ical.getEvents().get(1);
+			assertSize(event, 0, 6);
+
+			assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
+			assertEquals(utc("2006-01-04 19:00:00"), event.getDateStart().getValue());
+			assertNull(event.getDateStart().getTimezoneId());
+			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
+
+			assertEquals(utc("2006-01-04 17:00:00"), event.getRecurrenceId().getValue());
+			assertNull(event.getRecurrenceId().getTimezoneId());
+			assertEquals("Event #2 bis", event.getSummary().getValue());
+			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
+		}
+
+		//assert the timezone info
+		TimezoneInfo tzinfo = reader.getTimezoneInfo();
+		{
+			Iterator<VTimezone> it = tzinfo.getComponents().iterator();
+
+			VTimezone timezone = it.next();
 			assertSize(timezone, 2, 2);
 
 			assertEquals(utc("2004-01-10 03:28:45"), timezone.getLastModified().getValue());
@@ -1068,47 +1112,11 @@ public class XCalDocumentTest {
 				assertIntEquals(-5, standard.getTimezoneOffsetTo().getHourOffset());
 				assertIntEquals(0, standard.getTimezoneOffsetTo().getMinuteOffset());
 			}
-		}
-		{
-			VEvent event = ical.getEvents().get(0);
-			assertSize(event, 0, 8);
 
-			assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
-			assertEquals(utc("2006-01-02 17:00:00"), event.getDateStart().getValue());
-			assertNull(event.getDateStart().getTimezoneId());
-			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
-
-			Recurrence rrule = event.getRecurrenceRule().getValue();
-			assertEquals(Frequency.DAILY, rrule.getFrequency());
-			assertIntEquals(5, rrule.getCount());
-
-			RecurrenceDates rdate = event.getRecurrenceDates().get(0);
-			assertNull(rdate.getDates());
-			assertEquals(1, rdate.getPeriods().size());
-			assertEquals(new Period(utc("2006-01-02 20:00:00"), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
-			assertNull(rdate.getTimezoneId());
-
-			assertEquals("Event #2", event.getSummary().getValue());
-			assertEquals("We are having a meeting all this week at 12pm for one hour, with an additional meeting on the first day 2 hours long.\nPlease bring your own lunch for the 12 pm meetings.", event.getDescription().getValue());
-			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
-		}
-		{
-			VEvent event = ical.getEvents().get(1);
-			assertSize(event, 0, 6);
-
-			assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
-			assertEquals(utc("2006-01-04 19:00:00"), event.getDateStart().getValue());
-			assertNull(event.getDateStart().getTimezoneId());
-			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
-
-			assertEquals(utc("2006-01-04 17:00:00"), event.getRecurrenceId().getValue());
-			assertNull(event.getRecurrenceId().getTimezoneId());
-			assertEquals("Event #2 bis", event.getSummary().getValue());
-			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
+			assertFalse(it.hasNext());
 		}
 
-		TimezoneInfo tzinfo = reader.getTimezoneInfo();
-		VTimezone timezone = ical.getTimezones().get(0);
+		VTimezone timezone = tzinfo.getComponents().iterator().next();
 		VEvent event = ical.getEvents().get(0);
 
 		DateStart dtstart = event.getDateStart();
@@ -1138,42 +1146,12 @@ public class XCalDocumentTest {
 
 	@Test
 	public void write_example2() throws Throwable {
+		TimeZone eastern = TimeZone.getTimeZone("US/Eastern");
+
 		//see: RFC 6321 p.51
-		VTimezone usEasternTz;
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setProductId("-//Example Inc.//Example Client//EN");
-		{
-			usEasternTz = new VTimezone("US/Eastern");
-			usEasternTz.setLastModified(utc("2004-01-10 03:28:45"));
-			{
-				DaylightSavingsTime daylight = new DaylightSavingsTime();
-				daylight.setDateStart(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false));
-
-				Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY).byDay(1, DayOfWeek.SUNDAY).byMonth(4).build();
-				daylight.setRecurrenceRule(rrule);
-
-				daylight.addTimezoneName("EDT");
-				daylight.setTimezoneOffsetFrom(-5, 0);
-				daylight.setTimezoneOffsetTo(-4, 0);
-
-				usEasternTz.addDaylightSavingsTime(daylight);
-			}
-			{
-				StandardTime standard = new StandardTime();
-				standard.setDateStart(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false));
-
-				Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY).byDay(-1, DayOfWeek.SUNDAY).byMonth(10).build();
-				standard.setRecurrenceRule(rrule);
-
-				standard.addTimezoneName("EST");
-				standard.setTimezoneOffsetFrom(-4, 0);
-				standard.setTimezoneOffsetTo(-5, 0);
-
-				usEasternTz.addStandardTime(standard);
-			}
-			ical.addTimezone(usEasternTz);
-		}
 		{
 			VEvent event = new VEvent();
 			event.setDateTimeStamp(utc("2006-02-06 00:11:21"));
@@ -1205,10 +1183,40 @@ public class XCalDocumentTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0).run();
-		TimezoneInfo options = new TimezoneInfo();
-		options.assign(usEasternTz, eastern);
-		options.setDefaultTimezone(eastern);
-		assertExample(ical, "rfc6321-example2.xml", options);
+
+		VTimezone usEasternTz = new VTimezone("US/Eastern");
+		usEasternTz.setLastModified(utc("2004-01-10 03:28:45"));
+		{
+			DaylightSavingsTime daylight = new DaylightSavingsTime();
+			daylight.setDateStart(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false));
+
+			Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY).byDay(1, DayOfWeek.SUNDAY).byMonth(4).build();
+			daylight.setRecurrenceRule(rrule);
+
+			daylight.addTimezoneName("EDT");
+			daylight.setTimezoneOffsetFrom(-5, 0);
+			daylight.setTimezoneOffsetTo(-4, 0);
+
+			usEasternTz.addDaylightSavingsTime(daylight);
+		}
+		{
+			StandardTime standard = new StandardTime();
+			standard.setDateStart(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false));
+
+			Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY).byDay(-1, DayOfWeek.SUNDAY).byMonth(10).build();
+			standard.setRecurrenceRule(rrule);
+
+			standard.addTimezoneName("EST");
+			standard.setTimezoneOffsetFrom(-4, 0);
+			standard.setTimezoneOffsetTo(-5, 0);
+
+			usEasternTz.addStandardTime(standard);
+		}
+
+		TimezoneInfo tzinfo = new TimezoneInfo();
+		tzinfo.assign(usEasternTz, eastern);
+		tzinfo.setDefaultTimezone(eastern);
+		assertExample(ical, "rfc6321-example2.xml", tzinfo);
 	}
 
 	private XCalDocument read(String file) throws SAXException, IOException {
@@ -1224,7 +1232,14 @@ public class XCalDocumentTest {
 		try {
 			Document expected = XmlUtils.toDocument(getClass().getResourceAsStream(exampleFileName));
 			Document actual = xcal.getDocument();
-			assertXMLEqual(XmlUtils.toString(actual), expected, actual);
+
+			Map<String, String> properties = new HashMap<String, String>();
+			properties.put(OutputKeys.INDENT, "yes");
+			properties.put("{http://xml.apache.org/xslt}indent-amount", "3");
+			String expectedStr = XmlUtils.toString(expected, properties);
+			String actualStr = XmlUtils.toString(actual, properties);
+
+			assertXMLEqual("Expected:\n" + expectedStr + "\n\nActual:\n" + actualStr, expected, actual);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

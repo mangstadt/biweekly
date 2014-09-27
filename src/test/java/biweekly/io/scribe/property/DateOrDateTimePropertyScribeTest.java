@@ -53,8 +53,8 @@ public class DateOrDateTimePropertyScribeTest {
 	@ClassRule
 	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
 
-	private final DateOrDateTimePropertyMarshallerImpl marshaller = new DateOrDateTimePropertyMarshallerImpl();
-	private final Sensei<DateOrDateTimePropertyImpl> sensei = new Sensei<DateOrDateTimePropertyImpl>(marshaller);
+	private final DateOrDateTimePropertyMarshallerImpl scribe = new DateOrDateTimePropertyMarshallerImpl();
+	private final Sensei<DateOrDateTimePropertyImpl> sensei = new Sensei<DateOrDateTimePropertyImpl>(scribe);
 
 	private final Date date = date("2013-06-11");
 	private final String dateStr = "20130611";
@@ -75,7 +75,7 @@ public class DateOrDateTimePropertyScribeTest {
 
 	private final TimezoneInfo floatingGlobal = new TimezoneInfo();
 	{
-		floatingGlobal.setUseFloatingTime(true);
+		floatingGlobal.setGlobalFloatingTime(true);
 	}
 
 	private final TimezoneInfo timezoneGlobal = new TimezoneInfo();
@@ -186,14 +186,16 @@ public class DateOrDateTimePropertyScribeTest {
 		TimeZone tz2 = buildTimezone(-2, 0);
 		TimezoneInfo tzinfo;
 
-		test.run(utc);
+		//UTC time
+		tzinfo = new TimezoneInfo();
+		test.tz(tzinfo).run(utc);
 
 		//global floating time
 		test.tz(floatingGlobal).run(floating);
 
 		//property floating time
 		tzinfo = new TimezoneInfo();
-		tzinfo.setUseFloatingTime(withDateTime, true);
+		tzinfo.setFloating(withDateTime, true);
 		test.tz(tzinfo).run(floating);
 
 		//global timezone
@@ -209,7 +211,7 @@ public class DateOrDateTimePropertyScribeTest {
 		tzinfo = new TimezoneInfo();
 		tzinfo.assign(vtimezone, tz1);
 		tzinfo.setDefaultTimezone(tz1);
-		tzinfo.setUseFloatingTime(withDateTime, true);
+		tzinfo.setFloating(withDateTime, true);
 		test.tz(tzinfo).run(floating);
 
 		//property-assigned timezone should override global timezone
@@ -223,7 +225,7 @@ public class DateOrDateTimePropertyScribeTest {
 		//property-assigned timezone should override global floating
 		tzinfo = new TimezoneInfo();
 		tzinfo.assign(vtimezone, tz1);
-		tzinfo.setUseFloatingTime(true);
+		tzinfo.setGlobalFloatingTime(true);
 		tzinfo.setTimezone(withDateTime, tz1);
 		test.tz(tzinfo).run(minusOne);
 	}

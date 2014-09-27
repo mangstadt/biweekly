@@ -23,6 +23,7 @@ import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.SkipMeException;
+import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.text.ICalRawWriter;
@@ -1165,17 +1166,6 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		}
 
 		/**
-		 * Convenience method that combines {@link #floating(boolean)} and
-		 * {@link #tzid(String)} into one method.
-		 * @param localTz true to use local time, false not to
-		 * @param timezoneId the timezone ID
-		 * @return this
-		 */
-		public DateWriter tz(boolean localTz, String timezoneId) {
-			return localTz ? floating(true) : tzid(timezoneId);
-		}
-
-		/**
 		 * Sets the timezone.
 		 * @param floating true to use floating time, false not to
 		 * @param timezone the timezone
@@ -1235,14 +1225,19 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 			return parameters;
 		}
 
-		boolean floating = context.getTimezoneInfo().usesFloatingTime(property);
+		TimezoneInfo tzinfo = context.getTimezoneInfo();
+		boolean floating = tzinfo.isFloating(property);
 		if (floating) {
 			return parameters;
 		}
 
-		String tzid = context.getTimezoneInfo().getTimezoneId(property);
+		TimeZone timezone = tzinfo.getTimeZoneToWriteIn(property);
+		if (timezone == null) {
+			return parameters;
+		}
+
 		parameters = new ICalParameters(parameters);
-		parameters.setTimezoneId(tzid);
+		parameters.setTimezoneId(timezone.getID());
 		return parameters;
 	}
 

@@ -117,6 +117,14 @@ public abstract class ICalComponent {
 	}
 
 	/**
+	 * Removes components from the iCalendar object.
+	 * @param clazz the class of the components to remove (e.g. "VEvent.class")
+	 */
+	public void removeComponents(Class<? extends ICalComponent> clazz) {
+		components.removeAll(clazz);
+	}
+
+	/**
 	 * Gets the first experimental property with a given name.
 	 * @param name the property name (e.g. "X-ALT-DESC")
 	 * @return the property or null if none were found

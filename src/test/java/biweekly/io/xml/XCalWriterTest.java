@@ -107,8 +107,6 @@ public class XCalWriterTest {
 		ical.getProperties().clear();
 	}
 
-	private final TimeZone eastern = TimeZone.getTimeZone("US/Eastern");
-
 	@BeforeClass
 	public static void beforeClass() {
 		XMLUnit.setIgnoreWhitespace(true);
@@ -659,41 +657,10 @@ public class XCalWriterTest {
 
 	@Test
 	public void write_example2() throws Throwable {
+		TimeZone eastern = TimeZone.getTimeZone("US/Eastern");
 		//see: RFC 6321 p.51
 		VTimezone usEasternTz;
 		ical.setProductId("-//Example Inc.//Example Client//EN");
-		{
-			usEasternTz = new VTimezone(null);
-			usEasternTz.setLastModified(utc("2004-01-10 03:28:45"));
-			usEasternTz.setTimezoneId("US/Eastern");
-			{
-				DaylightSavingsTime daylight = new DaylightSavingsTime();
-				daylight.setDateStart(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false));
-
-				Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY).byDay(1, DayOfWeek.SUNDAY).byMonth(4).build();
-				daylight.setRecurrenceRule(rrule);
-
-				daylight.addTimezoneName("EDT");
-				daylight.setTimezoneOffsetFrom(-5, 0);
-				daylight.setTimezoneOffsetTo(-4, 0);
-
-				usEasternTz.addDaylightSavingsTime(daylight);
-			}
-			{
-				StandardTime standard = new StandardTime();
-				standard.setDateStart(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false));
-
-				Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY).byDay(-1, DayOfWeek.SUNDAY).byMonth(10).build();
-				standard.setRecurrenceRule(rrule);
-
-				standard.addTimezoneName("EST");
-				standard.setTimezoneOffsetFrom(-4, 0);
-				standard.setTimezoneOffsetTo(-5, 0);
-
-				usEasternTz.addStandardTime(standard);
-			}
-			ical.addTimezone(usEasternTz);
-		}
 		{
 			VEvent event = new VEvent();
 			event.setDateTimeStamp(utc("2006-02-06 00:11:21"));
@@ -726,10 +693,40 @@ public class XCalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0).run();
-		TimezoneInfo options = new TimezoneInfo();
-		options.assign(usEasternTz, eastern);
-		options.setDefaultTimezone(eastern);
-		assertExample(ical, "rfc6321-example2.xml", options);
+
+		usEasternTz = new VTimezone("US/Eastern");
+		usEasternTz.setLastModified(utc("2004-01-10 03:28:45"));
+		{
+			DaylightSavingsTime daylight = new DaylightSavingsTime();
+			daylight.setDateStart(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false));
+
+			Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY).byDay(1, DayOfWeek.SUNDAY).byMonth(4).build();
+			daylight.setRecurrenceRule(rrule);
+
+			daylight.addTimezoneName("EDT");
+			daylight.setTimezoneOffsetFrom(-5, 0);
+			daylight.setTimezoneOffsetTo(-4, 0);
+
+			usEasternTz.addDaylightSavingsTime(daylight);
+		}
+		{
+			StandardTime standard = new StandardTime();
+			standard.setDateStart(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false));
+
+			Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY).byDay(-1, DayOfWeek.SUNDAY).byMonth(10).build();
+			standard.setRecurrenceRule(rrule);
+
+			standard.addTimezoneName("EST");
+			standard.setTimezoneOffsetFrom(-4, 0);
+			standard.setTimezoneOffsetTo(-5, 0);
+
+			usEasternTz.addStandardTime(standard);
+		}
+
+		TimezoneInfo tzinfo = new TimezoneInfo();
+		tzinfo.assign(usEasternTz, eastern);
+		tzinfo.setDefaultTimezone(eastern);
+		assertExample(ical, "rfc6321-example2.xml", tzinfo);
 	}
 
 	private void assertOutput(String expected) throws SAXException, IOException {

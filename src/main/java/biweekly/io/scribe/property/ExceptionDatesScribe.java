@@ -66,7 +66,7 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 
 	@Override
 	protected String writeValue(ExceptionDates property, Date value, WriteContext context) {
-		return date(value).time(property.hasTime()).tz(context.getTimezoneInfo().usesFloatingTime(property), context.getTimezoneInfo().getTimeZone(property)).write();
+		return date(value).time(property.hasTime()).tz(context.getTimezoneInfo().isFloating(property), context.getTimezoneInfo().getTimeZoneToWriteIn(property)).write();
 	}
 
 	@Override

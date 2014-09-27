@@ -14,7 +14,6 @@ import biweekly.component.ICalComponent;
 import biweekly.component.VEvent;
 import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
-import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
 import biweekly.property.CalendarScale;
 import biweekly.property.Geo;
@@ -289,26 +288,6 @@ public class ICalendar extends ICalComponent {
 	 */
 	public void addFreeBusy(VFreeBusy freeBusy) {
 		addComponent(freeBusy);
-	}
-
-	/**
-	 * Gets the timezones.
-	 * @return the timezones
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
-	 * p.62-71</a>	
-	 */
-	public List<VTimezone> getTimezones() {
-		return getComponents(VTimezone.class);
-	}
-
-	/**
-	 * Adds a timezone.
-	 * @param timezone the timezone
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
-	 * p.62-71</a>	
-	 */
-	public void addTimezone(VTimezone timezone) {
-		addComponent(timezone);
 	}
 
 	/**

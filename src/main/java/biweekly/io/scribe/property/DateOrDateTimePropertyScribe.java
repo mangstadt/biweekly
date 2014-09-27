@@ -8,6 +8,7 @@ import biweekly.ICalVersion;
 import biweekly.component.Observance;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
+import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -70,8 +71,9 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 
 		Date value = property.getValue();
 		if (value != null) {
-			boolean floating = context.getTimezoneInfo().usesFloatingTime(property);
-			TimeZone tz = context.getTimezoneInfo().getTimeZone(property);
+			TimezoneInfo tzinfo = context.getTimezoneInfo();
+			boolean floating = tzinfo.isFloating(property);
+			TimeZone tz = tzinfo.getTimeZoneToWriteIn(property);
 			return date(value).time(property.hasTime()).tz(floating, tz).write();
 		}
 
@@ -93,8 +95,9 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 		if (components != null) {
 			dateStr = components.toString(true);
 		} else if (value != null) {
-			boolean floating = (context.getParent() instanceof Observance) ? true : context.getTimezoneInfo().usesFloatingTime(property);
-			dateStr = date(value).time(property.hasTime()).tz(floating, context.getTimezoneInfo().getTimeZone(property)).extended(true).write();
+			boolean floating = (context.getParent() instanceof Observance) ? true : context.getTimezoneInfo().isFloating(property);
+			TimeZone tz = context.getTimezoneInfo().getTimeZoneToWriteIn(property);
+			dateStr = date(value).time(property.hasTime()).tz(floating, tz).extended(true).write();
 		}
 
 		element.append(dataType(property, null), dateStr);
@@ -123,8 +126,9 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 
 		Date value = property.getValue();
 		if (value != null) {
-			boolean floating = (context.getParent() instanceof Observance) ? true : context.getTimezoneInfo().usesFloatingTime(property);
-			return JCalValue.single(date(value).time(property.hasTime()).tz(floating, context.getTimezoneInfo().getTimeZone(property)).extended(true).write());
+			boolean floating = (context.getParent() instanceof Observance) ? true : context.getTimezoneInfo().isFloating(property);
+			TimeZone tz = context.getTimezoneInfo().getTimeZoneToWriteIn(property);
+			return JCalValue.single(date(value).time(property.hasTime()).tz(floating, tz).extended(true).write());
 		}
 
 		return JCalValue.single("");

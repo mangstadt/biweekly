@@ -88,8 +88,6 @@ public class ICalWriterTest {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
-	private final TimeZone eastern = TimeZone.getTimeZone("America/New_York");
-
 	@Test
 	public void basic() throws Exception {
 		ICalendar ical = new ICalendar();
@@ -726,31 +724,10 @@ public class ICalWriterTest {
 
 	@Test
 	public void example2() throws Throwable {
-		VTimezone usEasternTz;
+		TimeZone eastern = TimeZone.getTimeZone("America/New_York");
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setProductId("-//RDU Software//NONSGML HandCal//EN");
-		{
-			usEasternTz = new VTimezone(null);
-			usEasternTz.setTimezoneId("America/New_York");
-			{
-				StandardTime standard = new StandardTime();
-				standard.setDateStart(new DateTimeComponents(1998, 10, 25, 2, 0, 0, false));
-				standard.setTimezoneOffsetFrom(-4, 0);
-				standard.setTimezoneOffsetTo(-5, 0);
-				standard.addTimezoneName("EST");
-				usEasternTz.addStandardTime(standard);
-			}
-			{
-				DaylightSavingsTime daylight = new DaylightSavingsTime();
-				daylight.setDateStart(new DateTimeComponents(1999, 4, 4, 2, 0, 0, false));
-				daylight.setTimezoneOffsetFrom(-5, 0);
-				daylight.setTimezoneOffsetTo(-4, 0);
-				daylight.addTimezoneName("EDT");
-				usEasternTz.addDaylightSavingsTime(daylight);
-			}
-			ical.addTimezone(usEasternTz);
-		}
 		{
 			VEvent event = new VEvent();
 			event.setDateTimeStamp(utc("1998-03-09 23:10:00"));
@@ -775,10 +752,32 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		TimezoneInfo options = new TimezoneInfo();
-		options.assign(usEasternTz, eastern);
-		options.setDefaultTimezone(eastern);
-		assertExample(ical, "rfc5545-example2.ics", options);
+
+		TimezoneInfo tzinfo = new TimezoneInfo();
+		VTimezone usEasternTz;
+		{
+			usEasternTz = new VTimezone("America/New_York");
+			{
+				StandardTime standard = new StandardTime();
+				standard.setDateStart(new DateTimeComponents(1998, 10, 25, 2, 0, 0, false));
+				standard.setTimezoneOffsetFrom(-4, 0);
+				standard.setTimezoneOffsetTo(-5, 0);
+				standard.addTimezoneName("EST");
+				usEasternTz.addStandardTime(standard);
+			}
+			{
+				DaylightSavingsTime daylight = new DaylightSavingsTime();
+				daylight.setDateStart(new DateTimeComponents(1999, 4, 4, 2, 0, 0, false));
+				daylight.setTimezoneOffsetFrom(-5, 0);
+				daylight.setTimezoneOffsetTo(-4, 0);
+				daylight.addTimezoneName("EDT");
+				usEasternTz.addDaylightSavingsTime(daylight);
+			}
+		}
+
+		tzinfo.assign(usEasternTz, eastern);
+		tzinfo.setDefaultTimezone(eastern);
+		assertExample(ical, "rfc5545-example2.ics", tzinfo);
 	}
 
 	@Test
@@ -851,7 +850,7 @@ public class ICalWriterTest {
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 		TimezoneInfo options = new TimezoneInfo();
-		options.setUseFloatingTime(ical.getTodos().get(0).getDateDue(), true);
+		options.setFloating(ical.getTodos().get(0).getDateDue(), true);
 		assertExample(ical, "rfc5545-example4.ics", options);
 	}
 

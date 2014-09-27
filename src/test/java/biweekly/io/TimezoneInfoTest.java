@@ -72,28 +72,16 @@ public class TimezoneInfoTest {
 		TimeZone timezone = TimeZone.getDefault();
 		VTimezone component = new VTimezone("tz");
 
-		TimezoneTranslator translator = mock(TimezoneTranslator.class);
-		doReturn(component).when(translator).toICalVTimezone(timezone);
-		tzinfo.setTranslator(translator);
+		VTimezoneGenerator generator = mock(VTimezoneGenerator.class);
+		doReturn(component).when(generator).generate(timezone);
+		tzinfo.setGenerator(generator);
 
 		tzinfo.setDefaultTimezone(timezone);
 
 		Collection<VTimezone> components = tzinfo.getComponents();
 		assertEquals(1, components.size());
 		assertTrue(components.contains(component));
-		verify(translator).toICalVTimezone(timezone);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void setDefaultTimezone_no_tzid() {
-		VTimezone component = new VTimezone(null);
-		tzinfo.setDefaultTimezone(component);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void setDefaultTimezone_empty_tzid() {
-		VTimezone component = new VTimezone("  ");
-		tzinfo.setDefaultTimezone(component);
+		verify(generator).generate(timezone);
 	}
 
 	@Test
@@ -107,34 +95,39 @@ public class TimezoneInfoTest {
 		TimeZone defaultTimezone = TimeZone.getDefault();
 		tzinfo.assign(defaultComponent, defaultTimezone);
 
-		TimeZone property1Timezone = TestUtils.buildTimezone(1, 0);
-		VTimezone property1Component = new VTimezone("custom");
-		tzinfo.assign(property1Component, property1Timezone);
+		TimeZone timezone1 = TestUtils.buildTimezone(1, 0);
+		VTimezone component1 = new VTimezone("custom");
+		tzinfo.assign(component1, timezone1);
 
 		tzinfo.setDefaultTimezone(defaultTimezone);
-		tzinfo.setTimezone(property1, property1Component);
-		tzinfo.setTimezone(property2, property1Timezone);
-		tzinfo.setUseFloatingTime(property3, true);
+		tzinfo.setTimezone(property1, timezone1);
+		tzinfo.setTimezone(property2, timezone1);
+		tzinfo.setFloating(property3, true);
 
-		assertEquals(property1Timezone, tzinfo.getTimeZone(property1));
-		assertEquals(property1Timezone, tzinfo.getTimeZone(property2));
-		assertEquals(defaultTimezone, tzinfo.getTimeZone(property3));
-		assertEquals(defaultTimezone, tzinfo.getTimeZone(property4));
+		assertEquals(timezone1, tzinfo.getTimeZone(property1));
+		assertEquals(timezone1, tzinfo.getTimeZone(property2));
+		assertEquals(null, tzinfo.getTimeZone(property3));
+		assertEquals(null, tzinfo.getTimeZone(property4));
 
-		assertEquals("custom", tzinfo.getTimezoneId(property1));
-		assertEquals("custom", tzinfo.getTimezoneId(property2));
-		assertEquals("default", tzinfo.getTimezoneId(property3));
-		assertEquals("default", tzinfo.getTimezoneId(property4));
+		assertEquals(timezone1, tzinfo.getTimeZoneToWriteIn(property1));
+		assertEquals(timezone1, tzinfo.getTimeZoneToWriteIn(property2));
+		assertEquals(defaultTimezone, tzinfo.getTimeZoneToWriteIn(property3));
+		assertEquals(defaultTimezone, tzinfo.getTimeZoneToWriteIn(property4));
 
-		assertFalse(tzinfo.usesFloatingTime(property1));
-		assertFalse(tzinfo.usesFloatingTime(property2));
-		assertTrue(tzinfo.usesFloatingTime(property3));
-		assertFalse(tzinfo.usesFloatingTime(property4));
+		assertEquals(component1, tzinfo.getComponent(property1));
+		assertEquals(component1, tzinfo.getComponent(property2));
+		assertEquals(null, tzinfo.getComponent(property3));
+		assertEquals(null, tzinfo.getComponent(property4));
+
+		assertFalse(tzinfo.isFloating(property1));
+		assertFalse(tzinfo.isFloating(property2));
+		assertTrue(tzinfo.isFloating(property3));
+		assertFalse(tzinfo.isFloating(property4));
 
 		Collection<VTimezone> components = tzinfo.getComponents();
 		assertEquals(2, components.size());
 		assertTrue(components.contains(defaultComponent));
-		assertTrue(components.contains(property1Component));
+		assertTrue(components.contains(component1));
 	}
 
 	@Test
@@ -145,31 +138,35 @@ public class TimezoneInfoTest {
 		TimeZone defaultTimezone = TimeZone.getDefault();
 		tzinfo.assign(defaultComponent, defaultTimezone);
 
-		TimeZone property1Timezone = TestUtils.buildTimezone(1, 0);
-		VTimezone property1Component = new VTimezone("tz2");
-		tzinfo.assign(property1Component, property1Timezone);
+		TimeZone timezone1 = TestUtils.buildTimezone(1, 0);
+		VTimezone component1 = new VTimezone("tz2");
+		tzinfo.assign(component1, timezone1);
 
 		tzinfo.setDefaultTimezone(defaultTimezone);
 
-		tzinfo.setTimezone(property, property1Component);
-		assertEquals(property1Timezone, tzinfo.getTimeZone(property));
-		assertEquals("tz2", tzinfo.getTimezoneId(property));
-		assertFalse(tzinfo.usesFloatingTime(property));
+		tzinfo.setTimezone(property, timezone1);
+		assertEquals(timezone1, tzinfo.getTimeZone(property));
+		assertEquals(timezone1, tzinfo.getTimeZoneToWriteIn(property));
+		assertEquals(component1, tzinfo.getComponent(property));
+		assertFalse(tzinfo.isFloating(property));
 
 		tzinfo.setTimezone(property, (TimeZone) null);
-		assertEquals(defaultTimezone, tzinfo.getTimeZone(property));
-		assertEquals("tz", tzinfo.getTimezoneId(property));
-		assertFalse(tzinfo.usesFloatingTime(property));
+		assertEquals(null, tzinfo.getTimeZone(property));
+		assertEquals(defaultTimezone, tzinfo.getTimeZoneToWriteIn(property));
+		assertEquals(null, tzinfo.getComponent(property));
+		assertFalse(tzinfo.isFloating(property));
 
-		tzinfo.setUseFloatingTime(property, true);
-		assertEquals(defaultTimezone, tzinfo.getTimeZone(property));
-		assertEquals("tz", tzinfo.getTimezoneId(property));
-		assertTrue(tzinfo.usesFloatingTime(property));
+		tzinfo.setFloating(property, true);
+		assertEquals(null, tzinfo.getTimeZone(property));
+		assertEquals(defaultTimezone, tzinfo.getTimeZoneToWriteIn(property));
+		assertEquals(null, tzinfo.getComponent(property));
+		assertTrue(tzinfo.isFloating(property));
 
-		tzinfo.setUseFloatingTime(property, false);
-		assertEquals(defaultTimezone, tzinfo.getTimeZone(property));
-		assertEquals("tz", tzinfo.getTimezoneId(property));
-		assertFalse(tzinfo.usesFloatingTime(property));
+		tzinfo.setFloating(property, false);
+		assertEquals(null, tzinfo.getTimeZone(property));
+		assertEquals(defaultTimezone, tzinfo.getTimeZoneToWriteIn(property));
+		assertEquals(null, tzinfo.getComponent(property));
+		assertFalse(tzinfo.isFloating(property));
 	}
 
 	private class ICalPropertyImpl extends ICalProperty {

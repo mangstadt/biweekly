@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
@@ -58,16 +59,73 @@ public class StreamReaderTest {
 
 	@Test
 	public void timezones() throws Exception {
-		StreamReaderImpl reader = new StreamReaderImpl();
+		StreamReader reader = new StreamReaderImpl() {
+			@Override
+			protected ICalendar _readNext() {
+				ICalendar ical = new ICalendar();
+
+				VTimezone timezone = new VTimezone("tz");
+				{
+					StandardTime standard = new StandardTime();
+					standard.setDateStart(new DateTimeComponents(2014, 9, 1, 2, 0, 0, false));
+					standard.setTimezoneOffsetFrom(10, 0);
+					standard.setTimezoneOffsetTo(9, 0);
+					timezone.addStandardTime(standard);
+
+					DaylightSavingsTime daylight = new DaylightSavingsTime();
+					daylight.setDateStart(new DateTimeComponents(2014, 1, 1, 2, 0, 0, false));
+					daylight.setTimezoneOffsetFrom(9, 0);
+					daylight.setTimezoneOffsetTo(10, 0);
+					timezone.addDaylightSavingsTime(daylight);
+				}
+				ical.addComponent(timezone);
+
+				TestProperty floating = new TestProperty(date("2014-09-21 10:22:00"));
+				context.addFloatingDate(floating);
+				ical.addProperty(floating);
+
+				TestProperty timezoned = new TestProperty(date("2014-10-01 13:07:00"));
+				timezoned.getParameters().setTimezoneId(timezone.getTimezoneId().getValue());
+				context.addTimezonedDate(timezone.getTimezoneId().getValue(), timezoned, timezoned.date, "20141001T130700");
+				ical.addProperty(timezoned);
+
+				timezoned = new TestProperty(date("2014-08-01 13:07:00"));
+				timezoned.getParameters().setTimezoneId(timezone.getTimezoneId().getValue());
+				context.addTimezonedDate(timezone.getTimezoneId().getValue(), timezoned, timezoned.date, "20140801T130700");
+				ical.addProperty(timezoned);
+
+				timezoned = new TestProperty(date("2013-12-01 13:07:00"));
+				timezoned.getParameters().setTimezoneId(timezone.getTimezoneId().getValue());
+				context.addTimezonedDate(timezone.getTimezoneId().getValue(), timezoned, timezoned.date, "20131201T130700");
+				ical.addProperty(timezoned);
+
+				timezoned = new TestProperty(date("2014-07-04 09:00:00"));
+				timezoned.getParameters().setTimezoneId("America/New_York");
+				context.addTimezonedDate("America/New_York", timezoned, timezoned.date, "20140704T090000");
+				ical.addProperty(timezoned);
+
+				timezoned = new TestProperty(date("2014-06-11 14:00:00"));
+				timezoned.getParameters().setTimezoneId("foobar");
+				context.addTimezonedDate("foobar", timezoned, timezoned.date, "20140611T140000");
+				ical.addProperty(timezoned);
+
+				return ical;
+			}
+		};
+
 		ICalendar ical = reader.readNext();
 		TimezoneInfo tzinfo = reader.getTimezoneInfo();
 
-		VTimezone component = ical.getTimezones().get(0);
+		Collection<VTimezone> components = tzinfo.getComponents();
+		assertEquals(1, components.size());
+		assertEquals(0, ical.getComponents(VTimezone.class).size());
+
+		VTimezone component = components.iterator().next();
 		Iterator<TestProperty> it = ical.getProperties(TestProperty.class).iterator();
 
 		//floating-time property
 		TestProperty property = it.next();
-		assertTrue(tzinfo.usesFloatingTime(property));
+		assertTrue(tzinfo.isFloating(property));
 		assertNull(tzinfo.getComponent(property));
 		assertNull(tzinfo.getTimeZone(property));
 		assertNull(property.getParameters().getTimezoneId());
@@ -75,7 +133,7 @@ public class StreamReaderTest {
 
 		//timezoned property
 		property = it.next();
-		assertFalse(tzinfo.usesFloatingTime(property));
+		assertFalse(tzinfo.isFloating(property));
 		assertEquals(component, tzinfo.getComponent(property));
 		assertTrue(tzinfo.getTimeZone(property) instanceof ICalTimeZone);
 		assertNull(property.getParameters().getTimezoneId());
@@ -83,7 +141,7 @@ public class StreamReaderTest {
 
 		//timezoned property
 		property = it.next();
-		assertFalse(tzinfo.usesFloatingTime(property));
+		assertFalse(tzinfo.isFloating(property));
 		assertEquals(component, tzinfo.getComponent(property));
 		assertTrue(tzinfo.getTimeZone(property) instanceof ICalTimeZone);
 		assertNull(property.getParameters().getTimezoneId());
@@ -91,7 +149,7 @@ public class StreamReaderTest {
 
 		//timezoned property
 		property = it.next();
-		assertFalse(tzinfo.usesFloatingTime(property));
+		assertFalse(tzinfo.isFloating(property));
 		assertEquals(component, tzinfo.getComponent(property));
 		assertTrue(tzinfo.getTimeZone(property) instanceof ICalTimeZone);
 		assertNull(property.getParameters().getTimezoneId());
@@ -99,7 +157,7 @@ public class StreamReaderTest {
 
 		//property with Olsen TZID that doesn't point to a VTIMEZONE component
 		property = it.next();
-		assertFalse(tzinfo.usesFloatingTime(property));
+		assertFalse(tzinfo.isFloating(property));
 		assertNull(tzinfo.getComponent(property));
 		assertEquals(TimeZone.getTimeZone("America/New_York"), tzinfo.getTimeZone(property));
 		assertNull(property.getParameters().getTimezoneId());
@@ -107,7 +165,7 @@ public class StreamReaderTest {
 
 		//property with TZID that doesn't point to a VTIMEZONE component
 		property = it.next();
-		assertFalse(tzinfo.usesFloatingTime(property));
+		assertFalse(tzinfo.isFloating(property));
 		assertNull(tzinfo.getComponent(property));
 		assertNull(tzinfo.getTimeZone(property));
 		assertEquals("foobar", property.getParameters().getTimezoneId());
@@ -118,72 +176,43 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void timezones_no_component_with_olsen_id() {
+	public void timezone_without_id() throws Exception {
+		StreamReader reader = new StreamReaderImpl() {
+			@Override
+			protected ICalendar _readNext() {
+				ICalendar ical = new ICalendar();
 
-	}
+				VTimezone timezone = new VTimezone(null);
+				{
+					StandardTime standard = new StandardTime();
+					standard.setDateStart(new DateTimeComponents(2014, 9, 1, 2, 0, 0, false));
+					standard.setTimezoneOffsetFrom(10, 0);
+					standard.setTimezoneOffsetTo(9, 0);
+					timezone.addStandardTime(standard);
 
-	@Test
-	public void timezones_no_component_without_olsen_id() {
+					DaylightSavingsTime daylight = new DaylightSavingsTime();
+					daylight.setDateStart(new DateTimeComponents(2014, 1, 1, 2, 0, 0, false));
+					daylight.setTimezoneOffsetFrom(9, 0);
+					daylight.setTimezoneOffsetTo(10, 0);
+					timezone.addDaylightSavingsTime(daylight);
+				}
+				ical.addComponent(timezone);
 
-	}
-
-	private class StreamReaderImpl extends StreamReader {
-		@Override
-		protected ICalendar _readNext() {
-			ICalendar ical = new ICalendar();
-
-			VTimezone timezone = new VTimezone("tz");
-			{
-				StandardTime standard = new StandardTime();
-				standard.setDateStart(new DateTimeComponents(2014, 9, 1, 2, 0, 0, false));
-				standard.setTimezoneOffsetFrom(10, 0);
-				standard.setTimezoneOffsetTo(9, 0);
-				timezone.addStandardTime(standard);
-
-				DaylightSavingsTime daylight = new DaylightSavingsTime();
-				daylight.setDateStart(new DateTimeComponents(2014, 1, 1, 2, 0, 0, false));
-				daylight.setTimezoneOffsetFrom(9, 0);
-				daylight.setTimezoneOffsetTo(10, 0);
-				timezone.addDaylightSavingsTime(daylight);
+				return ical;
 			}
-			ical.addComponent(timezone);
+		};
 
-			TestProperty floating = new TestProperty(date("2014-09-21 10:22:00"));
-			context.addFloatingDate(floating);
-			ical.addProperty(floating);
+		ICalendar ical = reader.readNext();
+		TimezoneInfo tzinfo = reader.getTimezoneInfo();
+		assertEquals(0, tzinfo.getComponents().size());
+		assertEquals(1, ical.getComponents(VTimezone.class).size());
+		assertWarnings(1, reader);
+	}
 
-			TestProperty timezoned = new TestProperty(date("2014-10-01 13:07:00"));
-			timezoned.getParameters().setTimezoneId(timezone.getTimezoneId().getValue());
-			context.addTimezonedDate(timezone.getTimezoneId().getValue(), timezoned, timezoned.date, "20141001T130700");
-			ical.addProperty(timezoned);
-
-			timezoned = new TestProperty(date("2014-08-01 13:07:00"));
-			timezoned.getParameters().setTimezoneId(timezone.getTimezoneId().getValue());
-			context.addTimezonedDate(timezone.getTimezoneId().getValue(), timezoned, timezoned.date, "20140801T130700");
-			ical.addProperty(timezoned);
-
-			timezoned = new TestProperty(date("2013-12-01 13:07:00"));
-			timezoned.getParameters().setTimezoneId(timezone.getTimezoneId().getValue());
-			context.addTimezonedDate(timezone.getTimezoneId().getValue(), timezoned, timezoned.date, "20131201T130700");
-			ical.addProperty(timezoned);
-
-			timezoned = new TestProperty(date("2014-07-04 09:00:00"));
-			timezoned.getParameters().setTimezoneId("America/New_York");
-			context.addTimezonedDate("America/New_York", timezoned, timezoned.date, "20140704T090000");
-			ical.addProperty(timezoned);
-
-			timezoned = new TestProperty(date("2014-06-11 14:00:00"));
-			timezoned.getParameters().setTimezoneId("foobar");
-			context.addTimezonedDate("foobar", timezoned, timezoned.date, "20140611T140000");
-			ical.addProperty(timezoned);
-
-			return ical;
-		}
-
+	private abstract class StreamReaderImpl extends StreamReader {
 		public void close() throws IOException {
 			//empty
 		}
-
 	}
 
 	private class TestProperty extends ICalProperty {

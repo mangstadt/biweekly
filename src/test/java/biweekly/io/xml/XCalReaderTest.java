@@ -9,6 +9,7 @@ import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -968,12 +969,52 @@ public class XCalReaderTest {
 
 		{
 			ICalendar ical = reader.readNext();
-			assertSize(ical, 3, 1);
+			assertSize(ical, 2, 1);
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
 			assertEquals(ICalVersion.V2_0, ical.getVersion());
-
 			{
-				VTimezone timezone = ical.getTimezones().get(0);
+				VEvent event = ical.getEvents().get(0);
+				assertSize(event, 0, 8);
+
+				assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
+				assertEquals(utc("2006-01-02 17:00:00"), event.getDateStart().getValue());
+				assertNull(event.getDateStart().getTimezoneId());
+				assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
+
+				Recurrence rrule = event.getRecurrenceRule().getValue();
+				assertEquals(Frequency.DAILY, rrule.getFrequency());
+				assertIntEquals(5, rrule.getCount());
+
+				RecurrenceDates rdate = event.getRecurrenceDates().get(0);
+				assertNull(rdate.getDates());
+				assertEquals(1, rdate.getPeriods().size());
+				assertEquals(new Period(utc("2006-01-02 20:00:00"), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
+				assertNull(rdate.getTimezoneId());
+
+				assertEquals("Event #2", event.getSummary().getValue());
+				assertEquals("We are having a meeting all this week at 12pm for one hour, with an additional meeting on the first day 2 hours long.\nPlease bring your own lunch for the 12 pm meetings.", event.getDescription().getValue());
+				assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
+			}
+			{
+				VEvent event = ical.getEvents().get(1);
+				assertSize(event, 0, 6);
+
+				assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
+				assertEquals(utc("2006-01-04 19:00:00"), event.getDateStart().getValue());
+				assertNull(event.getDateStart().getTimezoneId());
+				assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
+
+				assertEquals(utc("2006-01-04 17:00:00"), event.getRecurrenceId().getValue());
+				assertNull(event.getRecurrenceId().getTimezoneId());
+				assertEquals("Event #2 bis", event.getSummary().getValue());
+				assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
+			}
+
+			TimezoneInfo tzinfo = reader.getTimezoneInfo();
+			{
+				Iterator<VTimezone> it = tzinfo.getComponents().iterator();
+				VTimezone timezone = it.next();
+
 				assertSize(timezone, 2, 2);
 
 				assertEquals(utc("2004-01-10 03:28:45"), timezone.getLastModified().getValue());
@@ -1015,47 +1056,11 @@ public class XCalReaderTest {
 					assertIntEquals(-5, standard.getTimezoneOffsetTo().getHourOffset());
 					assertIntEquals(0, standard.getTimezoneOffsetTo().getMinuteOffset());
 				}
-			}
-			{
-				VEvent event = ical.getEvents().get(0);
-				assertSize(event, 0, 8);
 
-				assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
-				assertEquals(utc("2006-01-02 17:00:00"), event.getDateStart().getValue());
-				assertNull(event.getDateStart().getTimezoneId());
-				assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
-
-				Recurrence rrule = event.getRecurrenceRule().getValue();
-				assertEquals(Frequency.DAILY, rrule.getFrequency());
-				assertIntEquals(5, rrule.getCount());
-
-				RecurrenceDates rdate = event.getRecurrenceDates().get(0);
-				assertNull(rdate.getDates());
-				assertEquals(1, rdate.getPeriods().size());
-				assertEquals(new Period(utc("2006-01-02 20:00:00"), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
-				assertNull(rdate.getTimezoneId());
-
-				assertEquals("Event #2", event.getSummary().getValue());
-				assertEquals("We are having a meeting all this week at 12pm for one hour, with an additional meeting on the first day 2 hours long.\nPlease bring your own lunch for the 12 pm meetings.", event.getDescription().getValue());
-				assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
-			}
-			{
-				VEvent event = ical.getEvents().get(1);
-				assertSize(event, 0, 6);
-
-				assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
-				assertEquals(utc("2006-01-04 19:00:00"), event.getDateStart().getValue());
-				assertNull(event.getDateStart().getTimezoneId());
-				assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
-
-				assertEquals(utc("2006-01-04 17:00:00"), event.getRecurrenceId().getValue());
-				assertNull(event.getRecurrenceId().getTimezoneId());
-				assertEquals("Event #2 bis", event.getSummary().getValue());
-				assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
+				assertFalse(it.hasNext());
 			}
 
-			TimezoneInfo tzinfo = reader.getTimezoneInfo();
-			VTimezone timezone = ical.getTimezones().get(0);
+			VTimezone timezone = tzinfo.getComponents().iterator().next();
 			VEvent event = ical.getEvents().get(0);
 
 			DateStart dtstart = event.getDateStart();

@@ -305,7 +305,7 @@ public enum ICalDateFormat {
 	 */
 	public static TimeZone parseTimeZoneId(String timezoneId) {
 		TimeZone timezone = TimeZone.getTimeZone(timezoneId);
-		return "GMT".equals(timezone.getID()) ? null : timezone;
+		return "GMT".equals(timezone.getID()) && !"GMT".equalsIgnoreCase(timezoneId) ? null : timezone;
 	}
 
 	private static IllegalArgumentException parseException(String dateStr) {
