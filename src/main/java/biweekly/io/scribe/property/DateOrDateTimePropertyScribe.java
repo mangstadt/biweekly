@@ -170,7 +170,7 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 		if (!ICalDateFormat.isUTC(value)) {
 			//TODO handle UTC offsets within the date strings (not part of iCal standard)
 			if (tzid == null) {
-				context.addFloatingDate(property);
+				context.addFloatingDate(property, date, value);
 			} else if (hasTime) {
 				context.addTimezonedDate(tzid, property, date, value);
 			}

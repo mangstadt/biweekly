@@ -44,7 +44,7 @@ public class ParseContext {
 	private ICalVersion version;
 	private List<Warning> warnings = new ArrayList<Warning>();
 	private ListMultimap<String, TimezonedDate> timezonedDates = new ListMultimap<String, TimezonedDate>();
-	private Set<ICalProperty> floatingDates = new HashSet<ICalProperty>();
+	private Set<TimezonedDate> floatingDates = new HashSet<TimezonedDate>();
 
 	/**
 	 * Gets the version of the iCalendar object being parsed.
@@ -91,8 +91,8 @@ public class ParseContext {
 	 * after the iCalendar object is parsed.
 	 * @param property the property
 	 */
-	public void addFloatingDate(ICalProperty property) {
-		floatingDates.add(property);
+	public void addFloatingDate(ICalProperty property, Date date, String dateStr) {
+		floatingDates.add(new TimezonedDate(dateStr, date, property));
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class ParseContext {
 	 * timezone).
 	 * @return the floating date-time properties
 	 */
-	public Set<ICalProperty> getFloatingDates() {
+	public Set<TimezonedDate> getFloatingDates() {
 		return floatingDates;
 	}
 
@@ -173,6 +173,34 @@ public class ParseContext {
 		 */
 		public ICalProperty getProperty() {
 			return property;
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((date == null) ? 0 : date.hashCode());
+			result = prime * result + ((dateStr == null) ? 0 : dateStr.hashCode());
+			result = prime * result + ((property == null) ? 0 : property.hashCode());
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) return true;
+			if (obj == null) return false;
+			if (getClass() != obj.getClass()) return false;
+			TimezonedDate other = (TimezonedDate) obj;
+			if (date == null) {
+				if (other.date != null) return false;
+			} else if (!date.equals(other.date)) return false;
+			if (dateStr == null) {
+				if (other.dateStr != null) return false;
+			} else if (!dateStr.equals(other.dateStr)) return false;
+			if (property == null) {
+				if (other.property != null) return false;
+			} else if (!property.equals(other.property)) return false;
+			return true;
 		}
 	}
 }

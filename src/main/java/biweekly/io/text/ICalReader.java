@@ -21,7 +21,6 @@ import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.VAlarm;
-import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamReader;
@@ -38,7 +37,6 @@ import biweekly.parameter.Role;
 import biweekly.property.Attendee;
 import biweekly.property.AudioAlarm;
 import biweekly.property.Created;
-import biweekly.property.Daylight;
 import biweekly.property.DisplayAlarm;
 import biweekly.property.EmailAlarm;
 import biweekly.property.ICalProperty;
@@ -95,8 +93,8 @@ import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
 public class ICalReader extends StreamReader {
 	private static final String icalComponentName = ScribeIndex.getICalendarScribe().getComponentName();
 
-	private Charset defaultQuotedPrintableCharset;
 	private final ICalRawReader reader;
+	private Charset defaultQuotedPrintableCharset;
 
 	/**
 	 * Creates a reader that parses iCalendar objects from a string.
@@ -218,7 +216,7 @@ public class ICalReader extends StreamReader {
 
 			if ("BEGIN".equalsIgnoreCase(propertyName)) {
 				String componentName = line.getValue();
-				if (ical == null && !icalComponentName.equals(componentName)) {
+				if (ical == null && !icalComponentName.equalsIgnoreCase(componentName)) {
 					//keep reading until a VCALENDAR component is found
 					continue;
 				}
@@ -361,14 +359,6 @@ public class ICalReader extends StreamReader {
 				}
 
 				if (reader.getVersion() == null || reader.getVersion() == ICalVersion.V1_0) {
-					//DAYLIGHT property => VTIMEZONE component
-					if (property instanceof Daylight) {
-						Daylight daylight = (Daylight) property;
-						VTimezone timezone = convert(daylight);
-						parentComponent.addComponent(timezone);
-						continue;
-					}
-
 					//ATTENDEE with "organizer" role => ORGANIZER property
 					if (property instanceof Attendee) {
 						Attendee attendee = (Attendee) property;

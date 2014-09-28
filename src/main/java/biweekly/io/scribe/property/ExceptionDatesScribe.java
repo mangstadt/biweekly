@@ -81,7 +81,7 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 		String tzid = parameters.getTimezoneId();
 		if (!ICalDateFormat.isUTC(value)) {
 			if (tzid == null) {
-				context.addFloatingDate(property);
+				context.addFloatingDate(property, date, value);
 			} else {
 				context.addTimezonedDate(tzid, property, date, value);
 			}

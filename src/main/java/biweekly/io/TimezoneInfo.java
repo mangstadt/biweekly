@@ -145,6 +145,16 @@ public class TimezoneInfo {
 	}
 
 	/**
+	 * Gets the {@link TimeZone} object that is assigned to a {@link VTimezone}
+	 * component.
+	 * @param component the component
+	 * @return the timezone object or null if none were found
+	 */
+	public TimeZone getTimeZoneByComponent(VTimezone component) {
+		return assignments.get(component);
+	}
+
+	/**
 	 * Gets the {@link VTimezone} component that a property is assigned to.
 	 * @param property the property
 	 * @return the component or null if it is not assigned to one

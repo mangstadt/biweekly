@@ -25,8 +25,10 @@ import biweekly.property.EmailAlarm;
 import biweekly.property.Organizer;
 import biweekly.property.ProcedureAlarm;
 import biweekly.property.Repeat;
+import biweekly.property.Timezone;
 import biweekly.property.Trigger;
 import biweekly.property.VCalAlarmProperty;
+import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.UtcOffset;
 
@@ -62,34 +64,68 @@ import biweekly.util.UtcOffset;
  */
 public class DataModelConverter {
 	/**
-	 * Converts a {@link Daylight} property to a {@link VTimezone} component.
-	 * @param daylight the DAYLIGHT property
+	 * Converts the timezone information in a vCalendar object to a
+	 * {@link VTimezone} component.
+	 * @param daylights the DAYLIGHT properties
+	 * @param tz the TZ property
 	 * @return the VTIMEZONE component
 	 */
-	public static VTimezone convert(Daylight daylight) {
-		VTimezone timezone = new VTimezone("TZ1");
-		if (!daylight.isDaylight()) {
+	public static VTimezone convert(List<Daylight> daylights, Timezone tz) {
+		UtcOffset tzOffset = (tz == null) ? null : tz.getValue();
+		if (daylights.isEmpty() && tzOffset == null) {
+			return null;
+		}
+
+		VTimezone timezone = new VTimezone("TZ");
+		if (daylights.isEmpty() && tzOffset != null) {
+			StandardTime st = new StandardTime();
+			st.setTimezoneOffsetFrom(tzOffset);
+			st.setTimezoneOffsetTo(tzOffset);
+			timezone.addStandardTime(st);
 			return timezone;
 		}
 
-		UtcOffset offset = daylight.getOffset();
+		for (Daylight daylight : daylights) {
+			if (!daylight.isDaylight()) {
+				continue;
+			}
 
-		//TODO convert all local dates to this timezone
-		DaylightSavingsTime dst = new DaylightSavingsTime();
-		dst.setDateStart(new DateStart(daylight.getStart()));
-		dst.setTimezoneOffsetFrom(offset.getHour() - 1, offset.getMinute());
-		dst.setTimezoneOffsetTo(offset.getHour(), offset.getMinute());
-		dst.addTimezoneName(daylight.getDaylightName());
-		timezone.addDaylightSavingsTime(dst);
+			UtcOffset daylightOffset = daylight.getOffset();
+			UtcOffset standardOffset;
+			if (tzOffset == null) {
+				standardOffset = new UtcOffset(daylightOffset.getHour() - 1, daylightOffset.getMinute());
+			} else {
+				standardOffset = tzOffset;
+			}
 
-		StandardTime st = new StandardTime();
-		st.setDateStart(new DateStart(daylight.getEnd()));
-		st.setTimezoneOffsetFrom(offset.getHour(), offset.getMinute());
-		st.setTimezoneOffsetTo(offset.getHour() - 1, offset.getMinute());
-		st.addTimezoneName(daylight.getStandardName());
-		timezone.addStandardTime(st);
+			DaylightSavingsTime dst = new DaylightSavingsTime();
+			DateStart dtstart = new DateStart(daylight.getStart());
+			dtstart.setRawComponents(new DateTimeComponents(daylight.getStart()));
+			dst.setDateStart(dtstart);
+			dst.setTimezoneOffsetFrom(standardOffset);
+			dst.setTimezoneOffsetTo(daylightOffset);
+			dst.addTimezoneName(daylight.getDaylightName());
+			timezone.addDaylightSavingsTime(dst);
+
+			StandardTime st = new StandardTime();
+			dtstart = new DateStart(daylight.getEnd());
+			dtstart.setRawComponents(new DateTimeComponents(daylight.getEnd()));
+			st.setDateStart(dtstart);
+			st.setTimezoneOffsetFrom(daylightOffset);
+			st.setTimezoneOffsetTo(standardOffset);
+			st.addTimezoneName(daylight.getStandardName());
+			timezone.addStandardTime(st);
+		}
 
 		return timezone;
+	}
+
+	public static StandardTime convert(Timezone tz) {
+		StandardTime standard = new StandardTime();
+		UtcOffset offset = tz.getValue();
+		standard.setTimezoneOffsetFrom(offset.getHour(), offset.getMinute());
+		standard.setTimezoneOffsetTo(offset.getHour(), offset.getMinute());
+		return standard;
 	}
 
 	/**
@@ -99,6 +135,7 @@ public class DataModelConverter {
 	 * @return the DAYLIGHT properties
 	 */
 	public static List<Daylight> convert(VTimezone timezone) {
+		//TODO this doesn't work right!
 		List<DaylightSavingsTime> daylightSavingsTimes = timezone.getDaylightSavingsTime();
 		List<StandardTime> standardTimes = timezone.getStandardTimes();
 		List<Daylight> daylights = new ArrayList<Daylight>();

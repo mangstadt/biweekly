@@ -190,7 +190,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 						if (!ICalDateFormat.isUTC(startStr)) {
 							if (tzid == null) {
-								context.addFloatingDate(property);
+								context.addFloatingDate(property, start, startStr);
 							} else {
 								context.addTimezonedDate(tzid, property, start, startStr);
 							}
@@ -198,7 +198,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 						if (end != null && !ICalDateFormat.isUTC(endStr)) {
 							if (tzid == null) {
-								context.addFloatingDate(property);
+								context.addFloatingDate(property, end, endStr);
 							} else {
 								context.addTimezonedDate(tzid, property, end, endStr);
 							}
@@ -217,7 +217,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 						if (!ICalDateFormat.isUTC(startStr)) {
 							if (tzid == null) {
-								context.addFloatingDate(property);
+								context.addFloatingDate(property, start, startStr);
 							} else {
 								context.addTimezonedDate(tzid, property, start, startStr);
 							}
@@ -247,7 +247,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 					if (hasTime && !ICalDateFormat.isUTC(dateStr)) {
 						if (tzid == null) {
-							context.addFloatingDate(property);
+							context.addFloatingDate(property, date, dateStr);
 						} else {
 							context.addTimezonedDate(tzid, property, date, dateStr);
 						}
@@ -347,7 +347,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 				if (!ICalDateFormat.isUTC(startStr)) {
 					if (tzid == null) {
-						context.addFloatingDate(property);
+						context.addFloatingDate(property, start, startStr);
 					} else {
 						context.addTimezonedDate(tzid, property, start, startStr);
 					}
@@ -355,7 +355,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 				if (end != null && !ICalDateFormat.isUTC(endStr)) {
 					if (tzid == null) {
-						context.addFloatingDate(property);
+						context.addFloatingDate(property, end, endStr);
 					} else {
 						context.addTimezonedDate(tzid, property, end, endStr);
 					}
@@ -381,7 +381,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 			if (hasTime && !ICalDateFormat.isUTC(s)) {
 				if (tzid == null) {
-					context.addFloatingDate(property);
+					context.addFloatingDate(property, date, s);
 				} else {
 					context.addTimezonedDate(tzid, property, date, s);
 				}

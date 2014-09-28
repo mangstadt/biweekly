@@ -79,7 +79,7 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 			if (!ICalDateFormat.isUTC(value)) {
 				String tzid = parameters.getTimezoneId();
 				if (tzid == null) {
-					context.addFloatingDate(property);
+					context.addFloatingDate(property, date, value);
 				} else {
 					context.addTimezonedDate(tzid, property, date, value);
 				}
@@ -136,7 +136,7 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 				if (!ICalDateFormat.isUTC(value)) {
 					String tzid = parameters.getTimezoneId();
 					if (tzid == null) {
-						context.addFloatingDate(property);
+						context.addFloatingDate(property, date, value);
 					} else {
 						context.addTimezonedDate(tzid, property, date, value);
 					}
@@ -177,7 +177,7 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 			if (!ICalDateFormat.isUTC(valueStr)) {
 				String tzid = parameters.getTimezoneId();
 				if (tzid == null) {
-					context.addFloatingDate(property);
+					context.addFloatingDate(property, date, valueStr);
 				} else {
 					context.addTimezonedDate(tzid, property, date, valueStr);
 				}

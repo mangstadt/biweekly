@@ -15,6 +15,7 @@ import biweekly.property.TimezoneOffsetFrom;
 import biweekly.property.TimezoneOffsetTo;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Recurrence;
+import biweekly.util.UtcOffset;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -126,7 +127,18 @@ public class Observance extends ICalComponent {
 	 * p.105-6</a>
 	 */
 	public TimezoneOffsetTo setTimezoneOffsetTo(Integer hour, Integer minute) {
-		TimezoneOffsetTo prop = new TimezoneOffsetTo(hour, minute);
+		return setTimezoneOffsetTo(new UtcOffset(hour, minute));
+	}
+
+	/**
+	 * Sets the UTC offset that the timezone observance transitions to.
+	 * @param offset the offset
+	 * @return the property that was created
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-105">RFC 5545
+	 * p.105-6</a>
+	 */
+	public TimezoneOffsetTo setTimezoneOffsetTo(UtcOffset offset) {
+		TimezoneOffsetTo prop = new TimezoneOffsetTo(offset);
 		setTimezoneOffsetTo(prop);
 		return prop;
 	}
@@ -160,7 +172,18 @@ public class Observance extends ICalComponent {
 	 * p.104-5</a>
 	 */
 	public TimezoneOffsetFrom setTimezoneOffsetFrom(Integer hour, Integer minute) {
-		TimezoneOffsetFrom prop = new TimezoneOffsetFrom(hour, minute);
+		return setTimezoneOffsetFrom(new UtcOffset(hour, minute));
+	}
+
+	/**
+	 * Sets the UTC offset that the timezone observance transitions from.
+	 * @param offset the offset
+	 * @return the property that was created
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-104">RFC 5545
+	 * p.104-5</a>
+	 */
+	public TimezoneOffsetFrom setTimezoneOffsetFrom(UtcOffset offset) {
+		TimezoneOffsetFrom prop = new TimezoneOffsetFrom(offset);
 		setTimezoneOffsetFrom(prop);
 		return prop;
 	}

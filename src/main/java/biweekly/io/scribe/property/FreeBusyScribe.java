@@ -135,7 +135,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 
 					if (!ICalDateFormat.isUTC(startStr)) {
 						if (tzid == null) {
-							context.addFloatingDate(prop);
+							context.addFloatingDate(prop, start, startStr);
 						} else {
 							context.addTimezonedDate(tzid, prop, start, startStr);
 						}
@@ -143,7 +143,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 
 					if (end != null && !ICalDateFormat.isUTC(endStr)) {
 						if (tzid == null) {
-							context.addFloatingDate(prop);
+							context.addFloatingDate(prop, end, endStr);
 						} else {
 							context.addTimezonedDate(tzid, prop, end, endStr);
 						}
@@ -162,7 +162,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 
 					if (!ICalDateFormat.isUTC(startStr)) {
 						if (tzid == null) {
-							context.addFloatingDate(prop);
+							context.addFloatingDate(prop, start, startStr);
 						} else {
 							context.addTimezonedDate(tzid, prop, start, startStr);
 						}
@@ -252,7 +252,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 
 			if (!ICalDateFormat.isUTC(startStr)) {
 				if (tzid == null) {
-					context.addFloatingDate(freebusy);
+					context.addFloatingDate(freebusy, start, startStr);
 				} else {
 					context.addTimezonedDate(tzid, freebusy, start, startStr);
 				}
@@ -260,7 +260,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 
 			if (end != null && !ICalDateFormat.isUTC(endStr)) {
 				if (tzid == null) {
-					context.addFloatingDate(freebusy);
+					context.addFloatingDate(freebusy, end, endStr);
 				} else {
 					context.addTimezonedDate(tzid, freebusy, end, endStr);
 				}

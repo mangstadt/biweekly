@@ -81,7 +81,7 @@ public class StreamReaderTest {
 				ical.addComponent(timezone);
 
 				TestProperty floating = new TestProperty(date("2014-09-21 10:22:00"));
-				context.addFloatingDate(floating);
+				context.addFloatingDate(floating, floating.date, "20140921T102200");
 				ical.addProperty(floating);
 
 				TestProperty timezoned = new TestProperty(date("2014-10-01 13:07:00"));

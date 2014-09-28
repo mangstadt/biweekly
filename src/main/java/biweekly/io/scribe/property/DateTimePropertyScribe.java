@@ -117,7 +117,7 @@ public abstract class DateTimePropertyScribe<T extends DateTimeProperty> extends
 		if (!utc) {
 			//TODO handle UTC offsets within the date strings (not part of iCal standard)
 			if (tzid == null) {
-				context.addFloatingDate(property);
+				context.addFloatingDate(property, date, value);
 			} else if (hasTime) {
 				context.addTimezonedDate(tzid, property, date, value);
 			}
