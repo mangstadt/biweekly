@@ -145,6 +145,10 @@ public class ICalTimeZone extends TimeZone {
 		return (observance == null) ? false : (observance instanceof DaylightSavingsTime);
 	}
 
+	/**
+	 * @throws UnsupportedOperationException not supported by this
+	 * implementation
+	 */
 	@Override
 	public void setRawOffset(int offset) {
 		throw new UnsupportedOperationException("Unable to set the raw offset.  Modify the VTIMEZONE component instead.");
