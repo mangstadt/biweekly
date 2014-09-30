@@ -20,7 +20,6 @@ import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
-import biweekly.component.VAlarm;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamReader;
@@ -353,50 +352,20 @@ public class ICalReader extends StreamReader {
 
 			//add the properties to the iCalendar object
 			ICalComponent parentComponent = componentStack.get(componentStack.size() - 1);
+			boolean isVCal = reader.getVersion() == null || reader.getVersion() == ICalVersion.V1_0;
 			for (ICalProperty property : propertiesToAdd) {
 				for (Warning warning : context.getWarnings()) {
 					warnings.add(reader.getLineNum(), propertyName, warning);
 				}
 
-				if (reader.getVersion() == null || reader.getVersion() == ICalVersion.V1_0) {
-					//ATTENDEE with "organizer" role => ORGANIZER property
-					if (property instanceof Attendee) {
-						Attendee attendee = (Attendee) property;
-						if (attendee.getRole() == Role.ORGANIZER) {
-							property = convert(attendee);
-						}
-					}
-
-					//AALARM property => VALARM component
-					if (property instanceof AudioAlarm) {
-						AudioAlarm aalarm = (AudioAlarm) property;
-						VAlarm valarm = convert(aalarm);
-						parentComponent.addComponent(valarm);
+				if (isVCal) {
+					Object obj = convertVCalProperty(property);
+					if (obj instanceof ICalComponent) {
+						parentComponent.addComponent((ICalComponent) obj);
 						continue;
 					}
-
-					//DALARM property => VALARM component
-					if (property instanceof DisplayAlarm) {
-						DisplayAlarm dalarm = (DisplayAlarm) property;
-						VAlarm valarm = convert(dalarm);
-						parentComponent.addComponent(valarm);
-						continue;
-					}
-
-					//MALARM property => VALARM component
-					if (property instanceof EmailAlarm) {
-						EmailAlarm malarm = (EmailAlarm) property;
-						VAlarm valarm = convert(malarm);
-						parentComponent.addComponent(valarm);
-						continue;
-					}
-
-					//PALARM property => VALARM component
-					if (property instanceof ProcedureAlarm) {
-						ProcedureAlarm palarm = (ProcedureAlarm) property;
-						VAlarm valarm = convert(palarm);
-						parentComponent.addComponent(valarm);
-						continue;
+					if (obj instanceof ICalProperty) {
+						property = (ICalProperty) obj;
 					}
 				}
 
@@ -474,6 +443,46 @@ public class ICalReader extends StreamReader {
 
 		QuotedPrintableCodec codec = new QuotedPrintableCodec(charset.name());
 		return codec.decode(value);
+	}
+
+	/**
+	 * Converts a vCal property to the iCalendar data model.
+	 * @param property the vCal property
+	 * @return the iCalendar property or component (or the given property is no
+	 * conversion is necessary)
+	 */
+	private Object convertVCalProperty(ICalProperty property) {
+		//ATTENDEE with "organizer" role => ORGANIZER property
+		if (property instanceof Attendee) {
+			Attendee attendee = (Attendee) property;
+			return (attendee.getRole() == Role.ORGANIZER) ? convert(attendee) : property;
+		}
+
+		//AALARM property => VALARM component
+		if (property instanceof AudioAlarm) {
+			AudioAlarm aalarm = (AudioAlarm) property;
+			return convert(aalarm);
+		}
+
+		//DALARM property => VALARM component
+		if (property instanceof DisplayAlarm) {
+			DisplayAlarm dalarm = (DisplayAlarm) property;
+			return convert(dalarm);
+		}
+
+		//MALARM property => VALARM component
+		if (property instanceof EmailAlarm) {
+			EmailAlarm malarm = (EmailAlarm) property;
+			return convert(malarm);
+		}
+
+		//PALARM property => VALARM component
+		if (property instanceof ProcedureAlarm) {
+			ProcedureAlarm palarm = (ProcedureAlarm) property;
+			return convert(palarm);
+		}
+
+		return property;
 	}
 
 	/**
