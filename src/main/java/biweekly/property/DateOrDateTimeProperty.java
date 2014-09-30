@@ -41,14 +41,13 @@ public class DateOrDateTimeProperty extends ICalProperty {
 	protected Date value;
 	protected DateTimeComponents rawComponents;
 	protected boolean hasTime;
-	protected boolean floating;
 
 	/**
 	 * Creates a new property.
 	 * @param rawComponents the raw components of the date-time value
 	 */
-	public DateOrDateTimeProperty(DateTimeComponents rawComponents) {
-		setRawComponents(rawComponents);
+	public DateOrDateTimeProperty(DateTimeComponents rawComponents, boolean hasTime) {
+		setRawComponents(rawComponents, hasTime);
 	}
 
 	/**
@@ -91,9 +90,12 @@ public class DateOrDateTimeProperty extends ICalProperty {
 	/**
 	 * Sets the raw components of the date-time value.
 	 * @param rawComponents the raw components
+	 * @param hasTime true if the value has a time component, false if it is
+	 * strictly a date
 	 */
-	public void setRawComponents(DateTimeComponents rawComponents) {
+	public void setRawComponents(DateTimeComponents rawComponents, boolean hasTime) {
 		this.rawComponents = rawComponents;
+		this.hasTime = hasTime;
 	}
 
 	/**

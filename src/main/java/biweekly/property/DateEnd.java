@@ -142,8 +142,8 @@ public class DateEnd extends DateOrDateTimeProperty {
 	/**
 	 * Creates an end date property.
 	 * @param endDate the end date
-	 * @param hasTime true to include the time component of the date, false not
-	 * to
+	 * @param hasTime true if the value has a time component, false if it is
+	 * strictly a date
 	 */
 	public DateEnd(Date endDate, boolean hasTime) {
 		super(endDate, hasTime);
@@ -152,8 +152,10 @@ public class DateEnd extends DateOrDateTimeProperty {
 	/**
 	 * Creates an end date property.
 	 * @param components the raw components of the date-time value
+	 * @param hasTime true if the value has a time component, false if it is
+	 * strictly a date
 	 */
-	public DateEnd(DateTimeComponents components) {
-		super(components);
+	public DateEnd(DateTimeComponents components, boolean hasTime) {
+		super(components, hasTime);
 	}
 }

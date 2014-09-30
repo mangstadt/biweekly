@@ -143,8 +143,8 @@ public class DateStart extends DateOrDateTimeProperty {
 	/**
 	 * Creates a start date property.
 	 * @param startDate the start date
-	 * @param hasTime true to include the time component of the date, false not
-	 * to
+	 * @@param hasTime true if the value has a time component, false if it is
+	 * strictly a date
 	 */
 	public DateStart(Date startDate, boolean hasTime) {
 		super(startDate, hasTime);
@@ -153,8 +153,10 @@ public class DateStart extends DateOrDateTimeProperty {
 	/**
 	 * Creates a start date property.
 	 * @param components the raw components of the date-time value
+	 * @param hasTime true if the value has a time component, false if it is
+	 * strictly a date
 	 */
-	public DateStart(DateTimeComponents components) {
-		super(components);
+	public DateStart(DateTimeComponents components, boolean hasTime) {
+		super(components, hasTime);
 	}
 }

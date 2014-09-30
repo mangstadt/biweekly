@@ -227,21 +227,27 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents> 
 	 */
 	@Override
 	public String toString() {
-		return toString(false);
+		return toString(true, false);
 	}
 
 	/**
 	 * Converts the date-time components to a string.
+	 * @param includedTime true to include the time portion, false not to
 	 * @param extended true to use extended format, false to use basic
 	 * @return the date string
 	 */
-	public String toString(boolean extended) {
+	public String toString(boolean includeTime, boolean extended) {
 		NumberFormat nf = new DecimalFormat("00");
 		String dash = extended ? "-" : "";
 		String colon = extended ? ":" : "";
 		String z = utc ? "Z" : "";
 
-		return year + dash + nf.format(month) + dash + nf.format(date) + "T" + nf.format(hour) + colon + nf.format(minute) + colon + nf.format(second) + z;
+		StringBuilder sb = new StringBuilder();
+		sb.append(year).append(dash).append(nf.format(month)).append(dash).append(nf.format(date));
+		if (includeTime) {
+			sb.append("T").append(nf.format(hour)).append(colon).append(nf.format(minute)).append(colon).append(nf.format(second)).append(z);
+		}
+		return sb.toString();
 	}
 
 	/**

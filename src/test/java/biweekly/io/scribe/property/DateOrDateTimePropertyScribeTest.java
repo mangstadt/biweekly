@@ -70,8 +70,16 @@ public class DateOrDateTimePropertyScribeTest {
 
 	private final DateOrDateTimePropertyImpl withDateTime = new DateOrDateTimePropertyImpl(datetime, true);
 	private final DateOrDateTimePropertyImpl withDate = new DateOrDateTimePropertyImpl(datetime, false);
-	private final DateOrDateTimePropertyImpl withComponents = new DateOrDateTimePropertyImpl(components);
-	private final DateOrDateTimePropertyImpl empty = new DateOrDateTimePropertyImpl(null);
+	private final DateOrDateTimePropertyImpl withComponents = new DateOrDateTimePropertyImpl(components, true);
+	private final DateOrDateTimePropertyImpl withDateAndComponents = new DateOrDateTimePropertyImpl(datetime, false);
+	{
+		withDateAndComponents.setRawComponents(components, false);
+	}
+	private final DateOrDateTimePropertyImpl withDateTimeAndComponents = new DateOrDateTimePropertyImpl(datetime, true);
+	{
+		withDateTimeAndComponents.setRawComponents(components, true);
+	}
+	private final DateOrDateTimePropertyImpl empty = new DateOrDateTimePropertyImpl((Date) null, false);
 
 	private final TimezoneInfo floatingGlobal = new TimezoneInfo();
 	{
@@ -90,7 +98,9 @@ public class DateOrDateTimePropertyScribeTest {
 		sensei.assertDataType(withDate).run(ICalDataType.DATE);
 		sensei.assertDataType(withDateTime).run(ICalDataType.DATE_TIME);
 		sensei.assertDataType(withComponents).run(ICalDataType.DATE_TIME);
-		sensei.assertDataType(empty).run(ICalDataType.DATE_TIME);
+		sensei.assertDataType(withDateAndComponents).run(ICalDataType.DATE);
+		sensei.assertDataType(withDateTimeAndComponents).run(ICalDataType.DATE_TIME);
+		sensei.assertDataType(empty).run(ICalDataType.DATE);
 	}
 
 	@Test
@@ -107,6 +117,17 @@ public class DateOrDateTimePropertyScribeTest {
 		//@formatter:on
 
 		assertComponents(sensei.assertWriteText(withComponents), componentsStr);
+
+		assertDate(sensei.assertWriteText(withDateAndComponents), dateStr);
+
+		//@formatter:off
+		assertDateTime(sensei.assertWriteText(withDateTimeAndComponents),
+			"20130611T124302Z",
+			"20130611T134302",
+			"20130611T114302",
+			"20130611T104302"
+		);
+		//@formatter:on
 
 		sensei.assertWriteText(empty).run("");
 	}
@@ -134,7 +155,18 @@ public class DateOrDateTimePropertyScribeTest {
 
 		assertComponents(sensei.assertWriteXml(withComponents), "<date-time>" + componentsStrExt + "</date-time>");
 
-		sensei.assertWriteXml(empty).run("<date-time/>");
+		assertDate(sensei.assertWriteXml(withDateAndComponents), "<date>" + dateStrExt + "</date>");
+
+		//@formatter:off
+		assertDateTime(sensei.assertWriteXml(withDateTimeAndComponents),
+			"<date-time>2013-06-11T12:43:02Z</date-time>",
+			"<date-time>2013-06-11T13:43:02</date-time>",
+			"<date-time>2013-06-11T11:43:02</date-time>",
+			"<date-time>2013-06-11T10:43:02</date-time>"
+		);
+		//@formatter:on
+
+		sensei.assertWriteXml(empty).run("<date/>");
 	}
 
 	@Test
@@ -159,6 +191,17 @@ public class DateOrDateTimePropertyScribeTest {
 		//@formatter:on
 
 		assertComponents(sensei.assertWriteJson(withComponents), componentsStrExt);
+
+		assertDate(sensei.assertWriteJson(withDateAndComponents), dateStrExt);
+
+		//@formatter:off
+		assertDateTime(sensei.assertWriteJson(withDateTimeAndComponents),
+			"2013-06-11T12:43:02Z",
+			"2013-06-11T13:43:02",
+			"2013-06-11T11:43:02",
+			"2013-06-11T10:43:02"
+		);
+		//@formatter:on
 
 		sensei.assertWriteJson(empty).run("");
 	}
@@ -195,7 +238,7 @@ public class DateOrDateTimePropertyScribeTest {
 
 		//property floating time
 		tzinfo = new TimezoneInfo();
-		tzinfo.setFloating(withDateTime, true);
+		tzinfo.setFloating(test.property, true);
 		test.tz(tzinfo).run(floating);
 
 		//global timezone
@@ -204,14 +247,14 @@ public class DateOrDateTimePropertyScribeTest {
 		//property-assigned timezone
 		tzinfo = new TimezoneInfo();
 		tzinfo.assign(vtimezone, tz1);
-		tzinfo.setTimezone(withDateTime, tz1);
+		tzinfo.setTimezone(test.property, tz1);
 		test.tz(tzinfo).run(minusOne);
 
 		//property-assigned floating should override global timezone
 		tzinfo = new TimezoneInfo();
 		tzinfo.assign(vtimezone, tz1);
 		tzinfo.setDefaultTimezone(tz1);
-		tzinfo.setFloating(withDateTime, true);
+		tzinfo.setFloating(test.property, true);
 		test.tz(tzinfo).run(floating);
 
 		//property-assigned timezone should override global timezone
@@ -219,14 +262,14 @@ public class DateOrDateTimePropertyScribeTest {
 		tzinfo.assign(vtimezone, tz1);
 		tzinfo.assign(vtimezone, tz2);
 		tzinfo.setDefaultTimezone(tz1);
-		tzinfo.setTimezone(withDateTime, tz2);
+		tzinfo.setTimezone(test.property, tz2);
 		test.tz(tzinfo).run(minusTwo);
 
 		//property-assigned timezone should override global floating
 		tzinfo = new TimezoneInfo();
 		tzinfo.assign(vtimezone, tz1);
 		tzinfo.setGlobalFloatingTime(true);
-		tzinfo.setTimezone(withDateTime, tz1);
+		tzinfo.setTimezone(test.property, tz1);
 		test.tz(tzinfo).run(minusOne);
 	}
 
@@ -250,8 +293,8 @@ public class DateOrDateTimePropertyScribeTest {
 	}
 
 	private class DateOrDateTimePropertyImpl extends DateOrDateTimeProperty {
-		public DateOrDateTimePropertyImpl(DateTimeComponents component) {
-			super(component);
+		public DateOrDateTimePropertyImpl(DateTimeComponents component, boolean hasTime) {
+			super(component, hasTime);
 		}
 
 		public DateOrDateTimePropertyImpl(Date value, boolean hasTime) {

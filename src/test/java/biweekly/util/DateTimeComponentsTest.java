@@ -59,14 +59,18 @@ public class DateTimeComponentsTest {
 
 	@Test
 	public void toString_() {
-		assertToString("20130722T150630", "2013-07-22T15:06:30", new DateTimeComponents(2013, 7, 22, 15, 6, 30, false));
-		assertToString("20130722T150630Z", "2013-07-22T15:06:30Z", new DateTimeComponents(2013, 7, 22, 15, 6, 30, true));
-		assertToString("20130722T000000", "2013-07-22T00:00:00", new DateTimeComponents(2013, 7, 22, 0, 0, 0, false));
+		assertToString("20130722T150630", "2013-07-22T15:06:30", new DateTimeComponents(2013, 7, 22, 15, 6, 30, false), true);
+		assertToString("20130722T150630Z", "2013-07-22T15:06:30Z", new DateTimeComponents(2013, 7, 22, 15, 6, 30, true), true);
+		assertToString("20130722T000000", "2013-07-22T00:00:00", new DateTimeComponents(2013, 7, 22, 0, 0, 0, false), true);
+
+		assertToString("20130722", "2013-07-22", new DateTimeComponents(2013, 7, 22, 15, 6, 30, false), false);
+		assertToString("20130722", "2013-07-22", new DateTimeComponents(2013, 7, 22, 15, 6, 30, true), false);
+		assertToString("20130722", "2013-07-22", new DateTimeComponents(2013, 7, 22, 0, 0, 0, false), false);
 	}
 
-	private void assertToString(String expectedBasic, String expectedExtended, DateTimeComponents components) {
-		assertEquals(expectedBasic, components.toString(false));
-		assertEquals(expectedExtended, components.toString(true));
+	private void assertToString(String expectedBasic, String expectedExtended, DateTimeComponents components, boolean includeTime) {
+		assertEquals(expectedBasic, components.toString(includeTime, false));
+		assertEquals(expectedExtended, components.toString(includeTime, true));
 	}
 
 	@Test

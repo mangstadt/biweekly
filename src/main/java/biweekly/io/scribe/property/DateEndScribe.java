@@ -2,8 +2,6 @@ package biweekly.io.scribe.property;
 
 import java.util.Date;
 
-import biweekly.component.Observance;
-import biweekly.io.WriteContext;
 import biweekly.property.DateEnd;
 
 /*
@@ -38,16 +36,6 @@ import biweekly.property.DateEnd;
 public class DateEndScribe extends DateOrDateTimePropertyScribe<DateEnd> {
 	public DateEndScribe() {
 		super(DateEnd.class, "DTEND");
-	}
-
-	@Override
-	protected String _writeText(DateEnd property, WriteContext context) {
-		Date date = property.getValue();
-		if (date != null && context.getParent() instanceof Observance) {
-			return date(date).time(property.hasTime()).floating(true).write();
-		}
-
-		return super._writeText(property, context);
 	}
 
 	@Override

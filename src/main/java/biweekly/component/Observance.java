@@ -80,7 +80,7 @@ public class Observance extends ICalComponent {
 	 * p.97-8</a>
 	 */
 	public DateStart setDateStart(DateTimeComponents components) {
-		DateStart prop = (components == null) ? null : new DateStart(components);
+		DateStart prop = (components == null) ? null : new DateStart(components, true);
 		setDateStart(prop);
 		return prop;
 	}

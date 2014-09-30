@@ -2,9 +2,14 @@ package biweekly.io.scribe.property;
 
 import java.util.Date;
 
+import biweekly.ICalDataType;
 import biweekly.component.Observance;
 import biweekly.io.WriteContext;
+import biweekly.io.json.JCalValue;
+import biweekly.io.xml.XCalElement;
+import biweekly.parameter.ICalParameters;
 import biweekly.property.DateStart;
+import biweekly.util.DateTimeComponents;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -41,13 +46,57 @@ public class DateStartScribe extends DateOrDateTimePropertyScribe<DateStart> {
 	}
 
 	@Override
+	protected ICalParameters _prepareParameters(DateStart property, WriteContext context) {
+		if (isInObservance(context)) {
+			return property.getParameters();
+		}
+		return super._prepareParameters(property, context);
+	}
+
+	@Override
 	protected String _writeText(DateStart property, WriteContext context) {
-		Date date = property.getValue();
-		if (date != null && context.getParent() instanceof Observance) {
-			return date(date).time(property.hasTime()).floating(true).write();
+		if (isInObservance(context)) {
+			return write(property, false);
+		}
+		return super._writeText(property, context);
+	}
+
+	@Override
+	protected void _writeXml(DateStart property, XCalElement element, WriteContext context) {
+		if (isInObservance(context)) {
+			String dateStr = write(property, true);
+			ICalDataType dataType = dataType(property, null);
+			element.append(dataType, dateStr);
+			return;
 		}
 
-		return super._writeText(property, context);
+		super._writeXml(property, element, context);
+	}
+
+	@Override
+	protected JCalValue _writeJson(DateStart property, WriteContext context) {
+		if (isInObservance(context)) {
+			return JCalValue.single(write(property, true));
+		}
+		return super._writeJson(property, context);
+	}
+
+	private String write(DateStart property, boolean extended) {
+		Date value = property.getValue();
+		if (value != null) {
+			return date(value).time(true).floating(true).extended(extended).write();
+		}
+
+		DateTimeComponents components = property.getRawComponents();
+		if (components != null) {
+			return components.toString(true, extended);
+		}
+
+		return "";
+	}
+
+	private boolean isInObservance(WriteContext context) {
+		return context.getParent() instanceof Observance;
 	}
 
 	@Override

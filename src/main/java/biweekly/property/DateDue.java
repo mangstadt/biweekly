@@ -142,8 +142,8 @@ public class DateDue extends DateOrDateTimeProperty {
 	/**
 	 * Creates a due date property.
 	 * @param dueDate the due date
-	 * @param hasTime true to include the time component of the date, false not
-	 * to
+	 * @param hasTime true if the value has a time component, false if it is
+	 * strictly a date
 	 */
 	public DateDue(Date dueDate, boolean hasTime) {
 		super(dueDate, hasTime);
@@ -152,8 +152,10 @@ public class DateDue extends DateOrDateTimeProperty {
 	/**
 	 * Creates an due date property.
 	 * @param components the raw components of the date-time value
+	 * @param hasTime true if the value has a time component, false if it is
+	 * strictly a date
 	 */
-	public DateDue(DateTimeComponents components) {
-		super(components);
+	public DateDue(DateTimeComponents components, boolean hasTime) {
+		super(components, hasTime);
 	}
 }

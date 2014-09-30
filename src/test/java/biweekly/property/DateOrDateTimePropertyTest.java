@@ -39,13 +39,13 @@ import biweekly.util.DateTimeComponents;
 public class DateOrDateTimePropertyTest {
 	@Test
 	public void validate() {
-		DateOrDateTimeProperty property = new DateOrDateTimeProperty(null);
+		DateOrDateTimeProperty property = new DateOrDateTimeProperty((Date) null, false);
 		assertValidate(property).run(26);
 
-		property = new DateOrDateTimeProperty(new DateTimeComponents(2010, 1, 1, 1, 1, 1, true));
+		property = new DateOrDateTimeProperty(new DateTimeComponents(2010, 1, 1, 1, 1, 1, true), true);
 		assertValidate(property).run();
 
-		property = new DateOrDateTimeProperty(null, false);
+		property = new DateOrDateTimeProperty((Date) null, false);
 		assertValidate(property).run(26);
 
 		property = new DateOrDateTimeProperty(new Date(), false);
