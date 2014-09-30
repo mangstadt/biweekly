@@ -91,12 +91,7 @@ public class DataModelConverter {
 			}
 
 			UtcOffset daylightOffset = daylight.getOffset();
-			UtcOffset standardOffset;
-			if (tzOffset == null) {
-				standardOffset = new UtcOffset(daylightOffset.getHour() - 1, daylightOffset.getMinute());
-			} else {
-				standardOffset = tzOffset;
-			}
+			UtcOffset standardOffset = new UtcOffset(daylightOffset.getHour() - 1, daylightOffset.getMinute());
 
 			DaylightSavingsTime dst = new DaylightSavingsTime();
 			DateStart dtstart = new DateStart(daylight.getStart());
