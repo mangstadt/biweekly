@@ -100,7 +100,7 @@ public class DataModelConverter {
 
 			DaylightSavingsTime dst = new DaylightSavingsTime();
 			DateStart dtstart = new DateStart(daylight.getStart());
-			dtstart.setRawComponents(new DateTimeComponents(daylight.getStart()));
+			dtstart.setRawComponents(new DateTimeComponents(daylight.getStart()), true);
 			dst.setDateStart(dtstart);
 			dst.setTimezoneOffsetFrom(standardOffset);
 			dst.setTimezoneOffsetTo(daylightOffset);
@@ -109,7 +109,7 @@ public class DataModelConverter {
 
 			StandardTime st = new StandardTime();
 			dtstart = new DateStart(daylight.getEnd());
-			dtstart.setRawComponents(new DateTimeComponents(daylight.getEnd()));
+			dtstart.setRawComponents(new DateTimeComponents(daylight.getEnd()), true);
 			st.setDateStart(dtstart);
 			st.setTimezoneOffsetFrom(daylightOffset);
 			st.setTimezoneOffsetTo(standardOffset);
