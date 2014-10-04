@@ -112,7 +112,7 @@ public class DataModelConverter {
 			timezone.addStandardTime(st);
 		}
 
-		return timezone;
+		return timezone.getComponents().isEmpty() ? null : timezone;
 	}
 
 	public static StandardTime convert(Timezone tz) {

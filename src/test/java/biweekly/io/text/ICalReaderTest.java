@@ -14,10 +14,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.Writer;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
 
@@ -1092,15 +1089,6 @@ public class ICalReaderTest {
 		TimezoneInfo tzinfo = reader.getTimezoneInfo();
 		assertEquals(1, tzinfo.getComponents().size());
 		VTimezone timezone = tzinfo.getComponents().iterator().next();
-
-		ICalTimeZone tz = new ICalTimeZone(timezone);
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		df.setTimeZone(tz);
-		Date d = utc("2014-09-28 17:00:00");
-		System.out.println(tz.inDaylightTime(d));
-		System.out.println(tz.getOffset(d.getTime()) / 1000 / 60 / 60);
-		System.out.println(df.format(d));
-
 		{
 			assertSize(timezone, 2, 1);
 			assertEquals("TZ", timezone.getTimezoneId().getValue());
@@ -1137,20 +1125,72 @@ public class ICalReaderTest {
 		"BEGIN:VCALENDAR\r\n" +
 			"VERSION:1.0\r\n" +
 			"DAYLIGHT:FALSE\r\n" +
+			"DTSTART:20140928T120000Z\r\n" +
+			"DTSTART:20140308T120000\r\n" +
+			"DTSTART:20140928T120000\r\n" +
+			"DTSTART:20141103T120000\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
 		ICalendar icalendar = reader.readNext();
-		assertSize(icalendar, 0, 0);
+		assertSize(icalendar, 0, 4);
 		assertEquals(ICalVersion.V1_0, icalendar.getVersion());
+
+		Iterator<DateStart> dtstart = icalendar.getProperties(DateStart.class).iterator();
+		assertEquals(utc("2014-09-28 12:00:00"), dtstart.next().getValue());
+		assertEquals(date("2014-03-08 12:00:00"), dtstart.next().getValue());
+		assertEquals(date("2014-09-28 12:00:00"), dtstart.next().getValue());
+		assertEquals(date("2014-11-03 12:00:00"), dtstart.next().getValue());
+
+		TimezoneInfo tzinfo = reader.getTimezoneInfo();
+		assertEquals(0, tzinfo.getComponents().size());
+
+		assertWarnings(0, reader);
+		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void vcal_TZ_property() throws Throwable {
+		//@formatter:off
+		String ical =
+		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:1.0\r\n" +
+			"TZ:-0500\r\n" +
+			"DTSTART:20140928T120000Z\r\n" +
+			"DTSTART:20140308T120000\r\n" +
+			"DTSTART:20140928T120000\r\n" +
+			"DTSTART:20141103T120000\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		ICalReader reader = new ICalReader(ical);
+		ICalendar icalendar = reader.readNext();
+		assertSize(icalendar, 0, 4);
+		assertEquals(ICalVersion.V1_0, icalendar.getVersion());
+
+		Iterator<DateStart> dtstart = icalendar.getProperties(DateStart.class).iterator();
+		assertEquals(utc("2014-09-28 12:00:00"), dtstart.next().getValue());
+		assertEquals(utc("2014-03-08 17:00:00"), dtstart.next().getValue());
+		assertEquals(utc("2014-09-28 17:00:00"), dtstart.next().getValue());
+		assertEquals(utc("2014-11-03 17:00:00"), dtstart.next().getValue());
 
 		TimezoneInfo tzinfo = reader.getTimezoneInfo();
 		assertEquals(1, tzinfo.getComponents().size());
 		VTimezone timezone = tzinfo.getComponents().iterator().next();
 		{
-			assertSize(timezone, 0, 1);
+			assertSize(timezone, 1, 1);
 			assertEquals("TZ", timezone.getTimezoneId().getValue());
+
+			{
+				StandardTime standard = timezone.getStandardTimes().get(0);
+				assertSize(standard, 0, 2);
+
+				assertEquals(null, standard.getDateStart());
+				assertEquals(new UtcOffset(-5, 0), standard.getTimezoneOffsetFrom().getValue());
+				assertEquals(new UtcOffset(-5, 0), standard.getTimezoneOffsetTo().getValue());
+				assertEquals(0, standard.getTimezoneNames().size());
+			}
 		}
 
 		assertWarnings(0, reader);
