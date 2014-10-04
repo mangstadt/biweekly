@@ -7,11 +7,9 @@ import java.util.List;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
-import biweekly.component.VTimezone;
 import biweekly.property.FreeBusy;
 import biweekly.property.RecurrenceId;
 import biweekly.property.RelatedTo;
-import biweekly.property.TimezoneId;
 import biweekly.property.Trigger;
 import biweekly.util.ListMultimap;
 
@@ -497,12 +495,11 @@ public class ICalParameters extends ListMultimap<String, String> {
 	}
 
 	/**
-	 * Gets the timezone identifier. This either (a) references the
-	 * {@link TimezoneId} property of a {@link VTimezone} component, or (b)
-	 * specifies a globally-defined timezone (e.g. "America/New_York"). For a
-	 * list of globally-defined timezones, see the <a
-	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
-	 * @return the timezone identifier or null if not set
+	 * Gets the TZID property, which defines the timezone that this property is
+	 * formatted in. It is either the ID of the VTIMEZONE component which
+	 * contains the timezone definition, or globally unique ID (if it starts
+	 * with a "/" character).
+	 * @return the timezone ID or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
 	 * p.27-8</a>
 	 */
@@ -511,11 +508,10 @@ public class ICalParameters extends ListMultimap<String, String> {
 	}
 
 	/**
-	 * Sets the timezone identifier. This either (a) references the
-	 * {@link TimezoneId} property of a {@link VTimezone} component, or (b)
-	 * specifies a globally-defined timezone (e.g. "America/New_York"). For a
-	 * list of globally-defined timezones, see the <a
-	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
+	 * Sets the TZID property, which defines the timezone that this property is
+	 * formatted in. It is either the ID of the VTIMEZONE component which
+	 * contains the timezone definition, or globally unique ID (if it starts
+	 * with a "/" character).
 	 * @param timezoneId the timezone identifier or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
 	 * p.27-8</a>
