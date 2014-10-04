@@ -84,29 +84,40 @@ public class StreamReaderTest {
 				context.addFloatingDate(floating, floating.date, "20140921T102200");
 				ical.addProperty(floating);
 
+				String tzid = timezone.getTimezoneId().getValue();
 				TestProperty timezoned = new TestProperty(date("2014-10-01 13:07:00"));
-				timezoned.getParameters().setTimezoneId(timezone.getTimezoneId().getValue());
-				context.addTimezonedDate(timezone.getTimezoneId().getValue(), timezoned, timezoned.date, "20141001T130700");
+				timezoned.getParameters().setTimezoneId(tzid);
+				context.addTimezonedDate(tzid, timezoned, timezoned.date, "20141001T130700");
 				ical.addProperty(timezoned);
 
+				tzid = timezone.getTimezoneId().getValue();
 				timezoned = new TestProperty(date("2014-08-01 13:07:00"));
-				timezoned.getParameters().setTimezoneId(timezone.getTimezoneId().getValue());
-				context.addTimezonedDate(timezone.getTimezoneId().getValue(), timezoned, timezoned.date, "20140801T130700");
+				timezoned.getParameters().setTimezoneId(tzid);
+				context.addTimezonedDate(tzid, timezoned, timezoned.date, "20140801T130700");
 				ical.addProperty(timezoned);
 
+				tzid = timezone.getTimezoneId().getValue();
 				timezoned = new TestProperty(date("2013-12-01 13:07:00"));
-				timezoned.getParameters().setTimezoneId(timezone.getTimezoneId().getValue());
-				context.addTimezonedDate(timezone.getTimezoneId().getValue(), timezoned, timezoned.date, "20131201T130700");
+				timezoned.getParameters().setTimezoneId(tzid);
+				context.addTimezonedDate(tzid, timezoned, timezoned.date, "20131201T130700");
 				ical.addProperty(timezoned);
 
+				tzid = "/America/New_York";
 				timezoned = new TestProperty(date("2014-07-04 09:00:00"));
-				timezoned.getParameters().setTimezoneId("America/New_York");
-				context.addTimezonedDate("America/New_York", timezoned, timezoned.date, "20140704T090000");
+				timezoned.getParameters().setTimezoneId(tzid);
+				context.addTimezonedDate(tzid, timezoned, timezoned.date, "20140704T090000");
 				ical.addProperty(timezoned);
 
+				tzid = "America/New_York";
+				timezoned = new TestProperty(date("2014-07-04 09:00:00"));
+				timezoned.getParameters().setTimezoneId(tzid);
+				context.addTimezonedDate(tzid, timezoned, timezoned.date, "20140704T090000");
+				ical.addProperty(timezoned);
+
+				tzid = "foobar";
 				timezoned = new TestProperty(date("2014-06-11 14:00:00"));
-				timezoned.getParameters().setTimezoneId("foobar");
-				context.addTimezonedDate("foobar", timezoned, timezoned.date, "20140611T140000");
+				timezoned.getParameters().setTimezoneId(tzid);
+				context.addTimezonedDate(tzid, timezoned, timezoned.date, "20140611T140000");
 				ical.addProperty(timezoned);
 
 				return ical;
@@ -154,6 +165,14 @@ public class StreamReaderTest {
 		assertTrue(tzinfo.getTimeZone(property) instanceof ICalTimeZone);
 		assertNull(property.getParameters().getTimezoneId());
 		assertEquals(utc("2013-12-01 04:07:00"), property.date);
+
+		//property with Olsen TZID
+		property = it.next();
+		assertFalse(tzinfo.isFloating(property));
+		assertNull(tzinfo.getComponent(property));
+		assertEquals(TimeZone.getTimeZone("America/New_York"), tzinfo.getTimeZone(property));
+		assertNull(property.getParameters().getTimezoneId());
+		assertEquals(utc("2014-07-04 13:00:00"), property.date);
 
 		//property with Olsen TZID that doesn't point to a VTIMEZONE component
 		property = it.next();

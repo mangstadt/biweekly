@@ -222,18 +222,29 @@ public abstract class StreamReader implements Closeable {
 		for (Map.Entry<String, List<TimezonedDate>> entry : context.getTimezonedDates()) {
 			//find the VTIMEZONE component with the given TZID
 			String tzid = entry.getKey();
-			TimeZone timezone = tzinfo.getTimeZoneById(tzid);
-			if (timezone == null) {
-				//A VTIMEZONE component couldn't found
-				//so treat the TZID parameter value as an Olsen timezone ID
-				timezone = ICalDateFormat.parseTimeZoneId(tzid);
+			TimeZone timezone;
+			if (tzid.startsWith("/")) {
+				//treat the TZID parameter value as an Olsen timezone ID
+				timezone = ICalDateFormat.parseTimeZoneId(tzid.substring(1));
 				if (timezone == null) {
 					//timezone could not be determined
 					warnings.add(null, null, 38, tzid);
 					continue;
 				}
+			} else {
+				timezone = tzinfo.getTimeZoneById(tzid);
+				if (timezone == null) {
+					//A VTIMEZONE component couldn't found
+					//so treat the TZID parameter value as an Olsen timezone ID
+					timezone = ICalDateFormat.parseTimeZoneId(tzid);
+					if (timezone == null) {
+						//timezone could not be determined
+						warnings.add(null, null, 38, tzid);
+						continue;
+					}
 
-				warnings.add(null, null, 37, tzid);
+					warnings.add(null, null, 37, tzid);
+				}
 			}
 
 			List<TimezonedDate> timezonedDates = entry.getValue();
