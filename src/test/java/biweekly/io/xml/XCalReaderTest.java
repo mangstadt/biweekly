@@ -978,7 +978,7 @@ public class XCalReaderTest {
 
 				assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
 				assertEquals(utc("2006-01-02 17:00:00"), event.getDateStart().getValue());
-				assertNull(event.getDateStart().getTimezoneId());
+				assertNull(event.getDateStart().getParameters().getTimezoneId());
 				assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
 
 				Recurrence rrule = event.getRecurrenceRule().getValue();
@@ -989,7 +989,7 @@ public class XCalReaderTest {
 				assertNull(rdate.getDates());
 				assertEquals(1, rdate.getPeriods().size());
 				assertEquals(new Period(utc("2006-01-02 20:00:00"), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
-				assertNull(rdate.getTimezoneId());
+				assertNull(rdate.getParameters().getTimezoneId());
 
 				assertEquals("Event #2", event.getSummary().getValue());
 				assertEquals("We are having a meeting all this week at 12pm for one hour, with an additional meeting on the first day 2 hours long.\nPlease bring your own lunch for the 12 pm meetings.", event.getDescription().getValue());
@@ -1001,11 +1001,11 @@ public class XCalReaderTest {
 
 				assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
 				assertEquals(utc("2006-01-04 19:00:00"), event.getDateStart().getValue());
-				assertNull(event.getDateStart().getTimezoneId());
+				assertNull(event.getDateStart().getParameters().getTimezoneId());
 				assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
 
 				assertEquals(utc("2006-01-04 17:00:00"), event.getRecurrenceId().getValue());
-				assertNull(event.getRecurrenceId().getTimezoneId());
+				assertNull(event.getRecurrenceId().getParameters().getTimezoneId());
 				assertEquals("Event #2 bis", event.getSummary().getValue());
 				assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
 			}

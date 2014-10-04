@@ -1270,12 +1270,12 @@ public class ICalReaderTest {
 			assertEquals("Meeting will discuss objectives for next project." + NEWLINE + "Will include a presentation and food.", event.getDescription().getValue());
 
 			assertEquals(utc("2013-06-10 17:00:00"), event.getDateEnd().getValue());
-			assertNull(event.getDateEnd().getTimezoneId());
+			assertNull(event.getDateEnd().getParameters().getTimezoneId());
 
 			assertEquals(utc("2013-04-25 15:58:07"), event.getDateTimeStamp().getValue());
 
 			assertEquals(utc("2013-06-10 16:00:00"), event.getDateStart().getValue());
-			assertNull(event.getDateStart().getTimezoneId());
+			assertNull(event.getDateStart().getParameters().getTimezoneId());
 
 			assertEquals(utc("2013-06-08 20:04:10"), event.getLastModified().getValue());
 
@@ -1440,10 +1440,10 @@ public class ICalReaderTest {
 			assertEquals("XYZ Project Review", event.getSummary().getValue());
 
 			assertEquals(utc("1998-03-12 13:30:00"), event.getDateStart().getValue());
-			assertNull(event.getDateStart().getTimezoneId());
+			assertNull(event.getDateStart().getParameters().getTimezoneId());
 
 			assertEquals(utc("1998-03-12 14:30:00"), event.getDateEnd().getValue());
-			assertNull(event.getDateEnd().getTimezoneId());
+			assertNull(event.getDateEnd().getParameters().getTimezoneId());
 
 			assertEquals("1CP Conference Room 4350", event.getLocation().getValue());
 		}

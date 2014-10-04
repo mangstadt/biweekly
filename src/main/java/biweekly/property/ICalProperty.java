@@ -8,7 +8,6 @@ import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
-import biweekly.component.VTimezone;
 import biweekly.parameter.ICalParameters;
 
 /*
@@ -177,20 +176,6 @@ public abstract class ICalProperty {
 	 */
 	void setLanguage(String language) {
 		parameters.setLanguage(language);
-	}
-
-	/**
-	 * Gets the timezone identifier. This either (a) references the
-	 * {@link TimezoneId} property of a {@link VTimezone} component, or (b)
-	 * specifies a globally-defined timezone (e.g. "America/New_York"). For a
-	 * list of globally-defined timezones, see the <a
-	 * href="http://www.twinsun.com/tz/tz-link.htm">TZ database</a>.
-	 * @return the timezone identifier or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
-	 * p.27-8</a>
-	 */
-	public String getTimezoneId() {
-		return parameters.getTimezoneId();
 	}
 
 	/**
