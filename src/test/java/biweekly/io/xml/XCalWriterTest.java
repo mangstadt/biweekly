@@ -731,7 +731,8 @@ public class XCalWriterTest {
 
 	private void assertOutput(String expected) throws SAXException, IOException {
 		String actual = sw.toString();
-		assertXMLEqual(actual, expected, actual);
+		String prettyPrinted = XmlUtils.toString(XmlUtils.toDocument(actual), true);
+		assertXMLEqual(prettyPrinted, expected, actual);
 	}
 
 	private void assertExample(ICalendar ical, String exampleFileName, TimezoneInfo tzinfo) throws SAXException, IOException {

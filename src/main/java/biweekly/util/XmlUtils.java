@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -148,6 +149,21 @@ public class XmlUtils {
 	 */
 	public static String toString(Node node) {
 		return toString(node, new HashMap<String, String>());
+	}
+
+	/**
+	 * Converts an XML node to a string.
+	 * @param node the XML node
+	 * @param prettyPrint true to pretty print, false not to
+	 * @return the string
+	 */
+	public static String toString(Node node, boolean prettyPrint) {
+		Map<String, String> properties = new HashMap<String, String>();
+		if (prettyPrint) {
+			properties.put(OutputKeys.INDENT, "yes");
+			properties.put("{http://xml.apache.org/xslt}indent-amount", "2");
+		}
+		return toString(node, properties);
 	}
 
 	/**
