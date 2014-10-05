@@ -1,9 +1,12 @@
 package biweekly.io.scribe.property;
 
+import java.util.EnumSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
@@ -90,5 +93,10 @@ public class OrganizerScribe extends ICalPropertyScribe<Organizer> {
 		}
 
 		return "";
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

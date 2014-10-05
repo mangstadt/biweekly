@@ -1,8 +1,12 @@
 package biweekly.io.scribe.component;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
+import biweekly.ICalVersion;
 import biweekly.component.ICalComponent;
 import biweekly.property.ICalProperty;
 
@@ -37,6 +41,8 @@ import biweekly.property.ICalProperty;
  * @author Michael Angstadt
  */
 public abstract class ICalComponentScribe<T extends ICalComponent> {
+	private static final Set<ICalVersion> allVersions = Collections.unmodifiableSet(EnumSet.allOf(ICalVersion.class));
+
 	protected final Class<T> clazz;
 	protected final String componentName;
 
@@ -48,6 +54,15 @@ public abstract class ICalComponentScribe<T extends ICalComponent> {
 	public ICalComponentScribe(Class<T> clazz, String componentName) {
 		this.clazz = clazz;
 		this.componentName = componentName;
+	}
+
+	/**
+	 * Gets the iCalendar versions that support this component. This method
+	 * returns all iCalendar versions unless overridden by the child scribe.
+	 * @return the iCalendar versions
+	 */
+	public Set<ICalVersion> getSupportedVersions() {
+		return allVersions;
 	}
 
 	/**

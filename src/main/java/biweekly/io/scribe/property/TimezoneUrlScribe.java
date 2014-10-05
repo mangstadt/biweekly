@@ -1,5 +1,8 @@
 package biweekly.io.scribe.property;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.property.TimezoneUrl;
@@ -41,5 +44,10 @@ public class TimezoneUrlScribe extends TextPropertyScribe<TimezoneUrl> {
 	@Override
 	protected TimezoneUrl newInstance(String value, ICalVersion version) {
 		return new TimezoneUrl(value);
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

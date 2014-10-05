@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
+import biweekly.ICalVersion;
 import biweekly.component.VFreeBusy;
 import biweekly.property.FreeBusy;
 import biweekly.property.ICalProperty;
@@ -105,5 +108,10 @@ public class VFreeBusyScribe extends ICalComponentScribe<VFreeBusy> {
 	@Override
 	protected VFreeBusy _newInstance() {
 		return new VFreeBusy();
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

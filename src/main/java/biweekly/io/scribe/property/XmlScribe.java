@@ -1,7 +1,9 @@
 package biweekly.io.scribe.property;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.transform.OutputKeys;
 
@@ -10,6 +12,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
@@ -122,5 +125,10 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 		Map<String, String> props = new HashMap<String, String>();
 		props.put(OutputKeys.OMIT_XML_DECLARATION, "yes");
 		return XmlUtils.toString(document, props);
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

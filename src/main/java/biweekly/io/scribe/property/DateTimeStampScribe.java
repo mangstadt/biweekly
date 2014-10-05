@@ -1,9 +1,11 @@
 package biweekly.io.scribe.property;
 
 import java.util.Date;
+import java.util.EnumSet;
+import java.util.Set;
 
+import biweekly.ICalVersion;
 import biweekly.property.DateTimeStamp;
-
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -42,5 +44,10 @@ public class DateTimeStampScribe extends DateTimePropertyScribe<DateTimeStamp> {
 	@Override
 	protected DateTimeStamp newInstance(Date date) {
 		return new DateTimeStamp(date);
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

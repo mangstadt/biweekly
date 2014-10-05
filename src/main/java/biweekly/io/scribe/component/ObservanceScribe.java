@@ -1,10 +1,10 @@
-package biweekly.io.scribe.property;
+package biweekly.io.scribe.component;
 
 import java.util.EnumSet;
 import java.util.Set;
 
 import biweekly.ICalVersion;
-import biweekly.property.Action;
+import biweekly.component.Observance;
 
 /*
  Copyright (c) 2013, Michael Angstadt
@@ -32,17 +32,11 @@ import biweekly.property.Action;
  */
 
 /**
- * Marshals {@link Action} properties.
  * @author Michael Angstadt
  */
-public class ActionScribe extends TextPropertyScribe<Action> {
-	public ActionScribe() {
-		super(Action.class, "ACTION");
-	}
-
-	@Override
-	protected Action newInstance(String value, ICalVersion version) {
-		return new Action(value);
+public abstract class ObservanceScribe<T extends Observance> extends ICalComponentScribe<T> {
+	protected ObservanceScribe(Class<T> clazz, String componentName) {
+		super(clazz, componentName);
 	}
 
 	@Override

@@ -2,9 +2,12 @@ package biweekly.io.scribe.property;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
@@ -114,5 +117,10 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 		String daylightName = it.nextString();
 
 		return new Daylight(flag, offset, start, end, standardName, daylightName);
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V1_0);
 	}
 }

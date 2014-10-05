@@ -1,6 +1,10 @@
 package biweekly.io.scribe.property;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
@@ -101,5 +105,10 @@ public class RequestStatusScribe extends ICalPropertyScribe<RequestStatus> {
 
 	private String s(String str) {
 		return (str == null || str.length() == 0) ? null : str;
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

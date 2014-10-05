@@ -2,9 +2,12 @@ package biweekly.io.scribe.property;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
@@ -116,4 +119,9 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 	protected abstract List<String> writeData(T property);
 
 	protected abstract T create(ICalDataType dataType, SemiStructuredIterator it);
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V1_0);
+	}
 }

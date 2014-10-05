@@ -1,7 +1,10 @@
 package biweekly.io.scribe.property;
 
 import java.util.Date;
+import java.util.EnumSet;
+import java.util.Set;
 
+import biweekly.ICalVersion;
 import biweekly.property.Created;
 
 /*
@@ -41,5 +44,10 @@ public class CreatedScribe extends DateTimePropertyScribe<Created> {
 	@Override
 	protected Created newInstance(Date date) {
 		return new Created(date);
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

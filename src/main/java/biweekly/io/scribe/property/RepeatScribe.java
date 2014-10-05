@@ -1,5 +1,9 @@
 package biweekly.io.scribe.property;
 
+import java.util.EnumSet;
+import java.util.Set;
+
+import biweekly.ICalVersion;
 import biweekly.property.Repeat;
 
 /*
@@ -39,5 +43,10 @@ public class RepeatScribe extends IntegerPropertyScribe<Repeat> {
 	@Override
 	protected Repeat newInstance(Integer value) {
 		return new Repeat(value);
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

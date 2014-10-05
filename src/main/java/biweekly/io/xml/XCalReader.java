@@ -292,7 +292,7 @@ public class XCalReader extends StreamReader {
 				case icalendar:
 					//<vcalendar>
 					if (VCALENDAR.equals(qname)) {
-						ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(localName);
+						ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(localName, ICalVersion.V2_0);
 						ICalComponent component = scribe.emptyInstance();
 
 						curComponent = component;
@@ -317,7 +317,7 @@ public class XCalReader extends StreamReader {
 				case components:
 					//start component element
 					if (XCAL_NS.equals(namespace)) {
-						ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(localName);
+						ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(localName, ICalVersion.V2_0);
 						curComponent = scribe.emptyInstance();
 
 						ICalComponent parent = componentStack.getLast();

@@ -1,5 +1,9 @@
 package biweekly.io.scribe.property;
 
+import java.util.EnumSet;
+import java.util.Set;
+
+import biweekly.ICalVersion;
 import biweekly.property.TimezoneOffsetFrom;
 import biweekly.util.UtcOffset;
 
@@ -40,5 +44,10 @@ public class TimezoneOffsetFromScribe extends UtcOffsetPropertyScribe<TimezoneOf
 	@Override
 	protected TimezoneOffsetFrom newInstance(UtcOffset offset) {
 		return new TimezoneOffsetFrom(offset);
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

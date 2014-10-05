@@ -1,5 +1,9 @@
 package biweekly.io.scribe.component;
 
+import java.util.EnumSet;
+import java.util.Set;
+
+import biweekly.ICalVersion;
 import biweekly.component.VAlarm;
 
 /*
@@ -38,5 +42,10 @@ public class VAlarmScribe extends ICalComponentScribe<VAlarm> {
 	@Override
 	protected VAlarm _newInstance() {
 		return new VAlarm(null, null);
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

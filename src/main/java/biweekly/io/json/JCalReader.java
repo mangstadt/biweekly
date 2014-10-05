@@ -155,7 +155,7 @@ public class JCalReader extends StreamReader {
 			ICalComponent parent = components.get(componentHierarchy);
 
 			//unmarshal the property
-			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyName);
+			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyName, ICalVersion.V2_0);
 			try {
 				ICalProperty property = scribe.parseJson(value, dataType, parameters, context);
 				for (Warning warning : context.getWarnings()) {
@@ -186,7 +186,7 @@ public class JCalReader extends StreamReader {
 		}
 
 		public void readComponent(List<String> parentHierarchy, String componentName) {
-			ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(componentName);
+			ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(componentName, ICalVersion.V2_0);
 			ICalComponent component = scribe.emptyInstance();
 
 			ICalComponent parent = components.get(parentHierarchy);

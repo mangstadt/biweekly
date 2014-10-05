@@ -1,5 +1,8 @@
 package biweekly.io.scribe.property;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import biweekly.ICalVersion;
 import biweekly.property.TimezoneId;
 
@@ -40,5 +43,10 @@ public class TimezoneIdScribe extends TextPropertyScribe<TimezoneId> {
 	@Override
 	protected TimezoneId newInstance(String value, ICalVersion version) {
 		return new TimezoneId(value);
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

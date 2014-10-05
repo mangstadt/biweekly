@@ -6,10 +6,13 @@ import static biweekly.util.StringUtils.join;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
@@ -68,6 +71,8 @@ import biweekly.util.XmlUtils;
  * @author Michael Angstadt
  */
 public abstract class ICalPropertyScribe<T extends ICalProperty> {
+	private static final Set<ICalVersion> allVersions = Collections.unmodifiableSet(EnumSet.allOf(ICalVersion.class));
+
 	protected final Class<T> clazz;
 	protected final String propertyName;
 	protected final ICalDataType defaultDataType;
@@ -99,6 +104,15 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		this.propertyName = propertyName;
 		this.defaultDataType = defaultDataType;
 		this.qname = qname;
+	}
+
+	/**
+	 * Gets the iCalendar versions that support this property. This method
+	 * returns all iCalendar versions unless overridden by the child scribe.
+	 * @return the iCalendar versions
+	 */
+	public Set<ICalVersion> getSupportedVersions() {
+		return allVersions;
 	}
 
 	/**

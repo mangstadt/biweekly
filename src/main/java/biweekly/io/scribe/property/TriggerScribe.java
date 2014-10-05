@@ -1,6 +1,8 @@
 package biweekly.io.scribe.property;
 
 import java.util.Date;
+import java.util.EnumSet;
+import java.util.Set;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -193,5 +195,10 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 		} catch (IllegalArgumentException e) {
 			throw new CannotParseException(25);
 		}
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

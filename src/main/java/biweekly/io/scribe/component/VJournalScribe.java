@@ -1,5 +1,9 @@
 package biweekly.io.scribe.component;
 
+import java.util.EnumSet;
+import java.util.Set;
+
+import biweekly.ICalVersion;
 import biweekly.component.VJournal;
 
 /*
@@ -38,5 +42,10 @@ public class VJournalScribe extends ICalComponentScribe<VJournal> {
 	@Override
 	protected VJournal _newInstance() {
 		return new VJournal();
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

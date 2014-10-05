@@ -30,7 +30,7 @@ import biweekly.component.StandardTime;
 /**
  * @author Michael Angstadt
  */
-public class StandardTimeScribe extends ICalComponentScribe<StandardTime> {
+public class StandardTimeScribe extends ObservanceScribe<StandardTime> {
 	public StandardTimeScribe() {
 		super(StandardTime.class, "STANDARD");
 	}

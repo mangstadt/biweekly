@@ -2,9 +2,12 @@ package biweekly.io.scribe.property;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
@@ -268,5 +271,10 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 		}
 
 		return freebusy;
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

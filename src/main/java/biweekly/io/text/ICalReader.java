@@ -29,13 +29,11 @@ import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.io.scribe.property.RecurrencePropertyScribe;
-import biweekly.io.scribe.property.VCalAlarmPropertyScribe;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Role;
 import biweekly.property.Attendee;
 import biweekly.property.AudioAlarm;
-import biweekly.property.Created;
 import biweekly.property.DisplayAlarm;
 import biweekly.property.EmailAlarm;
 import biweekly.property.ICalProperty;
@@ -222,7 +220,7 @@ public class ICalReader extends StreamReader {
 
 				ICalComponent parentComponent = componentStack.isEmpty() ? null : componentStack.get(componentStack.size() - 1);
 
-				ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(componentName);
+				ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(componentName, reader.getVersion());
 				ICalComponent component = scribe.emptyInstance();
 				componentStack.add(component);
 				componentNamesStack.add(componentName);
@@ -272,20 +270,7 @@ public class ICalReader extends StreamReader {
 			ICalParameters parameters = line.getParameters();
 			String value = line.getValue();
 
-			ICalPropertyScribe<? extends ICalProperty> scribe;
-			if (reader.getVersion() == ICalVersion.V1_0 && "DCREATED".equals(propertyName)) {
-				//the vCal DCREATED property is the same as the iCal CREATED property
-				scribe = index.getPropertyScribe(Created.class);
-			} else {
-				scribe = index.getPropertyScribe(propertyName);
-			}
-
-			//treat a vCal property as a raw property if the version is not 1.0
-			if (reader.getVersion() != ICalVersion.V1_0) {
-				if (scribe instanceof VCalAlarmPropertyScribe) {
-					scribe = new RawPropertyScribe(propertyName);
-				}
-			}
+			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyName, reader.getVersion());
 
 			//process nameless parameters
 			processNamelessParameters(parameters, propertyName);

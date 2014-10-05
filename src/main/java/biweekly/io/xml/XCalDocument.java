@@ -409,7 +409,7 @@ public class XCalDocument {
 
 		private ICalComponent parseComponent(Element componentElement) {
 			//create the component object
-			ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(componentElement.getLocalName());
+			ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(componentElement.getLocalName(), ICalVersion.V2_0);
 			ICalComponent component = scribe.emptyInstance();
 			boolean isICalendar = component instanceof ICalendar;
 

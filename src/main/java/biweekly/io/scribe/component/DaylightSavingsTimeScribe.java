@@ -30,7 +30,7 @@ import biweekly.component.DaylightSavingsTime;
 /**
  * @author Michael Angstadt
  */
-public class DaylightSavingsTimeScribe extends ICalComponentScribe<DaylightSavingsTime> {
+public class DaylightSavingsTimeScribe extends ObservanceScribe<DaylightSavingsTime> {
 	public DaylightSavingsTimeScribe() {
 		super(DaylightSavingsTime.class, "DAYLIGHT");
 	}

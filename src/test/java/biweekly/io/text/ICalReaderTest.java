@@ -9,6 +9,7 @@ import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -1232,6 +1233,67 @@ public class ICalReaderTest {
 			assertSize(icalendar, 0, 1);
 			assertEquals(ICalVersion.V2_0, icalendar.getVersion());
 			assertEquals("20140101T010000", icalendar.getExperimentalProperty("DCREATED").getValue());
+
+			assertWarnings(0, reader);
+			assertNull(reader.readNext());
+		}
+	}
+
+	@Test
+	public void marshal_as_raw_when_version_does_not_match() throws Throwable {
+		{
+			//@formatter:off
+			String ical =
+			"BEGIN:VCALENDAR\r\n" +
+				"VERSION:1.0\r\n" +
+				"DTSTAMP:20140101T010000Z\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+
+			ICalReader reader = new ICalReader(ical);
+			ICalendar icalendar = reader.readNext();
+			assertSize(icalendar, 0, 1);
+			assertEquals(ICalVersion.V1_0, icalendar.getVersion());
+			assertEquals("20140101T010000Z", icalendar.getExperimentalProperty("DTSTAMP").getValue());
+
+			assertWarnings(0, reader);
+			assertNull(reader.readNext());
+		}
+
+		{
+			//@formatter:off
+			String ical =
+			"BEGIN:VCALENDAR\r\n" +
+				"VERSION:2.0\r\n" +
+				"DAYLIGHT:FALSE\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+
+			ICalReader reader = new ICalReader(ical);
+			ICalendar icalendar = reader.readNext();
+			assertSize(icalendar, 0, 1);
+			assertEquals(ICalVersion.V2_0, icalendar.getVersion());
+			assertEquals("FALSE", icalendar.getExperimentalProperty("DAYLIGHT").getValue());
+
+			assertWarnings(0, reader);
+			assertNull(reader.readNext());
+		}
+
+		{
+			//@formatter:off
+			String ical =
+			"BEGIN:VCALENDAR\r\n" +
+				"VERSION:1.0\r\n" +
+				"BEGIN:VJOURNAL\r\n" +
+				"END:VJOURNAL\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+
+			ICalReader reader = new ICalReader(ical);
+			ICalendar icalendar = reader.readNext();
+			assertSize(icalendar, 1, 0);
+			assertEquals(ICalVersion.V1_0, icalendar.getVersion());
+			assertNotNull(icalendar.getExperimentalComponent("VJOURNAL"));
 
 			assertWarnings(0, reader);
 			assertNull(reader.readNext());

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
 import biweekly.component.RawComponent;
@@ -76,6 +77,7 @@ import biweekly.io.scribe.property.UrlScribe;
 import biweekly.io.scribe.property.VersionScribe;
 import biweekly.io.scribe.property.XmlScribe;
 import biweekly.io.xml.XCalNamespaceContext;
+import biweekly.property.Created;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.Xml;
@@ -236,43 +238,47 @@ public class ScribeIndex {
 	/**
 	 * Gets a component scribe by name.
 	 * @param componentName the component name (e.g. "VEVENT")
+	 * @param version the version of the iCalendar object being parsed
 	 * @return the component scribe or a {@link RawComponentScribe} if not found
 	 */
-	public ICalComponentScribe<? extends ICalComponent> getComponentScribe(String componentName) {
+	public ICalComponentScribe<? extends ICalComponent> getComponentScribe(String componentName, ICalVersion version) {
 		componentName = componentName.toUpperCase();
 
 		ICalComponentScribe<? extends ICalComponent> scribe = experimentalCompByName.get(componentName);
-		if (scribe != null) {
-			return scribe;
+		if (scribe == null) {
+			scribe = standardCompByName.get(componentName);
 		}
 
-		scribe = standardCompByName.get(componentName);
-		if (scribe != null) {
-			return scribe;
+		if (scribe == null || (version != null && !scribe.getSupportedVersions().contains(version))) {
+			return new RawComponentScribe(componentName);
 		}
 
-		return new RawComponentScribe(componentName);
+		return scribe;
 	}
 
 	/**
 	 * Gets a property scribe by name.
-	 * @param propertyName the property name (e.g. "VERSION")
+	 * @param propertyName the property name (e.g. "UID")
+	 * @param version the version of the iCalendar object being parsed
 	 * @return the property scribe or a {@link RawPropertyScribe} if not found
 	 */
-	public ICalPropertyScribe<? extends ICalProperty> getPropertyScribe(String propertyName) {
+	public ICalPropertyScribe<? extends ICalProperty> getPropertyScribe(String propertyName, ICalVersion version) {
 		propertyName = propertyName.toUpperCase();
 
+		if ((version == null || version == ICalVersion.V1_0) && "DCREATED".equals(propertyName)) {
+			return getPropertyScribe(Created.class);
+		}
+
 		ICalPropertyScribe<? extends ICalProperty> scribe = experimentalPropByName.get(propertyName);
-		if (scribe != null) {
-			return scribe;
+		if (scribe == null) {
+			scribe = standardPropByName.get(propertyName);
 		}
 
-		scribe = standardPropByName.get(propertyName);
-		if (scribe != null) {
-			return scribe;
+		if (scribe == null || (version != null && !scribe.getSupportedVersions().contains(version))) {
+			return new RawPropertyScribe(propertyName);
 		}
 
-		return new RawPropertyScribe(propertyName);
+		return scribe;
 	}
 
 	/**
@@ -338,20 +344,18 @@ public class ScribeIndex {
 	 */
 	public ICalPropertyScribe<? extends ICalProperty> getPropertyScribe(QName qname) {
 		ICalPropertyScribe<? extends ICalProperty> scribe = experimentalPropByQName.get(qname);
-		if (scribe != null) {
-			return scribe;
+		if (scribe == null) {
+			scribe = standardPropByQName.get(qname);
 		}
 
-		scribe = standardPropByQName.get(qname);
-		if (scribe != null) {
-			return scribe;
+		if (scribe == null || !scribe.getSupportedVersions().contains(ICalVersion.V2_0)) {
+			if (XCalNamespaceContext.XCAL_NS.equals(qname.getNamespaceURI())) {
+				return new RawPropertyScribe(qname.getLocalPart().toUpperCase());
+			}
+			return getPropertyScribe(Xml.class);
 		}
 
-		if (XCalNamespaceContext.XCAL_NS.equals(qname.getNamespaceURI())) {
-			return new RawPropertyScribe(qname.getLocalPart().toUpperCase());
-		}
-
-		return getPropertyScribe(Xml.class);
+		return scribe;
 	}
 
 	/**
