@@ -90,6 +90,7 @@ public class TimezoneInfoTest {
 		ICalProperty property2 = new ICalPropertyImpl();
 		ICalProperty property3 = new ICalPropertyImpl();
 		ICalProperty property4 = new ICalPropertyImpl();
+		ICalProperty property5 = new ICalPropertyImpl();
 
 		VTimezone defaultComponent = new VTimezone("default");
 		TimeZone defaultTimezone = TimeZone.getDefault();
@@ -103,6 +104,7 @@ public class TimezoneInfoTest {
 		tzinfo.setTimeZone(property1, timezone1);
 		tzinfo.setTimeZone(property2, timezone1);
 		tzinfo.setFloating(property3, true);
+		tzinfo.setTimeZone(property5, TestUtils.buildTimezone(2, 0), false);
 
 		assertEquals(timezone1, tzinfo.getTimeZone(property1));
 		assertEquals(timezone1, tzinfo.getTimeZone(property2));
@@ -123,6 +125,12 @@ public class TimezoneInfoTest {
 		assertFalse(tzinfo.isFloating(property2));
 		assertTrue(tzinfo.isFloating(property3));
 		assertFalse(tzinfo.isFloating(property4));
+
+		assertFalse(tzinfo.hasSolidusTimezone(property1));
+		assertFalse(tzinfo.hasSolidusTimezone(property2));
+		assertFalse(tzinfo.hasSolidusTimezone(property3));
+		assertFalse(tzinfo.hasSolidusTimezone(property4));
+		assertTrue(tzinfo.hasSolidusTimezone(property5));
 
 		Collection<VTimezone> components = tzinfo.getComponents();
 		assertEquals(2, components.size());

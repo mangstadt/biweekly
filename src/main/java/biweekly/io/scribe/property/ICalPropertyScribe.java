@@ -1233,25 +1233,43 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		}
 	}
 
+	/**
+	 * Adds a TZID parameter to a property's parameter list if necessary.
+	 * @param property the property
+	 * @param hasTime true if the property value has a time component, false if
+	 * not
+	 * @param context the write context
+	 * @return the property's new set of parameters
+	 */
 	protected static ICalParameters handleTzidParameter(ICalProperty property, boolean hasTime, WriteContext context) {
 		ICalParameters parameters = property.getParameters();
-		if (!hasTime || context.getVersion() == ICalVersion.V1_0) {
+
+		//date values don't have timezones
+		if (!hasTime) {
 			return parameters;
 		}
 
+		//vCal doesn't use the TZID parameter
+		if (context.getVersion() == ICalVersion.V1_0) {
+			return parameters;
+		}
+
+		//floating values don't have timezones
 		TimezoneInfo tzinfo = context.getTimezoneInfo();
 		boolean floating = tzinfo.isFloating(property);
 		if (floating) {
 			return parameters;
 		}
 
+		//property is being formatted in UTC
 		TimeZone timezone = tzinfo.getTimeZoneToWriteIn(property);
 		if (timezone == null) {
 			return parameters;
 		}
 
+		String id = (tzinfo.hasSolidusTimezone(property) ? "/" : "") + timezone.getID();
 		parameters = new ICalParameters(parameters);
-		parameters.setTimezoneId(timezone.getID());
+		parameters.setTimezoneId(id);
 		return parameters;
 	}
 

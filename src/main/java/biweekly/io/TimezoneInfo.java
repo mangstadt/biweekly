@@ -46,6 +46,7 @@ public class TimezoneInfo {
 	private final Map<String, TimeZone> timezonesById = new HashMap<String, TimeZone>();
 
 	private final Map<ICalProperty, TimeZone> propertyTimeZones = new HashMap<ICalProperty, TimeZone>();
+	private final Set<ICalProperty> hasSolidusTimezone = new HashSet<ICalProperty>();
 	private final Set<ICalProperty> floatingProperties = new HashSet<ICalProperty>();
 
 	private VTimezoneGenerator generator = new TzUrlDotOrgGenerator(false);
@@ -72,19 +73,20 @@ public class TimezoneInfo {
 	 * been assigned to the given timezone (see
 	 * {@link #assign(VTimezone, TimeZone) assign()}).
 	 * @param timezone the timezone object or null for UTC (default)
-	 * @throw IllegalArgumentException if there is no iCalendar timezone
-	 * component associated with the timezone and one could not be generated
+	 * @throws IllegalArgumentException if a {@link VTimezone} component could
+	 * not be generated
 	 */
 	public void setDefaultTimeZone(TimeZone timezone) {
-		VTimezone component = null;
-		if (timezone != null) {
-			component = assignmentsReverse.get(timezone);
-			if (component == null) {
-				component = generator.generate(timezone);
-				assign(component, timezone);
-			}
+		if (timezone == null) {
+			defaultTimezone = null;
+			return;
 		}
 
+		VTimezone component = assignmentsReverse.get(timezone);
+		if (component == null) {
+			component = generator.generate(timezone);
+			assign(component, timezone);
+		}
 		defaultTimezone = timezone;
 	}
 
@@ -99,33 +101,51 @@ public class TimezoneInfo {
 	}
 
 	/**
-	 * Instructs the writer to format a particular property's date/time value in
-	 * a specific timezone.
+	 * Instructs the writer to format an individual property's date/time value
+	 * in a specific timezone.
 	 * @param property the property
 	 * @param timezone the timezone or null to format the property according to
 	 * the default timezone (default)
 	 */
 	public void setTimeZone(ICalProperty property, TimeZone timezone) {
+		setTimeZone(property, timezone, true);
+	}
+
+	/**
+	 * Instructs the writer to format an individual property's date/time value
+	 * in a specific timezone.
+	 * @param property the property
+	 * @param timezone the timezone or null to format the property according to
+	 * the default timezone (default)
+	 * @param generateComponent true to associate the property with a
+	 * {@link VTimezone} component containing the timezone definition
+	 * (recommended), false not to. If the "timezone" parameter is null, then
+	 * this parameter has no effect
+	 */
+	public void setTimeZone(ICalProperty property, TimeZone timezone, boolean generateComponent) {
 		if (timezone == null) {
 			propertyTimeZones.remove(property);
+			hasSolidusTimezone.remove(property);
 			return;
 		}
 
-		VTimezone component = assignmentsReverse.get(timezone);
-		if (component == null) {
-			component = generator.generate(timezone);
-			assign(component, timezone);
+		if (generateComponent) {
+			VTimezone component = assignmentsReverse.get(timezone);
+			if (component == null) {
+				component = generator.generate(timezone);
+				assign(component, timezone);
+			}
+		} else {
+			hasSolidusTimezone.add(property);
 		}
 
 		propertyTimeZones.put(property, timezone);
 	}
 
-	void setTimeZoneReader(ICalProperty property, TimeZone timezone) {
-		if (timezone == null) {
-			propertyTimeZones.remove(property);
-			return;
+	/* package */void setTimeZoneReader(ICalProperty property, TimeZone timezone, boolean solidus) {
+		if (solidus) {
+			hasSolidusTimezone.add(property);
 		}
-
 		propertyTimeZones.put(property, timezone);
 	}
 
@@ -136,6 +156,16 @@ public class TimezoneInfo {
 	 */
 	public TimeZone getTimeZone(ICalProperty property) {
 		return propertyTimeZones.get(property);
+	}
+
+	/**
+	 * Determines if the given property has a solidus timezone (a globally
+	 * unique timezone ID).
+	 * @param property the property
+	 * @return true if the property has a solidus timezone, false if not
+	 */
+	public boolean hasSolidusTimezone(ICalProperty property) {
+		return hasSolidusTimezone.contains(property);
 	}
 
 	/**
@@ -175,6 +205,10 @@ public class TimezoneInfo {
 	 * @return the component or null if it is not assigned to one
 	 */
 	public VTimezone getComponent(ICalProperty property) {
+		if (hasSolidusTimezone.contains(property)) {
+			return null;
+		}
+
 		TimeZone timezone = getTimeZone(property);
 		return assignmentsReverse.get(timezone);
 	}

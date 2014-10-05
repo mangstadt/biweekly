@@ -222,8 +222,10 @@ public abstract class StreamReader implements Closeable {
 		for (Map.Entry<String, List<TimezonedDate>> entry : context.getTimezonedDates()) {
 			//find the VTIMEZONE component with the given TZID
 			String tzid = entry.getKey();
+
+			boolean solidus = tzid.startsWith("/");
 			TimeZone timezone;
-			if (tzid.startsWith("/")) {
+			if (solidus) {
 				//treat the TZID parameter value as an Olsen timezone ID
 				timezone = ICalDateFormat.parseTimeZoneId(tzid.substring(1));
 				if (timezone == null) {
@@ -251,7 +253,7 @@ public abstract class StreamReader implements Closeable {
 			for (TimezonedDate timezonedDate : timezonedDates) {
 				//assign the property to the timezone
 				ICalProperty property = timezonedDate.getProperty();
-				tzinfo.setTimeZoneReader(property, timezone);
+				tzinfo.setTimeZoneReader(property, timezone, solidus);
 
 				//parse the date string again under its real timezone
 				Date realDate = ICalDateFormat.parse(timezonedDate.getDateStr(), timezone);
