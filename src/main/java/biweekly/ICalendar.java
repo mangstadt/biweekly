@@ -21,7 +21,7 @@ import biweekly.property.Method;
 import biweekly.property.ProductId;
 
 /*
- Copyright (c) 2013, Michael Angstadt
+ Copyright (c) 2013-2014, Michael Angstadt
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without

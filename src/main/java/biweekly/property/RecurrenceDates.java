@@ -6,7 +6,7 @@ import java.util.List;
 import biweekly.util.Period;
 
 /*
- Copyright (c) 2013, Michael Angstadt
+ Copyright (c) 2013-2014, Michael Angstadt
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without

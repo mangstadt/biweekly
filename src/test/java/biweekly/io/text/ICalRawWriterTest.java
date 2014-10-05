@@ -14,7 +14,7 @@ import biweekly.parameter.ICalParameters;
 import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
 
 /*
- Copyright (c) 2013, Michael Angstadt
+ Copyright (c) 2013-2014, Michael Angstadt
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
