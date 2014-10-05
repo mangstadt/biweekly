@@ -77,6 +77,24 @@ import biweekly.property.Version;
  * </p>
  * 
  * <p>
+ * <b>Changing the timezone settings:</b>
+ * 
+ * <pre class="brush:java">
+ * ICalWriter writer = new ICalWriter(...);
+ * 
+ * //format all date/time values in a specific timezone instead of UTC
+ * //note: this makes an HTTP call to the "tzurl.org" website
+ * writer.getTimezoneInfo().setDefaultTimeZone(TimeZone.getDefault());
+ * 
+ * //format the value of a particular date/time property in a specific timezone instead of UTC
+ * //note: this makes an HTTP call to the "tzurl.org" website
+ * DateStart dtstart = ...
+ * writer.getTimezoneInfo().setTimeZone(dtstart, TimeZone.getDefault());
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <p>
  * <b>Changing the line folding settings:</b>
  * 
  * <pre class="brush:java">

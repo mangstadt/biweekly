@@ -84,6 +84,25 @@ import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
  * </pre>
  * 
  * </p>
+ * 
+ * <p>
+ * <b>Getting timezone information:</b>
+ * 
+ * <pre class="brush:java">
+ * ICalReader reader = ...
+ * ICalendar ical = reader.readNext();
+ * TimezoneInfo tzinfo = reader.getTimezoneInfo();
+ * 
+ * //get the VTIMEZONE components that were parsed
+ * //the VTIMEZONE components will NOT be in the ICalendar object
+ * Collection&ltVTimezone&gt; vtimezones = tzinfo.getComponents();
+ * 
+ * //get the timezone that a property was originally formatted in
+ * DateStart dtstart = ical.getEvents().get(0).getDateStart();
+ * TimeZone tz = tzinfo.getTimeZone(dtstart);
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */

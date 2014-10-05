@@ -66,6 +66,24 @@ import biweekly.property.Version;
  * </pre>
  * 
  * </p>
+ * 
+ * <p>
+ * <b>Changing the timezone settings:</b>
+ * 
+ * <pre class="brush:java">
+ * JCalWriter writer = new JCalWriter(...);
+ * 
+ * //format all date/time values in a specific timezone instead of UTC
+ * //note: this makes an HTTP call to the "tzurl.org" website
+ * writer.getTimezoneInfo().setDefaultTimeZone(TimeZone.getDefault());
+ * 
+ * //format the value of a particular date/time property in a specific timezone instead of UTC
+ * //note: this makes an HTTP call to the "tzurl.org" website
+ * DateStart dtstart = ...
+ * writer.getTimezoneInfo().setTimeZone(dtstart, TimeZone.getDefault());
+ * </pre>
+ * 
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc7265">RFC 7265</a>
  */
