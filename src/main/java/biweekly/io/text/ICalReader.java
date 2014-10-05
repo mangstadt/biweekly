@@ -209,8 +209,7 @@ public class ICalReader extends StreamReader {
 	protected ICalendar _readNext() throws IOException {
 		ICalendar ical = null;
 		List<String> values = new ArrayList<String>();
-		List<ICalComponent> componentStack = new ArrayList<ICalComponent>();
-		List<String> componentNamesStack = new ArrayList<String>();
+		ComponentStack stack = new ComponentStack();
 
 		while (true) {
 			//read next line
@@ -237,12 +236,11 @@ public class ICalReader extends StreamReader {
 					continue;
 				}
 
-				ICalComponent parentComponent = componentStack.isEmpty() ? null : componentStack.get(componentStack.size() - 1);
+				ICalComponent parentComponent = stack.peek();
 
 				ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(componentName, reader.getVersion());
 				ICalComponent component = scribe.emptyInstance();
-				componentStack.add(component);
-				componentNamesStack.add(componentName);
+				stack.push(component, componentName);
 
 				if (parentComponent == null) {
 					ical = (ICalendar) component;
@@ -267,20 +265,10 @@ public class ICalReader extends StreamReader {
 				}
 
 				//find the component that this END property matches up with
-				int popIndex = -1;
-				for (int i = componentStack.size() - 1; i >= 0; i--) {
-					String name = componentNamesStack.get(i);
-					if (name.equalsIgnoreCase(componentName)) {
-						popIndex = i;
-						break;
-					}
-				}
-				if (popIndex == -1) {
+				boolean found = stack.popThrough(componentName);
+				if (!found) {
 					//END property does not match up with any BEGIN properties, so ignore
 					warnings.add(reader.getLineNum(), "END", 2);
-				} else {
-					componentStack.subList(popIndex, componentStack.size()).clear();
-					componentNamesStack.subList(popIndex, componentNamesStack.size()).clear();
 				}
 
 				continue;
@@ -355,7 +343,7 @@ public class ICalReader extends StreamReader {
 			}
 
 			//add the properties to the iCalendar object
-			ICalComponent parentComponent = componentStack.get(componentStack.size() - 1);
+			ICalComponent parentComponent = stack.peek();
 			boolean isVCal = reader.getVersion() == null || reader.getVersion() == ICalVersion.V1_0;
 			for (ICalProperty property : propertiesToAdd) {
 				for (Warning warning : context.getWarnings()) {
@@ -494,5 +482,47 @@ public class ICalReader extends StreamReader {
 	 */
 	public void close() throws IOException {
 		reader.close();
+	}
+
+	private static class ComponentStack {
+		private final List<ICalComponent> components = new ArrayList<ICalComponent>();
+		private final List<String> names = new ArrayList<String>();
+
+		/**
+		 * Gets the component on the top of the stack.
+		 * @return the component or null if the stack is empty
+		 */
+		public ICalComponent peek() {
+			return components.isEmpty() ? null : components.get(components.size() - 1);
+		}
+
+		/**
+		 * Adds a component to the stack
+		 * @param component the component
+		 * @param name the component's name (e.g. "VEVENT")
+		 */
+		public void push(ICalComponent component, String name) {
+			components.add(component);
+			names.add(name);
+		}
+
+		/**
+		 * Removes all components that come after the given component, including
+		 * the given component itself.
+		 * @param name the component's name (e.g. "VEVENT")
+		 * @return true if the component was found, false if not
+		 */
+		public boolean popThrough(String name) {
+			for (int i = components.size() - 1; i >= 0; i--) {
+				String curName = names.get(i);
+				if (curName.equalsIgnoreCase(name)) {
+					components.subList(i, components.size()).clear();
+					names.subList(i, names.size()).clear();
+					return true;
+				}
+			}
+
+			return false;
+		}
 	}
 }
