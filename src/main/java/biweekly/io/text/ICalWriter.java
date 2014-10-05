@@ -26,6 +26,7 @@ import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Attendee;
 import biweekly.property.Created;
+import biweekly.property.DateTimeStamp;
 import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.property.Organizer;
@@ -306,6 +307,10 @@ public class ICalWriter extends StreamWriter implements Flushable {
 				Organizer organizer = (Organizer) property;
 				Attendee attendee = convert(organizer);
 				writeProperty(attendee);
+				return;
+			}
+			if (property instanceof DateTimeStamp) {
+				//do not write this property
 				return;
 			}
 			break;
