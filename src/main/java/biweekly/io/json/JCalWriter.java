@@ -81,6 +81,9 @@ import biweekly.property.Version;
  * //note: this makes an HTTP call to the "tzurl.org" website
  * DateStart dtstart = ...
  * writer.getTimezoneInfo().setTimeZone(dtstart, TimeZone.getDefault());
+ * 
+ * //generate Outlook-friendly VTIMEZONE components:
+ * writer.getTimezoneInfo().setGenerator(new TzUrlDotOrgGenerator(true));
  * </pre>
  * 
  * </p>
