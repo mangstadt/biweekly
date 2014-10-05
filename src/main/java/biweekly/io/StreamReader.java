@@ -173,7 +173,7 @@ public abstract class StreamReader implements Closeable {
 			if (vcalComponent != null) {
 				TimeZone timezone = new ICalTimeZone(vcalComponent);
 				tzinfo.assign(vcalComponent, timezone);
-				tzinfo.setDefaultTimezone(timezone);
+				tzinfo.setDefaultTimeZone(timezone);
 			}
 
 			ical.removeProperties(Daylight.class);
@@ -251,7 +251,7 @@ public abstract class StreamReader implements Closeable {
 			for (TimezonedDate timezonedDate : timezonedDates) {
 				//assign the property to the timezone
 				ICalProperty property = timezonedDate.getProperty();
-				tzinfo.setTimezone(property, timezone);
+				tzinfo.setTimeZoneReader(property, timezone);
 
 				//parse the date string again under its real timezone
 				Date realDate = ICalDateFormat.parse(timezonedDate.getDateStr(), timezone);

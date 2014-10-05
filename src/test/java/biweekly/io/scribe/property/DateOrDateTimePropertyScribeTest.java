@@ -90,7 +90,7 @@ public class DateOrDateTimePropertyScribeTest {
 	{
 		TimeZone tz = buildTimezone(-2, 0);
 		timezoneGlobal.assign(new VTimezone("id"), tz);
-		timezoneGlobal.setDefaultTimezone(tz);
+		timezoneGlobal.setDefaultTimeZone(tz);
 	}
 
 	@Test
@@ -247,13 +247,13 @@ public class DateOrDateTimePropertyScribeTest {
 		//property-assigned timezone
 		tzinfo = new TimezoneInfo();
 		tzinfo.assign(vtimezone, tz1);
-		tzinfo.setTimezone(test.property, tz1);
+		tzinfo.setTimeZone(test.property, tz1);
 		test.tz(tzinfo).run(minusOne);
 
 		//property-assigned floating should override global timezone
 		tzinfo = new TimezoneInfo();
 		tzinfo.assign(vtimezone, tz1);
-		tzinfo.setDefaultTimezone(tz1);
+		tzinfo.setDefaultTimeZone(tz1);
 		tzinfo.setFloating(test.property, true);
 		test.tz(tzinfo).run(floating);
 
@@ -261,15 +261,15 @@ public class DateOrDateTimePropertyScribeTest {
 		tzinfo = new TimezoneInfo();
 		tzinfo.assign(vtimezone, tz1);
 		tzinfo.assign(vtimezone, tz2);
-		tzinfo.setDefaultTimezone(tz1);
-		tzinfo.setTimezone(test.property, tz2);
+		tzinfo.setDefaultTimeZone(tz1);
+		tzinfo.setTimeZone(test.property, tz2);
 		test.tz(tzinfo).run(minusTwo);
 
 		//property-assigned timezone should override global floating
 		tzinfo = new TimezoneInfo();
 		tzinfo.assign(vtimezone, tz1);
 		tzinfo.setGlobalFloatingTime(true);
-		tzinfo.setTimezone(test.property, tz1);
+		tzinfo.setTimeZone(test.property, tz1);
 		test.tz(tzinfo).run(minusOne);
 	}
 

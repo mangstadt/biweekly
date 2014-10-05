@@ -776,7 +776,7 @@ public class ICalWriterTest {
 		}
 
 		tzinfo.assign(usEasternTz, eastern);
-		tzinfo.setDefaultTimezone(eastern);
+		tzinfo.setDefaultTimeZone(eastern);
 		assertExample(ical, "rfc5545-example2.ics", tzinfo);
 	}
 

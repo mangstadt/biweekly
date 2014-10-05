@@ -725,7 +725,7 @@ public class XCalWriterTest {
 
 		TimezoneInfo tzinfo = new TimezoneInfo();
 		tzinfo.assign(usEasternTz, eastern);
-		tzinfo.setDefaultTimezone(eastern);
+		tzinfo.setDefaultTimeZone(eastern);
 		assertExample(ical, "rfc6321-example2.xml", tzinfo);
 	}
 

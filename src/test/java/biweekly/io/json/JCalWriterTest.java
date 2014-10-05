@@ -602,7 +602,7 @@ public class JCalWriterTest {
 			}
 		}
 		tzinfo.assign(usEasternTz, eastern);
-		tzinfo.setDefaultTimezone(eastern);
+		tzinfo.setDefaultTimeZone(eastern);
 		assertExample(ical, "jcal-draft-example2.json", tzinfo);
 	}
 

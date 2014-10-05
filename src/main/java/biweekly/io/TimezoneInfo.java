@@ -75,7 +75,7 @@ public class TimezoneInfo {
 	 * @throw IllegalArgumentException if there is no iCalendar timezone
 	 * component associated with the timezone and one could not be generated
 	 */
-	public void setDefaultTimezone(TimeZone timezone) {
+	public void setDefaultTimeZone(TimeZone timezone) {
 		VTimezone component = null;
 		if (timezone != null) {
 			component = assignmentsReverse.get(timezone);
@@ -105,7 +105,22 @@ public class TimezoneInfo {
 	 * @param timezone the timezone or null to format the property according to
 	 * the default timezone (default)
 	 */
-	public void setTimezone(ICalProperty property, TimeZone timezone) {
+	public void setTimeZone(ICalProperty property, TimeZone timezone) {
+		if (timezone == null) {
+			propertyTimeZones.remove(property);
+			return;
+		}
+
+		VTimezone component = assignmentsReverse.get(timezone);
+		if (component == null) {
+			component = generator.generate(timezone);
+			assign(component, timezone);
+		}
+
+		propertyTimeZones.put(property, timezone);
+	}
+
+	void setTimeZoneReader(ICalProperty property, TimeZone timezone) {
 		if (timezone == null) {
 			propertyTimeZones.remove(property);
 			return;

@@ -214,7 +214,7 @@ public class Sensei<T extends ICalProperty> {
 
 		public PrepareParamsTest tz(TimeZone timezone, VTimezone vtimezone) {
 			tzOptions.assign(vtimezone, timezone);
-			tzOptions.setDefaultTimezone(timezone);
+			tzOptions.setDefaultTimeZone(timezone);
 			return this;
 		}
 
