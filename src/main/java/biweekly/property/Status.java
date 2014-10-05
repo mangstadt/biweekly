@@ -315,7 +315,7 @@ public class Status extends EnumProperty {
 	}
 
 	@Override
-	protected Collection<ICalVersion> getSupportedVersions() {
+	protected Collection<ICalVersion> getValueSupportedVersions() {
 		if (value == null) {
 			return Collections.emptyList();
 		}

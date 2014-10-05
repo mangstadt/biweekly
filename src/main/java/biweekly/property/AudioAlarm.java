@@ -1,5 +1,9 @@
 package biweekly.property;
 
+import java.util.EnumSet;
+import java.util.Set;
+
+import biweekly.ICalVersion;
 import biweekly.component.VAlarm;
 
 /*
@@ -66,5 +70,10 @@ public class AudioAlarm extends VCalAlarmProperty {
 		this.data = data;
 		this.uri = null;
 		this.contentId = null;
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V1_0);
 	}
 }

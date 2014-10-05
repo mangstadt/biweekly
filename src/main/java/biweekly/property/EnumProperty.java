@@ -68,7 +68,7 @@ public abstract class EnumProperty extends TextProperty {
 	 * Gets the iCalendar versions that this property's value is supported in.
 	 * @return the supported versions
 	 */
-	protected Collection<ICalVersion> getSupportedVersions() {
+	protected Collection<ICalVersion> getValueSupportedVersions() {
 		if (value == null) {
 			return Collections.emptyList();
 		}
@@ -82,7 +82,7 @@ public abstract class EnumProperty extends TextProperty {
 			return;
 		}
 
-		Collection<ICalVersion> supportedVersions = getSupportedVersions();
+		Collection<ICalVersion> supportedVersions = getValueSupportedVersions();
 		if (supportedVersions.isEmpty()) {
 			//it's a non-standard value
 			warnings.add(Warning.validate(28, value, getStandardValues(version)));

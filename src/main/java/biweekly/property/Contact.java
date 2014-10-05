@@ -1,5 +1,10 @@
 package biweekly.property;
 
+import java.util.EnumSet;
+import java.util.Set;
+
+import biweekly.ICalVersion;
+
 /*
  Copyright (c) 2013, Michael Angstadt
  All rights reserved.
@@ -42,10 +47,10 @@ package biweekly.property;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545 p.109-11</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
+ * p.109-11</a>
  */
 public class Contact extends TextProperty {
-	//TODO override get/setValue methods to customize the Javadocs?
 	/**
 	 * Creates a contact property.
 	 * @param contact the contact information (e.g. "Acme Co: (212) 555-1234")
@@ -78,5 +83,10 @@ public class Contact extends TextProperty {
 	@Override
 	public void setLanguage(String language) {
 		super.setLanguage(language);
+	}
+
+	@Override
+	public Set<ICalVersion> getSupportedVersions() {
+		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }

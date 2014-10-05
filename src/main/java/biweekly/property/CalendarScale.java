@@ -119,7 +119,7 @@ public class CalendarScale extends EnumProperty {
 	}
 
 	@Override
-	protected Collection<ICalVersion> getSupportedVersions() {
+	protected Collection<ICalVersion> getValueSupportedVersions() {
 		if (value == null) {
 			return Collections.emptyList();
 		}

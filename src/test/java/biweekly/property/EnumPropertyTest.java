@@ -85,7 +85,7 @@ public class EnumPropertyTest {
 		}
 
 		@Override
-		protected Collection<ICalVersion> getSupportedVersions() {
+		protected Collection<ICalVersion> getValueSupportedVersions() {
 			if (value == null) {
 				return Collections.emptyList();
 			}
