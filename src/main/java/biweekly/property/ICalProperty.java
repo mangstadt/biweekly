@@ -1,12 +1,8 @@
 package biweekly.property;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
@@ -44,20 +40,10 @@ import biweekly.parameter.ICalParameters;
  * @author Michael Angstadt
  */
 public abstract class ICalProperty {
-	private static final Set<ICalVersion> allVersions = Collections.unmodifiableSet(EnumSet.copyOf(Arrays.asList(ICalVersion.values())));
-
 	/**
 	 * The property parameters.
 	 */
 	protected ICalParameters parameters = new ICalParameters();
-
-	/**
-	 * Gets the iCalendar versions that support this property.
-	 * @return the iCalendar versions
-	 */
-	public Set<ICalVersion> getSupportedVersions() {
-		return allVersions;
-	}
 
 	/**
 	 * Gets the property's parameters.

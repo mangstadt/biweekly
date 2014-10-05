@@ -1,9 +1,5 @@
 package biweekly.property;
 
-import java.util.EnumSet;
-import java.util.Set;
-
-import biweekly.ICalVersion;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -75,10 +71,5 @@ public class Comment extends TextProperty {
 	@Override
 	public void setLanguage(String language) {
 		super.setLanguage(language);
-	}
-
-	@Override
-	public Set<ICalVersion> getSupportedVersions() {
-		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 	}
 }
