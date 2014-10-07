@@ -1,11 +1,14 @@
 package biweekly.io;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
+import biweekly.component.Observance;
 import biweekly.component.StandardTime;
 import biweekly.component.VAlarm;
 import biweekly.component.VTimezone;
@@ -115,52 +118,54 @@ public class DataModelConverter {
 		return timezone.getComponents().isEmpty() ? null : timezone;
 	}
 
-	public static StandardTime convert(Timezone tz) {
-		StandardTime standard = new StandardTime();
-		UtcOffset offset = tz.getValue();
-		standard.setTimezoneOffsetFrom(offset.getHour(), offset.getMinute());
-		standard.setTimezoneOffsetTo(offset.getHour(), offset.getMinute());
-		return standard;
-	}
-
 	/**
 	 * Converts a {@link VTimezone} component into a list of {@link Daylight}
 	 * properties.
 	 * @param timezone the TIMEZONE component
 	 * @return the DAYLIGHT properties
 	 */
-	public static List<Daylight> convert(VTimezone timezone) {
-		//TODO this doesn't work right!
-		List<DaylightSavingsTime> daylightSavingsTimes = timezone.getDaylightSavingsTime();
-		List<StandardTime> standardTimes = timezone.getStandardTimes();
+	public static VCalTimezoneProperties convert(VTimezone timezone, List<Date> dates) {
 		List<Daylight> daylights = new ArrayList<Daylight>();
-
-		int len = Math.max(daylightSavingsTimes.size(), standardTimes.size());
-		for (int i = 0; i < len; i++) {
-			DaylightSavingsTime daylightSavings = (i < daylightSavingsTimes.size()) ? daylightSavingsTimes.get(i) : null;
-			StandardTime standard = (i < standardTimes.size()) ? standardTimes.get(i) : null;
-
-			if (daylightSavings == null) {
-				//there is no accompanying DAYLIGHT component, which means that daylight savings time is not observed
-				daylights.add(new Daylight());
-				continue;
-			}
-
-			if (standard == null) {
-				//there is no accompanying STANDARD component, which makes no sense
-				continue;
-			}
-
-			UtcOffset offset = daylightSavings.getTimezoneOffsetTo().getValue();
-			Date start = daylightSavings.getDateStart().getValue();
-			Date end = standard.getDateStart().getValue();
-			String daylightName = (daylightSavings.getTimezoneNames().isEmpty()) ? null : daylightSavings.getTimezoneNames().get(0).getValue();
-			String standardName = (standard.getTimezoneNames().isEmpty()) ? null : standard.getTimezoneNames().get(0).getValue();
-
-			daylights.add(new Daylight(true, offset, start, end, standardName, daylightName));
+		Timezone tz = null;
+		if (dates.isEmpty()) {
+			return new VCalTimezoneProperties(daylights, tz);
 		}
 
-		return daylights;
+		ICalTimeZone icalTz = new ICalTimeZone(timezone);
+		Collections.sort(dates);
+		for (Date date : dates) {
+			Observance observance = icalTz.getObservance(date);
+			if (observance == null) {
+
+			} else {
+				if (observance instanceof StandardTime) {
+					tz = new Timezone(observance.getTimezoneOffsetTo().getValue());
+				} else {
+					UtcOffset offset = observance.getTimezoneOffsetTo().getValue();
+					Date start = observance.getDateStart().getValue();
+					Date end = null; //TODO
+					String standardName = icalTz.getDisplayName(false, TimeZone.SHORT);
+					String daylightName = icalTz.getDisplayName(true, TimeZone.SHORT);
+
+					Daylight daylight = new Daylight(true, offset, start, end, standardName, daylightName);
+					daylights.add(daylight);
+				}
+			}
+		}
+
+		if (tz == null) {
+			int rawOffset = icalTz.getRawOffset();
+			UtcOffset offset = new UtcOffset(rawOffset);
+			tz = new Timezone(offset);
+		}
+
+		if (daylights.isEmpty()) {
+			Daylight daylight = new Daylight();
+			daylight.setDaylight(false);
+			daylights.add(daylight);
+		}
+
+		return new VCalTimezoneProperties(daylights, tz);
 	}
 
 	/**
@@ -394,5 +399,24 @@ public class DataModelConverter {
 		}
 
 		return null;
+	}
+
+	public static class VCalTimezoneProperties {
+		private final List<Daylight> daylights;
+		private final Timezone tz;
+
+		public VCalTimezoneProperties(List<Daylight> daylights, Timezone tz) {
+			this.daylights = daylights;
+			this.tz = tz;
+		}
+
+		public List<Daylight> getDaylights() {
+			return daylights;
+		}
+
+		public Timezone getTz() {
+			return tz;
+		}
+
 	}
 }

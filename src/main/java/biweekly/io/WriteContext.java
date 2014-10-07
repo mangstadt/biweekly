@@ -1,5 +1,10 @@
 package biweekly.io;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+
 import biweekly.ICalVersion;
 import biweekly.component.ICalComponent;
 
@@ -35,6 +40,7 @@ import biweekly.component.ICalComponent;
 public class WriteContext {
 	private final ICalVersion version;
 	private final TimezoneInfo timezoneOptions;
+	private final List<Date> dates = new ArrayList<Date>();
 	private ICalComponent parent;
 
 	public WriteContext(ICalVersion version, TimezoneInfo timezoneOptions) {
@@ -72,5 +78,30 @@ public class WriteContext {
 	 */
 	public void setParent(ICalComponent parent) {
 		this.parent = parent;
+	}
+
+	public List<Date> getDates() {
+		return dates;
+	}
+
+	/**
+	 * Records the date-time values that are being written. This is used to
+	 * generate a DAYLIGHT property for vCalendar objects.
+	 * @param hasTime true if the date has a time component, false if it's
+	 * strictly a date
+	 * @param floating true if the date is floating, false if not
+	 * @param tz the timezone to format the date in or null for UTC
+	 * @param date the date value
+	 */
+	public void addDate(boolean hasTime, boolean floating, TimeZone tz, Date date) {
+		if (version != ICalVersion.V1_0) {
+			return;
+		}
+
+		if (!hasTime || floating || tz == null) {
+			return;
+		}
+
+		dates.add(date);
 	}
 }

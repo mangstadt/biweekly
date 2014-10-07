@@ -164,7 +164,7 @@ public class ICalTimeZone extends TimeZone {
 	 * @param date the date
 	 * @return the observance or null if an observance cannot be found
 	 */
-	private Observance getObservance(Date date) {
+	public Observance getObservance(Date date) {
 		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC")); //TODO should this be local TZ?
 		//Calendar cal = Calendar.getInstance();
 		cal.setTime(date);

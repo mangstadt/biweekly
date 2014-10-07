@@ -490,8 +490,9 @@ public class ICalWriterTest {
 	public void vcal_VTimezone_to_Daylight_multiple_observances() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
+		ical.addProperty(new DateStart(date("2014-10-07 09:34:00")));
 
-		VTimezone timezone = new VTimezone(null);
+		VTimezone timezone = new VTimezone("id");
 
 		DaylightSavingsTime daylightSavings = new DaylightSavingsTime();
 		daylightSavings.setDateStart(new DateStart(date("2014-01-01 01:00:00")));
@@ -521,10 +522,9 @@ public class ICalWriterTest {
 		standard.addTimezoneName("EST2");
 		timezone.addStandardTime(standard);
 
-		ical.addComponent(timezone);
-
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		writer.getTimezoneInfo().assign(timezone, TimeZone.getDefault());
 		writer.write(ical);
 		writer.close();
 
@@ -532,6 +532,7 @@ public class ICalWriterTest {
 		String expected = 
 		"BEGIN:VCALENDAR\r\n" +
 			"VERSION:1.0\r\n" +
+			"DTSTART:20141007T093400\r\n" +
 			"DAYLIGHT:TRUE;-0400;20140101T010000;20140201T010000;EST;EDT\r\n" +
 			"DAYLIGHT:TRUE;-0400;20140301T010000;20140401T010000;EST2;EDT2\r\n" +
 		"END:VCALENDAR\r\n";

@@ -66,9 +66,11 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 		Date value = property.getValue();
 		if (value != null) {
 			TimezoneInfo tzinfo = context.getTimezoneInfo();
+			boolean hasTime = property.hasTime();
 			boolean floating = tzinfo.isFloating(property);
 			TimeZone tz = tzinfo.getTimeZoneToWriteIn(property);
-			return date(value).time(property.hasTime()).tz(floating, tz).write();
+			context.addDate(hasTime, floating, tz, value);
+			return date(value).time(hasTime).tz(floating, tz).write();
 		}
 
 		DateTimeComponents components = property.getRawComponents();

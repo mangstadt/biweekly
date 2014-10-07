@@ -19,6 +19,7 @@ import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
 import biweekly.component.VAlarm;
 import biweekly.component.VTimezone;
+import biweekly.io.DataModelConverter.VCalTimezoneProperties;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamWriter;
 import biweekly.io.scribe.component.ICalComponentScribe;
@@ -27,9 +28,9 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.Attendee;
 import biweekly.property.Created;
 import biweekly.property.DateTimeStamp;
-import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.property.Organizer;
+import biweekly.property.Timezone;
 import biweekly.property.VCalAlarmProperty;
 import biweekly.property.Version;
 
@@ -241,16 +242,6 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	private void writeComponent(ICalComponent component, ICalComponent parent) throws IOException {
 		switch (writer.getVersion()) {
 		case V1_0:
-			//VTIMEZONE component => DAYLIGHT properties
-			if (component instanceof VTimezone) {
-				VTimezone timezone = (VTimezone) component;
-				List<Daylight> daylights = convert(timezone);
-				for (Daylight daylight : daylights) {
-					writeProperty(daylight);
-				}
-				return;
-			}
-
 			//VALARM component => vCal alarm property
 			if (component instanceof VAlarm) {
 				VAlarm valarm = (VAlarm) component;
@@ -272,8 +263,23 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		writer.writeBeginComponent(componentScribe.getComponentName());
 
 		List propertyObjs = componentScribe.getProperties(component);
-		if (component instanceof ICalendar && component.getProperty(Version.class) == null) {
-			propertyObjs.add(0, new Version(writer.getVersion()));
+		if (component instanceof ICalendar) {
+			if (component.getProperty(Version.class) == null) {
+				propertyObjs.add(0, new Version(getTargetVersion()));
+			}
+			if (getTargetVersion() == ICalVersion.V1_0) {
+				Collection<VTimezone> timezones = tzinfo.getComponents();
+				if (!timezones.isEmpty()) {
+					VTimezone timezone = timezones.iterator().next();
+					VCalTimezoneProperties props = convert(timezone, context.getDates());
+
+					Timezone tz = props.getTz();
+					if (tz != null) {
+						propertyObjs.add(tz);
+					}
+					propertyObjs.addAll(props.getDaylights());
+				}
+			}
 		}
 
 		for (Object propertyObj : propertyObjs) {
@@ -283,7 +289,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		}
 
 		Collection subComponents = componentScribe.getComponents(component);
-		if (component instanceof ICalendar) {
+		if (getTargetVersion() != ICalVersion.V1_0 && component instanceof ICalendar) {
 			//add the VTIMEZONE components that were auto-generated
 			Collection<VTimezone> timezones = tzinfo.getComponents();
 			for (VTimezone timezone : timezones) {
