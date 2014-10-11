@@ -178,6 +178,20 @@ public class ICalTimeZone extends TimeZone {
 		return getObservance(year, month, day, hour, minute, second);
 	}
 
+	public Observance getObservanceAfter(Date date) {
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC")); //TODO should this be local TZ?
+		//Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		int year = cal.get(Calendar.YEAR);
+		int month = cal.get(Calendar.MONTH) + 1;
+		int day = cal.get(Calendar.DATE);
+		int hour = cal.get(Calendar.HOUR);
+		int minute = cal.get(Calendar.MINUTE);
+		int second = cal.get(Calendar.SECOND);
+
+		return getObservanceAfter(year, month, day, hour, minute, second);
+	}
+
 	/**
 	 * Gets the observance that a date is effected by.
 	 * @param year the year
@@ -222,6 +236,48 @@ public class ICalTimeZone extends TimeZone {
 		}
 
 		return closest;
+	}
+
+	private Observance getObservanceAfter(int year, int month, int day, int hour, int minute, int second) {
+		List<Observance> observances = getSortedObservances();
+		if (observances.isEmpty()) {
+			return null;
+		}
+
+		DateValue givenTime = new DateTimeValueImpl(year, month, day, hour, minute, second);
+		int closestIndex = -1;
+		DateValue closestValue = null;
+		for (int i = 0; i < observances.size(); i++) {
+			Observance observance = observances.get(i);
+
+			//skip observances that start after the given time
+			DateStart dtstart = observance.getDateStart();
+			if (dtstart != null) {
+				DateTimeValue dtstartValue = convert(dtstart);
+				if (dtstartValue != null && dtstartValue.compareTo(givenTime) > 0) {
+					continue;
+				}
+			}
+
+			RecurrenceIterator it = createIterator(observance);
+			DateValue prev = null;
+			while (it.hasNext()) {
+				DateValue cur = it.next();
+				if (givenTime.compareTo(cur) < 0) {
+					//break if we have passed the given time
+					break;
+				}
+
+				prev = cur;
+			}
+
+			if (prev != null && (closestValue == null || closestValue.compareTo(prev) < 0)) {
+				closestValue = prev;
+				closestIndex = i;
+			}
+		}
+
+		return (closestIndex < observances.size() - 1) ? observances.get(closestIndex + 1) : null;
 	}
 
 	private boolean hasDateStart(Observance observance) {

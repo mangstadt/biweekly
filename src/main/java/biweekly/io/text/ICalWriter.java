@@ -28,6 +28,7 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.Attendee;
 import biweekly.property.Created;
 import biweekly.property.DateTimeStamp;
+import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.property.Organizer;
 import biweekly.property.Timezone;
@@ -259,27 +260,16 @@ public class ICalWriter extends StreamWriter implements Flushable {
 			break;
 		}
 
+		boolean isICalComponent = component instanceof ICalendar;
+		boolean isVCalRoot = getTargetVersion() == ICalVersion.V1_0 && isICalComponent;
+		boolean isICalRoot = getTargetVersion() != ICalVersion.V1_0 && isICalComponent;
+
 		ICalComponentScribe componentScribe = index.getComponentScribe(component);
 		writer.writeBeginComponent(componentScribe.getComponentName());
 
 		List propertyObjs = componentScribe.getProperties(component);
-		if (component instanceof ICalendar) {
-			if (component.getProperty(Version.class) == null) {
-				propertyObjs.add(0, new Version(getTargetVersion()));
-			}
-			if (getTargetVersion() == ICalVersion.V1_0) {
-				Collection<VTimezone> timezones = tzinfo.getComponents();
-				if (!timezones.isEmpty()) {
-					VTimezone timezone = timezones.iterator().next();
-					VCalTimezoneProperties props = convert(timezone, context.getDates());
-
-					Timezone tz = props.getTz();
-					if (tz != null) {
-						propertyObjs.add(tz);
-					}
-					propertyObjs.addAll(props.getDaylights());
-				}
-			}
+		if (isICalComponent && component.getProperty(Version.class) == null) {
+			propertyObjs.add(0, new Version(getTargetVersion()));
 		}
 
 		for (Object propertyObj : propertyObjs) {
@@ -289,7 +279,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		}
 
 		Collection subComponents = componentScribe.getComponents(component);
-		if (getTargetVersion() != ICalVersion.V1_0 && component instanceof ICalendar) {
+		if (isICalRoot) {
 			//add the VTIMEZONE components that were auto-generated
 			Collection<VTimezone> timezones = tzinfo.getComponents();
 			for (VTimezone timezone : timezones) {
@@ -302,6 +292,22 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		for (Object subComponentObj : subComponents) {
 			ICalComponent subComponent = (ICalComponent) subComponentObj;
 			writeComponent(subComponent, component);
+		}
+
+		if (isVCalRoot) {
+			Collection<VTimezone> timezones = tzinfo.getComponents();
+			if (!timezones.isEmpty()) {
+				VTimezone timezone = timezones.iterator().next();
+				VCalTimezoneProperties props = convert(timezone, context.getDates());
+
+				Timezone tz = props.getTz();
+				if (tz != null) {
+					writeProperty(tz);
+				}
+				for (Daylight daylight : props.getDaylights()) {
+					writeProperty(daylight);
+				}
+			}
 		}
 
 		writer.writeEndComponent(componentScribe.getComponentName());

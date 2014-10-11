@@ -3,7 +3,9 @@ package biweekly.io;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 
 import biweekly.component.DaylightSavingsTime;
@@ -133,23 +135,51 @@ public class DataModelConverter {
 
 		ICalTimeZone icalTz = new ICalTimeZone(timezone);
 		Collections.sort(dates);
+		Set<Observance> observancesUsed = new HashSet<Observance>();
+		boolean zeroObservanceUsed = false;
 		for (Date date : dates) {
 			Observance observance = icalTz.getObservance(date);
-			if (observance == null) {
+			Observance observanceAfter = icalTz.getObservanceAfter(date);
+			if (observance == null && observanceAfter == null) {
+				continue;
+			}
 
-			} else {
-				if (observance instanceof StandardTime) {
-					tz = new Timezone(observance.getTimezoneOffsetTo().getValue());
-				} else {
-					UtcOffset offset = observance.getTimezoneOffsetTo().getValue();
-					Date start = observance.getDateStart().getValue();
-					Date end = null; //TODO
+			if (observance == null) {
+				if (observanceAfter instanceof StandardTime && !zeroObservanceUsed) {
+					UtcOffset offset = observanceAfter.getTimezoneOffsetFrom().getValue();
+					Date start = null;
+					Date end = observanceAfter.getDateStart().getValue();
 					String standardName = icalTz.getDisplayName(false, TimeZone.SHORT);
 					String daylightName = icalTz.getDisplayName(true, TimeZone.SHORT);
 
 					Daylight daylight = new Daylight(true, offset, start, end, standardName, daylightName);
 					daylights.add(daylight);
+					zeroObservanceUsed = true;
 				}
+
+				if (observanceAfter instanceof DaylightSavingsTime) {
+					tz = new Timezone(observanceAfter.getTimezoneOffsetFrom().getValue());
+				}
+
+				continue;
+			}
+
+			if (observance instanceof StandardTime) {
+				tz = new Timezone(observance.getTimezoneOffsetTo().getValue());
+				continue;
+			}
+
+			if (observance instanceof DaylightSavingsTime && !observancesUsed.contains(observance)) {
+				UtcOffset offset = observance.getTimezoneOffsetTo().getValue();
+				Date start = observance.getDateStart().getValue();
+				Date end = (observanceAfter == null) ? null : observanceAfter.getDateStart().getValue();
+				String standardName = icalTz.getDisplayName(false, TimeZone.SHORT);
+				String daylightName = icalTz.getDisplayName(true, TimeZone.SHORT);
+
+				Daylight daylight = new Daylight(true, offset, start, end, standardName, daylightName);
+				daylights.add(daylight);
+				observancesUsed.add(observance);
+				continue;
 			}
 		}
 

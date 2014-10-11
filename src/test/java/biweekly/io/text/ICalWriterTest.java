@@ -29,6 +29,7 @@ import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
 import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
+import biweekly.io.ICalTimeZone;
 import biweekly.io.ParseContext;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
@@ -447,30 +448,37 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_VTimezone_to_Daylight() throws Throwable {
+	public void vcal_VTimezone_to_Daylight_no_dates() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 
-		VTimezone timezone = new VTimezone(null);
+		TimezoneInfo tzinfo = new TimezoneInfo();
+		{
+			VTimezone timezone = new VTimezone("id");
+			{
+				DaylightSavingsTime daylightSavings = new DaylightSavingsTime();
+				daylightSavings.setDateStart(new DateTimeComponents(2007, 3, 11, 2, 0, 0, false));
+				daylightSavings.setTimezoneOffsetFrom(-5, 0);
+				daylightSavings.setTimezoneOffsetTo(-4, 0);
+				daylightSavings.addTimezoneName("EDT");
+				timezone.addDaylightSavingsTime(daylightSavings);
 
-		DaylightSavingsTime daylightSavings = new DaylightSavingsTime();
-		daylightSavings.setDateStart(new DateStart(date("2014-01-01 01:00:00")));
-		daylightSavings.setTimezoneOffsetFrom(-5, 0);
-		daylightSavings.setTimezoneOffsetTo(-4, 0);
-		daylightSavings.addTimezoneName("EDT");
-		timezone.addDaylightSavingsTime(daylightSavings);
+				StandardTime standard = new StandardTime();
+				standard.setDateStart(new DateTimeComponents(2007, 11, 4, 2, 0, 0, false));
+				standard.setTimezoneOffsetFrom(-4, 0);
+				standard.setTimezoneOffsetTo(-5, 0);
+				standard.addTimezoneName("EST");
+				timezone.addStandardTime(standard);
+			}
 
-		StandardTime standard = new StandardTime();
-		standard.setDateStart(new DateStart(date("2014-02-01 01:00:00")));
-		standard.setTimezoneOffsetFrom(-4, 0);
-		standard.setTimezoneOffsetTo(-5, 0);
-		standard.addTimezoneName("EST");
-		timezone.addStandardTime(standard);
-
-		ical.addComponent(timezone);
+			ICalTimeZone icalTz = new ICalTimeZone(timezone);
+			tzinfo.assign(timezone, icalTz);
+			tzinfo.setDefaultTimeZone(icalTz);
+		}
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		writer.setTimezoneInfo(tzinfo);
 		writer.write(ical);
 		writer.close();
 
@@ -478,7 +486,6 @@ public class ICalWriterTest {
 		String expected = 
 		"BEGIN:VCALENDAR\r\n" +
 			"VERSION:1.0\r\n" +
-			"DAYLIGHT:TRUE;-0400;20140101T010000;20140201T010000;EST;EDT\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
@@ -487,44 +494,38 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_VTimezone_to_Daylight_multiple_observances() throws Throwable {
+	public void vcal_VTimezone_to_Daylight_one_observance() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new DateStart(date("2014-10-07 09:34:00")));
 
-		VTimezone timezone = new VTimezone("id");
+		TimezoneInfo tzinfo = new TimezoneInfo();
+		{
+			VTimezone timezone = new VTimezone("id");
+			{
+				DaylightSavingsTime daylightSavings = new DaylightSavingsTime();
+				daylightSavings.setDateStart(new DateTimeComponents(2007, 3, 11, 2, 0, 0, false));
+				daylightSavings.setTimezoneOffsetFrom(-5, 0);
+				daylightSavings.setTimezoneOffsetTo(-4, 0);
+				daylightSavings.addTimezoneName("EDT");
+				timezone.addDaylightSavingsTime(daylightSavings);
 
-		DaylightSavingsTime daylightSavings = new DaylightSavingsTime();
-		daylightSavings.setDateStart(new DateStart(date("2014-01-01 01:00:00")));
-		daylightSavings.setTimezoneOffsetFrom(-5, 0);
-		daylightSavings.setTimezoneOffsetTo(-4, 0);
-		daylightSavings.addTimezoneName("EDT");
-		timezone.addDaylightSavingsTime(daylightSavings);
+				StandardTime standard = new StandardTime();
+				standard.setDateStart(new DateTimeComponents(2007, 11, 4, 2, 0, 0, false));
+				standard.setTimezoneOffsetFrom(-4, 0);
+				standard.setTimezoneOffsetTo(-5, 0);
+				standard.addTimezoneName("EST");
+				timezone.addStandardTime(standard);
+			}
 
-		StandardTime standard = new StandardTime();
-		standard.setDateStart(new DateStart(date("2014-02-01 01:00:00")));
-		standard.setTimezoneOffsetFrom(-4, 0);
-		standard.setTimezoneOffsetTo(-5, 0);
-		standard.addTimezoneName("EST");
-		timezone.addStandardTime(standard);
-
-		daylightSavings = new DaylightSavingsTime();
-		daylightSavings.setDateStart(new DateStart(date("2014-03-01 01:00:00")));
-		daylightSavings.setTimezoneOffsetFrom(-5, 0);
-		daylightSavings.setTimezoneOffsetTo(-4, 0);
-		daylightSavings.addTimezoneName("EDT2");
-		timezone.addDaylightSavingsTime(daylightSavings);
-
-		standard = new StandardTime();
-		standard.setDateStart(new DateStart(date("2014-04-01 01:00:00")));
-		standard.setTimezoneOffsetFrom(-4, 0);
-		standard.setTimezoneOffsetTo(-5, 0);
-		standard.addTimezoneName("EST2");
-		timezone.addStandardTime(standard);
+			ICalTimeZone icalTz = new ICalTimeZone(timezone);
+			tzinfo.assign(timezone, icalTz);
+			tzinfo.setDefaultTimeZone(icalTz);
+		}
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
-		writer.getTimezoneInfo().assign(timezone, TimeZone.getDefault());
+		writer.setTimezoneInfo(tzinfo);
 		writer.write(ical);
 		writer.close();
 
