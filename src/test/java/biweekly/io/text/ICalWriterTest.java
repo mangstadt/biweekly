@@ -833,7 +833,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example1.ics", new TimezoneInfo());
+		assertExample(ical, "rfc5545-example1.ics", new TimezoneInfo(), ICalVersion.V2_0);
 	}
 
 	@Test
@@ -891,7 +891,7 @@ public class ICalWriterTest {
 
 		tzinfo.assign(usEasternTz, eastern);
 		tzinfo.setDefaultTimeZone(eastern);
-		assertExample(ical, "rfc5545-example2.ics", tzinfo);
+		assertExample(ical, "rfc5545-example2.ics", tzinfo, ICalVersion.V2_0);
 	}
 
 	@Test
@@ -927,7 +927,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example3.ics", new TimezoneInfo());
+		assertExample(ical, "rfc5545-example3.ics", new TimezoneInfo(), ICalVersion.V2_0);
 	}
 
 	@Test
@@ -963,9 +963,9 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		TimezoneInfo options = new TimezoneInfo();
-		options.setFloating(ical.getTodos().get(0).getDateDue(), true);
-		assertExample(ical, "rfc5545-example4.ics", options);
+		TimezoneInfo tzinfo = new TimezoneInfo();
+		tzinfo.setFloating(ical.getTodos().get(0).getDateDue(), true);
+		assertExample(ical, "rfc5545-example4.ics", tzinfo, ICalVersion.V2_0);
 	}
 
 	@Test
@@ -987,7 +987,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example5.ics", new TimezoneInfo());
+		assertExample(ical, "rfc5545-example5.ics", new TimezoneInfo(), ICalVersion.V2_0);
 	}
 
 	@Test
@@ -1019,14 +1019,88 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).warn(freebusy, 2, 2).run(); //UID and DTSTAMP missing
-		assertExample(ical, "rfc5545-example6.ics", new TimezoneInfo());
+		assertExample(ical, "rfc5545-example6.ics", new TimezoneInfo(), ICalVersion.V2_0);
 	}
 
-	private void assertExample(ICalendar ical, String exampleFileName, TimezoneInfo timezoneOptions) throws IOException {
+	@Test
+	public void vcal_example1() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		{
+			VEvent event = new VEvent();
+			event.getProperties().clear();
+			event.addCategories("MEETING");
+			event.setStatus(Status.tentative());
+			event.setDateStart(utc("1996-04-01 03:30:00"));
+			event.setDateEnd(utc("1996-04-01 04:30:00"));
+			event.setSummary("Your Proposal Review");
+			event.setDescription("Steve and John to review newest proposal material");
+			event.setClassification(Classification.private_());
+
+			ical.addEvent(event);
+		}
+
+		assertValidate(ical).versions(ICalVersion.V1_0).run();
+		assertExample(ical, "vcal-example1.vcs", new TimezoneInfo(), ICalVersion.V1_0);
+	}
+
+	@Test
+	public void vcal_example2() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		{
+			VTodo todo = new VTodo();
+			todo.getProperties().clear();
+			todo.setSummary("John to pay for lunch");
+			todo.setDateDue(utc("1996-04-01 08:30:00"));
+			todo.setStatus(Status.needsAction());
+
+			ical.addTodo(todo);
+		}
+
+		assertValidate(ical).versions(ICalVersion.V1_0).run();
+		assertExample(ical, "vcal-example2.vcs", new TimezoneInfo(), ICalVersion.V1_0);
+	}
+
+	@Test
+	public void vcal_example3() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+
+		VEvent event;
+		{
+			event = new VEvent();
+			event.getProperties().clear();
+			event.addCategories("MEETING");
+			event.setStatus(Status.needsAction());
+			event.setDateStart(utc("1996-04-01 07:30:00"));
+			event.setDateEnd(utc("1996-04-01 08:30:00"));
+			event.setSummary("Steve's Proposal Review");
+			event.setDescription("Steve and John to review newest proposal material");
+			event.setClassification(Classification.private_());
+
+			ical.addEvent(event);
+		}
+
+		{
+			VTodo todo = new VTodo();
+			todo.getProperties().clear();
+			todo.setSummary("John to pay for lunch");
+			todo.setDateDue(utc("1996-04-01 08:30:00"));
+			todo.setStatus(Status.needsAction());
+
+			ical.addTodo(todo);
+		}
+
+		assertValidate(ical).versions(ICalVersion.V1_0).warn(event, 13).run();
+		assertExample(ical, "vcal-example3.vcs", new TimezoneInfo(), ICalVersion.V1_0);
+	}
+
+	private void assertExample(ICalendar ical, String exampleFileName, TimezoneInfo tzinfo, ICalVersion version) throws IOException {
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, version);
 		writer.getRawWriter().getFoldedLineWriter().setLineLength(null);
-		writer.setTimezoneInfo(timezoneOptions);
+		writer.setTimezoneInfo(tzinfo);
 		writer.write(ical);
 		writer.close();
 
