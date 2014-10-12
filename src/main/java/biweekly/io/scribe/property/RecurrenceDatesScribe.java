@@ -6,6 +6,7 @@ import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
+import biweekly.component.Observance;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
@@ -52,6 +53,10 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 	@Override
 	protected ICalParameters _prepareParameters(RecurrenceDates property, WriteContext context) {
+		if (isInObservance(context)) {
+			return property.getParameters();
+		}
+
 		boolean hasTime = property.hasTime() || !property.getPeriods().isEmpty();
 		return handleTzidParameter(property, hasTime, context);
 	}
@@ -71,11 +76,22 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	protected String _writeText(final RecurrenceDates property, final WriteContext context) {
 		List<Date> dates = property.getDates();
 		if (dates != null) {
-			return list(dates, new ListCallback<Date>() {
-				public String asString(Date date) {
-					return date(date).time(property.hasTime()).tz(context.getTimezoneInfo().isFloating(property), context.getTimezoneInfo().getTimeZoneToWriteIn(property)).write();
+			//@formatter:off
+			ListCallback<Date> callback = isInObservance(context) ?
+				new ListCallback<Date>() {
+					public String asString(Date date) {
+						return date(date).time(true).floating(true).extended(false).write();
+					}
 				}
-			});
+				:
+				new ListCallback<Date>() {
+					public String asString(Date date) {
+						return date(date).time(property.hasTime()).tz(context.getTimezoneInfo().isFloating(property), context.getTimezoneInfo().getTimeZoneToWriteIn(property)).write();
+					}
+				};
+			//@formatter:on
+
+			return list(dates, callback);
 		}
 
 		//TODO vCal does not support periods
@@ -119,11 +135,18 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 			ICalDataType dataType = property.hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
 			if (dates.isEmpty()) {
 				element.append(dataType, "");
-			} else {
-				for (Date date : dates) {
-					String dateStr = date(date).time(property.hasTime()).tz(context.getTimezoneInfo().isFloating(property), context.getTimezoneInfo().getTimeZoneToWriteIn(property)).extended(true).write();
-					element.append(dataType, dateStr);
-				}
+				return;
+			}
+
+			boolean inObservance = isInObservance(context);
+			for (Date date : dates) {
+				//@formatter:off
+				String dateStr = inObservance ?
+				date(date).time(true).floating(true).extended(true).write() :
+				date(date).time(property.hasTime()).tz(context.getTimezoneInfo().isFloating(property), context.getTimezoneInfo().getTimeZoneToWriteIn(property)).extended(true).write();
+				//@formatter:on
+
+				element.append(dataType, dateStr);
 			}
 			return;
 		}
@@ -269,8 +292,14 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		List<Date> dates = property.getDates();
 		List<Period> periods = property.getPeriods();
 		if (dates != null) {
+			boolean inObservance = isInObservance(context);
 			for (Date date : dates) {
-				String dateStr = date(date).time(property.hasTime()).tz(context.getTimezoneInfo().isFloating(property), context.getTimezoneInfo().getTimeZoneToWriteIn(property)).extended(true).write();
+				//@formatter:off
+				String dateStr = inObservance ?
+				date(date).time(true).floating(true).extended(true).write() :
+				date(date).time(property.hasTime()).tz(context.getTimezoneInfo().isFloating(property), context.getTimezoneInfo().getTimeZoneToWriteIn(property)).extended(true).write();
+				//@formatter:on
+
 				values.add(dateStr);
 			}
 		} else if (periods != null) {
@@ -388,5 +417,9 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 			}
 		}
 		return property;
+	}
+
+	private boolean isInObservance(WriteContext context) {
+		return context.getParent() instanceof Observance;
 	}
 }
