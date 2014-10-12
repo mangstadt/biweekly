@@ -260,15 +260,15 @@ public class ICalWriter extends StreamWriter implements Flushable {
 			break;
 		}
 
-		boolean isICalComponent = component instanceof ICalendar;
-		boolean isVCalRoot = getTargetVersion() == ICalVersion.V1_0 && isICalComponent;
-		boolean isICalRoot = getTargetVersion() != ICalVersion.V1_0 && isICalComponent;
+		boolean inICalendar = component instanceof ICalendar;
+		boolean inVCalRoot = getTargetVersion() == ICalVersion.V1_0 && inICalendar;
+		boolean inICalRoot = getTargetVersion() != ICalVersion.V1_0 && inICalendar;
 
 		ICalComponentScribe componentScribe = index.getComponentScribe(component);
 		writer.writeBeginComponent(componentScribe.getComponentName());
 
 		List propertyObjs = componentScribe.getProperties(component);
-		if (isICalComponent && component.getProperty(Version.class) == null) {
+		if (inICalendar && component.getProperty(Version.class) == null) {
 			propertyObjs.add(0, new Version(getTargetVersion()));
 		}
 
@@ -279,7 +279,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		}
 
 		Collection subComponents = componentScribe.getComponents(component);
-		if (isICalRoot) {
+		if (inICalRoot) {
 			//add the VTIMEZONE components that were auto-generated
 			Collection<VTimezone> timezones = tzinfo.getComponents();
 			for (VTimezone timezone : timezones) {
@@ -294,7 +294,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 			writeComponent(subComponent, component);
 		}
 
-		if (isVCalRoot) {
+		if (inVCalRoot) {
 			Collection<VTimezone> timezones = tzinfo.getComponents();
 			if (!timezones.isEmpty()) {
 				VTimezone timezone = timezones.iterator().next();
