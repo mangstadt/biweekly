@@ -287,7 +287,6 @@ public class ICalTimeZone extends TimeZone {
 					observanceAfterStart = cur;
 					break;
 				}
-
 			}
 		}
 
@@ -669,6 +668,9 @@ public class ICalTimeZone extends TimeZone {
 		}
 	}
 
+	/**
+	 * Holds the timezone observance information of a particular date.
+	 */
 	public static class Boundary {
 		private final DateTimeValue observanceInStart, observanceAfterStart;
 		private final Observance observanceIn, observanceAfter;
@@ -680,18 +682,36 @@ public class ICalTimeZone extends TimeZone {
 			this.observanceAfter = observanceAfter;
 		}
 
+		/**
+		 * Gets start time of the observance that the date resides in.
+		 * @return the time
+		 */
 		public DateTimeValue getObservanceInStart() {
 			return observanceInStart;
 		}
 
+		/**
+		 * Gets the start time the observance that comes after the observance
+		 * that the date resides in.
+		 * @return the time
+		 */
 		public DateTimeValue getObservanceAfterStart() {
 			return observanceAfterStart;
 		}
 
+		/**
+		 * Gets the observance that the date resides in.
+		 * @return the observance
+		 */
 		public Observance getObservanceIn() {
 			return observanceIn;
 		}
 
+		/**
+		 * Gets the observance that comes after the observance that the date
+		 * resides in.
+		 * @return the observance
+		 */
 		public Observance getObservanceAfter() {
 			return observanceAfter;
 		}

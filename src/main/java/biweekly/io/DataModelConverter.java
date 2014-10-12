@@ -34,6 +34,7 @@ import biweekly.property.ProcedureAlarm;
 import biweekly.property.Repeat;
 import biweekly.property.Timezone;
 import biweekly.property.Trigger;
+import biweekly.property.UtcOffsetProperty;
 import biweekly.property.VCalAlarmProperty;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
@@ -73,8 +74,8 @@ import com.google.ical.values.DateTimeValue;
  */
 public class DataModelConverter {
 	/**
-	 * Converts the timezone information in a vCalendar object to a
-	 * {@link VTimezone} component.
+	 * Converts vCalendar timezone information to am iCalendar {@link VTimezone}
+	 * component.
 	 * @param daylights the DAYLIGHT properties
 	 * @param tz the TZ property
 	 * @return the VTIMEZONE component
@@ -125,12 +126,12 @@ public class DataModelConverter {
 	}
 
 	/**
-	 * Converts a {@link VTimezone} component into the appropriate vCal
-	 * properties.
+	 * Converts an iCalendar {@link VTimezone} component into the appropriate
+	 * vCalendar properties.
 	 * @param timezone the TIMEZONE component
-	 * @param dates the date values in the vCal object that are effected by the
-	 * timezone.
-	 * @return the vCal properties
+	 * @param dates the date values in the vCalendar object that are effected by
+	 * the timezone.
+	 * @return the vCalendar properties
 	 */
 	public static VCalTimezoneProperties convert(VTimezone timezone, List<Date> dates) {
 		List<Daylight> daylights = new ArrayList<Daylight>();
@@ -152,8 +153,9 @@ public class DataModelConverter {
 			}
 
 			if (observance == null) {
+				//the date comes before the earliest observance
 				if (observanceAfter instanceof StandardTime && !zeroObservanceUsed) {
-					UtcOffset offset = observanceAfter.getTimezoneOffsetFrom().getValue();
+					UtcOffset offset = getOffset(observanceAfter.getTimezoneOffsetFrom());
 					DateTimeValue start = null;
 					DateTimeValue end = boundary.getObservanceAfterStart();
 					String standardName = icalTz.getDisplayName(false, TimeZone.SHORT);
@@ -165,19 +167,25 @@ public class DataModelConverter {
 				}
 
 				if (observanceAfter instanceof DaylightSavingsTime) {
-					tz = new Timezone(observanceAfter.getTimezoneOffsetFrom().getValue());
+					UtcOffset offset = getOffset(observanceAfter.getTimezoneOffsetFrom());
+					if (offset != null) {
+						tz = new Timezone(offset);
+					}
 				}
 
 				continue;
 			}
 
 			if (observance instanceof StandardTime) {
-				tz = new Timezone(observance.getTimezoneOffsetTo().getValue());
+				UtcOffset offset = getOffset(observance.getTimezoneOffsetTo());
+				if (offset != null) {
+					tz = new Timezone(offset);
+				}
 				continue;
 			}
 
 			if (observance instanceof DaylightSavingsTime && !daylightStartDates.contains(boundary.getObservanceInStart())) {
-				UtcOffset offset = observance.getTimezoneOffsetTo().getValue();
+				UtcOffset offset = getOffset(observance.getTimezoneOffsetTo());
 				DateTimeValue start = boundary.getObservanceInStart();
 				DateTimeValue end = null;
 				if (observanceAfter != null) {
@@ -207,6 +215,10 @@ public class DataModelConverter {
 		}
 
 		return new VCalTimezoneProperties(daylights, tz);
+	}
+
+	private static UtcOffset getOffset(UtcOffsetProperty property) {
+		return (property == null) ? null : property.getValue();
 	}
 
 	private static Date convert(DateTimeValue value) {
