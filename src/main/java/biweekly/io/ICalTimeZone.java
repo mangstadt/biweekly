@@ -9,6 +9,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.TimeZone;
 
@@ -22,6 +24,7 @@ import biweekly.property.ExceptionRule;
 import biweekly.property.RecurrenceDates;
 import biweekly.property.RecurrenceProperty;
 import biweekly.property.RecurrenceRule;
+import biweekly.property.TimezoneName;
 import biweekly.property.UtcOffsetProperty;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Recurrence;
@@ -79,6 +82,37 @@ public class ICalTimeZone extends TimeZone {
 	public ICalTimeZone(VTimezone component) {
 		this.component = component;
 		setID(component.getTimezoneId().getValue());
+	}
+
+	@Override
+	public String getDisplayName(boolean daylight, int style, Locale locale) {
+		List<Observance> observances = getSortedObservances();
+		if (observances.isEmpty()) {
+			return super.getDisplayName(daylight, style, locale);
+		}
+
+		ListIterator<Observance> it = observances.listIterator(observances.size());
+		while (it.hasPrevious()) {
+			Observance observance = it.previous();
+
+			if (daylight && observance instanceof DaylightSavingsTime) {
+				List<TimezoneName> names = observance.getTimezoneNames();
+				if (!names.isEmpty()) {
+					TimezoneName name = names.get(0);
+					return name.getValue();
+				}
+			}
+
+			if (!daylight && observance instanceof StandardTime) {
+				List<TimezoneName> names = observance.getTimezoneNames();
+				if (!names.isEmpty()) {
+					TimezoneName name = names.get(0);
+					return name.getValue();
+				}
+			}
+		}
+
+		return super.getDisplayName(daylight, style, locale);
 	}
 
 	/**
@@ -180,7 +214,7 @@ public class ICalTimeZone extends TimeZone {
 	 */
 	public Observance getObservance(Date date) {
 		Boundary boundary = getObservanceBoundary(date);
-		return boundary.getObservanceIn();
+		return (boundary == null) ? null : boundary.getObservanceIn();
 	}
 
 	/**
@@ -195,7 +229,7 @@ public class ICalTimeZone extends TimeZone {
 	 */
 	private Observance getObservance(int year, int month, int day, int hour, int minute, int second) {
 		Boundary boundary = getObservanceBoundary(year, month, day, hour, minute, second);
-		return boundary.getObservanceIn();
+		return (boundary == null) ? null : boundary.getObservanceIn();
 	}
 
 	private Boundary getObservanceBoundary(int year, int month, int day, int hour, int minute, int second) {
