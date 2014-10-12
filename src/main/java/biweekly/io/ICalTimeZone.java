@@ -159,37 +159,28 @@ public class ICalTimeZone extends TimeZone {
 		return !component.getDaylightSavingsTime().isEmpty();
 	}
 
+	public Boundary getObservanceBoundary(Date date) {
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC")); //TODO should this be local TZ?
+		//Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		int year = cal.get(Calendar.YEAR);
+		int month = cal.get(Calendar.MONTH) + 1;
+		int day = cal.get(Calendar.DATE);
+		int hour = cal.get(Calendar.HOUR);
+		int minute = cal.get(Calendar.MINUTE);
+		int second = cal.get(Calendar.SECOND);
+
+		return getObservanceBoundary(year, month, day, hour, minute, second);
+	}
+
 	/**
 	 * Gets the observance that a date is effected by.
 	 * @param date the date
 	 * @return the observance or null if an observance cannot be found
 	 */
 	public Observance getObservance(Date date) {
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC")); //TODO should this be local TZ?
-		//Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		int year = cal.get(Calendar.YEAR);
-		int month = cal.get(Calendar.MONTH) + 1;
-		int day = cal.get(Calendar.DATE);
-		int hour = cal.get(Calendar.HOUR);
-		int minute = cal.get(Calendar.MINUTE);
-		int second = cal.get(Calendar.SECOND);
-
-		return getObservance(year, month, day, hour, minute, second);
-	}
-
-	public Observance getObservanceAfter(Date date) {
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC")); //TODO should this be local TZ?
-		//Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
-		int year = cal.get(Calendar.YEAR);
-		int month = cal.get(Calendar.MONTH) + 1;
-		int day = cal.get(Calendar.DATE);
-		int hour = cal.get(Calendar.HOUR);
-		int minute = cal.get(Calendar.MINUTE);
-		int second = cal.get(Calendar.SECOND);
-
-		return getObservanceAfter(year, month, day, hour, minute, second);
+		Boundary boundary = getObservanceBoundary(date);
+		return boundary.getObservanceIn();
 	}
 
 	/**
@@ -203,42 +194,11 @@ public class ICalTimeZone extends TimeZone {
 	 * @return the observance or null if an observance cannot be found
 	 */
 	private Observance getObservance(int year, int month, int day, int hour, int minute, int second) {
-		DateValue givenTime = new DateTimeValueImpl(year, month, day, hour, minute, second);
-
-		Observance closest = null;
-		DateValue closestValue = null;
-		for (Observance observance : getSortedObservances()) {
-			//skip observances that start after the given time
-			DateStart dtstart = observance.getDateStart();
-			if (dtstart != null) {
-				DateTimeValue dtstartValue = convert(dtstart);
-				if (dtstartValue != null && dtstartValue.compareTo(givenTime) > 0) {
-					continue;
-				}
-			}
-
-			RecurrenceIterator it = createIterator(observance);
-			DateValue prev = null;
-			while (it.hasNext()) {
-				DateValue cur = it.next();
-				if (givenTime.compareTo(cur) < 0) {
-					//break if we have passed the given time
-					break;
-				}
-
-				prev = cur;
-			}
-
-			if (prev != null && (closestValue == null || closestValue.compareTo(prev) < 0)) {
-				closestValue = prev;
-				closest = observance;
-			}
-		}
-
-		return closest;
+		Boundary boundary = getObservanceBoundary(year, month, day, hour, minute, second);
+		return boundary.getObservanceIn();
 	}
 
-	private Observance getObservanceAfter(int year, int month, int day, int hour, int minute, int second) {
+	private Boundary getObservanceBoundary(int year, int month, int day, int hour, int minute, int second) {
 		List<Observance> observances = getSortedObservances();
 		if (observances.isEmpty()) {
 			return null;
@@ -246,7 +206,8 @@ public class ICalTimeZone extends TimeZone {
 
 		DateValue givenTime = new DateTimeValueImpl(year, month, day, hour, minute, second);
 		int closestIndex = -1;
-		DateValue closestValue = null;
+		Observance closest = null;
+		DateTimeValue closestValue = null;
 		for (int i = 0; i < observances.size(); i++) {
 			Observance observance = observances.get(i);
 
@@ -260,9 +221,9 @@ public class ICalTimeZone extends TimeZone {
 			}
 
 			RecurrenceIterator it = createIterator(observance);
-			DateValue prev = null;
+			DateTimeValue prev = null;
 			while (it.hasNext()) {
-				DateValue cur = it.next();
+				DateTimeValue cur = (DateTimeValue) it.next();
 				if (givenTime.compareTo(cur) < 0) {
 					//break if we have passed the given time
 					break;
@@ -273,11 +234,30 @@ public class ICalTimeZone extends TimeZone {
 
 			if (prev != null && (closestValue == null || closestValue.compareTo(prev) < 0)) {
 				closestValue = prev;
+				closest = observance;
 				closestIndex = i;
 			}
 		}
 
-		return (closestIndex < observances.size() - 1) ? observances.get(closestIndex + 1) : null;
+		Observance observanceIn = closest;
+		DateTimeValue observanceInStart = closestValue;
+		Observance observanceAfter = null;
+		DateTimeValue observanceAfterStart = null;
+		if (closestIndex < observances.size() - 1) {
+			observanceAfter = observances.get(closestIndex + 1);
+
+			RecurrenceIterator it = createIterator(observanceAfter);
+			while (it.hasNext()) {
+				DateTimeValue cur = (DateTimeValue) it.next();
+				if (givenTime.compareTo(cur) < 0) {
+					observanceAfterStart = cur;
+					break;
+				}
+
+			}
+		}
+
+		return new Boundary(observanceInStart, observanceIn, observanceAfterStart, observanceAfter);
 	}
 
 	private boolean hasDateStart(Observance observance) {
@@ -652,6 +632,34 @@ public class ICalTimeZone extends TimeZone {
 
 		public void remove() {
 			it.remove();
+		}
+	}
+
+	public static class Boundary {
+		private final DateTimeValue observanceInStart, observanceAfterStart;
+		private final Observance observanceIn, observanceAfter;
+
+		public Boundary(DateTimeValue observanceInStart, Observance observanceIn, DateTimeValue observanceAfterStart, Observance observanceAfter) {
+			this.observanceInStart = observanceInStart;
+			this.observanceAfterStart = observanceAfterStart;
+			this.observanceIn = observanceIn;
+			this.observanceAfter = observanceAfter;
+		}
+
+		public DateTimeValue getObservanceInStart() {
+			return observanceInStart;
+		}
+
+		public DateTimeValue getObservanceAfterStart() {
+			return observanceAfterStart;
+		}
+
+		public Observance getObservanceIn() {
+			return observanceIn;
+		}
+
+		public Observance getObservanceAfter() {
+			return observanceAfter;
 		}
 	}
 }

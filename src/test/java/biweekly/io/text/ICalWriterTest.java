@@ -56,6 +56,9 @@ import biweekly.property.Trigger;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
+import biweekly.util.Recurrence;
+import biweekly.util.Recurrence.DayOfWeek;
+import biweekly.util.Recurrence.Frequency;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -448,37 +451,13 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_VTimezone_to_Daylight_no_dates() throws Throwable {
+	public void vcal_timezone_no_dates() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 
-		TimezoneInfo tzinfo = new TimezoneInfo();
-		{
-			VTimezone timezone = new VTimezone("id");
-			{
-				DaylightSavingsTime daylightSavings = new DaylightSavingsTime();
-				daylightSavings.setDateStart(new DateTimeComponents(2007, 3, 11, 2, 0, 0, false));
-				daylightSavings.setTimezoneOffsetFrom(-5, 0);
-				daylightSavings.setTimezoneOffsetTo(-4, 0);
-				daylightSavings.addTimezoneName("EDT");
-				timezone.addDaylightSavingsTime(daylightSavings);
-
-				StandardTime standard = new StandardTime();
-				standard.setDateStart(new DateTimeComponents(2007, 11, 4, 2, 0, 0, false));
-				standard.setTimezoneOffsetFrom(-4, 0);
-				standard.setTimezoneOffsetTo(-5, 0);
-				standard.addTimezoneName("EST");
-				timezone.addStandardTime(standard);
-			}
-
-			ICalTimeZone icalTz = new ICalTimeZone(timezone);
-			tzinfo.assign(timezone, icalTz);
-			tzinfo.setDefaultTimeZone(icalTz);
-		}
-
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
-		writer.setTimezoneInfo(tzinfo);
+		writer.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
 
@@ -494,38 +473,14 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_VTimezone_to_Daylight_one_observance() throws Throwable {
+	public void vcal_timezone_one_daylight_one_date() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
-		ical.addProperty(new DateStart(date("2014-10-07 09:34:00")));
-
-		TimezoneInfo tzinfo = new TimezoneInfo();
-		{
-			VTimezone timezone = new VTimezone("id");
-			{
-				DaylightSavingsTime daylightSavings = new DaylightSavingsTime();
-				daylightSavings.setDateStart(new DateTimeComponents(2007, 3, 11, 2, 0, 0, false));
-				daylightSavings.setTimezoneOffsetFrom(-5, 0);
-				daylightSavings.setTimezoneOffsetTo(-4, 0);
-				daylightSavings.addTimezoneName("EDT");
-				timezone.addDaylightSavingsTime(daylightSavings);
-
-				StandardTime standard = new StandardTime();
-				standard.setDateStart(new DateTimeComponents(2007, 11, 4, 2, 0, 0, false));
-				standard.setTimezoneOffsetFrom(-4, 0);
-				standard.setTimezoneOffsetTo(-5, 0);
-				standard.addTimezoneName("EST");
-				timezone.addStandardTime(standard);
-			}
-
-			ICalTimeZone icalTz = new ICalTimeZone(timezone);
-			tzinfo.assign(timezone, icalTz);
-			tzinfo.setDefaultTimeZone(icalTz);
-		}
+		ical.addProperty(new DateStart(utc("2014-10-07 09:34:00")));
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
-		writer.setTimezoneInfo(tzinfo);
+		writer.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
 
@@ -533,9 +488,9 @@ public class ICalWriterTest {
 		String expected = 
 		"BEGIN:VCALENDAR\r\n" +
 			"VERSION:1.0\r\n" +
-			"DTSTART:20141007T093400\r\n" +
-			"DAYLIGHT:TRUE;-0400;20140101T010000;20140201T010000;EST;EDT\r\n" +
-			"DAYLIGHT:TRUE;-0400;20140301T010000;20140401T010000;EST2;EDT2\r\n" +
+			"DTSTART:20141007T053400\r\n" +
+			"TZ:-0500\r\n" +
+			"DAYLIGHT:TRUE;-0400;20140309T030000;20141102T020000;GMT-05:00;GMT-04:00\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
@@ -544,23 +499,15 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_VTimezone_to_Daylight_no_daylight_component() throws Throwable {
+	public void vcal_timezone_one_daylight_two_dates() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
-
-		VTimezone timezone = new VTimezone(null);
-
-		StandardTime standard = new StandardTime();
-		standard.setDateStart(new DateStart(date("2014-02-01 01:00:00")));
-		standard.setTimezoneOffsetFrom(-4, 0);
-		standard.setTimezoneOffsetTo(-5, 0);
-		standard.addTimezoneName("EST");
-		timezone.addStandardTime(standard);
-
-		ical.addComponent(timezone);
+		ical.addProperty(new DateStart(utc("2014-10-07 09:34:00")));
+		ical.addProperty(new DateStart(utc("2014-10-08 09:34:00")));
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		writer.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
 
@@ -568,6 +515,35 @@ public class ICalWriterTest {
 		String expected = 
 		"BEGIN:VCALENDAR\r\n" +
 			"VERSION:1.0\r\n" +
+			"DTSTART:20141007T053400\r\n" +
+			"DTSTART:20141008T053400\r\n" +
+			"TZ:-0500\r\n" +
+			"DAYLIGHT:TRUE;-0400;20140309T030000;20141102T020000;GMT-05:00;GMT-04:00\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void vcal_timezone_standard_one_date() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.addProperty(new DateStart(utc("2014-01-07 09:34:00")));
+
+		StringWriter sw = new StringWriter();
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		writer.setTimezoneInfo(americaNewYork());
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected = 
+		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:1.0\r\n" +
+			"DTSTART:20140107T043400\r\n" +
+			"TZ:-0500\r\n" +
 			"DAYLIGHT:FALSE\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
@@ -577,23 +553,15 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_VTimezone_to_Daylight_no_standard_component() throws Throwable {
+	public void vcal_timezone_standard_two_dates() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
-
-		VTimezone timezone = new VTimezone(null);
-
-		DaylightSavingsTime daylightSavings = new DaylightSavingsTime();
-		daylightSavings.setDateStart(new DateStart(date("2014-01-01 01:00:00")));
-		daylightSavings.setTimezoneOffsetFrom(-5, 0);
-		daylightSavings.setTimezoneOffsetTo(-4, 0);
-		daylightSavings.addTimezoneName("EDT");
-		timezone.addDaylightSavingsTime(daylightSavings);
-
-		ical.addComponent(timezone);
+		ical.addProperty(new DateStart(utc("2014-01-07 09:34:00")));
+		ical.addProperty(new DateStart(utc("2014-02-07 09:34:00")));
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		writer.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
 
@@ -601,6 +569,98 @@ public class ICalWriterTest {
 		String expected = 
 		"BEGIN:VCALENDAR\r\n" +
 			"VERSION:1.0\r\n" +
+			"DTSTART:20140107T043400\r\n" +
+			"DTSTART:20140207T043400\r\n" +
+			"TZ:-0500\r\n" +
+			"DAYLIGHT:FALSE\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void vcal_timezone_standard_and_daylight() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.addProperty(new DateStart(utc("2014-01-07 09:34:00")));
+		ical.addProperty(new DateStart(utc("2014-10-07 09:34:00")));
+
+		StringWriter sw = new StringWriter();
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		writer.setTimezoneInfo(americaNewYork());
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected = 
+		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:1.0\r\n" +
+			"DTSTART:20140107T043400\r\n" +
+			"DTSTART:20141007T053400\r\n" +
+			"TZ:-0500\r\n" +
+			"DAYLIGHT:TRUE;-0400;20140309T030000;20141102T020000;GMT-05:00;GMT-04:00\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void vcal_timezone_standard_and_two_daylights() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		ical.addProperty(new DateStart(utc("2014-01-07 09:34:00")));
+		ical.addProperty(new DateStart(utc("2014-10-07 09:34:00")));
+		ical.addProperty(new DateStart(utc("2015-10-07 09:34:00")));
+
+		StringWriter sw = new StringWriter();
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		writer.setTimezoneInfo(americaNewYork());
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected = 
+		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:1.0\r\n" +
+			"DTSTART:20140107T043400\r\n" +
+			"DTSTART:20141007T053400\r\n" +
+			"DTSTART:20151007T053400\r\n" +
+			"TZ:-0500\r\n" +
+			"DAYLIGHT:TRUE;-0400;20140309T030000;20141102T020000;GMT-05:00;GMT-04:00\r\n" +
+			"DAYLIGHT:TRUE;-0400;20150308T030000;20151101T020000;GMT-05:00;GMT-04:00\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void vcal_timezone_no_daylight_component() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+
+		ical.addProperty(new DateStart(utc("2014-01-07 09:34:00")));
+		ical.addProperty(new DateStart(utc("2014-10-07 09:34:00")));
+
+		StringWriter sw = new StringWriter();
+		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		writer.setTimezoneInfo(americaNewYorkWithoutDaylight());
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected = 
+		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:1.0\r\n" +
+			"DTSTART:20140107T043400\r\n" +
+			"DTSTART:20141007T043400\r\n" +
+			"TZ:-0500\r\n" +
+			"DAYLIGHT:FALSE\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
@@ -977,6 +1037,73 @@ public class ICalWriterTest {
 		String actual = sw.toString();
 
 		assertEquals(expected, actual);
+	}
+
+	private TimezoneInfo americaNewYorkWithoutDaylight() {
+		VTimezone timezone = new VTimezone("id");
+		{
+
+			StandardTime standard = new StandardTime();
+			standard.setDateStart(new DateTimeComponents(2007, 11, 4, 2, 0, 0, false));
+			standard.setTimezoneOffsetFrom(-4, 0);
+			standard.setTimezoneOffsetTo(-5, 0);
+			standard.addTimezoneName("EST");
+			//@formatter:off
+			standard.setRecurrenceRule(new Recurrence.Builder
+			(Frequency.YEARLY)
+			.byMonth(11)
+			.byDay(1, DayOfWeek.SUNDAY)
+			.build());
+			//@formatter:on
+			timezone.addStandardTime(standard);
+		}
+
+		ICalTimeZone icalTz = new ICalTimeZone(timezone);
+
+		TimezoneInfo tzinfo = new TimezoneInfo();
+		tzinfo.assign(timezone, icalTz);
+		tzinfo.setDefaultTimeZone(icalTz);
+		return tzinfo;
+	}
+
+	private TimezoneInfo americaNewYork() {
+		VTimezone timezone = new VTimezone("id");
+		{
+			DaylightSavingsTime daylightSavings = new DaylightSavingsTime();
+			daylightSavings.setDateStart(new DateTimeComponents(2007, 3, 11, 2, 0, 0, false));
+			daylightSavings.setTimezoneOffsetFrom(-5, 0);
+			daylightSavings.setTimezoneOffsetTo(-4, 0);
+			daylightSavings.addTimezoneName("EDT");
+			//@formatter:off
+			daylightSavings.setRecurrenceRule(new Recurrence.Builder
+			(Frequency.YEARLY)
+			.byMonth(3)
+			.byDay(2, DayOfWeek.SUNDAY)
+			.build());
+			//@formatter:on
+			timezone.addDaylightSavingsTime(daylightSavings);
+
+			StandardTime standard = new StandardTime();
+			standard.setDateStart(new DateTimeComponents(2007, 11, 4, 2, 0, 0, false));
+			standard.setTimezoneOffsetFrom(-4, 0);
+			standard.setTimezoneOffsetTo(-5, 0);
+			standard.addTimezoneName("EST");
+			//@formatter:off
+			standard.setRecurrenceRule(new Recurrence.Builder
+			(Frequency.YEARLY)
+			.byMonth(11)
+			.byDay(1, DayOfWeek.SUNDAY)
+			.build());
+			//@formatter:on
+			timezone.addStandardTime(standard);
+		}
+
+		ICalTimeZone icalTz = new ICalTimeZone(timezone);
+
+		TimezoneInfo tzinfo = new TimezoneInfo();
+		tzinfo.assign(timezone, icalTz);
+		tzinfo.setDefaultTimeZone(icalTz);
+		return tzinfo;
 	}
 
 	private class TestProperty extends ICalProperty {

@@ -1,6 +1,7 @@
 package biweekly.io;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -14,6 +15,7 @@ import biweekly.component.Observance;
 import biweekly.component.StandardTime;
 import biweekly.component.VAlarm;
 import biweekly.component.VTimezone;
+import biweekly.io.ICalTimeZone.Boundary;
 import biweekly.parameter.Related;
 import biweekly.parameter.Role;
 import biweekly.property.Action;
@@ -36,6 +38,8 @@ import biweekly.property.VCalAlarmProperty;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.UtcOffset;
+
+import com.google.ical.values.DateTimeValue;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -121,10 +125,12 @@ public class DataModelConverter {
 	}
 
 	/**
-	 * Converts a {@link VTimezone} component into a list of {@link Daylight}
+	 * Converts a {@link VTimezone} component into the appropriate vCal
 	 * properties.
 	 * @param timezone the TIMEZONE component
-	 * @return the DAYLIGHT properties
+	 * @param dates the date values in the vCal object that are effected by the
+	 * timezone.
+	 * @return the vCal properties
 	 */
 	public static VCalTimezoneProperties convert(VTimezone timezone, List<Date> dates) {
 		List<Daylight> daylights = new ArrayList<Daylight>();
@@ -135,11 +141,12 @@ public class DataModelConverter {
 
 		ICalTimeZone icalTz = new ICalTimeZone(timezone);
 		Collections.sort(dates);
-		Set<Observance> observancesUsed = new HashSet<Observance>();
+		Set<DateTimeValue> daylightStartDates = new HashSet<DateTimeValue>();
 		boolean zeroObservanceUsed = false;
 		for (Date date : dates) {
-			Observance observance = icalTz.getObservance(date);
-			Observance observanceAfter = icalTz.getObservanceAfter(date);
+			Boundary boundary = icalTz.getObservanceBoundary(date);
+			Observance observance = boundary.getObservanceIn();
+			Observance observanceAfter = boundary.getObservanceAfter();
 			if (observance == null && observanceAfter == null) {
 				continue;
 			}
@@ -147,12 +154,12 @@ public class DataModelConverter {
 			if (observance == null) {
 				if (observanceAfter instanceof StandardTime && !zeroObservanceUsed) {
 					UtcOffset offset = observanceAfter.getTimezoneOffsetFrom().getValue();
-					Date start = null;
-					Date end = observanceAfter.getDateStart().getValue();
+					DateTimeValue start = null;
+					DateTimeValue end = boundary.getObservanceAfterStart();
 					String standardName = icalTz.getDisplayName(false, TimeZone.SHORT);
 					String daylightName = icalTz.getDisplayName(true, TimeZone.SHORT);
 
-					Daylight daylight = new Daylight(true, offset, start, end, standardName, daylightName);
+					Daylight daylight = new Daylight(true, offset, convert(start), convert(end), standardName, daylightName);
 					daylights.add(daylight);
 					zeroObservanceUsed = true;
 				}
@@ -169,16 +176,20 @@ public class DataModelConverter {
 				continue;
 			}
 
-			if (observance instanceof DaylightSavingsTime && !observancesUsed.contains(observance)) {
+			if (observance instanceof DaylightSavingsTime && !daylightStartDates.contains(boundary.getObservanceInStart())) {
 				UtcOffset offset = observance.getTimezoneOffsetTo().getValue();
-				Date start = observance.getDateStart().getValue();
-				Date end = (observanceAfter == null) ? null : observanceAfter.getDateStart().getValue();
+				DateTimeValue start = boundary.getObservanceInStart();
+				DateTimeValue end = null;
+				if (observanceAfter != null) {
+					end = boundary.getObservanceAfterStart();
+				}
+
 				String standardName = icalTz.getDisplayName(false, TimeZone.SHORT);
 				String daylightName = icalTz.getDisplayName(true, TimeZone.SHORT);
 
-				Daylight daylight = new Daylight(true, offset, start, end, standardName, daylightName);
+				Daylight daylight = new Daylight(true, offset, convert(start), convert(end), standardName, daylightName);
 				daylights.add(daylight);
-				observancesUsed.add(observance);
+				daylightStartDates.add(start);
 				continue;
 			}
 		}
@@ -196,6 +207,26 @@ public class DataModelConverter {
 		}
 
 		return new VCalTimezoneProperties(daylights, tz);
+	}
+
+	private static Date convert(DateTimeValue value) {
+		if (value == null) {
+			return null;
+		}
+
+		Calendar cal = Calendar.getInstance();
+		cal.clear();
+		//@formatter:off
+		cal.set(
+			value.year(),
+			value.month() - 1,
+			value.day(),
+			value.hour(),
+			value.minute(),
+			value.second()
+		);
+		//@formatter::on
+		return cal.getTime();
 	}
 
 	/**
