@@ -1302,8 +1302,10 @@ public class VTodo extends ICalComponent {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
-		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
-		checkOptionalCardinality(warnings, Classification.class, Completed.class, Created.class, Description.class, DateStart.class, Geo.class, LastModified.class, Location.class, Organizer.class, PercentComplete.class, Priority.class, RecurrenceId.class, Sequence.class, Status.class, Summary.class, Url.class);
+		if (version != ICalVersion.V1_0) {
+			checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
+			checkOptionalCardinality(warnings, Classification.class, Completed.class, Created.class, Description.class, DateStart.class, Geo.class, LastModified.class, Location.class, Organizer.class, PercentComplete.class, Priority.class, RecurrenceId.class, Sequence.class, Status.class, Summary.class, Url.class);
+		}
 
 		Status validStatuses[];
 		switch (version) {

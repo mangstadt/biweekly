@@ -333,6 +333,10 @@ public class Observance extends ICalComponent {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+		if (version == ICalVersion.V1_0) {
+			warnings.add(Warning.validate(47, version));
+		}
+
 		checkRequiredCardinality(warnings, DateStart.class, TimezoneOffsetTo.class, TimezoneOffsetFrom.class);
 
 		//BYHOUR, BYMINUTE, and BYSECOND cannot be specified in RRULE if DTSTART's data type is "date"

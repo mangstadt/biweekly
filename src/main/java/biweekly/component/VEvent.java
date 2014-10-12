@@ -1280,8 +1280,10 @@ public class VEvent extends ICalComponent {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
-		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
-		checkOptionalCardinality(warnings, Classification.class, Created.class, Description.class, Geo.class, LastModified.class, Location.class, Organizer.class, Priority.class, Status.class, Summary.class, Transparency.class, Url.class, RecurrenceId.class);
+		if (version != ICalVersion.V1_0) {
+			checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
+			checkOptionalCardinality(warnings, Classification.class, Created.class, Description.class, Geo.class, LastModified.class, Location.class, Organizer.class, Priority.class, Status.class, Summary.class, Transparency.class, Url.class, RecurrenceId.class);
+		}
 
 		Status validStatuses[];
 		switch (version) {
@@ -1299,7 +1301,7 @@ public class VEvent extends ICalComponent {
 
 		//DTSTART is always required, unless there is a METHOD property at the iCal root
 		ICalComponent ical = components.get(0);
-		if (dateStart == null && ical.getProperty(Method.class) == null) {
+		if (version != ICalVersion.V1_0 && dateStart == null && ical.getProperty(Method.class) == null) {
 			warnings.add(Warning.validate(14));
 		}
 
@@ -1352,7 +1354,5 @@ public class VEvent extends ICalComponent {
 		if (getProperties(RecurrenceRule.class).size() > 1) {
 			warnings.add(Warning.validate(6));
 		}
-
-		//TODO check for properties which shouldn't be added to VEVENTs
 	}
 }

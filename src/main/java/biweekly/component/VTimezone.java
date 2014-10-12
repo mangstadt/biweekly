@@ -62,7 +62,8 @@ import biweekly.property.TimezoneUrl;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545 p.62-71</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
+ * p.62-71</a>
  */
 public class VTimezone extends ICalComponent {
 	/**
@@ -77,7 +78,8 @@ public class VTimezone extends ICalComponent {
 	/**
 	 * Gets the ID for this timezone. This is a <b>required</b> property.
 	 * @return the timezone ID or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-102">RFC 5545 p.102-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-102">RFC 5545
+	 * p.102-3</a>
 	 */
 	public TimezoneId getTimezoneId() {
 		return getProperty(TimezoneId.class);
@@ -86,7 +88,8 @@ public class VTimezone extends ICalComponent {
 	/**
 	 * Sets an ID for this timezone. This is a <b>required</b> property.
 	 * @param timezoneId the timezone ID or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-102">RFC 5545 p.102-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-102">RFC 5545
+	 * p.102-3</a>
 	 */
 	public void setTimezoneId(TimezoneId timezoneId) {
 		setProperty(TimezoneId.class, timezoneId);
@@ -96,7 +99,8 @@ public class VTimezone extends ICalComponent {
 	 * Sets an ID for this timezone. This is a <b>required</b> property.
 	 * @param timezoneId the timezone ID or null to remove
 	 * @return the property that was created
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-102">RFC 5545 p.102-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-102">RFC 5545
+	 * p.102-3</a>
 	 */
 	public TimezoneId setTimezoneId(String timezoneId) {
 		TimezoneId prop = (timezoneId == null) ? null : new TimezoneId(timezoneId);
@@ -107,7 +111,8 @@ public class VTimezone extends ICalComponent {
 	/**
 	 * Gets the date-time that the timezone data was last changed.
 	 * @return the last modified date or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545 p.138</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
+	 * p.138</a>
 	 */
 	public LastModified getLastModified() {
 		return getProperty(LastModified.class);
@@ -116,7 +121,8 @@ public class VTimezone extends ICalComponent {
 	/**
 	 * Sets the date-time that the timezone data was last changed.
 	 * @param lastModified the last modified date or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545 p.138</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
+	 * p.138</a>
 	 */
 	public void setLastModified(LastModified lastModified) {
 		setProperty(LastModified.class, lastModified);
@@ -126,7 +132,8 @@ public class VTimezone extends ICalComponent {
 	 * Sets the date-time that the timezone data was last changed.
 	 * @param lastModified the last modified date or null to remove
 	 * @return the property that was created
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545 p.138</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
+	 * p.138</a>
 	 */
 	public LastModified setLastModified(Date lastModified) {
 		LastModified prop = (lastModified == null) ? null : new LastModified(lastModified);
@@ -138,7 +145,8 @@ public class VTimezone extends ICalComponent {
 	 * Gets the timezone URL, which points to an iCalendar object that contains
 	 * further information on the timezone.
 	 * @return the URL or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-106">RFC 5545 p.106</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-106">RFC 5545
+	 * p.106</a>
 	 */
 	public TimezoneUrl getTimezoneUrl() {
 		return getProperty(TimezoneUrl.class);
@@ -148,7 +156,8 @@ public class VTimezone extends ICalComponent {
 	 * Sets the timezone URL, which points to an iCalendar object that contains
 	 * further information on the timezone.
 	 * @param url the URL or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-106">RFC 5545 p.106</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-106">RFC 5545
+	 * p.106</a>
 	 */
 	public void setTimezoneUrl(TimezoneUrl url) {
 		setProperty(TimezoneUrl.class, url);
@@ -160,7 +169,8 @@ public class VTimezone extends ICalComponent {
 	 * @param url the timezone URL (e.g.
 	 * "http://example.com/America-New_York.ics") or null to remove
 	 * @return the property that was created
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-106">RFC 5545 p.106</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-106">RFC 5545
+	 * p.106</a>
 	 */
 	public TimezoneUrl setTimezoneUrl(String url) {
 		TimezoneUrl prop = (url == null) ? null : new TimezoneUrl(url);
@@ -203,6 +213,10 @@ public class VTimezone extends ICalComponent {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+		if (version == ICalVersion.V1_0) {
+			warnings.add(Warning.validate(47, version));
+		}
+
 		checkRequiredCardinality(warnings, TimezoneId.class);
 		checkOptionalCardinality(warnings, LastModified.class, TimezoneUrl.class);
 

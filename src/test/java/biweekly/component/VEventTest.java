@@ -63,7 +63,8 @@ public class VEventTest {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
 		component.getProperties().clear();
-		assertValidate(component).parents(parent).run(2, 2, 14);
+		assertValidate(component).parents(parent).versions(ICalVersion.V1_0).run();
+		assertValidate(component).parents(parent).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(2, 2, 14);
 	}
 
 	@Test
@@ -99,7 +100,7 @@ public class VEventTest {
 		component.addProperty(new RecurrenceId(new Date()));
 		component.addProperty(new RecurrenceId(new Date()));
 
-		assertValidate(component).parents(parent).versions(ICalVersion.V1_0).warn(status1, 46).warn(status2, 46).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 14);
+		assertValidate(component).parents(parent).versions(ICalVersion.V1_0).warn(status1, 46).warn(status2, 46).run();
 		assertValidate(component).parents(parent).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 14);
 	}
 
@@ -110,7 +111,7 @@ public class VEventTest {
 		Status status = Status.draft();
 		component.setStatus(status);
 
-		assertValidate(component).parents(parent).versions(ICalVersion.V1_0).warn(status, 46).run(13, 14);
+		assertValidate(component).parents(parent).versions(ICalVersion.V1_0).warn(status, 46).run(13);
 		assertValidate(component).parents(parent).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(13, 14);
 	}
 

@@ -944,6 +944,10 @@ public class VJournal extends ICalComponent {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+		if (version == ICalVersion.V1_0) {
+			warnings.add(Warning.validate(47, version));
+		}
+
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
 		checkOptionalCardinality(warnings, Classification.class, Created.class, DateStart.class, LastModified.class, Organizer.class, RecurrenceId.class, Sequence.class, Status.class, Summary.class, Url.class);
 		checkStatus(warnings, Status.draft(), Status.final_(), Status.cancelled());

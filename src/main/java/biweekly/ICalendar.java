@@ -308,14 +308,16 @@ public class ICalendar extends ICalComponent {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
-		checkRequiredCardinality(warnings, ProductId.class);
+		if (version != ICalVersion.V1_0) {
+			checkRequiredCardinality(warnings, ProductId.class);
 
-		if (this.components.isEmpty()) {
-			warnings.add(Warning.validate(4));
-		}
+			if (this.components.isEmpty()) {
+				warnings.add(Warning.validate(4));
+			}
 
-		if (version != ICalVersion.V1_0 && getProperty(Geo.class) != null) {
-			warnings.add(Warning.validate(44));
+			if (getProperty(Geo.class) != null) {
+				warnings.add(Warning.validate(44));
+			}
 		}
 	}
 

@@ -63,7 +63,8 @@ public class VTodoTest {
 	public void validate_required() {
 		VTodo component = new VTodo();
 		component.getProperties().clear();
-		assertValidate(component).run(2, 2);
+		assertValidate(component).versions(ICalVersion.V1_0).run();
+		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(2, 2);
 	}
 
 	@Test
@@ -104,7 +105,7 @@ public class VTodoTest {
 		component.addProperty(new RecurrenceId(new Date()));
 		component.addProperty(new RecurrenceId(new Date()));
 
-		assertValidate(component).versions(ICalVersion.V1_0).warn(status1, 46).warn(status2, 46).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 13);
+		assertValidate(component).versions(ICalVersion.V1_0).warn(status1, 46).warn(status2, 46).run(13);
 		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
 	}
 

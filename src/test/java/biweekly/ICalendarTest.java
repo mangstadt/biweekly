@@ -49,7 +49,8 @@ public class ICalendarTest {
 	@Test
 	public void validate() {
 		ICalendar ical = new ICalendar();
-		assertValidate(ical).run(4);
+		assertValidate(ical).versions(ICalVersion.V1_0).run();
+		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(4);
 
 		ical.addExperimentalComponent("X-TEST");
 		assertValidate(ical).run();

@@ -86,10 +86,10 @@ import biweekly.property.Version;
  * ICalWriter writer = new ICalWriter(...);
  * 
  * //format all date/time values in a specific timezone instead of UTC
- * //note: this makes an HTTP call to the "tzurl.org" website
+ * //note: this makes an HTTP call to "http://tzurl.org"
  * writer.getTimezoneInfo().setDefaultTimeZone(TimeZone.getDefault());
  * 
- * //format the value of a particular date/time property in a specific timezone instead of UTC
+ * //format the value of a single date/time property in a specific timezone instead of UTC
  * //note: this makes an HTTP call to the "tzurl.org" website
  * DateStart dtstart = ...
  * writer.getTimezoneInfo().setTimeZone(dtstart, TimeZone.getDefault());
@@ -109,13 +109,13 @@ import biweekly.property.Version;
  * //disable line folding
  * writer.getRawWriter().getFoldedLineWriter().setLineLength(null);
  * 
- * //change line length
+ * //set line length (defaults to 75)
  * writer.getRawWriter().getFoldedLineWriter().setLineLength(50);
  * 
- * //change folded line indent string
+ * //change folded line indent string (defaults to one space character)
  * writer.getRawWriter().getFoldedLineWriter().setIndent("\t");
  * 
- * //change newline character
+ * //change newline character (defaults to CRLF)
  * writer.getRawWriter().getFoldedLineWriter().setNewline("**");
  * </pre>
  * 
@@ -261,8 +261,8 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		}
 
 		boolean inICalendar = component instanceof ICalendar;
-		boolean inVCalRoot = getTargetVersion() == ICalVersion.V1_0 && inICalendar;
-		boolean inICalRoot = getTargetVersion() != ICalVersion.V1_0 && inICalendar;
+		boolean inVCalRoot = inICalendar && getTargetVersion() == ICalVersion.V1_0;
+		boolean inICalRoot = inICalendar && getTargetVersion() != ICalVersion.V1_0;
 
 		ICalComponentScribe componentScribe = index.getComponentScribe(component);
 		writer.writeBeginComponent(componentScribe.getComponentName());
@@ -280,7 +280,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 
 		Collection subComponents = componentScribe.getComponents(component);
 		if (inICalRoot) {
-			//add the VTIMEZONE components that were auto-generated
+			//add the VTIMEZONE components
 			Collection<VTimezone> timezones = tzinfo.getComponents();
 			for (VTimezone timezone : timezones) {
 				if (!subComponents.contains(timezone)) {
