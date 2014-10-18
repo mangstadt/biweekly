@@ -1,7 +1,6 @@
 package biweekly.io.scribe.property;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -13,6 +12,7 @@ import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Daylight;
+import biweekly.util.DateTimeComponents;
 import biweekly.util.UtcOffset;
 
 /*
@@ -61,11 +61,11 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 		UtcOffset offset = property.getOffset();
 		values.add((offset == null) ? "" : offset.toString());
 
-		Date start = property.getStart();
-		values.add((start == null) ? "" : date(start).floating(true).write());
+		DateTimeComponents start = property.getStart();
+		values.add((start == null) ? "" : start.toString(true, false));
 
-		Date end = property.getEnd();
-		values.add((end == null) ? "" : date(end).floating(true).write());
+		DateTimeComponents end = property.getEnd();
+		values.add((end == null) ? "" : end.toString(true, false));
 
 		String standardName = property.getStandardName();
 		values.add((standardName == null) ? "" : standardName);
@@ -93,21 +93,21 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 			}
 		}
 
-		Date start = null;
+		DateTimeComponents start = null;
 		next = it.nextString();
 		if (next != null) {
 			try {
-				start = date(next).parse();
+				start = DateTimeComponents.parse(next);
 			} catch (IllegalArgumentException e) {
 				throw new CannotParseException(34, next);
 			}
 		}
 
-		Date end = null;
+		DateTimeComponents end = null;
 		next = it.nextString();
 		if (next != null) {
 			try {
-				end = date(next).parse();
+				end = DateTimeComponents.parse(next);
 			} catch (IllegalArgumentException e) {
 				throw new CannotParseException(35, next);
 			}

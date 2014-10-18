@@ -1,7 +1,6 @@
 package biweekly.io;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -104,8 +103,7 @@ public class DataModelConverter {
 			UtcOffset standardOffset = new UtcOffset(daylightOffset.getHour() - 1, daylightOffset.getMinute());
 
 			DaylightSavingsTime dst = new DaylightSavingsTime();
-			DateStart dtstart = new DateStart(daylight.getStart());
-			dtstart.setRawComponents(new DateTimeComponents(daylight.getStart()), true);
+			DateStart dtstart = new DateStart(daylight.getStart(), true);
 			dst.setDateStart(dtstart);
 			dst.setTimezoneOffsetFrom(standardOffset);
 			dst.setTimezoneOffsetTo(daylightOffset);
@@ -113,8 +111,7 @@ public class DataModelConverter {
 			timezone.addDaylightSavingsTime(dst);
 
 			StandardTime st = new StandardTime();
-			dtstart = new DateStart(daylight.getEnd());
-			dtstart.setRawComponents(new DateTimeComponents(daylight.getEnd()), true);
+			dtstart = new DateStart(daylight.getEnd(), true);
 			st.setDateStart(dtstart);
 			st.setTimezoneOffsetFrom(daylightOffset);
 			st.setTimezoneOffsetTo(standardOffset);
@@ -221,24 +218,22 @@ public class DataModelConverter {
 		return (property == null) ? null : property.getValue();
 	}
 
-	private static Date convert(DateTimeValue value) {
+	private static DateTimeComponents convert(DateTimeValue value) {
 		if (value == null) {
 			return null;
 		}
 
-		Calendar cal = Calendar.getInstance();
-		cal.clear();
 		//@formatter:off
-		cal.set(
+		return new DateTimeComponents(
 			value.year(),
-			value.month() - 1,
+			value.month(),
 			value.day(),
 			value.hour(),
 			value.minute(),
-			value.second()
+			value.second(),
+			false
 		);
-		//@formatter::on
-		return cal.getTime();
+		//@formatter:on
 	}
 
 	/**

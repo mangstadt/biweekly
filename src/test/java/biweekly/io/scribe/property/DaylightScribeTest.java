@@ -1,12 +1,12 @@
 package biweekly.io.scribe.property;
 
-import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Daylight;
+import biweekly.util.DateTimeComponents;
 import biweekly.util.UtcOffset;
 
 /*
@@ -42,7 +42,7 @@ public class DaylightScribeTest {
 	private final Sensei<Daylight> sensei = new Sensei<Daylight>(scribe);
 
 	private final Daylight empty = new Daylight();
-	private final Daylight withAllValues = new Daylight(true, new UtcOffset(-5, 0), date("2014-01-01 01:00:00"), date("2014-03-01 01:00:00"), "EST", "EDT");
+	private final Daylight withAllValues = new Daylight(true, new UtcOffset(-5, 0), new DateTimeComponents(2014, 1, 1, 1, 0, 0, false), new DateTimeComponents(2014, 3, 1, 1, 0, 0, false), "EST", "EDT");
 	private final Daylight withNoValues = new Daylight(true, null, null, null, null, null);
 
 	@Test

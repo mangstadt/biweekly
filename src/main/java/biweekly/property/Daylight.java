@@ -1,11 +1,11 @@
 package biweekly.property;
 
-import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
+import biweekly.util.DateTimeComponents;
 import biweekly.util.UtcOffset;
 
 /**
@@ -16,7 +16,7 @@ import biweekly.util.UtcOffset;
 public class Daylight extends ICalProperty {
 	private boolean daylight;
 	private UtcOffset offset;
-	private Date start, end;
+	private DateTimeComponents start, end;
 	private String standardName, daylightName;
 
 	/**
@@ -38,7 +38,7 @@ public class Daylight extends ICalProperty {
 	 * @param daylightName the timezone's name for daylight savings time (e.g.
 	 * "EDT")
 	 */
-	public Daylight(boolean daylight, UtcOffset offset, Date start, Date end, String standardName, String daylightName) {
+	public Daylight(boolean daylight, UtcOffset offset, DateTimeComponents start, DateTimeComponents end, String standardName, String daylightName) {
 		this.daylight = daylight;
 		this.offset = offset;
 		this.start = start;
@@ -83,7 +83,7 @@ public class Daylight extends ICalProperty {
 	 * Gets the start date of dayight savings time.
 	 * @return the start date
 	 */
-	public Date getStart() {
+	public DateTimeComponents getStart() {
 		return start;
 	}
 
@@ -91,7 +91,7 @@ public class Daylight extends ICalProperty {
 	 * Sets the start date of dayight savings time.
 	 * @param start the start date
 	 */
-	public void setStart(Date start) {
+	public void setStart(DateTimeComponents start) {
 		this.start = start;
 	}
 
@@ -99,7 +99,7 @@ public class Daylight extends ICalProperty {
 	 * Gets the end date of daylight savings time.
 	 * @return the end date
 	 */
-	public Date getEnd() {
+	public DateTimeComponents getEnd() {
 		return end;
 	}
 
@@ -107,7 +107,7 @@ public class Daylight extends ICalProperty {
 	 * Sets the end date of daylight savings time.
 	 * @param end the end date
 	 */
-	public void setEnd(Date end) {
+	public void setEnd(DateTimeComponents end) {
 		this.end = end;
 	}
 
