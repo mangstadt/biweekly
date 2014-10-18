@@ -486,7 +486,7 @@ public class Sensei<T extends ICalProperty> {
 						fail("Expected " + exception.getSimpleName() + " to be thrown.");
 					}
 					if (check != null) {
-						check.check(property);
+						check.check(property, context);
 					}
 
 					assertWarnings(warnings, context.getWarnings());
@@ -526,7 +526,7 @@ public class Sensei<T extends ICalProperty> {
 					fail("Expected " + exception.getSimpleName() + " to be thrown.");
 				}
 				if (check != null) {
-					check.check(property);
+					check.check(property, context);
 				}
 
 				assertWarnings(warnings, context.getWarnings());
@@ -574,7 +574,7 @@ public class Sensei<T extends ICalProperty> {
 					fail("Expected " + exception.getSimpleName() + " to be thrown.");
 				}
 				if (check != null) {
-					check.check(property);
+					check.check(property, context);
 				}
 
 				assertWarnings(warnings, context.getWarnings());
@@ -595,8 +595,9 @@ public class Sensei<T extends ICalProperty> {
 		/**
 		 * Validates the contents of the parsed property object.
 		 * @param property the parsed property object
+		 * @param context the parse context
 		 */
-		void check(T property);
+		void check(T property, ParseContext context);
 	}
 
 	private Document createXCalElement() {

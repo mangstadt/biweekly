@@ -6,9 +6,9 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import biweekly.io.ParseContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.json.JsonValue;
-import biweekly.io.scribe.property.IntegerPropertyScribe;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.IntegerProperty;
 
@@ -100,7 +100,7 @@ public class IntegerPropertyScribeTest {
 
 	private Check<IntegerProperty> has(final Integer value) {
 		return new Check<IntegerProperty>() {
-			public void check(IntegerProperty actual) {
+			public void check(IntegerProperty actual, ParseContext context) {
 				assertEquals(value, actual.getValue());
 			}
 		};

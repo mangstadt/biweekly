@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.component.VTimezone;
+import biweekly.io.ParseContext;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.io.scribe.property.Sensei.WriteTest;
@@ -303,7 +304,7 @@ public class DateOrDateTimePropertyScribeTest {
 	}
 
 	private final Check<DateOrDateTimePropertyImpl> hasDate = new Check<DateOrDateTimePropertyImpl>() {
-		public void check(DateOrDateTimePropertyImpl property) {
+		public void check(DateOrDateTimePropertyImpl property, ParseContext context) {
 			assertEquals(date, property.getValue());
 			assertEquals(new DateTimeComponents(2013, 6, 11, 0, 0, 0, false), property.getRawComponents());
 			assertFalse(property.hasTime());
@@ -311,7 +312,7 @@ public class DateOrDateTimePropertyScribeTest {
 	};
 
 	private final Check<DateOrDateTimePropertyImpl> hasDateTime = new Check<DateOrDateTimePropertyImpl>() {
-		public void check(DateOrDateTimePropertyImpl property) {
+		public void check(DateOrDateTimePropertyImpl property, ParseContext context) {
 			assertEquals(datetime, property.getValue());
 			assertEquals(new DateTimeComponents(2013, 6, 11, 12, 43, 2, true), property.getRawComponents());
 			assertTrue(property.hasTime());

@@ -7,6 +7,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.EmailAlarm;
 import biweekly.util.Duration;
@@ -80,7 +81,7 @@ public class EmailAlarmScribeTest {
 
 	private Check<EmailAlarm> is(final EmailAlarm expected) {
 		return new Check<EmailAlarm>() {
-			public void check(EmailAlarm actual) {
+			public void check(EmailAlarm actual, ParseContext context) {
 				assertEquals(expected.getStart(), actual.getStart());
 				assertEquals(expected.getSnooze(), actual.getSnooze());
 				assertEquals(expected.getRepeat(), actual.getRepeat());

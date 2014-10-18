@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Attachment;
 import biweekly.util.org.apache.commons.codec.binary.Base64;
@@ -139,7 +140,7 @@ public class AttachmentScribeTest {
 
 	private Check<Attachment> has(final String url) {
 		return new Check<Attachment>() {
-			public void check(Attachment property) {
+			public void check(Attachment property, ParseContext context) {
 				assertEquals(url, property.getUri());
 				assertNull(property.getData());
 			}
@@ -148,7 +149,7 @@ public class AttachmentScribeTest {
 
 	private Check<Attachment> has(final byte[] data) {
 		return new Check<Attachment>() {
-			public void check(Attachment property) {
+			public void check(Attachment property, ParseContext context) {
 				assertNull(property.getUri());
 				assertArrayEquals(data, property.getData());
 			}

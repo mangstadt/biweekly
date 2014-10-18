@@ -9,6 +9,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.Related;
 import biweekly.property.Trigger;
@@ -120,7 +121,7 @@ public class TriggerScribeTest {
 
 	private Check<Trigger> is(final Trigger expected) {
 		return new Check<Trigger>() {
-			public void check(Trigger actual) {
+			public void check(Trigger actual, ParseContext context) {
 				assertEquals(expected.getDate(), actual.getDate());
 				assertEquals(expected.getDuration(), actual.getDuration());
 			}

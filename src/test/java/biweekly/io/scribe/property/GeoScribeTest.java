@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import biweekly.ICalVersion;
+import biweekly.io.ParseContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Geo;
@@ -127,7 +128,7 @@ public class GeoScribeTest {
 
 	private Check<Geo> has(final Double latitude, final Double longitude) {
 		return new Check<Geo>() {
-			public void check(Geo actual) {
+			public void check(Geo actual, ParseContext context) {
 				if (latitude == null) {
 					assertNull(actual.getLatitude());
 				} else {

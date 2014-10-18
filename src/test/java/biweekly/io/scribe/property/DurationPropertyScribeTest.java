@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import biweekly.io.scribe.property.DurationPropertyScribe;
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.DurationProperty;
 import biweekly.util.Duration;
@@ -87,7 +87,7 @@ public class DurationPropertyScribeTest {
 	}
 
 	private final Check<DurationProperty> hasDuration = new Check<DurationProperty>() {
-		public void check(DurationProperty property) {
+		public void check(DurationProperty property, ParseContext context) {
 			assertEquals(duration, property.getValue());
 		}
 	};

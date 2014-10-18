@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.scribe.property.RawPropertyScribe;
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.RawProperty;
 
@@ -66,7 +66,7 @@ public class RawPropertyScribeTest {
 
 	private Check<RawProperty> has(final String name, final String value, final ICalDataType dataType) {
 		return new Check<RawProperty>() {
-			public void check(RawProperty property) {
+			public void check(RawProperty property, ParseContext context) {
 				assertEquals(name, property.getName());
 				assertEquals(value, property.getValue());
 				assertEquals(dataType, property.getDataType());

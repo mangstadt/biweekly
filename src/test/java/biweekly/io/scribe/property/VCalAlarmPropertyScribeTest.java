@@ -11,6 +11,7 @@ import java.util.List;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.VCalAlarmProperty;
 import biweekly.util.Duration;
@@ -72,7 +73,7 @@ public class VCalAlarmPropertyScribeTest {
 
 	private Check<VCalAlarmPropertyImpl> is(final VCalAlarmPropertyImpl expected) {
 		return new Check<VCalAlarmPropertyImpl>() {
-			public void check(VCalAlarmPropertyImpl actual) {
+			public void check(VCalAlarmPropertyImpl actual, ParseContext context) {
 				assertEquals(expected.getStart(), actual.getStart());
 				assertEquals(expected.getSnooze(), actual.getSnooze());
 				assertEquals(expected.getRepeat(), actual.getRepeat());

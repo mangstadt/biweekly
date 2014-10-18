@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Daylight;
 import biweekly.util.DateTimeComponents;
@@ -64,7 +65,7 @@ public class DaylightScribeTest {
 
 	private Check<Daylight> is(final Daylight expected) {
 		return new Check<Daylight>() {
-			public void check(Daylight actual) {
+			public void check(Daylight actual, ParseContext context) {
 				assertEquals(expected.isDaylight(), actual.isDaylight());
 				assertEquals(expected.getOffset(), actual.getOffset());
 				assertEquals(expected.getStart(), actual.getStart());

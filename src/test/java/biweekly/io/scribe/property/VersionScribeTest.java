@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Version;
 import biweekly.util.VersionNumber;
@@ -87,7 +88,7 @@ public class VersionScribeTest {
 
 	private Check<Version> has(final String min, final String max) {
 		return new Check<Version>() {
-			public void check(Version actual) {
+			public void check(Version actual, ParseContext context) {
 				VersionNumber minNumber = (min == null) ? null : new VersionNumber(min);
 				VersionNumber maxNumber = (max == null) ? null : new VersionNumber(max);
 

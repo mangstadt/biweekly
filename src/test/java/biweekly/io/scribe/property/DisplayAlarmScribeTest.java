@@ -7,6 +7,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.DisplayAlarm;
 import biweekly.util.Duration;
@@ -78,7 +79,7 @@ public class DisplayAlarmScribeTest {
 
 	private Check<DisplayAlarm> is(final DisplayAlarm expected) {
 		return new Check<DisplayAlarm>() {
-			public void check(DisplayAlarm actual) {
+			public void check(DisplayAlarm actual, ParseContext context) {
 				assertEquals(expected.getStart(), actual.getStart());
 				assertEquals(expected.getSnooze(), actual.getSnooze());
 				assertEquals(expected.getRepeat(), actual.getRepeat());

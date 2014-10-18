@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.ParticipationLevel;
 import biweekly.parameter.ParticipationStatus;
@@ -159,7 +160,7 @@ public class AttendeeScribeTest {
 
 	private Check<Attendee> check(final String name, final String email, final String uri) {
 		return new Check<Attendee>() {
-			public void check(Attendee property) {
+			public void check(Attendee property, ParseContext context) {
 				assertTrue(property.getParameters().isEmpty());
 				assertEquals(name, property.getCommonName());
 				assertEquals(email, property.getEmail());
@@ -175,7 +176,7 @@ public class AttendeeScribeTest {
 		sensei.assertParseText(uri).param("EXPECT", "FYI").versions(ICalVersion.V1_0).run(checkLevel(ParticipationLevel.FYI));
 		sensei.assertParseText(uri).param("EXPECT", "invalid").versions(ICalVersion.V1_0).run(checkLevel(ParticipationLevel.get("invalid")));
 		sensei.assertParseText(uri).param("EXPECT", "REQUIRE").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(new Check<Attendee>() {
-			public void check(Attendee property) {
+			public void check(Attendee property, ParseContext context) {
 				assertEquals("REQUIRE", property.getParameter("EXPECT"));
 				assertNull(property.getParticipationLevel());
 			}
@@ -185,14 +186,14 @@ public class AttendeeScribeTest {
 		sensei.assertParseText(uri).param("ROLE", "OPT-PARTICIPANT").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(checkLevel(ParticipationLevel.OPTIONAL));
 		sensei.assertParseText(uri).param("ROLE", "NON-PARTICIPANT").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(checkLevel(ParticipationLevel.FYI));
 		sensei.assertParseText(uri).param("ROLE", "invalid").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(new Check<Attendee>() {
-			public void check(Attendee property) {
+			public void check(Attendee property, ParseContext context) {
 				assertTrue(property.getParameters().isEmpty());
 				assertNull(property.getParticipationLevel());
 				assertEquals(Role.get("invalid"), property.getRole());
 			}
 		});
 		sensei.assertParseText(uri).param("ROLE", "REQ-PARTICIPANT").versions(ICalVersion.V1_0).run(new Check<Attendee>() {
-			public void check(Attendee property) {
+			public void check(Attendee property, ParseContext context) {
 				assertTrue(property.getParameters().isEmpty());
 				assertEquals(Role.get("REQ-PARTICIPANT"), property.getRole());
 				assertNull(property.getParticipationLevel());
@@ -202,7 +203,7 @@ public class AttendeeScribeTest {
 
 	private Check<Attendee> checkLevel(final ParticipationLevel level) {
 		return new Check<Attendee>() {
-			public void check(Attendee property) {
+			public void check(Attendee property, ParseContext context) {
 				assertTrue(property.getParameters().isEmpty());
 				assertEquals(level, property.getParticipationLevel());
 			}
@@ -219,7 +220,7 @@ public class AttendeeScribeTest {
 
 	private Check<Attendee> checkRole(final ParticipationLevel level, final Role role) {
 		return new Check<Attendee>() {
-			public void check(Attendee property) {
+			public void check(Attendee property, ParseContext context) {
 				assertNull(property.getParameter("ROLE"));
 				assertEquals(level, property.getParticipationLevel());
 				assertEquals(role, property.getRole());
@@ -239,7 +240,7 @@ public class AttendeeScribeTest {
 
 	private Check<Attendee> checkRsvp(final String paramValue, final Boolean value) {
 		return new Check<Attendee>() {
-			public void check(Attendee property) {
+			public void check(Attendee property, ParseContext context) {
 				assertEquals(paramValue, property.getParameter("RSVP"));
 				assertEquals(value, property.getRsvp());
 			}

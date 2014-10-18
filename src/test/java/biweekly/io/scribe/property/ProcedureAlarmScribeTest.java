@@ -7,6 +7,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.ProcedureAlarm;
 import biweekly.util.Duration;
@@ -78,7 +79,7 @@ public class ProcedureAlarmScribeTest {
 
 	private Check<ProcedureAlarm> is(final ProcedureAlarm expected) {
 		return new Check<ProcedureAlarm>() {
-			public void check(ProcedureAlarm actual) {
+			public void check(ProcedureAlarm actual, ParseContext context) {
 				assertEquals(expected.getStart(), actual.getStart());
 				assertEquals(expected.getSnooze(), actual.getSnooze());
 				assertEquals(expected.getRepeat(), actual.getRepeat());

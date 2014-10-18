@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import biweekly.ICalVersion;
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Transparency;
 
@@ -76,7 +77,7 @@ public class TransparencyScribeTest {
 
 	private Check<Transparency> isOpaque(final boolean isOpaque) {
 		return new Check<Transparency>() {
-			public void check(Transparency actual) {
+			public void check(Transparency actual, ParseContext context) {
 				assertEquals(isOpaque, actual.isOpaque());
 			}
 		};
@@ -84,7 +85,7 @@ public class TransparencyScribeTest {
 
 	private Check<Transparency> isTransparent(final boolean isTransparent) {
 		return new Check<Transparency>() {
-			public void check(Transparency actual) {
+			public void check(Transparency actual, ParseContext context) {
 				assertEquals(isTransparent, actual.isTransparent());
 			}
 		};
@@ -92,7 +93,7 @@ public class TransparencyScribeTest {
 
 	private Check<Transparency> is(final String value) {
 		return new Check<Transparency>() {
-			public void check(Transparency actual) {
+			public void check(Transparency actual, ParseContext context) {
 				assertEquals(value, actual.getValue());
 			}
 		};

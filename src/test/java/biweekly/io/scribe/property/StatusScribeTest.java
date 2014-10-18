@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import biweekly.ICalVersion;
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Status;
 
@@ -60,7 +61,7 @@ public class StatusScribeTest {
 
 	private Check<Status> isNeedsAction(final boolean isNeedsAction) {
 		return new Check<Status>() {
-			public void check(Status actual) {
+			public void check(Status actual, ParseContext context) {
 				assertEquals(isNeedsAction, actual.isNeedsAction());
 			}
 		};

@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.io.scribe.property.TextPropertyScribe;
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.TextProperty;
 
@@ -123,7 +123,7 @@ public class TextPropertyScribeTest {
 
 	private Check<TextPropertyImpl> has(final String expected) {
 		return new Check<TextPropertyImpl>() {
-			public void check(TextPropertyImpl actual) {
+			public void check(TextPropertyImpl actual, ParseContext context) {
 				assertEquals(expected, actual.getValue());
 			}
 		};

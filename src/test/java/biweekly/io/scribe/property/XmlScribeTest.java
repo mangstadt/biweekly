@@ -125,7 +125,7 @@ public class XmlScribeTest {
 
 	private Check<Xml> has(final Document expected) {
 		return new Check<Xml>() {
-			public void check(Xml actual) {
+			public void check(Xml actual, ParseContext context) {
 				assertXMLEqual(expected, actual.getValue());
 			}
 		};

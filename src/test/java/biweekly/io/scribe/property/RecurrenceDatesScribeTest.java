@@ -11,6 +11,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.io.ParseContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.RecurrenceDates;
@@ -347,7 +348,7 @@ public class RecurrenceDatesScribeTest {
 
 	private Check<RecurrenceDates> is(final RecurrenceDates expected) {
 		return new Check<RecurrenceDates>() {
-			public void check(RecurrenceDates actual) {
+			public void check(RecurrenceDates actual, ParseContext context) {
 				assertEquals(expected.getPeriods(), actual.getPeriods());
 				assertEquals(expected.getDates(), actual.getDates());
 				assertEquals(expected.hasTime(), actual.hasTime());

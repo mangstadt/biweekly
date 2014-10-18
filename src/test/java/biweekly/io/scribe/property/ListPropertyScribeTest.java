@@ -161,7 +161,7 @@ public class ListPropertyScribeTest {
 
 	private Check<ListPropertyImpl> is(final ListPropertyImpl expected) {
 		return new Check<ListPropertyImpl>() {
-			public void check(ListPropertyImpl actual) {
+			public void check(ListPropertyImpl actual, ParseContext context) {
 				assertEquals(expected.getValues(), actual.getValues());
 			}
 		};
@@ -169,7 +169,7 @@ public class ListPropertyScribeTest {
 
 	private Check<ListPropertyImpl> has(final String... values) {
 		return new Check<ListPropertyImpl>() {
-			public void check(ListPropertyImpl actual) {
+			public void check(ListPropertyImpl actual, ParseContext context) {
 				assertEquals(Arrays.asList(values), actual.getValues());
 			}
 		};

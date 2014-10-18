@@ -9,6 +9,7 @@ import java.util.Date;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.AudioAlarm;
 import biweekly.util.Duration;
@@ -115,7 +116,7 @@ public class AudioAlarmScribeTest {
 
 	private Check<AudioAlarm> is(final AudioAlarm expected) {
 		return new Check<AudioAlarm>() {
-			public void check(AudioAlarm actual) {
+			public void check(AudioAlarm actual, ParseContext context) {
 				assertEquals(expected.getStart(), actual.getStart());
 				assertEquals(expected.getSnooze(), actual.getSnooze());
 				assertEquals(expected.getRepeat(), actual.getRepeat());

@@ -167,8 +167,8 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 		T property = newInstance(date, hasTime);
 		property.setRawComponents(components, hasTime);
 
-		String tzid = parameters.getTimezoneId();
 		if (!ICalDateFormat.isUTC(value)) {
+			String tzid = parameters.getTimezoneId();
 			//TODO handle UTC offsets within the date strings (not part of iCal standard)
 			if (tzid == null) {
 				context.addFloatingDate(property, date, value);

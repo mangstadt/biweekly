@@ -510,8 +510,8 @@ public class ICalPropertyScribeTest {
 	@Test
 	public void parseText() {
 		sensei.assertParseText("value").warnings(1).run(new Check<TestProperty>() {
-			public void check(TestProperty property) {
-				has(ICalDataType.TEXT, "value").check(property);
+			public void check(TestProperty property, ParseContext context) {
+				has(ICalDataType.TEXT, "value").check(property, context);
 			}
 		});
 	}
@@ -680,7 +680,7 @@ public class ICalPropertyScribeTest {
 
 	private Check<TestProperty> has(final ICalDataType dataType, final String value) {
 		return new Check<TestProperty>() {
-			public void check(TestProperty property) {
+			public void check(TestProperty property, ParseContext context) {
 				assertEquals(dataType, property.parsedDataType);
 				assertEquals(value, property.value);
 			}

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +16,7 @@ import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
+import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -80,17 +82,30 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	}
 
 	@Override
+	protected ICalParameters _prepareParameters(T property, WriteContext context) {
+		Recurrence recur = property.getValue();
+		if (recur == null || recur.getUntil() == null) {
+			return property.getParameters();
+		}
+
+		return handleTzidParameter(property, recur.hasTimeUntilDate(), context);
+	}
+
+	@Override
 	protected String _writeText(T property, WriteContext context) {
+		//null value
 		Recurrence recur = property.getValue();
 		if (recur == null) {
 			return "";
 		}
 
+		//iCal 2.0
 		if (context.getVersion() != ICalVersion.V1_0) {
-			ListMultimap<String, Object> components = buildComponents(recur, false);
+			ListMultimap<String, Object> components = buildComponents(property, context, false);
 			return object(components.getMap());
 		}
 
+		//vCal 1.0
 		Frequency frequency = recur.getFrequency();
 		if (frequency == null) {
 			return "";
@@ -163,13 +178,17 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 		Integer count = recur.getCount();
 		Date until = recur.getUntil();
-		boolean untilHasTime = recur.hasTimeUntilDate();
-
 		sb.append(' ');
+
 		if (count != null) {
 			sb.append('#').append(count);
 		} else if (until != null) {
-			sb.append(date(until).time(untilHasTime).write());
+			TimezoneInfo tzinfo = context.getTimezoneInfo();
+			boolean hasTime = recur.hasTimeUntilDate();
+			boolean floating = tzinfo.isFloating(property);
+			TimeZone tz = tzinfo.getTimeZoneToWriteIn(property);
+			context.addDate(hasTime, floating, tz, until);
+			sb.append(date(until).time(hasTime).tz(floating, tz).write());
 		} else {
 			sb.append("#0");
 		}
@@ -187,6 +206,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 		if (context.getVersion() != ICalVersion.V1_0) {
 			ListMultimap<String, String> rules = object(value);
+			String untilStr = rules.first(UNTIL);
 
 			List<Warning> warnings = context.getWarnings();
 			parseFreq(rules, builder, warnings);
@@ -205,7 +225,21 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			parseWkst(rules, builder, warnings);
 			parseXRules(rules, builder, warnings); //must be called last
 
-			return newInstance(builder.build());
+			T property = newInstance(builder.build());
+
+			Date until = property.getValue().getUntil();
+			if (until != null && !ICalDateFormat.isUTC(untilStr)) {
+				String tzid = parameters.getTimezoneId();
+				boolean hasTime = property.getValue().hasTimeUntilDate();
+				//TODO handle UTC offsets within the date strings (not part of iCal standard)
+				if (tzid == null) {
+					context.addFloatingDate(property, until, untilStr);
+				} else if (hasTime) {
+					context.addTimezonedDate(tzid, property, until, untilStr);
+				}
+			}
+
+			return property;
 		}
 
 		String splitValues[] = value.toUpperCase().split("\\s+");
@@ -229,6 +263,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 		Integer count = null;
 		Date until = null;
+		String untilStr = null;
 		if (splitValues.length == 0) {
 			count = 2;
 		} else {
@@ -246,6 +281,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 				try {
 					//see if the value is an "until" date
 					until = date(lastToken).parse();
+					untilStr = lastToken;
 					splitValues = Arrays.copyOfRange(splitValues, 0, splitValues.length - 1);
 				} catch (IllegalArgumentException e) {
 					//last token is a regular value
@@ -401,7 +437,12 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		}
 		handler.handle(null);
 
-		return newInstance(builder.build());
+		T property = newInstance(builder.build());
+		if (until != null && !ICalDateFormat.isUTC(untilStr)) {
+			context.addFloatingDate(property, until, untilStr);
+		}
+
+		return property;
 	}
 
 	private Integer parseVCalInt(String value) {
@@ -446,7 +487,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			return;
 		}
 
-		ListMultimap<String, Object> components = buildComponents(recur, true);
+		ListMultimap<String, Object> components = buildComponents(property, context, true);
 		for (Map.Entry<String, List<Object>> component : components) {
 			String name = component.getKey().toLowerCase();
 			for (Object value : component.getValue()) {
@@ -474,6 +515,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		}
 
 		Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
+		String untilStr = rules.first(UNTIL);
 
 		List<Warning> warnings = context.getWarnings();
 		parseFreq(rules, builder, warnings);
@@ -492,7 +534,21 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		parseWkst(rules, builder, warnings);
 		parseXRules(rules, builder, warnings); //must be called last
 
-		return newInstance(builder.build());
+		T property = newInstance(builder.build());
+
+		Date until = property.getValue().getUntil();
+		if (until != null && !ICalDateFormat.isUTC(untilStr)) {
+			String tzid = parameters.getTimezoneId();
+			boolean hasTime = property.getValue().hasTimeUntilDate();
+			//TODO handle UTC offsets within the date strings (not part of iCal standard)
+			if (tzid == null) {
+				context.addFloatingDate(property, until, untilStr);
+			} else if (hasTime) {
+				context.addTimezonedDate(tzid, property, until, untilStr);
+			}
+		}
+
+		return property;
 	}
 
 	@Override
@@ -502,7 +558,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			return JCalValue.object(new ListMultimap<String, Object>(0));
 		}
 
-		ListMultimap<String, Object> components = buildComponents(recur, true);
+		ListMultimap<String, Object> components = buildComponents(property, context, true);
 
 		//lower-case all the keys
 		ListMultimap<String, Object> object = new ListMultimap<String, Object>(components.keySet().size());
@@ -525,6 +581,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			String key = entry.getKey().toUpperCase();
 			rules.putAll(key, entry.getValue());
 		}
+		String untilStr = rules.first(UNTIL);
 
 		List<Warning> warnings = context.getWarnings();
 		parseFreq(rules, builder, warnings);
@@ -543,7 +600,21 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		parseWkst(rules, builder, warnings);
 		parseXRules(rules, builder, warnings); //must be called last
 
-		return newInstance(builder.build());
+		T property = newInstance(builder.build());
+
+		Date until = property.getValue().getUntil();
+		if (until != null && !ICalDateFormat.isUTC(untilStr)) {
+			String tzid = parameters.getTimezoneId();
+			boolean hasTime = property.getValue().hasTimeUntilDate();
+			//TODO handle UTC offsets within the date strings (not part of iCal standard)
+			if (tzid == null) {
+				context.addFloatingDate(property, until, untilStr);
+			} else if (hasTime) {
+				context.addTimezonedDate(tzid, property, until, untilStr);
+			}
+		}
+
+		return property;
 	}
 
 	/**
@@ -717,8 +788,9 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		}
 	}
 
-	private ListMultimap<String, Object> buildComponents(Recurrence recur, boolean extended) {
+	private ListMultimap<String, Object> buildComponents(T property, WriteContext context, boolean extended) {
 		ListMultimap<String, Object> components = new ListMultimap<String, Object>();
+		Recurrence recur = property.getValue();
 
 		//FREQ must come first
 		if (recur.getFrequency() != null) {
@@ -726,7 +798,13 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		}
 
 		if (recur.getUntil() != null) {
-			String s = date(recur.getUntil()).time(recur.hasTimeUntilDate()).extended(extended).write();
+			Date value = recur.getUntil();
+			TimezoneInfo tzinfo = context.getTimezoneInfo();
+			boolean hasTime = recur.hasTimeUntilDate();
+			boolean floating = tzinfo.isFloating(property);
+			TimeZone tz = tzinfo.getTimeZoneToWriteIn(property);
+			context.addDate(hasTime, floating, tz, value);
+			String s = date(value).time(hasTime).tz(floating, tz).extended(extended).write();
 			components.put(UNTIL, s);
 		}
 

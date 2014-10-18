@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import biweekly.io.ParseContext;
 import biweekly.io.json.JCalValue;
-import biweekly.io.scribe.property.RequestStatusScribe;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.RequestStatus;
 
@@ -153,7 +153,7 @@ public class RequestStatusScribeTest {
 
 	private Check<RequestStatus> is(final RequestStatus expected) {
 		return new Check<RequestStatus>() {
-			public void check(RequestStatus actual) {
+			public void check(RequestStatus actual, ParseContext context) {
 				assertEquals(expected.getStatusCode(), actual.getStatusCode());
 				assertEquals(expected.getDescription(), actual.getDescription());
 				assertEquals(expected.getExceptionText(), actual.getExceptionText());

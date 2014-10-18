@@ -8,6 +8,7 @@ import java.util.Date;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.DateTimeProperty;
 import biweekly.util.DefaultTimezoneRule;
@@ -111,7 +112,7 @@ public class DateTimePropertyScribeTest {
 	}
 
 	private final Check<DateTimePropertyImpl> hasDateTime = new Check<DateTimePropertyImpl>() {
-		public void check(DateTimePropertyImpl property) {
+		public void check(DateTimePropertyImpl property, ParseContext context) {
 			assertEquals(datetime, property.getValue());
 		}
 	};

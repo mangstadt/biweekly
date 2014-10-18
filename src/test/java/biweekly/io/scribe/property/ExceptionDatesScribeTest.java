@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
+import biweekly.io.ParseContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.ExceptionDates;
@@ -172,7 +173,7 @@ public class ExceptionDatesScribeTest {
 
 	private final Check<ExceptionDates> has(final boolean hasTime, final Date... dates) {
 		return new Check<ExceptionDates>() {
-			public void check(ExceptionDates actual) {
+			public void check(ExceptionDates actual, ParseContext context) {
 				assertEquals(Arrays.asList(dates), actual.getValues());
 				assertEquals(hasTime, actual.hasTime());
 			}
@@ -181,7 +182,7 @@ public class ExceptionDatesScribeTest {
 
 	private final Check<ExceptionDates> is(final ExceptionDates expected) {
 		return new Check<ExceptionDates>() {
-			public void check(ExceptionDates actual) {
+			public void check(ExceptionDates actual, ParseContext context) {
 				assertEquals(expected.getValues(), actual.getValues());
 				assertEquals(expected.hasTime(), actual.hasTime());
 			}
