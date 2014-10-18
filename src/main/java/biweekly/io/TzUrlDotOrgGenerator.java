@@ -4,6 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.TimeZone;
 
@@ -42,6 +45,7 @@ import biweekly.util.IOUtils;
  * @author Michael Angstadt
  */
 public class TzUrlDotOrgGenerator implements VTimezoneGenerator {
+	private static final Map<URL, VTimezone> cache = Collections.synchronizedMap(new HashMap<URL, VTimezone>());
 	private final String baseUrl;
 
 	/**
@@ -61,13 +65,20 @@ public class TzUrlDotOrgGenerator implements VTimezoneGenerator {
 			throw new IllegalArgumentException(e);
 		}
 
+		VTimezone component = cache.get(url);
+		if (component != null) {
+			return component;
+		}
+
 		ICalReader reader = null;
 		try {
 			reader = new ICalReader(url.openStream());
 			reader.readNext();
 
 			TimezoneInfo tzinfo = reader.getTimezoneInfo();
-			return tzinfo.getComponents().iterator().next();
+			component = tzinfo.getComponents().iterator().next();
+			cache.put(url, component);
+			return component;
 		} catch (FileNotFoundException e) {
 			throw notFound(e);
 		} catch (NoSuchElementException e) {
