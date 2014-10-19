@@ -6,7 +6,6 @@ import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.component.Observance;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
@@ -417,9 +416,5 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 			}
 		}
 		return property;
-	}
-
-	private boolean isInObservance(WriteContext context) {
-		return context.getParent() instanceof Observance;
 	}
 }

@@ -3,7 +3,6 @@ package biweekly.io.scribe.property;
 import java.util.Date;
 
 import biweekly.ICalDataType;
-import biweekly.component.Observance;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -93,10 +92,6 @@ public class DateStartScribe extends DateOrDateTimePropertyScribe<DateStart> {
 		}
 
 		return "";
-	}
-
-	private boolean isInObservance(WriteContext context) {
-		return context.getParent() instanceof Observance;
 	}
 
 	@Override

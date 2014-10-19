@@ -23,6 +23,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
+import biweekly.component.Observance;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.SkipMeException;
@@ -537,6 +538,15 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		}
 
 		return escape(value.asSingle());
+	}
+
+	/**
+	 * Determines if the property is within an observance component.
+	 * @param context the write context
+	 * @return true if the property is within an observance, false if not
+	 */
+	protected static boolean isInObservance(WriteContext context) {
+		return context.getParent() instanceof Observance;
 	}
 
 	/**
