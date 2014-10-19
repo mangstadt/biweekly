@@ -1,12 +1,8 @@
 package biweekly.property;
 
 import java.util.Date;
-import java.util.List;
 
-import biweekly.ICalVersion;
-import biweekly.Warning;
-import biweekly.component.ICalComponent;
-import biweekly.util.DateTimeComponents;
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -37,17 +33,23 @@ import biweekly.util.DateTimeComponents;
  * Represents a property whose value is a date or a date-time.
  * @author Michael Angstadt
  */
-public class DateOrDateTimeProperty extends ICalProperty {
-	protected Date value;
-	protected DateTimeComponents rawComponents;
-	protected boolean hasTime;
+public class DateOrDateTimeProperty extends ValuedProperty<ICalDate> {
+	protected ICalDate value;
 
 	/**
 	 * Creates a new property.
-	 * @param rawComponents the raw components of the date-time value
+	 * @param value the date-time value
 	 */
-	public DateOrDateTimeProperty(DateTimeComponents rawComponents, boolean hasTime) {
-		setRawComponents(rawComponents, hasTime);
+	public DateOrDateTimeProperty(ICalDate value) {
+		super(value);
+	}
+
+	/**
+	 * Creates a new property.
+	 * @param value the date-time value
+	 */
+	public DateOrDateTimeProperty(Date value) {
+		this(value, true);
 	}
 
 	/**
@@ -57,15 +59,7 @@ public class DateOrDateTimeProperty extends ICalProperty {
 	 * strictly a date
 	 */
 	public DateOrDateTimeProperty(Date value, boolean hasTime) {
-		setValue(value, hasTime);
-	}
-
-	/**
-	 * Gets the date-time value.
-	 * @return the date-time value
-	 */
-	public Date getValue() {
-		return value;
+		this((value == null) ? null : new ICalDate(value, hasTime));
 	}
 
 	/**
@@ -75,42 +69,6 @@ public class DateOrDateTimeProperty extends ICalProperty {
 	 * strictly a date
 	 */
 	public void setValue(Date value, boolean hasTime) {
-		this.value = value;
-		this.hasTime = hasTime;
-	}
-
-	/**
-	 * Gets the raw components of the date-time value.
-	 * @return the raw components
-	 */
-	public DateTimeComponents getRawComponents() {
-		return rawComponents;
-	}
-
-	/**
-	 * Sets the raw components of the date-time value.
-	 * @param rawComponents the raw components
-	 * @param hasTime true if the value has a time component, false if it is
-	 * strictly a date
-	 */
-	public void setRawComponents(DateTimeComponents rawComponents, boolean hasTime) {
-		this.rawComponents = rawComponents;
-		this.hasTime = hasTime;
-	}
-
-	/**
-	 * Determines whether the date-time value has a time component.
-	 * @return true if the value has a time component, false if it is strictly a
-	 * date
-	 */
-	public boolean hasTime() {
-		return hasTime;
-	}
-
-	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
-		if (value == null && rawComponents == null) {
-			warnings.add(Warning.validate(26));
-		}
+		setValue((value == null) ? null : new ICalDate(value, hasTime));
 	}
 }

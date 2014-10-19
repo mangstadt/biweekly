@@ -521,7 +521,7 @@ public class JCalReaderTest {
 
 			assertEquals(utc("2008-02-05 19:12:24"), event.getDateTimeStamp().getValue());
 			assertEquals(date("2008-10-06"), event.getDateStart().getValue());
-			assertFalse(event.getDateStart().hasTime());
+			assertFalse(event.getDateStart().getValue().hasTime());
 			assertEquals("Planning meeting", event.getSummary().getValue());
 			assertEquals("4088E990AD89CB3DBB484909", event.getUid().getValue());
 		}
@@ -593,7 +593,7 @@ public class JCalReaderTest {
 				assertSize(daylight, 0, 5);
 
 				assertEquals(date("2000-04-04 02:00:00"), daylight.getDateStart().getValue());
-				assertEquals(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false), daylight.getDateStart().getRawComponents());
+				assertEquals(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false), daylight.getDateStart().getValue().getRawComponents());
 
 				Recurrence rrule = daylight.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
@@ -612,7 +612,7 @@ public class JCalReaderTest {
 				assertSize(standard, 0, 5);
 
 				assertEquals(date("2000-10-26 02:00:00"), standard.getDateStart().getValue());
-				assertEquals(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false), standard.getDateStart().getRawComponents());
+				assertEquals(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false), standard.getDateStart().getValue().getRawComponents());
 
 				Recurrence rrule = standard.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());

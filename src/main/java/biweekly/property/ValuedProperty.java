@@ -70,4 +70,13 @@ public class ValuedProperty<T> extends ICalProperty {
 			warnings.add(Warning.validate(26));
 		}
 	}
+
+	/**
+	 * Gets the value of a {@link ValuedProperty}.
+	 * @param property the property
+	 * @return the property value (may be null) or null if the property is null
+	 */
+	public static <T> T getValue(ValuedProperty<T> property) {
+		return (property == null) ? null : property.getValue();
+	}
 }

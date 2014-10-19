@@ -1,6 +1,5 @@
 package biweekly.component;
 
-import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalVersion;
@@ -14,6 +13,7 @@ import biweekly.property.TimezoneName;
 import biweekly.property.TimezoneOffsetFrom;
 import biweekly.property.TimezoneOffsetTo;
 import biweekly.util.DateTimeComponents;
+import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 import biweekly.util.UtcOffset;
 
@@ -79,23 +79,21 @@ public class Observance extends ICalComponent {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
 	 */
-	public DateStart setDateStart(DateTimeComponents components) {
-		DateStart prop = (components == null) ? null : new DateStart(components, true);
+	public DateStart setDateStart(ICalDate date) {
+		DateStart prop = (date == null) ? null : new DateStart(date);
 		setDateStart(prop);
 		return prop;
 	}
 
 	/**
 	 * Sets the date that the timezone observance starts.
-	 * @param date the start date
+	 * @param rawComponents the start date
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
 	 */
-	public DateStart setDateStart(Date date) {
-		DateStart prop = (date == null) ? null : new DateStart(date);
-		setDateStart(prop);
-		return prop;
+	public DateStart setDateStart(DateTimeComponents rawComponents) {
+		return setDateStart(new ICalDate(rawComponents, true));
 	}
 
 	/**
@@ -344,10 +342,10 @@ public class Observance extends ICalComponent {
 		DateStart dateStart = getDateStart();
 		RecurrenceRule rrule = getRecurrenceRule();
 		if (dateStart != null && rrule != null) {
-			Date start = dateStart.getValue();
+			ICalDate start = dateStart.getValue();
 			Recurrence recur = rrule.getValue();
 			if (start != null && recur != null) {
-				if (!dateStart.hasTime() && (!recur.getByHour().isEmpty() || !recur.getByMinute().isEmpty() || !recur.getBySecond().isEmpty())) {
+				if (!start.hasTime() && (!recur.getByHour().isEmpty() || !recur.getByMinute().isEmpty() || !recur.getBySecond().isEmpty())) {
 					warnings.add(Warning.validate(5));
 				}
 			}

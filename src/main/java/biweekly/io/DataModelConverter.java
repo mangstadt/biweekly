@@ -37,6 +37,7 @@ import biweekly.property.UtcOffsetProperty;
 import biweekly.property.VCalAlarmProperty;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
+import biweekly.util.ICalDate;
 import biweekly.util.UtcOffset;
 
 import com.google.ical.values.DateTimeValue;
@@ -103,16 +104,14 @@ public class DataModelConverter {
 			UtcOffset standardOffset = new UtcOffset(daylightOffset.getHour() - 1, daylightOffset.getMinute());
 
 			DaylightSavingsTime dst = new DaylightSavingsTime();
-			DateStart dtstart = new DateStart(daylight.getStart(), true);
-			dst.setDateStart(dtstart);
+			dst.setDateStart(daylight.getStart());
 			dst.setTimezoneOffsetFrom(standardOffset);
 			dst.setTimezoneOffsetTo(daylightOffset);
 			dst.addTimezoneName(daylight.getDaylightName());
 			timezone.addDaylightSavingsTime(dst);
 
 			StandardTime st = new StandardTime();
-			dtstart = new DateStart(daylight.getEnd(), true);
-			st.setDateStart(dtstart);
+			st.setDateStart(daylight.getEnd());
 			st.setTimezoneOffsetFrom(daylightOffset);
 			st.setTimezoneOffsetTo(standardOffset);
 			st.addTimezoneName(daylight.getStandardName());
@@ -218,13 +217,13 @@ public class DataModelConverter {
 		return (property == null) ? null : property.getValue();
 	}
 
-	private static DateTimeComponents convert(DateTimeValue value) {
+	private static ICalDate convert(DateTimeValue value) {
 		if (value == null) {
 			return null;
 		}
 
 		//@formatter:off
-		return new DateTimeComponents(
+		DateTimeComponents components = new DateTimeComponents(
 			value.year(),
 			value.month(),
 			value.day(),
@@ -234,6 +233,8 @@ public class DataModelConverter {
 			false
 		);
 		//@formatter:on
+
+		return new ICalDate(components, true);
 	}
 
 	/**

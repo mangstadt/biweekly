@@ -1,5 +1,7 @@
 package biweekly.io;
 
+import static biweekly.property.ValuedProperty.getValue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -27,6 +29,7 @@ import biweekly.property.RecurrenceRule;
 import biweekly.property.TimezoneName;
 import biweekly.property.UtcOffsetProperty;
 import biweekly.util.DateTimeComponents;
+import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.ByDay;
 import biweekly.util.Recurrence.DayOfWeek;
@@ -295,7 +298,7 @@ public class ICalTimeZone extends TimeZone {
 
 	private boolean hasDateStart(Observance observance) {
 		DateStart dtstart = observance.getDateStart();
-		return dtstart != null && (dtstart.getRawComponents() != null || dtstart.getValue() != null);
+		return dtstart != null && dtstart.getValue() != null;
 	}
 
 	private boolean hasTimezoneOffsetFrom(Observance observance) {
@@ -319,8 +322,8 @@ public class ICalTimeZone extends TimeZone {
 
 		Collections.sort(observances, new Comparator<Observance>() {
 			public int compare(Observance left, Observance right) {
-				DateStart startLeft = left.getDateStart();
-				DateStart startRight = right.getDateStart();
+				ICalDate startLeft = getValue(left.getDateStart());
+				ICalDate startRight = getValue(right.getDateStart());
 				if (startLeft == null && startRight == null) {
 					return 0;
 				}
@@ -418,12 +421,12 @@ public class ICalTimeZone extends TimeZone {
 	 * @return the google-rfc-2445 object
 	 */
 	private DateTimeValue convert(DateStart dtstart) {
-		DateTimeComponents raw = dtstart.getRawComponents();
-		Date value = dtstart.getValue();
-		if (raw == null && value == null) {
+		ICalDate value = dtstart.getValue();
+		if (value == null) {
 			return null;
 		}
 
+		DateTimeComponents raw = value.getRawComponents();
 		if (raw == null) {
 			raw = new DateTimeComponents(value);
 		}

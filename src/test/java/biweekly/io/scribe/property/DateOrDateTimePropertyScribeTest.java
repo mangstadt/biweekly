@@ -21,6 +21,7 @@ import biweekly.io.scribe.property.Sensei.WriteTest;
 import biweekly.property.DateOrDateTimeProperty;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DefaultTimezoneRule;
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -65,21 +66,8 @@ public class DateOrDateTimePropertyScribeTest {
 	private final String datetimeStr = "20130611T124302Z";
 	private final String datetimeStrExt = "2013-06-11T12:43:02Z";
 
-	private final DateTimeComponents components = new DateTimeComponents(2013, 6, 11, 12, 43, 2, false);
-	private final String componentsStr = "20130611T124302";
-	private final String componentsStrExt = "2013-06-11T12:43:02";
-
 	private final DateOrDateTimePropertyImpl withDateTime = new DateOrDateTimePropertyImpl(datetime, true);
 	private final DateOrDateTimePropertyImpl withDate = new DateOrDateTimePropertyImpl(datetime, false);
-	private final DateOrDateTimePropertyImpl withComponents = new DateOrDateTimePropertyImpl(components, true);
-	private final DateOrDateTimePropertyImpl withDateAndComponents = new DateOrDateTimePropertyImpl(datetime, false);
-	{
-		withDateAndComponents.setRawComponents(components, false);
-	}
-	private final DateOrDateTimePropertyImpl withDateTimeAndComponents = new DateOrDateTimePropertyImpl(datetime, true);
-	{
-		withDateTimeAndComponents.setRawComponents(components, true);
-	}
 	private final DateOrDateTimePropertyImpl empty = new DateOrDateTimePropertyImpl((Date) null, false);
 
 	private final TimezoneInfo floatingGlobal = new TimezoneInfo();
@@ -98,10 +86,7 @@ public class DateOrDateTimePropertyScribeTest {
 	public void dataType() {
 		sensei.assertDataType(withDate).run(ICalDataType.DATE);
 		sensei.assertDataType(withDateTime).run(ICalDataType.DATE_TIME);
-		sensei.assertDataType(withComponents).run(ICalDataType.DATE_TIME);
-		sensei.assertDataType(withDateAndComponents).run(ICalDataType.DATE);
-		sensei.assertDataType(withDateTimeAndComponents).run(ICalDataType.DATE_TIME);
-		sensei.assertDataType(empty).run(ICalDataType.DATE);
+		sensei.assertDataType(empty).run(ICalDataType.DATE_TIME);
 	}
 
 	@Test
@@ -110,19 +95,6 @@ public class DateOrDateTimePropertyScribeTest {
 
 		//@formatter:off
 		assertDateTime(sensei.assertWriteText(withDateTime),
-			"20130611T124302Z",
-			"20130611T134302",
-			"20130611T114302",
-			"20130611T104302"
-		);
-		//@formatter:on
-
-		assertComponents(sensei.assertWriteText(withComponents), componentsStr);
-
-		assertDate(sensei.assertWriteText(withDateAndComponents), dateStr);
-
-		//@formatter:off
-		assertDateTime(sensei.assertWriteText(withDateTimeAndComponents),
 			"20130611T124302Z",
 			"20130611T134302",
 			"20130611T114302",
@@ -154,20 +126,7 @@ public class DateOrDateTimePropertyScribeTest {
 		);
 		//@formatter:on
 
-		assertComponents(sensei.assertWriteXml(withComponents), "<date-time>" + componentsStrExt + "</date-time>");
-
-		assertDate(sensei.assertWriteXml(withDateAndComponents), "<date>" + dateStrExt + "</date>");
-
-		//@formatter:off
-		assertDateTime(sensei.assertWriteXml(withDateTimeAndComponents),
-			"<date-time>2013-06-11T12:43:02Z</date-time>",
-			"<date-time>2013-06-11T13:43:02</date-time>",
-			"<date-time>2013-06-11T11:43:02</date-time>",
-			"<date-time>2013-06-11T10:43:02</date-time>"
-		);
-		//@formatter:on
-
-		sensei.assertWriteXml(empty).run("<date/>");
+		sensei.assertWriteXml(empty).run("<date-time/>");
 	}
 
 	@Test
@@ -184,19 +143,6 @@ public class DateOrDateTimePropertyScribeTest {
 
 		//@formatter:off
 		assertDateTime(sensei.assertWriteJson(withDateTime),
-			"2013-06-11T12:43:02Z",
-			"2013-06-11T13:43:02",
-			"2013-06-11T11:43:02",
-			"2013-06-11T10:43:02"
-		);
-		//@formatter:on
-
-		assertComponents(sensei.assertWriteJson(withComponents), componentsStrExt);
-
-		assertDate(sensei.assertWriteJson(withDateAndComponents), dateStrExt);
-
-		//@formatter:off
-		assertDateTime(sensei.assertWriteJson(withDateTimeAndComponents),
 			"2013-06-11T12:43:02Z",
 			"2013-06-11T13:43:02",
 			"2013-06-11T11:43:02",
@@ -274,48 +220,42 @@ public class DateOrDateTimePropertyScribeTest {
 		test.tz(tzinfo).run(minusOne);
 	}
 
-	@SuppressWarnings("rawtypes")
-	private void assertComponents(Sensei<DateOrDateTimePropertyImpl>.WriteTest<? extends WriteTest> test, String expected) {
-		//date components are uneffected by timezone options
-		test.run(expected);
-		test.tz(floatingGlobal).run(expected);
-		test.tz(timezoneGlobal).run(expected);
-	}
-
 	private class DateOrDateTimePropertyMarshallerImpl extends DateOrDateTimePropertyScribe<DateOrDateTimePropertyImpl> {
 		public DateOrDateTimePropertyMarshallerImpl() {
 			super(DateOrDateTimePropertyImpl.class, "DATE-OR-DATETIME");
 		}
 
 		@Override
-		protected DateOrDateTimePropertyImpl newInstance(Date date, boolean hasTime) {
-			return new DateOrDateTimePropertyImpl(date, hasTime);
+		protected DateOrDateTimePropertyImpl newInstance(ICalDate date) {
+			return new DateOrDateTimePropertyImpl(date);
 		}
 	}
 
 	private class DateOrDateTimePropertyImpl extends DateOrDateTimeProperty {
-		public DateOrDateTimePropertyImpl(DateTimeComponents component, boolean hasTime) {
-			super(component, hasTime);
-		}
-
 		public DateOrDateTimePropertyImpl(Date value, boolean hasTime) {
 			super(value, hasTime);
+		}
+
+		public DateOrDateTimePropertyImpl(ICalDate value) {
+			super(value);
 		}
 	}
 
 	private final Check<DateOrDateTimePropertyImpl> hasDate = new Check<DateOrDateTimePropertyImpl>() {
 		public void check(DateOrDateTimePropertyImpl property, ParseContext context) {
-			assertEquals(date, property.getValue());
-			assertEquals(new DateTimeComponents(2013, 6, 11, 0, 0, 0, false), property.getRawComponents());
-			assertFalse(property.hasTime());
+			ICalDate value = property.getValue();
+			assertEquals(date, value);
+			assertEquals(new DateTimeComponents(2013, 6, 11, 0, 0, 0, false), value.getRawComponents());
+			assertFalse(value.hasTime());
 		}
 	};
 
 	private final Check<DateOrDateTimePropertyImpl> hasDateTime = new Check<DateOrDateTimePropertyImpl>() {
 		public void check(DateOrDateTimePropertyImpl property, ParseContext context) {
-			assertEquals(datetime, property.getValue());
-			assertEquals(new DateTimeComponents(2013, 6, 11, 12, 43, 2, true), property.getRawComponents());
-			assertTrue(property.hasTime());
+			ICalDate value = property.getValue();
+			assertEquals(datetime, value);
+			assertEquals(new DateTimeComponents(2013, 6, 11, 12, 43, 2, true), value.getRawComponents());
+			assertTrue(value.hasTime());
 		}
 	};
 

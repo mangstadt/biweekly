@@ -1,9 +1,7 @@
 package biweekly.io.scribe.property;
 
-import java.util.Date;
-
 import biweekly.property.DateDue;
-
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -40,7 +38,7 @@ public class DateDueScribe extends DateOrDateTimePropertyScribe<DateDue> {
 	}
 
 	@Override
-	protected DateDue newInstance(Date date, boolean hasTime) {
-		return new DateDue(date, hasTime);
+	protected DateDue newInstance(ICalDate date) {
+		return new DateDue(date);
 	}
 }

@@ -2,7 +2,7 @@ package biweekly.property;
 
 import java.util.Date;
 
-import biweekly.util.DateTimeComponents;
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -50,45 +50,29 @@ import biweekly.util.DateTimeComponents;
  * Date date = ...
  * dtstart = new DateStart(date, false);
  * event.setDateStart(dtstart);
- * 
- * //raw date/time components 
- * DateTimeComponents components = new DateTimeComponents(1999, 4, 4, 2, 0, 0, false);
- * dtstart = new DateStart(components);
- * event.setDateStart(dtstart);
  * </pre>
  * 
  * </p>
  * 
- * <b>Code sample (retrieving):</b>
+ * <b>Code sample (reading):</b>
  * 
  * <pre class="brush:java">
  * ICalendar ical = ...
  * for (VEvent event : ical.getEvents()){
  *   DateStart dtstart = event.getDateStart();
  *   
- *   //get the raw date/time components from the date string
- *   DateTimeComponents components = dtstart.getRawComponents();
- *   int year = components.getYear();
- *   int month = components.getMonth();
- *   //etc.
+ *   //get property value (ICalDate extends java.util.Date)
+ *   ICalDate value = dtstart.getValue();
  *   
- *   //get the Java Date object that was generated based on the provided timezone
- *   Date value = dtstart.getValue();
- *   
- *   if (dtstart.hasTime()){
+ *   if (value.hasTime()){
  *     //the value includes a time component
- *     
- *     if (dtstart.isFloatingTime()){
- *       //timezone information was not provided
- *       //Java Date object was parsed under the local computer's default timezone
- *     } else {
- *       //timezone information was provided
- *       //Java Date object was parsed under the provided timezone (if recognized)
- *     }
  *   } else {
  *     //the value is just a date
- *     //Java Date object's time is set to "00:00:00" under the local computer's default timezone
+ *     //date object's time is set to "00:00:00" under local computer's default timezone
  *   }
+ *   
+ *   //gets the timezone that the property value was parsed under if you are curious about that
+ *   TimeZone tz = tzinfo.getTimeZone(dtstart);
  * }
  * </pre>
  * 
@@ -98,31 +82,24 @@ import biweekly.util.DateTimeComponents;
  * <b>Code sample (using timezones):</b>
  * 
  * <pre class="brush:java">
- * //by default, values are formatted in UTC
+ * DateStart dtstart = new DateStart(...);
  * 
  * ICalendar ical = new ICalendar();
- * 
  * VEvent event = new VEvent();
- * Date datetime = ...
- * DateStart dtstart = new DateStart(datetime);
  * event.setDateStart(dtstart);
  * ical.addEvent(event);
  * 
- * java.util.TimeZone tz = java.util.TimeZone.getTimeZone(...);
+ * java.util.TimeZone tz = ...
  * ICalWriter writer = new ICalWriter(...);
  * 
- * //set the timezone for all date/time properties
- * writer.getTimezoneInfo().setDefaultTimezone(tz);
+ * //set the timezone of all date-time property values
+ * //date-time property values are written in UTC by default
+ * writer.getTimezoneInfo().setDefaultTimeZone(tz);
  * 
- * //set the timezone for an individual property
- * writer.getTimezoneInfo().setTimezone(dtstart, tz);
+ * //set the timezone just for this property
+ * writer.getTimezoneInfo().setTimeZone(dtstart, tz);
  * 
- * //format all date/time values in floating time (no timezone information, formatted in default JVM timezone)
- * writer.getTimezoneInfo().setUseFloatingTime(true);
- * 
- * //format an individual property in floating time (no timezone information, formatted in default JVM timezone)
- * writer.getTimezoneInfo().setUseFloatingTime(dtstart, true);
- * 
+ * //finally, write the iCalendar object
  * writer.write(ical);
  * </pre>
  * 
@@ -137,13 +114,13 @@ public class DateStart extends DateOrDateTimeProperty {
 	 * @param startDate the start date
 	 */
 	public DateStart(Date startDate) {
-		this(startDate, true);
+		super(startDate);
 	}
 
 	/**
 	 * Creates a start date property.
 	 * @param startDate the start date
-	 * @@param hasTime true if the value has a time component, false if it is
+	 * @param hasTime true if the value has a time component, false if it is
 	 * strictly a date
 	 */
 	public DateStart(Date startDate, boolean hasTime) {
@@ -152,11 +129,9 @@ public class DateStart extends DateOrDateTimeProperty {
 
 	/**
 	 * Creates a start date property.
-	 * @param components the raw components of the date-time value
-	 * @param hasTime true if the value has a time component, false if it is
-	 * strictly a date
+	 * @param startDate the start date
 	 */
-	public DateStart(DateTimeComponents components, boolean hasTime) {
-		super(components, hasTime);
+	public DateStart(ICalDate startDate) {
+		super(startDate);
 	}
 }

@@ -1,5 +1,7 @@
 package biweekly.component;
 
+import static biweekly.property.ValuedProperty.getValue;
+
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +22,7 @@ import biweekly.property.RequestStatus;
 import biweekly.property.Uid;
 import biweekly.property.Url;
 import biweekly.util.Duration;
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -517,8 +520,8 @@ public class VFreeBusy extends ICalComponent {
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
 		checkOptionalCardinality(warnings, Contact.class, DateStart.class, DateEnd.class, Organizer.class, Url.class);
 
-		DateStart dateStart = getDateStart();
-		DateEnd dateEnd = getDateEnd();
+		ICalDate dateStart = getValue(getDateStart());
+		ICalDate dateEnd = getValue(getDateEnd());
 
 		//DTSTART is required if DTEND exists
 		if (dateEnd != null && dateStart == null) {
@@ -526,20 +529,16 @@ public class VFreeBusy extends ICalComponent {
 		}
 
 		//DTSTART and DTEND must contain a time component
-		if (dateStart != null && dateStart.getValue() != null && !dateStart.hasTime()) {
+		if (dateStart != null && !dateStart.hasTime()) {
 			warnings.add(Warning.validate(20, DateStart.class.getSimpleName()));
 		}
-		if (dateEnd != null && dateEnd.getValue() != null && !dateEnd.hasTime()) {
+		if (dateEnd != null && !dateEnd.hasTime()) {
 			warnings.add(Warning.validate(20, DateEnd.class.getSimpleName()));
 		}
 
 		//DTSTART must come before DTEND
-		if (dateStart != null && dateEnd != null) {
-			Date start = dateStart.getValue();
-			Date end = dateEnd.getValue();
-			if (start != null && end != null && start.compareTo(end) >= 0) {
-				warnings.add(Warning.validate(16));
-			}
+		if (dateStart != null && dateEnd != null && dateStart.compareTo(dateEnd) >= 0) {
+			warnings.add(Warning.validate(16));
 		}
 	}
 }

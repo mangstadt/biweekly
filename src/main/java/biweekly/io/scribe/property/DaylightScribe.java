@@ -1,6 +1,7 @@
 package biweekly.io.scribe.property;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -13,6 +14,8 @@ import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Daylight;
 import biweekly.util.DateTimeComponents;
+import biweekly.util.ICalDate;
+import biweekly.util.ICalDateFormat;
 import biweekly.util.UtcOffset;
 
 /*
@@ -61,11 +64,11 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 		UtcOffset offset = property.getOffset();
 		values.add((offset == null) ? "" : offset.toString());
 
-		DateTimeComponents start = property.getStart();
-		values.add((start == null) ? "" : start.toString(true, false));
+		ICalDate start = property.getStart();
+		values.add((start == null || start.getRawComponents() == null) ? "" : start.getRawComponents().toString(true, false));
 
-		DateTimeComponents end = property.getEnd();
-		values.add((end == null) ? "" : end.toString(true, false));
+		ICalDate end = property.getEnd();
+		values.add((end == null || end.getRawComponents() == null) ? "" : end.getRawComponents().toString(true, false));
 
 		String standardName = property.getStandardName();
 		values.add((standardName == null) ? "" : standardName);
@@ -93,21 +96,25 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 			}
 		}
 
-		DateTimeComponents start = null;
+		ICalDate start = null;
 		next = it.nextString();
 		if (next != null) {
 			try {
-				start = DateTimeComponents.parse(next);
+				Date dateValue = ICalDateFormat.parse(next);
+				DateTimeComponents components = DateTimeComponents.parse(next);
+				start = new ICalDate(dateValue, components, true);
 			} catch (IllegalArgumentException e) {
 				throw new CannotParseException(34, next);
 			}
 		}
 
-		DateTimeComponents end = null;
+		ICalDate end = null;
 		next = it.nextString();
 		if (next != null) {
 			try {
-				end = DateTimeComponents.parse(next);
+				Date dateValue = ICalDateFormat.parse(next);
+				DateTimeComponents components = DateTimeComponents.parse(next);
+				end = new ICalDate(dateValue, components, true);
 			} catch (IllegalArgumentException e) {
 				throw new CannotParseException(35, next);
 			}

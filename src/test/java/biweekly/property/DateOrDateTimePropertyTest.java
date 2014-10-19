@@ -6,8 +6,6 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import biweekly.util.DateTimeComponents;
-
 /*
  Copyright (c) 2013-2014, Michael Angstadt
  All rights reserved.
@@ -40,12 +38,6 @@ public class DateOrDateTimePropertyTest {
 	@Test
 	public void validate() {
 		DateOrDateTimeProperty property = new DateOrDateTimeProperty((Date) null, false);
-		assertValidate(property).run(26);
-
-		property = new DateOrDateTimeProperty(new DateTimeComponents(2010, 1, 1, 1, 1, 1, true), true);
-		assertValidate(property).run();
-
-		property = new DateOrDateTimeProperty((Date) null, false);
 		assertValidate(property).run(26);
 
 		property = new DateOrDateTimeProperty(new Date(), false);

@@ -105,6 +105,14 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents> 
 	/**
 	 * Copies an existing DateTimeComponents object.
 	 * @param original the object to copy from
+	 */
+	public DateTimeComponents(DateTimeComponents original) {
+		this(original, null, null, null, null, null, null, null);
+	}
+
+	/**
+	 * Copies an existing DateTimeComponents object.
+	 * @param original the object to copy from
 	 * @param year the new year value or null not to change
 	 * @param month the new month value or null not to change
 	 * @param date the new date value or null not to change
@@ -232,7 +240,7 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents> 
 
 	/**
 	 * Converts the date-time components to a string.
-	 * @param includedTime true to include the time portion, false not to
+	 * @param includeTime true to include the time portion, false not to
 	 * @param extended true to use extended format, false to use basic
 	 * @return the date string
 	 */

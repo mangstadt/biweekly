@@ -14,6 +14,7 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DateOrDateTimeProperty;
 import biweekly.util.DateTimeComponents;
+import biweekly.util.ICalDate;
 import biweekly.util.ICalDateFormat;
 
 /*
@@ -53,32 +54,37 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 
 	@Override
 	protected ICalParameters _prepareParameters(T property, WriteContext context) {
-		return handleTzidParameter(property, property.hasTime(), context);
+		ICalDate value = property.getValue();
+		if (value == null) {
+			return property.getParameters();
+		}
+
+		return handleTzidParameter(property, value.hasTime(), context);
 	}
 
 	@Override
 	protected ICalDataType _dataType(T property, ICalVersion version) {
-		return property.hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
+		ICalDate value = property.getValue();
+		if (value == null) {
+			return ICalDataType.DATE_TIME;
+		}
+
+		return value.hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
 	}
 
 	@Override
 	protected String _writeText(T property, WriteContext context) {
-		Date value = property.getValue();
-		if (value != null) {
-			TimezoneInfo tzinfo = context.getTimezoneInfo();
-			boolean hasTime = property.hasTime();
-			boolean floating = tzinfo.isFloating(property);
-			TimeZone tz = tzinfo.getTimeZoneToWriteIn(property);
-			context.addDate(hasTime, floating, tz, value);
-			return date(value).time(hasTime).tz(floating, tz).write();
+		ICalDate value = property.getValue();
+		if (value == null) {
+			return "";
 		}
 
-		DateTimeComponents components = property.getRawComponents();
-		if (components != null) {
-			return components.toString(property.hasTime(), false);
-		}
-
-		return "";
+		TimezoneInfo tzinfo = context.getTimezoneInfo();
+		boolean hasTime = value.hasTime();
+		boolean floating = tzinfo.isFloating(property);
+		TimeZone tz = tzinfo.getTimeZoneToWriteIn(property);
+		context.addDate(hasTime, floating, tz, value);
+		return date(value).time(hasTime).tz(floating, tz).write();
 	}
 
 	@Override
@@ -89,19 +95,18 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 
 	@Override
 	protected void _writeXml(T property, XCalElement element, WriteContext context) {
-		String dateStr = null;
-
-		Date value = property.getValue();
-		DateTimeComponents components = property.getRawComponents();
-		if (value != null) {
-			boolean floating = context.getTimezoneInfo().isFloating(property);
-			TimeZone tz = context.getTimezoneInfo().getTimeZoneToWriteIn(property);
-			dateStr = date(value).time(property.hasTime()).tz(floating, tz).extended(true).write();
-		} else if (components != null) {
-			dateStr = components.toString(property.hasTime(), true);
+		ICalDataType dataType = dataType(property, null);
+		ICalDate value = property.getValue();
+		if (value == null) {
+			element.append(dataType, "");
+			return;
 		}
 
-		element.append(dataType(property, null), dateStr);
+		boolean hasTime = value.hasTime();
+		boolean floating = context.getTimezoneInfo().isFloating(property);
+		TimeZone tz = context.getTimezoneInfo().getTimeZoneToWriteIn(property);
+		String dateStr = date(value).time(hasTime).tz(floating, tz).extended(true).write();
+		element.append(dataType, dateStr);
 	}
 
 	@Override
@@ -120,19 +125,16 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 
 	@Override
 	protected JCalValue _writeJson(T property, WriteContext context) {
-		Date value = property.getValue();
-		if (value != null) {
-			boolean floating = context.getTimezoneInfo().isFloating(property);
-			TimeZone tz = context.getTimezoneInfo().getTimeZoneToWriteIn(property);
-			return JCalValue.single(date(value).time(property.hasTime()).tz(floating, tz).extended(true).write());
+		ICalDate value = property.getValue();
+		if (value == null) {
+			return JCalValue.single("");
 		}
 
-		DateTimeComponents components = property.getRawComponents();
-		if (components != null) {
-			return JCalValue.single(components.toString(property.hasTime(), true));
-		}
-
-		return JCalValue.single("");
+		boolean hasTime = value.hasTime();
+		boolean floating = context.getTimezoneInfo().isFloating(property);
+		TimeZone tz = context.getTimezoneInfo().getTimeZoneToWriteIn(property);
+		String dateStr = date(value).time(hasTime).tz(floating, tz).extended(true).write();
+		return JCalValue.single(dateStr);
 	}
 
 	@Override
@@ -141,11 +143,11 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 		return parse(valueStr, parameters, context);
 	}
 
-	protected abstract T newInstance(Date date, boolean hasTime);
+	protected abstract T newInstance(ICalDate date);
 
 	private T parse(String value, ICalParameters parameters, ParseContext context) {
 		if (value == null) {
-			return newInstance(null, true);
+			return newInstance(null);
 		}
 
 		Date date;
@@ -164,16 +166,17 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 		}
 
 		boolean hasTime = ICalDateFormat.dateHasTime(value);
-		T property = newInstance(date, hasTime);
-		property.setRawComponents(components, hasTime);
+
+		ICalDate icalDate = new ICalDate(date, components, hasTime);
+		T property = newInstance(icalDate);
 
 		if (!ICalDateFormat.isUTC(value)) {
 			String tzid = parameters.getTimezoneId();
 			//TODO handle UTC offsets within the date strings (not part of iCal standard)
 			if (tzid == null) {
-				context.addFloatingDate(property, date, value);
+				context.addFloatingDate(property, icalDate, value);
 			} else if (hasTime) {
-				context.addTimezonedDate(tzid, property, date, value);
+				context.addTimezonedDate(tzid, property, icalDate, value);
 			}
 		}
 

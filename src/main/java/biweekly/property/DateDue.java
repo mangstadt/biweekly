@@ -2,7 +2,7 @@ package biweekly.property;
 
 import java.util.Date;
 
-import biweekly.util.DateTimeComponents;
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -49,45 +49,32 @@ import biweekly.util.DateTimeComponents;
  * Date date = ...
  * due = new DateDue(date, false);
  * todo.setDateDue(due);
- * 
- * //raw date/time components 
- * DateTimeComponents components = new DateTimeComponents(1999, 4, 4, 2, 0, 0, false);
- * due = new DateDue(components);
- * todo.setDateDue(due);
  * </pre>
  * 
  * </p>
  * 
- * <b>Code sample (retrieving):</b>
+ * <b>Code sample (reading):</b>
  * 
  * <pre class="brush:java">
- * ICalendar ical = ...
+ * ICalReader reader = ...
+ * ICalendar ical = reader.readNext();
+ * TimezoneInfo tzinfo = reader.getTimezoneInfo();
+ * 
  * for (VTodo todo : ical.getTodos()){
  *   DateDue due = todo.getDateDue();
  *   
- *   //get the raw date/time components from the date string
- *   DateTimeComponents components = due.getRawComponents();
- *   int year = components.getYear();
- *   int month = components.getMonth();
- *   //etc.
+ *   //get property value (ICalDate extends java.util.Date)
+ *   ICalDate value = due.getValue();
  *   
- *   //get the Java Date object that was generated based on the provided timezone
- *   Date value = due.getValue();
- *   
- *   if (due.hasTime()){
+ *   if (value.hasTime()){
  *     //the value includes a time component
- *     
- *     if (due.isFloatingTime()){
- *       //timezone information was not provided
- *       //Java Date object was parsed under the local computer's default timezone
- *     } else {
- *       //timezone information was provided
- *       //Java Date object was parsed under the provided timezone (if recognized)
- *     }
  *   } else {
  *     //the value is just a date
- *     //Java Date object's time is set to "00:00:00" under the local computer's default timezone
+ *     //date object's time is set to "00:00:00" under local computer's default timezone
  *   }
+ *   
+ *   //gets the timezone that the property value was parsed under if you are curious about that
+ *   TimeZone tz = tzinfo.getTimeZone(due);
  * }
  * </pre>
  * 
@@ -97,31 +84,25 @@ import biweekly.util.DateTimeComponents;
  * <b>Code sample (using timezones):</b>
  * 
  * <pre class="brush:java">
- * //by default, values are formatted in UTC
+ * DateDue due = new DateDue(...);
  * 
  * ICalendar ical = new ICalendar();
- * 
  * VTodo todo = new VTodo();
  * Date datetime = ...
- * DateDue due = new DateDue(datetime);
  * todo.setDateDue(due);
  * ical.addTodo(todo);
  * 
- * java.util.TimeZone tz = java.util.TimeZone.getTimeZone(...);
+ * java.util.TimeZone tz = ...
  * ICalWriter writer = new ICalWriter(...);
  * 
- * //set the timezone for all date/time properties
- * writer.getTimezoneInfo().setDefaultTimezone(tz);
+ * //set the timezone of all date-time property values
+ * //date-time property values are written in UTC by default
+ * writer.getTimezoneInfo().setDefaultTimeZone(tz);
  * 
- * //set the timezone for an individual property
- * writer.getTimezoneInfo().setTimezone(due, tz);
+ * //set the timezone just for this property
+ * writer.getTimezoneInfo().setTimeZone(due, tz);
  * 
- * //format all date/time values in floating time (no timezone information, formatted in default JVM timezone)
- * writer.getTimezoneInfo().setUseFloatingTime(true);
- * 
- * //format an individual property in floating time (no timezone information, formatted in default JVM timezone)
- * writer.getTimezoneInfo().setUseFloatingTime(due, true);
- * 
+ * //finally, write the iCalendar object
  * writer.write(ical);
  * </pre>
  * 
@@ -136,7 +117,7 @@ public class DateDue extends DateOrDateTimeProperty {
 	 * @param dueDate the due date
 	 */
 	public DateDue(Date dueDate) {
-		this(dueDate, true);
+		super(dueDate);
 	}
 
 	/**
@@ -150,12 +131,10 @@ public class DateDue extends DateOrDateTimeProperty {
 	}
 
 	/**
-	 * Creates an due date property.
-	 * @param components the raw components of the date-time value
-	 * @param hasTime true if the value has a time component, false if it is
-	 * strictly a date
+	 * Creates a due date property.
+	 * @param dueDate the due date
 	 */
-	public DateDue(DateTimeComponents components, boolean hasTime) {
-		super(components, hasTime);
+	public DateDue(ICalDate dueDate) {
+		super(dueDate);
 	}
 }

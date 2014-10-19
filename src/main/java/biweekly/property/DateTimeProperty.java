@@ -28,13 +28,14 @@ import java.util.Date;
  */
 
 /**
- * Represents a property whose value is a date-time.
+ * Represents a property whose value is a date-time value. These properties are
+ * always written in UTC time.
  * @author Michael Angstadt
  */
 public class DateTimeProperty extends ValuedProperty<Date> {
 	/**
 	 * Creates a new property.
-	 * @param value the date
+	 * @param value the date-time value
 	 */
 	public DateTimeProperty(Date value) {
 		super(value);

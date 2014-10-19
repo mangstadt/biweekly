@@ -1080,7 +1080,7 @@ public class XCalDocumentTest {
 				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
 				assertSize(daylight, 0, 5);
 				assertEquals(date("2000-04-04 02:00:00"), daylight.getDateStart().getValue());
-				assertEquals(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false), daylight.getDateStart().getRawComponents());
+				assertEquals(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false), daylight.getDateStart().getValue().getRawComponents());
 
 				Recurrence rrule = daylight.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
@@ -1098,7 +1098,7 @@ public class XCalDocumentTest {
 				StandardTime standard = timezone.getStandardTimes().get(0);
 				assertSize(standard, 0, 5);
 				assertEquals(date("2000-10-26 02:00:00"), standard.getDateStart().getValue());
-				assertEquals(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false), standard.getDateStart().getRawComponents());
+				assertEquals(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false), standard.getDateStart().getValue().getRawComponents());
 
 				Recurrence rrule = standard.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());

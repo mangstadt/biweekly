@@ -80,13 +80,18 @@ public class WriteContext {
 		this.parent = parent;
 	}
 
+	/**
+	 * Gets the timezoned date-time property values that are in the iCalendar
+	 * object.
+	 * @return the timezoned date-time property values
+	 */
 	public List<Date> getDates() {
 		return dates;
 	}
 
 	/**
-	 * Records the date-time values that are being written. This is used to
-	 * generate a DAYLIGHT property for vCalendar objects.
+	 * Records the timezoned date-time values that are being written. This is
+	 * used to generate a DAYLIGHT property for vCalendar objects.
 	 * @param hasTime true if the date has a time component, false if it's
 	 * strictly a date
 	 * @param floating true if the date is floating, false if not
@@ -94,10 +99,6 @@ public class WriteContext {
 	 * @param date the date value
 	 */
 	public void addDate(boolean hasTime, boolean floating, TimeZone tz, Date date) {
-		if (version != ICalVersion.V1_0) {
-			return;
-		}
-
 		if (!hasTime || floating || tz == null) {
 			return;
 		}

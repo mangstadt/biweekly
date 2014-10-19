@@ -83,6 +83,10 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 	@Override
 	protected ICalParameters _prepareParameters(T property, WriteContext context) {
+		if (isInObservance(context)) {
+			return property.getParameters();
+		}
+
 		Recurrence recur = property.getValue();
 		if (recur == null || recur.getUntil() == null) {
 			return property.getParameters();

@@ -8,6 +8,7 @@ import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Daylight;
 import biweekly.util.DateTimeComponents;
+import biweekly.util.ICalDate;
 import biweekly.util.UtcOffset;
 
 /*
@@ -43,7 +44,7 @@ public class DaylightScribeTest {
 	private final Sensei<Daylight> sensei = new Sensei<Daylight>(scribe);
 
 	private final Daylight empty = new Daylight();
-	private final Daylight withAllValues = new Daylight(true, new UtcOffset(-5, 0), new DateTimeComponents(2014, 1, 1, 1, 0, 0, false), new DateTimeComponents(2014, 3, 1, 1, 0, 0, false), "EST", "EDT");
+	private final Daylight withAllValues = new Daylight(true, new UtcOffset(-5, 0), new ICalDate(new DateTimeComponents(2014, 1, 1, 1, 0, 0, false), true), new ICalDate(new DateTimeComponents(2014, 3, 1, 1, 0, 0, false), true), "EST", "EDT");
 	private final Daylight withNoValues = new Daylight(true, null, null, null, null, null);
 
 	@Test

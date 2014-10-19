@@ -1098,7 +1098,7 @@ public class ICalReaderTest {
 				StandardTime standard = timezone.getStandardTimes().get(0);
 				assertSize(standard, 0, 4);
 
-				assertEquals(new DateTimeComponents(2014, 11, 2, 2, 0, 0, false), standard.getDateStart().getRawComponents());
+				assertEquals(new DateTimeComponents(2014, 11, 2, 2, 0, 0, false), standard.getDateStart().getValue().getRawComponents());
 				assertEquals(new UtcOffset(-4, 0), standard.getTimezoneOffsetFrom().getValue());
 				assertEquals(new UtcOffset(-5, 0), standard.getTimezoneOffsetTo().getValue());
 				assertEquals("EST", standard.getTimezoneNames().get(0).getValue());
@@ -1108,7 +1108,7 @@ public class ICalReaderTest {
 				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
 				assertSize(daylight, 0, 4);
 
-				assertEquals(new DateTimeComponents(2014, 3, 9, 2, 0, 0, false), daylight.getDateStart().getRawComponents());
+				assertEquals(new DateTimeComponents(2014, 3, 9, 2, 0, 0, false), daylight.getDateStart().getValue().getRawComponents());
 				assertEquals(new UtcOffset(-5, 0), daylight.getTimezoneOffsetFrom().getValue());
 				assertEquals(new UtcOffset(-4, 0), daylight.getTimezoneOffsetTo().getValue());
 				assertEquals("EDT", daylight.getTimezoneNames().get(0).getValue());
@@ -1524,7 +1524,7 @@ public class ICalReaderTest {
 				assertSize(standard, 0, 4);
 
 				assertEquals(date("1998-10-25 02:00:00"), standard.getDateStart().getValue());
-				assertEquals(new DateTimeComponents(1998, 10, 25, 2, 0, 0, false), standard.getDateStart().getRawComponents());
+				assertEquals(new DateTimeComponents(1998, 10, 25, 2, 0, 0, false), standard.getDateStart().getValue().getRawComponents());
 
 				assertIntEquals(-4, standard.getTimezoneOffsetFrom().getHourOffset());
 				assertIntEquals(0, standard.getTimezoneOffsetFrom().getMinuteOffset());
@@ -1539,7 +1539,7 @@ public class ICalReaderTest {
 				assertSize(daylight, 0, 4);
 
 				assertEquals(date("1999-04-04 02:00:00"), daylight.getDateStart().getValue());
-				assertEquals(new DateTimeComponents(1999, 04, 04, 2, 0, 0, false), daylight.getDateStart().getRawComponents());
+				assertEquals(new DateTimeComponents(1999, 04, 04, 2, 0, 0, false), daylight.getDateStart().getValue().getRawComponents());
 
 				assertIntEquals(-5, daylight.getTimezoneOffsetFrom().getHourOffset());
 				assertIntEquals(0, daylight.getTimezoneOffsetFrom().getMinuteOffset());

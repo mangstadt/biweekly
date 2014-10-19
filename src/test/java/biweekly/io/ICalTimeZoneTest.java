@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
 
@@ -21,6 +20,7 @@ import biweekly.property.TimezoneOffsetFrom;
 import biweekly.property.TimezoneOffsetTo;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DefaultTimezoneRule;
+import biweekly.util.ICalDate;
 import biweekly.util.UtcOffset;
 
 import com.google.ical.iter.RecurrenceIterator;
@@ -186,13 +186,13 @@ public class ICalTimeZoneTest {
 		VTimezone component = new VTimezone("America/New_York");
 		{
 			StandardTime standard = new StandardTime();
-			standard.setDateStart((Date) null);
+			standard.setDateStart((ICalDate) null);
 			standard.setTimezoneOffsetFrom(-4, 0);
 			standard.setTimezoneOffsetTo(-5, 0);
 			component.addStandardTime(standard);
 
 			DaylightSavingsTime daylight = new DaylightSavingsTime();
-			daylight.setDateStart((Date) null);
+			daylight.setDateStart((ICalDate) null);
 			daylight.setTimezoneOffsetFrom(-5, 0);
 			daylight.setTimezoneOffsetTo(-4, 0);
 			component.addDaylightSavingsTime(daylight);

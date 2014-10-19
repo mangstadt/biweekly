@@ -1,5 +1,7 @@
 package biweekly.component;
 
+import static biweekly.property.ValuedProperty.getValue;
+
 import java.util.Date;
 import java.util.List;
 
@@ -39,6 +41,7 @@ import biweekly.property.Summary;
 import biweekly.property.Uid;
 import biweekly.property.Url;
 import biweekly.util.Duration;
+import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 
 /*
@@ -1318,14 +1321,11 @@ public class VTodo extends ICalComponent {
 		}
 		checkStatus(warnings, validStatuses);
 
-		DateStart dateStart = getDateStart();
-		DateDue dateDue = getDateDue();
+		ICalDate dateStart = getValue(getDateStart());
+		ICalDate dateDue = getValue(getDateDue());
 		if (dateStart != null && dateDue != null) {
-			Date start = dateStart.getValue();
-			Date due = dateDue.getValue();
-
 			//DTSTART must come before DUE
-			if (start != null && due != null && start.compareTo(due) > 0) {
+			if (dateStart.compareTo(dateDue) > 0) {
 				warnings.add(Warning.validate(22));
 			}
 
@@ -1347,21 +1347,17 @@ public class VTodo extends ICalComponent {
 		}
 
 		//DTSTART and RECURRENCE-ID must have the same data type
-		RecurrenceId recurrenceId = getRecurrenceId();
+		ICalDate recurrenceId = getValue(getRecurrenceId());
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
 			warnings.add(Warning.validate(19));
 		}
 
 		//BYHOUR, BYMINUTE, and BYSECOND cannot be specified in RRULE if DTSTART's data type is "date"
 		//RFC 5545 p. 167
-		RecurrenceRule rrule = getRecurrenceRule();
+		Recurrence rrule = getValue(getRecurrenceRule());
 		if (dateStart != null && rrule != null) {
-			Date start = dateStart.getValue();
-			Recurrence recur = rrule.getValue();
-			if (start != null && recur != null) {
-				if (!dateStart.hasTime() && (!recur.getByHour().isEmpty() || !recur.getByMinute().isEmpty() || !recur.getBySecond().isEmpty())) {
-					warnings.add(Warning.validate(5));
-				}
+			if (!dateStart.hasTime() && (!rrule.getByHour().isEmpty() || !rrule.getByMinute().isEmpty() || !rrule.getBySecond().isEmpty())) {
+				warnings.add(Warning.validate(5));
 			}
 		}
 

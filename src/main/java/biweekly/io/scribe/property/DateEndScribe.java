@@ -1,8 +1,7 @@
 package biweekly.io.scribe.property;
 
-import java.util.Date;
-
 import biweekly.property.DateEnd;
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -39,7 +38,7 @@ public class DateEndScribe extends DateOrDateTimePropertyScribe<DateEnd> {
 	}
 
 	@Override
-	protected DateEnd newInstance(Date date, boolean hasTime) {
-		return new DateEnd(date, hasTime);
+	protected DateEnd newInstance(ICalDate date) {
+		return new DateEnd(date);
 	}
 }

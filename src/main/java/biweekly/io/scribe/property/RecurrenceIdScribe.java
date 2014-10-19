@@ -1,11 +1,11 @@
 package biweekly.io.scribe.property;
 
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
 
 import biweekly.ICalVersion;
 import biweekly.property.RecurrenceId;
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -42,8 +42,8 @@ public class RecurrenceIdScribe extends DateOrDateTimePropertyScribe<RecurrenceI
 	}
 
 	@Override
-	protected RecurrenceId newInstance(Date date, boolean hasTime) {
-		return new RecurrenceId(date, hasTime);
+	protected RecurrenceId newInstance(ICalDate date) {
+		return new RecurrenceId(date);
 	}
 
 	@Override

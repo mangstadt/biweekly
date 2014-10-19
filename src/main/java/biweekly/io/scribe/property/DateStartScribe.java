@@ -1,7 +1,5 @@
 package biweekly.io.scribe.property;
 
-import java.util.Date;
-
 import biweekly.ICalDataType;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
@@ -9,6 +7,7 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DateStart;
 import biweekly.util.DateTimeComponents;
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -81,21 +80,21 @@ public class DateStartScribe extends DateOrDateTimePropertyScribe<DateStart> {
 	}
 
 	private String write(DateStart property, boolean extended) {
-		Date value = property.getValue();
-		if (value != null) {
-			return date(value).time(true).floating(true).extended(extended).write();
+		ICalDate value = property.getValue();
+		if (value == null) {
+			return "";
 		}
 
-		DateTimeComponents components = property.getRawComponents();
+		DateTimeComponents components = value.getRawComponents();
 		if (components != null) {
 			return components.toString(true, extended);
 		}
 
-		return "";
+		return date(value).time(true).floating(true).extended(extended).write();
 	}
 
 	@Override
-	protected DateStart newInstance(Date date, boolean hasTime) {
-		return new DateStart(date, hasTime);
+	protected DateStart newInstance(ICalDate date) {
+		return new DateStart(date);
 	}
 }

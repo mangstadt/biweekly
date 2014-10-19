@@ -1,5 +1,7 @@
 package biweekly.component;
 
+import static biweekly.property.ValuedProperty.getValue;
+
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +40,7 @@ import biweekly.property.Transparency;
 import biweekly.property.Uid;
 import biweekly.property.Url;
 import biweekly.util.Duration;
+import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 
 /*
@@ -1296,8 +1299,8 @@ public class VEvent extends ICalComponent {
 		}
 		checkStatus(warnings, validStatuses);
 
-		DateStart dateStart = getDateStart();
-		DateEnd dateEnd = getDateEnd();
+		ICalDate dateStart = getValue(getDateStart());
+		ICalDate dateEnd = getValue(getDateEnd());
 
 		//DTSTART is always required, unless there is a METHOD property at the iCal root
 		ICalComponent ical = components.get(0);
@@ -1311,11 +1314,8 @@ public class VEvent extends ICalComponent {
 		}
 
 		if (dateStart != null && dateEnd != null) {
-			Date start = dateStart.getValue();
-			Date end = dateEnd.getValue();
-
 			//DTSTART must come before DTEND
-			if (start != null && end != null && start.compareTo(end) > 0) {
+			if (dateStart.compareTo(dateEnd) > 0) {
 				warnings.add(Warning.validate(16));
 			}
 
@@ -1331,21 +1331,17 @@ public class VEvent extends ICalComponent {
 		}
 
 		//DTSTART and RECURRENCE-ID must have the same data type
-		RecurrenceId recurrenceId = getRecurrenceId();
+		ICalDate recurrenceId = getValue(getRecurrenceId());
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
 			warnings.add(Warning.validate(19));
 		}
 
 		//BYHOUR, BYMINUTE, and BYSECOND cannot be specified in RRULE if DTSTART's data type is "date"
 		//RFC 5545 p. 167
-		RecurrenceRule rrule = getRecurrenceRule();
+		Recurrence rrule = getValue(getRecurrenceRule());
 		if (dateStart != null && rrule != null) {
-			Date start = dateStart.getValue();
-			Recurrence recur = rrule.getValue();
-			if (start != null && recur != null) {
-				if (!dateStart.hasTime() && (!recur.getByHour().isEmpty() || !recur.getByMinute().isEmpty() || !recur.getBySecond().isEmpty())) {
-					warnings.add(Warning.validate(5));
-				}
+			if (!dateStart.hasTime() && (!rrule.getByHour().isEmpty() || !rrule.getByMinute().isEmpty() || !rrule.getBySecond().isEmpty())) {
+				warnings.add(Warning.validate(5));
 			}
 		}
 
