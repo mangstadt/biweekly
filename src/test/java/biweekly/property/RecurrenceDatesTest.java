@@ -1,8 +1,16 @@
 package biweekly.property;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertValidate;
 
+import java.util.Date;
+
 import org.junit.Test;
+
+import biweekly.util.ICalDate;
+import biweekly.util.Period;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -35,7 +43,18 @@ import org.junit.Test;
 public class RecurrenceDatesTest {
 	@Test
 	public void validate() {
-		RecurrenceDates property = new RecurrenceDates(null);
-		assertValidate(property).run();
+		RecurrenceDates property = new RecurrenceDates();
+		assertValidate(property).run(26);
+
+		property = new RecurrenceDates();
+		property.addDate(new Date());
+		property.addPeriod(new Period(new Date(), new Date()));
+		assertValidate(property).versions(V1_0).run(49, 51);
+		assertValidate(property).versions(V2_0_DEPRECATED, V2_0).run(49);
+
+		property = new RecurrenceDates();
+		property.addDate(new ICalDate(new Date(), true));
+		property.addDate(new ICalDate(new Date(), false));
+		assertValidate(property).run(50);
 	}
 }

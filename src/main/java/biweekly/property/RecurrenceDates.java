@@ -1,8 +1,13 @@
 package biweekly.property;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import biweekly.ICalVersion;
+import biweekly.Warning;
+import biweekly.component.ICalComponent;
+import biweekly.util.ICalDate;
 import biweekly.util.Period;
 
 /*
@@ -43,24 +48,21 @@ import biweekly.util.Period;
  * VEvent event = new VEvent();
  * 
  * //date-time values
- * Date datetime1 = ...
- * Date datetime2 = ...
- * List&lt;Date&gt; datetimes = Arrays.asList(datetime1, datetime2);
- * RecurrenceDates rdate = new RecurrenceDates(datetimes, true);
+ * Date datetime = ...
+ * RecurrenceDates rdate = new RecurrenceDates();
+ * rdate.addDate(new ICalDate(datetime, true));
  * event.addRecurrenceDates(rdate);
  * 
  * //date values
- * Date date1 = ...
- * Date date2 = ...
- * List&lt;Date&gt; dates = Arrays.asList(date1, date2);
- * rdate = new RecurrenceDates(dates, false);
+ * Date date = ...
+ * RecurrenceDates rdate = new RecurrenceDates();
+ * rdate.addDate(new ICalDate(date, false));
  * event.addRecurrenceDates(rdate);
  * 
  * //periods
- * Period period1 = ...
- * Period period2 = ...
- * List&lt;Period&gt; periods = Arrays.asList(period1, period2);
- * rdate = new RecurrenceDates(periods, true);
+ * Period period = ...
+ * rdate = new RecurrenceDates();
+ * rdate.addPeriod(period);
  * event.addRecurrenceDates(rdate);
  * </pre>
  * 
@@ -71,51 +73,75 @@ import biweekly.util.Period;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34</a>
  */
 public class RecurrenceDates extends ICalProperty {
-	private List<Date> dates;
-	private boolean hasTime;
-	private List<Period> periods;
-
-	/**
-	 * Creates a recurrence dates property.
-	 * @param dates the recurrence dates
-	 * @param hasTime true if the dates have a time component, false if they are
-	 * strictly dates
-	 */
-	public RecurrenceDates(List<Date> dates, boolean hasTime) {
-		this.dates = dates;
-		this.hasTime = hasTime;
-	}
-
-	/**
-	 * Creates a recurrence dates property.
-	 * @param periods the time periods
-	 */
-	public RecurrenceDates(List<Period> periods) {
-		this.periods = periods;
-	}
+	private List<ICalDate> dates = new ArrayList<ICalDate>();
+	private List<Period> periods = new ArrayList<Period>();
 
 	/**
 	 * Gets the recurrence dates.
-	 * @return the dates or null if this property contains periods
+	 * @return the dates
 	 */
-	public List<Date> getDates() {
+	public List<ICalDate> getDates() {
 		return dates;
 	}
 
 	/**
-	 * Gets whether the recurrence dates have time components.
-	 * @return true if the dates have a time component, false if they are
-	 * strictly dates
+	 * Adds a date.
+	 * @param date the date to add
 	 */
-	public boolean hasTime() {
-		return hasTime;
+	public void addDate(ICalDate date) {
+		dates.add(date);
+	}
+
+	/**
+	 * Adds a date
+	 * @param date the date to add
+	 */
+	public void addDate(Date date) {
+		addDate(new ICalDate(date, true));
 	}
 
 	/**
 	 * Gets the time periods.
-	 * @return the time periods or null if this property contains dates
+	 * @return the time periods
 	 */
 	public List<Period> getPeriods() {
 		return periods;
+	}
+
+	/**
+	 * Adds a period
+	 * @param period the period to add
+	 */
+	public void addPeriod(Period period) {
+		periods.add(period);
+	}
+
+	@Override
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+		if (dates.isEmpty() && periods.isEmpty()) {
+			//no value
+			warnings.add(Warning.validate(26));
+		}
+
+		if (!dates.isEmpty() && !periods.isEmpty()) {
+			//can't mix dates and periods
+			warnings.add(Warning.validate(49));
+		}
+
+		if (version == ICalVersion.V1_0 && !periods.isEmpty()) {
+			//1.0 doesn't support periods
+			warnings.add(Warning.validate(51));
+		}
+
+		if (!dates.isEmpty()) {
+			//can't mix date and date-time values
+			boolean hasTime = dates.get(0).hasTime();
+			for (ICalDate date : dates.subList(1, dates.size())) {
+				if (date.hasTime() != hasTime) {
+					warnings.add(Warning.validate(50));
+					break;
+				}
+			}
+		}
 	}
 }

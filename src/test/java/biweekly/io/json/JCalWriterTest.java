@@ -9,7 +9,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.TimeZone;
 
 import org.junit.Rule;
@@ -547,7 +546,8 @@ public class JCalWriterTest {
 			Recurrence rrule = new Recurrence.Builder(Frequency.DAILY).count(5).build();
 			event.setRecurrenceRule(rrule);
 
-			RecurrenceDates rdate = new RecurrenceDates(Arrays.asList(new Period(date("2006-01-02 15:00:00, eastern"), Duration.builder().hours(2).build())));
+			RecurrenceDates rdate = new RecurrenceDates();
+			rdate.addPeriod(new Period(date("2006-01-02 15:00:00", eastern), Duration.builder().hours(2).build()));
 			event.addRecurrenceDates(rdate);
 
 			event.setSummary("Event#2");

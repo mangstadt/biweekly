@@ -8,7 +8,6 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 
@@ -19,7 +18,6 @@ import org.xml.sax.SAXException;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.component.ICalComponent;
-import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.TimezoneInfo;
@@ -187,8 +185,9 @@ public class Sensei<T extends ICalProperty> {
 	public class PrepareParamsTest {
 		protected final T property;
 		private ICalVersion versions[] = ICalVersion.values();
-		private TimezoneInfo tzOptions = new TimezoneInfo();
+		private TimezoneInfo tzinfo = new TimezoneInfo();
 		private ICalParameters expected = new ICalParameters();
+		private ICalComponent parent;
 
 		public PrepareParamsTest(T property) {
 			this.property = property;
@@ -212,9 +211,13 @@ public class Sensei<T extends ICalProperty> {
 			return this;
 		}
 
-		public PrepareParamsTest tz(TimeZone timezone, VTimezone vtimezone) {
-			tzOptions.assign(vtimezone, timezone);
-			tzOptions.setDefaultTimeZone(timezone);
+		public PrepareParamsTest tz(TimezoneInfo tzinfo) {
+			this.tzinfo = tzinfo;
+			return this;
+		}
+
+		public PrepareParamsTest parent(ICalComponent parent) {
+			this.parent = parent;
 			return this;
 		}
 
@@ -223,7 +226,8 @@ public class Sensei<T extends ICalProperty> {
 		 */
 		public void run() {
 			for (ICalVersion version : versions) {
-				WriteContext context = new WriteContext(version, tzOptions);
+				WriteContext context = new WriteContext(version, tzinfo);
+				context.setParent(parent);
 				ICalParameters actual = scribe.prepareParameters(property, context);
 				assertEquals("Actual: " + actual, expected.size(), actual.size());
 

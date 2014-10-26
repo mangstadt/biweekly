@@ -986,7 +986,7 @@ public class XCalReaderTest {
 				assertIntEquals(5, rrule.getCount());
 
 				RecurrenceDates rdate = event.getRecurrenceDates().get(0);
-				assertNull(rdate.getDates());
+				assertEquals(0, rdate.getDates().size());
 				assertEquals(1, rdate.getPeriods().size());
 				assertEquals(new Period(utc("2006-01-02 20:00:00"), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
 				assertNull(rdate.getParameters().getTimezoneId());
