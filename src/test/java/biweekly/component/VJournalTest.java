@@ -55,7 +55,7 @@ public class VJournalTest {
 	public void validate_required() {
 		VJournal component = new VJournal();
 		component.getProperties().clear();
-		assertValidate(component).versions(ICalVersion.V1_0).run(47, 2, 2);
+		assertValidate(component).versions(ICalVersion.V1_0).run(48, 2, 2);
 		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(2, 2);
 	}
 
@@ -85,7 +85,7 @@ public class VJournalTest {
 		component.addProperty(new Url(""));
 		component.addProperty(new Url(""));
 
-		assertValidate(component).versions(ICalVersion.V1_0).warn(status1, 46).warn(status2, 46).run(47, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
+		assertValidate(component).versions(ICalVersion.V1_0).warn(status1, 46).warn(status2, 46).run(48, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
 		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
 	}
 
@@ -93,7 +93,7 @@ public class VJournalTest {
 	public void validate_status() {
 		VJournal component = new VJournal();
 		component.setStatus(Status.tentative());
-		assertValidate(component).versions(ICalVersion.V1_0).run(47, 13);
+		assertValidate(component).versions(ICalVersion.V1_0).run(48, 13);
 		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(13);
 	}
 
@@ -102,7 +102,7 @@ public class VJournalTest {
 		VJournal component = new VJournal();
 		component.setDateStart(new DateStart(date("2000-01-01"), false));
 		component.setRecurrenceId(new RecurrenceId(date("2000-01-01"), true));
-		assertValidate(component).versions(ICalVersion.V1_0).run(47, 19);
+		assertValidate(component).versions(ICalVersion.V1_0).run(48, 19);
 		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(19);
 	}
 
@@ -119,7 +119,7 @@ public class VJournalTest {
 			VJournal component = new VJournal();
 			component.setDateStart(new DateStart(date("2000-01-01"), false));
 			component.setRecurrenceRule(recurrence);
-			assertValidate(component).versions(ICalVersion.V1_0).run(47, 5);
+			assertValidate(component).versions(ICalVersion.V1_0).run(48, 5);
 			assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(5);
 		}
 	}
@@ -130,7 +130,7 @@ public class VJournalTest {
 		component.setDateStart(new DateStart(date("2000-01-01"), false));
 		component.addProperty(new RecurrenceRule(new Recurrence.Builder(Frequency.DAILY).build()));
 		component.addProperty(new RecurrenceRule(new Recurrence.Builder(Frequency.DAILY).build()));
-		assertValidate(component).versions(ICalVersion.V1_0).run(47, 6);
+		assertValidate(component).versions(ICalVersion.V1_0).run(48, 6);
 		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(6);
 	}
 }

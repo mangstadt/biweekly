@@ -43,7 +43,7 @@ public class VTimezoneTest {
 	@Test
 	public void validate_required() {
 		VTimezone component = new VTimezone(null);
-		assertValidate(component).versions(ICalVersion.V1_0).run(47, 2, 21);
+		assertValidate(component).versions(ICalVersion.V1_0).run(48, 2, 21);
 		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(2, 21);
 	}
 
@@ -54,7 +54,7 @@ public class VTimezoneTest {
 		component.addProperty(new LastModified(new Date()));
 		component.addProperty(new TimezoneUrl(""));
 		component.addProperty(new TimezoneUrl(""));
-		assertValidate(component).versions(ICalVersion.V1_0).run(47, 3, 3, 21);
+		assertValidate(component).versions(ICalVersion.V1_0).run(48, 3, 3, 21);
 		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(3, 3, 21);
 	}
 
@@ -66,7 +66,7 @@ public class VTimezoneTest {
 		standard.setTimezoneOffsetTo(1, 0);
 		VTimezone component = new VTimezone("");
 		component.addStandardTime(standard);
-		assertValidate(component).versions(ICalVersion.V1_0).warn(standard, 47).run(47);
+		assertValidate(component).versions(ICalVersion.V1_0).warn(standard, 48).run(48);
 		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 
 		DaylightSavingsTime daylight = new DaylightSavingsTime();
@@ -75,7 +75,7 @@ public class VTimezoneTest {
 		daylight.setTimezoneOffsetTo(1, 0);
 		component = new VTimezone("");
 		component.addDaylightSavingsTime(daylight);
-		assertValidate(component).versions(ICalVersion.V1_0).warn(daylight, 47).run(47);
+		assertValidate(component).versions(ICalVersion.V1_0).warn(daylight, 48).run(48);
 		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
 	}
 }
