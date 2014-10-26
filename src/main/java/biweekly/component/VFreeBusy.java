@@ -514,7 +514,7 @@ public class VFreeBusy extends ICalComponent {
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		if (version == ICalVersion.V1_0) {
-			warnings.add(Warning.validate(47, version));
+			warnings.add(Warning.validate(48, version));
 		}
 
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
