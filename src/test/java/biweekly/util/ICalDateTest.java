@@ -67,10 +67,12 @@ public class ICalDateTest {
 		ICalDate date1 = new ICalDate(date("2014-10-01 12:00:00"), true);
 		Date date2 = date("2014-10-01 12:00:00");
 		assertEquals(date1, date2);
+		assertEquals(date2, date1);
 
 		date1 = new ICalDate(date("2014-10-01 12:00:00"), false);
 		date2 = date("2014-10-01 12:00:00");
 		assertEquals(date1, date2);
+		assertEquals(date2, date1);
 	}
 
 	@Test
