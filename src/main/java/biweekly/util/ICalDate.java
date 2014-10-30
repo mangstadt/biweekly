@@ -54,6 +54,14 @@ public class ICalDate extends Date {
 	}
 
 	/**
+	 * Creates a new date-time value (includes the time component).
+	 * @param date the date-time value
+	 */
+	public ICalDate(Date date) {
+		this(date, true);
+	}
+
+	/**
 	 * Creates a new date-time value.
 	 * @param date the date-time value
 	 * @param hasTime true to include the time component, false not to

@@ -1,5 +1,8 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.ICalDataType.DATE;
+import static biweekly.ICalDataType.DATE_TIME;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,11 +11,14 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
+import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ExceptionDates;
+import biweekly.util.DateTimeComponents;
+import biweekly.util.ICalDate;
 import biweekly.util.ICalDateFormat;
 
 /*
@@ -44,36 +50,63 @@ import biweekly.util.ICalDateFormat;
  * Marshals {@link ExceptionDates} properties.
  * @author Michael Angstadt
  */
-public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Date> {
+public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICalDate> {
 	public ExceptionDatesScribe() {
-		super(ExceptionDates.class, "EXDATE", ICalDataType.DATE_TIME);
+		super(ExceptionDates.class, "EXDATE", DATE_TIME);
 	}
 
 	@Override
 	protected ICalParameters _prepareParameters(ExceptionDates property, WriteContext context) {
-		return handleTzidParameter(property, property.hasTime(), context);
+		if (isInObservance(context)) {
+			return property.getParameters();
+		}
+
+		boolean hasTime;
+		if (property.getValues().isEmpty()) {
+			hasTime = false;
+		} else {
+			hasTime = (dataType(property, context.getVersion()) == DATE_TIME);
+		}
+		return handleTzidParameter(property, hasTime, context);
 	}
 
 	@Override
 	protected ICalDataType _dataType(ExceptionDates property, ICalVersion version) {
-		return property.hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
+		List<ICalDate> dates = property.getValues();
+		if (!dates.isEmpty()) {
+			return dates.get(0).hasTime() ? DATE_TIME : DATE;
+		}
+
+		return defaultDataType(version);
 	}
 
 	@Override
 	protected ExceptionDates newInstance(ICalDataType dataType, ICalParameters parameters) {
-		return new ExceptionDates(dataType != ICalDataType.DATE);
+		return new ExceptionDates();
 	}
 
 	@Override
-	protected String writeValue(ExceptionDates property, Date value, WriteContext context) {
-		return date(value).time(property.hasTime()).tz(context.getTimezoneInfo().isFloating(property), context.getTimezoneInfo().getTimeZoneToWriteIn(property)).write();
+	protected String writeValue(ExceptionDates property, ICalDate value, WriteContext context) {
+		if (isInObservance(context)) {
+			DateTimeComponents components = value.getRawComponents();
+			if (components == null) {
+				return date(value).time(true).floating(true).extended(false).write();
+			}
+			return components.toString(true, false);
+		}
+
+		TimezoneInfo tzinfo = context.getTimezoneInfo();
+		return date(value).time(value.hasTime()).tz(tzinfo.isFloating(property), tzinfo.getTimeZoneToWriteIn(property)).write();
 	}
 
 	@Override
-	protected Date readValue(ExceptionDates property, String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		Date date;
+	protected ICalDate readValue(ExceptionDates property, String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
+		ICalDate icalDate;
 		try {
-			date = ICalDateFormat.parse(value);
+			Date date = ICalDateFormat.parse(value);
+			DateTimeComponents components = DateTimeComponents.parse(value);
+			boolean hasTime = (dataType == DATE_TIME);
+			icalDate = new ICalDate(date, components, hasTime);
 		} catch (IllegalArgumentException e) {
 			throw new CannotParseException(19);
 		}
@@ -81,51 +114,92 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 		String tzid = parameters.getTimezoneId();
 		if (!ICalDateFormat.isUTC(value)) {
 			if (tzid == null) {
-				context.addFloatingDate(property, date, value);
+				context.addFloatingDate(property, icalDate, value);
 			} else {
-				context.addTimezonedDate(tzid, property, date, value);
+				context.addTimezonedDate(tzid, property, icalDate, value);
 			}
 		}
 
-		return date;
+		return icalDate;
 	}
 
 	@Override
 	protected void _writeXml(ExceptionDates property, XCalElement element, WriteContext context) {
-		ICalDataType dataType = dataType(property, null);
-		for (Date value : property.getValues()) {
-			String dateStr = date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).extended(true).write();
+		List<ICalDate> values = property.getValues();
+		if (values.isEmpty()) {
+			element.append(defaultDataType(context.getVersion()), "");
+			return;
+		}
+
+		if (isInObservance(context)) {
+			for (ICalDate value : values) {
+				String valueStr;
+				DateTimeComponents components = value.getRawComponents();
+				if (components == null) {
+					valueStr = date(value).time(true).floating(true).extended(true).write();
+				} else {
+					valueStr = components.toString(true, true);
+				}
+
+				element.append(DATE_TIME, valueStr);
+			}
+			return;
+		}
+
+		TimezoneInfo tzinfo = context.getTimezoneInfo();
+		for (ICalDate value : values) {
+			ICalDataType dataType = value.hasTime() ? DATE_TIME : DATE;
+			String dateStr = date(value).time(value.hasTime()).tz(tzinfo.isFloating(property), tzinfo.getTimeZoneToWriteIn(property)).extended(true).write();
 			element.append(dataType, dateStr);
 		}
 	}
 
 	@Override
 	protected ExceptionDates _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
-		List<String> values = element.all(ICalDataType.DATE_TIME);
-		ICalDataType dataType = values.isEmpty() ? ICalDataType.DATE : ICalDataType.DATE_TIME;
-		values.addAll(element.all(ICalDataType.DATE));
-		if (values.isEmpty()) {
-			throw missingXmlElements(ICalDataType.DATE_TIME, ICalDataType.DATE);
+		List<String> dateTimeElements = element.all(DATE_TIME);
+		List<String> dateElements = element.all(DATE);
+		if (dateTimeElements.isEmpty() && dateElements.isEmpty()) {
+			throw missingXmlElements(DATE_TIME, DATE);
 		}
 
-		ExceptionDates prop = new ExceptionDates(dataType == ICalDataType.DATE_TIME);
-		for (String value : values) {
-			Date date = readValue(prop, value, dataType, parameters, context);
-			prop.addValue(date);
+		ExceptionDates property = new ExceptionDates();
+		for (String value : dateTimeElements) {
+			ICalDate datetime = readValue(property, value, DATE_TIME, parameters, context);
+			property.addValue(datetime);
 		}
-		return prop;
+		for (String value : dateElements) {
+			ICalDate date = readValue(property, value, DATE, parameters, context);
+			property.addValue(date);
+		}
+		return property;
 	}
 
 	@Override
 	protected JCalValue _writeJson(ExceptionDates property, WriteContext context) {
-		List<Date> values = property.getValues();
+		List<ICalDate> values = property.getValues();
 		if (values.isEmpty()) {
 			return JCalValue.single("");
 		}
 
 		List<String> valuesStr = new ArrayList<String>();
-		for (Date value : values) {
-			String dateStr = date(value).time(property.hasTime()).tzid(property.getParameters().getTimezoneId()).extended(true).write();
+		if (isInObservance(context)) {
+			for (ICalDate value : values) {
+				String valueStr;
+				DateTimeComponents components = value.getRawComponents();
+				if (components == null) {
+					valueStr = date(value).time(true).floating(true).extended(true).write();
+				} else {
+					valueStr = components.toString(true, true);
+				}
+
+				valuesStr.add(valueStr);
+			}
+			return JCalValue.multi(valuesStr);
+		}
+
+		TimezoneInfo tzinfo = context.getTimezoneInfo();
+		for (ICalDate value : values) {
+			String dateStr = date(value).time(value.hasTime()).tz(tzinfo.isFloating(property), tzinfo.getTimeZoneToWriteIn(property)).extended(true).write();
 			valuesStr.add(dateStr);
 		}
 		return JCalValue.multi(valuesStr);
@@ -135,11 +209,11 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, Dat
 	protected ExceptionDates _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		List<String> valueStrs = value.asMulti();
 
-		ExceptionDates prop = new ExceptionDates(dataType == ICalDataType.DATE_TIME);
+		ExceptionDates property = new ExceptionDates();
 		for (String valueStr : valueStrs) {
-			Date date = readValue(prop, valueStr, dataType, parameters, context);
-			prop.addValue(date);
+			ICalDate date = readValue(property, valueStr, dataType, parameters, context);
+			property.addValue(date);
 		}
-		return prop;
+		return property;
 	}
 }

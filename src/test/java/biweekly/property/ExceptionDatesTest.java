@@ -2,9 +2,9 @@ package biweekly.property;
 
 import static biweekly.util.TestUtils.assertValidate;
 
-import java.util.Date;
-
 import org.junit.Test;
+
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -37,11 +37,16 @@ import org.junit.Test;
 public class ExceptionDatesTest {
 	@Test
 	public void validate() {
-		ExceptionDates property = new ExceptionDates(true);
+		ExceptionDates property = new ExceptionDates();
 		assertValidate(property).run(26);
 
-		property = new ExceptionDates(true);
-		property.addValue(new Date());
+		property = new ExceptionDates();
+		property.addValue(new ICalDate(true));
+		property.addValue(new ICalDate(false));
+		assertValidate(property).run(50);
+
+		property = new ExceptionDates();
+		property.addValue(new ICalDate());
 		assertValidate(property).run();
 	}
 }

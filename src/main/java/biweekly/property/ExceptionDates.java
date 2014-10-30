@@ -1,6 +1,12 @@
 package biweekly.property;
 
 import java.util.Date;
+import java.util.List;
+
+import biweekly.ICalVersion;
+import biweekly.Warning;
+import biweekly.component.ICalComponent;
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -39,19 +45,15 @@ import java.util.Date;
  * VEvent event = new VEvent();
  * 
  * //dates with time components
- * ExceptionDates exdate = new ExceptionDates(true);
- * Date datetime1 = ...;
- * exdate.addValue(datetime1);
- * Date datetime2 = ...;
- * exdate.addValue(datetime2);
+ * ExceptionDates exdate = new ExceptionDates();
+ * Date datetime = ...
+ * exdate.addValue(new ICalDate(datetime, true));
  * event.addExceptionDates(exdate);
  * 
  * //dates without time components
- * exdate = new ExceptionDates(false);
- * Date date1 = ...;
- * exdate.addValue(date1);
- * Date date2 = ...;
- * exdate.addValue(date2);
+ * exdate = new ExceptionDates();
+ * Date date = ...
+ * exdate.addValue(new ICalDate(date, false));
  * event.addExceptionDates(exdate);
  * </pre>
  * 
@@ -61,33 +63,31 @@ import java.util.Date;
  * p.118-20</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
  */
-public class ExceptionDates extends ListProperty<Date> {
-	private boolean hasTime = true;
-
+public class ExceptionDates extends ListProperty<ICalDate> {
 	/**
-	 * Creates an exception dates property.
-	 * @param hasTime true if the dates have a time component, false if they are
-	 * strictly dates
+	 * Adds a value to this property.
+	 * @param value the value to add
 	 */
-	public ExceptionDates(boolean hasTime) {
-		setHasTime(hasTime);
+	public void addValue(Date value) {
+		addValue(new ICalDate(value));
 	}
 
-	/**
-	 * Gets whether the dates have time components.
-	 * @return true if the dates have time components, false if they are
-	 * strictly dates
-	 */
-	public boolean hasTime() {
-		return hasTime;
-	}
+	@Override
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+		super.validate(components, version, warnings);
 
-	/**
-	 * Sets whether the dates have time components.
-	 * @param hasTime true if the dates have time components, false if they are
-	 * strictly dates
-	 */
-	public void setHasTime(boolean hasTime) {
-		this.hasTime = hasTime;
+		List<ICalDate> dates = getValues();
+		if (dates.isEmpty()) {
+			return;
+		}
+
+		//can't mix date and date-time values
+		boolean hasTime = dates.get(0).hasTime();
+		for (ICalDate date : dates.subList(1, dates.size())) {
+			if (date.hasTime() != hasTime) {
+				warnings.add(Warning.validate(50));
+				break;
+			}
+		}
 	}
 }

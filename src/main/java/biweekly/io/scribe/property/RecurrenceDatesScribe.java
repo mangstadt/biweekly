@@ -1,5 +1,9 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.ICalDataType.DATE;
+import static biweekly.ICalDataType.DATE_TIME;
+import static biweekly.ICalDataType.PERIOD;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -50,7 +54,7 @@ import biweekly.util.Period;
  */
 public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	public RecurrenceDatesScribe() {
-		super(RecurrenceDates.class, "RDATE", ICalDataType.DATE_TIME);
+		super(RecurrenceDates.class, "RDATE", DATE_TIME);
 	}
 
 	@Override
@@ -61,7 +65,13 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 		List<Period> periods = property.getPeriods();
 		List<ICalDate> dates = property.getDates();
-		boolean hasTime = dates.isEmpty() ? !periods.isEmpty() : dates.get(0).hasTime();
+		boolean hasTime;
+		if (periods.isEmpty() && dates.isEmpty()) {
+			hasTime = false;
+		} else {
+			ICalDataType dataType = dataType(property, context.getVersion());
+			hasTime = (dataType == DATE_TIME || dataType == PERIOD);
+		}
 		return handleTzidParameter(property, hasTime, context);
 	}
 
@@ -69,11 +79,11 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	protected ICalDataType _dataType(RecurrenceDates property, ICalVersion version) {
 		List<ICalDate> dates = property.getDates();
 		if (!dates.isEmpty()) {
-			return dates.get(0).hasTime() ? ICalDataType.DATE_TIME : ICalDataType.DATE;
+			return dates.get(0).hasTime() ? DATE_TIME : DATE;
 		}
 
 		if (!property.getPeriods().isEmpty()) {
-			return ICalDataType.PERIOD;
+			return PERIOD;
 		}
 
 		return defaultDataType(version);
@@ -88,7 +98,11 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 			return list(dates, new ListCallback<ICalDate>() {
 				public String asString(ICalDate date) {
 					if (inObservance) {
-						return date(date).time(true).floating(true).extended(false).write();
+						DateTimeComponents components = date.getRawComponents();
+						if (components == null) {
+							return date(date).time(true).floating(true).extended(false).write();
+						}
+						return components.toString(true, false);
 					}
 					return date(date).time(date.hasTime()).tz(tzinfo.isFloating(property), tzinfo.getTimeZoneToWriteIn(property)).write();
 				}
@@ -179,11 +193,11 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 	@Override
 	protected RecurrenceDates _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
-		List<XCalElement> periodElements = element.children(ICalDataType.PERIOD);
-		List<String> dateTimeElements = element.all(ICalDataType.DATE_TIME);
-		List<String> dateElements = element.all(ICalDataType.DATE);
+		List<XCalElement> periodElements = element.children(PERIOD);
+		List<String> dateTimeElements = element.all(DATE_TIME);
+		List<String> dateElements = element.all(DATE);
 		if (periodElements.isEmpty() && dateTimeElements.isEmpty() && dateElements.isEmpty()) {
-			throw missingXmlElements(ICalDataType.PERIOD, ICalDataType.DATE_TIME, ICalDataType.DATE);
+			throw missingXmlElements(PERIOD, DATE_TIME, DATE);
 		}
 
 		String tzid = parameters.getTimezoneId();
@@ -275,7 +289,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		}
 
 		//parse dates
-		for (String dateStr : element.all(ICalDataType.DATE)) {
+		for (String dateStr : element.all(DATE)) {
 			try {
 				Date date = ICalDateFormat.parse(dateStr);
 				DateTimeComponents components = DateTimeComponents.parse(dateStr);
@@ -344,7 +358,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		String tzid = parameters.getTimezoneId();
 		RecurrenceDates property = new RecurrenceDates();
 
-		if (dataType == ICalDataType.PERIOD) {
+		if (dataType == PERIOD) {
 			//parse as periods
 			for (String timePeriodStr : valueStrs) {
 				String timePeriodStrSplit[] = timePeriodStr.split("/");
@@ -399,7 +413,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		}
 
 		//parse as dates
-		boolean hasTime = (dataType == ICalDataType.DATE_TIME);
+		boolean hasTime = (dataType == DATE_TIME);
 		for (String s : valueStrs) {
 			Date date;
 			try {
