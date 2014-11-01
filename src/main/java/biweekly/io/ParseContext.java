@@ -1,9 +1,7 @@
 package biweekly.io;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
@@ -45,7 +43,7 @@ public class ParseContext {
 	private ICalVersion version;
 	private List<Warning> warnings = new ArrayList<Warning>();
 	private ListMultimap<String, TimezonedDate> timezonedDates = new ListMultimap<String, TimezonedDate>();
-	private Set<TimezonedDate> floatingDates = new HashSet<TimezonedDate>();
+	private List<TimezonedDate> floatingDates = new ArrayList<TimezonedDate>();
 
 	/**
 	 * Gets the version of the iCalendar object being parsed.
@@ -128,7 +126,7 @@ public class ParseContext {
 	 * timezone).
 	 * @return the floating date-time properties
 	 */
-	public Set<TimezonedDate> getFloatingDates() {
+	public List<TimezonedDate> getFloatingDates() {
 		return floatingDates;
 	}
 
