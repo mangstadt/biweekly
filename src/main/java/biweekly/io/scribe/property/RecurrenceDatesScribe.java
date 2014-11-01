@@ -10,6 +10,7 @@ import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
+import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
@@ -205,17 +206,14 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		for (XCalElement periodElement : periodElements) {
 			String startStr = periodElement.first("start");
 			if (startStr == null) {
-				context.addWarning(9);
-				continue;
+				throw new CannotParseException(9);
 			}
 
 			ICalDate start;
 			try {
 				start = date(startStr).parse();
 			} catch (IllegalArgumentException e) {
-				context.addWarning(10, startStr);
-				//TODO throw cannotparse
-				continue;
+				throw new CannotParseException(10, startStr);
 			}
 
 			String endStr = periodElement.first("end");
@@ -226,7 +224,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 					context.addDate(start, property, parameters);
 					context.addDate(end, property, parameters);
 				} catch (IllegalArgumentException e) {
-					context.addWarning(11, endStr);
+					throw new CannotParseException(11, endStr);
 				}
 				continue;
 			}
@@ -238,12 +236,12 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 					property.addPeriod(new Period(start, duration));
 					context.addDate(start, property, parameters);
 				} catch (IllegalArgumentException e) {
-					context.addWarning(12, durationStr);
+					throw new CannotParseException(12, durationStr);
 				}
 				continue;
 			}
 
-			context.addWarning(13);
+			throw new CannotParseException(13);
 		}
 
 		//parse date-times
@@ -253,7 +251,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 				property.addDate(date);
 				context.addDate(date, property, parameters);
 			} catch (IllegalArgumentException e) {
-				context.addWarning(15, dateTimeStr);
+				throw new CannotParseException(15, dateTimeStr);
 			}
 		}
 
@@ -263,7 +261,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 				ICalDate date = date(dateStr).hasTime(false).parse();
 				property.addDate(date);
 			} catch (IllegalArgumentException e) {
-				context.addWarning(15, dateStr);
+				throw new CannotParseException(15, dateStr);
 			}
 		}
 
@@ -330,8 +328,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 				String timePeriodStrSplit[] = timePeriodStr.split("/");
 
 				if (timePeriodStrSplit.length < 2) {
-					context.addWarning(13);
-					continue;
+					throw new CannotParseException(13);
 				}
 
 				String startStr = timePeriodStrSplit[0];
@@ -339,9 +336,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 				try {
 					start = date(startStr).parse();
 				} catch (IllegalArgumentException e) {
-					context.addWarning(10, startStr);
-					//TODO throw cannotparse
-					continue;
+					throw new CannotParseException(10, startStr);
 				}
 
 				String endStr = timePeriodStrSplit[1];
@@ -358,8 +353,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 						property.addPeriod(new Period(start, duration));
 						context.addDate(start, property, parameters);
 					} catch (IllegalArgumentException e2) {
-						context.addWarning(14, endStr);
-						continue;
+						throw new CannotParseException(14, endStr);
 					}
 				}
 			}
@@ -373,8 +367,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 			try {
 				date = date(s).hasTime(hasTime).parse();
 			} catch (IllegalArgumentException e) {
-				context.addWarning(15, s);
-				continue;
+				throw new CannotParseException(15, s);
 			}
 			property.addDate(date);
 			context.addDate(date, property, parameters);

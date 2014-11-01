@@ -189,16 +189,16 @@ public class RecurrenceDatesScribeTest {
 	@Test
 	public void parseText() {
 		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/" + durationStr).dataType(PERIOD).run(is(withMultiplePeriods));
-		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + "invalid/" + durationStr).dataType(PERIOD).warnings(1).run(is(withSinglePeriod));
-		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/invalid").dataType(PERIOD).warnings(1).run(is(withSinglePeriod));
-		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/").dataType(PERIOD).warnings(1).run(is(withSinglePeriod));
-		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr).dataType(PERIOD).warnings(1).run(is(withSinglePeriod));
+		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + "invalid/" + durationStr).dataType(PERIOD).warnings(1).cannotParse();
+		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/invalid").dataType(PERIOD).cannotParse();
+		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/").dataType(PERIOD).cannotParse();
+		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr).dataType(PERIOD).cannotParse();
 
 		sensei.assertParseText(startDateStr + "," + endDateStr).dataType(DATE).run(is(withMultipleDates));
-		sensei.assertParseText(startDateStr + ",invalid").dataType(DATE).warnings(1).run(is(withSingleDate));
+		sensei.assertParseText(startDateStr + ",invalid").dataType(DATE).cannotParse();
 
 		sensei.assertParseText(startDateTimeStr + "," + endDateTimeStr).dataType(DATE_TIME).run(is(withMultipleDateTimes));
-		sensei.assertParseText(startDateTimeStr + ",invalid").dataType(DATE_TIME).warnings(1).run(is(withSingleDateTime));
+		sensei.assertParseText(startDateTimeStr + ",invalid").dataType(DATE_TIME).cannotParse();
 
 		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr).dataType(PERIOD).run(is(withSinglePeriod));
 		sensei.assertParseText(startDateStr).dataType(DATE).run(is(withSingleDate));
@@ -207,10 +207,12 @@ public class RecurrenceDatesScribeTest {
 		sensei.assertParseText("").run(is(empty));
 
 		//timezone tests
-		sensei.assertParseText("20141026T120000/20141026T140000,20141026T120000/" + durationStr).dataType(PERIOD).param("TZID", "id").run(periodWithTimezone(false));
-		sensei.assertParseText("20141026T120000/20141026T140000,20141026T150000/" + durationStr).dataType(PERIOD).run(periodWithoutTimezone(false));
-		sensei.assertParseText("20141026T120000,20141026T140000").dataType(DATE_TIME).param("TZID", "id").run(dateTimeWithTimezone(false));
-		sensei.assertParseText("20141026T120000,20141026T140000").dataType(DATE_TIME).run(dateTimeWithoutTimezone(false));
+		{
+			sensei.assertParseText("20141026T120000/20141026T140000,20141026T120000/" + durationStr).dataType(PERIOD).param("TZID", "id").run(periodWithTimezone(false));
+			sensei.assertParseText("20141026T120000/20141026T140000,20141026T150000/" + durationStr).dataType(PERIOD).run(periodWithoutTimezone(false));
+			sensei.assertParseText("20141026T120000,20141026T140000").dataType(DATE_TIME).param("TZID", "id").run(dateTimeWithTimezone(false));
+			sensei.assertParseText("20141026T120000,20141026T140000").dataType(DATE_TIME).run(dateTimeWithoutTimezone(false));
+		}
 	}
 
 	@Test
@@ -280,7 +282,7 @@ public class RecurrenceDatesScribeTest {
 			"<start>invalid</start>" +
 			"<duration>" + durationStr + "</duration>" +
 		"</period>"
-		).warnings(1).run(is(withSinglePeriod));
+		).cannotParse();
 		
 		//invalid duration
 		sensei.assertParseXml(
@@ -292,7 +294,7 @@ public class RecurrenceDatesScribeTest {
 			"<start>" + startDateTimeStrExt + "</start>" +
 			"<duration>invalid</duration>" +
 		"</period>"
-		).warnings(1).run(is(withSinglePeriod));
+		).cannotParse();
 		
 		//missing start date
 		sensei.assertParseXml(
@@ -303,7 +305,7 @@ public class RecurrenceDatesScribeTest {
 		"<period>" +
 			"<duration>" + durationStr + "</duration>" +
 		"</period>"
-		).warnings(1).run(is(withSinglePeriod));
+		).cannotParse();
 		
 		//missing duration
 		sensei.assertParseXml(
@@ -314,7 +316,7 @@ public class RecurrenceDatesScribeTest {
 		"<period>" +
 			"<start>" + startDateTimeStrExt + "</start>" +
 		"</period>"
-		).warnings(1).run(is(withSinglePeriod));
+		).cannotParse();
 		
 		//empty <period> element
 		sensei.assertParseXml(
@@ -323,7 +325,7 @@ public class RecurrenceDatesScribeTest {
 			"<end>" + endDateTimeStrExt + "</end>" +
 		"</period>" +
 		"<period/>"
-		).warnings(1).run(is(withSinglePeriod));
+		).cannotParse();
 		
 		sensei.assertParseXml(
 		"<date>" + startDateStrExt + "</date>" +
@@ -334,7 +336,7 @@ public class RecurrenceDatesScribeTest {
 		sensei.assertParseXml(
 		"<date>" + startDateStrExt + "</date>" +
 		"<date>invalid</date>"
-		).warnings(1).run(is(withSingleDate));
+		).cannotParse();
 		
 		sensei.assertParseXml(
 		"<date-time>" + startDateTimeStrExt + "</date-time>" +
@@ -345,7 +347,7 @@ public class RecurrenceDatesScribeTest {
 		sensei.assertParseXml(
 		"<date-time>" + startDateTimeStrExt + "</date-time>" +
 		"<date-time>invalid</date-time>"
-		).warnings(1).run(is(withSingleDateTime));
+		).cannotParse();
 		
 		sensei.assertParseXml(
 		"<period>" +
@@ -364,37 +366,40 @@ public class RecurrenceDatesScribeTest {
 		
 		sensei.assertParseXml("").cannotParse();
 		
-		sensei.assertParseXml(
-		"<period>" + 
-			"<start>2014-10-26T12:00:00</start>" + 
-			"<end>2014-10-26T14:00:00</end>" + 
-		"</period>" +
-		"<period>" + 
-			"<start>2014-10-26T12:00:00</start>" +
-			"<duration>" + durationStr + "</duration>" +
-		"</period>"
-		).param("TZID", "id").run(periodWithTimezone(true));
-		
-		sensei.assertParseXml(
-		"<period>" + 
-			"<start>2014-10-26T12:00:00</start>" + 
-			"<end>2014-10-26T14:00:00</end>" + 
-		"</period>" +
-		"<period>" + 
-			"<start>2014-10-26T15:00:00</start>" +
-			"<duration>" + durationStr + "</duration>" +
-		"</period>"
-		).run(periodWithoutTimezone(true));
-		
-		sensei.assertParseXml(
-		"<date-time>2014-10-26T12:00:00</date-time>" +
-		"<date-time>2014-10-26T14:00:00</date-time>"
-		).param("TZID", "id").run(dateTimeWithTimezone(true));
-		
-		sensei.assertParseXml(
-		"<date-time>2014-10-26T12:00:00</date-time>" +
-		"<date-time>2014-10-26T14:00:00</date-time>"
-		).run(dateTimeWithoutTimezone(true));
+		//timezone tests
+		{
+			sensei.assertParseXml(
+			"<period>" + 
+				"<start>2014-10-26T12:00:00</start>" + 
+				"<end>2014-10-26T14:00:00</end>" + 
+			"</period>" +
+			"<period>" + 
+				"<start>2014-10-26T12:00:00</start>" +
+				"<duration>" + durationStr + "</duration>" +
+			"</period>"
+			).param("TZID", "id").run(periodWithTimezone(true));
+			
+			sensei.assertParseXml(
+			"<period>" + 
+				"<start>2014-10-26T12:00:00</start>" + 
+				"<end>2014-10-26T14:00:00</end>" + 
+			"</period>" +
+			"<period>" + 
+				"<start>2014-10-26T15:00:00</start>" +
+				"<duration>" + durationStr + "</duration>" +
+			"</period>"
+			).run(periodWithoutTimezone(true));
+			
+			sensei.assertParseXml(
+			"<date-time>2014-10-26T12:00:00</date-time>" +
+			"<date-time>2014-10-26T14:00:00</date-time>"
+			).param("TZID", "id").run(dateTimeWithTimezone(true));
+			
+			sensei.assertParseXml(
+			"<date-time>2014-10-26T12:00:00</date-time>" +
+			"<date-time>2014-10-26T14:00:00</date-time>"
+			).run(dateTimeWithoutTimezone(true));
+		}
 		//@formatter:on
 	}
 
@@ -422,22 +427,22 @@ public class RecurrenceDatesScribeTest {
 		sensei.assertParseJson(JCalValue.multi(
 			startDateTimeStrExt + "/" + endDateTimeStrExt,
 			"invalid/" + durationStr
-		)).dataType(PERIOD).warnings(1).run(is(withSinglePeriod));
+		)).dataType(PERIOD).cannotParse();
 		
 		sensei.assertParseJson(JCalValue.multi(
 			startDateTimeStrExt + "/" + endDateTimeStrExt,
 			startDateTimeStrExt + "/invalid"
-		)).dataType(PERIOD).warnings(1).run(is(withSinglePeriod));
+		)).dataType(PERIOD).cannotParse();
 		
 		sensei.assertParseJson(JCalValue.multi(
 			startDateTimeStrExt + "/" + endDateTimeStrExt,
 			startDateTimeStrExt + "/"
-		)).dataType(PERIOD).warnings(1).run(is(withSinglePeriod));
+		)).dataType(PERIOD).cannotParse();
 		
 		sensei.assertParseJson(JCalValue.multi(
 			startDateTimeStrExt + "/" + endDateTimeStrExt,
 			startDateTimeStrExt
-		)).dataType(PERIOD).warnings(1).run(is(withSinglePeriod));
+		)).dataType(PERIOD).cannotParse();
 
 		sensei.assertParseJson(JCalValue.multi(
 			startDateStrExt,
@@ -447,7 +452,7 @@ public class RecurrenceDatesScribeTest {
 		sensei.assertParseJson(JCalValue.multi(
 			startDateStrExt,
 			"invalid"
-		)).dataType(DATE).warnings(1).run(is(withSingleDate));
+		)).dataType(DATE).cannotParse();
 
 		sensei.assertParseJson(JCalValue.multi(
 			startDateTimeStrExt,
@@ -457,7 +462,7 @@ public class RecurrenceDatesScribeTest {
 		sensei.assertParseJson(JCalValue.multi(
 			startDateTimeStrExt,
 			"invalid"
-		)).dataType(DATE_TIME).warnings(1).run(is(withSingleDateTime));
+		)).dataType(DATE_TIME).cannotParse();
 
 		sensei.assertParseJson(JCalValue.multi(
 			startDateTimeStrExt + "/" + endDateTimeStrExt
@@ -471,23 +476,26 @@ public class RecurrenceDatesScribeTest {
 			startDateTimeStrExt
 		)).dataType(DATE_TIME).run(is(withSingleDateTime));
 
-		sensei.assertParseJson(JCalValue.multi(
-			"2014-10-26T12:00:00/2014-10-26T14:00:00",
-			"2014-10-26T12:00:00/" + durationStr
-		)).dataType(PERIOD).param("TZID", "id").run(periodWithTimezone(true));
-		sensei.assertParseJson(JCalValue.multi(
-			"2014-10-26T12:00:00/2014-10-26T14:00:00",
-			"2014-10-26T15:00:00/" + durationStr
-		)).dataType(PERIOD).run(periodWithoutTimezone(true));
-
-		sensei.assertParseJson(JCalValue.multi(
-			"2014-10-26T12:00:00",
-			"2014-10-26T14:00:00"
-		)).param("TZID", "id").dataType(DATE_TIME).run(dateTimeWithTimezone(true));
-		sensei.assertParseJson(JCalValue.multi(
-			"2014-10-26T12:00:00",
-			"2014-10-26T14:00:00"
-		)).dataType(DATE_TIME).run(dateTimeWithoutTimezone(true));
+		//timezone tests
+		{
+			sensei.assertParseJson(JCalValue.multi(
+				"2014-10-26T12:00:00/2014-10-26T14:00:00",
+				"2014-10-26T12:00:00/" + durationStr
+			)).dataType(PERIOD).param("TZID", "id").run(periodWithTimezone(true));
+			sensei.assertParseJson(JCalValue.multi(
+				"2014-10-26T12:00:00/2014-10-26T14:00:00",
+				"2014-10-26T15:00:00/" + durationStr
+			)).dataType(PERIOD).run(periodWithoutTimezone(true));
+	
+			sensei.assertParseJson(JCalValue.multi(
+				"2014-10-26T12:00:00",
+				"2014-10-26T14:00:00"
+			)).param("TZID", "id").dataType(DATE_TIME).run(dateTimeWithTimezone(true));
+			sensei.assertParseJson(JCalValue.multi(
+				"2014-10-26T12:00:00",
+				"2014-10-26T14:00:00"
+			)).dataType(DATE_TIME).run(dateTimeWithoutTimezone(true));
+		}
 		//@formatter:on
 	}
 

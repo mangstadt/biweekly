@@ -92,10 +92,11 @@ public class FreeBusyScribeTest {
 	public void parseText() {
 		sensei.assertParseText(startStr + "/" + endStr).run(hasSingle);
 		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/" + durationStr).run(hasMultiple);
-		sensei.assertParseText(startStr + "/" + endStr + ",invalid/" + durationStr).warnings(1).run(hasSingle);
-		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/invalid").warnings(1).run(hasSingle);
-		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/").warnings(1).run(hasSingle);
-		sensei.assertParseText(startStr + "/" + endStr + "," + startStr).warnings(1).run(hasSingle);
+
+		sensei.assertParseText(startStr + "/" + endStr + ",invalid/" + durationStr).cannotParse();
+		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/invalid").cannotParse();
+		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/").cannotParse();
+		sensei.assertParseText(startStr + "/" + endStr + "," + startStr).cannotParse();
 		sensei.assertParseText("").run(has());
 	}
 
@@ -152,7 +153,7 @@ public class FreeBusyScribeTest {
 			"<start>invalid</start>" +
 			"<duration>" + durationStr + "</duration>" +
 		"</period>"
-		).warnings(1).run(hasSingle);
+		).cannotParse();
 		
 		sensei.assertParseXml(
 		"<period>" +
@@ -163,7 +164,7 @@ public class FreeBusyScribeTest {
 			"<start>" + startStrExt  + "</start>" +
 			"<duration>invalid</duration>" +
 		"</period>"
-		).warnings(1).run(hasSingle);
+		).cannotParse();
 		
 		sensei.assertParseXml(
 		"<period>" +
@@ -174,7 +175,7 @@ public class FreeBusyScribeTest {
 			"<start>" + startStrExt  + "</start>" +
 			"<end>invalid</end>" +
 		"</period>"
-		).warnings(1).run(hasSingle);
+		).cannotParse();
 		
 		sensei.assertParseXml(
 		"<period>" +
@@ -184,7 +185,7 @@ public class FreeBusyScribeTest {
 		"<period>" +
 			"<start>" + startStrExt  + "</start>" +
 		"</period>"
-		).warnings(1).run(hasSingle);
+		).cannotParse();
 		
 		sensei.assertParseXml(
 		"<period>" +
@@ -194,7 +195,7 @@ public class FreeBusyScribeTest {
 		"<period>" +
 			"<end>" + endStrExt + "</end>" +
 		"</period>"
-		).warnings(1).run(hasSingle);
+		).cannotParse();
 		
 		sensei.assertParseXml(
 		"<period>" +
@@ -204,7 +205,7 @@ public class FreeBusyScribeTest {
 		"<period>" +
 			"<duration>" + durationStr + "</duration>" +
 		"</period>"
-		).warnings(1).run(hasSingle);
+		).cannotParse();
 		
 		sensei.assertParseXml(
 		"<period>" +
@@ -212,7 +213,7 @@ public class FreeBusyScribeTest {
 			"<end>" + endStrExt + "</end>" +
 		"</period>" +
 		"<period/>"
-		).warnings(1).run(hasSingle);
+		).cannotParse();
 		
 		sensei.assertParseXml("").cannotParse();
 		//@formatter:on
@@ -230,11 +231,11 @@ public class FreeBusyScribeTest {
 		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt)).run(hasSingle);
 		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/" + durationStr)).run(hasMultiple);
 
-		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, "invalid/" + durationStr)).warnings(1).run(hasSingle);
-		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/invalid")).warnings(1).run(hasSingle);
-		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/")).warnings(1).run(hasSingle);
-		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt)).warnings(1).run(hasSingle);
-		sensei.assertParseJson("").warnings(1).run(has());
+		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, "invalid/" + durationStr)).cannotParse();
+		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/invalid")).cannotParse();
+		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/")).cannotParse();
+		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt)).cannotParse();
+		sensei.assertParseJson("").cannotParse();
 	}
 
 	private final Check<FreeBusy> hasSingle = has(new Period(start, end));

@@ -8,6 +8,7 @@ import java.util.Set;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
+import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
@@ -117,16 +118,14 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 		for (XCalElement periodElement : periodElements) {
 			String startStr = periodElement.first("start");
 			if (startStr == null) {
-				context.addWarning(9);
-				continue;
+				throw new CannotParseException(9);
 			}
 
 			ICalDate start = null;
 			try {
 				start = date(startStr).parse();
 			} catch (IllegalArgumentException e) {
-				context.addWarning(10, startStr);
-				continue;
+				throw new CannotParseException(10, startStr);
 			}
 
 			String endStr = periodElement.first("end");
@@ -137,7 +136,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 					context.addDate(start, property, parameters);
 					context.addDate(end, property, parameters);
 				} catch (IllegalArgumentException e) {
-					context.addWarning(11, endStr);
+					throw new CannotParseException(11, endStr);
 				}
 				continue;
 			}
@@ -149,12 +148,12 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 					property.addValue(start, duration);
 					context.addDate(start, property, parameters);
 				} catch (IllegalArgumentException e) {
-					context.addWarning(12, durationStr);
+					throw new CannotParseException(12, durationStr);
 				}
 				continue;
 			}
 
-			context.addWarning(13);
+			throw new CannotParseException(13);
 		}
 
 		return property;
@@ -202,8 +201,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 			String periodSplit[] = period.split("/");
 
 			if (periodSplit.length < 2) {
-				context.addWarning(13);
-				continue;
+				throw new CannotParseException(13);
 			}
 
 			String startStr = periodSplit[0];
@@ -211,9 +209,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 			try {
 				start = date(startStr).parse();
 			} catch (IllegalArgumentException e) {
-				//TODO throw cannotparseexcetion
-				context.addWarning(10, startStr);
-				continue;
+				throw new CannotParseException(10, startStr);
 			}
 
 			String endStr = periodSplit[1];
@@ -230,8 +226,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 					property.addValue(start, duration);
 					context.addDate(start, property, parameters);
 				} catch (IllegalArgumentException e2) {
-					context.addWarning(14, endStr);
-					continue;
+					throw new CannotParseException(14, endStr);
 				}
 			}
 		}
