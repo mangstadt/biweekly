@@ -70,7 +70,7 @@ public class ICalDateTest {
 		assertEquals(date2, date1);
 
 		date1 = new ICalDate(date("2014-10-01 12:00:00"), false);
-		date2 = date("2014-10-01 12:00:00");
+		date2 = date("2014-10-01 00:00:00");
 		assertEquals(date1, date2);
 		assertEquals(date2, date1);
 	}
@@ -80,5 +80,11 @@ public class ICalDateTest {
 		ICalDate date1 = new ICalDate(date("2014-10-01 12:00:00"), true);
 		String date2 = "string";
 		assertNotEquals(date1, date2);
+	}
+
+	@Test
+	public void truncate_time_for_dates() {
+		ICalDate date = new ICalDate(date("2014-10-01 12:00:00"), false);
+		assertEquals(date("2014-10-01 00:00:00"), date);
 	}
 }

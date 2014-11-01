@@ -65,6 +65,7 @@ import biweekly.property.Version;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.Duration;
+import biweekly.util.ICalDate;
 import biweekly.util.IOUtils;
 import biweekly.util.Period;
 import biweekly.util.Recurrence;
@@ -1052,7 +1053,7 @@ public class ICalReaderTest {
 		Iterator<RecurrenceRule> rrules = icalendar.getProperties(RecurrenceRule.class).iterator();
 		Recurrence expected = new Recurrence.Builder(Frequency.MONTHLY).interval(1).byMonthDay(1).count(1).build();
 		assertEquals(expected, rrules.next().getValue());
-		expected = new Recurrence.Builder(Frequency.DAILY).interval(2).until(utc("2000-01-01 00:00:00")).build();
+		expected = new Recurrence.Builder(Frequency.DAILY).interval(2).until(new ICalDate(utc("2000-01-01 00:00:00"))).build();
 		assertEquals(expected, rrules.next().getValue());
 		expected = new Recurrence.Builder(Frequency.MINUTELY).interval(3).count(2).build();
 		assertEquals(expected, rrules.next().getValue());

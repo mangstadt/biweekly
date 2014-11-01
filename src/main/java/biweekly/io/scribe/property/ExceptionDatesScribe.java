@@ -4,7 +4,6 @@ import static biweekly.ICalDataType.DATE;
 import static biweekly.ICalDataType.DATE_TIME;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalDataType;
@@ -19,7 +18,6 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.ExceptionDates;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.ICalDate;
-import biweekly.util.ICalDateFormat;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -101,26 +99,16 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICa
 
 	@Override
 	protected ICalDate readValue(ExceptionDates property, String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		ICalDate icalDate;
+		ICalDate date;
 		try {
-			Date date = ICalDateFormat.parse(value);
-			DateTimeComponents components = DateTimeComponents.parse(value);
 			boolean hasTime = (dataType == DATE_TIME);
-			icalDate = new ICalDate(date, components, hasTime);
+			date = date(value).hasTime(hasTime).parse();
 		} catch (IllegalArgumentException e) {
 			throw new CannotParseException(19);
 		}
+		context.addDate(date, property, parameters);
 
-		String tzid = parameters.getTimezoneId();
-		if (!ICalDateFormat.isUTC(value)) {
-			if (tzid == null) {
-				context.addFloatingDate(property, icalDate, value);
-			} else {
-				context.addTimezonedDate(tzid, property, icalDate, value);
-			}
-		}
-
-		return icalDate;
+		return date;
 	}
 
 	@Override

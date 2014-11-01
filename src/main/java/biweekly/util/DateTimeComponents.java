@@ -63,32 +63,50 @@ import java.util.regex.Pattern;
 public final class DateTimeComponents implements Comparable<DateTimeComponents> {
 	private static final Pattern regex = Pattern.compile("^(\\d{4})-?(\\d{2})-?(\\d{2})(T(\\d{2}):?(\\d{2}):?(\\d{2})(Z?))?.*");
 	private final int year, month, date, hour, minute, second;
-	private final boolean utc;
+	private final boolean hasTime, utc;
 
 	/**
 	 * Parses the components out of a date-time string.
-	 * @param dateString the date-time string (basic and extended formats
+	 * @param dateString the date-time string (basic and extended formats are
 	 * supported, e.g. "20130331T020000" or "2013-03-31T02:00:00")
 	 * @return the parsed components
 	 * @throws IllegalArgumentException if the date string cannot be parsed
 	 */
 	public static DateTimeComponents parse(String dateString) {
+		return parse(dateString, null);
+	}
+
+	/**
+	 * Parses the components out of a date-time string.
+	 * @param dateString the date-time string (basic and extended formats are
+	 * supported, e.g. "20130331T020000" or "2013-03-31T02:00:00")
+	 * @param hasTime true to force the value to be parsed as a date-time value,
+	 * false to force the value to be parsed as a date value, null to parse the
+	 * value however it is
+	 * @return the parsed components
+	 * @throws IllegalArgumentException if the date string cannot be parsed
+	 */
+	public static DateTimeComponents parse(String dateString, Boolean hasTime) {
 		Matcher m = regex.matcher(dateString);
 		if (!m.find()) {
 			throw new IllegalArgumentException("Cannot parse date: " + dateString);
 		}
 
 		int i = 1;
-
 		int year = Integer.parseInt(m.group(i++));
-
 		int month = Integer.parseInt(m.group(i++));
-
 		int date = Integer.parseInt(m.group(i++));
 
 		i++; //skip
 
 		String hourStr = m.group(i++);
+		if (hasTime == null) {
+			hasTime = (hourStr != null);
+		}
+		if (!hasTime) {
+			return new DateTimeComponents(year, month, date);
+		}
+
 		int hour = (hourStr == null) ? 0 : Integer.parseInt(hourStr);
 
 		String minuteStr = m.group(i++);
@@ -137,7 +155,17 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents> 
 	}
 
 	/**
-	 * Creates a new set of date-time components.
+	 * Creates a set of date components.
+	 * @param year the year (e.g. "2013")
+	 * @param month the month (e.g. "1" for January)
+	 * @param date the date of the month (e.g. "15")
+	 */
+	public DateTimeComponents(int year, int month, int date) {
+		this(year, month, date, 0, 0, 0, false, false);
+	}
+
+	/**
+	 * Creates a set of date-time components.
 	 * @param year the year (e.g. "2013")
 	 * @param month the month (e.g. "1" for January)
 	 * @param date the date of the month (e.g. "15")
@@ -147,6 +175,10 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents> 
 	 * @param utc true if the time is in UTC, false if not
 	 */
 	public DateTimeComponents(int year, int month, int date, int hour, int minute, int second, boolean utc) {
+		this(year, month, date, hour, minute, second, utc, true);
+	}
+
+	private DateTimeComponents(int year, int month, int date, int hour, int minute, int second, boolean utc, boolean hasTime) {
 		this.year = year;
 		this.month = month;
 		this.date = date;
@@ -154,12 +186,23 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents> 
 		this.minute = minute;
 		this.second = second;
 		this.utc = utc;
+		this.hasTime = hasTime;
 	}
 
+	/**
+	 * Creates a set of date-time components in the local timezone from a
+	 * {@link Date} object.
+	 * @param date the date object
+	 */
 	public DateTimeComponents(Date date) {
 		this(date, TimeZone.getDefault());
 	}
 
+	/**
+	 * Creates a set of date-time components from a {@link Date} object.
+	 * @param date the date object
+	 * @param timezone the timezone the date-time components will be in
+	 */
 	public DateTimeComponents(Date date, TimeZone timezone) {
 		Calendar cal = Calendar.getInstance(timezone);
 		cal.setTime(date);
@@ -171,6 +214,7 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents> 
 		minute = cal.get(Calendar.MINUTE);
 		second = cal.get(Calendar.SECOND);
 		utc = false;
+		hasTime = true;
 	}
 
 	/**
@@ -195,6 +239,14 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents> 
 	 */
 	public int getDate() {
 		return date;
+	}
+
+	/**
+	 * Gets whether these components contain a time component
+	 * @return true if it has a time component, false if it's strictly a date
+	 */
+	public boolean hasTime() {
+		return hasTime;
 	}
 
 	/**
@@ -263,8 +315,16 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents> 
 	 * @return the date object
 	 */
 	public Date toDate() {
-		TimeZone tz = utc ? TimeZone.getTimeZone("UTC") : TimeZone.getDefault();
-		Calendar c = Calendar.getInstance(tz);
+		TimeZone timezone = utc ? TimeZone.getTimeZone("UTC") : TimeZone.getDefault();
+		return toDate(timezone);
+	}
+
+	/**
+	 * Converts the date-time components to a {@link Date} object.
+	 * @return the date object
+	 */
+	public Date toDate(TimeZone timezone) {
+		Calendar c = Calendar.getInstance(timezone);
 		c.clear();
 		c.set(Calendar.YEAR, year);
 		c.set(Calendar.MONTH, month - 1);
@@ -280,6 +340,7 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents> 
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + date;
+		result = prime * result + (hasTime ? 1231 : 1237);
 		result = prime * result + hour;
 		result = prime * result + minute;
 		result = prime * result + month;
@@ -296,6 +357,7 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents> 
 		if (getClass() != obj.getClass()) return false;
 		DateTimeComponents other = (DateTimeComponents) obj;
 		if (date != other.date) return false;
+		if (hasTime != other.hasTime) return false;
 		if (hour != other.hour) return false;
 		if (minute != other.minute) return false;
 		if (month != other.month) return false;

@@ -21,6 +21,7 @@ import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.property.Timezone;
 import biweekly.property.TimezoneId;
+import biweekly.util.ICalDate;
 import biweekly.util.ICalDateFormat;
 
 /*
@@ -207,11 +208,13 @@ public abstract class StreamReader implements Closeable {
 			//vCal: parse floating dates according to the DAYLIGHT and TZ properties (which were converted to a VTIMEZONE component)
 			TimeZone timezone = tzinfo.getTimeZoneByComponent(vcalComponent);
 			for (TimezonedDate timezonedDate : context.getFloatingDates()) {
-				//parse the date string again under its real timezone
-				Date realDate = ICalDateFormat.parse(timezonedDate.getDateStr(), timezone);
+				ICalDate date = timezonedDate.getDate();
 
-				//update the Date object with the new timestamp
-				timezonedDate.getDate().setTime(realDate.getTime());
+				//parse its raw date components under its real timezone
+				Date realDate = date.getRawComponents().toDate(timezone);
+
+				//update the ICalDate object with the new timestamp
+				date.setTime(realDate.getTime());
 			}
 		} else {
 			for (TimezonedDate timezonedDate : context.getFloatingDates()) {
@@ -255,11 +258,13 @@ public abstract class StreamReader implements Closeable {
 				ICalProperty property = timezonedDate.getProperty();
 				tzinfo.setTimeZoneReader(property, timezone, solidus);
 
-				//parse the date string again under its real timezone
-				Date realDate = ICalDateFormat.parse(timezonedDate.getDateStr(), timezone);
+				ICalDate date = timezonedDate.getDate();
+
+				//parse its raw date components under its real timezone
+				Date realDate = date.getRawComponents().toDate(timezone);
 
 				//update the Date object with the new timestamp
-				timezonedDate.getDate().setTime(realDate.getTime());
+				date.setTime(realDate.getTime());
 
 				//remove the TZID parameter
 				property.getParameters().setTimezoneId(null);

@@ -14,7 +14,7 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Trigger;
 import biweekly.util.Duration;
-import biweekly.util.ICalDateFormat;
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -75,18 +75,9 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 		value = unescape(value);
 
 		try {
-			Date date = ICalDateFormat.parse(value);
+			ICalDate date = date(value).parse();
 			Trigger property = new Trigger(date);
-
-			if (!ICalDateFormat.isUTC(value)) {
-				String tzid = parameters.getTimezoneId();
-				if (tzid == null) {
-					context.addFloatingDate(property, date, value);
-				} else {
-					context.addTimezonedDate(tzid, property, date, value);
-				}
-			}
-
+			context.addDate(date, property, parameters);
 			return property;
 		} catch (IllegalArgumentException e) {
 			//unable to parse value as date, must be a duration
@@ -132,18 +123,9 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 		value = element.first(ICalDataType.DATE_TIME);
 		if (value != null) {
 			try {
-				Date date = ICalDateFormat.parse(value);
+				ICalDate date = date(value).parse();
 				Trigger property = new Trigger(date);
-
-				if (!ICalDateFormat.isUTC(value)) {
-					String tzid = parameters.getTimezoneId();
-					if (tzid == null) {
-						context.addFloatingDate(property, date, value);
-					} else {
-						context.addTimezonedDate(tzid, property, date, value);
-					}
-				}
-
+				context.addDate(date, property, parameters);
 				return property;
 			} catch (IllegalArgumentException e) {
 				throw new CannotParseException(27, value);
@@ -173,18 +155,9 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 		String valueStr = value.asSingle();
 
 		try {
-			Date date = ICalDateFormat.parse(valueStr);
+			ICalDate date = date(valueStr).parse();
 			Trigger property = new Trigger(date);
-
-			if (!ICalDateFormat.isUTC(valueStr)) {
-				String tzid = parameters.getTimezoneId();
-				if (tzid == null) {
-					context.addFloatingDate(property, date, valueStr);
-				} else {
-					context.addTimezonedDate(tzid, property, date, valueStr);
-				}
-			}
-
+			context.addDate(date, property, parameters);
 			return property;
 		} catch (IllegalArgumentException e) {
 			//must be a duration

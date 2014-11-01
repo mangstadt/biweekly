@@ -10,7 +10,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DateTimeProperty;
-import biweekly.util.ICalDateFormat;
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -103,26 +103,15 @@ public abstract class DateTimePropertyScribe<T extends DateTimeProperty> extends
 	}
 
 	private T parse(String value, ICalParameters parameters, ParseContext context) {
-		Date date;
+		ICalDate date;
 		try {
-			date = ICalDateFormat.parse(value);
+			date = date(value).parse();
 		} catch (IllegalArgumentException e) {
 			throw new CannotParseException(17);
 		}
 
 		T property = newInstance(date);
-		boolean hasTime = ICalDateFormat.dateHasTime(value);
-		String tzid = parameters.getTimezoneId();
-		boolean utc = ICalDateFormat.isUTC(value);
-		if (!utc) {
-			//TODO handle UTC offsets within the date strings (not part of iCal standard)
-			if (tzid == null) {
-				context.addFloatingDate(property, date, value);
-			} else if (hasTime) {
-				context.addTimezonedDate(tzid, property, date, value);
-			}
-		}
-
+		context.addDate(date, property, parameters);
 		return property;
 	}
 

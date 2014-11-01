@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /*
@@ -84,7 +85,7 @@ public class ICalDate extends Date {
 	 * @param date the date-time value
 	 */
 	public ICalDate(ICalDate date) {
-		this(date, new DateTimeComponents(date.rawComponents), date.hasTime);
+		this(date, (date.rawComponents == null) ? null : new DateTimeComponents(date.rawComponents), date.hasTime);
 	}
 
 	/**
@@ -96,7 +97,17 @@ public class ICalDate extends Date {
 	 * not
 	 */
 	public ICalDate(Date date, DateTimeComponents rawComponents, boolean hasTime) {
-		super(date.getTime());
+		if (!hasTime) {
+			Calendar c = Calendar.getInstance();
+			c.setTime(date);
+			c.set(Calendar.HOUR_OF_DAY, 0);
+			c.set(Calendar.MINUTE, 0);
+			c.set(Calendar.SECOND, 0);
+			c.set(Calendar.MILLISECOND, 0);
+			date = c.getTime();
+		}
+
+		setTime(date.getTime());
 		this.rawComponents = rawComponents;
 		this.hasTime = hasTime;
 	}

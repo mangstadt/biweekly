@@ -232,6 +232,13 @@ public class TestUtils {
 		throw new IllegalArgumentException("Invalid date string: " + text);
 	}
 
+	public static ICalDate icalDate(String text) {
+		DateTimeComponents components = DateTimeComponents.parse(text);
+		Date date = components.toDate();
+		boolean hasTime = components.hasTime();
+		return new ICalDate(date, components, hasTime);
+	}
+
 	/**
 	 * Creates a {@link Date} object.
 	 * @param text the date string (e.g. "2000-01-30 02:21:00", see code for

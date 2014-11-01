@@ -1,14 +1,15 @@
 package biweekly.io;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
+import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.util.ICalDate;
 import biweekly.util.ListMultimap;
 
 /*
@@ -63,6 +64,33 @@ public class ParseContext {
 	}
 
 	/**
+	 * Adds a parsed date to this parse context so its timezone can be applied
+	 * to it after the iCalendar object has been parsed (if it has one).
+	 * @param icalDate the parsed date
+	 * @param property the property that the date value belongs to
+	 * @param parameters the property's parameters
+	 */
+	public void addDate(ICalDate icalDate, ICalProperty property, ICalParameters parameters) {
+		if (!icalDate.hasTime()) {
+			//dates don't have timezones
+			return;
+		}
+
+		if (icalDate.getRawComponents().isUtc()) {
+			//it's a UTC date, so it was already parsed under the correct timezone
+			return;
+		}
+
+		//TODO handle UTC offsets within the date strings (not part of iCal standard)
+		String tzid = parameters.getTimezoneId();
+		if (tzid == null) {
+			addFloatingDate(property, icalDate);
+		} else {
+			addTimezonedDate(tzid, property, icalDate);
+		}
+	}
+
+	/**
 	 * Keeps track of a date-time property value that uses a timezone so it can
 	 * be parsed later. Timezones cannot be handled until the entire iCalendar
 	 * object has been parsed.
@@ -72,8 +100,8 @@ public class ParseContext {
 	 * (should be parsed under the JVM's default timezone)
 	 * @param dateStr the raw date string (e.g. "20140901T120000")
 	 */
-	public void addTimezonedDate(String tzid, ICalProperty property, Date date, String dateStr) {
-		timezonedDates.put(tzid, new TimezonedDate(dateStr, date, property));
+	public void addTimezonedDate(String tzid, ICalProperty property, ICalDate date) {
+		timezonedDates.put(tzid, new TimezonedDate(date, property));
 	}
 
 	/**
@@ -91,8 +119,8 @@ public class ParseContext {
 	 * after the iCalendar object is parsed.
 	 * @param property the property
 	 */
-	public void addFloatingDate(ICalProperty property, Date date, String dateStr) {
-		floatingDates.add(new TimezonedDate(dateStr, date, property));
+	public void addFloatingDate(ICalProperty property, ICalDate date) {
+		floatingDates.add(new TimezonedDate(date, property));
 	}
 
 	/**
@@ -134,8 +162,7 @@ public class ParseContext {
 	 * @author Michael Angstadt
 	 */
 	public static class TimezonedDate {
-		private final String dateStr;
-		private final Date date;
+		private final ICalDate date;
 		private final ICalProperty property;
 
 		/**
@@ -144,18 +171,9 @@ public class ParseContext {
 		 * (should be parsed under the JVM's default timezone)
 		 * @param property the property object
 		 */
-		public TimezonedDate(String dateStr, Date date, ICalProperty property) {
-			this.dateStr = dateStr;
+		public TimezonedDate(ICalDate date, ICalProperty property) {
 			this.date = date;
 			this.property = property;
-		}
-
-		/**
-		 * Gets the raw date string.
-		 * @return the raw date string (e.g. "20140901T120000")
-		 */
-		public String getDateStr() {
-			return dateStr;
 		}
 
 		/**
@@ -163,7 +181,7 @@ public class ParseContext {
 		 * be parsed under the JVM's default timezone)
 		 * @return the date object
 		 */
-		public Date getDate() {
+		public ICalDate getDate() {
 			return date;
 		}
 
@@ -180,7 +198,6 @@ public class ParseContext {
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + ((date == null) ? 0 : date.hashCode());
-			result = prime * result + ((dateStr == null) ? 0 : dateStr.hashCode());
 			result = prime * result + ((property == null) ? 0 : property.hashCode());
 			return result;
 		}
@@ -194,9 +211,6 @@ public class ParseContext {
 			if (date == null) {
 				if (other.date != null) return false;
 			} else if (!date.equals(other.date)) return false;
-			if (dateStr == null) {
-				if (other.dateStr != null) return false;
-			} else if (!dateStr.equals(other.dateStr)) return false;
 			if (property == null) {
 				if (other.property != null) return false;
 			} else if (!property.equals(other.property)) return false;

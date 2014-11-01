@@ -1,13 +1,11 @@
 package biweekly.io.scribe.property;
 
 import static biweekly.util.StringUtils.NEWLINE;
-import static biweekly.util.TestUtils.assertWarnings;
 import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -18,7 +16,6 @@ import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.Warning;
 import biweekly.component.VTimezone;
 import biweekly.io.ParseContext;
 import biweekly.io.TimezoneInfo;
@@ -181,64 +178,6 @@ public class ICalPropertyScribeTest {
 		Date actual = ICalPropertyScribe.date(value).parse();
 
 		assertEquals(datetime, actual);
-	}
-
-	@Test
-	public void DateParser_tzid() {
-		String value = "20130611T144302";
-		List<Warning> warnings = new ArrayList<Warning>();
-
-		Date actual = ICalPropertyScribe.date(value).tzid("some ID", warnings).parse();
-
-		//parse as local time
-		assertEquals(datetime, actual);
-		assertWarnings(0, warnings);
-	}
-
-	@Test
-	public void DateParser_tzid_null() {
-		String value = "20130611T144302";
-		List<Warning> warnings = new ArrayList<Warning>();
-
-		Date actual = ICalPropertyScribe.date(value).tzid(null, warnings).parse();
-
-		//parse as local time
-		assertEquals(datetime, actual);
-		assertWarnings(0, warnings);
-	}
-
-	@Test
-	public void DateParser_global_tzid() {
-		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
-		String value = "20130611T154302";
-		List<Warning> warnings = new ArrayList<Warning>();
-
-		Date actual = ICalPropertyScribe.date(value).tzid(timezone.getID(), warnings).parse();
-
-		assertEquals(datetime, actual);
-		assertWarnings(0, warnings);
-	}
-
-	@Test
-	public void DateParser_timezone_object() {
-		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
-		String value = "20130611T154302";
-
-		Date actual = ICalPropertyScribe.date(value).tz(timezone).parse();
-
-		assertEquals(datetime, actual);
-	}
-
-	@Test
-	public void DateParser_invalid_global_tzid() {
-		String value = "20130611T144302";
-		List<Warning> warnings = new ArrayList<Warning>();
-
-		Date actual = ICalPropertyScribe.date(value).tzid("invalid/timezone", warnings).parse();
-
-		//parse as local time and add warning
-		assertEquals(datetime, actual);
-		assertWarnings(1, warnings);
 	}
 
 	@Test

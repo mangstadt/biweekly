@@ -1,6 +1,5 @@
 package biweekly.io.scribe.property;
 
-import java.util.Date;
 import java.util.TimeZone;
 
 import biweekly.ICalDataType;
@@ -13,9 +12,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DateOrDateTimeProperty;
-import biweekly.util.DateTimeComponents;
 import biweekly.util.ICalDate;
-import biweekly.util.ICalDateFormat;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -150,36 +147,15 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 			return newInstance(null);
 		}
 
-		Date date;
+		ICalDate date;
 		try {
-			date = ICalDateFormat.parse(value);
+			date = date(value).parse();
 		} catch (IllegalArgumentException e) {
 			throw new CannotParseException(17);
 		}
 
-		DateTimeComponents components;
-		try {
-			components = DateTimeComponents.parse(value);
-		} catch (IllegalArgumentException e) {
-			context.addWarning(6, value);
-			components = null;
-		}
-
-		boolean hasTime = ICalDateFormat.dateHasTime(value);
-
-		ICalDate icalDate = new ICalDate(date, components, hasTime);
-		T property = newInstance(icalDate);
-
-		if (!ICalDateFormat.isUTC(value)) {
-			String tzid = parameters.getTimezoneId();
-			//TODO handle UTC offsets within the date strings (not part of iCal standard)
-			if (tzid == null) {
-				context.addFloatingDate(property, icalDate, value);
-			} else if (hasTime) {
-				context.addTimezonedDate(tzid, property, icalDate, value);
-			}
-		}
-
+		T property = newInstance(date);
+		context.addDate(date, property, parameters);
 		return property;
 	}
 }

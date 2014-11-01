@@ -2,11 +2,10 @@ package biweekly.property;
 
 import static biweekly.util.TestUtils.assertValidate;
 
-import java.util.Date;
-
 import org.junit.Test;
 
 import biweekly.ICalVersion;
+import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.Frequency;
 
@@ -47,10 +46,10 @@ public class RecurrencePropertyTest {
 		property = new RecurrenceProperty(new Recurrence.Builder((Frequency) null).build());
 		assertValidate(property).run(30);
 
-		property = new RecurrenceProperty(new Recurrence.Builder((Frequency) null).until(new Date()).count(1).build());
+		property = new RecurrenceProperty(new Recurrence.Builder((Frequency) null).until(new ICalDate()).count(1).build());
 		assertValidate(property).run(30, 31);
 
-		property = new RecurrenceProperty(new Recurrence.Builder(Frequency.DAILY).until(new Date()).count(1).build());
+		property = new RecurrenceProperty(new Recurrence.Builder(Frequency.DAILY).until(new ICalDate()).count(1).build());
 		assertValidate(property).run(31);
 
 		property = new RecurrenceProperty(new Recurrence.Builder(Frequency.DAILY).build());

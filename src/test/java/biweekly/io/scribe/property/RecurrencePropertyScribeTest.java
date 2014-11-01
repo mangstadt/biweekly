@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,6 +27,7 @@ import biweekly.io.json.JsonValue;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.RecurrenceProperty;
 import biweekly.util.DefaultTimezoneRule;
+import biweekly.util.ICalDate;
 import biweekly.util.ListMultimap;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.ByDay;
@@ -69,11 +69,11 @@ public class RecurrencePropertyScribeTest {
 	private final RecurrencePropertyMarshallerImpl marshaller = new RecurrencePropertyMarshallerImpl();
 	private final Sensei<RecurrenceProperty> sensei = new Sensei<RecurrenceProperty>(marshaller);
 
-	private final Date date = date("2013-06-11");
+	private final ICalDate date = new ICalDate(date("2013-06-11"), false);
 	private final String dateStr = "20130611";
 	private final String dateStrExt = "2013-06-11";
 
-	private final Date datetime = utc("2013-06-11 12:43:02");
+	private final ICalDate datetime = new ICalDate(utc("2013-06-11 12:43:02"));
 	private final String dateTimeStr = dateStr + "T124302Z";
 	private final String dateTimeStrExt = dateStrExt + "T12:43:02Z";
 
@@ -135,7 +135,7 @@ public class RecurrencePropertyScribeTest {
 
 		withSingle = new RecurrenceProperty(builder.build());
 	}
-	private final RecurrenceProperty withUntilDate = new RecurrenceProperty(new Recurrence.Builder(Frequency.WEEKLY).until(date, false).build());
+	private final RecurrenceProperty withUntilDate = new RecurrenceProperty(new Recurrence.Builder(Frequency.WEEKLY).until(date).build());
 	private final RecurrenceProperty withUntilDateTime = new RecurrenceProperty(new Recurrence.Builder(Frequency.WEEKLY).until(datetime).build());
 	private final RecurrenceProperty empty = new RecurrenceProperty(null);
 
@@ -169,12 +169,12 @@ public class RecurrencePropertyScribeTest {
 		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
 		assertEquals(expected, actual);
 
-		prop.setValue(new Recurrence.Builder(Frequency.MINUTELY).interval(5).until(utc("2000-01-01 01:00:00")).build());
+		prop.setValue(new Recurrence.Builder(Frequency.MINUTELY).interval(5).until(new ICalDate(utc("2000-01-01 01:00:00"))).build());
 		expected = "M5 20000101T010000Z";
 		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).run();
 		assertEquals(expected, actual);
 
-		prop.setValue(new Recurrence.Builder(Frequency.MINUTELY).interval(5).until(utc("2000-01-01 12:00:00")).build());
+		prop.setValue(new Recurrence.Builder(Frequency.MINUTELY).interval(5).until(new ICalDate(utc("2000-01-01 12:00:00"))).build());
 		expected = "M5 20000101T070000";
 		actual = sensei.assertWriteText(prop).version(ICalVersion.V1_0).tz(americaNewYork()).run();
 		assertEquals(expected, actual);
@@ -302,10 +302,10 @@ public class RecurrencePropertyScribeTest {
 
 		sensei.assertParseText("M2").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MINUTELY).interval(2).count(2).build()));
 		sensei.assertParseText("M2 #0").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MINUTELY).interval(2).build()));
-		sensei.assertParseText("M2 20000101T010000Z").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MINUTELY).interval(2).until(utc("2000-01-01 01:00:00")).build()));
+		sensei.assertParseText("M2 20000101T010000Z").versions(ICalVersion.V1_0).run(is(new Recurrence.Builder(Frequency.MINUTELY).interval(2).until(new ICalDate(utc("2000-01-01 01:00:00"))).build()));
 		sensei.assertParseText("M2 20000101T010000").versions(ICalVersion.V1_0).run(new Check<RecurrenceProperty>() {
 			public void check(RecurrenceProperty property, ParseContext context) {
-				Recurrence expected = new Recurrence.Builder(Frequency.MINUTELY).interval(2).until(date("2000-01-01 01:00:00")).build();
+				Recurrence expected = new Recurrence.Builder(Frequency.MINUTELY).interval(2).until(new ICalDate(date("2000-01-01 01:00:00"))).build();
 				is(expected).check(property, context);
 
 				assertEquals(1, context.getFloatingDates().size());
@@ -313,7 +313,6 @@ public class RecurrencePropertyScribeTest {
 
 				TimezonedDate timezonedDate = context.getFloatingDates().iterator().next();
 				assertEquals(property, timezonedDate.getProperty());
-				assertEquals("20000101T010000", timezonedDate.getDateStr());
 				assertEquals(date("2000-01-01 01:00:00"), timezonedDate.getDate());
 
 			}
@@ -354,7 +353,7 @@ public class RecurrencePropertyScribeTest {
 	public void parseText_until() {
 		sensei.assertParseText("FREQ=WEEKLY;UNTIL=" + dateTimeStr).versions(ICalVersion.V2_0).run(new Check<RecurrenceProperty>() {
 			public void check(RecurrenceProperty property, ParseContext context) {
-				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(utc("2013-06-11 12:43:02")).build();
+				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(new ICalDate(new ICalDate(utc("2013-06-11 12:43:02")))).build();
 				is(expected).check(property, context);
 
 				assertEquals(0, context.getFloatingDates().size());
@@ -364,7 +363,7 @@ public class RecurrencePropertyScribeTest {
 
 		sensei.assertParseText("FREQ=WEEKLY;UNTIL=20130611T124302").param("TZID", "America/New_York").versions(ICalVersion.V2_0).run(new Check<RecurrenceProperty>() {
 			public void check(RecurrenceProperty property, ParseContext context) {
-				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(date("2013-06-11 12:43:02")).build();
+				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(new ICalDate(date("2013-06-11 12:43:02"))).build();
 				is(expected).check(property, context);
 
 				assertEquals(0, context.getFloatingDates().size());
@@ -373,14 +372,13 @@ public class RecurrencePropertyScribeTest {
 
 				TimezonedDate timezonedDate = context.getTimezonedDates().get("America/New_York").get(0);
 				assertEquals(property, timezonedDate.getProperty());
-				assertEquals("20130611T124302", timezonedDate.getDateStr());
 				assertEquals(date("2013-06-11 12:43:02"), timezonedDate.getDate());
 			}
 		});
 
 		sensei.assertParseText("FREQ=WEEKLY;UNTIL=20130611T124302").versions(ICalVersion.V2_0).run(new Check<RecurrenceProperty>() {
 			public void check(RecurrenceProperty property, ParseContext context) {
-				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(date("2013-06-11 12:43:02")).build();
+				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(new ICalDate(date("2013-06-11 12:43:02"))).build();
 				is(expected).check(property, context);
 
 				assertEquals(1, context.getFloatingDates().size());
@@ -388,7 +386,6 @@ public class RecurrencePropertyScribeTest {
 
 				TimezonedDate timezonedDate = context.getFloatingDates().iterator().next();
 				assertEquals(property, timezonedDate.getProperty());
-				assertEquals("20130611T124302", timezonedDate.getDateStr());
 				assertEquals(date("2013-06-11 12:43:02"), timezonedDate.getDate());
 			}
 		});
@@ -564,7 +561,7 @@ public class RecurrencePropertyScribeTest {
 	public void parseXml_until() {
 		sensei.assertParseXml("<recur><freq>WEEKLY</freq><until>" + dateTimeStrExt + "</until></recur>").run(new Check<RecurrenceProperty>() {
 			public void check(RecurrenceProperty property, ParseContext context) {
-				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(utc("2013-06-11 12:43:02")).build();
+				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(new ICalDate(utc("2013-06-11 12:43:02"))).build();
 				is(expected).check(property, context);
 
 				assertEquals(0, context.getFloatingDates().size());
@@ -574,7 +571,7 @@ public class RecurrencePropertyScribeTest {
 
 		sensei.assertParseXml("<recur><freq>WEEKLY</freq><until>2013-06-11T12:43:02</until></recur>").param("TZID", "America/New_York").run(new Check<RecurrenceProperty>() {
 			public void check(RecurrenceProperty property, ParseContext context) {
-				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(date("2013-06-11 12:43:02")).build();
+				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(new ICalDate(date("2013-06-11 12:43:02"))).build();
 				is(expected).check(property, context);
 
 				assertEquals(0, context.getFloatingDates().size());
@@ -583,14 +580,13 @@ public class RecurrencePropertyScribeTest {
 
 				TimezonedDate timezonedDate = context.getTimezonedDates().get("America/New_York").get(0);
 				assertEquals(property, timezonedDate.getProperty());
-				assertEquals("2013-06-11T12:43:02", timezonedDate.getDateStr());
 				assertEquals(date("2013-06-11 12:43:02"), timezonedDate.getDate());
 			}
 		});
 
 		sensei.assertParseXml("<recur><freq>WEEKLY</freq><until>2013-06-11T12:43:02</until></recur>").run(new Check<RecurrenceProperty>() {
 			public void check(RecurrenceProperty property, ParseContext context) {
-				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(date("2013-06-11 12:43:02")).build();
+				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(new ICalDate(date("2013-06-11 12:43:02"))).build();
 				is(expected).check(property, context);
 
 				assertEquals(1, context.getFloatingDates().size());
@@ -598,7 +594,6 @@ public class RecurrencePropertyScribeTest {
 
 				TimezonedDate timezonedDate = context.getFloatingDates().iterator().next();
 				assertEquals(property, timezonedDate.getProperty());
-				assertEquals("2013-06-11T12:43:02", timezonedDate.getDateStr());
 				assertEquals(date("2013-06-11 12:43:02"), timezonedDate.getDate());
 			}
 		});
@@ -781,7 +776,7 @@ public class RecurrencePropertyScribeTest {
 		map.put("until", dateTimeStrExt);
 		sensei.assertParseJson(JCalValue.object(map)).run(new Check<RecurrenceProperty>() {
 			public void check(RecurrenceProperty property, ParseContext context) {
-				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(utc("2013-06-11 12:43:02")).build();
+				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(new ICalDate(utc("2013-06-11 12:43:02"))).build();
 				is(expected).check(property, context);
 
 				assertEquals(0, context.getFloatingDates().size());
@@ -794,7 +789,7 @@ public class RecurrencePropertyScribeTest {
 		map.put("until", "2013-06-11T12:43:02");
 		sensei.assertParseJson(JCalValue.object(map)).param("TZID", "America/New_York").run(new Check<RecurrenceProperty>() {
 			public void check(RecurrenceProperty property, ParseContext context) {
-				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(date("2013-06-11 12:43:02")).build();
+				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(new ICalDate(date("2013-06-11 12:43:02"))).build();
 				is(expected).check(property, context);
 
 				assertEquals(0, context.getFloatingDates().size());
@@ -803,7 +798,6 @@ public class RecurrencePropertyScribeTest {
 
 				TimezonedDate timezonedDate = context.getTimezonedDates().get("America/New_York").get(0);
 				assertEquals(property, timezonedDate.getProperty());
-				assertEquals("2013-06-11T12:43:02", timezonedDate.getDateStr());
 				assertEquals(date("2013-06-11 12:43:02"), timezonedDate.getDate());
 			}
 		});
@@ -813,7 +807,7 @@ public class RecurrencePropertyScribeTest {
 		map.put("until", "2013-06-11T12:43:02");
 		sensei.assertParseJson(JCalValue.object(map)).run(new Check<RecurrenceProperty>() {
 			public void check(RecurrenceProperty property, ParseContext context) {
-				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(date("2013-06-11 12:43:02")).build();
+				Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(new ICalDate(date("2013-06-11 12:43:02"))).build();
 				is(expected).check(property, context);
 
 				assertEquals(1, context.getFloatingDates().size());
@@ -821,7 +815,7 @@ public class RecurrencePropertyScribeTest {
 
 				TimezonedDate timezonedDate = context.getFloatingDates().iterator().next();
 				assertEquals(property, timezonedDate.getProperty());
-				assertEquals("2013-06-11T12:43:02", timezonedDate.getDateStr());
+
 				assertEquals(date("2013-06-11 12:43:02"), timezonedDate.getDate());
 			}
 		});

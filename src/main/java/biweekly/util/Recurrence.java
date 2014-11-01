@@ -59,8 +59,7 @@ public final class Recurrence {
 	private final Frequency frequency;
 	private final Integer interval;
 	private final Integer count;
-	private final Date until;
-	private final boolean untilHasTime;
+	private final ICalDate until;
 	private final List<Integer> bySecond;
 	private final List<Integer> byMinute;
 	private final List<Integer> byHour;
@@ -78,7 +77,6 @@ public final class Recurrence {
 		interval = builder.interval;
 		count = builder.count;
 		until = builder.until;
-		untilHasTime = builder.untilHasTime;
 		bySecond = Collections.unmodifiableList(builder.bySecond);
 		byMinute = Collections.unmodifiableList(builder.byMinute);
 		byHour = Collections.unmodifiableList(builder.byHour);
@@ -112,16 +110,8 @@ public final class Recurrence {
 	 * Gets the date that the recurrence stops.
 	 * @return the date or null if not set
 	 */
-	public Date getUntil() {
-		return (until == null) ? null : new Date(until.getTime());
-	}
-
-	/**
-	 * Determines whether the UNTIL date has a time component.
-	 * @return true if it has a time component, false if it is strictly a date
-	 */
-	public boolean hasTimeUntilDate() {
-		return untilHasTime;
+	public ICalDate getUntil() {
+		return (until == null) ? null : new ICalDate(until);
 	}
 
 	/**
@@ -247,7 +237,6 @@ public final class Recurrence {
 		result = prime * result + ((frequency == null) ? 0 : frequency.hashCode());
 		result = prime * result + ((interval == null) ? 0 : interval.hashCode());
 		result = prime * result + ((until == null) ? 0 : until.hashCode());
-		result = prime * result + (untilHasTime ? 1231 : 1237);
 		result = prime * result + ((workweekStarts == null) ? 0 : workweekStarts.hashCode());
 		return result;
 	}
@@ -298,7 +287,6 @@ public final class Recurrence {
 		if (until == null) {
 			if (other.until != null) return false;
 		} else if (!until.equals(other.until)) return false;
-		if (untilHasTime != other.untilHasTime) return false;
 		if (workweekStarts != other.workweekStarts) return false;
 		return true;
 	}
@@ -405,8 +393,7 @@ public final class Recurrence {
 		private Frequency frequency;
 		private Integer interval;
 		private Integer count;
-		private Date until;
-		private boolean untilHasTime;
+		private ICalDate until;
 		private List<Integer> bySecond;
 		private List<Integer> byMinute;
 		private List<Integer> byHour;
@@ -446,7 +433,6 @@ public final class Recurrence {
 			interval = recur.interval;
 			count = recur.count;
 			until = recur.until;
-			untilHasTime = recur.untilHasTime;
 			bySecond = new ArrayList<Integer>(recur.bySecond);
 			byMinute = new ArrayList<Integer>(recur.byMinute);
 			byHour = new ArrayList<Integer>(recur.byHour);
@@ -473,30 +459,34 @@ public final class Recurrence {
 		/**
 		 * Sets the date that the recurrence stops. Note that the UNTIL and
 		 * COUNT fields cannot both be defined within the same rule.
-		 * @param until the date (time component is included)
+		 * @param until the date
+		 * @return this
+		 */
+		public Builder until(ICalDate until) {
+			this.until = (until == null) ? null : new ICalDate(until);
+			return this;
+		}
+
+		/**
+		 * Sets the date that the recurrence stops. Note that the UNTIL and
+		 * COUNT fields cannot both be defined within the same rule.
+		 * @param until the date (time component will be included)
 		 * @return this
 		 */
 		public Builder until(Date until) {
-			return until(until, until != null);
+			return until(until, true);
 		}
 
 		/**
 		 * Sets the date that the recurrence stops. Note that the UNTIL and
 		 * COUNT fields cannot both be defined within the same rule.
 		 * @param until the date
-		 * @param hasTime true if the date has a time component, false if it's
+		 * @param hasTime true to include the time component, false if it's
 		 * strictly a date
 		 * @return this
 		 */
 		public Builder until(Date until, boolean hasTime) {
-			if (until == null) {
-				this.until = null;
-				this.untilHasTime = false;
-			} else {
-				this.until = new Date(until.getTime());
-				this.untilHasTime = hasTime;
-			}
-			return this;
+			return until(new ICalDate(until, hasTime));
 		}
 
 		/**

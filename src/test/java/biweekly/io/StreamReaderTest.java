@@ -2,6 +2,7 @@ package biweekly.io;
 
 import static biweekly.util.TestUtils.assertWarnings;
 import static biweekly.util.TestUtils.date;
+import static biweekly.util.TestUtils.icalDate;
 import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -10,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
 
@@ -24,6 +24,7 @@ import biweekly.component.VTimezone;
 import biweekly.property.ICalProperty;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DefaultTimezoneRule;
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -80,44 +81,44 @@ public class StreamReaderTest {
 				}
 				ical.addComponent(timezone);
 
-				TestProperty floating = new TestProperty(date("2014-09-21 10:22:00"));
-				context.addFloatingDate(floating, floating.date, "20140921T102200");
+				TestProperty floating = new TestProperty(icalDate("2014-09-21T10:22:00"));
+				context.addFloatingDate(floating, floating.date);
 				ical.addProperty(floating);
 
 				String tzid = timezone.getTimezoneId().getValue();
-				TestProperty timezoned = new TestProperty(date("2014-10-01 13:07:00"));
+				TestProperty timezoned = new TestProperty(icalDate("2014-10-01T13:07:00"));
 				timezoned.getParameters().setTimezoneId(tzid);
-				context.addTimezonedDate(tzid, timezoned, timezoned.date, "20141001T130700");
+				context.addTimezonedDate(tzid, timezoned, timezoned.date);
 				ical.addProperty(timezoned);
 
 				tzid = timezone.getTimezoneId().getValue();
-				timezoned = new TestProperty(date("2014-08-01 13:07:00"));
+				timezoned = new TestProperty(icalDate("2014-08-01T13:07:00"));
 				timezoned.getParameters().setTimezoneId(tzid);
-				context.addTimezonedDate(tzid, timezoned, timezoned.date, "20140801T130700");
+				context.addTimezonedDate(tzid, timezoned, timezoned.date);
 				ical.addProperty(timezoned);
 
 				tzid = timezone.getTimezoneId().getValue();
-				timezoned = new TestProperty(date("2013-12-01 13:07:00"));
+				timezoned = new TestProperty(icalDate("2013-12-01T13:07:00"));
 				timezoned.getParameters().setTimezoneId(tzid);
-				context.addTimezonedDate(tzid, timezoned, timezoned.date, "20131201T130700");
+				context.addTimezonedDate(tzid, timezoned, timezoned.date);
 				ical.addProperty(timezoned);
 
 				tzid = "/America/New_York";
-				timezoned = new TestProperty(date("2014-07-04 09:00:00"));
+				timezoned = new TestProperty(icalDate("2014-07-04T09:00:00"));
 				timezoned.getParameters().setTimezoneId(tzid);
-				context.addTimezonedDate(tzid, timezoned, timezoned.date, "20140704T090000");
+				context.addTimezonedDate(tzid, timezoned, timezoned.date);
 				ical.addProperty(timezoned);
 
 				tzid = "America/New_York";
-				timezoned = new TestProperty(date("2014-07-04 09:00:00"));
+				timezoned = new TestProperty(icalDate("2014-07-04T09:00:00"));
 				timezoned.getParameters().setTimezoneId(tzid);
-				context.addTimezonedDate(tzid, timezoned, timezoned.date, "20140704T090000");
+				context.addTimezonedDate(tzid, timezoned, timezoned.date);
 				ical.addProperty(timezoned);
 
 				tzid = "foobar";
-				timezoned = new TestProperty(date("2014-06-11 14:00:00"));
+				timezoned = new TestProperty(icalDate("2014-06-11T14:00:00"));
 				timezoned.getParameters().setTimezoneId(tzid);
-				context.addTimezonedDate(tzid, timezoned, timezoned.date, "20140611T140000");
+				context.addTimezonedDate(tzid, timezoned, timezoned.date);
 				ical.addProperty(timezoned);
 
 				return ical;
@@ -235,9 +236,9 @@ public class StreamReaderTest {
 	}
 
 	private class TestProperty extends ICalProperty {
-		private final Date date;
+		private final ICalDate date;
 
-		public TestProperty(Date date) {
+		public TestProperty(ICalDate date) {
 			this.date = date;
 		}
 	}

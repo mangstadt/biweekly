@@ -43,8 +43,8 @@ public class DateTimeComponentsTest {
 		assertParse(new DateTimeComponents(2013, 7, 22, 15, 6, 30, false), "2013-07-22T15:06:30");
 		assertParse(new DateTimeComponents(2013, 7, 22, 15, 6, 30, true), "20130722T150630Z");
 		assertParse(new DateTimeComponents(2013, 7, 22, 15, 6, 30, true), "2013-07-22T15:06:30Z");
-		assertParse(new DateTimeComponents(2013, 7, 22, 0, 0, 0, false), "20130722");
-		assertParse(new DateTimeComponents(2013, 7, 22, 0, 0, 0, false), "2013-07-22");
+		assertParse(new DateTimeComponents(2013, 7, 22), "20130722");
+		assertParse(new DateTimeComponents(2013, 7, 22), "2013-07-22");
 	}
 
 	private void assertParse(DateTimeComponents expected, String input) {

@@ -34,6 +34,8 @@ import biweekly.io.text.ICalRawWriter;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.util.DateTimeComponents;
+import biweekly.util.ICalDate;
 import biweekly.util.ICalDateFormat;
 import biweekly.util.ListMultimap;
 import biweekly.util.StringUtils;
@@ -1048,7 +1050,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 */
 	protected static class DateParser {
 		private String value;
-		private TimeZone timezone;
+		private Boolean hasTime;
 
 		/**
 		 * Creates a new date writer object.
@@ -1059,59 +1061,14 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		}
 
 		/**
-		 * Sets the ID of the timezone to parse the date as (TZID parameter
-		 * value). If the ID does not contain a "/" character, it will be
-		 * ignored.
-		 * @param timezoneId the timezone ID
+		 * Forces the value to be parsed as a date-time or date value.
+		 * @param hasTime true to parsed as a date-timme value, false to parse
+		 * as a date value, null to parse as whatever value it is (defaults to
+		 * null)
 		 * @return this
 		 */
-		public DateParser tzid(String timezoneId) {
-			return tzid(timezoneId, null);
-		}
-
-		/**
-		 * Sets the ID of the timezone to parse the date as (TZID parameter
-		 * value).
-		 * @param timezoneId the timezone ID. If the ID is global (contains a
-		 * "/" character), it will attempt to look up the timezone in Java's
-		 * timezone registry and parse the date according to that timezone. If
-		 * the timezone is not found, the date will be parsed according to the
-		 * JVM's default timezone and a warning message will be added to the
-		 * provided warnings list. If the ID is not global, it will be parsed
-		 * according to the JVM's default timezone. Whichever timezone is chosen
-		 * here, it will be ignored if the date string is in UTC time or
-		 * contains an offset.
-		 * @param warnings if the ID is global and is not recognized, a warning
-		 * message will be added to this list
-		 * @return this
-		 */
-		public DateParser tzid(String timezoneId, List<Warning> warnings) {
-			if (timezoneId == null) {
-				return tz(null);
-			}
-
-			if (timezoneId.contains("/")) {
-				TimeZone timezone = ICalDateFormat.parseTimeZoneId(timezoneId);
-				if (timezone == null) {
-					timezone = TimeZone.getDefault();
-					if (warnings != null) {
-						warnings.add(Warning.parse(5, timezoneId, timezone.getID()));
-					}
-				}
-				return tz(timezone);
-			}
-
-			//TODO parse according to the associated VTIMEZONE component
-			return tz(TimeZone.getDefault());
-		}
-
-		/**
-		 * Sets the timezone to parse the date as.
-		 * @param timezone the timezone
-		 * @return this
-		 */
-		public DateParser tz(TimeZone timezone) {
-			this.timezone = timezone;
+		public DateParser hasTime(Boolean hasTime) {
+			this.hasTime = hasTime;
 			return this;
 		}
 
@@ -1120,8 +1077,12 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		 * @return the parsed date
 		 * @throws IllegalArgumentException if the date string is invalid
 		 */
-		public Date parse() {
-			return ICalDateFormat.parse(value, timezone);
+		public ICalDate parse() {
+			DateTimeComponents components = DateTimeComponents.parse(value, hasTime);
+			Date date = components.toDate();
+			boolean hasTime = components.hasTime();
+
+			return new ICalDate(date, components, hasTime);
 		}
 	}
 

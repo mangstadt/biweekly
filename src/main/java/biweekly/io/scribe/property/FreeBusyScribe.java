@@ -15,7 +15,7 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.FreeBusy;
 import biweekly.util.Duration;
-import biweekly.util.ICalDateFormat;
+import biweekly.util.ICalDate;
 import biweekly.util.Period;
 
 /*
@@ -113,8 +113,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 			throw missingXmlElements(ICalDataType.PERIOD);
 		}
 
-		FreeBusy prop = new FreeBusy();
-		String tzid = parameters.getTimezoneId();
+		FreeBusy property = new FreeBusy();
 		for (XCalElement periodElement : periodElements) {
 			String startStr = periodElement.first("start");
 			if (startStr == null) {
@@ -122,9 +121,9 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 				continue;
 			}
 
-			Date start = null;
+			ICalDate start = null;
 			try {
-				start = ICalDateFormat.parse(startStr);
+				start = date(startStr).parse();
 			} catch (IllegalArgumentException e) {
 				context.addWarning(10, startStr);
 				continue;
@@ -133,24 +132,10 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 			String endStr = periodElement.first("end");
 			if (endStr != null) {
 				try {
-					Date end = ICalDateFormat.parse(endStr);
-					prop.addValue(start, end);
-
-					if (!ICalDateFormat.isUTC(startStr)) {
-						if (tzid == null) {
-							context.addFloatingDate(prop, start, startStr);
-						} else {
-							context.addTimezonedDate(tzid, prop, start, startStr);
-						}
-					}
-
-					if (end != null && !ICalDateFormat.isUTC(endStr)) {
-						if (tzid == null) {
-							context.addFloatingDate(prop, end, endStr);
-						} else {
-							context.addTimezonedDate(tzid, prop, end, endStr);
-						}
-					}
+					ICalDate end = date(endStr).parse();
+					property.addValue(start, end);
+					context.addDate(start, property, parameters);
+					context.addDate(end, property, parameters);
 				} catch (IllegalArgumentException e) {
 					context.addWarning(11, endStr);
 				}
@@ -161,15 +146,8 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 			if (durationStr != null) {
 				try {
 					Duration duration = Duration.parse(durationStr);
-					prop.addValue(start, duration);
-
-					if (!ICalDateFormat.isUTC(startStr)) {
-						if (tzid == null) {
-							context.addFloatingDate(prop, start, startStr);
-						} else {
-							context.addTimezonedDate(tzid, prop, start, startStr);
-						}
-					}
+					property.addValue(start, duration);
+					context.addDate(start, property, parameters);
 				} catch (IllegalArgumentException e) {
 					context.addWarning(12, durationStr);
 				}
@@ -178,7 +156,8 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 
 			context.addWarning(13);
 		}
-		return prop;
+
+		return property;
 	}
 
 	@Override
@@ -217,8 +196,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 	}
 
 	private FreeBusy parse(List<String> periods, ICalParameters parameters, ParseContext context) {
-		FreeBusy freebusy = new FreeBusy();
-		String tzid = parameters.getTimezoneId();
+		FreeBusy property = new FreeBusy();
 
 		for (String period : periods) {
 			String periodSplit[] = period.split("/");
@@ -229,48 +207,36 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 			}
 
 			String startStr = periodSplit[0];
-			Date start = null;
+			ICalDate start = null;
 			try {
-				start = ICalDateFormat.parse(startStr);
+				start = date(startStr).parse();
 			} catch (IllegalArgumentException e) {
+				//TODO throw cannotparseexcetion
 				context.addWarning(10, startStr);
 				continue;
 			}
 
 			String endStr = periodSplit[1];
-			Date end = null;
+			ICalDate end = null;
 			try {
-				end = ICalDateFormat.parse(endStr);
-				freebusy.addValue(start, end);
+				end = date(endStr).parse();
+				property.addValue(start, end);
+				context.addDate(start, property, parameters);
+				context.addDate(end, property, parameters);
 			} catch (IllegalArgumentException e) {
 				//must be a duration
 				try {
 					Duration duration = Duration.parse(endStr);
-					freebusy.addValue(start, duration);
+					property.addValue(start, duration);
+					context.addDate(start, property, parameters);
 				} catch (IllegalArgumentException e2) {
 					context.addWarning(14, endStr);
 					continue;
 				}
 			}
-
-			if (!ICalDateFormat.isUTC(startStr)) {
-				if (tzid == null) {
-					context.addFloatingDate(freebusy, start, startStr);
-				} else {
-					context.addTimezonedDate(tzid, freebusy, start, startStr);
-				}
-			}
-
-			if (end != null && !ICalDateFormat.isUTC(endStr)) {
-				if (tzid == null) {
-					context.addFloatingDate(freebusy, end, endStr);
-				} else {
-					context.addTimezonedDate(tzid, freebusy, end, endStr);
-				}
-			}
 		}
 
-		return freebusy;
+		return property;
 	}
 
 	@Override

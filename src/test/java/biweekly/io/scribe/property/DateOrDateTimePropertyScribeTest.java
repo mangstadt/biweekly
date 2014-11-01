@@ -245,7 +245,7 @@ public class DateOrDateTimePropertyScribeTest {
 		public void check(DateOrDateTimePropertyImpl property, ParseContext context) {
 			ICalDate value = property.getValue();
 			assertEquals(date, value);
-			assertEquals(new DateTimeComponents(2013, 6, 11, 0, 0, 0, false), value.getRawComponents());
+			assertEquals(new DateTimeComponents(2013, 6, 11), value.getRawComponents());
 			assertFalse(value.hasTime());
 		}
 	};

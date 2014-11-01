@@ -8,6 +8,7 @@ import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.buildTimezone;
 import static biweekly.util.TestUtils.date;
+import static biweekly.util.TestUtils.icalDate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -510,9 +511,9 @@ public class RecurrenceDatesScribeTest {
 				assertEquals(1, timezonedDates.keySet().size());
 				List<TimezonedDate> dates = timezonedDates.get("id");
 				assertEquals(3, dates.size());
-				assertTrue(dates.contains(new TimezonedDate(extended ? "2014-10-26T12:00:00" : "20141026T120000", date("2014-10-26 12:00:00"), property)));
-				assertTrue(dates.contains(new TimezonedDate(extended ? "2014-10-26T14:00:00" : "20141026T140000", date("2014-10-26 14:00:00"), property)));
-				assertTrue(dates.contains(new TimezonedDate(extended ? "2014-10-26T12:00:00" : "20141026T120000", date("2014-10-26 12:00:00"), property)));
+				assertTrue(dates.contains(new TimezonedDate(icalDate("2014-10-26T12:00:00"), property)));
+				assertTrue(dates.contains(new TimezonedDate(icalDate("2014-10-26T14:00:00"), property)));
+				assertTrue(dates.contains(new TimezonedDate(icalDate("2014-10-26T12:00:00"), property)));
 			}
 		};
 	}
@@ -522,9 +523,9 @@ public class RecurrenceDatesScribeTest {
 			public void check(RecurrenceDates property, ParseContext context) {
 				Collection<TimezonedDate> floating = context.getFloatingDates();
 				assertEquals(3, floating.size());
-				assertTrue(floating.contains(new TimezonedDate(extended ? "2014-10-26T12:00:00" : "20141026T120000", date("2014-10-26 12:00:00"), property)));
-				assertTrue(floating.contains(new TimezonedDate(extended ? "2014-10-26T14:00:00" : "20141026T140000", date("2014-10-26 14:00:00"), property)));
-				assertTrue(floating.contains(new TimezonedDate(extended ? "2014-10-26T15:00:00" : "20141026T150000", date("2014-10-26 15:00:00"), property)));
+				assertTrue(floating.contains(new TimezonedDate(icalDate("2014-10-26T12:00:00"), property)));
+				assertTrue(floating.contains(new TimezonedDate(icalDate("2014-10-26T14:00:00"), property)));
+				assertTrue(floating.contains(new TimezonedDate(icalDate("2014-10-26T15:00:00"), property)));
 
 				assertEquals(0, context.getTimezonedDates().size());
 			}
@@ -540,8 +541,8 @@ public class RecurrenceDatesScribeTest {
 				assertEquals(1, timezonedDates.keySet().size());
 				List<TimezonedDate> dates = context.getTimezonedDates().get("id");
 				assertEquals(2, dates.size());
-				assertTrue(dates.contains(new TimezonedDate(extended ? "2014-10-26T12:00:00" : "20141026T120000", date("2014-10-26 12:00:00"), property)));
-				assertTrue(dates.contains(new TimezonedDate(extended ? "2014-10-26T14:00:00" : "20141026T140000", date("2014-10-26 14:00:00"), property)));
+				assertTrue(dates.contains(new TimezonedDate(icalDate("2014-10-26T12:00:00"), property)));
+				assertTrue(dates.contains(new TimezonedDate(icalDate("2014-10-26T14:00:00"), property)));
 			}
 		};
 	}
@@ -551,8 +552,8 @@ public class RecurrenceDatesScribeTest {
 			public void check(RecurrenceDates property, ParseContext context) {
 				Collection<TimezonedDate> floating = context.getFloatingDates();
 				assertEquals(2, floating.size());
-				assertTrue(floating.contains(new TimezonedDate(extended ? "2014-10-26T12:00:00" : "20141026T120000", date("2014-10-26 12:00:00"), property)));
-				assertTrue(floating.contains(new TimezonedDate(extended ? "2014-10-26T14:00:00" : "20141026T140000", date("2014-10-26 14:00:00"), property)));
+				assertTrue(floating.contains(new TimezonedDate(icalDate("2014-10-26T12:00:00"), property)));
+				assertTrue(floating.contains(new TimezonedDate(icalDate("2014-10-26T14:00:00"), property)));
 
 				assertEquals(0, context.getTimezonedDates().size());
 			}
