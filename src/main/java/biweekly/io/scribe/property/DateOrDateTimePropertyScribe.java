@@ -1,12 +1,9 @@
 package biweekly.io.scribe.property;
 
-import java.util.TimeZone;
-
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
-import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -72,16 +69,7 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 	@Override
 	protected String _writeText(T property, WriteContext context) {
 		ICalDate value = property.getValue();
-		if (value == null) {
-			return "";
-		}
-
-		TimezoneInfo tzinfo = context.getTimezoneInfo();
-		boolean hasTime = value.hasTime();
-		boolean floating = tzinfo.isFloating(property);
-		TimeZone tz = tzinfo.getTimeZoneToWriteIn(property);
-		context.addDate(hasTime, floating, tz, value);
-		return date(value).time(hasTime).tz(floating, tz).write();
+		return date(value, property, context).extended(false).write();
 	}
 
 	@Override
@@ -94,15 +82,8 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 	protected void _writeXml(T property, XCalElement element, WriteContext context) {
 		ICalDataType dataType = dataType(property, null);
 		ICalDate value = property.getValue();
-		if (value == null) {
-			element.append(dataType, "");
-			return;
-		}
 
-		boolean hasTime = value.hasTime();
-		boolean floating = context.getTimezoneInfo().isFloating(property);
-		TimeZone tz = context.getTimezoneInfo().getTimeZoneToWriteIn(property);
-		String dateStr = date(value).time(hasTime).tz(floating, tz).extended(true).write();
+		String dateStr = date(value, property, context).extended(true).write();
 		element.append(dataType, dateStr);
 	}
 
@@ -123,14 +104,7 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 	@Override
 	protected JCalValue _writeJson(T property, WriteContext context) {
 		ICalDate value = property.getValue();
-		if (value == null) {
-			return JCalValue.single("");
-		}
-
-		boolean hasTime = value.hasTime();
-		boolean floating = context.getTimezoneInfo().isFloating(property);
-		TimeZone tz = context.getTimezoneInfo().getTimeZoneToWriteIn(property);
-		String dateStr = date(value).time(hasTime).tz(floating, tz).extended(true).write();
+		String dateStr = date(value, property, context).extended(true).write();
 		return JCalValue.single(dateStr);
 	}
 

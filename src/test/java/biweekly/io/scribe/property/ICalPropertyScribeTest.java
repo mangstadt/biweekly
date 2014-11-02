@@ -26,6 +26,7 @@ import biweekly.io.scribe.property.ICalPropertyScribeTest.TestProperty;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.util.ICalDate;
 import biweekly.util.ListMultimap;
 
 /*
@@ -192,32 +193,30 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	}
 
 	@Test
+	public void DateWriter_datetime_utc() {
+		String expected = "20130611T134302Z";
+		String actual = ICalPropertyScribe.date(datetime).utc(true).write();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void DateWriter_datetime_utc_extended() {
+		String expected = "2013-06-11T13:43:02Z";
+		String actual = ICalPropertyScribe.date(datetime).utc(true).extended(true).write();
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void DateWriter_date() {
 		String expected = "20130611";
-		String actual = ICalPropertyScribe.date(datetime).time(false).write();
+		String actual = ICalPropertyScribe.date(new ICalDate(datetime, false)).write();
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void DateWriter_date_extended() {
 		String expected = "2013-06-11";
-		String actual = ICalPropertyScribe.date(datetime).time(false).extended(true).write();
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void DateWriter_datetime_global_tzid() {
-		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
-		String expected = "20130611T154302";
-		String actual = ICalPropertyScribe.date(datetime).tzid(timezone.getID()).write();
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void DateWriter_datetime_global_tzid_extended() {
-		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
-		String expected = "2013-06-11T15:43:02";
-		String actual = ICalPropertyScribe.date(datetime).tzid(timezone.getID()).extended(true).write();
+		String actual = ICalPropertyScribe.date(new ICalDate(datetime, false)).extended(true).write();
 		assertEquals(expected, actual);
 	}
 
@@ -225,42 +224,22 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	public void DateWriter_datetime_timezone() {
 		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
 		String expected = "20130611T154302";
-		String actual = ICalPropertyScribe.date(datetime).tz(timezone).write();
+		String actual = ICalPropertyScribe.date(datetime).tz(false, timezone).write();
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void DateWriter_datetime_invalid_global_tzid() {
-		String expected = "20130611T134302Z";
-		String actual = ICalPropertyScribe.date(datetime).tzid("invalid/timezone").write();
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void DateWriter_datetime_tzid() {
-		String expected = "20130611T144302";
-		String actual = ICalPropertyScribe.date(datetime).tzid("some ID").write();
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void DateWriter_datetime_tzid_null() {
-		String expected = "20130611T134302Z";
-		String actual = ICalPropertyScribe.date(datetime).tzid(null).write();
+	public void DateWriter_datetime_timezone_extended() {
+		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
+		String expected = "2013-06-11T15:43:02";
+		String actual = ICalPropertyScribe.date(datetime).tz(false, timezone).extended(true).write();
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void DateWriter_datetime_local_time() {
 		String expected = "20130611T144302";
-		String actual = ICalPropertyScribe.date(datetime).floating(true).write();
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void DateWriter_datetime_local_time_false() {
-		String expected = "20130611T134302Z";
-		String actual = ICalPropertyScribe.date(datetime).floating(false).write(); //should ignore the method call
+		String actual = ICalPropertyScribe.date(datetime).tz(true, null).write();
 		assertEquals(expected, actual);
 	}
 

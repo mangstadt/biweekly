@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,7 +14,6 @@ import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
-import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -186,12 +184,8 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		if (count != null) {
 			sb.append('#').append(count);
 		} else if (until != null) {
-			TimezoneInfo tzinfo = context.getTimezoneInfo();
-			boolean hasTime = until.hasTime();
-			boolean floating = tzinfo.isFloating(property);
-			TimeZone tz = tzinfo.getTimeZoneToWriteIn(property);
-			context.addDate(hasTime, floating, tz, until);
-			sb.append(date(until).time(hasTime).tz(floating, tz).write());
+			String dateStr = date(until, property, context).extended(false).write();
+			sb.append(dateStr);
 		} else {
 			sb.append("#0");
 		}
@@ -773,15 +767,15 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			components.put(FREQ, recur.getFrequency().name());
 		}
 
-		if (recur.getUntil() != null) {
-			ICalDate value = recur.getUntil();
-			TimezoneInfo tzinfo = context.getTimezoneInfo();
-			boolean hasTime = value.hasTime();
-			boolean floating = tzinfo.isFloating(property);
-			TimeZone tz = tzinfo.getTimeZoneToWriteIn(property);
-			context.addDate(hasTime, floating, tz, value);
-			String s = date(value).time(hasTime).tz(floating, tz).extended(extended).write();
-			components.put(UNTIL, s);
+		ICalDate until = recur.getUntil();
+		if (until != null) {
+			String dateStr;
+			if (isInObservance(context)) {
+				dateStr = date(until).observance(true).extended(extended).write();
+			} else {
+				dateStr = date(until, property, context).extended(extended).write();
+			}
+			components.put(UNTIL, dateStr);
 		}
 
 		if (recur.getCount() != null) {

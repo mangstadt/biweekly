@@ -54,7 +54,7 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 		List<String> values = new ArrayList<String>(4);
 
 		Date start = property.getStart();
-		String value = (start == null) ? "" : date(start).write();
+		String value = date(start, property, context).extended(false).write();
 		values.add(value);
 
 		Duration snooze = property.getSnooze();

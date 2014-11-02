@@ -63,11 +63,7 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 		}
 
 		Date date = property.getDate();
-		if (date != null) {
-			return date(date).write();
-		}
-
-		return "";
+		return date(date, property, context).extended(false).write();
 	}
 
 	@Override
@@ -102,7 +98,8 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 
 		Date date = property.getDate();
 		if (date != null) {
-			element.append(ICalDataType.DATE_TIME, date(date).extended(true).write());
+			String dateStr = date(date, property, context).extended(true).write();
+			element.append(ICalDataType.DATE_TIME, dateStr);
 			return;
 		}
 
@@ -144,7 +141,8 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 
 		Date date = property.getDate();
 		if (date != null) {
-			return JCalValue.single(date(date).extended(true).write());
+			String dateStr = date(date, property, context).extended(true).write();
+			return JCalValue.single(dateStr);
 		}
 
 		return JCalValue.single("");

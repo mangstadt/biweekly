@@ -54,23 +54,25 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 	}
 
 	@Override
-	protected String _writeText(FreeBusy property, WriteContext context) {
+	protected String _writeText(final FreeBusy property, final WriteContext context) {
 		List<Period> values = property.getValues();
 
 		return list(values, new ListCallback<Period>() {
 			public String asString(Period period) {
 				StringBuilder sb = new StringBuilder();
 
-				if (period.getStartDate() != null) {
-					String date = date(period.getStartDate()).write();
-					sb.append(date);
+				Date start = period.getStartDate();
+				if (start != null) {
+					String dateStr = date(start, property, context).extended(false).write();
+					sb.append(dateStr);
 				}
 
 				sb.append('/');
 
-				if (period.getEndDate() != null) {
-					String date = date(period.getEndDate()).write();
-					sb.append(date);
+				Date end = period.getEndDate();
+				if (end != null) {
+					String dateStr = date(end, property, context).extended(false).write();
+					sb.append(dateStr);
 				} else if (period.getDuration() != null) {
 					sb.append(period.getDuration());
 				}
@@ -92,12 +94,14 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 
 			Date start = period.getStartDate();
 			if (start != null) {
-				periodElement.append("start", date(start).extended(true).write());
+				String dateStr = date(start, property, context).extended(true).write();
+				periodElement.append("start", dateStr);
 			}
 
 			Date end = period.getEndDate();
 			if (end != null) {
-				periodElement.append("end", date(end).extended(true).write());
+				String dateStr = date(end, property, context).extended(true).write();
+				periodElement.append("end", dateStr);
 			}
 
 			Duration duration = period.getDuration();
@@ -169,16 +173,18 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 		List<String> valuesStr = new ArrayList<String>();
 		for (Period period : values) {
 			StringBuilder sb = new StringBuilder();
-			if (period.getStartDate() != null) {
-				String date = date(period.getStartDate()).extended(true).write();
-				sb.append(date);
+			Date start = period.getStartDate();
+			if (start != null) {
+				String dateStr = date(start, property, context).extended(true).write();
+				sb.append(dateStr);
 			}
 
 			sb.append('/');
 
-			if (period.getEndDate() != null) {
-				String date = date(period.getEndDate()).extended(true).write();
-				sb.append(date);
+			Date end = period.getEndDate();
+			if (end != null) {
+				String dateStr = date(end, property, context).extended(true).write();
+				sb.append(dateStr);
 			} else if (period.getDuration() != null) {
 				sb.append(period.getDuration());
 			}

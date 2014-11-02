@@ -10,13 +10,11 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
-import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ExceptionDates;
-import biweekly.util.DateTimeComponents;
 import biweekly.util.ICalDate;
 
 /*
@@ -86,15 +84,10 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICa
 	@Override
 	protected String writeValue(ExceptionDates property, ICalDate value, WriteContext context) {
 		if (isInObservance(context)) {
-			DateTimeComponents components = value.getRawComponents();
-			if (components == null) {
-				return date(value).time(true).floating(true).extended(false).write();
-			}
-			return components.toString(true, false);
+			return date(value).observance(true).extended(false).write();
 		}
 
-		TimezoneInfo tzinfo = context.getTimezoneInfo();
-		return date(value).time(value.hasTime()).tz(tzinfo.isFloating(property), tzinfo.getTimeZoneToWriteIn(property)).write();
+		return date(value, property, context).extended(false).write();
 	}
 
 	@Override
@@ -121,23 +114,15 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICa
 
 		if (isInObservance(context)) {
 			for (ICalDate value : values) {
-				String valueStr;
-				DateTimeComponents components = value.getRawComponents();
-				if (components == null) {
-					valueStr = date(value).time(true).floating(true).extended(true).write();
-				} else {
-					valueStr = components.toString(true, true);
-				}
-
+				String valueStr = date(value).observance(true).extended(true).write();
 				element.append(DATE_TIME, valueStr);
 			}
 			return;
 		}
 
-		TimezoneInfo tzinfo = context.getTimezoneInfo();
 		for (ICalDate value : values) {
 			ICalDataType dataType = value.hasTime() ? DATE_TIME : DATE;
-			String dateStr = date(value).time(value.hasTime()).tz(tzinfo.isFloating(property), tzinfo.getTimeZoneToWriteIn(property)).extended(true).write();
+			String dateStr = date(value, property, context).extended(true).write();
 			element.append(dataType, dateStr);
 		}
 	}
@@ -172,22 +157,14 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICa
 		List<String> valuesStr = new ArrayList<String>();
 		if (isInObservance(context)) {
 			for (ICalDate value : values) {
-				String valueStr;
-				DateTimeComponents components = value.getRawComponents();
-				if (components == null) {
-					valueStr = date(value).time(true).floating(true).extended(true).write();
-				} else {
-					valueStr = components.toString(true, true);
-				}
-
+				String valueStr = date(value).observance(true).extended(true).write();
 				valuesStr.add(valueStr);
 			}
 			return JCalValue.multi(valuesStr);
 		}
 
-		TimezoneInfo tzinfo = context.getTimezoneInfo();
 		for (ICalDate value : values) {
-			String dateStr = date(value).time(value.hasTime()).tz(tzinfo.isFloating(property), tzinfo.getTimeZoneToWriteIn(property)).extended(true).write();
+			String dateStr = date(value, property, context).extended(true).write();
 			valuesStr.add(dateStr);
 		}
 		return JCalValue.multi(valuesStr);

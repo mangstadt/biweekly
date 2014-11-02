@@ -51,11 +51,7 @@ public abstract class DateTimePropertyScribe<T extends DateTimeProperty> extends
 	@Override
 	protected String _writeText(T property, WriteContext context) {
 		Date value = property.getValue();
-		if (value != null) {
-			return date(value).write(); //should always be in UTC time
-		}
-
-		return "";
+		return date(value).utc(true).extended(false).write();
 	}
 
 	@Override
@@ -66,14 +62,11 @@ public abstract class DateTimePropertyScribe<T extends DateTimeProperty> extends
 
 	@Override
 	protected void _writeXml(T property, XCalElement element, WriteContext context) {
-		String dateStr = null;
-
+		ICalDataType dataType = dataType(property, null);
 		Date value = property.getValue();
-		if (value != null) {
-			dateStr = date(value).extended(true).write(); //should always be in UTC time
-		}
+		String dateStr = date(value).utc(true).extended(true).write();
 
-		element.append(dataType(property, null), dateStr);
+		element.append(dataType, dateStr);
 	}
 
 	@Override
@@ -89,11 +82,8 @@ public abstract class DateTimePropertyScribe<T extends DateTimeProperty> extends
 	@Override
 	protected JCalValue _writeJson(T property, WriteContext context) {
 		Date value = property.getValue();
-		if (value != null) {
-			return JCalValue.single(date(value).extended(true).write());
-		}
-
-		return JCalValue.single("");
+		String dateStr = date(value).utc(true).extended(true).write();
+		return JCalValue.single(dateStr);
 	}
 
 	@Override

@@ -1037,15 +1037,6 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	}
 
 	/**
-	 * Formats a {@link Date} object as a string.
-	 * @param date the date
-	 * @return the factory object
-	 */
-	protected static DateWriter date(Date date) {
-		return new DateWriter(date);
-	}
-
-	/**
 	 * Factory class for parsing dates.
 	 */
 	protected static class DateParser {
@@ -1087,67 +1078,73 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	}
 
 	/**
+	 * Formats a date as a string.
+	 * @param date the date
+	 * @return the factory object
+	 */
+	protected static DateWriter date(Date date) {
+		return date((date == null) ? null : new ICalDate(date));
+	}
+
+	/**
+	 * Formats a date as a string.
+	 * @param date the date
+	 * @return the factory object
+	 */
+	protected static DateWriter date(ICalDate date) {
+		return new DateWriter(date);
+	}
+
+	protected static DateWriter date(Date date, ICalProperty property, WriteContext context) {
+		return date((date == null) ? null : new ICalDate(date), property, context);
+	}
+
+	protected static DateWriter date(ICalDate date, ICalProperty property, WriteContext context) {
+		TimezoneInfo tzinfo = context.getTimezoneInfo();
+		boolean floating = tzinfo.isFloating(property);
+		TimeZone tz = tzinfo.getTimeZoneToWriteIn(property);
+		context.addDate(date, floating, tz);
+
+		return date(date).tz(floating, tz);
+	}
+
+	/**
 	 * Factory class for writing dates.
 	 */
 	protected static class DateWriter {
-		private Date date;
-		private boolean hasTime = true;
+		private ICalDate date;
 		private TimeZone timezone;
+		private boolean observance = false;
 		private boolean extended = false;
+		private boolean utc = false;
 
 		/**
 		 * Creates a new date writer object.
 		 * @param date the date to format
 		 */
-		public DateWriter(Date date) {
+		public DateWriter(ICalDate date) {
 			this.date = date;
 		}
 
 		/**
-		 * Sets whether to output the date's time component.
-		 * @param hasTime true include the time, false if it's strictly a date
-		 * (defaults to "true")
+		 * Sets whether the property is within an observance or not.
+		 * @param observance true if it's in an observance, false if not
+		 * (defaults to false)
 		 * @return this
 		 */
-		public DateWriter time(boolean hasTime) {
-			this.hasTime = hasTime;
+		public DateWriter observance(boolean observance) {
+			this.observance = observance;
 			return this;
 		}
 
 		/**
-		 * Sets the ID of the timezone to format the date as (TZID parameter
-		 * value).
-		 * @param timezoneId the timezone ID. If the ID is global (contains a
-		 * "/" character), it will attempt to look up the timezone in Java's
-		 * timezone registry and format the date according to that timezone. If
-		 * the timezone is not found, the date will be formatted in UTC. If the
-		 * ID is not global, it will be formatted according to the JVM's default
-		 * timezone. If no timezone preference is specified, the date will be
-		 * formatted as UTC.
+		 * Sets whether to write the value in UTC or not.
+		 * @param utc true to write in UTC, false not to
 		 * @return this
 		 */
-		public DateWriter tzid(String timezoneId) {
-			if (timezoneId == null) {
-				return tz(null);
-			}
-
-			if (timezoneId.contains("/")) {
-				return tz(ICalDateFormat.parseTimeZoneId(timezoneId));
-			}
-
-			//TODO format according to the associated VTIMEZONE component
-			return tz(TimeZone.getDefault());
-		}
-
-		/**
-		 * Outputs the date in floating time (a non-UTC date whose property
-		 * doesn't have a TZID parameter). If no timezone preference is
-		 * specified, the date will be formatted as UTC.
-		 * @param floating true to use floating time, false not to
-		 * @return this
-		 */
-		public DateWriter floating(boolean floating) {
-			return floating ? tz(TimeZone.getDefault()) : this;
+		public DateWriter utc(boolean utc) {
+			this.utc = utc;
+			return this;
 		}
 
 		/**
@@ -1157,16 +1154,9 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		 * @return this
 		 */
 		public DateWriter tz(boolean floating, TimeZone timezone) {
-			return floating ? floating(true) : tz(timezone);
-		}
-
-		/**
-		 * Sets the timezone to format the date as. If no timezone preference is
-		 * specified, the date will be formatted as UTC.
-		 * @param timezone the timezone
-		 * @return this
-		 */
-		public DateWriter tz(TimeZone timezone) {
+			if (floating) {
+				timezone = TimeZone.getDefault();
+			}
 			this.timezone = timezone;
 			return this;
 		}
@@ -1187,9 +1177,28 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		 * @return the date string
 		 */
 		public String write() {
+			if (date == null) {
+				return "";
+			}
+
+			if (observance) {
+				DateTimeComponents components = date.getRawComponents();
+				if (components == null) {
+					ICalDateFormat format = extended ? ICalDateFormat.DATE_TIME_EXTENDED_WITHOUT_TZ : ICalDateFormat.DATE_TIME_BASIC_WITHOUT_TZ;
+					return format.format(date);
+				}
+
+				return components.toString(true, extended);
+			}
+
+			if (utc) {
+				ICalDateFormat format = extended ? ICalDateFormat.UTC_TIME_EXTENDED : ICalDateFormat.UTC_TIME_BASIC;
+				return format.format(date);
+			}
+
 			ICalDateFormat format;
 			TimeZone timezone = this.timezone;
-			if (hasTime) {
+			if (date.hasTime()) {
 				if (timezone == null) {
 					format = extended ? ICalDateFormat.UTC_TIME_EXTENDED : ICalDateFormat.UTC_TIME_BASIC;
 				} else {

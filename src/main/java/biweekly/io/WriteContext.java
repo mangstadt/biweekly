@@ -7,6 +7,7 @@ import java.util.TimeZone;
 
 import biweekly.ICalVersion;
 import biweekly.component.ICalComponent;
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -92,17 +93,13 @@ public class WriteContext {
 	/**
 	 * Records the timezoned date-time values that are being written. This is
 	 * used to generate a DAYLIGHT property for vCalendar objects.
-	 * @param hasTime true if the date has a time component, false if it's
-	 * strictly a date
 	 * @param floating true if the date is floating, false if not
 	 * @param tz the timezone to format the date in or null for UTC
 	 * @param date the date value
 	 */
-	public void addDate(boolean hasTime, boolean floating, TimeZone tz, Date date) {
-		if (!hasTime || floating || tz == null) {
-			return;
+	public void addDate(ICalDate date, boolean floating, TimeZone tz) {
+		if (date != null && date.hasTime() && !floating && tz != null) {
+			dates.add(date);
 		}
-
-		dates.add(date);
 	}
 }
