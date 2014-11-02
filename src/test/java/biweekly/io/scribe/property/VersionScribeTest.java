@@ -37,13 +37,14 @@ import biweekly.util.VersionNumber;
 /**
  * @author Michael Angstadt
  */
-public class VersionScribeTest {
-	private final VersionScribe marshaller = new VersionScribe();
-	private final Sensei<Version> sensei = new Sensei<Version>(marshaller);
-
+public class VersionScribeTest extends ScribeTest<Version> {
 	private final Version withMinMax = new Version("1.0", "2.0");
 	private final Version withMax = new Version("2.0");
 	private final Version empty = new Version((String) null);
+
+	public VersionScribeTest() {
+		super(new VersionScribe());
+	}
 
 	@Test
 	public void writeText_min_max() {

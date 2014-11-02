@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.ICalVersion;
@@ -26,7 +25,6 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.json.JsonValue;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.RecurrenceProperty;
-import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.ICalDate;
 import biweekly.util.ListMultimap;
 import biweekly.util.Recurrence;
@@ -62,13 +60,7 @@ import biweekly.util.Recurrence.Frequency;
 /**
  * @author Michael Angstadt
  */
-public class RecurrencePropertyScribeTest {
-	@ClassRule
-	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
-
-	private final RecurrencePropertyMarshallerImpl marshaller = new RecurrencePropertyMarshallerImpl();
-	private final Sensei<RecurrenceProperty> sensei = new Sensei<RecurrenceProperty>(marshaller);
-
+public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty> {
 	private final ICalDate date = new ICalDate(date("2013-06-11"), false);
 	private final String dateStr = "20130611";
 	private final String dateStrExt = "2013-06-11";
@@ -138,6 +130,10 @@ public class RecurrencePropertyScribeTest {
 	private final RecurrenceProperty withUntilDate = new RecurrenceProperty(new Recurrence.Builder(Frequency.WEEKLY).until(date).build());
 	private final RecurrenceProperty withUntilDateTime = new RecurrenceProperty(new Recurrence.Builder(Frequency.WEEKLY).until(datetime).build());
 	private final RecurrenceProperty empty = new RecurrenceProperty(null);
+
+	public RecurrencePropertyScribeTest() {
+		super(new RecurrencePropertyMarshallerImpl());
+	}
 
 	@Test
 	public void writeText_vcal() throws Exception {
@@ -873,7 +869,7 @@ public class RecurrencePropertyScribeTest {
 		sensei.assertParseJson("").run(emptyCheck);
 	}
 
-	private static class RecurrencePropertyMarshallerImpl extends RecurrencePropertyScribe<RecurrenceProperty> {
+	public static class RecurrencePropertyMarshallerImpl extends RecurrencePropertyScribe<RecurrenceProperty> {
 		public RecurrencePropertyMarshallerImpl() {
 			super(RecurrenceProperty.class, "RECURRENCE");
 		}

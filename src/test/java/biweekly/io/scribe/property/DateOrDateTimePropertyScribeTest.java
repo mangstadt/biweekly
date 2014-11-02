@@ -9,18 +9,17 @@ import static org.junit.Assert.assertTrue;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.component.VTimezone;
 import biweekly.io.ParseContext;
 import biweekly.io.TimezoneInfo;
+import biweekly.io.scribe.property.DateOrDateTimePropertyScribeTest.DateOrDateTimePropertyImpl;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.io.scribe.property.Sensei.WriteTest;
 import biweekly.property.DateOrDateTimeProperty;
 import biweekly.util.DateTimeComponents;
-import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.ICalDate;
 
 /*
@@ -51,13 +50,7 @@ import biweekly.util.ICalDate;
 /**
  * @author Michael Angstadt
  */
-public class DateOrDateTimePropertyScribeTest {
-	@ClassRule
-	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
-
-	private final DateOrDateTimePropertyMarshallerImpl scribe = new DateOrDateTimePropertyMarshallerImpl();
-	private final Sensei<DateOrDateTimePropertyImpl> sensei = new Sensei<DateOrDateTimePropertyImpl>(scribe);
-
+public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimePropertyImpl> {
 	private final Date date = date("2013-06-11");
 	private final String dateStr = "20130611";
 	private final String dateStrExt = "2013-06-11";
@@ -80,6 +73,10 @@ public class DateOrDateTimePropertyScribeTest {
 		TimeZone tz = buildTimezone(-2, 0);
 		timezoneGlobal.assign(new VTimezone("id"), tz);
 		timezoneGlobal.setDefaultTimeZone(tz);
+	}
+
+	public DateOrDateTimePropertyScribeTest() {
+		super(new DateOrDateTimePropertyMarshallerImpl());
 	}
 
 	@Test
@@ -220,7 +217,7 @@ public class DateOrDateTimePropertyScribeTest {
 		test.tz(tzinfo).run(minusOne);
 	}
 
-	private class DateOrDateTimePropertyMarshallerImpl extends DateOrDateTimePropertyScribe<DateOrDateTimePropertyImpl> {
+	public static class DateOrDateTimePropertyMarshallerImpl extends DateOrDateTimePropertyScribe<DateOrDateTimePropertyImpl> {
 		public DateOrDateTimePropertyMarshallerImpl() {
 			super(DateOrDateTimePropertyImpl.class, "DATE-OR-DATETIME");
 		}
@@ -231,7 +228,7 @@ public class DateOrDateTimePropertyScribeTest {
 		}
 	}
 
-	private class DateOrDateTimePropertyImpl extends DateOrDateTimeProperty {
+	public static class DateOrDateTimePropertyImpl extends DateOrDateTimeProperty {
 		public DateOrDateTimePropertyImpl(Date value, boolean hasTime) {
 			super(value, hasTime);
 		}

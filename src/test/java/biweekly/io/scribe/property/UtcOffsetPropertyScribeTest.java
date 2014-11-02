@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
+import biweekly.io.scribe.property.UtcOffsetPropertyScribeTest.UtcOffsetPropertyImpl;
 import biweekly.property.UtcOffsetProperty;
 import biweekly.util.UtcOffset;
 
@@ -37,12 +38,13 @@ import biweekly.util.UtcOffset;
 /**
  * @author Michael Angstadt
  */
-public class UtcOffsetPropertyScribeTest {
-	private final UtcOffsetPropertyMarshallerImpl marshaller = new UtcOffsetPropertyMarshallerImpl();
-	private final Sensei<UtcOffsetPropertyImpl> sensei = new Sensei<UtcOffsetPropertyImpl>(marshaller);
-
+public class UtcOffsetPropertyScribeTest extends ScribeTest<UtcOffsetPropertyImpl> {
 	private final UtcOffsetPropertyImpl withValue = new UtcOffsetPropertyImpl(new UtcOffset(1, 30));
 	private final UtcOffsetPropertyImpl empty = new UtcOffsetPropertyImpl(null);
+
+	public UtcOffsetPropertyScribeTest() {
+		super(new UtcOffsetPropertyMarshallerImpl());
+	}
 
 	@Test
 	public void writeText() {
@@ -82,7 +84,7 @@ public class UtcOffsetPropertyScribeTest {
 		sensei.assertParseJson("").cannotParse();
 	}
 
-	private class UtcOffsetPropertyMarshallerImpl extends UtcOffsetPropertyScribe<UtcOffsetPropertyImpl> {
+	public static class UtcOffsetPropertyMarshallerImpl extends UtcOffsetPropertyScribe<UtcOffsetPropertyImpl> {
 		public UtcOffsetPropertyMarshallerImpl() {
 			super(UtcOffsetPropertyImpl.class, "UTC");
 		}
@@ -93,7 +95,7 @@ public class UtcOffsetPropertyScribeTest {
 		}
 	}
 
-	private class UtcOffsetPropertyImpl extends UtcOffsetProperty {
+	public static class UtcOffsetPropertyImpl extends UtcOffsetProperty {
 		public UtcOffsetPropertyImpl(UtcOffset offset) {
 			super(offset);
 		}

@@ -5,13 +5,12 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
 
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.io.ParseContext;
+import biweekly.io.scribe.property.DateTimePropertyScribeTest.DateTimePropertyImpl;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.DateTimeProperty;
-import biweekly.util.DefaultTimezoneRule;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -41,19 +40,17 @@ import biweekly.util.DefaultTimezoneRule;
 /**
  * @author Michael Angstadt
  */
-public class DateTimePropertyScribeTest {
-	@ClassRule
-	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
-
-	private final DateTimePropertyMarshallerImpl marshaller = new DateTimePropertyMarshallerImpl();
-	private final Sensei<DateTimePropertyImpl> sensei = new Sensei<DateTimePropertyImpl>(marshaller);
-
+public class DateTimePropertyScribeTest extends ScribeTest<DateTimePropertyImpl> {
 	private final Date datetime = date("2013-06-11 13:43:02");
 	private final String datetimeStr = "20130611T124302Z";
 	private final String datetimeStrExt = "2013-06-11T12:43:02Z";
 
 	private final DateTimePropertyImpl withDateTime = new DateTimePropertyImpl(datetime);
 	private final DateTimePropertyImpl empty = new DateTimePropertyImpl(null);
+
+	public DateTimePropertyScribeTest() {
+		super(new DateTimePropertyMarshallerImpl());
+	}
 
 	@Test
 	public void writeText() {
@@ -94,7 +91,7 @@ public class DateTimePropertyScribeTest {
 		sensei.assertParseJson("").cannotParse();
 	}
 
-	private class DateTimePropertyMarshallerImpl extends DateTimePropertyScribe<DateTimePropertyImpl> {
+	public static class DateTimePropertyMarshallerImpl extends DateTimePropertyScribe<DateTimePropertyImpl> {
 		public DateTimePropertyMarshallerImpl() {
 			super(DateTimePropertyImpl.class, "DATETIME");
 		}
@@ -105,7 +102,7 @@ public class DateTimePropertyScribeTest {
 		}
 	}
 
-	private class DateTimePropertyImpl extends DateTimeProperty {
+	public static class DateTimePropertyImpl extends DateTimeProperty {
 		public DateTimePropertyImpl(Date value) {
 			super(value);
 		}

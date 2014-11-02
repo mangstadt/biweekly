@@ -7,14 +7,12 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.io.ParseContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.FreeBusy;
-import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.Duration;
 import biweekly.util.Period;
 
@@ -46,13 +44,7 @@ import biweekly.util.Period;
 /**
  * @author Michael Angstadt
  */
-public class FreeBusyScribeTest {
-	@ClassRule
-	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
-
-	private final FreeBusyScribe marshaller = new FreeBusyScribe();
-	private final Sensei<FreeBusy> sensei = new Sensei<FreeBusy>(marshaller);
-
+public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 	private final Date start = date("2013-06-11 13:43:02");
 	private final String startStr = "20130611T124302Z";
 	private final String startStrExt = "2013-06-11T12:43:02Z";
@@ -80,6 +72,10 @@ public class FreeBusyScribeTest {
 		withSingle.addValue(start, end);
 	}
 	private final FreeBusy empty = new FreeBusy();
+
+	public FreeBusyScribeTest() {
+		super(new FreeBusyScribe());
+	}
 
 	@Test
 	public void writeText() {

@@ -37,9 +37,10 @@ import biweekly.property.Status;
 /**
  * @author Michael Angstadt
  */
-public class StatusScribeTest {
-	private final StatusScribe scribe = new StatusScribe();
-	private final Sensei<Status> sensei = new Sensei<Status>(scribe);
+public class StatusScribeTest extends ScribeTest<Status> {
+	public StatusScribeTest() {
+		super(new StatusScribe());
+	}
 
 	@Test
 	public void writeText_needsAction() {

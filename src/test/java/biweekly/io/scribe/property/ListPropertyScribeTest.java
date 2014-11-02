@@ -11,6 +11,7 @@ import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
+import biweekly.io.scribe.property.ListPropertyScribeTest.ListPropertyImpl;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ListProperty;
@@ -43,9 +44,10 @@ import biweekly.property.ListProperty;
 /**
  * @author Michael Angstadt
  */
-public class ListPropertyScribeTest {
-	private final ListPropertyMarshallerImpl marshaller = new ListPropertyMarshallerImpl();
-	private final Sensei<ListPropertyImpl> sensei = new Sensei<ListPropertyImpl>(marshaller);
+public class ListPropertyScribeTest extends ScribeTest<ListPropertyImpl> {
+	public ListPropertyScribeTest() {
+		super(new ListPropertyMarshallerImpl());
+	}
 
 	private final ListPropertyImpl withMultiple = new ListPropertyImpl();
 	{
@@ -130,7 +132,7 @@ public class ListPropertyScribeTest {
 		sensei.assertParseJson("").run(has(""));
 	}
 
-	private class ListPropertyMarshallerImpl extends ListPropertyScribe<ListPropertyImpl, String> {
+	public static class ListPropertyMarshallerImpl extends ListPropertyScribe<ListPropertyImpl, String> {
 		public ListPropertyMarshallerImpl() {
 			super(ListPropertyImpl.class, "LIST");
 		}
@@ -155,7 +157,7 @@ public class ListPropertyScribeTest {
 		}
 	}
 
-	private class ListPropertyImpl extends ListProperty<String> {
+	public static class ListPropertyImpl extends ListProperty<String> {
 		//empty
 	}
 

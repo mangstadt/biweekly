@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.io.ParseContext;
@@ -22,7 +21,6 @@ import biweekly.io.ParseContext.TimezonedDate;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.ExceptionDates;
-import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.ICalDate;
 import biweekly.util.ListMultimap;
 
@@ -54,13 +52,7 @@ import biweekly.util.ListMultimap;
 /**
  * @author Michael Angstadt
  */
-public class ExceptionDatesScribeTest {
-	@ClassRule
-	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
-
-	private final ExceptionDatesScribe scribe = new ExceptionDatesScribe();
-	private final Sensei<ExceptionDates> sensei = new Sensei<ExceptionDates>(scribe);
-
+public class ExceptionDatesScribeTest extends ScribeTest<ExceptionDates> {
 	private final ICalDate date1 = new ICalDate(date("2013-06-11"), false);
 	private final String date1Str = "20130611";
 	private final String date1StrExt = "2013-06-11";
@@ -88,6 +80,10 @@ public class ExceptionDatesScribeTest {
 		withDates.addValue(date2);
 	}
 	private final ExceptionDates empty = new ExceptionDates();
+
+	public ExceptionDatesScribeTest() {
+		super(new ExceptionDatesScribe());
+	}
 
 	@Test
 	public void dataType() {

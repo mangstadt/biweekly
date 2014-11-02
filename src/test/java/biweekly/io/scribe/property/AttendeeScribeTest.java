@@ -43,10 +43,7 @@ import biweekly.property.Attendee;
 /**
  * @author Michael Angstadt
  */
-public class AttendeeScribeTest {
-	private final AttendeeScribe scribe = new AttendeeScribe();
-	private final Sensei<Attendee> sensei = new Sensei<Attendee>(scribe);
-
+public class AttendeeScribeTest extends ScribeTest<Attendee> {
 	private final String name = "John Doe";
 	private final String email = "jdoe@example.com";
 	private final String uri = "http://example.com/jdoe";
@@ -61,6 +58,10 @@ public class AttendeeScribeTest {
 	private final Attendee withRoleUri = new Attendee(uri);
 	{
 		withRoleUri.setRole(Role.ATTENDEE);
+	}
+
+	public AttendeeScribeTest() {
+		super(new AttendeeScribe());
 	}
 
 	@Test

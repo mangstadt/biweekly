@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
@@ -23,10 +22,10 @@ import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.ICalPropertyScribe.SemiStructuredIterator;
 import biweekly.io.scribe.property.ICalPropertyScribe.StructuredIterator;
+import biweekly.io.scribe.property.ICalPropertyScribeTest.TestProperty;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.ListMultimap;
 
 /*
@@ -57,14 +56,12 @@ import biweekly.util.ListMultimap;
 /**
  * @author Michael Angstadt
  */
-public class ICalPropertyScribeTest {
-	@ClassRule
-	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
-
-	private final ICalPropertyMarshallerImpl marshaller = new ICalPropertyMarshallerImpl();
-	private final Sensei<TestProperty> sensei = new Sensei<TestProperty>(marshaller);
-
+public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	private final Date datetime = date("2013-06-11 14:43:02");
+
+	public ICalPropertyScribeTest() {
+		super(new ICalPropertyMarshallerImpl());
+	}
 
 	@Test
 	public void unescape() {
@@ -434,7 +431,7 @@ public class ICalPropertyScribeTest {
 	@Test
 	public void prepareParameters() {
 		TestProperty property = new TestProperty("value");
-		ICalParameters copy = marshaller.prepareParameters(property, null);
+		ICalParameters copy = scribe.prepareParameters(property, null);
 
 		assertFalse(property.getParameters() == copy);
 		assertEquals("value", copy.first("PARAM"));
@@ -579,7 +576,7 @@ public class ICalPropertyScribeTest {
 		}
 	}
 
-	private class ICalPropertyMarshallerImpl extends ICalPropertyScribe<TestProperty> {
+	public static class ICalPropertyMarshallerImpl extends ICalPropertyScribe<TestProperty> {
 		private ICalPropertyMarshallerImpl() {
 			super(TestProperty.class, "TEST", ICalDataType.TEXT);
 		}
@@ -603,7 +600,7 @@ public class ICalPropertyScribeTest {
 		}
 	}
 
-	private class TestProperty extends ICalProperty {
+	public static class TestProperty extends ICalProperty {
 		public String value;
 		public ICalDataType parsedDataType;
 

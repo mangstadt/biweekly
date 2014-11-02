@@ -43,10 +43,7 @@ import biweekly.util.org.apache.commons.codec.binary.Base64;
 /**
  * @author Michael Angstadt
  */
-public class AudioAlarmScribeTest {
-	private final AudioAlarmScribe scribe = new AudioAlarmScribe();
-	private final Sensei<AudioAlarm> sensei = new Sensei<AudioAlarm>(scribe);
-
+public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 	private final Date start = date("2014-01-01 01:00:00 +0000");
 
 	private final AudioAlarm empty = new AudioAlarm();
@@ -84,6 +81,10 @@ public class AudioAlarmScribeTest {
 		withData.setSnooze(new Duration.Builder().minutes(10).build());
 		withData.setStart(start);
 		withData.setData(data);
+	}
+
+	public AudioAlarmScribeTest() {
+		super(new AudioAlarmScribe());
 	}
 
 	@Test

@@ -8,6 +8,7 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
+import biweekly.io.scribe.property.TextPropertyScribeTest.TextPropertyImpl;
 import biweekly.property.TextProperty;
 
 /*
@@ -38,13 +39,14 @@ import biweekly.property.TextProperty;
 /**
  * @author Michael Angstadt
  */
-public class TextPropertyScribeTest {
-	private final TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl();
-	private final Sensei<TextPropertyImpl> sensei = new Sensei<TextPropertyImpl>(marshaller);
-
+public class TextPropertyScribeTest extends ScribeTest<TextPropertyImpl> {
 	private final String value = "the;text";
 	private final TextPropertyImpl withValue = new TextPropertyImpl(value);
 	private final TextPropertyImpl empty = new TextPropertyImpl(null);
+
+	public TextPropertyScribeTest() {
+		super(new TextPropertyMarshallerImpl());
+	}
 
 	@Test
 	public void writeText() {
@@ -100,7 +102,7 @@ public class TextPropertyScribeTest {
 		sensei.assertParseJson("").run(has(""));
 	}
 
-	private class TextPropertyMarshallerImpl extends TextPropertyScribe<TextPropertyImpl> {
+	public static class TextPropertyMarshallerImpl extends TextPropertyScribe<TextPropertyImpl> {
 		public TextPropertyMarshallerImpl() {
 			super(TextPropertyImpl.class, "TEXT");
 		}
@@ -115,7 +117,7 @@ public class TextPropertyScribeTest {
 		}
 	}
 
-	private class TextPropertyImpl extends TextProperty {
+	public static class TextPropertyImpl extends TextProperty {
 		public TextPropertyImpl(String value) {
 			super(value);
 		}

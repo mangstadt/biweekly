@@ -40,12 +40,13 @@ import biweekly.property.IntegerProperty;
 /**
  * @author Michael Angstadt
  */
-public class IntegerPropertyScribeTest {
-	private final IntegerPropertyMarshallerImpl marshaller = new IntegerPropertyMarshallerImpl();
-	private final Sensei<IntegerProperty> sensei = new Sensei<IntegerProperty>(marshaller);
-
+public class IntegerPropertyScribeTest extends ScribeTest<IntegerProperty> {
 	private final IntegerProperty withValue = new IntegerProperty(5);
 	private final IntegerProperty empty = new IntegerProperty(null);
+
+	public IntegerPropertyScribeTest() {
+		super(new IntegerPropertyMarshallerImpl());
+	}
 
 	@Test
 	public void writeText() {
@@ -87,7 +88,7 @@ public class IntegerPropertyScribeTest {
 		sensei.assertParseJson("").run(has(null));
 	}
 
-	private class IntegerPropertyMarshallerImpl extends IntegerPropertyScribe<IntegerProperty> {
+	public static class IntegerPropertyMarshallerImpl extends IntegerPropertyScribe<IntegerProperty> {
 		public IntegerPropertyMarshallerImpl() {
 			super(IntegerProperty.class, "INT");
 		}

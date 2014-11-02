@@ -42,10 +42,7 @@ import biweekly.property.ListProperty;
 /**
  * @author Michael Angstadt
  */
-public class TextListPropertyScribeTest {
-	private final TextListPropertyMarshallerImpl marshaller = new TextListPropertyMarshallerImpl();
-	private final Sensei<ListPropertyImpl> sensei = new Sensei<ListPropertyImpl>(marshaller);
-
+public class TextListPropertyScribeTest extends ScribeTest<biweekly.io.scribe.property.TextListPropertyScribeTest.ListPropertyImpl> {
 	private final ListPropertyImpl withMultiple = new ListPropertyImpl();
 	{
 		withMultiple.addValue("one");
@@ -57,6 +54,10 @@ public class TextListPropertyScribeTest {
 		withSingle.addValue("one");
 	}
 	private final ListPropertyImpl empty = new ListPropertyImpl();
+
+	public TextListPropertyScribeTest() {
+		super(new TextListPropertyMarshallerImpl());
+	}
 
 	@Test
 	public void writeText() {
@@ -106,7 +107,7 @@ public class TextListPropertyScribeTest {
 		sensei.assertParseJson("").run(has(""));
 	}
 
-	private class TextListPropertyMarshallerImpl extends TextListPropertyScribe<ListPropertyImpl> {
+	public static class TextListPropertyMarshallerImpl extends TextListPropertyScribe<ListPropertyImpl> {
 		public TextListPropertyMarshallerImpl() {
 			super(ListPropertyImpl.class, "LIST");
 		}
@@ -117,7 +118,7 @@ public class TextListPropertyScribeTest {
 		}
 	}
 
-	private class ListPropertyImpl extends ListProperty<String> {
+	public static class ListPropertyImpl extends ListProperty<String> {
 		//empty
 	}
 

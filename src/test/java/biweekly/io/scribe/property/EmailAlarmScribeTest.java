@@ -40,10 +40,7 @@ import biweekly.util.Duration;
 /**
  * @author Michael Angstadt
  */
-public class EmailAlarmScribeTest {
-	private final EmailAlarmScribe scribe = new EmailAlarmScribe();
-	private final Sensei<EmailAlarm> sensei = new Sensei<EmailAlarm>(scribe);
-
+public class EmailAlarmScribeTest extends ScribeTest<EmailAlarm> {
 	private final Date start = date("2014-01-01 01:00:00 +0000");
 
 	private final EmailAlarm empty = new EmailAlarm(null);
@@ -63,6 +60,10 @@ public class EmailAlarmScribeTest {
 		withValue.setRepeat(5);
 		withValue.setSnooze(new Duration.Builder().minutes(10).build());
 		withValue.setStart(start);
+	}
+
+	public EmailAlarmScribeTest() {
+		super(new EmailAlarmScribe());
 	}
 
 	@Test

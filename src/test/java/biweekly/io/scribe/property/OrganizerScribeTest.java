@@ -37,10 +37,7 @@ import biweekly.property.Organizer;
 /**
  * @author Michael Angstadt
  */
-public class OrganizerScribeTest {
-	private final OrganizerScribe scribe = new OrganizerScribe();
-	private final Sensei<Organizer> sensei = new Sensei<Organizer>(scribe);
-
+public class OrganizerScribeTest extends ScribeTest<Organizer> {
 	private final String name = "John Doe";
 	private final String email = "jdoe@example.com";
 	private final String uri = "http://example.com/jdoe";
@@ -50,6 +47,10 @@ public class OrganizerScribeTest {
 	private final Organizer withNameEmailUri = new Organizer(name, email);
 	{
 		withNameEmailUri.setUri(uri);
+	}
+
+	public OrganizerScribeTest() {
+		super(new OrganizerScribe());
 	}
 
 	@Test

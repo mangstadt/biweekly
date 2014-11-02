@@ -37,15 +37,16 @@ import biweekly.util.Duration;
 /**
  * @author Michael Angstadt
  */
-public class DurationPropertyScribeTest {
-	private final DurationPropertyScribe marshaller = new DurationPropertyScribe();
-	private final Sensei<DurationProperty> sensei = new Sensei<DurationProperty>(marshaller);
-
+public class DurationPropertyScribeTest extends ScribeTest<DurationProperty> {
 	private final Duration duration = Duration.builder().hours(1).minutes(30).build();
 	private final String durationStr = duration.toString();
 
 	private final DurationProperty withDuration = new DurationProperty(duration);
 	private final DurationProperty empty = new DurationProperty(null);
+
+	public DurationPropertyScribeTest() {
+		super(new DurationPropertyScribe());
+	}
 
 	@Test
 	public void writeText() {

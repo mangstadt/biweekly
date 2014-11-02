@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.component.Observance;
@@ -29,7 +28,6 @@ import biweekly.io.TimezoneInfo;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.RecurrenceDates;
-import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.Duration;
 import biweekly.util.ICalDate;
 import biweekly.util.ListMultimap;
@@ -63,13 +61,7 @@ import biweekly.util.Period;
 /**
  * @author Michael Angstadt
  */
-public class RecurrenceDatesScribeTest {
-	@ClassRule
-	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
-
-	private final RecurrenceDatesScribe marshaller = new RecurrenceDatesScribe();
-	private final Sensei<RecurrenceDates> sensei = new Sensei<RecurrenceDates>(marshaller);
-
+public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 	private final Date startDate = date("2013-06-11");
 	private final String startDateStr = "20130611";
 	private final String startDateStrExt = "2013-06-11";
@@ -138,6 +130,10 @@ public class RecurrenceDatesScribeTest {
 	}
 
 	private final RecurrenceDates empty = new RecurrenceDates();
+
+	public RecurrenceDatesScribeTest() {
+		super(new RecurrenceDatesScribe());
+	}
 
 	@Test
 	public void dataType() {

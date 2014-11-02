@@ -13,6 +13,7 @@ import org.junit.Test;
 import biweekly.ICalDataType;
 import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
+import biweekly.io.scribe.property.VCalAlarmPropertyScribeTest.VCalAlarmPropertyImpl;
 import biweekly.property.VCalAlarmProperty;
 import biweekly.util.Duration;
 
@@ -44,10 +45,7 @@ import biweekly.util.Duration;
 /**
  * @author Michael Angstadt
  */
-public class VCalAlarmPropertyScribeTest {
-	private final VCalAlarmPropertyScribe<VCalAlarmPropertyImpl> scribe = new VCalAlarmPropertyScribeImpl();
-	private final Sensei<VCalAlarmPropertyImpl> sensei = new Sensei<VCalAlarmPropertyImpl>(scribe);
-
+public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImpl> {
 	private final Date start = date("2014-01-01 01:00:00 +0000");
 
 	private final VCalAlarmPropertyImpl empty = new VCalAlarmPropertyImpl();
@@ -56,6 +54,10 @@ public class VCalAlarmPropertyScribeTest {
 		withValues.setRepeat(5);
 		withValues.setSnooze(new Duration.Builder().minutes(10).build());
 		withValues.setStart(start);
+	}
+
+	public VCalAlarmPropertyScribeTest() {
+		super(new VCalAlarmPropertyScribeImpl());
 	}
 
 	@Test
@@ -82,7 +84,7 @@ public class VCalAlarmPropertyScribeTest {
 		};
 	}
 
-	private static class VCalAlarmPropertyImpl extends VCalAlarmProperty {
+	public static class VCalAlarmPropertyImpl extends VCalAlarmProperty {
 		private final List<String> dataValues;
 
 		public VCalAlarmPropertyImpl(String... dataValues) {
@@ -90,7 +92,7 @@ public class VCalAlarmPropertyScribeTest {
 		}
 	}
 
-	private static class VCalAlarmPropertyScribeImpl extends VCalAlarmPropertyScribe<VCalAlarmPropertyImpl> {
+	public static class VCalAlarmPropertyScribeImpl extends VCalAlarmPropertyScribe<VCalAlarmPropertyImpl> {
 		public VCalAlarmPropertyScribeImpl() {
 			super(VCalAlarmPropertyImpl.class, "NAME", null);
 		}

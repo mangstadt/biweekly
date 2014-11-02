@@ -42,10 +42,7 @@ import biweekly.util.XmlUtils;
 /**
  * @author Michael Angstadt
  */
-public class XmlScribeTest {
-	private final XmlScribe marshaller = new XmlScribe();
-	private final Sensei<Xml> sensei = new Sensei<Xml>(marshaller);
-
+public class XmlScribeTest extends ScribeTest<Xml> {
 	private final String xml = "<element xmlns=\"http://example.com\">text</element>";
 	private final Document value;
 	{
@@ -58,6 +55,10 @@ public class XmlScribeTest {
 
 	private final Xml withValue = new Xml(value);
 	private final Xml empty = new Xml((Document) null);
+
+	public XmlScribeTest() {
+		super(new XmlScribe());
+	}
 
 	@Test
 	public void writeText() {
@@ -80,7 +81,7 @@ public class XmlScribeTest {
 	@Test
 	public void parseXml() {
 		ParseContext context = new ParseContext();
-		Xml prop = marshaller.parseXml(XmlUtils.getRootElement(value), new ICalParameters(), context);
+		Xml prop = scribe.parseXml(XmlUtils.getRootElement(value), new ICalParameters(), context);
 
 		assertXMLEqual(value, prop.getValue());
 		assertWarnings(0, context.getWarnings());
@@ -104,7 +105,7 @@ public class XmlScribeTest {
 		ICalParameters parameters = new ICalParameters();
 		parameters.put("x-foo", "value");
 		ParseContext context = new ParseContext();
-		Xml prop = marshaller.parseXml(XmlUtils.getRootElement(doc), parameters, context);
+		Xml prop = scribe.parseXml(XmlUtils.getRootElement(doc), parameters, context);
 
 		assertXMLEqual(value, prop.getValue());
 		assertWarnings(0, context.getWarnings());

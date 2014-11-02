@@ -41,10 +41,7 @@ import biweekly.util.org.apache.commons.codec.binary.Base64;
 /**
  * @author Michael Angstadt
  */
-public class AttachmentScribeTest {
-	private final AttachmentScribe marshaller = new AttachmentScribe();
-	private final Sensei<Attachment> sensei = new Sensei<Attachment>(marshaller);
-
+public class AttachmentScribeTest extends ScribeTest<Attachment> {
 	private final String formatType = "image/png";
 	private final String url = "http://example.com/image.png";
 	private final byte[] data = "data".getBytes();
@@ -58,6 +55,10 @@ public class AttachmentScribeTest {
 		withContentId.setContentId(contentId);
 	}
 	private final Attachment empty = new Attachment(null, (String) null);
+
+	public AttachmentScribeTest() {
+		super(new AttachmentScribe());
+	}
 
 	@Test
 	public void prepareParameters() {

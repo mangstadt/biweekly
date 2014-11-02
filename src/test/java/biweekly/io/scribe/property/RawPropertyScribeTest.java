@@ -37,12 +37,13 @@ import biweekly.property.RawProperty;
 /**
  * @author Michael Angstadt
  */
-public class RawPropertyScribeTest {
-	private final RawPropertyScribe marshaller = new RawPropertyScribe("RAW");
-	private final Sensei<RawProperty> sensei = new Sensei<RawProperty>(marshaller);
-
+public class RawPropertyScribeTest extends ScribeTest<RawProperty> {
 	private final RawProperty withValue = new RawProperty("RAW", "value");
 	private final RawProperty empty = new RawProperty("RAW", null);
+
+	public RawPropertyScribeTest() {
+		super(new RawPropertyScribe("RAW"));
+	}
 
 	@Test
 	public void writeText() {

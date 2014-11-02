@@ -39,15 +39,16 @@ import biweekly.property.Geo;
 /**
  * @author Michael Angstadt
  */
-public class GeoScribeTest {
-	private final GeoScribe marshaller = new GeoScribe();
-	private final Sensei<Geo> sensei = new Sensei<Geo>(marshaller);
-
+public class GeoScribeTest extends ScribeTest<Geo> {
 	private final Geo withBoth = new Geo(12.34, 56.78);
 	private final Geo withLatitude = new Geo(12.34, null);
 	private final Geo withLongitude = new Geo(null, 56.78);
 	private final Geo withManyDecimals = new Geo(12.3444444444, 56.7777777777);
 	private final Geo empty = new Geo(null, null);
+
+	public GeoScribeTest() {
+		super(new GeoScribe());
+	}
 
 	@Test
 	public void writeText() {

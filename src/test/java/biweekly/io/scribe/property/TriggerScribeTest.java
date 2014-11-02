@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
 
-import org.junit.ClassRule;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
@@ -13,7 +12,6 @@ import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.Related;
 import biweekly.property.Trigger;
-import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.Duration;
 
 /*
@@ -44,13 +42,7 @@ import biweekly.util.Duration;
 /**
  * @author Michael Angstadt
  */
-public class TriggerScribeTest {
-	@ClassRule
-	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
-
-	private final TriggerScribe marshaller = new TriggerScribe();
-	private final Sensei<Trigger> sensei = new Sensei<Trigger>(marshaller);
-
+public class TriggerScribeTest extends ScribeTest<Trigger> {
 	private final Date datetime = date("2013-06-11 13:43:02");
 	private final String datetimeStr = "20130611T124302Z";
 	private final String datetimeStrExt = "2013-06-11T12:43:02Z";
@@ -61,6 +53,10 @@ public class TriggerScribeTest {
 	private final Trigger withDateTime = new Trigger(datetime);
 	private final Trigger withDuration = new Trigger(duration, Related.START);
 	private final Trigger empty = new Trigger(null);
+
+	public TriggerScribeTest() {
+		super(new TriggerScribe());
+	}
 
 	@Test
 	public void dataType() {

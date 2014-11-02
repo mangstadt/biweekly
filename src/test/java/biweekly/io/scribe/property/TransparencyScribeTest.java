@@ -37,9 +37,10 @@ import biweekly.property.Transparency;
 /**
  * @author Michael Angstadt
  */
-public class TransparencyScribeTest {
-	private final TransparencyScribe scribe = new TransparencyScribe();
-	private final Sensei<Transparency> sensei = new Sensei<Transparency>(scribe);
+public class TransparencyScribeTest extends ScribeTest<Transparency> {
+	public TransparencyScribeTest() {
+		super(new TransparencyScribe());
+	}
 
 	@Test
 	public void writeText() {

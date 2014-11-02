@@ -40,10 +40,7 @@ import biweekly.util.Duration;
 /**
  * @author Michael Angstadt
  */
-public class ProcedureAlarmScribeTest {
-	private final ProcedureAlarmScribe scribe = new ProcedureAlarmScribe();
-	private final Sensei<ProcedureAlarm> sensei = new Sensei<ProcedureAlarm>(scribe);
-
+public class ProcedureAlarmScribeTest extends ScribeTest<ProcedureAlarm> {
 	private final Date start = date("2014-01-01 01:00:00 +0000");
 
 	private final ProcedureAlarm empty = new ProcedureAlarm(null);
@@ -61,6 +58,10 @@ public class ProcedureAlarmScribeTest {
 		withValue.setRepeat(5);
 		withValue.setSnooze(new Duration.Builder().minutes(10).build());
 		withValue.setStart(start);
+	}
+
+	public ProcedureAlarmScribeTest() {
+		super(new ProcedureAlarmScribe());
 	}
 
 	@Test

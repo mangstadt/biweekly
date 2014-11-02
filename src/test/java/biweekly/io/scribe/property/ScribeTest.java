@@ -1,14 +1,9 @@
 package biweekly.io.scribe.property;
 
-import static biweekly.util.TestUtils.date;
+import org.junit.ClassRule;
 
-import java.util.Date;
-
-import org.junit.Test;
-
-import biweekly.component.ICalComponent;
-import biweekly.component.Observance;
-import biweekly.property.DateStart;
+import biweekly.property.ICalProperty;
+import biweekly.util.DefaultTimezoneRule;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -36,37 +31,19 @@ import biweekly.property.DateStart;
  */
 
 /**
+ * Parent class for all scribe unit tests.
  * @author Michael Angstadt
+ * @param <P> the property class
  */
-public class DateStartPropertyScribeTest extends ScribeTest<DateStart> {
-	private final Date datetime = date("2013-06-11 13:43:02");
-	private final String datetimeStr = "20130611T124302Z";
-	private final String datetimeFloatingStr = "20130611T134302";
-	private final String datetimeStrExt = "2013-06-11T12:43:02Z";
-	private final String datetimeFloatingStrExt = "2013-06-11T13:43:02";
+public class ScribeTest<P extends ICalProperty> {
+	@ClassRule
+	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
 
-	private final DateStart withDateTime = new DateStart(datetime, true);
-	private final ICalComponent parent = new Observance();
+	protected final ICalPropertyScribe<P> scribe;
+	protected final Sensei<P> sensei;
 
-	public DateStartPropertyScribeTest() {
-		super(new DateStartScribe());
-	}
-
-	@Test
-	public void writeText() {
-		sensei.assertWriteText(withDateTime).run(datetimeStr);
-		sensei.assertWriteText(withDateTime).parent(parent).run(datetimeFloatingStr);
-	}
-
-	@Test
-	public void writeXml() {
-		sensei.assertWriteXml(withDateTime).run("<date-time>" + datetimeStrExt + "</date-time>");
-		sensei.assertWriteXml(withDateTime).parent(parent).run("<date-time>" + datetimeFloatingStrExt + "</date-time>");
-	}
-
-	@Test
-	public void writeJson() {
-		sensei.assertWriteJson(withDateTime).run(datetimeStrExt);
-		sensei.assertWriteJson(withDateTime).parent(parent).run(datetimeFloatingStrExt);
+	protected ScribeTest(ICalPropertyScribe<P> scribe) {
+		this.scribe = scribe;
+		sensei = new Sensei<P>(scribe);
 	}
 }

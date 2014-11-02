@@ -40,10 +40,7 @@ import biweekly.util.Duration;
 /**
  * @author Michael Angstadt
  */
-public class DisplayAlarmScribeTest {
-	private final DisplayAlarmScribe scribe = new DisplayAlarmScribe();
-	private final Sensei<DisplayAlarm> sensei = new Sensei<DisplayAlarm>(scribe);
-
+public class DisplayAlarmScribeTest extends ScribeTest<DisplayAlarm> {
 	private final Date start = date("2014-01-01 01:00:00 +0000");
 
 	private final DisplayAlarm empty = new DisplayAlarm(null);
@@ -61,6 +58,10 @@ public class DisplayAlarmScribeTest {
 		withValue.setRepeat(5);
 		withValue.setSnooze(new Duration.Builder().minutes(10).build());
 		withValue.setStart(start);
+	}
+
+	public DisplayAlarmScribeTest() {
+		super(new DisplayAlarmScribe());
 	}
 
 	@Test

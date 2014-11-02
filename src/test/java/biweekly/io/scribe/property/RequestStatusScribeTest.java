@@ -37,10 +37,7 @@ import biweekly.property.RequestStatus;
 /**
  * @author Michael Angstadt
  */
-public class RequestStatusScribeTest {
-	private final RequestStatusScribe marshaller = new RequestStatusScribe();
-	private final Sensei<RequestStatus> sensei = new Sensei<RequestStatus>(marshaller);
-
+public class RequestStatusScribeTest extends ScribeTest<RequestStatus> {
 	private final String code = "1.2.3;", description = "description;", data = "data;";
 
 	private final RequestStatus withAll = new RequestStatus(code);
@@ -71,6 +68,10 @@ public class RequestStatusScribeTest {
 		withData.setExceptionText(data);
 	}
 	private final RequestStatus empty = new RequestStatus(null);
+
+	public RequestStatusScribeTest() {
+		super(new RequestStatusScribe());
+	}
 
 	@Test
 	public void writeText() {
