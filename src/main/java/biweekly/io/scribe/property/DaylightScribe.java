@@ -1,7 +1,6 @@
 package biweekly.io.scribe.property;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -13,9 +12,7 @@ import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Daylight;
-import biweekly.util.DateTimeComponents;
 import biweekly.util.ICalDate;
-import biweekly.util.ICalDateFormat;
 import biweekly.util.UtcOffset;
 
 /*
@@ -100,9 +97,7 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 		next = it.nextString();
 		if (next != null) {
 			try {
-				Date dateValue = ICalDateFormat.parse(next);
-				DateTimeComponents components = DateTimeComponents.parse(next);
-				start = new ICalDate(dateValue, components, true);
+				start = date(next).parse();
 			} catch (IllegalArgumentException e) {
 				throw new CannotParseException(34, next);
 			}
@@ -112,9 +107,7 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 		next = it.nextString();
 		if (next != null) {
 			try {
-				Date dateValue = ICalDateFormat.parse(next);
-				DateTimeComponents components = DateTimeComponents.parse(next);
-				end = new ICalDate(dateValue, components, true);
+				end = date(next).parse();
 			} catch (IllegalArgumentException e) {
 				throw new CannotParseException(35, next);
 			}

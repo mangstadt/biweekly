@@ -26,6 +26,7 @@ import biweekly.property.ExceptionRule;
 import biweekly.property.RecurrenceDates;
 import biweekly.property.RecurrenceProperty;
 import biweekly.property.RecurrenceRule;
+import biweekly.property.TimezoneId;
 import biweekly.property.TimezoneName;
 import biweekly.property.UtcOffsetProperty;
 import biweekly.util.DateTimeComponents;
@@ -84,16 +85,16 @@ public class ICalTimeZone extends TimeZone {
 	 */
 	public ICalTimeZone(VTimezone component) {
 		this.component = component;
-		setID(component.getTimezoneId().getValue());
+
+		TimezoneId id = component.getTimezoneId();
+		if (id != null) {
+			setID(id.getValue());
+		}
 	}
 
 	@Override
 	public String getDisplayName(boolean daylight, int style, Locale locale) {
 		List<Observance> observances = getSortedObservances();
-		if (observances.isEmpty()) {
-			return super.getDisplayName(daylight, style, locale);
-		}
-
 		ListIterator<Observance> it = observances.listIterator(observances.size());
 		while (it.hasPrevious()) {
 			Observance observance = it.previous();
@@ -116,15 +117,6 @@ public class ICalTimeZone extends TimeZone {
 		}
 
 		return super.getDisplayName(daylight, style, locale);
-	}
-
-	/**
-	 * Gets the VTIMEZONE component that is being wrapped. Modifications made to
-	 * the component will effect this timezone object.
-	 * @return the VTIMEZONE component
-	 */
-	public VTimezone getComponent() {
-		return component;
 	}
 
 	@Override
@@ -196,9 +188,13 @@ public class ICalTimeZone extends TimeZone {
 		return !component.getDaylightSavingsTime().isEmpty();
 	}
 
+	/**
+	 * Gets the timezone information of a date.
+	 * @param date the date
+	 * @return the timezone information
+	 */
 	public Boundary getObservanceBoundary(Date date) {
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC")); //TODO should this be local TZ?
-		//Calendar cal = Calendar.getInstance();
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		cal.setTime(date);
 		int year = cal.get(Calendar.YEAR);
 		int month = cal.get(Calendar.MONTH) + 1;
@@ -221,6 +217,15 @@ public class ICalTimeZone extends TimeZone {
 	}
 
 	/**
+	 * Gets the VTIMEZONE component that is being wrapped. Modifications made to
+	 * the component will effect this timezone object.
+	 * @return the VTIMEZONE component
+	 */
+	public VTimezone getComponent() {
+		return component;
+	}
+
+	/**
 	 * Gets the observance that a date is effected by.
 	 * @param year the year
 	 * @param month the month (1-12)
@@ -235,6 +240,16 @@ public class ICalTimeZone extends TimeZone {
 		return (boundary == null) ? null : boundary.getObservanceIn();
 	}
 
+	/**
+	 * Gets the observance information of a date.
+	 * @param year the year
+	 * @param month the month (1-12)
+	 * @param day the day of the month
+	 * @param hour the hour
+	 * @param minute the minute
+	 * @param second the second
+	 * @return the observance information or null if none was found
+	 */
 	private Boundary getObservanceBoundary(int year, int month, int day, int hour, int minute, int second) {
 		List<Observance> observances = getSortedObservances();
 		if (observances.isEmpty()) {
@@ -375,16 +390,15 @@ public class ICalTimeZone extends TimeZone {
 		}
 
 		//add RDATE properties
-		List<Date> rdates = new ArrayList<Date>();
+		List<ICalDate> rdates = new ArrayList<ICalDate>();
 		for (RecurrenceDates rdate : observance.getRecurrenceDates()) {
 			rdates.addAll(rdate.getDates());
-			//TODO handle periods
 		}
 		Collections.sort(rdates);
 		inclusions.add(new DateRecurrenceIterator(rdates));
 
 		//add EXDATE properties
-		List<Date> exdates = new ArrayList<Date>();
+		List<ICalDate> exdates = new ArrayList<ICalDate>();
 		for (ExceptionDates exdate : observance.getProperties(ExceptionDates.class)) {
 			exdates.addAll(exdate.getValues());
 		}
@@ -420,7 +434,7 @@ public class ICalTimeZone extends TimeZone {
 	 * @param dtstart the biweekly object
 	 * @return the google-rfc-2445 object
 	 */
-	private DateTimeValue convert(DateStart dtstart) {
+	private static DateTimeValue convert(DateStart dtstart) {
 		ICalDate value = dtstart.getValue();
 		if (value == null) {
 			return null;
@@ -439,7 +453,7 @@ public class ICalTimeZone extends TimeZone {
 	 * @param biweeklyRRule the biweekly object
 	 * @return the google-rfc-2445 object
 	 */
-	private RRule convert(RecurrenceProperty biweeklyRRule) {
+	private static RRule convert(RecurrenceProperty biweeklyRRule) {
 		RRule googleRRule = new RRule();
 		Recurrence recur = biweeklyRRule.getValue();
 		if (recur == null) {
@@ -481,7 +495,7 @@ public class ICalTimeZone extends TimeZone {
 			googleRRule.setInterval(interval);
 		}
 
-		Date until = recur.getUntil();
+		ICalDate until = recur.getUntil();
 		if (until != null) {
 			googleRRule.setUntil(convert(until));
 		}
@@ -500,7 +514,7 @@ public class ICalTimeZone extends TimeZone {
 	 * @param day the biweekly object
 	 * @return the google-rfc-2445 object
 	 */
-	private Weekday convert(DayOfWeek day) {
+	private static Weekday convert(DayOfWeek day) {
 		switch (day) {
 		case SUNDAY:
 			return Weekday.SU;
@@ -527,7 +541,7 @@ public class ICalTimeZone extends TimeZone {
 	 * @param freq the biweekly object
 	 * @return the google-rfc-2445 object
 	 */
-	private com.google.ical.values.Frequency convert(Frequency freq) {
+	private static com.google.ical.values.Frequency convert(Frequency freq) {
 		switch (freq) {
 		case YEARLY:
 			return com.google.ical.values.Frequency.YEARLY;
@@ -549,23 +563,25 @@ public class ICalTimeZone extends TimeZone {
 	}
 
 	/**
-	 * Converts a Java {@link Date} object to a google-rfc-2445
+	 * Converts an {@link ICalDate} object to a google-rfc-2445
 	 * {@link DateValue} object.
 	 * @param date the Java date object
 	 * @return the google-rfc-2445 object
 	 */
-	private DateValue convert(Date date) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(date);
+	private static DateValue convert(ICalDate date) {
+		DateTimeComponents raw = date.getRawComponents();
+		if (raw == null) {
+			raw = new DateTimeComponents(date);
+		}
 
 		//@formatter:off
 		return new DateTimeValueImpl(
-			cal.get(Calendar.YEAR),
-			cal.get(Calendar.MONTH)+1,
-			cal.get(Calendar.DATE),
-			cal.get(Calendar.HOUR_OF_DAY),
-			cal.get(Calendar.MINUTE),
-			cal.get(Calendar.SECOND)
+			raw.getYear(),
+			raw.getMonth(),
+			raw.getDate(),
+			raw.getHour(),
+			raw.getMinute(),
+			raw.getSecond()
 		);
 		//@formatter:on
 	}
@@ -575,7 +591,7 @@ public class ICalTimeZone extends TimeZone {
 	 * @param list the Integer list
 	 * @return the int array
 	 */
-	private int[] toArray(List<Integer> list) {
+	private static int[] toArray(List<Integer> list) {
 		int[] array = new int[list.size()];
 		Iterator<Integer> it = list.iterator();
 		int i = 0;
@@ -622,29 +638,17 @@ public class ICalTimeZone extends TimeZone {
 	}
 
 	/**
-	 * A recurrence iterator that takes a collection of {@link Date} objects.
+	 * A recurrence iterator that takes a collection of {@link ICalDate}
+	 * objects.
 	 */
-	private static class DateRecurrenceIterator extends IteratorWrapper<Date> {
-		private final Calendar cal = Calendar.getInstance();
-
-		public DateRecurrenceIterator(Collection<Date> dates) {
+	private static class DateRecurrenceIterator extends IteratorWrapper<ICalDate> {
+		public DateRecurrenceIterator(Collection<ICalDate> dates) {
 			super(dates.iterator());
 		}
 
 		public DateValue next() {
-			Date value = it.next();
-			cal.setTime(value);
-
-			//@formatter:off
-			return new DateTimeValueImpl(
-				cal.get(Calendar.YEAR),
-				cal.get(Calendar.MONTH)+1,
-				cal.get(Calendar.DATE),
-				cal.get(Calendar.HOUR_OF_DAY),
-				cal.get(Calendar.MINUTE),
-				cal.get(Calendar.SECOND)
-			);
-			//@formatter:on
+			ICalDate value = it.next();
+			return convert(value);
 		}
 	}
 
