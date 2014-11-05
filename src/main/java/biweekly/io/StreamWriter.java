@@ -153,7 +153,7 @@ public abstract class StreamWriter implements Closeable {
 	 * @param ical the iCalendar object
 	 * @return the component/property classes
 	 */
-	private Collection<Class<? extends Object>> findScribeless(ICalendar ical) {
+	private Collection<Class<?>> findScribeless(ICalendar ical) {
 		Set<Class<?>> unregistered = new HashSet<Class<?>>();
 		LinkedList<ICalComponent> components = new LinkedList<ICalComponent>();
 		components.add(ical);
