@@ -74,9 +74,8 @@ import com.google.ical.values.WeekdayNum;
  * A timezone that is based on an iCalendar {@link VTimezone} component.
  * @author Michael Angstadt
  */
+@SuppressWarnings("serial")
 public class ICalTimeZone extends TimeZone {
-	private static final long serialVersionUID = 1529307906194773299L;
-
 	private final VTimezone component;
 
 	/**
