@@ -34,8 +34,6 @@ import biweekly.util.ICalDate;
  * @author Michael Angstadt
  */
 public class DateOrDateTimeProperty extends ValuedProperty<ICalDate> {
-	protected ICalDate value;
-
 	/**
 	 * Creates a new property.
 	 * @param value the date-time value
