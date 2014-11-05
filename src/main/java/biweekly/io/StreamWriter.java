@@ -65,7 +65,7 @@ public abstract class StreamWriter implements Closeable {
 	public void write(ICalendar ical) throws IOException {
 		Collection<Class<? extends Object>> unregistered = findScribeless(ical);
 		if (!unregistered.isEmpty()) {
-			throw new IllegalArgumentException("No scribes were found the following component/property classes: " + unregistered);
+			throw new IllegalArgumentException("No scribes were found for the following component/property classes: " + unregistered);
 		}
 
 		context = new WriteContext(getTargetVersion(), tzinfo);
