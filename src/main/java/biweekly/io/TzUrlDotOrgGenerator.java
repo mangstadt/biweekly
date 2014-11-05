@@ -2,8 +2,8 @@ package biweekly.io;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +45,7 @@ import biweekly.util.IOUtils;
  * @author Michael Angstadt
  */
 public class TzUrlDotOrgGenerator implements VTimezoneGenerator {
-	private static final Map<URL, VTimezone> cache = Collections.synchronizedMap(new HashMap<URL, VTimezone>());
+	private static final Map<URI, VTimezone> cache = Collections.synchronizedMap(new HashMap<URI, VTimezone>());
 	private final String baseUrl;
 
 	/**
@@ -58,26 +58,26 @@ public class TzUrlDotOrgGenerator implements VTimezoneGenerator {
 	}
 
 	public VTimezone generate(TimeZone timezone) throws IllegalArgumentException {
-		URL url;
+		URI uri;
 		try {
-			url = new URL(baseUrl + timezone.getID());
-		} catch (MalformedURLException e) {
+			uri = new URI(baseUrl + timezone.getID());
+		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException(e);
 		}
 
-		VTimezone component = cache.get(url);
+		VTimezone component = cache.get(uri);
 		if (component != null) {
 			return component;
 		}
 
 		ICalReader reader = null;
 		try {
-			reader = new ICalReader(url.openStream());
+			reader = new ICalReader(uri.toURL().openStream());
 			reader.readNext();
 
 			TimezoneInfo tzinfo = reader.getTimezoneInfo();
 			component = tzinfo.getComponents().iterator().next();
-			cache.put(url, component);
+			cache.put(uri, component);
 			return component;
 		} catch (FileNotFoundException e) {
 			throw notFound(e);
