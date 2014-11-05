@@ -90,7 +90,7 @@ import biweekly.property.Version;
  * writer.getTimezoneInfo().setDefaultTimeZone(TimeZone.getDefault());
  * 
  * //format the value of a single date/time property in a specific timezone instead of UTC
- * //note: this makes an HTTP call to the "tzurl.org" website
+ * //note: this makes an HTTP call to "http://tzurl.org"
  * DateStart dtstart = ...
  * writer.getTimezoneInfo().setTimeZone(dtstart, TimeZone.getDefault());
  * 

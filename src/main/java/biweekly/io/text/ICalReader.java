@@ -440,8 +440,8 @@ public class ICalReader extends StreamReader {
 	/**
 	 * Converts a vCal property to the iCalendar data model.
 	 * @param property the vCal property
-	 * @return the iCalendar property or component (or the given property is no
-	 * conversion is necessary)
+	 * @return the converted iCalendar property/component, or the given property
+	 * if no conversion is necessary
 	 */
 	private Object convertVCalProperty(ICalProperty property) {
 		//ATTENDEE with "organizer" role => ORGANIZER property
