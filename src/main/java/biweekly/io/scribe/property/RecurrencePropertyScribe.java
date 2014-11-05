@@ -432,7 +432,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		return property;
 	}
 
-	private Integer parseVCalInt(String value) {
+	private int parseVCalInt(String value) {
 		int negate = 1;
 		if (value.endsWith("+")) {
 			value = value.substring(0, value.length() - 1);
@@ -441,7 +441,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			negate = -1;
 		}
 
-		return Integer.valueOf(value) * negate;
+		return Integer.parseInt(value) * negate;
 	}
 
 	private String writeVCalInt(Integer value) {
