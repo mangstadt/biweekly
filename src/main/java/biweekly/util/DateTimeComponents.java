@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Calendar;
@@ -60,7 +61,8 @@ import java.util.regex.Pattern;
  * </p>
  * @author Michael Angstadt
  */
-public final class DateTimeComponents implements Comparable<DateTimeComponents> {
+public final class DateTimeComponents implements Comparable<DateTimeComponents>, Serializable {
+	private static final long serialVersionUID = 7668029303206402368L;
 	private static final Pattern regex = Pattern.compile("^(\\d{4})-?(\\d{2})-?(\\d{2})(T(\\d{2}):?(\\d{2}):?(\\d{2})(Z?))?.*");
 	private final int year, month, date, hour, minute, second;
 	private final boolean hasTime, utc;
