@@ -51,7 +51,7 @@ public class EmailAlarm extends VCalAlarmProperty {
 
 	/**
 	 * Sets the email address.
-	 * @param text the email address
+	 * @param email the email address
 	 */
 	public void setEmail(String email) {
 		this.email = email;

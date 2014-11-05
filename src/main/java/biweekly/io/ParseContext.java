@@ -95,8 +95,6 @@ public class ParseContext {
 	 * @param tzid the timezone ID (TZID parameter)
 	 * @param property the property
 	 * @param date the date object that was assigned to the property object
-	 * (should be parsed under the JVM's default timezone)
-	 * @param dateStr the raw date string (e.g. "20140901T120000")
 	 */
 	public void addTimezonedDate(String tzid, ICalProperty property, ICalDate date) {
 		timezonedDates.put(tzid, new TimezonedDate(date, property));
@@ -164,9 +162,7 @@ public class ParseContext {
 		private final ICalProperty property;
 
 		/**
-		 * @param dateStr the raw date string (e.g. "20140901T120000")
 		 * @param date the date object that was assigned to the property object
-		 * (should be parsed under the JVM's default timezone)
 		 * @param property the property object
 		 */
 		public TimezonedDate(ICalDate date, ICalProperty property) {

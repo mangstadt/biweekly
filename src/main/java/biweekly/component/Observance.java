@@ -74,7 +74,7 @@ public class Observance extends ICalComponent {
 
 	/**
 	 * Sets the date that the timezone observance starts.
-	 * @param components the raw components of the start date or null to remove
+	 * @param date the start date or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
@@ -87,13 +87,13 @@ public class Observance extends ICalComponent {
 
 	/**
 	 * Sets the date that the timezone observance starts.
-	 * @param rawComponents the start date
+	 * @param rawComponents the start date or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
 	 */
 	public DateStart setDateStart(DateTimeComponents rawComponents) {
-		return setDateStart(new ICalDate(rawComponents, true));
+		return setDateStart((rawComponents == null) ? null : new ICalDate(rawComponents, true));
 	}
 
 	/**

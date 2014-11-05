@@ -57,7 +57,7 @@ public class ProcedureAlarm extends VCalAlarmProperty {
 	/**
 	 * Sets the path or name of the procedure to run when the alarm is
 	 * triggered.
-	 * @param text the path
+	 * @param path the path
 	 */
 	public void getPath(String path) {
 		this.path = path;

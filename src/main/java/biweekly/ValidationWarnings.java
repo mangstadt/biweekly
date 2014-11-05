@@ -76,7 +76,7 @@ import biweekly.util.StringUtils.JoinCallback;
  * 
  * </p>
  * @author Michael Angstadt
- * @see ICalendar#validate()
+ * @see ICalendar#validate(ICalVersion)
  */
 public class ValidationWarnings implements Iterable<WarningsGroup> {
 	private final List<WarningsGroup> warnings;

@@ -224,7 +224,7 @@ public class Attendee extends ICalProperty {
 
 	/**
 	 * Sets an attendee's level of participation.
-	 * @param status the participation level or null to remove
+	 * @param level the participation level or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545
 	 * p.25-6</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.26-7</a>
