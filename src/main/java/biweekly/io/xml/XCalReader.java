@@ -543,7 +543,7 @@ public class XCalReader extends StreamReader {
 	 * the {@code <duration>} property has a {@code <duration>} data type)
 	 * </p>
 	 */
-	private class XCalStructure {
+	private static class XCalStructure {
 		private final List<ElementType> stack = new ArrayList<ElementType>();
 
 		/**
