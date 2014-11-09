@@ -67,7 +67,7 @@ public class ICalRawReader implements Closeable {
 
 	/**
 	 * Gets the iCalendar version that the reader is currently parsing with.
-	 * @return the iCalendar version
+	 * @return the iCalendar version or null if unknown
 	 */
 	public ICalVersion getVersion() {
 		return version;
