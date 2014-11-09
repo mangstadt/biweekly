@@ -67,6 +67,7 @@ import biweekly.util.Period;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-100">RFC 5545
  * p.100-1</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-95">RFC 2445 p.95-6</a>
  */
 public class FreeBusy extends ICalProperty {
 	private final List<Period> values = new ArrayList<Period>();

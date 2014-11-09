@@ -66,6 +66,7 @@ import biweekly.ICalVersion;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-132">RFC 5545
  * p.132-3</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-126">RFC 2445 p.126</a>
  */
 public class Action extends EnumProperty {
 	private static final String AUDIO = "AUDIO";

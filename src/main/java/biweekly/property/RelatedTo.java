@@ -46,6 +46,8 @@ import biweekly.parameter.RelationshipType;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-115">RFC 5545
  * p.115-6</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-109-10">RFC 2445
+ * p.109-10</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.33-4</a>
  */
 public class RelatedTo extends TextProperty {

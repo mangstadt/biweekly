@@ -52,6 +52,8 @@ import biweekly.util.Duration;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-133">RFC 5545
  * p.133-6</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-127">RFC 2445
+ * p.127-9</a>
  */
 public class Trigger extends ICalProperty {
 	private Duration duration;

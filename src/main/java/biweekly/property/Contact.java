@@ -1,6 +1,5 @@
 package biweekly.property;
 
-
 /*
  Copyright (c) 2013-2014, Michael Angstadt
  All rights reserved.
@@ -45,6 +44,8 @@ package biweekly.property;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
  * p.109-11</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-104">RFC 2445
+ * p.104-6</a>
  */
 public class Contact extends TextProperty {
 	/**

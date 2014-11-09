@@ -45,7 +45,10 @@ import biweekly.util.UtcOffset;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-104">RFC 5545 p.104-5</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-104">RFC 5545
+ * p.104-5</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-99">RFC 2445
+ * p.99-100</a>
  */
 public class TimezoneOffsetFrom extends UtcOffsetProperty {
 	/**

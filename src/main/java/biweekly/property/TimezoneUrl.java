@@ -41,6 +41,7 @@ package biweekly.property;
  * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-106">RFC 5545 p.106</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-101">RFC 2445 p.101</a>
  */
 public class TimezoneUrl extends TextProperty {
 	/**

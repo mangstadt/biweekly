@@ -109,6 +109,7 @@ import biweekly.util.ICalDate;
  * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-96">RFC 5545 p.96-7</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-92">RFC 2445 p.92-3</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.30</a>
  */
 public class DateDue extends DateOrDateTimeProperty {

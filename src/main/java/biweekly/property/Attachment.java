@@ -65,6 +65,7 @@ import biweekly.util.IOUtils;
  * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-80">RFC 5545 p.80-1</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-77">RFC 2445 p.77-8</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25</a>
  */
 public class Attachment extends ICalProperty {

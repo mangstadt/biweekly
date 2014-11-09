@@ -83,6 +83,7 @@ import biweekly.ICalVersion;
  * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-76">RFC 5545 p.76-7</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-73">RFC 2445 p.73-4</a>
  */
 public class CalendarScale extends EnumProperty {
 	private static final String GREGORIAN = "GREGORIAN";

@@ -55,6 +55,7 @@ import biweekly.util.VersionNumber;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-79">RFC 5545
  * p.79-80</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-76">RFC 2445 p.76-7</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
  */
 public class Version extends ICalProperty {

@@ -70,6 +70,8 @@ import biweekly.util.Period;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-120">RFC 5545
  * p.120-2</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-115">RFC 2445
+ * p.115-7</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34</a>
  */
 public class RecurrenceDates extends ICalProperty {
