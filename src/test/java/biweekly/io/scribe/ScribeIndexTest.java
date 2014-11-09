@@ -21,6 +21,7 @@ import biweekly.io.scribe.component.RawComponentScribe;
 import biweekly.io.scribe.component.VEventScribe;
 import biweekly.io.scribe.component.VFreeBusyScribe;
 import biweekly.io.scribe.property.CreatedScribe;
+import biweekly.io.scribe.property.DaylightScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.io.scribe.property.UidScribe;
@@ -121,6 +122,14 @@ public class ScribeIndexTest {
 		}
 		scribe = index.getPropertyScribe(name, null);
 		assertTrue(scribe instanceof UidScribe);
+
+		name = "DAYLIGHT";
+		scribe = index.getPropertyScribe(name, ICalVersion.V1_0);
+		assertTrue(scribe instanceof DaylightScribe);
+		for (ICalVersion version : each(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0)) {
+			scribe = index.getPropertyScribe(name, version);
+			assertTrue(scribe instanceof RawPropertyScribe);
+		}
 
 		name = "DCREATED";
 		scribe = index.getPropertyScribe(name, ICalVersion.V1_0);

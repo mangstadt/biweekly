@@ -249,7 +249,12 @@ public class ScribeIndex {
 			scribe = standardCompByName.get(componentName);
 		}
 
-		if (scribe == null || (version != null && !scribe.getSupportedVersions().contains(version))) {
+		if (scribe == null) {
+			return new RawComponentScribe(componentName);
+		}
+
+		if (version != null && !scribe.getSupportedVersions().contains(version)) {
+			//treat the component as a raw component if the current iCal version doesn't support it
 			return new RawComponentScribe(componentName);
 		}
 
@@ -265,6 +270,7 @@ public class ScribeIndex {
 	public ICalPropertyScribe<? extends ICalProperty> getPropertyScribe(String propertyName, ICalVersion version) {
 		propertyName = propertyName.toUpperCase();
 
+		//the vCal 1.0 "DCREATED" property is the same as the iCal 2.0 "CREATED" property
 		if ((version == null || version == ICalVersion.V1_0) && "DCREATED".equals(propertyName)) {
 			return getPropertyScribe(Created.class);
 		}
@@ -274,7 +280,12 @@ public class ScribeIndex {
 			scribe = standardPropByName.get(propertyName);
 		}
 
-		if (scribe == null || (version != null && !scribe.getSupportedVersions().contains(version))) {
+		if (scribe == null) {
+			return new RawPropertyScribe(propertyName);
+		}
+
+		if (version != null && !scribe.getSupportedVersions().contains(version)) {
+			//treat the property as a raw property if the current iCal version doesn't support it
 			return new RawPropertyScribe(propertyName);
 		}
 
