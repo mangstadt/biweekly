@@ -75,12 +75,13 @@ public abstract class UtcOffsetPropertyScribe<T extends UtcOffsetProperty> exten
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
-		String value = element.first(defaultDataType);
+		ICalDataType dataType = defaultDataType(context.getVersion());
+		String value = element.first(dataType);
 		if (value != null) {
 			return parse(value);
 		}
 
-		throw missingXmlElements(defaultDataType);
+		throw missingXmlElements(dataType);
 	}
 
 	@Override

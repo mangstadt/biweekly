@@ -71,12 +71,13 @@ public abstract class DateTimePropertyScribe<T extends DateTimeProperty> extends
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
-		String value = element.first(defaultDataType);
+		ICalDataType dataType = defaultDataType(context.getVersion());
+		String value = element.first(dataType);
 		if (value != null) {
 			return parse(value, parameters, context);
 		}
 
-		throw missingXmlElements(defaultDataType);
+		throw missingXmlElements(dataType);
 	}
 
 	@Override

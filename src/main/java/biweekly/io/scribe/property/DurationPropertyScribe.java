@@ -1,6 +1,7 @@
 package biweekly.io.scribe.property;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
@@ -41,7 +42,12 @@ import biweekly.util.Duration;
  */
 public class DurationPropertyScribe extends ICalPropertyScribe<DurationProperty> {
 	public DurationPropertyScribe() {
-		super(DurationProperty.class, "DURATION", ICalDataType.DURATION);
+		super(DurationProperty.class, "DURATION");
+	}
+
+	@Override
+	protected ICalDataType _defaultDataType(ICalVersion version) {
+		return ICalDataType.DURATION;
 	}
 
 	@Override
@@ -74,12 +80,13 @@ public class DurationPropertyScribe extends ICalPropertyScribe<DurationProperty>
 
 	@Override
 	protected DurationProperty _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
-		String value = element.first(defaultDataType);
+		ICalDataType dataType = defaultDataType(context.getVersion());
+		String value = element.first(dataType);
 		if (value != null) {
 			return parse(value);
 		}
 
-		throw missingXmlElements(defaultDataType);
+		throw missingXmlElements(dataType);
 	}
 
 	@Override

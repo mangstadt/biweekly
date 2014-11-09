@@ -103,7 +103,7 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 			return;
 		}
 
-		element.append(defaultDataType, "");
+		element.append(defaultDataType(context.getVersion()), "");
 	}
 
 	@Override

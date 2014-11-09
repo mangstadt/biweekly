@@ -78,8 +78,17 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 
 	protected final Class<T> clazz;
 	protected final String propertyName;
-	protected final ICalDataType defaultDataType;
+	private final ICalDataType defaultDataType;
 	protected final QName qname;
+
+	/**
+	 * Creates a new scribe.
+	 * @param clazz the property class
+	 * @param propertyName the property name (e.g. "VERSION")
+	 */
+	public ICalPropertyScribe(Class<T> clazz, String propertyName) {
+		this(clazz, propertyName, null);
+	}
 
 	/**
 	 * Creates a new scribe.
@@ -88,7 +97,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param defaultDataType the property's default data type (e.g. "text") or
 	 * null if unknown
 	 */
-	public ICalPropertyScribe(Class<T> clazz, String propertyName, ICalDataType defaultDataType) { //TODO remove defaultDataType
+	public ICalPropertyScribe(Class<T> clazz, String propertyName, ICalDataType defaultDataType) {
 		this(clazz, propertyName, defaultDataType, new QName(XCAL_NS, propertyName.toLowerCase()));
 	}
 
@@ -153,7 +162,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	}
 
 	/**
-	 * Determines the default data type of a property instance.
+	 * Determines the default data type of this property.
 	 * @param version the version of the iCalendar object being generated
 	 * @return the data type or null if unknown
 	 */
@@ -290,7 +299,9 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * <p>
 	 * This method should be overridden by child classes if a property's default
 	 * data type changes depending the iCalendar version. The default
-	 * implementation of this method returns the property's default data type.
+	 * implementation of this method returns the data type that was passed into
+	 * the {@link #ICalPropertyScribe(Class, String, ICalDataType)} constructor.
+	 * Null is returned if this constructor was not invoked.
 	 * </p>
 	 * @param version the version of the iCalendar object being generated
 	 * @return the data type or null if unknown

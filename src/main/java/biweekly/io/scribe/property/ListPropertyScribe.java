@@ -100,12 +100,13 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
-		List<String> values = element.all(defaultDataType);
+		ICalDataType dataType = defaultDataType(context.getVersion());
+		List<String> values = element.all(dataType);
 		if (!values.isEmpty()) {
-			return parse(values, defaultDataType, parameters, context);
+			return parse(values, dataType, parameters, context);
 		}
 
-		throw missingXmlElements(defaultDataType);
+		throw missingXmlElements(dataType);
 	}
 
 	@Override

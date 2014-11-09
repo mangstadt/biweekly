@@ -84,12 +84,13 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 
 	@Override
 	protected Version _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
-		String value = element.first(defaultDataType);
+		ICalDataType dataType = defaultDataType(context.getVersion());
+		String value = element.first(dataType);
 		if (value != null) {
 			return parse(null, value);
 		}
 
-		throw missingXmlElements(defaultDataType);
+		throw missingXmlElements(dataType);
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.property.EmailAlarm;
 
 /*
@@ -38,7 +39,12 @@ import biweekly.property.EmailAlarm;
  */
 public class EmailAlarmScribe extends VCalAlarmPropertyScribe<EmailAlarm> {
 	public EmailAlarmScribe() {
-		super(EmailAlarm.class, "MALARM", ICalDataType.TEXT);
+		super(EmailAlarm.class, "MALARM");
+	}
+
+	@Override
+	protected ICalDataType _defaultDataType(ICalVersion version) {
+		return ICalDataType.TEXT;
 	}
 
 	@Override

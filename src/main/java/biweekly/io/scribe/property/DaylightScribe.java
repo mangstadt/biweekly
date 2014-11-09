@@ -46,7 +46,7 @@ import biweekly.util.UtcOffset;
  */
 public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 	public DaylightScribe() {
-		super(Daylight.class, "DAYLIGHT", null);
+		super(Daylight.class, "DAYLIGHT");
 	}
 
 	@Override

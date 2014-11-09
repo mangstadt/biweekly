@@ -75,7 +75,12 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	private static final String WKST = "WKST";
 
 	public RecurrencePropertyScribe(Class<T> clazz, String propertyName) {
-		super(clazz, propertyName, ICalDataType.RECUR);
+		super(clazz, propertyName);
+	}
+
+	@Override
+	protected ICalDataType _defaultDataType(ICalVersion version) {
+		return ICalDataType.RECUR;
 	}
 
 	@Override
@@ -485,9 +490,10 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 	@Override
 	protected T _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
-		XCalElement value = element.child(defaultDataType);
+		ICalDataType dataType = defaultDataType(context.getVersion());
+		XCalElement value = element.child(dataType);
 		if (value == null) {
-			throw missingXmlElements(defaultDataType);
+			throw missingXmlElements(dataType);
 		}
 
 		ListMultimap<String, String> rules = new ListMultimap<String, String>();

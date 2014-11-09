@@ -39,7 +39,7 @@ import biweekly.util.org.apache.commons.codec.binary.Base64;
  */
 public class AudioAlarmScribe extends VCalAlarmPropertyScribe<AudioAlarm> {
 	public AudioAlarmScribe() {
-		super(AudioAlarm.class, "AALARM", null);
+		super(AudioAlarm.class, "AALARM");
 	}
 
 	@Override

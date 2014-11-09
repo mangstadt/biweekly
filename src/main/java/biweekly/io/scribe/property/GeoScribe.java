@@ -3,6 +3,7 @@ package biweekly.io.scribe.property;
 import java.util.Iterator;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
@@ -43,7 +44,12 @@ import biweekly.util.ICalFloatFormatter;
  */
 public class GeoScribe extends ICalPropertyScribe<Geo> {
 	public GeoScribe() {
-		super(Geo.class, "GEO", ICalDataType.FLOAT);
+		super(Geo.class, "GEO");
+	}
+
+	@Override
+	protected ICalDataType _defaultDataType(ICalVersion version) {
+		return ICalDataType.FLOAT;
 	}
 
 	@Override

@@ -69,7 +69,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 		if (property.getContentId() != null) {
 			return (version == ICalVersion.V1_0) ? ICalDataType.CONTENT_ID : ICalDataType.URI;
 		}
-		return defaultDataType;
+		return defaultDataType(version);
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 			return;
 		}
 
-		element.append(defaultDataType, "");
+		element.append(defaultDataType(context.getVersion()), "");
 	}
 
 	@Override

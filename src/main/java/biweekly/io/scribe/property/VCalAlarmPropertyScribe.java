@@ -45,6 +45,10 @@ import biweekly.util.Duration;
  * @author Michael Angstadt
  */
 public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> extends ICalPropertyScribe<T> {
+	public VCalAlarmPropertyScribe(Class<T> clazz, String propertyName) {
+		super(clazz, propertyName);
+	}
+
 	public VCalAlarmPropertyScribe(Class<T> clazz, String propertyName, ICalDataType defaultDataType) {
 		super(clazz, propertyName, defaultDataType);
 	}

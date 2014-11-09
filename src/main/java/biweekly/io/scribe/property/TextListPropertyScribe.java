@@ -1,6 +1,7 @@
 package biweekly.io.scribe.property;
 
 import biweekly.ICalDataType;
+import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
@@ -38,7 +39,12 @@ import biweekly.property.ListProperty;
  */
 public abstract class TextListPropertyScribe<T extends ListProperty<String>> extends ListPropertyScribe<T, String> {
 	public TextListPropertyScribe(Class<T> clazz, String propertyName) {
-		super(clazz, propertyName, ICalDataType.TEXT);
+		super(clazz, propertyName);
+	}
+
+	@Override
+	protected ICalDataType _defaultDataType(ICalVersion version) {
+		return ICalDataType.TEXT;
 	}
 
 	@Override

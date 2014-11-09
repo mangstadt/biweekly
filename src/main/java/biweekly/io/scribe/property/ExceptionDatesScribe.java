@@ -48,7 +48,12 @@ import biweekly.util.ICalDate;
  */
 public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICalDate> {
 	public ExceptionDatesScribe() {
-		super(ExceptionDates.class, "EXDATE", DATE_TIME);
+		super(ExceptionDates.class, "EXDATE");
+	}
+
+	@Override
+	protected ICalDataType _defaultDataType(ICalVersion version) {
+		return DATE_TIME;
 	}
 
 	@Override

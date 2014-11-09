@@ -44,7 +44,7 @@ import biweekly.property.Attendee;
  */
 public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 	public AttendeeScribe() {
-		super(Attendee.class, "ATTENDEE", ICalDataType.CAL_ADDRESS);
+		super(Attendee.class, "ATTENDEE");
 	}
 
 	@Override

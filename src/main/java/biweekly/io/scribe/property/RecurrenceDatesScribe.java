@@ -183,7 +183,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 			return;
 		}
 
-		element.append(defaultDataType, "");
+		element.append(defaultDataType(context.getVersion()), "");
 	}
 
 	@Override

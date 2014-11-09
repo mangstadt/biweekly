@@ -50,7 +50,12 @@ import biweekly.util.Period;
  */
 public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 	public FreeBusyScribe() {
-		super(FreeBusy.class, "FREEBUSY", ICalDataType.PERIOD);
+		super(FreeBusy.class, "FREEBUSY");
+	}
+
+	@Override
+	protected ICalDataType _defaultDataType(ICalVersion version) {
+		return ICalDataType.PERIOD;
 	}
 
 	@Override
