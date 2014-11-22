@@ -1,6 +1,7 @@
 package biweekly.io;
 
 import static biweekly.property.ValuedProperty.getValue;
+import static biweekly.util.Google2445Utils.convert;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,17 +25,12 @@ import biweekly.property.DateStart;
 import biweekly.property.ExceptionDates;
 import biweekly.property.ExceptionRule;
 import biweekly.property.RecurrenceDates;
-import biweekly.property.RecurrenceProperty;
 import biweekly.property.RecurrenceRule;
 import biweekly.property.TimezoneId;
 import biweekly.property.TimezoneName;
 import biweekly.property.UtcOffsetProperty;
-import biweekly.util.DateTimeComponents;
 import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
-import biweekly.util.Recurrence.ByDay;
-import biweekly.util.Recurrence.DayOfWeek;
-import biweekly.util.Recurrence.Frequency;
 
 import com.google.ical.iter.RecurrenceIterator;
 import com.google.ical.iter.RecurrenceIteratorFactory;
@@ -42,8 +38,6 @@ import com.google.ical.values.DateTimeValue;
 import com.google.ical.values.DateTimeValueImpl;
 import com.google.ical.values.DateValue;
 import com.google.ical.values.RRule;
-import com.google.ical.values.Weekday;
-import com.google.ical.values.WeekdayNum;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -376,14 +370,20 @@ public class ICalTimeZone extends TimeZone {
 
 				//add RRULE properties
 				for (RecurrenceRule rrule : observance.getProperties(RecurrenceRule.class)) {
-					RRule rruleValue = convert(rrule);
-					inclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(rruleValue, dtstartValue, utc));
+					Recurrence recur = rrule.getValue();
+					if (recur != null) {
+						RRule rruleValue = convert(recur);
+						inclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(rruleValue, dtstartValue, utc));
+					}
 				}
 
 				//add EXRULE properties
 				for (ExceptionRule exrule : observance.getProperties(ExceptionRule.class)) {
-					RRule exruleValue = convert(exrule);
-					exclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(exruleValue, dtstartValue, utc));
+					Recurrence recur = exrule.getValue();
+					if (recur != null) {
+						RRule exruleValue = convert(recur);
+						exclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(exruleValue, dtstartValue, utc));
+					}
 				}
 			}
 		}
@@ -425,180 +425,6 @@ public class ICalTimeZone extends TimeZone {
 
 		List<RecurrenceIterator> theRest = iterators.subList(1, iterators.size());
 		return RecurrenceIteratorFactory.join(first, theRest.toArray(new RecurrenceIterator[0]));
-	}
-
-	/**
-	 * Converts a biweekly {@link DateStart} object to a google-rfc-2445
-	 * {@link DateTimeValue} object.
-	 * @param dtstart the biweekly object
-	 * @return the google-rfc-2445 object
-	 */
-	private static DateTimeValue convert(DateStart dtstart) {
-		ICalDate value = dtstart.getValue();
-		if (value == null) {
-			return null;
-		}
-
-		DateTimeComponents raw = value.getRawComponents();
-		if (raw == null) {
-			raw = new DateTimeComponents(value);
-		}
-		return new DateTimeValueImpl(raw.getYear(), raw.getMonth(), raw.getDate(), raw.getHour(), raw.getMinute(), raw.getSecond());
-	}
-
-	/**
-	 * Converts a biweekly {@link RecurrenceProperty} object to a
-	 * google-rfc-2445 {@link RRule} object.
-	 * @param biweeklyRRule the biweekly object
-	 * @return the google-rfc-2445 object
-	 */
-	private static RRule convert(RecurrenceProperty biweeklyRRule) {
-		RRule googleRRule = new RRule();
-		Recurrence recur = biweeklyRRule.getValue();
-		if (recur == null) {
-			return googleRRule;
-		}
-
-		List<WeekdayNum> weekdayNums = new ArrayList<WeekdayNum>();
-		for (ByDay byDay : recur.getByDay()) {
-			Integer prefix = byDay.getNum();
-			if (prefix == null) {
-				prefix = 0;
-			}
-
-			weekdayNums.add(new WeekdayNum(prefix, convert(byDay.getDay())));
-		}
-		googleRRule.setByDay(weekdayNums);
-
-		googleRRule.setByYearDay(toArray(recur.getByYearDay()));
-		googleRRule.setByMonth(toArray(recur.getByMonth()));
-		googleRRule.setByWeekNo(toArray(recur.getByWeekNo()));
-		googleRRule.setByMonthDay(toArray(recur.getByMonthDay()));
-		googleRRule.setByHour(toArray(recur.getByHour()));
-		googleRRule.setByMinute(toArray(recur.getByMinute()));
-		googleRRule.setBySecond(toArray(recur.getBySecond()));
-		googleRRule.setBySetPos(toArray(recur.getBySetPos()));
-
-		Integer count = recur.getCount();
-		if (count != null) {
-			googleRRule.setCount(count);
-		}
-
-		Frequency freq = recur.getFrequency();
-		if (freq != null) {
-			googleRRule.setFreq(convert(freq));
-		}
-
-		Integer interval = recur.getInterval();
-		if (interval != null) {
-			googleRRule.setInterval(interval);
-		}
-
-		ICalDate until = recur.getUntil();
-		if (until != null) {
-			googleRRule.setUntil(convert(until));
-		}
-
-		DayOfWeek workweekStarts = recur.getWorkweekStarts();
-		if (workweekStarts != null) {
-			googleRRule.setWkSt(convert(workweekStarts));
-		}
-
-		return googleRRule;
-	}
-
-	/**
-	 * Converts a biweekly {@link DayOfWeek} object to a google-rfc-2445
-	 * {@link Weekday} object.
-	 * @param day the biweekly object
-	 * @return the google-rfc-2445 object
-	 */
-	private static Weekday convert(DayOfWeek day) {
-		switch (day) {
-		case SUNDAY:
-			return Weekday.SU;
-		case MONDAY:
-			return Weekday.MO;
-		case TUESDAY:
-			return Weekday.TU;
-		case WEDNESDAY:
-			return Weekday.WE;
-		case THURSDAY:
-			return Weekday.TH;
-		case FRIDAY:
-			return Weekday.FR;
-		case SATURDAY:
-			return Weekday.SA;
-		default:
-			return null;
-		}
-	}
-
-	/**
-	 * Converts a biweekly {@link Frequency} object to a google-rfc-2445
-	 * {@link com.google.ical.values.Frequency Frequency} object.
-	 * @param freq the biweekly object
-	 * @return the google-rfc-2445 object
-	 */
-	private static com.google.ical.values.Frequency convert(Frequency freq) {
-		switch (freq) {
-		case YEARLY:
-			return com.google.ical.values.Frequency.YEARLY;
-		case MONTHLY:
-			return com.google.ical.values.Frequency.MONTHLY;
-		case WEEKLY:
-			return com.google.ical.values.Frequency.WEEKLY;
-		case DAILY:
-			return com.google.ical.values.Frequency.DAILY;
-		case HOURLY:
-			return com.google.ical.values.Frequency.HOURLY;
-		case MINUTELY:
-			return com.google.ical.values.Frequency.MINUTELY;
-		case SECONDLY:
-			return com.google.ical.values.Frequency.SECONDLY;
-		default:
-			return null;
-		}
-	}
-
-	/**
-	 * Converts an {@link ICalDate} object to a google-rfc-2445
-	 * {@link DateValue} object.
-	 * @param date the Java date object
-	 * @return the google-rfc-2445 object
-	 */
-	private static DateValue convert(ICalDate date) {
-		DateTimeComponents raw = date.getRawComponents();
-		if (raw == null) {
-			raw = new DateTimeComponents(date);
-		}
-
-		//@formatter:off
-		return new DateTimeValueImpl(
-			raw.getYear(),
-			raw.getMonth(),
-			raw.getDate(),
-			raw.getHour(),
-			raw.getMinute(),
-			raw.getSecond()
-		);
-		//@formatter:on
-	}
-
-	/**
-	 * Converts an Integer list to an int array.
-	 * @param list the Integer list
-	 * @return the int array
-	 */
-	private static int[] toArray(List<Integer> list) {
-		int[] array = new int[list.size()];
-		Iterator<Integer> it = list.iterator();
-		int i = 0;
-		while (it.hasNext()) {
-			Integer next = it.next();
-			array[i++] = (next == null) ? 0 : next;
-		}
-		return array;
 	}
 
 	/**

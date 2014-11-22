@@ -1,6 +1,14 @@
 package biweekly.property;
 
 import static biweekly.util.TestUtils.assertValidate;
+import static biweekly.util.TestUtils.date;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -8,6 +16,8 @@ import biweekly.ICalVersion;
 import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.Frequency;
+
+import com.google.ical.compat.javautil.DateIterator;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -38,6 +48,39 @@ import biweekly.util.Recurrence.Frequency;
  * @author Michael Angstadt
  */
 public class RecurrencePropertyTest {
+	@Test
+	public void getDateIterator_empty() {
+		RecurrenceProperty property = new RecurrenceProperty(null);
+		Date start = date("2014-11-22 10:00:00");
+		DateIterator it = property.getDateIterator(start);
+		assertFalse(it.hasNext());
+	}
+
+	@Test
+	public void getDateIterator() {
+		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).count(5).build();
+		Date start = date("2014-11-22 10:00:00");
+		RecurrenceProperty property = new RecurrenceProperty(recur);
+
+		//@formatter:off
+		List<Date> expected = Arrays.asList(
+			date("2014-11-22 10:00:00"),
+			date("2014-11-23 10:00:00"),
+			date("2014-11-24 10:00:00"),
+			date("2014-11-25 10:00:00"),
+			date("2014-11-26 10:00:00")
+		);
+		//@formatter:on
+
+		List<Date> actual = new ArrayList<Date>();
+		DateIterator it = property.getDateIterator(start);
+		while (it.hasNext()) {
+			actual.add(it.next());
+		}
+
+		assertEquals(expected, actual);
+	}
+
 	@Test
 	public void validate() {
 		RecurrenceProperty property = new RecurrenceProperty(null);

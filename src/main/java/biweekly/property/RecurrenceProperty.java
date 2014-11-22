@@ -1,12 +1,25 @@
 package biweekly.property;
 
+import static biweekly.util.Google2445Utils.convert;
+
+import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.TimeZone;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
+import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.Frequency;
+
+import com.google.ical.compat.javautil.DateIterator;
+import com.google.ical.compat.javautil.DateIteratorFactory;
+import com.google.ical.iter.RecurrenceIterator;
+import com.google.ical.iter.RecurrenceIteratorFactory;
+import com.google.ical.values.DateValue;
+import com.google.ical.values.RRule;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -44,6 +57,38 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 	 */
 	public RecurrenceProperty(Recurrence recur) {
 		super(recur);
+	}
+
+	/**
+	 * Gets the date values of this recurrence property.
+	 * @param startDate the date that the recurrence starts (typically, the
+	 * value of its accompanying {@link DateStart} property)
+	 * @return an iterator containing the dates
+	 * @see <a
+	 * href="https://code.google.com/p/google-rfc-2445/">google-rfc-2445</a>
+	 */
+	public DateIterator getDateIterator(Date startDate) {
+		return getDateIterator(new ICalDate(startDate));
+	}
+
+	/**
+	 * Gets the date values of this recurrence property.
+	 * @param startDate the date that the recurrence starts (typically, the
+	 * value of its accompanying {@link DateStart} property)
+	 * @return an iterator containing the dates
+	 * @see <a
+	 * href="https://code.google.com/p/google-rfc-2445/">google-rfc-2445</a>
+	 */
+	public DateIterator getDateIterator(ICalDate startDate) {
+		Recurrence recur = getValue();
+		if (recur == null) {
+			return new EmptyDateIterator();
+		}
+
+		RRule rruleValue = convert(recur);
+		DateValue dtstartValue = convert(startDate);
+		RecurrenceIterator it = RecurrenceIteratorFactory.createRecurrenceIterator(rruleValue, dtstartValue, TimeZone.getDefault());
+		return DateIteratorFactory.createDateIterator(it);
 	}
 
 	@Override
@@ -84,6 +129,24 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 			}
 
 			break;
+		}
+	}
+
+	private static class EmptyDateIterator implements DateIterator {
+		public boolean hasNext() {
+			return false;
+		}
+
+		public Date next() {
+			throw new NoSuchElementException();
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+
+		public void advanceTo(Date newStartUtc) {
+			//empty
 		}
 	}
 }
