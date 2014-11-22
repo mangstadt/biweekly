@@ -137,7 +137,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 
 	/**
 	 * Gets the property name.
-	 * @return the property name (e.g. "VERSION")
+	 * @return the property name (e.g. "DTSTART")
 	 */
 	public String getPropertyName() {
 		return propertyName;
