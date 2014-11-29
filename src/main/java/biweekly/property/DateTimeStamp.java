@@ -29,16 +29,16 @@ import java.util.Date;
 
 /**
  * <p>
- * The meaning of this property varies depending on the state of the iCalendar
- * object:
+ * The meaning of this property varies depending on whether the iCalendar object
+ * has a {@link Method} property.
  * <ul>
- * <li><b>If a {@link Method} property exists</b>, this property defines the
- * creation date of the iCalendar object (not the creation date of the actual
- * calendar data). Use the {@link Created} property to define the date that the
- * calendar data was last created.</li>
- * <li><b>Otherwise</b>, this property defines the date that the calendar data
- * was last modified (the {@link LastModified} property also holds this
- * information).</li>
+ * <li><b>Has a {@link Method} property:</b> Defines the creation date of the
+ * iCalendar object itself (<u>not</u> the creation date of the actual calendar
+ * data from the originating data store). Use the {@link Created} property to
+ * define the creation date of the actual calendar data.</li>
+ * <li><b>Does not have a {@link Method} property:</b> Defines the date that the
+ * calendar data was last updated (the {@link LastModified} property also holds
+ * this information).</li>
  * </ul>
  * </p>
  * <p>
