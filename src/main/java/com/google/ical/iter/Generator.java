@@ -56,6 +56,7 @@ abstract class Generator {
    * singleton to avoid forcing the JVM to unoptimize and decompile the
    * RecurrenceIterator's inner loop.</p>
    */
+  @SuppressWarnings("serial")
   static class IteratorShortCircuitingException extends Exception {
     private IteratorShortCircuitingException() {
       super();
