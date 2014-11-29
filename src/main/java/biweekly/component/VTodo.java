@@ -87,6 +87,7 @@ import biweekly.util.Recurrence;
  * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545 p.55-7</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-55">RFC 2445 p.55-6</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.14</a>
  */
 public class VTodo extends ICalComponent {

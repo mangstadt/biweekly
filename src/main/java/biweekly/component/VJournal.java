@@ -78,6 +78,7 @@ import biweekly.util.Recurrence;
  * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-57">RFC 5545 p.57-9</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-56">RFC 2445 p.56-7</a>
  */
 public class VJournal extends ICalComponent {
 	/**

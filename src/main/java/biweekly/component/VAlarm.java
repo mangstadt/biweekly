@@ -75,6 +75,8 @@ import biweekly.util.Duration;
  * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-71">RFC 5545 p.71-6</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-67">RFC 2445
+ * p.67-73</a>
  */
 public class VAlarm extends ICalComponent {
 	/**

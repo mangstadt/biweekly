@@ -73,6 +73,8 @@ import biweekly.util.ICalDate;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-59">RFC 5545
  * p.59-62</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-58">RFC 2445
+ * p.58-60</a>
  */
 public class VFreeBusy extends ICalComponent {
 	/**

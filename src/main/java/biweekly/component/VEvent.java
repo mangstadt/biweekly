@@ -90,6 +90,7 @@ import biweekly.util.Recurrence;
  * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-52">RFC 5545 p.52-5</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-52">RFC 2445 p.52-4</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.13</a>
  */
 public class VEvent extends ICalComponent {

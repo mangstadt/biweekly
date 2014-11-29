@@ -44,7 +44,9 @@ package biweekly.component;
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545 p.62-71</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
+ * p.62-71</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445#page-60">RFC 2445 p.60-7</a>
  */
 public class DaylightSavingsTime extends Observance {
 	//empty
