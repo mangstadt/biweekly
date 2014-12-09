@@ -86,7 +86,12 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 		}
 
 		RRule rruleValue = convert(recur);
-		DateValue dtstartValue = convert(startDate);
+
+		//we need an ICalDate that *doesn't* have any raw date/time components to pass into "convert()"
+		//see: https://sourceforge.net/p/biweekly/discussion/help-and-support/thread/faa25306/
+		ICalDate startDateCopy = (startDate.getRawComponents() == null) ? startDate : new ICalDate(startDate, null, startDate.hasTime());
+		DateValue dtstartValue = convert(startDateCopy);
+
 		RecurrenceIterator it = RecurrenceIteratorFactory.createRecurrenceIterator(rruleValue, dtstartValue, TimeZone.getDefault());
 		return DateIteratorFactory.createDateIterator(it);
 	}
