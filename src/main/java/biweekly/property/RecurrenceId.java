@@ -3,6 +3,7 @@ package biweekly.property;
 import java.util.Date;
 
 import biweekly.parameter.Range;
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2014, Michael Angstadt
@@ -64,8 +65,16 @@ public class RecurrenceId extends DateOrDateTimeProperty {
 	 * Creates a recurrence ID property.
 	 * @param originalStartDate the original start date
 	 */
+	public RecurrenceId(ICalDate originalStartDate) {
+		super(originalStartDate);
+	}
+
+	/**
+	 * Creates a recurrence ID property.
+	 * @param originalStartDate the original start date
+	 */
 	public RecurrenceId(Date originalStartDate) {
-		this(originalStartDate, true);
+		super(originalStartDate);
 	}
 
 	/**
