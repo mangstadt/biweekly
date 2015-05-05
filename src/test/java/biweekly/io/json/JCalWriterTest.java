@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
+import static biweekly.ICalVersion.*;
 import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
@@ -524,7 +524,7 @@ public class JCalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical).versions(ICalVersion.V2_0).run();
+		assertValidate(ical).versions(V2_0).run();
 		assertExample(ical, "jcal-draft-example1.json", new TimezoneInfo());
 	}
 
@@ -568,7 +568,7 @@ public class JCalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical).versions(ICalVersion.V2_0).run();
+		assertValidate(ical).versions(V2_0).run();
 
 		TimezoneInfo tzinfo = new TimezoneInfo();
 		{

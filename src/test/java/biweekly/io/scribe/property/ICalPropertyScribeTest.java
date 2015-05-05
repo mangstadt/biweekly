@@ -1,5 +1,7 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
 import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
@@ -492,7 +494,7 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 		ICalProperty property = new TestProperty("");
 
 		//1.0 doesn't use TZID parameter
-		ICalVersion version = ICalVersion.V1_0;
+		ICalVersion version = V1_0;
 		{
 			boolean hasTime = true;
 			TimezoneInfo tzinfo = new TimezoneInfo();
@@ -504,7 +506,7 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 			assertNull(parameters.getTimezoneId());
 		}
 
-		version = ICalVersion.V2_0;
+		version = V2_0;
 		{
 			//property has no time component
 			boolean hasTime = false;

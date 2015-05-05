@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
+import static biweekly.ICalVersion.*;
 import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.ParticipationLevel;
@@ -67,8 +67,8 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 	@Test
 	public void prepareParameters_cn() {
 		Attendee property = new Attendee(name, email);
-		sensei.assertPrepareParams(property).versions(ICalVersion.V1_0).run();
-		sensei.assertPrepareParams(property).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).expected("CN", name).run();
+		sensei.assertPrepareParams(property).versions(V1_0).run();
+		sensei.assertPrepareParams(property).versions(V2_0_DEPRECATED, V2_0).expected("CN", name).run();
 	}
 
 	@Test
@@ -76,20 +76,20 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		Attendee property = new Attendee(uri);
 
 		property.setRsvp(true);
-		sensei.assertPrepareParams(property).versions(ICalVersion.V1_0).expected("RSVP", "YES").run();
-		sensei.assertPrepareParams(property).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).expected("RSVP", "TRUE").run();
+		sensei.assertPrepareParams(property).versions(V1_0).expected("RSVP", "YES").run();
+		sensei.assertPrepareParams(property).versions(V2_0_DEPRECATED, V2_0).expected("RSVP", "TRUE").run();
 
 		property.setRsvp(false);
-		sensei.assertPrepareParams(property).versions(ICalVersion.V1_0).expected("RSVP", "NO").run();
-		sensei.assertPrepareParams(property).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).expected("RSVP", "FALSE").run();
+		sensei.assertPrepareParams(property).versions(V1_0).expected("RSVP", "NO").run();
+		sensei.assertPrepareParams(property).versions(V2_0_DEPRECATED, V2_0).expected("RSVP", "FALSE").run();
 	}
 
 	@Test
 	public void prepareParameters_level() {
 		Attendee property = new Attendee(uri);
 		property.setParticipationLevel(ParticipationLevel.OPTIONAL);
-		sensei.assertPrepareParams(property).versions(ICalVersion.V1_0).expected("EXPECT", "REQUEST").run();
-		sensei.assertPrepareParams(property).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).expected("ROLE", "OPT-PARTICIPANT").run();
+		sensei.assertPrepareParams(property).versions(V1_0).expected("EXPECT", "REQUEST").run();
+		sensei.assertPrepareParams(property).versions(V2_0_DEPRECATED, V2_0).expected("ROLE", "OPT-PARTICIPANT").run();
 	}
 
 	@Test
@@ -98,65 +98,65 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		property.setParticipationLevel(ParticipationLevel.OPTIONAL);
 		property.setRole(Role.CHAIR);
 
-		sensei.assertPrepareParams(property).versions(ICalVersion.V1_0).expected("EXPECT", "REQUEST").expected("ROLE", "CHAIR").run();
-		sensei.assertPrepareParams(property).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).expected("ROLE", "CHAIR").run();
+		sensei.assertPrepareParams(property).versions(V1_0).expected("EXPECT", "REQUEST").expected("ROLE", "CHAIR").run();
+		sensei.assertPrepareParams(property).versions(V2_0_DEPRECATED, V2_0).expected("ROLE", "CHAIR").run();
 	}
 
 	@Test
 	public void prepareParameters_status() {
 		Attendee property = new Attendee(uri);
 		property.setParticipationStatus(ParticipationStatus.ACCEPTED);
-		sensei.assertPrepareParams(property).versions(ICalVersion.V1_0).expected("STATUS", "ACCEPTED").run();
-		sensei.assertPrepareParams(property).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).expected("PARTSTAT", "ACCEPTED").run();
+		sensei.assertPrepareParams(property).versions(V1_0).expected("STATUS", "ACCEPTED").run();
+		sensei.assertPrepareParams(property).versions(V2_0_DEPRECATED, V2_0).expected("PARTSTAT", "ACCEPTED").run();
 	}
 
 	@Test
 	public void prepareParameters_status_needs_action() {
 		Attendee property = new Attendee(uri);
 		property.setParticipationStatus(ParticipationStatus.NEEDS_ACTION);
-		sensei.assertPrepareParams(property).versions(ICalVersion.V1_0).expected("STATUS", "NEEDS ACTION").run();
-		sensei.assertPrepareParams(property).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).expected("PARTSTAT", "NEEDS-ACTION").run();
+		sensei.assertPrepareParams(property).versions(V1_0).expected("STATUS", "NEEDS ACTION").run();
+		sensei.assertPrepareParams(property).versions(V2_0_DEPRECATED, V2_0).expected("PARTSTAT", "NEEDS-ACTION").run();
 	}
 
 	@Test
 	public void dataType() {
 		Attendee property = new Attendee(name, email);
-		sensei.assertDataType(property).versions(ICalVersion.V1_0).run(null);
-		sensei.assertDataType(property).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(ICalDataType.CAL_ADDRESS);
+		sensei.assertDataType(property).versions(V1_0).run(null);
+		sensei.assertDataType(property).versions(V2_0_DEPRECATED, V2_0).run(ICalDataType.CAL_ADDRESS);
 	}
 
 	@Test
 	public void dataType_uri() {
 		Attendee property = new Attendee(uri);
-		sensei.assertDataType(property).versions(ICalVersion.V1_0).run(ICalDataType.URL);
-		sensei.assertDataType(property).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(ICalDataType.CAL_ADDRESS);
+		sensei.assertDataType(property).versions(V1_0).run(ICalDataType.URL);
+		sensei.assertDataType(property).versions(V2_0_DEPRECATED, V2_0).run(ICalDataType.CAL_ADDRESS);
 	}
 
 	@Test
 	public void writeText() {
-		sensei.assertWriteText(withEmail).version(ICalVersion.V1_0).run(email);
-		sensei.assertWriteText(withEmail).version(ICalVersion.V2_0_DEPRECATED).run("mailto:" + email);
-		sensei.assertWriteText(withEmail).version(ICalVersion.V2_0).run("mailto:" + email);
+		sensei.assertWriteText(withEmail).version(V1_0).run(email);
+		sensei.assertWriteText(withEmail).version(V2_0_DEPRECATED).run("mailto:" + email);
+		sensei.assertWriteText(withEmail).version(V2_0).run("mailto:" + email);
 
-		sensei.assertWriteText(withNameEmail).version(ICalVersion.V1_0).run(name + " <" + email + ">");
-		sensei.assertWriteText(withNameEmail).version(ICalVersion.V2_0_DEPRECATED).run("mailto:" + email);
-		sensei.assertWriteText(withNameEmail).version(ICalVersion.V2_0).run("mailto:" + email);
+		sensei.assertWriteText(withNameEmail).version(V1_0).run(name + " <" + email + ">");
+		sensei.assertWriteText(withNameEmail).version(V2_0_DEPRECATED).run("mailto:" + email);
+		sensei.assertWriteText(withNameEmail).version(V2_0).run("mailto:" + email);
 
-		sensei.assertWriteText(withNameEmailUri).version(ICalVersion.V1_0).run(uri);
-		sensei.assertWriteText(withNameEmailUri).version(ICalVersion.V2_0_DEPRECATED).run(uri);
-		sensei.assertWriteText(withNameEmailUri).version(ICalVersion.V2_0).run(uri);
+		sensei.assertWriteText(withNameEmailUri).version(V1_0).run(uri);
+		sensei.assertWriteText(withNameEmailUri).version(V2_0_DEPRECATED).run(uri);
+		sensei.assertWriteText(withNameEmailUri).version(V2_0).run(uri);
 	}
 
 	@Test
 	public void parseText() {
-		sensei.assertParseText(uri).versions(ICalVersion.V1_0).dataType(ICalDataType.URL).run(check(null, null, uri));
-		sensei.assertParseText(uri).versions(ICalVersion.V1_0).run(check(null, uri, null));
+		sensei.assertParseText(uri).versions(V1_0).dataType(ICalDataType.URL).run(check(null, null, uri));
+		sensei.assertParseText(uri).versions(V1_0).run(check(null, uri, null));
 
-		sensei.assertParseText(name + " <" + email + ">").versions(ICalVersion.V1_0).run(check(name, email, null));
-		sensei.assertParseText(name + " <" + email + ">").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(check(null, null, name + " <" + email + ">"));
+		sensei.assertParseText(name + " <" + email + ">").versions(V1_0).run(check(name, email, null));
+		sensei.assertParseText(name + " <" + email + ">").versions(V2_0_DEPRECATED, V2_0).run(check(null, null, name + " <" + email + ">"));
 
-		sensei.assertParseText("mailto:" + email).versions(ICalVersion.V1_0).run(check(null, "mailto:" + email, null));
-		sensei.assertParseText("mailto:" + email).param("CN", name).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(check(name, email, null));
+		sensei.assertParseText("mailto:" + email).versions(V1_0).run(check(null, "mailto:" + email, null));
+		sensei.assertParseText("mailto:" + email).param("CN", name).versions(V2_0_DEPRECATED, V2_0).run(check(name, email, null));
 	}
 
 	private Check<Attendee> check(final String name, final String email, final String uri) {
@@ -172,28 +172,28 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 
 	@Test
 	public void parseText_level() {
-		sensei.assertParseText(uri).param("EXPECT", "REQUIRE").versions(ICalVersion.V1_0).run(checkLevel(ParticipationLevel.REQUIRED));
-		sensei.assertParseText(uri).param("EXPECT", "REQUEST").versions(ICalVersion.V1_0).run(checkLevel(ParticipationLevel.OPTIONAL));
-		sensei.assertParseText(uri).param("EXPECT", "FYI").versions(ICalVersion.V1_0).run(checkLevel(ParticipationLevel.FYI));
-		sensei.assertParseText(uri).param("EXPECT", "invalid").versions(ICalVersion.V1_0).run(checkLevel(ParticipationLevel.get("invalid")));
-		sensei.assertParseText(uri).param("EXPECT", "REQUIRE").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(new Check<Attendee>() {
+		sensei.assertParseText(uri).param("EXPECT", "REQUIRE").versions(V1_0).run(checkLevel(ParticipationLevel.REQUIRED));
+		sensei.assertParseText(uri).param("EXPECT", "REQUEST").versions(V1_0).run(checkLevel(ParticipationLevel.OPTIONAL));
+		sensei.assertParseText(uri).param("EXPECT", "FYI").versions(V1_0).run(checkLevel(ParticipationLevel.FYI));
+		sensei.assertParseText(uri).param("EXPECT", "invalid").versions(V1_0).run(checkLevel(ParticipationLevel.get("invalid")));
+		sensei.assertParseText(uri).param("EXPECT", "REQUIRE").versions(V2_0_DEPRECATED, V2_0).run(new Check<Attendee>() {
 			public void check(Attendee property, ParseContext context) {
 				assertEquals("REQUIRE", property.getParameter("EXPECT"));
 				assertNull(property.getParticipationLevel());
 			}
 		});
 
-		sensei.assertParseText(uri).param("ROLE", "REQ-PARTICIPANT").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(checkLevel(ParticipationLevel.REQUIRED));
-		sensei.assertParseText(uri).param("ROLE", "OPT-PARTICIPANT").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(checkLevel(ParticipationLevel.OPTIONAL));
-		sensei.assertParseText(uri).param("ROLE", "NON-PARTICIPANT").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(checkLevel(ParticipationLevel.FYI));
-		sensei.assertParseText(uri).param("ROLE", "invalid").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(new Check<Attendee>() {
+		sensei.assertParseText(uri).param("ROLE", "REQ-PARTICIPANT").versions(V2_0_DEPRECATED, V2_0).run(checkLevel(ParticipationLevel.REQUIRED));
+		sensei.assertParseText(uri).param("ROLE", "OPT-PARTICIPANT").versions(V2_0_DEPRECATED, V2_0).run(checkLevel(ParticipationLevel.OPTIONAL));
+		sensei.assertParseText(uri).param("ROLE", "NON-PARTICIPANT").versions(V2_0_DEPRECATED, V2_0).run(checkLevel(ParticipationLevel.FYI));
+		sensei.assertParseText(uri).param("ROLE", "invalid").versions(V2_0_DEPRECATED, V2_0).run(new Check<Attendee>() {
 			public void check(Attendee property, ParseContext context) {
 				assertTrue(property.getParameters().isEmpty());
 				assertNull(property.getParticipationLevel());
 				assertEquals(Role.get("invalid"), property.getRole());
 			}
 		});
-		sensei.assertParseText(uri).param("ROLE", "REQ-PARTICIPANT").versions(ICalVersion.V1_0).run(new Check<Attendee>() {
+		sensei.assertParseText(uri).param("ROLE", "REQ-PARTICIPANT").versions(V1_0).run(new Check<Attendee>() {
 			public void check(Attendee property, ParseContext context) {
 				assertTrue(property.getParameters().isEmpty());
 				assertEquals(Role.get("REQ-PARTICIPANT"), property.getRole());
@@ -213,8 +213,8 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 
 	@Test
 	public void parseText_role() {
-		sensei.assertParseText(uri).param("ROLE", "OPT-PARTICIPANT").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(checkRole(ParticipationLevel.OPTIONAL, null));
-		sensei.assertParseText(uri).param("ROLE", "CHAIR").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(checkRole(null, Role.CHAIR));
+		sensei.assertParseText(uri).param("ROLE", "OPT-PARTICIPANT").versions(V2_0_DEPRECATED, V2_0).run(checkRole(ParticipationLevel.OPTIONAL, null));
+		sensei.assertParseText(uri).param("ROLE", "CHAIR").versions(V2_0_DEPRECATED, V2_0).run(checkRole(null, Role.CHAIR));
 		sensei.assertParseText(uri).param("ROLE", "ATTENDEE").run(checkRole(null, Role.ATTENDEE));
 		sensei.assertParseText(uri).param("ROLE", "invalid").run(checkRole(null, Role.get("invalid")));
 	}
@@ -232,10 +232,10 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 	@Test
 	public void parseText_rsvp() {
 		sensei.assertParseText(uri).run(checkRsvp(null, null));
-		sensei.assertParseText(uri).param("RSVP", "YES").versions(ICalVersion.V1_0).run(checkRsvp(null, true));
-		sensei.assertParseText(uri).param("RSVP", "NO").versions(ICalVersion.V1_0).run(checkRsvp(null, false));
-		sensei.assertParseText(uri).param("RSVP", "TRUE").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(checkRsvp(null, true));
-		sensei.assertParseText(uri).param("RSVP", "FALSE").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(checkRsvp(null, false));
+		sensei.assertParseText(uri).param("RSVP", "YES").versions(V1_0).run(checkRsvp(null, true));
+		sensei.assertParseText(uri).param("RSVP", "NO").versions(V1_0).run(checkRsvp(null, false));
+		sensei.assertParseText(uri).param("RSVP", "TRUE").versions(V2_0_DEPRECATED, V2_0).run(checkRsvp(null, true));
+		sensei.assertParseText(uri).param("RSVP", "FALSE").versions(V2_0_DEPRECATED, V2_0).run(checkRsvp(null, false));
 		sensei.assertParseText(uri).param("RSVP", "invalid").run(checkRsvp("invalid", null));
 	}
 

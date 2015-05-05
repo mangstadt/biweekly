@@ -6,7 +6,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import biweekly.ICalVersion;
+import static biweekly.ICalVersion.*;
 import biweekly.parameter.Related;
 import biweekly.property.Action;
 import biweekly.property.Attachment;
@@ -106,12 +106,12 @@ public class VAlarmTest {
 	public void validate_procedure() {
 		Action action = Action.procedure();
 		VAlarm component = new VAlarm(action, new Trigger(new Date()));
-		assertValidate(component).versions(ICalVersion.V1_0).run(2);
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).warn(action, 46).run(2);
+		assertValidate(component).versions(V1_0).run(2);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).warn(action, 46).run(2);
 
 		component.setDescription("");
-		assertValidate(component).versions(ICalVersion.V1_0).run();
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).warn(action, 46).run();
+		assertValidate(component).versions(V1_0).run();
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).warn(action, 46).run();
 	}
 
 	@Test

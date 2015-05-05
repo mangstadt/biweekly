@@ -1,5 +1,8 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -7,7 +10,6 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Attachment;
@@ -70,13 +72,13 @@ public class AttachmentScribeTest extends ScribeTest<Attachment> {
 
 	@Test
 	public void dataType() {
-		sensei.assertDataType(withUrl).versions(ICalVersion.V1_0).run(ICalDataType.URL);
-		sensei.assertDataType(withUrl).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(ICalDataType.URI);
+		sensei.assertDataType(withUrl).versions(V1_0).run(ICalDataType.URL);
+		sensei.assertDataType(withUrl).versions(V2_0_DEPRECATED, V2_0).run(ICalDataType.URI);
 
 		sensei.assertDataType(withData).run(ICalDataType.BINARY);
 
-		sensei.assertDataType(withContentId).versions(ICalVersion.V1_0).run(ICalDataType.CONTENT_ID);
-		sensei.assertDataType(withContentId).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(ICalDataType.URI);
+		sensei.assertDataType(withContentId).versions(V1_0).run(ICalDataType.CONTENT_ID);
+		sensei.assertDataType(withContentId).versions(V2_0_DEPRECATED, V2_0).run(ICalDataType.URI);
 
 		sensei.assertDataType(empty).run(ICalDataType.URI);
 	}
@@ -85,9 +87,9 @@ public class AttachmentScribeTest extends ScribeTest<Attachment> {
 	public void writeText() {
 		sensei.assertWriteText(withUrl).run(url);
 		sensei.assertWriteText(withData).run(base64Data);
-		sensei.assertWriteText(withContentId).version(ICalVersion.V1_0).run(contentId);
-		sensei.assertWriteText(withContentId).version(ICalVersion.V2_0_DEPRECATED).run("CID:" + contentId);
-		sensei.assertWriteText(withContentId).version(ICalVersion.V2_0).run("CID:" + contentId);
+		sensei.assertWriteText(withContentId).version(V1_0).run(contentId);
+		sensei.assertWriteText(withContentId).version(V2_0_DEPRECATED).run("CID:" + contentId);
+		sensei.assertWriteText(withContentId).version(V2_0).run("CID:" + contentId);
 		sensei.assertWriteText(empty).run("");
 	}
 

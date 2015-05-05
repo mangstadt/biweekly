@@ -1,5 +1,6 @@
 package biweekly.io;
 
+import static biweekly.ICalVersion.V2_0;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -108,7 +109,7 @@ public class StreamWriterTest {
 	private class StreamWriterImpl extends StreamWriter {
 		@Override
 		protected ICalVersion getTargetVersion() {
-			return ICalVersion.V2_0;
+			return V2_0;
 		}
 
 		@Override

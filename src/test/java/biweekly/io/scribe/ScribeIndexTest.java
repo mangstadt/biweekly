@@ -1,5 +1,8 @@
 package biweekly.io.scribe;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.each;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -81,9 +84,9 @@ public class ScribeIndexTest {
 		assertTrue(scribe instanceof VEventScribe);
 
 		name = "VFREEBUSY";
-		scribe = index.getComponentScribe(name, ICalVersion.V1_0);
+		scribe = index.getComponentScribe(name, V1_0);
 		assertTrue(scribe instanceof RawComponentScribe);
-		for (ICalVersion version : each(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0)) {
+		for (ICalVersion version : each(V2_0_DEPRECATED, V2_0)) {
 			scribe = index.getComponentScribe(name, version);
 			assertTrue(scribe instanceof VFreeBusyScribe);
 		}
@@ -124,17 +127,17 @@ public class ScribeIndexTest {
 		assertTrue(scribe instanceof UidScribe);
 
 		name = "DAYLIGHT";
-		scribe = index.getPropertyScribe(name, ICalVersion.V1_0);
+		scribe = index.getPropertyScribe(name, V1_0);
 		assertTrue(scribe instanceof DaylightScribe);
-		for (ICalVersion version : each(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0)) {
+		for (ICalVersion version : each(V2_0_DEPRECATED, V2_0)) {
 			scribe = index.getPropertyScribe(name, version);
 			assertTrue(scribe instanceof RawPropertyScribe);
 		}
 
 		name = "DCREATED";
-		scribe = index.getPropertyScribe(name, ICalVersion.V1_0);
+		scribe = index.getPropertyScribe(name, V1_0);
 		assertTrue(scribe instanceof CreatedScribe);
-		for (ICalVersion version : each(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0)) {
+		for (ICalVersion version : each(V2_0_DEPRECATED, V2_0)) {
 			scribe = index.getPropertyScribe(name, version);
 			assertTrue(scribe instanceof RawPropertyScribe);
 		}
@@ -142,9 +145,9 @@ public class ScribeIndexTest {
 		assertTrue(scribe instanceof CreatedScribe);
 
 		name = "CREATED";
-		scribe = index.getPropertyScribe(name, ICalVersion.V1_0);
+		scribe = index.getPropertyScribe(name, V1_0);
 		assertTrue(scribe instanceof RawPropertyScribe);
-		for (ICalVersion version : each(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0)) {
+		for (ICalVersion version : each(V2_0_DEPRECATED, V2_0)) {
 			scribe = index.getPropertyScribe(name, version);
 			assertTrue(scribe instanceof CreatedScribe);
 		}

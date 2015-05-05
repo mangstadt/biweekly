@@ -28,7 +28,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
+import static biweekly.ICalVersion.*;
 import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
@@ -650,7 +650,7 @@ public class XCalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical).versions(ICalVersion.V2_0).run();
+		assertValidate(ical).versions(V2_0).run();
 		assertExample(ical, "rfc6321-example1.xml", new TimezoneInfo());
 	}
 
@@ -691,7 +691,7 @@ public class XCalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical).versions(ICalVersion.V2_0).run();
+		assertValidate(ical).versions(V2_0).run();
 
 		usEasternTz = new VTimezone("US/Eastern");
 		usEasternTz.setLastModified(utc("2004-01-10 03:28:45"));

@@ -6,7 +6,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import biweekly.ICalVersion;
+import static biweekly.ICalVersion.*;
 import biweekly.property.DateStart;
 import biweekly.property.LastModified;
 import biweekly.property.TimezoneUrl;
@@ -43,8 +43,8 @@ public class VTimezoneTest {
 	@Test
 	public void validate_required() {
 		VTimezone component = new VTimezone(null);
-		assertValidate(component).versions(ICalVersion.V1_0).run(48, 2, 21);
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(2, 21);
+		assertValidate(component).versions(V1_0).run(48, 2, 21);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(2, 21);
 	}
 
 	@Test
@@ -54,8 +54,8 @@ public class VTimezoneTest {
 		component.addProperty(new LastModified(new Date()));
 		component.addProperty(new TimezoneUrl(""));
 		component.addProperty(new TimezoneUrl(""));
-		assertValidate(component).versions(ICalVersion.V1_0).run(48, 3, 3, 21);
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(3, 3, 21);
+		assertValidate(component).versions(V1_0).run(48, 3, 3, 21);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(3, 3, 21);
 	}
 
 	@Test
@@ -66,8 +66,8 @@ public class VTimezoneTest {
 		standard.setTimezoneOffsetTo(1, 0);
 		VTimezone component = new VTimezone("");
 		component.addStandardTime(standard);
-		assertValidate(component).versions(ICalVersion.V1_0).warn(standard, 48).run(48);
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
+		assertValidate(component).versions(V1_0).warn(standard, 48).run(48);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run();
 
 		DaylightSavingsTime daylight = new DaylightSavingsTime();
 		daylight.setDateStart(new DateStart(new Date()));
@@ -75,7 +75,7 @@ public class VTimezoneTest {
 		daylight.setTimezoneOffsetTo(1, 0);
 		component = new VTimezone("");
 		component.addDaylightSavingsTime(daylight);
-		assertValidate(component).versions(ICalVersion.V1_0).warn(daylight, 48).run(48);
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
+		assertValidate(component).versions(V1_0).warn(daylight, 48).run(48);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run();
 	}
 }

@@ -7,7 +7,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
+import static biweekly.ICalVersion.*;
 import biweekly.io.ParseContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -61,9 +61,9 @@ public class TextListPropertyScribeTest extends ScribeTest<biweekly.io.scribe.pr
 
 	@Test
 	public void writeText() {
-		sensei.assertWriteText(withMultiple).version(ICalVersion.V1_0).run("one;two;three\\,four");
-		sensei.assertWriteText(withMultiple).version(ICalVersion.V2_0_DEPRECATED).run("one,two,three\\,four");
-		sensei.assertWriteText(withMultiple).version(ICalVersion.V2_0).run("one,two,three\\,four");
+		sensei.assertWriteText(withMultiple).version(V1_0).run("one;two;three\\,four");
+		sensei.assertWriteText(withMultiple).version(V2_0_DEPRECATED).run("one,two,three\\,four");
+		sensei.assertWriteText(withMultiple).version(V2_0).run("one,two,three\\,four");
 
 		sensei.assertWriteText(withSingle).run("one");
 		sensei.assertWriteText(empty).run("");
@@ -71,8 +71,8 @@ public class TextListPropertyScribeTest extends ScribeTest<biweekly.io.scribe.pr
 
 	@Test
 	public void parseText() {
-		sensei.assertParseText("one;two;three\\,four").versions(ICalVersion.V1_0).run(is(withMultiple));
-		sensei.assertParseText("one,two,three\\,four").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(is(withMultiple));
+		sensei.assertParseText("one;two;three\\,four").versions(V1_0).run(is(withMultiple));
+		sensei.assertParseText("one,two,three\\,four").versions(V2_0_DEPRECATED, V2_0).run(is(withMultiple));
 		sensei.assertParseText("one").run(is(withSingle));
 		sensei.assertParseText("").run(is(empty));
 	}

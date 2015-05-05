@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.ICalVersion.V2_0;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
@@ -275,7 +276,7 @@ public class Sensei<T extends ICalProperty> {
 	 * method.
 	 */
 	public class WriteTextTest extends WriteTest<WriteTextTest> {
-		protected ICalVersion version = ICalVersion.V2_0;
+		protected ICalVersion version = V2_0;
 
 		public WriteTextTest(T property) {
 			super(property);
@@ -324,7 +325,7 @@ public class Sensei<T extends ICalProperty> {
 		@Override
 		public void run(String expectedInnerXml) {
 			Document actual = createXCalElement();
-			WriteContext context = new WriteContext(ICalVersion.V2_0, tzinfo);
+			WriteContext context = new WriteContext(V2_0, tzinfo);
 			context.setParent(parent);
 			scribe.writeXml(property, XmlUtils.getRootElement(actual), context);
 
@@ -348,7 +349,7 @@ public class Sensei<T extends ICalProperty> {
 		 * @return the marshalled value
 		 */
 		public JCalValue run() {
-			WriteContext context = new WriteContext(ICalVersion.V2_0, tzinfo);
+			WriteContext context = new WriteContext(V2_0, tzinfo);
 			context.setParent(parent);
 			return scribe.writeJson(property, context);
 		}
@@ -453,7 +454,7 @@ public class Sensei<T extends ICalProperty> {
 	 */
 	public class ParseTextTest extends ParseTest<ParseTextTest> {
 		private final String value;
-		private ICalDataType dataType = scribe.defaultDataType(ICalVersion.V2_0);
+		private ICalDataType dataType = scribe.defaultDataType(V2_0);
 		private ICalVersion versions[] = ICalVersion.values();
 
 		/**
@@ -549,7 +550,7 @@ public class Sensei<T extends ICalProperty> {
 	 */
 	public class ParseJsonTest extends ParseTest<ParseJsonTest> {
 		private final JCalValue value;
-		private ICalDataType dataType = scribe.defaultDataType(ICalVersion.V2_0);
+		private ICalDataType dataType = scribe.defaultDataType(V2_0);
 
 		/**
 		 * @param value the jCal value to parse

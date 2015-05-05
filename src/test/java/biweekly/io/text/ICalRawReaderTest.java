@@ -8,7 +8,7 @@ import java.io.StringReader;
 
 import org.junit.Test;
 
-import biweekly.ICalVersion;
+import static biweekly.ICalVersion.*;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -95,22 +95,22 @@ public class ICalRawReaderTest {
 		assertEquals(null, reader.getVersion());
 
 		assertEquals(line("PRODID").value("value").build(), reader.readLine());
-		assertEquals(ICalVersion.V2_0, reader.getVersion());
+		assertEquals(V2_0, reader.getVersion());
 
 		assertEquals(line("BEGIN").value("VEVENT").build(), reader.readLine());
-		assertEquals(ICalVersion.V2_0, reader.getVersion());
+		assertEquals(V2_0, reader.getVersion());
 
 		assertEquals(line("VERSION").value("1.0").build(), reader.readLine());
-		assertEquals(ICalVersion.V2_0, reader.getVersion());
+		assertEquals(V2_0, reader.getVersion());
 
 		assertEquals(line("SUMMARY").value("value").build(), reader.readLine());
-		assertEquals(ICalVersion.V2_0, reader.getVersion());
+		assertEquals(V2_0, reader.getVersion());
 
 		assertEquals(line("END").value("VCALENDAR").build(), reader.readLine());
-		assertEquals(ICalVersion.V2_0, reader.getVersion());
+		assertEquals(V2_0, reader.getVersion());
 
 		assertEquals(line("VERSION").value("1.0").build(), reader.readLine());
-		assertEquals(ICalVersion.V2_0, reader.getVersion());
+		assertEquals(V2_0, reader.getVersion());
 
 		assertNull(reader.readLine());
 	}

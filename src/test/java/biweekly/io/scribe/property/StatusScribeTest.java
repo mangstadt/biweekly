@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import biweekly.ICalVersion;
+import static biweekly.ICalVersion.*;
 import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Status;
@@ -46,18 +46,18 @@ public class StatusScribeTest extends ScribeTest<Status> {
 	public void writeText_needsAction() {
 		Status status = Status.needsAction();
 
-		sensei.assertWriteText(status).version(ICalVersion.V1_0).run("NEEDS ACTION");
-		sensei.assertWriteText(status).version(ICalVersion.V2_0_DEPRECATED).run("NEEDS-ACTION");
-		sensei.assertWriteText(status).version(ICalVersion.V2_0).run("NEEDS-ACTION");
+		sensei.assertWriteText(status).version(V1_0).run("NEEDS ACTION");
+		sensei.assertWriteText(status).version(V2_0_DEPRECATED).run("NEEDS-ACTION");
+		sensei.assertWriteText(status).version(V2_0).run("NEEDS-ACTION");
 	}
 
 	@Test
 	public void parseText_needsAction() {
-		sensei.assertParseText("NEEDS ACTION").versions(ICalVersion.V1_0).run(isNeedsAction(true));
-		sensei.assertParseText("NEEDS ACTION").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(isNeedsAction(false));
+		sensei.assertParseText("NEEDS ACTION").versions(V1_0).run(isNeedsAction(true));
+		sensei.assertParseText("NEEDS ACTION").versions(V2_0_DEPRECATED, V2_0).run(isNeedsAction(false));
 
-		sensei.assertParseText("NEEDS-ACTION").versions(ICalVersion.V1_0).run(isNeedsAction(true));
-		sensei.assertParseText("NEEDS-ACTION").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(isNeedsAction(true));
+		sensei.assertParseText("NEEDS-ACTION").versions(V1_0).run(isNeedsAction(true));
+		sensei.assertParseText("NEEDS-ACTION").versions(V2_0_DEPRECATED, V2_0).run(isNeedsAction(true));
 	}
 
 	private Check<Status> isNeedsAction(final boolean isNeedsAction) {

@@ -1,5 +1,7 @@
 package biweekly.io.text;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -49,7 +51,7 @@ public class ICalRawWriterTest {
 	@Before
 	public void before() throws Exception {
 		sw = new StringWriter();
-		writer = new ICalRawWriter(sw, ICalVersion.V2_0);
+		writer = new ICalRawWriter(sw, V2_0);
 	}
 
 	@Test
@@ -134,7 +136,7 @@ public class ICalRawWriterTest {
 
 	@Test
 	public void custom_foldingScheme_and_newline() throws Exception {
-		writer = new ICalRawWriter(sw, ICalVersion.V2_0);
+		writer = new ICalRawWriter(sw, V2_0);
 		writer.getFoldedLineWriter().setIndent("\t");
 		writer.getFoldedLineWriter().setLineLength(100);
 		writer.getFoldedLineWriter().setNewline("*");
@@ -154,7 +156,7 @@ public class ICalRawWriterTest {
 
 	@Test
 	public void no_foldingScheme() throws Exception {
-		writer = new ICalRawWriter(sw, ICalVersion.V2_0);
+		writer = new ICalRawWriter(sw, V2_0);
 		writer.getFoldedLineWriter().setLineLength(null);
 		writer.getFoldedLineWriter().setNewline("*");
 
@@ -172,7 +174,7 @@ public class ICalRawWriterTest {
 	@Test
 	public void newline() throws Throwable {
 		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw, ICalVersion.V1_0);
+		ICalRawWriter writer = new ICalRawWriter(sw, V1_0);
 		writer.getFoldedLineWriter().setNewline("*");
 
 		writer.writeProperty("PROP", "one");
@@ -228,14 +230,14 @@ public class ICalRawWriterTest {
 		//replaces \ with \\
 		//replaces ; with \;
 		//replaces newline with space
-		assertParametersSpecialChars(ICalVersion.V1_0, false, "PROP;X-TEST=^�\\\\\\;\"\t ;X-TEST=normal:\r\n");
+		assertParametersSpecialChars(V1_0, false, "PROP;X-TEST=^�\\\\\\;\"\t ;X-TEST=normal:\r\n");
 
 		//1.0 with caret escaping (ignored)
 		//removes , : = [ ] FS
 		//replaces \ with \\
 		//replaces ; with \;
 		//replaces newline with space
-		assertParametersSpecialChars(ICalVersion.V1_0, true, "PROP;X-TEST=^�\\\\\\;\"\t ;X-TEST=normal:\r\n");
+		assertParametersSpecialChars(V1_0, true, "PROP;X-TEST=^�\\\\\\;\"\t ;X-TEST=normal:\r\n");
 
 		//2.0 without caret escaping
 		//removes FS
@@ -243,7 +245,7 @@ public class ICalRawWriterTest {
 		//replaces newline with space
 		//replaces " with '
 		//surrounds in double quotes, since it contains , ; or :
-		assertParametersSpecialChars(ICalVersion.V2_0, false, "PROP;X-TEST=\"^�\\,;:=[]'\t \",normal:\r\n");
+		assertParametersSpecialChars(V2_0, false, "PROP;X-TEST=\"^�\\,;:=[]'\t \",normal:\r\n");
 
 		//2.0 with caret escaping
 		//removes FS
@@ -251,7 +253,7 @@ public class ICalRawWriterTest {
 		//replaces newline with ^n
 		//replaces " with ^'
 		//surrounds in double quotes, since it contains , ; or :
-		assertParametersSpecialChars(ICalVersion.V2_0, true, "PROP;X-TEST=\"^^�\\,;:=[]^'\t^n\",normal:\r\n");
+		assertParametersSpecialChars(V2_0, true, "PROP;X-TEST=\"^^�\\,;:=[]^'\t^n\",normal:\r\n");
 	}
 
 	private void assertParametersSpecialChars(ICalVersion version, boolean caretEncodingEnabled, String expected) throws IOException {
@@ -276,8 +278,8 @@ public class ICalRawWriterTest {
 	 */
 	@Test
 	public void newlines_in_property_values() throws Throwable {
-		assertNewlinesInPropertyValues(ICalVersion.V1_0, "PROP;ENCODING=QUOTED-PRINTABLE;CHARSET=UTF-8:one=0D=0Atwo\r\n");
-		assertNewlinesInPropertyValues(ICalVersion.V2_0, "PROP:one\\ntwo\r\n");
+		assertNewlinesInPropertyValues(V1_0, "PROP;ENCODING=QUOTED-PRINTABLE;CHARSET=UTF-8:one=0D=0Atwo\r\n");
+		assertNewlinesInPropertyValues(V2_0, "PROP:one\\ntwo\r\n");
 	}
 
 	private void assertNewlinesInPropertyValues(ICalVersion version, String expected) throws IOException {
@@ -297,7 +299,7 @@ public class ICalRawWriterTest {
 	@Test
 	public void quoted_printable_line() throws Throwable {
 		StringWriter sw = new StringWriter();
-		ICalRawWriter writer = new ICalRawWriter(sw, ICalVersion.V1_0);
+		ICalRawWriter writer = new ICalRawWriter(sw, V1_0);
 		writer.getFoldedLineWriter().setLineLength(60);
 
 		ICalParameters parameters = new ICalParameters();
@@ -327,7 +329,7 @@ public class ICalRawWriterTest {
 		//UTF-8
 		{
 			StringWriter sw = new StringWriter();
-			ICalRawWriter writer = new ICalRawWriter(sw, ICalVersion.V1_0);
+			ICalRawWriter writer = new ICalRawWriter(sw, V1_0);
 
 			ICalParameters parameters = new ICalParameters();
 			parameters.setEncoding(Encoding.QUOTED_PRINTABLE);
@@ -348,7 +350,7 @@ public class ICalRawWriterTest {
 		//ISO-8859-1
 		{
 			StringWriter sw = new StringWriter();
-			ICalRawWriter writer = new ICalRawWriter(sw, ICalVersion.V1_0);
+			ICalRawWriter writer = new ICalRawWriter(sw, V1_0);
 
 			ICalParameters parameters = new ICalParameters();
 			parameters.setEncoding(Encoding.QUOTED_PRINTABLE);
@@ -369,7 +371,7 @@ public class ICalRawWriterTest {
 		//invalid
 		{
 			StringWriter sw = new StringWriter();
-			ICalRawWriter writer = new ICalRawWriter(sw, ICalVersion.V1_0);
+			ICalRawWriter writer = new ICalRawWriter(sw, V1_0);
 
 			ICalParameters parameters = new ICalParameters();
 			parameters.setEncoding(Encoding.QUOTED_PRINTABLE);

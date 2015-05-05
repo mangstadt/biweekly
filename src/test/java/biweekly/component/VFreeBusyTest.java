@@ -5,7 +5,7 @@ import static biweekly.util.TestUtils.date;
 
 import org.junit.Test;
 
-import biweekly.ICalVersion;
+import static biweekly.ICalVersion.*;
 import biweekly.property.Contact;
 import biweekly.property.DateEnd;
 import biweekly.property.DateStart;
@@ -45,8 +45,8 @@ public class VFreeBusyTest {
 	public void validate_required() {
 		VFreeBusy component = new VFreeBusy();
 		component.getProperties().clear();
-		assertValidate(component).versions(ICalVersion.V1_0).run(48, 2, 2);
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(2, 2);
+		assertValidate(component).versions(V1_0).run(48, 2, 2);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(2, 2);
 	}
 
 	@Test
@@ -62,16 +62,16 @@ public class VFreeBusyTest {
 		component.addProperty(new Organizer(null, null));
 		component.addProperty(new Url(""));
 		component.addProperty(new Url(""));
-		assertValidate(component).versions(ICalVersion.V1_0).run(48, 3, 3, 3, 3, 3);
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(3, 3, 3, 3, 3);
+		assertValidate(component).versions(V1_0).run(48, 3, 3, 3, 3, 3);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(3, 3, 3, 3, 3);
 	}
 
 	@Test
 	public void validate_no_startDate() {
 		VFreeBusy component = new VFreeBusy();
 		component.setDateEnd(new DateEnd(date("2000-01-10"), true));
-		assertValidate(component).versions(ICalVersion.V1_0).run(48, 15);
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(15);
+		assertValidate(component).versions(V1_0).run(48, 15);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(15);
 	}
 
 	@Test
@@ -79,8 +79,8 @@ public class VFreeBusyTest {
 		VFreeBusy component = new VFreeBusy();
 		component.setDateStart(new DateStart(date("2000-01-01"), false));
 		component.setDateEnd(new DateEnd(date("2000-01-10"), false));
-		assertValidate(component).versions(ICalVersion.V1_0).run(48, 20, 20);
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(20, 20);
+		assertValidate(component).versions(V1_0).run(48, 20, 20);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(20, 20);
 	}
 
 	@Test
@@ -88,7 +88,7 @@ public class VFreeBusyTest {
 		VFreeBusy component = new VFreeBusy();
 		component.setDateStart(new DateStart(date("2000-01-10"), true));
 		component.setDateEnd(new DateEnd(date("2000-01-01"), true));
-		assertValidate(component).versions(ICalVersion.V1_0).run(48, 16);
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(16);
+		assertValidate(component).versions(V1_0).run(48, 16);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(16);
 	}
 }

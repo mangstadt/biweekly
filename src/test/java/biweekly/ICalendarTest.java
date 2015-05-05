@@ -1,5 +1,8 @@
 package biweekly;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertValidate;
 import static org.junit.Assert.assertNotNull;
 
@@ -49,15 +52,15 @@ public class ICalendarTest {
 	@Test
 	public void validate() {
 		ICalendar ical = new ICalendar();
-		assertValidate(ical).versions(ICalVersion.V1_0).run();
-		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(4);
+		assertValidate(ical).versions(V1_0).run();
+		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run(4);
 
 		ical.addExperimentalComponent("X-TEST");
 		assertValidate(ical).run();
 
 		ical.addProperty(new Geo(1.0, 2.0));
-		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(44);
-		assertValidate(ical).versions(ICalVersion.V1_0).run();
+		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run(44);
+		assertValidate(ical).versions(V1_0).run();
 	}
 
 	@Test

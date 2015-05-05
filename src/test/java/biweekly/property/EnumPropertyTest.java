@@ -1,5 +1,8 @@
 package biweekly.property;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertWarnings;
 
 import java.util.Arrays;
@@ -43,30 +46,30 @@ public class EnumPropertyTest {
 	public void validate() {
 		//null value
 		EnumPropertyImpl prop = new EnumPropertyImpl(null);
-		assertWarnings(1, prop.validate(null, ICalVersion.V1_0));
-		assertWarnings(1, prop.validate(null, ICalVersion.V2_0_DEPRECATED));
-		assertWarnings(1, prop.validate(null, ICalVersion.V2_0));
+		assertWarnings(1, prop.validate(null, V1_0));
+		assertWarnings(1, prop.validate(null, V2_0_DEPRECATED));
+		assertWarnings(1, prop.validate(null, V2_0));
 
 		//invalid value
 		prop = new EnumPropertyImpl("three");
-		assertWarnings(1, prop.validate(null, ICalVersion.V1_0));
-		assertWarnings(1, prop.validate(null, ICalVersion.V2_0_DEPRECATED));
-		assertWarnings(1, prop.validate(null, ICalVersion.V2_0));
+		assertWarnings(1, prop.validate(null, V1_0));
+		assertWarnings(1, prop.validate(null, V2_0_DEPRECATED));
+		assertWarnings(1, prop.validate(null, V2_0));
 
 		prop = new EnumPropertyImpl("");
-		assertWarnings(1, prop.validate(null, ICalVersion.V1_0));
-		assertWarnings(1, prop.validate(null, ICalVersion.V2_0_DEPRECATED));
-		assertWarnings(1, prop.validate(null, ICalVersion.V2_0));
+		assertWarnings(1, prop.validate(null, V1_0));
+		assertWarnings(1, prop.validate(null, V2_0_DEPRECATED));
+		assertWarnings(1, prop.validate(null, V2_0));
 
 		prop = new EnumPropertyImpl("ONE");
-		assertWarnings(0, prop.validate(null, ICalVersion.V1_0));
-		assertWarnings(1, prop.validate(null, ICalVersion.V2_0_DEPRECATED));
-		assertWarnings(1, prop.validate(null, ICalVersion.V2_0));
+		assertWarnings(0, prop.validate(null, V1_0));
+		assertWarnings(1, prop.validate(null, V2_0_DEPRECATED));
+		assertWarnings(1, prop.validate(null, V2_0));
 
 		prop = new EnumPropertyImpl("TWO");
-		assertWarnings(1, prop.validate(null, ICalVersion.V1_0));
-		assertWarnings(0, prop.validate(null, ICalVersion.V2_0_DEPRECATED));
-		assertWarnings(0, prop.validate(null, ICalVersion.V2_0));
+		assertWarnings(1, prop.validate(null, V1_0));
+		assertWarnings(0, prop.validate(null, V2_0_DEPRECATED));
+		assertWarnings(0, prop.validate(null, V2_0));
 	}
 
 	private class EnumPropertyImpl extends EnumProperty {
@@ -91,10 +94,10 @@ public class EnumPropertyTest {
 			}
 
 			if ("one".equalsIgnoreCase(value)) {
-				return Arrays.asList(ICalVersion.V1_0);
+				return Arrays.asList(V1_0);
 			}
 			if ("two".equalsIgnoreCase(value)) {
-				return Arrays.asList(ICalVersion.V2_0, ICalVersion.V2_0_DEPRECATED);
+				return Arrays.asList(V2_0, V2_0_DEPRECATED);
 			}
 
 			return Collections.emptyList();

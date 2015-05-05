@@ -1,5 +1,8 @@
 package biweekly.io.text;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertRegex;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
@@ -102,7 +105,7 @@ public class ICalWriterTest {
 		ical.addEvent(event);
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.write(ical);
 		writer.close();
 
@@ -132,7 +135,7 @@ public class ICalWriterTest {
 		ical.addEvent(event);
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.write(ical);
 		writer.close();
 
@@ -159,7 +162,7 @@ public class ICalWriterTest {
 		ical.getProductId().addParameter("X-TEST", "\"test\"");
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.write(ical);
 		writer.close();
 
@@ -181,7 +184,7 @@ public class ICalWriterTest {
 		ical.getProductId().addParameter("X-TEST", "\"test\"");
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.setCaretEncodingEnabled(true);
 		writer.write(ical);
 		writer.close();
@@ -201,7 +204,7 @@ public class ICalWriterTest {
 	@Test
 	public void multiple() throws Exception {
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.write(new ICalendar());
 		writer.write(new ICalendar());
 		writer.close();
@@ -228,7 +231,7 @@ public class ICalWriterTest {
 		ical.addProperty(new TestProperty("value"));
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.write(ical);
 	}
 
@@ -238,7 +241,7 @@ public class ICalWriterTest {
 		ical.addComponent(new Party());
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.write(ical);
 	}
 
@@ -248,7 +251,7 @@ public class ICalWriterTest {
 		ical.addProperty(new TestProperty("value"));
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.registerScribe(new BadNameMarshaller());
 		writer.write(ical);
 	}
@@ -261,7 +264,7 @@ public class ICalWriterTest {
 		ical.addExperimentalProperty("X-FOO", "bar");
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.registerScribe(new SkipMeScribe());
 		writer.write(ical);
 		writer.close();
@@ -284,7 +287,7 @@ public class ICalWriterTest {
 		ical.setProductId("prod id");
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.registerScribe(new MyProdIdScribe());
 		writer.write(ical);
 		writer.close();
@@ -308,7 +311,7 @@ public class ICalWriterTest {
 		ical.addExperimentalProperty("X-NUMBER", "2");
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.write(ical);
 		writer.close();
 
@@ -333,7 +336,7 @@ public class ICalWriterTest {
 		ical.addProperty(new TestProperty("two"));
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.registerScribe(new TestPropertyMarshaller());
 		writer.write(ical);
 		writer.close();
@@ -358,7 +361,7 @@ public class ICalWriterTest {
 		ical.addExperimentalComponent("X-VPARTY");
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.write(ical);
 		writer.close();
 
@@ -382,7 +385,7 @@ public class ICalWriterTest {
 		ical.addComponent(new Party());
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.registerScribe(new PartyMarshaller());
 		writer.write(ical);
 		writer.close();
@@ -408,7 +411,7 @@ public class ICalWriterTest {
 		ical.addProperty(new TestProperty("2"));
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.registerScribe(new DataTypePropertyMarshaller());
 		writer.write(ical);
 		writer.close();
@@ -434,7 +437,7 @@ public class ICalWriterTest {
 		ical.addProperty(new Summary("\u1e66ummary"));
 
 		File file = tempFolder.newFile();
-		ICalWriter writer = new ICalWriter(file, ICalVersion.V2_0);
+		ICalWriter writer = new ICalWriter(file, V2_0);
 		writer.write(ical);
 		writer.close();
 
@@ -456,7 +459,7 @@ public class ICalWriterTest {
 		ical.getProperties().clear();
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		ICalWriter writer = new ICalWriter(sw, V1_0);
 		writer.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
@@ -479,7 +482,7 @@ public class ICalWriterTest {
 		ical.addProperty(new DateStart(utc("2014-10-07 09:34:00")));
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		ICalWriter writer = new ICalWriter(sw, V1_0);
 		writer.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
@@ -506,7 +509,7 @@ public class ICalWriterTest {
 		ical.addProperty(new DateStart(utc("2014-10-08 09:34:00")));
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		ICalWriter writer = new ICalWriter(sw, V1_0);
 		writer.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
@@ -533,7 +536,7 @@ public class ICalWriterTest {
 		ical.addProperty(new DateStart(utc("2014-01-07 09:34:00")));
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		ICalWriter writer = new ICalWriter(sw, V1_0);
 		writer.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
@@ -560,7 +563,7 @@ public class ICalWriterTest {
 		ical.addProperty(new DateStart(utc("2014-02-07 09:34:00")));
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		ICalWriter writer = new ICalWriter(sw, V1_0);
 		writer.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
@@ -588,7 +591,7 @@ public class ICalWriterTest {
 		ical.addProperty(new DateStart(utc("2014-10-07 09:34:00")));
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		ICalWriter writer = new ICalWriter(sw, V1_0);
 		writer.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
@@ -617,7 +620,7 @@ public class ICalWriterTest {
 		ical.addProperty(new DateStart(utc("2015-10-07 09:34:00")));
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		ICalWriter writer = new ICalWriter(sw, V1_0);
 		writer.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
@@ -648,7 +651,7 @@ public class ICalWriterTest {
 		ical.addProperty(new DateStart(utc("2014-10-07 09:34:00")));
 
 		StringWriter sw = new StringWriter();
-		ICalWriter writer = new ICalWriter(sw, ICalVersion.V1_0);
+		ICalWriter writer = new ICalWriter(sw, V1_0);
 		writer.setTimezoneInfo(americaNewYorkWithoutDaylight());
 		writer.write(ical);
 		writer.close();
@@ -678,7 +681,7 @@ public class ICalWriterTest {
 		ical.addProperty(organizer);
 
 		{
-			ICalVersion version = ICalVersion.V1_0;
+			ICalVersion version = V1_0;
 			StringWriter sw = new StringWriter();
 			ICalWriter writer = new ICalWriter(sw, version);
 			writer.write(ical);
@@ -696,7 +699,7 @@ public class ICalWriterTest {
 			assertEquals(expected, actual);
 		}
 
-		for (ICalVersion version : each(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0)) {
+		for (ICalVersion version : each(V2_0_DEPRECATED, V2_0)) {
 			StringWriter sw = new StringWriter();
 			ICalWriter writer = new ICalWriter(sw, version);
 			writer.write(ical);
@@ -724,7 +727,7 @@ public class ICalWriterTest {
 		ical.addProperty(created);
 
 		{
-			ICalVersion version = ICalVersion.V1_0;
+			ICalVersion version = V1_0;
 			StringWriter sw = new StringWriter();
 			ICalWriter writer = new ICalWriter(sw, version);
 			writer.write(ical);
@@ -742,7 +745,7 @@ public class ICalWriterTest {
 			assertEquals(expected, actual);
 		}
 
-		for (ICalVersion version : each(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0)) {
+		for (ICalVersion version : each(V2_0_DEPRECATED, V2_0)) {
 			StringWriter sw = new StringWriter();
 			ICalWriter writer = new ICalWriter(sw, version);
 			writer.write(ical);
@@ -769,7 +772,7 @@ public class ICalWriterTest {
 		ical.addEvent(event);
 
 		{
-			ICalVersion version = ICalVersion.V1_0;
+			ICalVersion version = V1_0;
 			StringWriter sw = new StringWriter();
 			ICalWriter writer = new ICalWriter(sw, version);
 			writer.write(ical);
@@ -790,7 +793,7 @@ public class ICalWriterTest {
 		}
 
 		{
-			ICalVersion version = ICalVersion.V2_0;
+			ICalVersion version = V2_0;
 			StringWriter sw = new StringWriter();
 			ICalWriter writer = new ICalWriter(sw, version);
 			writer.write(ical);
@@ -832,8 +835,8 @@ public class ICalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example1.ics", new TimezoneInfo(), ICalVersion.V2_0);
+		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run();
+		assertExample(ical, "rfc5545-example1.ics", new TimezoneInfo(), V2_0);
 	}
 
 	@Test
@@ -865,7 +868,7 @@ public class ICalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
+		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run();
 
 		TimezoneInfo tzinfo = new TimezoneInfo();
 		VTimezone usEasternTz;
@@ -891,7 +894,7 @@ public class ICalWriterTest {
 
 		tzinfo.assign(usEasternTz, eastern);
 		tzinfo.setDefaultTimeZone(eastern);
-		assertExample(ical, "rfc5545-example2.ics", tzinfo, ICalVersion.V2_0);
+		assertExample(ical, "rfc5545-example2.ics", tzinfo, V2_0);
 	}
 
 	@Test
@@ -926,8 +929,8 @@ public class ICalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example3.ics", new TimezoneInfo(), ICalVersion.V2_0);
+		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run();
+		assertExample(ical, "rfc5545-example3.ics", new TimezoneInfo(), V2_0);
 	}
 
 	@Test
@@ -962,10 +965,10 @@ public class ICalWriterTest {
 			ical.addTodo(todo);
 		}
 
-		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
+		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run();
 		TimezoneInfo tzinfo = new TimezoneInfo();
 		tzinfo.setFloating(ical.getTodos().get(0).getDateDue(), true);
-		assertExample(ical, "rfc5545-example4.ics", tzinfo, ICalVersion.V2_0);
+		assertExample(ical, "rfc5545-example4.ics", tzinfo, V2_0);
 	}
 
 	@Test
@@ -986,8 +989,8 @@ public class ICalWriterTest {
 			ical.addJournal(journal);
 		}
 
-		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
-		assertExample(ical, "rfc5545-example5.ics", new TimezoneInfo(), ICalVersion.V2_0);
+		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run();
+		assertExample(ical, "rfc5545-example5.ics", new TimezoneInfo(), V2_0);
 	}
 
 	@Test
@@ -1018,8 +1021,8 @@ public class ICalWriterTest {
 			ical.addFreeBusy(freebusy);
 		}
 
-		assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).warn(freebusy, 2, 2).run(); //UID and DTSTAMP missing
-		assertExample(ical, "rfc5545-example6.ics", new TimezoneInfo(), ICalVersion.V2_0);
+		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).warn(freebusy, 2, 2).run(); //UID and DTSTAMP missing
+		assertExample(ical, "rfc5545-example6.ics", new TimezoneInfo(), V2_0);
 	}
 
 	@Test
@@ -1040,8 +1043,8 @@ public class ICalWriterTest {
 			ical.addEvent(event);
 		}
 
-		assertValidate(ical).versions(ICalVersion.V1_0).run();
-		assertExample(ical, "vcal-example1.vcs", new TimezoneInfo(), ICalVersion.V1_0);
+		assertValidate(ical).versions(V1_0).run();
+		assertExample(ical, "vcal-example1.vcs", new TimezoneInfo(), V1_0);
 	}
 
 	@Test
@@ -1058,8 +1061,8 @@ public class ICalWriterTest {
 			ical.addTodo(todo);
 		}
 
-		assertValidate(ical).versions(ICalVersion.V1_0).run();
-		assertExample(ical, "vcal-example2.vcs", new TimezoneInfo(), ICalVersion.V1_0);
+		assertValidate(ical).versions(V1_0).run();
+		assertExample(ical, "vcal-example2.vcs", new TimezoneInfo(), V1_0);
 	}
 
 	@Test
@@ -1092,8 +1095,8 @@ public class ICalWriterTest {
 			ical.addTodo(todo);
 		}
 
-		assertValidate(ical).versions(ICalVersion.V1_0).warn(event, 13).run();
-		assertExample(ical, "vcal-example3.vcs", new TimezoneInfo(), ICalVersion.V1_0);
+		assertValidate(ical).versions(V1_0).warn(event, 13).run();
+		assertExample(ical, "vcal-example3.vcs", new TimezoneInfo(), V1_0);
 	}
 
 	private void assertExample(ICalendar ical, String exampleFileName, TimezoneInfo tzinfo, ICalVersion version) throws IOException {

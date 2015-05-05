@@ -7,7 +7,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import biweekly.ICalVersion;
+import static biweekly.ICalVersion.*;
 import biweekly.property.Classification;
 import biweekly.property.Completed;
 import biweekly.property.Created;
@@ -63,8 +63,8 @@ public class VTodoTest {
 	public void validate_required() {
 		VTodo component = new VTodo();
 		component.getProperties().clear();
-		assertValidate(component).versions(ICalVersion.V1_0).run();
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(2, 2);
+		assertValidate(component).versions(V1_0).run();
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(2, 2);
 	}
 
 	@Test
@@ -105,8 +105,8 @@ public class VTodoTest {
 		component.addProperty(new RecurrenceId(new Date()));
 		component.addProperty(new RecurrenceId(new Date()));
 
-		assertValidate(component).versions(ICalVersion.V1_0).warn(status1, 46).warn(status2, 46).run(13);
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
+		assertValidate(component).versions(V1_0).warn(status1, 46).warn(status2, 46).run(13);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
 	}
 
 	@Test
@@ -115,8 +115,8 @@ public class VTodoTest {
 		Status status = Status.draft();
 		component.setStatus(status);
 
-		assertValidate(component).versions(ICalVersion.V1_0).warn(status, 46).run(13);
-		assertValidate(component).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(13);
+		assertValidate(component).versions(V1_0).warn(status, 46).run(13);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(13);
 	}
 
 	@Test

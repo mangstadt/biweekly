@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import static biweekly.ICalVersion.V2_0;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -194,7 +195,7 @@ public class TestUtils {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void assertWriteXml(String expectedInnerXml, ICalProperty propertyToWrite, ICalPropertyScribe marshaller) {
 		Document actual = xcalProperty(marshaller);
-		marshaller.writeXml(propertyToWrite, XmlUtils.getRootElement(actual), new WriteContext(ICalVersion.V2_0, new TimezoneInfo()));
+		marshaller.writeXml(propertyToWrite, XmlUtils.getRootElement(actual), new WriteContext(V2_0, new TimezoneInfo()));
 
 		Document expected = xcalProperty(marshaller, expectedInnerXml);
 		assertXMLEqual(expected, actual);

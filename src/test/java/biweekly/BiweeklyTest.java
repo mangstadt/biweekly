@@ -1,5 +1,6 @@
 package biweekly;
 
+import static biweekly.ICalVersion.V2_0;
 import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertRegex;
@@ -71,7 +72,7 @@ public class BiweeklyTest {
 
 		ICalendar ical = Biweekly.parse(icalStr).warnings(warnings).first();
 
-		assertEquals(ICalVersion.V2_0, ical.getVersion());
+		assertEquals(V2_0, ical.getVersion());
 		assertEquals("prodid", ical.getProductId().getValue());
 		assertWarningsLists(warnings, 0);
 	}
@@ -95,11 +96,11 @@ public class BiweeklyTest {
 		Iterator<ICalendar> it = icals.iterator();
 
 		ICalendar ical = it.next();
-		assertEquals(ICalVersion.V2_0, ical.getVersion());
+		assertEquals(V2_0, ical.getVersion());
 		assertEquals("one", ical.getProductId().getValue());
 
 		ical = it.next();
-		assertEquals(ICalVersion.V2_0, ical.getVersion());
+		assertEquals(V2_0, ical.getVersion());
 		assertEquals("two", ical.getProductId().getValue());
 
 		assertWarningsLists(warnings, 0, 0);
@@ -172,7 +173,7 @@ public class BiweeklyTest {
 
 		ICalendar ical = Biweekly.parseXml(xml).warnings(warnings).first();
 
-		assertEquals(ICalVersion.V2_0, ical.getVersion());
+		assertEquals(V2_0, ical.getVersion());
 		assertEquals("one", ical.getProductId().getValue());
 		assertWarningsLists(warnings, 0);
 	}
@@ -203,11 +204,11 @@ public class BiweeklyTest {
 		Iterator<ICalendar> it = icals.iterator();
 
 		ICalendar ical = it.next();
-		assertEquals(ICalVersion.V2_0, ical.getVersion());
+		assertEquals(V2_0, ical.getVersion());
 		assertEquals("one", ical.getProductId().getValue());
 
 		ical = it.next();
-		assertEquals(ICalVersion.V2_0, ical.getVersion());
+		assertEquals(V2_0, ical.getVersion());
 		assertEquals("two", ical.getProductId().getValue());
 
 		assertWarningsLists(warnings, 0, 0);

@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
+import static biweekly.ICalVersion.*;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -55,25 +55,25 @@ public class ICalParametersTest {
 
 	@Test
 	public void validate_empty() {
-		assertWarnings(0, params.validate(ICalVersion.V2_0));
+		assertWarnings(0, params.validate(V2_0));
 	}
 
 	@Test
 	public void validate_rsvp() {
 		params.replace(ICalParameters.RSVP, "foo");
-		assertWarnings(1, params.validate(ICalVersion.V2_0));
+		assertWarnings(1, params.validate(V2_0));
 
 		params.replace(ICalParameters.RSVP, "true");
-		assertWarnings(0, params.validate(ICalVersion.V2_0));
+		assertWarnings(0, params.validate(V2_0));
 
 		params.replace(ICalParameters.RSVP, "false");
-		assertWarnings(0, params.validate(ICalVersion.V2_0));
+		assertWarnings(0, params.validate(V2_0));
 
 		params.replace(ICalParameters.RSVP, "TRUE");
-		assertWarnings(0, params.validate(ICalVersion.V2_0));
+		assertWarnings(0, params.validate(V2_0));
 
 		params.replace(ICalParameters.RSVP, "FALSE");
-		assertWarnings(0, params.validate(ICalVersion.V2_0));
+		assertWarnings(0, params.validate(V2_0));
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class ICalParametersTest {
 		params.put(ICalParameters.ROLE, "foo");
 		params.put(ICalParameters.VALUE, "foo");
 
-		assertWarnings(8, params.validate(ICalVersion.V2_0));
+		assertWarnings(8, params.validate(V2_0));
 	}
 
 	@Test
@@ -101,14 +101,14 @@ public class ICalParametersTest {
 		params.put(ICalParameters.ROLE, Role.CHAIR.getValue());
 		params.put(ICalParameters.VALUE, ICalDataType.BINARY.getName());
 
-		assertWarnings(0, params.validate(ICalVersion.V2_0));
+		assertWarnings(0, params.validate(V2_0));
 	}
 
 	@Test
 	public void validate_deprecated_values() {
 		params.put(ICalParameters.RANGE, Range.THIS_AND_PRIOR.getValue());
-		assertWarnings(0, params.validate(ICalVersion.V1_0));
-		assertWarnings(0, params.validate(ICalVersion.V2_0_DEPRECATED));
-		assertWarnings(1, params.validate(ICalVersion.V2_0));
+		assertWarnings(0, params.validate(V1_0));
+		assertWarnings(0, params.validate(V2_0_DEPRECATED));
+		assertWarnings(1, params.validate(V2_0));
 	}
 }

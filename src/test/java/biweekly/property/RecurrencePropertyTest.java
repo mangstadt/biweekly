@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import biweekly.ICalVersion;
+import static biweekly.ICalVersion.*;
 import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.Frequency;
@@ -102,30 +102,30 @@ public class RecurrencePropertyTest {
 	@Test
 	public void validate_xrules() {
 		RecurrenceProperty property = new RecurrenceProperty(new Recurrence.Builder(Frequency.DAILY).xrule("foo", "bar").build());
-		assertValidate(property).versions(ICalVersion.V1_0).run(new Integer[] { null });
+		assertValidate(property).versions(V1_0).run(new Integer[] { null });
 
 		property = new RecurrenceProperty(new Recurrence.Builder(Frequency.DAILY).xrule("foo", "bar").build());
-		assertValidate(property).versions(ICalVersion.V2_0_DEPRECATED).run();
+		assertValidate(property).versions(V2_0_DEPRECATED).run();
 
 		property = new RecurrenceProperty(new Recurrence.Builder(Frequency.DAILY).xrule("foo", "bar").build());
-		assertValidate(property).versions(ICalVersion.V2_0).run(32);
+		assertValidate(property).versions(V2_0).run(32);
 	}
 
 	@Test
 	public void validate_bysetpos() {
 		RecurrenceProperty property = new RecurrenceProperty(new Recurrence.Builder(Frequency.DAILY).bySetPos(-1).build());
-		assertValidate(property).versions(ICalVersion.V1_0).run(new Integer[] { null });
+		assertValidate(property).versions(V1_0).run(new Integer[] { null });
 
 		property = new RecurrenceProperty(new Recurrence.Builder(Frequency.DAILY).bySetPos(-1).build());
-		assertValidate(property).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
+		assertValidate(property).versions(V2_0_DEPRECATED, V2_0).run();
 	}
 
 	@Test
 	public void validate_secondly_frequency() {
 		RecurrenceProperty property = new RecurrenceProperty(new Recurrence.Builder(Frequency.SECONDLY).build());
-		assertValidate(property).versions(ICalVersion.V1_0).run(new Integer[] { null });
+		assertValidate(property).versions(V1_0).run(new Integer[] { null });
 
 		property = new RecurrenceProperty(new Recurrence.Builder(Frequency.SECONDLY).build());
-		assertValidate(property).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
+		assertValidate(property).versions(V2_0_DEPRECATED, V2_0).run();
 	}
 }

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import biweekly.ICalVersion;
+import static biweekly.ICalVersion.*;
 import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Transparency;
@@ -45,14 +45,14 @@ public class TransparencyScribeTest extends ScribeTest<Transparency> {
 	@Test
 	public void writeText() {
 		Transparency opaque = Transparency.opaque();
-		sensei.assertWriteText(opaque).version(ICalVersion.V1_0).run("0");
-		sensei.assertWriteText(opaque).version(ICalVersion.V2_0_DEPRECATED).run("OPAQUE");
-		sensei.assertWriteText(opaque).version(ICalVersion.V2_0).run("OPAQUE");
+		sensei.assertWriteText(opaque).version(V1_0).run("0");
+		sensei.assertWriteText(opaque).version(V2_0_DEPRECATED).run("OPAQUE");
+		sensei.assertWriteText(opaque).version(V2_0).run("OPAQUE");
 
 		Transparency transparent = Transparency.transparent();
-		sensei.assertWriteText(transparent).version(ICalVersion.V1_0).run("1");
-		sensei.assertWriteText(transparent).version(ICalVersion.V2_0_DEPRECATED).run("TRANSPARENT");
-		sensei.assertWriteText(transparent).version(ICalVersion.V2_0).run("TRANSPARENT");
+		sensei.assertWriteText(transparent).version(V1_0).run("1");
+		sensei.assertWriteText(transparent).version(V2_0_DEPRECATED).run("TRANSPARENT");
+		sensei.assertWriteText(transparent).version(V2_0).run("TRANSPARENT");
 
 		Transparency other = new Transparency("2");
 		sensei.assertWriteText(other).run("2");
@@ -60,20 +60,20 @@ public class TransparencyScribeTest extends ScribeTest<Transparency> {
 
 	@Test
 	public void parseText() {
-		sensei.assertParseText("0").versions(ICalVersion.V1_0).run(isOpaque(true));
-		sensei.assertParseText("0").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(isOpaque(false));
+		sensei.assertParseText("0").versions(V1_0).run(isOpaque(true));
+		sensei.assertParseText("0").versions(V2_0_DEPRECATED, V2_0).run(isOpaque(false));
 
-		sensei.assertParseText("1").versions(ICalVersion.V1_0).run(isTransparent(true));
-		sensei.assertParseText("1").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(isTransparent(false));
+		sensei.assertParseText("1").versions(V1_0).run(isTransparent(true));
+		sensei.assertParseText("1").versions(V2_0_DEPRECATED, V2_0).run(isTransparent(false));
 
-		sensei.assertParseText("OPAQUE").versions(ICalVersion.V1_0).run(isOpaque(true));
-		sensei.assertParseText("OPAQUE").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(isOpaque(true));
+		sensei.assertParseText("OPAQUE").versions(V1_0).run(isOpaque(true));
+		sensei.assertParseText("OPAQUE").versions(V2_0_DEPRECATED, V2_0).run(isOpaque(true));
 
-		sensei.assertParseText("TRANSPARENT").versions(ICalVersion.V1_0).run(isTransparent(true));
-		sensei.assertParseText("TRANSPARENT").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(isTransparent(true));
+		sensei.assertParseText("TRANSPARENT").versions(V1_0).run(isTransparent(true));
+		sensei.assertParseText("TRANSPARENT").versions(V2_0_DEPRECATED, V2_0).run(isTransparent(true));
 
-		sensei.assertParseText("2").versions(ICalVersion.V1_0).run(is("2"));
-		sensei.assertParseText("2").versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run(is("2"));
+		sensei.assertParseText("2").versions(V1_0).run(is("2"));
+		sensei.assertParseText("2").versions(V2_0_DEPRECATED, V2_0).run(is("2"));
 	}
 
 	private Check<Transparency> isOpaque(final boolean isOpaque) {

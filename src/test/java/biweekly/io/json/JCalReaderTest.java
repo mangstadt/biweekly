@@ -55,6 +55,7 @@ import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.ByDay;
 import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
+import biweekly.util.TestUtils;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -120,7 +121,7 @@ public class JCalReaderTest {
 		assertSize(ical, 1, 1);
 
 		assertEquals("-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN", ical.getProductId().getValue());
-		assertVersion(V2_0, ical);
+		TestUtils.assertVersion(V2_0, ical);
 
 		VEvent event = ical.getEvents().get(0);
 		assertSize(event, 0, 2);
