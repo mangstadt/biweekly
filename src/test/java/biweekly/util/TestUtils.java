@@ -25,6 +25,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalVersion;
+import biweekly.ICalendar;
 import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
@@ -64,6 +65,16 @@ import biweekly.property.ICalProperty;
  * @author Michael Angstadt
  */
 public class TestUtils {
+	/**
+	 * Tests the version assigned to a {@link ICalendar} object.
+	 * @param expected the expected version
+	 * @param ical the iCalendar object
+	 */
+	public static void assertVersion(ICalVersion expected, ICalendar ical) {
+		ICalVersion actual = ical.getVersion();
+		assertEquals(expected, actual);
+	}
+
 	/**
 	 * Asserts that a warnings list is a certain size.
 	 * @param expectedSize the expected size of the warnings list

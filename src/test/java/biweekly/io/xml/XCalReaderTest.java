@@ -1,9 +1,12 @@
 package biweekly.io.xml;
 
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertValidate;
+import static biweekly.util.TestUtils.assertVersion;
 import static biweekly.util.TestUtils.assertWarnings;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
@@ -34,7 +37,6 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
@@ -137,7 +139,7 @@ public class XCalReaderTest {
 			assertSize(ical, 1, 1);
 
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-			assertEquals(ICalVersion.V2_0, ical.getVersion());
+			assertEquals(V2_0, ical.getVersion());
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -192,7 +194,7 @@ public class XCalReaderTest {
 			assertSize(ical, 1, 1);
 
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-			assertEquals(ICalVersion.V2_0, ical.getVersion());
+			assertVersion(V2_0, ical);
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -206,7 +208,7 @@ public class XCalReaderTest {
 			assertSize(ical, 1, 1);
 
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-			assertEquals(ICalVersion.V2_0, ical.getVersion());
+			assertVersion(V2_0, ical);
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -288,7 +290,7 @@ public class XCalReaderTest {
 			assertSize(ical, 1, 1);
 
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-			assertEquals(ICalVersion.V2_0, ical.getVersion());
+			assertVersion(V2_0, ical);
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -373,7 +375,7 @@ public class XCalReaderTest {
 			assertEquals("-//Example Inc.//Example Client//EN", productId.getValue());
 			assertEquals("bar", productId.getParameter("x-foo"));
 
-			assertEquals(ICalVersion.V2_0, ical.getVersion());
+			assertVersion(V2_0, ical);
 
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 1);
@@ -524,7 +526,7 @@ public class XCalReaderTest {
 			assertSize(ical, 0, 1);
 
 			assertEquals("value1", ical.getProductId().getValue());
-			assertEquals(ICalVersion.V2_0, ical.getVersion());
+			assertVersion(V2_0, ical);
 
 			assertWarnings(0, reader);
 		}
@@ -534,7 +536,7 @@ public class XCalReaderTest {
 			assertSize(ical, 0, 1);
 
 			assertEquals("value2", ical.getProductId().getValue());
-			assertEquals(ICalVersion.V2_0, ical.getVersion());
+			assertVersion(V2_0, ical);
 
 			assertWarnings(0, reader);
 		}
@@ -945,7 +947,7 @@ public class XCalReaderTest {
 			assertSize(ical, 1, 2);
 			assertTrue(ical.getCalendarScale().isGregorian());
 			assertEquals("-//Example Inc.//Example Calendar//EN", ical.getProductId().getValue());
-			assertEquals(ICalVersion.V2_0, ical.getVersion());
+			assertVersion(V2_0, ical);
 
 			{
 				VEvent event = ical.getEvents().get(0);
@@ -957,7 +959,7 @@ public class XCalReaderTest {
 				assertEquals("4088E990AD89CB3DBB484909", event.getUid().getValue());
 			}
 
-			assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
+			assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run();
 		}
 
 		assertNull(reader.readNext());
@@ -971,7 +973,7 @@ public class XCalReaderTest {
 			ICalendar ical = reader.readNext();
 			assertSize(ical, 2, 1);
 			assertEquals("-//Example Inc.//Example Client//EN", ical.getProductId().getValue());
-			assertEquals(ICalVersion.V2_0, ical.getVersion());
+			assertVersion(V2_0, ical);
 			{
 				VEvent event = ical.getEvents().get(0);
 				assertSize(event, 0, 8);
@@ -1083,7 +1085,7 @@ public class XCalReaderTest {
 			assertEquals(timezone, tzinfo.getComponent(rid));
 			assertEquals(dtstartTz, tzinfo.getTimeZone(rid));
 
-			assertValidate(ical).versions(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0).run();
+			assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run();
 		}
 
 		assertNull(reader.readNext());
