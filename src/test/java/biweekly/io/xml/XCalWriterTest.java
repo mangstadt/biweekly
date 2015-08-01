@@ -1,5 +1,6 @@
 package biweekly.io.xml;
 
+import static biweekly.ICalVersion.V2_0;
 import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
 import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertValidate;
@@ -28,7 +29,6 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
-import static biweekly.ICalVersion.*;
 import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
@@ -575,7 +575,8 @@ public class XCalWriterTest {
 
 	@Test
 	public void write_pretty_print() throws Exception {
-		writer = new XCalWriter(sw, "  ");
+		writer = new XCalWriter(sw);
+		writer.setIndent("  ");
 
 		ProductId prodId = ical.setProductId("value");
 		prodId.setParameter("x-foo", "bar");

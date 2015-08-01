@@ -62,19 +62,23 @@ import biweekly.property.Version;
 
 /**
  * <p>
- * Writes {@link ICalendar} objects to an iCalendar data stream.
+ * Writes {@link ICalendar} objects to a plain-text iCalendar data stream.
  * </p>
  * <p>
  * <b>Example:</b>
  * 
  * <pre class="brush:java">
- * List&lt;ICalendar&gt; icals = ... 
- * OutputStream out = ...
- * ICalWriter icalWriter = new ICalWriter(out, ICalVersion.V2_0);
- * for (ICalendar ical : icals){
- *   icalWriter.write(ical);
+ * ICalendar ical1 = ...
+ * ICalendar ical2 = ...
+ * File file = new File("icals.ics");
+ * ICalWriter writer = null;
+ * try {
+ *   writer = new ICalWriter(file, ICalVersion.V2_0);
+ *   writer.write(ical1);
+ *   writer.write(ical2);
+ * } finally {
+ *   if (writer != null) writer.close();
  * }
- * icalWriter.close();
  * </pre>
  * 
  * </p>
@@ -121,22 +125,22 @@ import biweekly.property.Version;
  * 
  * </p>
  * @author Michael Angstadt
+ * @see <a href="http://www.imc.org/pdi/pdiproddev.html">1.0 specs</a>
+ * @see <a href="https://tools.ietf.org/html/rfc2445">RFC 2445</a>
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalWriter extends StreamWriter implements Flushable {
 	private final ICalRawWriter writer;
 
 	/**
-	 * Creates an iCalendar writer that writes to an output stream.
-	 * @param outputStream the output stream to write to
+	 * @param out the output stream to write to
 	 * @param version the iCalendar version to adhere to
 	 */
-	public ICalWriter(OutputStream outputStream, ICalVersion version) {
-		this((version == ICalVersion.V1_0) ? new OutputStreamWriter(outputStream) : utf8Writer(outputStream), version);
+	public ICalWriter(OutputStream out, ICalVersion version) {
+		this((version == ICalVersion.V1_0) ? new OutputStreamWriter(out) : utf8Writer(out), version);
 	}
 
 	/**
-	 * Creates an iCalendar writer that writes to a file.
 	 * @param file the file to write to
 	 * @param version the iCalendar version to adhere to
 	 * @throws IOException if the file cannot be written to
@@ -146,7 +150,6 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	}
 
 	/**
-	 * Creates an iCalendar writer that writes to a file.
 	 * @param file the file to write to
 	 * @param version the iCalendar version to adhere to
 	 * @param append true to append to the end of the file, false to overwrite
@@ -158,8 +161,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	}
 
 	/**
-	 * Creates an iCalendar writer that writes to a writer.
-	 * @param writer the output stream to write to
+	 * @param writer the writer to write to
 	 * @param version the iCalendar version to adhere to
 	 */
 	public ICalWriter(Writer writer, ICalVersion version) {
@@ -348,10 +350,15 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		//get parameters
 		ICalParameters parameters = scribe.prepareParameters(property, context);
 
-		//set the data type
+		/*
+		 * Set the property's data type.
+		 * 
+		 * Only add a VALUE parameter if the data type is:
+		 * (1) not "unknown"
+		 * (2) different from the property's default data type
+		 */
 		ICalDataType dataType = scribe.dataType(property, writer.getVersion());
 		if (dataType != null && dataType != scribe.defaultDataType(writer.getVersion())) {
-			//only add a VALUE parameter if the data type is (1) not "unknown" and (2) different from the property's default data type
 			parameters = new ICalParameters(parameters);
 			parameters.setValue(dataType);
 		}

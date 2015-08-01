@@ -87,18 +87,22 @@ import biweekly.util.XmlUtils;
 
 /**
  * <p>
- * Reads xCals (XML-encoded vCards) in a streaming fashion.
+ * Reads xCals (XML-encoded iCalendar objects) in a streaming fashion.
  * </p>
  * <p>
  * <b>Example:</b>
  * 
  * <pre class="brush:java">
- * File file = new File(&quot;xcals.xml&quot;);
- * List&lt;ICalendar&gt; icals = new ArrayList&lt;ICalendar&gt;();
- * XCalReader xcalReader = new XCalReader(file);
- * ICalendar ical;
- * while ((ical = xcalReader.readNext()) != null) {
- * 	icals.add(ical);
+ * File file = new File("icals.xml");
+ * XCalReader reader = null;
+ * try {
+ *   reader = new XCalReader(file);
+ *   ICalendar ical;
+ *   while ((ical = reader.readNext()) != null){
+ * 	   ...
+ *   }
+ * } finally {
+ *   if (reader != null) reader.close();
  * }
  * </pre>
  * 
@@ -138,16 +142,14 @@ public class XCalReader extends StreamReader {
 	private final BlockingQueue<Object> threadBlock = new ArrayBlockingQueue<Object>(1);
 
 	/**
-	 * Creates an xCal reader.
-	 * @param str the string to read the xCals from
+	 * @param str the string to read from
 	 */
 	public XCalReader(String str) {
 		this(new StringReader(str));
 	}
 
 	/**
-	 * Creates an xCal reader.
-	 * @param in the input stream to read the xCals from
+	 * @param in the input stream to read from
 	 */
 	public XCalReader(InputStream in) {
 		source = new StreamSource(in);
@@ -155,8 +157,7 @@ public class XCalReader extends StreamReader {
 	}
 
 	/**
-	 * Creates an xCal reader.
-	 * @param file the file to read the xCals from
+	 * @param file the file to read from
 	 * @throws FileNotFoundException if the file doesn't exist
 	 */
 	public XCalReader(File file) throws FileNotFoundException {
@@ -164,7 +165,6 @@ public class XCalReader extends StreamReader {
 	}
 
 	/**
-	 * Creates an xCal reader.
 	 * @param reader the reader to read from
 	 */
 	public XCalReader(Reader reader) {
@@ -173,7 +173,6 @@ public class XCalReader extends StreamReader {
 	}
 
 	/**
-	 * Creates an xCal reader.
 	 * @param node the DOM node to read from
 	 */
 	public XCalReader(Node node) {
@@ -229,24 +228,12 @@ public class XCalReader extends StreamReader {
 			try {
 				transformer = TransformerFactory.newInstance().newTransformer();
 			} catch (TransformerConfigurationException e) {
-				//no complex configurations
+				//shouldn't be thrown because it's a simple configuration
 				throw new RuntimeException(e);
 			}
 
 			//prevent error messages from being printed to stderr
-			transformer.setErrorListener(new ErrorListener() {
-				public void error(TransformerException e) {
-					//empty
-				}
-
-				public void fatalError(TransformerException e) {
-					//empty
-				}
-
-				public void warning(TransformerException e) {
-					//empty
-				}
-			});
+			transformer.setErrorListener(new NoOpErrorListener());
 
 			result = new SAXResult(new ContentHandlerImpl());
 		}
@@ -291,8 +278,7 @@ public class XCalReader extends StreamReader {
 		@Override
 		public void startElement(String namespace, String localName, String qName, Attributes attributes) throws SAXException {
 			QName qname = new QName(namespace, localName);
-			String textContent = characterBuffer.toString();
-			characterBuffer.setLength(0);
+			String textContent = emptyCharacterBuffer();
 
 			if (structure.isEmpty()) {
 				//<icalendar>
@@ -304,7 +290,6 @@ public class XCalReader extends StreamReader {
 
 			ElementType parentType = structure.peek();
 			ElementType typeToPush = null;
-			//System.out.println(structure.stack + " current: " + localName);
 			if (parentType != null) {
 				switch (parentType) {
 
@@ -397,8 +382,7 @@ public class XCalReader extends StreamReader {
 
 		@Override
 		public void endElement(String namespace, String localName, String qName) throws SAXException {
-			String textContent = characterBuffer.toString();
-			characterBuffer.setLength(0);
+			String textContent = emptyCharacterBuffer();
 
 			if (structure.isEmpty()) {
 				//no <icalendar> elements were read yet
@@ -411,7 +395,6 @@ public class XCalReader extends StreamReader {
 				return;
 			}
 
-			//System.out.println(structure.stack + " ending: " + localName);
 			if (type != null) {
 				switch (type) {
 				case parameterValue:
@@ -505,10 +488,19 @@ public class XCalReader extends StreamReader {
 			}
 		}
 
+		private String emptyCharacterBuffer() {
+			String textContent = characterBuffer.toString();
+			characterBuffer.setLength(0);
+			return textContent;
+		}
+
 		private Element createElement(String namespace, String localName, Attributes attributes) {
 			Element element = DOC.createElementNS(namespace, localName);
+			applyAttributesTo(element, attributes);
+			return element;
+		}
 
-			//copy the attributes
+		private void applyAttributesTo(Element element, Attributes attributes) {
 			for (int i = 0; i < attributes.getLength(); i++) {
 				String qname = attributes.getQName(i);
 				if (qname.startsWith("xmlns:")) {
@@ -519,8 +511,6 @@ public class XCalReader extends StreamReader {
 				String value = attributes.getValue(i);
 				element.setAttribute(name, value);
 			}
-
-			return element;
 		}
 	}
 
@@ -551,7 +541,7 @@ public class XCalReader extends StreamReader {
 		 * @return the element type or null if the stack is empty
 		 */
 		public ElementType pop() {
-			return stack.isEmpty() ? null : stack.remove(stack.size() - 1);
+			return isEmpty() ? null : stack.remove(stack.size() - 1);
 		}
 
 		/**
@@ -559,7 +549,7 @@ public class XCalReader extends StreamReader {
 		 * @return the top element type or null if the stack is empty
 		 */
 		public ElementType peek() {
-			return stack.isEmpty() ? null : stack.get(stack.size() - 1);
+			return isEmpty() ? null : stack.get(stack.size() - 1);
 		}
 
 		/**
@@ -586,7 +576,12 @@ public class XCalReader extends StreamReader {
 				}
 			}
 
-			return nonNull == ElementType.parameters || nonNull == ElementType.parameter || nonNull == ElementType.parameterValue;
+			//@formatter:off
+			return
+			nonNull == ElementType.parameters ||
+			nonNull == ElementType.parameter ||
+			nonNull == ElementType.parameterValue;
+			//@formatter:on
 		}
 
 		/**
@@ -595,6 +590,23 @@ public class XCalReader extends StreamReader {
 		 */
 		public boolean isEmpty() {
 			return stack.isEmpty();
+		}
+	}
+
+	/**
+	 * An implementation of {@link ErrorListener} that doesn't do anything.
+	 */
+	private static class NoOpErrorListener implements ErrorListener {
+		public void error(TransformerException e) {
+			//do nothing
+		}
+
+		public void fatalError(TransformerException e) {
+			//do nothing
+		}
+
+		public void warning(TransformerException e) {
+			//do nothing
 		}
 	}
 

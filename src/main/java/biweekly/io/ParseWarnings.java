@@ -36,7 +36,7 @@ import biweekly.Warning;
  */
 
 /**
- * Records vCard parse warnings.
+ * Records iCalendar parse warnings.
  * @author Michael Angstadt
  */
 public class ParseWarnings {

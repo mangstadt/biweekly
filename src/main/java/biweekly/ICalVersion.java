@@ -31,24 +31,21 @@ package biweekly;
  */
 public enum ICalVersion {
 	/**
-	 * Represents the original vCalendar specification.
-	 * @see <a
-	 * href="http://www.imc.org/pdi/pdiproddev.html">http://www.imc.org/pdi/pdiproddev.html</a>
+	 * The original vCalendar specification.
+	 * @see <a href="http://www.imc.org/pdi/pdiproddev.html">1.0 specs</a>
 	 */
 	V1_0("1.0"),
 
 	/**
-	 * Represents an older, deprecated version of the iCalendar specification
+	 * An older, deprecated version of the iCalendar specification
 	 * (very similar to {@link #V2_0}).
-	 * @see <a
-	 * href="https://tools.ietf.org/html/rfc2445">https://tools.ietf.org/html/rfc2445</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc2445">RFC 2445</a>
 	 */
 	V2_0_DEPRECATED("2.0"),
 
 	/**
-	 * Represents the latest iCalendar specification.
-	 * @see <a
-	 * href="https://tools.ietf.org/html/rfc5545">https://tools.ietf.org/html/rfc5545</a>
+	 * The latest iCalendar specification.
+	 * @see <a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a>
 	 */
 	V2_0("2.0");
 

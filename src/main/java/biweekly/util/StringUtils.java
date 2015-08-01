@@ -29,7 +29,7 @@ import java.util.Map;
  */
 
 /**
- * Contains miscellaneous string utilities.
+ * Helper class for dealing with strings.
  * @author Michael Angstadt
  */
 public class StringUtils {
@@ -70,6 +70,42 @@ public class StringUtils {
 			//do nothing
 		}
 		return (i == 0) ? "" : string.substring(0, i + 1);
+	}
+
+	/**
+	 * Creates a string consisting of "count" occurrences of char "c".
+	 * @param c the character to repeat
+	 * @param count the number of times to repeat the character
+	 * @return the resulting string
+	 */
+	public static String repeat(char c, int count) {
+		if (count <= 0) {
+			return "";
+		}
+
+		StringBuilder sb = new StringBuilder(count);
+		for (int i = 0; i < count; i++) {
+			sb.append(c);
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Creates a string consisting of "count" occurrences of string "str".
+	 * @param str the string to repeat
+	 * @param count the number of times to repeat the string
+	 * @return the resulting string
+	 */
+	public static String repeat(String str, int count) {
+		if (count <= 0) {
+			return "";
+		}
+
+		StringBuilder sb = new StringBuilder(count * str.length());
+		for (int i = 0; i < count; i++) {
+			sb.append(str);
+		}
+		return sb.toString();
 	}
 
 	/**
@@ -146,8 +182,7 @@ public class StringUtils {
 	}
 
 	/**
-	 * Callback interface used with the
-	 * {@link StringUtils#join(Collection, String, JoinCallback)} method.
+	 * Callback interface used with various {@code StringUtils.join()} methods.
 	 * @author Michael Angstadt
 	 * @param <T> the value type
 	 */
@@ -157,7 +192,7 @@ public class StringUtils {
 
 	/**
 	 * Callback interface used with the
-	 * {@link StringUtils#join(Map, String, JoinMapCallback)} method.
+	 * {@link #join(Map, String, JoinMapCallback)} method.
 	 * @author Michael Angstadt
 	 * @param <K> the key class
 	 * @param <V> the value class

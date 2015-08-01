@@ -33,7 +33,7 @@ import biweekly.ICalVersion;
 
 /**
  * Represents a parameter whose values are supported by a variety of different
- * vCard versions.
+ * iCalendar versions.
  * @author Michael Angstadt
  */
 public class VersionedEnumParameterValue extends EnumParameterValue {
@@ -46,9 +46,9 @@ public class VersionedEnumParameterValue extends EnumParameterValue {
 	}
 
 	/**
-	 * Determines if the parameter value is supported by the given vCard
+	 * Determines if the parameter value is supported by the given iCalendar
 	 * version.
-	 * @param version the vCard version
+	 * @param version the iCalendar version
 	 * @return true if it is supported, false if not
 	 */
 	public boolean isSupported(ICalVersion version) {

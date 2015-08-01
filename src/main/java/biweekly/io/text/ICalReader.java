@@ -68,19 +68,23 @@ import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
 
 /**
  * <p>
- * Parses {@link ICalendar} objects from an iCalendar data stream.
+ * Parses {@link ICalendar} objects from a plain-text iCalendar data stream.
  * </p>
  * <p>
  * <b>Example:</b>
  * 
  * <pre class="brush:java">
- * InputStream in = ...
- * ICalReader icalReader = new ICalReader(in);
- * ICalendar ical;
- * while ((ical = icalReader.readNext()) != null){
- *   ...
+ * File file = new File("icals.ics");
+ * ICalReader reader = null;
+ * try {
+ *   reader = new ICalReader(file);
+ *   ICalendar ical;
+ *   while ((ical = reader.readNext()) != null){
+ *     ...
+ *   }
+ * } finally {
+ *   if (reader != null) reader.close();
  * }
- * icalReader.close();
  * </pre>
  * 
  * </p>
@@ -104,6 +108,8 @@ import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
  * 
  * </p>
  * @author Michael Angstadt
+ * @see <a href="http://www.imc.org/pdi/pdiproddev.html">1.0 specs</a>
+ * @see <a href="https://tools.ietf.org/html/rfc2445">RFC 2445</a>
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalReader extends StreamReader {
@@ -113,24 +119,21 @@ public class ICalReader extends StreamReader {
 	private Charset defaultQuotedPrintableCharset;
 
 	/**
-	 * Creates a reader that parses iCalendar objects from a string.
-	 * @param string the string
+	 * @param str the string to read from
 	 */
-	public ICalReader(String string) {
-		this(new StringReader(string));
+	public ICalReader(String str) {
+		this(new StringReader(str));
 	}
 
 	/**
-	 * Creates a reader that parses iCalendar objects from an input stream.
-	 * @param in the input stream
+	 * @param in the input stream to read from
 	 */
 	public ICalReader(InputStream in) {
 		this(utf8Reader(in));
 	}
 
 	/**
-	 * Creates a reader that parses iCalendar objects from a file.
-	 * @param file the file
+	 * @param file the file to read from
 	 * @throws FileNotFoundException if the file doesn't exist
 	 */
 	public ICalReader(File file) throws FileNotFoundException {
@@ -138,8 +141,7 @@ public class ICalReader extends StreamReader {
 	}
 
 	/**
-	 * Creates a reader that parses iCalendar objects from a reader.
-	 * @param reader the reader
+	 * @param reader the reader to read from
 	 */
 	public ICalReader(Reader reader) {
 		this.reader = new ICalRawReader(reader);
@@ -285,14 +287,14 @@ public class ICalReader extends StreamReader {
 			//decode property value from quoted-printable
 			if (parameters.getEncoding() == Encoding.QUOTED_PRINTABLE) {
 				try {
-					value = decodeQuotedPrintable(propertyName, parameters.getCharset(), value);
+					value = decodeQuotedPrintableValue(propertyName, parameters.getCharset(), value);
 				} catch (DecoderException e) {
 					warnings.add(reader.getLineNum(), propertyName, 31, e.getMessage());
 				}
 				parameters.setEncoding(null);
 			}
 
-			//get the data type
+			//get the data type (VALUE parameter)
 			ICalDataType dataType = parameters.getValue();
 			if (dataType == null) {
 				//use the default data type if there is no VALUE parameter
@@ -384,7 +386,7 @@ public class ICalReader extends StreamReader {
 	 * @param propertyName the property name
 	 */
 	private void processNamelessParameters(ICalParameters parameters, String propertyName) {
-		List<String> namelessParamValues = parameters.get(null);
+		List<String> namelessParamValues = parameters.removeAll(null);
 		if (namelessParamValues.isEmpty()) {
 			return;
 		}
@@ -394,18 +396,27 @@ public class ICalReader extends StreamReader {
 		}
 
 		for (String paramValue : namelessParamValues) {
-			String paramName;
-			if (ICalDataType.find(paramValue) != null) {
-				paramName = ICalParameters.VALUE;
-			} else if (Encoding.find(paramValue) != null) {
-				paramName = ICalParameters.ENCODING;
-			} else {
-				//otherwise, assume it's a TYPE
-				paramName = ICalParameters.TYPE;
-			}
+			String paramName = guessParameterName(paramValue);
 			parameters.put(paramName, paramValue);
 		}
-		parameters.removeAll(null);
+	}
+
+	/**
+	 * Makes a guess as to what a parameter value's name should be.
+	 * @param value the parameter value
+	 * @return the guessed name
+	 */
+	private String guessParameterName(String value) {
+		if (ICalDataType.find(value) != null) {
+			return ICalParameters.VALUE;
+		}
+
+		if (Encoding.find(value) != null) {
+			return ICalParameters.ENCODING;
+		}
+
+		//otherwise, assume it's a TYPE
+		return ICalParameters.TYPE;
 	}
 
 	/**
@@ -417,7 +428,7 @@ public class ICalReader extends StreamReader {
 	 * @return the decoded property value
 	 * @throws DecoderException if the value couldn't be decoded
 	 */
-	private String decodeQuotedPrintable(String propertyName, String charsetParam, String value) throws DecoderException {
+	private String decodeQuotedPrintableValue(String propertyName, String charsetParam, String value) throws DecoderException {
 		//determine the character set
 		Charset charset = null;
 		if (charsetParam == null) {
@@ -440,8 +451,8 @@ public class ICalReader extends StreamReader {
 	/**
 	 * Converts a vCal property to the iCalendar data model.
 	 * @param property the vCal property
-	 * @return the converted iCalendar property/component, or the given property
-	 * if no conversion is necessary
+	 * @return the converted iCalendar property/component, or the same property
+	 * that was passed in if no conversion was necessary
 	 */
 	private Object convertVCalProperty(ICalProperty property) {
 		//ATTENDEE with "organizer" role => ORGANIZER property

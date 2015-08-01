@@ -1,7 +1,6 @@
 package biweekly.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import biweekly.property.DateStart;
@@ -208,11 +207,9 @@ public class Google2445Utils {
 	 */
 	private static int[] toArray(List<Integer> list) {
 		int[] array = new int[list.size()];
-		Iterator<Integer> it = list.iterator();
 		int i = 0;
-		while (it.hasNext()) {
-			Integer next = it.next();
-			array[i++] = (next == null) ? 0 : next;
+		for (Integer intObj : list) {
+			array[i++] = (intObj == null) ? 0 : intObj;
 		}
 		return array;
 	}

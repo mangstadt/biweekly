@@ -6,7 +6,6 @@ import static biweekly.io.xml.XCalQNames.ICALENDAR;
 import static biweekly.io.xml.XCalQNames.PARAMETERS;
 import static biweekly.io.xml.XCalQNames.PROPERTIES;
 import static biweekly.util.IOUtils.utf8Writer;
-import static biweekly.util.StringUtils.NEWLINE;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,6 +48,7 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.Version;
 import biweekly.property.Xml;
+import biweekly.util.StringUtils;
 import biweekly.util.XmlUtils;
 
 /*
@@ -82,20 +82,23 @@ import biweekly.util.XmlUtils;
 
 /**
  * <p>
- * Writes xCards (XML-encoded vCards) in a streaming fashion.
+ * Writes xCards (XML-encoded iCalendar objects) in a streaming fashion.
  * </p>
  * <p>
  * <b>Example:</b>
  * 
  * <pre class="brush:java">
- * VCard vcard1 = ...
- * VCard vcard2 = ...
- * 
- * File file = new File("vcards.xml");
- * XCardWriter xcardWriter = new XCardWriter(file);
- * xcardWriter.write(vcard1);
- * xcardWriter.write(vcard2);
- * xcardWriter.close();
+ * ICalendar ical1 = ...
+ * ICalendar ical2 = ...
+ * File file = new File("icals.xml");
+ * XCalWriter writer = null;
+ * try {
+ *   writer = new XCalWriter(file);
+ *   writer.write(ical1);
+ *   writer.write(ical2);
+ * } finally {
+ *   if (writer != null) writer.close();
+ * }
  * </pre>
  * 
  * </p>
@@ -125,7 +128,7 @@ import biweekly.util.XmlUtils;
  * @see <a href="http://tools.ietf.org/html/rfc6351">RFC 6351</a>
  */
 public class XCalWriter extends StreamWriter {
-	//how to use SAX to write XML: http://stackoverflow.com/questions/4898590/generating-xml-using-sax-and-java
+	//How to use SAX to write XML: http://stackoverflow.com/q/4898590
 	private final Document DOC = XmlUtils.createDocument();
 
 	/**
@@ -158,32 +161,20 @@ public class XCalWriter extends StreamWriter {
 	private final Writer writer;
 	private final ICalVersion targetVersion = ICalVersion.V2_0;
 	private final TransformerHandler handler;
-	private final String indent;
 	private final boolean icalendarElementExists;
+	private String indent;
 	private int level = 0;
 	private boolean textNodeJustPrinted = false, started = false;
 
 	/**
-	 * Creates an xCard writer (UTF-8 encoding will be used).
-	 * @param out the output stream to write the xCards to
+	 * @param out the output stream to write to (UTF-8 encoding will be used)
 	 */
 	public XCalWriter(OutputStream out) {
 		this(utf8Writer(out));
 	}
 
 	/**
-	 * Creates an xCard writer (UTF-8 encoding will be used).
-	 * @param out the output stream to write the xCards to
-	 * @param indent the indentation string to use for pretty printing (e.g.
-	 * "\t") or null not to pretty print
-	 */
-	public XCalWriter(OutputStream out, String indent) {
-		this(utf8Writer(out), indent);
-	}
-
-	/**
-	 * Creates an xCard writer (UTF-8 encoding will be used).
-	 * @param file the file to write the xCards to
+	 * @param file the file to write to (UTF-8 encoding will be used).
 	 * @throws IOException if there's a problem opening the file
 	 */
 	public XCalWriter(File file) throws IOException {
@@ -191,18 +182,6 @@ public class XCalWriter extends StreamWriter {
 	}
 
 	/**
-	 * Creates an xCard writer (UTF-8 encoding will be used).
-	 * @param file the file to write the xCards to
-	 * @param indent the indentation string to use for pretty printing (e.g.
-	 * "\t") or null not to pretty print
-	 * @throws IOException if there's a problem opening the file
-	 */
-	public XCalWriter(File file, String indent) throws IOException {
-		this(utf8Writer(file), indent);
-	}
-
-	/**
-	 * Creates an xCard writer.
 	 * @param writer the writer to write to
 	 */
 	public XCalWriter(Writer writer) {
@@ -210,26 +189,14 @@ public class XCalWriter extends StreamWriter {
 	}
 
 	/**
-	 * Creates an xCard writer.
-	 * @param writer the writer to write to
-	 * @param indent the indentation string to use for pretty printing (e.g.
-	 * "\t") or null not to pretty print
-	 */
-	public XCalWriter(Writer writer, String indent) {
-		this(writer, indent, null);
-	}
-
-	/**
-	 * Creates an xCard writer.
 	 * @param parent the DOM node to add child elements to
 	 */
 	public XCalWriter(Node parent) {
-		this(null, null, parent);
+		this(null, parent);
 	}
 
-	private XCalWriter(Writer writer, String indent, Node parent) {
+	private XCalWriter(Writer writer, Node parent) {
 		this.writer = writer;
-		this.indent = indent;
 
 		if (parent instanceof Document) {
 			Node root = parent.getFirstChild();
@@ -250,6 +217,15 @@ public class XCalWriter extends StreamWriter {
 		handler.setResult(result);
 	}
 
+	/**
+	 * Set the indentation string to use for pretty-printing the output.
+	 * @param indent the indentation string (e.g. 2 spaces) or null to disable
+	 * pretty-printing (defaults to null)
+	 */
+	public void setIndent(String indent) {
+		this.indent = indent;
+	}
+
 	private boolean isICalendarElement(Node node) {
 		if (node == null) {
 			return false;
@@ -259,7 +235,7 @@ public class XCalWriter extends StreamWriter {
 			return false;
 		}
 
-		return ICALENDAR.getNamespaceURI().equals(node.getNamespaceURI()) && ICALENDAR.getLocalPart().equals(node.getLocalName());
+		return XmlUtils.hasQName(node, ICALENDAR);
 	}
 
 	/**
@@ -408,7 +384,6 @@ public class XCalWriter extends StreamWriter {
 					level--;
 					end(element);
 				} else {
-					//make childless elements appear as "<foo />" instead of "<foo></foo>"
 					childless(element);
 				}
 
@@ -458,15 +433,20 @@ public class XCalWriter extends StreamWriter {
 			return;
 		}
 
-		StringBuilder sb = new StringBuilder(NEWLINE);
-		for (int i = 0; i < level; i++) {
-			sb.append(indent);
-		}
-
-		String str = sb.toString();
+		/*
+		 * "\n" is hard-coded here because if the Windows "\r\n" is used, it
+		 * will encode the "\r" character for XML ("&#13;")
+		 */
+		String str = '\n' + StringUtils.repeat(indent, level);
 		handler.ignorableWhitespace(str.toCharArray(), 0, str.length());
 	}
 
+	/**
+	 * Makes an childless element appear as {@code<foo />} instead of
+	 * {@code<foo></foo>}
+	 * @param element the element
+	 * @throws SAXException
+	 */
 	private void childless(Element element) throws SAXException {
 		Attributes attributes = getElementAttributes(element);
 		indent();

@@ -56,8 +56,7 @@ public class JCalRawReader implements Closeable {
 	private JCalDataStreamListener listener;
 
 	/**
-	 * Creates a new reader.
-	 * @param reader the reader to the data stream
+	 * @param reader the reader to wrap
 	 */
 	public JCalRawReader(Reader reader) {
 		this.reader = reader;

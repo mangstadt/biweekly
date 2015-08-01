@@ -1,5 +1,7 @@
 package biweekly.io.text;
 
+import static biweekly.util.StringUtils.ltrim;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,8 +9,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.regex.Pattern;
-
-import biweekly.util.StringUtils;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -36,14 +36,16 @@ import biweekly.util.StringUtils;
  */
 
 /**
- * Automatically unfolds lines of text as they are read.
+ * Reads lines of text from a reader, transparently unfolding lines that are
+ * folded.
  * @author Michael Angstadt
  */
 public class FoldedLineReader extends BufferedReader {
 	/**
-	 * Regular expression used to detect "quoted-printable" property values.
+	 * Regular expression used to detect the first line of folded,
+	 * "quoted-printable" property values.
 	 */
-	private static final Pattern foldedQuotedPrintableValueRegex = Pattern.compile("[^:]*?QUOTED-PRINTABLE.*?:.*?=", Pattern.CASE_INSENSITIVE);
+	private final Pattern foldedQuotedPrintableValueRegex = Pattern.compile("[^:]*?QUOTED-PRINTABLE.*?:.*?=", Pattern.CASE_INSENSITIVE);
 
 	private String lastLine;
 	private boolean singleSpaceFolding = true;
@@ -56,6 +58,7 @@ public class FoldedLineReader extends BufferedReader {
 	 */
 	public FoldedLineReader(Reader reader) {
 		super(reader);
+
 		if (reader instanceof InputStreamReader) {
 			InputStreamReader isr = (InputStreamReader) reader;
 			String charsetStr = isr.getEncoding();
@@ -110,27 +113,28 @@ public class FoldedLineReader extends BufferedReader {
 	}
 
 	/**
-	 * Reads the next non-empty line. Empty lines must be ignored because some
-	 * vCards (i.e. iPhone) contain empty lines. These empty lines appear in
-	 * between folded lines, which, if not ignored, will cause the parser to
-	 * incorrectly parse the vCard.
+	 * Reads the next non-empty line.
 	 * @return the next non-empty line or null of EOF
 	 * @throws IOException if there's a problem reading from the reader
 	 */
 	private String readNonEmptyLine() throws IOException {
-		String line;
-		do {
-			line = super.readLine();
-			if (line != null) {
-				lineCount++;
+		while (true) {
+			String line = super.readLine();
+			if (line == null) {
+				return null;
 			}
-		} while (line != null && line.length() == 0);
-		return line;
+
+			lineCount++;
+			if (line.length() > 0) {
+				return line;
+			}
+		}
 	}
 
 	/**
 	 * Reads the next unfolded line.
-	 * @return the next unfolded line or null if EOF
+	 * @return the next unfolded line or null if the end of the stream has been
+	 * reached
 	 * @throws IOException if there's a problem reading from the reader
 	 */
 	@Override
@@ -146,7 +150,8 @@ public class FoldedLineReader extends BufferedReader {
 		/*
 		 * Lines that are QUOTED-PRINTABLE are folded in a strange way. A "=" is
 		 * appended to the end of a line to signal that the next line is folded.
-		 * Also, each folded line is not prepend with whitespace.
+		 * Also, each folded line is *not* prepend with whitespace (which it should
+		 * be, according to the 2.1 specs).
 		 * 
 		 * For example:
 		 * 
@@ -163,16 +168,14 @@ public class FoldedLineReader extends BufferedReader {
 		 * END. This is still part of the NOTE property value because the 3rd
 		 * line of NOTE ends with a "=".
 		 * 
-		 * This behavior has only been observed in Outlook vCards.
+		 * This behavior has only been observed in Outlook vCards. >:(
 		 */
 		//@formatter:on
 
-		boolean foldedQuotedPrintableLine = false;
-		if (foldedQuotedPrintableValueRegex.matcher(wholeLine).matches()) {
-			foldedQuotedPrintableLine = true;
-
+		boolean foldedQuotedPrintableLine = foldedQuotedPrintableValueRegex.matcher(wholeLine).matches();
+		if (foldedQuotedPrintableLine) {
 			//chop off the trailing "="
-			wholeLine = wholeLine.substring(0, wholeLine.length() - 1);
+			wholeLine = chop(wholeLine);
 		}
 
 		lastLineNum = lineCount;
@@ -185,12 +188,13 @@ public class FoldedLineReader extends BufferedReader {
 			}
 
 			if (foldedQuotedPrintableLine) {
-				line = StringUtils.ltrim(line);
+				//remove any folding whitespace
+				line = ltrim(line);
 
 				boolean endsInEquals = line.endsWith("=");
 				if (endsInEquals) {
 					//chop off the trailing "="
-					line = line.substring(0, line.length() - 1);
+					line = chop(line);
 				}
 
 				unfoldedLine.append(line);
@@ -198,10 +202,10 @@ public class FoldedLineReader extends BufferedReader {
 				if (endsInEquals) {
 					//there are more folded lines
 					continue;
-				} else {
-					//end of the folded line
-					break;
 				}
+
+				//end of the folded line
+				break;
 			}
 
 			if (line.length() > 0 && Character.isWhitespace(line.charAt(0))) {
@@ -223,5 +227,14 @@ public class FoldedLineReader extends BufferedReader {
 		}
 
 		return unfoldedLine.toString();
+	}
+
+	/**
+	 * Removes the last character from a string.
+	 * @param string the string
+	 * @return the modified string
+	 */
+	private static String chop(String string) {
+		return (string.length() > 0) ? string.substring(0, string.length() - 1) : string;
 	}
 }

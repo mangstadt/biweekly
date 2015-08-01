@@ -68,13 +68,17 @@ import com.fasterxml.jackson.core.JsonParseException;
  * <b>Example:</b>
  * 
  * <pre class="brush:java">
- * InputStream in = ...
- * JCalReader jcalReader = new JCalReader(in);
- * ICalendar ical;
- * while ((ical = jcalReader.readNext()) != null){
- *   ...
+ * File file = new File("icals.json");
+ * JCalReader reader = null;
+ * try {
+ *   reader = new JCalReader(file);
+ *   ICalendar ical;
+ *   while ((ical = reader.readNext()) != null){
+ *     ...
+ *   }
+ * } finally {
+ *   if (reader != null) reader.close();
  * }
- * jcalReader.close();
  * </pre>
  * 
  * </p>
@@ -105,24 +109,21 @@ public class JCalReader extends StreamReader {
 	private final JCalRawReader reader;
 
 	/**
-	 * Creates a jCard reader.
-	 * @param json the JSON string
+	 * @param json the JSON string to read from
 	 */
 	public JCalReader(String json) {
 		this(new StringReader(json));
 	}
 
 	/**
-	 * Creates a jCard reader.
-	 * @param in the input stream to read the vCards from
+	 * @param in the input stream to read from
 	 */
 	public JCalReader(InputStream in) {
 		this(utf8Reader(in));
 	}
 
 	/**
-	 * Creates a jCard reader.
-	 * @param file the file to read the vCards from
+	 * @param file the file to read from
 	 * @throws FileNotFoundException if the file doesn't exist
 	 */
 	public JCalReader(File file) throws FileNotFoundException {
@@ -130,8 +131,7 @@ public class JCalReader extends StreamReader {
 	}
 
 	/**
-	 * Creates a jCard reader.
-	 * @param reader the reader to read the vCards from
+	 * @param reader the reader to read from
 	 */
 	public JCalReader(Reader reader) {
 		this.reader = new JCalRawReader(reader);

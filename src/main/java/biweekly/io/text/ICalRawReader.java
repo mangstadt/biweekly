@@ -39,8 +39,10 @@ import biweekly.util.StringUtils;
  */
 
 /**
- * Parses an iCalendar data stream.
+ * Parses the components out of each line in a plain-text iCalendar data stream.
  * @author Michael Angstadt
+ * @see <a href="http://www.imc.org/pdi/pdiproddev.html">1.0 specs</a>
+ * @see <a href="https://tools.ietf.org/html/rfc2445">RFC 2445</a>
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalRawReader implements Closeable {
@@ -50,8 +52,7 @@ public class ICalRawReader implements Closeable {
 	private ICalVersion version = null;
 
 	/**
-	 * Creates a new reader.
-	 * @param reader the reader to the data stream
+	 * @param reader the reader to wrap
 	 */
 	public ICalRawReader(Reader reader) {
 		this.reader = new FoldedLineReader(reader);

@@ -44,6 +44,8 @@ import biweekly.parameter.ICalParameters;
 /**
  * Writes data to an iCalendar data stream.
  * @author Michael Angstadt
+ * @see <a href="http://www.imc.org/pdi/pdiproddev.html">1.0 specs</a>
+ * @see <a href="https://tools.ietf.org/html/rfc2445">RFC 2445</a>
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalRawWriter implements Closeable, Flushable {
@@ -111,8 +113,7 @@ public class ICalRawWriter implements Closeable, Flushable {
 	private ICalVersion version;
 
 	/**
-	 * Creates an iCalendar raw writer.
-	 * @param writer the writer to the data stream
+	 * @param writer the writer to wrap
 	 * @param version the version to adhere to
 	 */
 	public ICalRawWriter(Writer writer, ICalVersion version) {
@@ -308,22 +309,24 @@ public class ICalRawWriter implements Closeable, Flushable {
 
 		value = sanitizeValue(parameters, value);
 
-		//determine if the property value must be encoded in quoted printable
-		//and determine the charset to use when encoding to quoted-printable
-		boolean quotedPrintable = (parameters.getEncoding() == Encoding.QUOTED_PRINTABLE);
-		Charset charset = null;
-		if (quotedPrintable) {
+		/*
+		 * Determine if the property value must be encoded in quoted printable
+		 * encoding. If so, then determine what charset to use for the encoding.
+		 */
+		boolean useQuotedPrintable = (parameters.getEncoding() == Encoding.QUOTED_PRINTABLE);
+		Charset quotedPrintableCharset = null;
+		if (useQuotedPrintable) {
 			String charsetParam = parameters.getCharset();
 			if (charsetParam == null) {
-				charset = Charset.forName("UTF-8");
+				quotedPrintableCharset = Charset.forName("UTF-8");
 			} else {
 				try {
-					charset = Charset.forName(charsetParam);
+					quotedPrintableCharset = Charset.forName(charsetParam);
 				} catch (Throwable t) {
-					charset = Charset.forName("UTF-8");
+					quotedPrintableCharset = Charset.forName("UTF-8");
 				}
 			}
-			parameters.setCharset(charset.name());
+			parameters.setCharset(quotedPrintableCharset.name());
 		}
 
 		//write the property name
@@ -357,10 +360,8 @@ public class ICalRawWriter implements Closeable, Flushable {
 				parameterValue = sanitizeParameterValue(parameterValue, parameterName, propertyName);
 
 				//surround with double quotes if contains special chars
-				if (quoteMeRegex.matcher(parameterValue).matches()) {
-					writer.append('"');
-					writer.append(parameterValue);
-					writer.append('"');
+				if (containsSpecialChars(parameterValue)) {
+					writer.append('"').append(parameterValue).append('"');
 				} else {
 					writer.append(parameterValue);
 				}
@@ -372,13 +373,13 @@ public class ICalRawWriter implements Closeable, Flushable {
 		writer.append(':');
 
 		//write the property value
-		writer.append(value, quotedPrintable, charset);
+		writer.append(value, useQuotedPrintable, quotedPrintableCharset);
 		writer.append(writer.getNewline());
 	}
 
 	/**
-	 * Sanitizes a property value for safe inclusion in a vCard.
-	 * @param parameters the parameters
+	 * Sanitizes a property value for safe inclusion in an iCalendar object.
+	 * @param parameters the property's parameters
 	 * @param value the value to sanitize
 	 * @return the sanitized value
 	 */
@@ -388,7 +389,10 @@ public class ICalRawWriter implements Closeable, Flushable {
 		}
 
 		if (version == ICalVersion.V1_0 && containsNewlines(value)) {
-			//1.0 does not support the "\n" escape sequence (see "Delimiters" sub-section in section 2 of the specs)
+			/*
+			 * 1.0 does not support the "\n" escape sequence (see "Delimiters"
+			 * sub-section in section 2 of the specs)
+			 */
 			parameters.setEncoding(Encoding.QUOTED_PRINTABLE);
 			return value;
 		}
@@ -510,6 +514,15 @@ public class ICalRawWriter implements Closeable, Flushable {
 	 */
 	private boolean containsNewlines(String text) {
 		return newlineRegex.matcher(text).find();
+	}
+
+	/**
+	 * Determines if a parameter value contains special characters.
+	 * @param parameterValue the parameter value
+	 * @return true if it contains special characters, false if not
+	 */
+	private boolean containsSpecialChars(String parameterValue) {
+		return quoteMeRegex.matcher(parameterValue).matches();
 	}
 
 	/**

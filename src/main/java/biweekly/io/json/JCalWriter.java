@@ -56,13 +56,17 @@ import biweekly.property.Version;
  * <b>Example:</b>
  * 
  * <pre class="brush:java">
- * List&lt;ICalendar&gt; icals = ... 
- * OutputStream out = ...
- * JCalWriter jcalWriter = new JCalWriter(out);
- * for (ICalendar ical : icals){
- *   jcalWriter.write(ical);
+ * ICalendar ical1 = ...
+ * ICalendar ical2 = ...
+ * File file = new File("icals.json");
+ * JCalWriter writer = null;
+ * try {
+ *   writer = new JCalWriter(file);
+ *   writer.write(ical1);
+ *   writer.write(ical2);
+ * } finally {
+ *   if (writer != null) writer.close();
  * }
- * jcalWriter.close();
  * </pre>
  * 
  * </p>
@@ -95,26 +99,23 @@ public class JCalWriter extends StreamWriter implements Flushable {
 	private final ICalVersion targetVersion = ICalVersion.V2_0;
 
 	/**
-	 * Creates a jCal writer that writes to an output stream.
-	 * @param outputStream the output stream to write to
+	 * @param out the output stream to write to (UTF-8 encoding will be used)
 	 */
-	public JCalWriter(OutputStream outputStream) {
-		this(utf8Writer(outputStream));
+	public JCalWriter(OutputStream out) {
+		this(utf8Writer(out));
 	}
 
 	/**
-	 * Creates a jCal writer that writes to an output stream.
-	 * @param outputStream the output stream to write to
+	 * @param out the output stream to write to (UTF-8 encoding will be used)
 	 * @param wrapInArray true to wrap all iCalendar objects in a parent array,
 	 * false not to (useful when writing more than one iCalendar object)
 	 */
-	public JCalWriter(OutputStream outputStream, boolean wrapInArray) {
-		this(utf8Writer(outputStream), wrapInArray);
+	public JCalWriter(OutputStream out, boolean wrapInArray) {
+		this(utf8Writer(out), wrapInArray);
 	}
 
 	/**
-	 * Creates a jCal writer that writes to a file.
-	 * @param file the file to write to
+	 * @param file the file to write to (UTF-8 encoding will be used)
 	 * @throws IOException if the file cannot be written to
 	 */
 	public JCalWriter(File file) throws IOException {
@@ -122,8 +123,7 @@ public class JCalWriter extends StreamWriter implements Flushable {
 	}
 
 	/**
-	 * Creates a jCal writer that writes to a file.
-	 * @param file the file to write to
+	 * @param file the file to write to (UTF-8 encoding will be used)
 	 * @param wrapInArray true to wrap all iCalendar objects in a parent array,
 	 * false not to (useful when writing more than one iCalendar object)
 	 * @throws IOException if the file cannot be written to
@@ -133,16 +133,14 @@ public class JCalWriter extends StreamWriter implements Flushable {
 	}
 
 	/**
-	 * Creates a jCal writer that writes to a writer.
-	 * @param writer the writer to the data stream
+	 * @param writer the writer to write to
 	 */
 	public JCalWriter(Writer writer) {
 		this(writer, false);
 	}
 
 	/**
-	 * Creates a jCal writer that writes to a writer.
-	 * @param writer the writer to the data stream
+	 * @param writer the writer to write to
 	 * @param wrapInArray true to wrap all iCalendar objects in a parent array,
 	 * false not to (useful when writing more than one iCalendar object)
 	 */
