@@ -44,15 +44,6 @@ import biweekly.util.UtcOffset;
 public class Timezone extends UtcOffsetProperty {
 	/**
 	 * Creates a timezone property.
-	 * @param hourOffset the hour component of the UTC offset (e.g. -5)
-	 * @param minuteOffset the minute component of the UTC offset (e.g. 0)
-	 */
-	public Timezone(int hourOffset, int minuteOffset) {
-		super(hourOffset, minuteOffset);
-	}
-
-	/**
-	 * Creates a timezone property.
 	 * @param offset the UTC offset
 	 */
 	public Timezone(UtcOffset offset) {

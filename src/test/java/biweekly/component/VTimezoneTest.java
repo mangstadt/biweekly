@@ -1,15 +1,18 @@
 package biweekly.component;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertValidate;
 
 import java.util.Date;
 
 import org.junit.Test;
 
-import static biweekly.ICalVersion.*;
 import biweekly.property.DateStart;
 import biweekly.property.LastModified;
 import biweekly.property.TimezoneUrl;
+import biweekly.util.UtcOffset;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -62,8 +65,8 @@ public class VTimezoneTest {
 	public void validate_observance_required() {
 		StandardTime standard = new StandardTime();
 		standard.setDateStart(new DateStart(new Date()));
-		standard.setTimezoneOffsetFrom(1, 0);
-		standard.setTimezoneOffsetTo(1, 0);
+		standard.setTimezoneOffsetFrom(new UtcOffset(true, 1, 0));
+		standard.setTimezoneOffsetTo(new UtcOffset(true, 1, 0));
 		VTimezone component = new VTimezone("");
 		component.addStandardTime(standard);
 		assertValidate(component).versions(V1_0).warn(standard, 48).run(48);
@@ -71,8 +74,8 @@ public class VTimezoneTest {
 
 		DaylightSavingsTime daylight = new DaylightSavingsTime();
 		daylight.setDateStart(new DateStart(new Date()));
-		daylight.setTimezoneOffsetFrom(1, 0);
-		daylight.setTimezoneOffsetTo(1, 0);
+		daylight.setTimezoneOffsetFrom(new UtcOffset(true, 1, 0));
+		daylight.setTimezoneOffsetTo(new UtcOffset(true, 1, 0));
 		component = new VTimezone("");
 		component.addDaylightSavingsTime(daylight);
 		assertValidate(component).versions(V1_0).warn(daylight, 48).run(48);

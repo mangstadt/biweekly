@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import static biweekly.util.TestUtils.buildTimezone;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
@@ -33,6 +34,21 @@ import org.junit.Test;
  * @author Michael Angstadt
  */
 public class UtcOffsetTest {
+	@Test
+	public void constructor() {
+		final int HOURS = 60 * 60 * 1000;
+		final int MINUTES = 60 * 1000;
+
+		UtcOffset offset = new UtcOffset(true, -5, -30);
+		assertEquals(5 * HOURS + 30 * MINUTES, offset.getMillis());
+
+		offset = new UtcOffset(false, 5, 30);
+		assertEquals(-(5 * HOURS + 30 * MINUTES), offset.getMillis());
+
+		offset = new UtcOffset(false, 5, 70);
+		assertEquals(-(5 * HOURS + 70 * MINUTES), offset.getMillis());
+	}
+
 	@Test
 	public void parse() {
 		assertParse("5", 5, 0);
@@ -86,12 +102,12 @@ public class UtcOffsetTest {
 		assertParse("+10:30", 10, 30);
 		assertParse("-05:30", -5, 30);
 		assertParse("-10:30", -10, 30);
-		assertParse("-100030", -10, 0);
 	}
 
-	private void assertParse(String input, int expectedHour, int expectedMinute) {
-		UtcOffset expected = new UtcOffset(expectedHour, expectedMinute);
-		UtcOffset actual = UtcOffset.parse(input);
+	@Test
+	public void parse_timezone() {
+		UtcOffset expected = new UtcOffset(true, 1, 0);
+		UtcOffset actual = UtcOffset.parse(buildTimezone(1, 0));
 		assertEquals(expected, actual);
 	}
 
@@ -102,49 +118,68 @@ public class UtcOffsetTest {
 
 	@Test
 	public void toString_() {
-		assertToString(0, 0, false, "+0000");
-		assertToString(1, 0, false, "+0100");
-		assertToString(10, 0, false, "+1000");
-		assertToString(1, 30, false, "+0130");
-		assertToString(10, 30, false, "+1030");
-		assertToString(0, 30, false, "+0030");
-		assertToString(0, 30, false, "+0030");
-		assertToString(-1, 0, false, "-0100");
-		assertToString(-10, 0, false, "-1000");
-		assertToString(-1, 30, false, "-0130");
-		assertToString(-10, 30, false, "-1030");
+		{
+			boolean extended = false;
 
-		assertToString(0, 0, true, "+00:00");
-		assertToString(1, 0, true, "+01:00");
-		assertToString(10, 0, true, "+10:00");
-		assertToString(1, 30, true, "+01:30");
-		assertToString(10, 30, true, "+10:30");
-		assertToString(0, 30, true, "+00:30");
-		assertToString(0, 30, true, "+00:30");
-		assertToString(-1, 0, true, "-01:00");
-		assertToString(-10, 0, true, "-10:00");
-		assertToString(-1, 30, true, "-01:30");
-		assertToString(-10, 30, true, "-10:30");
+			{
+				boolean positive = true;
+				assertToString(positive, 0, 0, extended, "+0000");
+				assertToString(positive, 1, 0, extended, "+0100");
+				assertToString(positive, 10, 0, extended, "+1000");
+				assertToString(positive, 1, 30, extended, "+0130");
+				assertToString(positive, 10, 30, extended, "+1030");
+				assertToString(positive, 0, 30, extended, "+0030");
+				assertToString(positive, 0, 5, extended, "+0005");
+			}
+
+			{
+				boolean positive = false;
+				assertToString(positive, 0, 0, extended, "+0000");
+				assertToString(positive, -1, 0, extended, "-0100");
+				assertToString(positive, -10, 0, extended, "-1000");
+				assertToString(positive, -1, 30, extended, "-0130");
+				assertToString(positive, -10, 30, extended, "-1030");
+				assertToString(positive, 0, 30, extended, "-0030");
+				assertToString(positive, 0, 5, extended, "-0005");
+			}
+		}
+
+		{
+			boolean extended = true;
+
+			{
+				boolean positive = true;
+				assertToString(positive, 0, 0, extended, "+00:00");
+				assertToString(positive, 1, 0, extended, "+01:00");
+				assertToString(positive, 10, 0, extended, "+10:00");
+				assertToString(positive, 1, 30, extended, "+01:30");
+				assertToString(positive, 10, 30, extended, "+10:30");
+				assertToString(positive, 0, 30, extended, "+00:30");
+				assertToString(positive, 0, 5, extended, "+00:05");
+			}
+
+			{
+				boolean positive = false;
+				assertToString(positive, 0, 0, extended, "+00:00");
+				assertToString(positive, -1, 0, extended, "-01:00");
+				assertToString(positive, -10, 0, extended, "-10:00");
+				assertToString(positive, -1, 30, extended, "-01:30");
+				assertToString(positive, -10, 30, extended, "-10:30");
+				assertToString(positive, 0, 30, extended, "-00:30");
+				assertToString(positive, 0, 5, extended, "-00:05");
+			}
+		}
 	}
 
-	private void assertToString(int hour, int minute, boolean extended, String expected) {
-		UtcOffset offset = new UtcOffset(hour, minute);
-		String actual = offset.toString(extended);
+	private static void assertParse(String input, int expectedHour, int expectedMinute) {
+		UtcOffset expected = new UtcOffset(expectedHour >= 0, expectedHour, expectedMinute);
+		UtcOffset actual = UtcOffset.parse(input);
 		assertEquals(expected, actual);
 	}
 
-	@Test
-	public void toMillis() {
-		assertToMillis(0, 0, 0);
-		assertToMillis(-4, 0, -4 * 1000 * 60 * 60);
-		assertToMillis(-4, 30, -(4 * 1000 * 60 * 60 + 30 * 1000 * 60));
-		assertToMillis(4, 0, 4 * 1000 * 60 * 60);
-		assertToMillis(4, 30, 4 * 1000 * 60 * 60 + 30 * 1000 * 60);
-		assertToMillis(0, 30, 30 * 1000 * 60);
-	}
-
-	private void assertToMillis(int hour, int minute, int expected) {
-		UtcOffset offset = new UtcOffset(hour, minute);
-		assertEquals(expected, offset.toMillis());
+	private static void assertToString(boolean positive, int hour, int minute, boolean extended, String expected) {
+		UtcOffset offset = new UtcOffset(positive, hour, minute);
+		String actual = offset.toString(extended);
+		assertEquals(expected, actual);
 	}
 }

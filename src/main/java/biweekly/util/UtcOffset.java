@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,27 +34,29 @@ import java.util.regex.Pattern;
  * @author Michael Angstadt
  */
 public final class UtcOffset {
-	private final int hour;
-	private final int minute;
+	private final long millis;
 
 	/**
-	 * Creates a new UTC offset.
-	 * @param hour the hour component (may be negative)
-	 * @param minute the minute component (must be between 0 and 59)
+	 * @param positive true if the offset is positive, false if it is negative
+	 * @param hour the hour component of the offset (the sign of this integer is
+	 * ignored)
+	 * @param minute the minute component of the offset (the sign of this
+	 * integer is ignored)
 	 */
-	public UtcOffset(int hour, int minute) {
-		this.hour = hour;
-		this.minute = minute;
+	public UtcOffset(boolean positive, int hour, int minute) {
+		//Note: The (hour, minute) constructor was removed because it could not handle timezones such as "-0030"
+		int sign = positive ? 1 : -1;
+		hour = Math.abs(hour);
+		minute = Math.abs(minute);
+
+		millis = sign * (hoursToMillis(hour) + minutesToMillis(minute));
 	}
 
 	/**
-	 * Creates a new UTC offset.
 	 * @param millis the offset in milliseconds
 	 */
-	public UtcOffset(int millis) {
-		hour = millis / 1000 / 60 / 60;
-		millis -= hour * 1000 * 60 * 60;
-		minute = Math.abs(millis / 1000 / 60);
+	public UtcOffset(long millis) {
+		this.millis = millis;
 	}
 
 	/**
@@ -70,40 +73,34 @@ public final class UtcOffset {
 			throw new IllegalArgumentException("Offset string is not in ISO8610 format: " + text);
 		}
 
-		String sign = m.group(1);
-		boolean positive;
-		if ("-".equals(sign)) {
-			positive = false;
-		} else {
-			positive = true;
-		}
+		String signStr = m.group(1);
+		boolean positive = !"-".equals(signStr);
 
 		String hourStr = m.group(2);
 		int hourOffset = Integer.parseInt(hourStr);
-		if (!positive) {
-			hourOffset *= -1;
-		}
 
 		String minuteStr = m.group(4);
 		int minuteOffset = (minuteStr == null) ? 0 : Integer.parseInt(minuteStr);
 
-		return new UtcOffset(hourOffset, minuteOffset);
+		return new UtcOffset(positive, hourOffset, minuteOffset);
 	}
 
 	/**
-	 * Gets the hour component.
-	 * @return the hour component
+	 * Creates a UTC offset from a {@link TimeZone} object.
+	 * @param timezone the timezone
+	 * @return the UTC offset
 	 */
-	public int getHour() {
-		return hour;
+	public static UtcOffset parse(TimeZone timezone) {
+		long offset = timezone.getOffset(System.currentTimeMillis());
+		return new UtcOffset(offset);
 	}
 
 	/**
-	 * Gets the minute component.
-	 * @return the minute component
+	 * Gets the offset in milliseconds.
+	 * @return the offset in milliseconds
 	 */
-	public int getMinute() {
-		return minute;
+	public long getMillis() {
+		return millis;
 	}
 
 	/**
@@ -125,10 +122,12 @@ public final class UtcOffset {
 	public String toString(boolean extended) {
 		StringBuilder sb = new StringBuilder();
 
-		boolean positive = hour >= 0;
+		boolean positive = (millis >= 0);
+		long hour = Math.abs(millisToHours(millis));
+		long minute = Math.abs(millisToMinutes(millis));
+
 		sb.append(positive ? '+' : '-');
 
-		int hour = Math.abs(this.hour);
 		if (hour < 10) {
 			sb.append('0');
 		}
@@ -146,38 +145,37 @@ public final class UtcOffset {
 		return sb.toString();
 	}
 
-	/**
-	 * Converts the offset to milliseconds.
-	 * @return the offset in milliseconds
-	 */
-	public int toMillis() {
-		int millis = Math.abs(hour) * 60 * 60 * 1000;
-		millis += minute * 60 * 1000;
-		return millis * ((hour < 0) ? -1 : 1);
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + hour;
-		result = prime * result + minute;
+		result = prime * result + (int) (millis ^ (millis >>> 32));
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
 		UtcOffset other = (UtcOffset) obj;
-		if (hour != other.hour)
-			return false;
-		if (minute != other.minute)
-			return false;
+		if (millis != other.millis) return false;
 		return true;
+	}
+
+	private static long hoursToMillis(long hours) {
+		return hours * 60 * 60 * 1000;
+	}
+
+	private static long minutesToMillis(long minutes) {
+		return minutes * 60 * 1000;
+	}
+
+	private static long millisToHours(long millis) {
+		return millis / 1000 / 60 / 60;
+	}
+
+	private static long millisToMinutes(long millis) {
+		return (millis / 1000 / 60) % 60;
 	}
 }

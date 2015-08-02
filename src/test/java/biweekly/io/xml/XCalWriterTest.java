@@ -59,6 +59,7 @@ import biweekly.util.Period;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
+import biweekly.util.UtcOffset;
 import biweekly.util.XmlUtils;
 
 /*
@@ -704,8 +705,8 @@ public class XCalWriterTest {
 			daylight.setRecurrenceRule(rrule);
 
 			daylight.addTimezoneName("EDT");
-			daylight.setTimezoneOffsetFrom(-5, 0);
-			daylight.setTimezoneOffsetTo(-4, 0);
+			daylight.setTimezoneOffsetFrom(new UtcOffset(false, 5, 0));
+			daylight.setTimezoneOffsetTo(new UtcOffset(false, 4, 0));
 
 			usEasternTz.addDaylightSavingsTime(daylight);
 		}
@@ -717,8 +718,8 @@ public class XCalWriterTest {
 			standard.setRecurrenceRule(rrule);
 
 			standard.addTimezoneName("EST");
-			standard.setTimezoneOffsetFrom(-4, 0);
-			standard.setTimezoneOffsetTo(-5, 0);
+			standard.setTimezoneOffsetFrom(new UtcOffset(false, 4, 0));
+			standard.setTimezoneOffsetTo(new UtcOffset(false, 5, 0));
 
 			usEasternTz.addStandardTime(standard);
 		}

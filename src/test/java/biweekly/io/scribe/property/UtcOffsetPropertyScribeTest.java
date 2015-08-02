@@ -39,7 +39,7 @@ import biweekly.util.UtcOffset;
  * @author Michael Angstadt
  */
 public class UtcOffsetPropertyScribeTest extends ScribeTest<UtcOffsetPropertyImpl> {
-	private final UtcOffsetPropertyImpl withValue = new UtcOffsetPropertyImpl(new UtcOffset(1, 30));
+	private final UtcOffsetPropertyImpl withValue = new UtcOffsetPropertyImpl(new UtcOffset(true, 1, 30));
 	private final UtcOffsetPropertyImpl empty = new UtcOffsetPropertyImpl(null);
 
 	public UtcOffsetPropertyScribeTest() {

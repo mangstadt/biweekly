@@ -1,16 +1,19 @@
 package biweekly.component;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertValidate;
 
 import java.util.Date;
 
 import org.junit.Test;
 
-import static biweekly.ICalVersion.*;
 import biweekly.property.DateStart;
 import biweekly.property.RecurrenceRule;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.Frequency;
+import biweekly.util.UtcOffset;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -59,8 +62,8 @@ public class ObservanceTest {
 		//@formatter:on
 		for (Recurrence recurrence : recurrences) {
 			Observance component = new Observance();
-			component.setTimezoneOffsetFrom(1, 0);
-			component.setTimezoneOffsetTo(1, 0);
+			component.setTimezoneOffsetFrom(new UtcOffset(true, 1, 0));
+			component.setTimezoneOffsetTo(new UtcOffset(true, 1, 0));
 			component.setDateStart(new DateStart(new Date(), false));
 			component.setRecurrenceRule(recurrence);
 			assertValidate(component).versions(V1_0).run(48, 5);
@@ -72,8 +75,8 @@ public class ObservanceTest {
 	public void validate_multiple_rrules() {
 		Observance component = new Observance();
 		component.setDateStart(new DateStart(new Date()));
-		component.setTimezoneOffsetFrom(1, 0);
-		component.setTimezoneOffsetTo(1, 0);
+		component.setTimezoneOffsetFrom(new UtcOffset(true, 1, 0));
+		component.setTimezoneOffsetTo(new UtcOffset(true, 1, 0));
 		component.addProperty(new RecurrenceRule(new Recurrence.Builder(Frequency.DAILY).build()));
 		component.addProperty(new RecurrenceRule(new Recurrence.Builder(Frequency.DAILY).build()));
 		assertValidate(component).versions(V1_0).run(48, 6);

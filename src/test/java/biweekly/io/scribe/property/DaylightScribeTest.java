@@ -41,7 +41,7 @@ import biweekly.util.UtcOffset;
  */
 public class DaylightScribeTest extends ScribeTest<Daylight> {
 	private final Daylight empty = new Daylight();
-	private final Daylight withAllValues = new Daylight(true, new UtcOffset(-5, 0), new ICalDate(new DateTimeComponents(2014, 1, 1, 1, 0, 0, false), true), new ICalDate(new DateTimeComponents(2014, 3, 1, 1, 0, 0, false), true), "EST", "EDT");
+	private final Daylight withAllValues = new Daylight(true, new UtcOffset(false, 5, 0), new ICalDate(new DateTimeComponents(2014, 1, 1, 1, 0, 0, false), true), new ICalDate(new DateTimeComponents(2014, 3, 1, 1, 0, 0, false), true), "EST", "EDT");
 	private final Daylight withNoValues = new Daylight(true, null, null, null, null, null);
 
 	public DaylightScribeTest() {

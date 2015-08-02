@@ -101,7 +101,7 @@ public class DataModelConverter {
 			}
 
 			UtcOffset daylightOffset = daylight.getOffset();
-			UtcOffset standardOffset = new UtcOffset(daylightOffset.getHour() - 1, daylightOffset.getMinute());
+			UtcOffset standardOffset = new UtcOffset(daylightOffset.getMillis() - (1000 * 60 * 60));
 
 			DaylightSavingsTime dst = new DaylightSavingsTime();
 			dst.setDateStart(daylight.getStart());

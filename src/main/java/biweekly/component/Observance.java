@@ -119,18 +119,6 @@ public class Observance extends ICalComponent {
 
 	/**
 	 * Sets the UTC offset that the timezone observance transitions to.
-	 * @param hour the hour offset (e.g. "-5")
-	 * @param minute the minute offset (e.g. "0")
-	 * @return the property that was created
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-105">RFC 5545
-	 * p.105-6</a>
-	 */
-	public TimezoneOffsetTo setTimezoneOffsetTo(Integer hour, Integer minute) {
-		return setTimezoneOffsetTo(new UtcOffset(hour, minute));
-	}
-
-	/**
-	 * Sets the UTC offset that the timezone observance transitions to.
 	 * @param offset the offset
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-105">RFC 5545
@@ -160,18 +148,6 @@ public class Observance extends ICalComponent {
 	 */
 	public void setTimezoneOffsetFrom(TimezoneOffsetFrom timezoneOffsetFrom) {
 		setProperty(TimezoneOffsetFrom.class, timezoneOffsetFrom);
-	}
-
-	/**
-	 * Sets the UTC offset that the timezone observance transitions from.
-	 * @param hour the hour offset (e.g. "-5")
-	 * @param minute the minute offset (e.g. "0")
-	 * @return the property that was created
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-104">RFC 5545
-	 * p.104-5</a>
-	 */
-	public TimezoneOffsetFrom setTimezoneOffsetFrom(Integer hour, Integer minute) {
-		return setTimezoneOffsetFrom(new UtcOffset(hour, minute));
 	}
 
 	/**

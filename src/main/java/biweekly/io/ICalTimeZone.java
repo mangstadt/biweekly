@@ -125,13 +125,13 @@ public class ICalTimeZone extends TimeZone {
 			//find the first observance that has a DTSTART property and a TZOFFSETFROM property
 			for (Observance o : getSortedObservances()) {
 				if (hasDateStart(o) && hasTimezoneOffsetFrom(o)) {
-					return o.getTimezoneOffsetFrom().getValue().toMillis();
+					return (int) o.getTimezoneOffsetFrom().getValue().getMillis();
 				}
 			}
 			return 0;
 		}
 
-		return hasTimezoneOffsetTo(observance) ? observance.getTimezoneOffsetTo().getValue().toMillis() : 0;
+		return hasTimezoneOffsetTo(observance) ? (int) observance.getTimezoneOffsetTo().getValue().getMillis() : 0;
 	}
 
 	@Override
@@ -141,7 +141,7 @@ public class ICalTimeZone extends TimeZone {
 			//return the offset of the first STANDARD component
 			for (Observance o : getSortedObservances()) {
 				if (o instanceof StandardTime && hasTimezoneOffsetTo(o)) {
-					return o.getTimezoneOffsetTo().getValue().toMillis();
+					return (int) o.getTimezoneOffsetTo().getValue().getMillis();
 				}
 			}
 			return 0;
@@ -154,7 +154,7 @@ public class ICalTimeZone extends TimeZone {
 			offset = observance.getTimezoneOffsetFrom();
 		}
 
-		return offset.getValue().toMillis();
+		return (int) offset.getValue().getMillis();
 	}
 
 	@Override

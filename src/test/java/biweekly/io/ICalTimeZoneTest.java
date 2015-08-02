@@ -59,20 +59,23 @@ public class ICalTimeZoneTest {
 	@ClassRule
 	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(3, 0);
 
+	private final UtcOffset minus4 = new UtcOffset(false, 4, 0);
+	private final UtcOffset minus5 = new UtcOffset(false, 5, 0);
+
 	@Test
 	public void getOffset_simple_example() {
 		VTimezone component = new VTimezone("America/New_York");
 		{
 			StandardTime standard = new StandardTime();
 			standard.setDateStart(new DateTimeComponents(1998, 10, 25, 2, 0, 0, false));
-			standard.setTimezoneOffsetFrom(-4, 0);
-			standard.setTimezoneOffsetTo(-5, 0);
+			standard.setTimezoneOffsetFrom(minus4);
+			standard.setTimezoneOffsetTo(minus5);
 			component.addStandardTime(standard);
 
 			DaylightSavingsTime daylight = new DaylightSavingsTime();
 			daylight.setDateStart(new DateTimeComponents(1999, 4, 4, 2, 0, 0, false));
-			daylight.setTimezoneOffsetFrom(-5, 0);
-			daylight.setTimezoneOffsetTo(-4, 0);
+			daylight.setTimezoneOffsetFrom(minus5);
+			daylight.setTimezoneOffsetTo(minus4);
 			component.addDaylightSavingsTime(daylight);
 		}
 
@@ -98,13 +101,13 @@ public class ICalTimeZoneTest {
 		VTimezone component = new VTimezone("America/New_York");
 		{
 			StandardTime standard = new StandardTime();
-			standard.setTimezoneOffsetFrom(-4, 0);
-			standard.setTimezoneOffsetTo(-5, 0);
+			standard.setTimezoneOffsetFrom(minus4);
+			standard.setTimezoneOffsetTo(minus5);
 			component.addStandardTime(standard);
 
 			DaylightSavingsTime daylight = new DaylightSavingsTime();
-			daylight.setTimezoneOffsetFrom(-5, 0);
-			daylight.setTimezoneOffsetTo(-4, 0);
+			daylight.setTimezoneOffsetFrom(minus5);
+			daylight.setTimezoneOffsetTo(minus4);
 			component.addDaylightSavingsTime(daylight);
 		}
 
@@ -131,8 +134,8 @@ public class ICalTimeZoneTest {
 		{
 			DaylightSavingsTime daylight = new DaylightSavingsTime();
 			daylight.setDateStart(new DateTimeComponents(1999, 4, 4, 2, 0, 0, false));
-			daylight.setTimezoneOffsetFrom(-5, 0);
-			daylight.setTimezoneOffsetTo(-4, 0);
+			daylight.setTimezoneOffsetFrom(minus5);
+			daylight.setTimezoneOffsetTo(minus4);
 			component.addDaylightSavingsTime(daylight);
 		}
 
@@ -159,8 +162,8 @@ public class ICalTimeZoneTest {
 		{
 			StandardTime standard = new StandardTime();
 			standard.setDateStart(new DateTimeComponents(1998, 10, 25, 2, 0, 0, false));
-			standard.setTimezoneOffsetFrom(-4, 0);
-			standard.setTimezoneOffsetTo(-5, 0);
+			standard.setTimezoneOffsetFrom(minus4);
+			standard.setTimezoneOffsetTo(minus5);
 			component.addStandardTime(standard);
 		}
 
@@ -187,14 +190,14 @@ public class ICalTimeZoneTest {
 		{
 			StandardTime standard = new StandardTime();
 			standard.setDateStart((ICalDate) null);
-			standard.setTimezoneOffsetFrom(-4, 0);
-			standard.setTimezoneOffsetTo(-5, 0);
+			standard.setTimezoneOffsetFrom(minus4);
+			standard.setTimezoneOffsetTo(minus5);
 			component.addStandardTime(standard);
 
 			DaylightSavingsTime daylight = new DaylightSavingsTime();
 			daylight.setDateStart((ICalDate) null);
-			daylight.setTimezoneOffsetFrom(-5, 0);
-			daylight.setTimezoneOffsetTo(-4, 0);
+			daylight.setTimezoneOffsetFrom(minus5);
+			daylight.setTimezoneOffsetTo(minus4);
 			component.addDaylightSavingsTime(daylight);
 		}
 
@@ -593,7 +596,7 @@ public class ICalTimeZoneTest {
 	private void assertOffset(int expectedHours, int expectedMinutes, boolean expectedInDaylight, ICalTimeZone tz, int year, int month, int date, int hour, int minute, int second) {
 		month -= 1;
 
-		UtcOffset expected = new UtcOffset(expectedHours, expectedMinutes);
+		UtcOffset expected = new UtcOffset(expectedHours >= 0, expectedHours, expectedMinutes);
 		int actualMillis = tz.getOffset(0, year, month, date, 0, ms(hour, minute, second));
 		UtcOffset actual = new UtcOffset(actualMillis);
 		assertEquals(expected, actual);
@@ -609,13 +612,12 @@ public class ICalTimeZoneTest {
 		assertEquals(expectedInDaylight, tz.inDaylightTime(c.getTime()));
 	}
 
-	private int ms(int hours, int minutes, int seconds) {
-		int ms = 0;
-
-		ms += hours * 60 * 60 * 1000;
-		ms += minutes * 60 * 1000;
-		ms += seconds * 1000;
-
-		return ms;
+	private static int ms(int hours, int minutes, int seconds) {
+		//@formatter:off
+		return
+		hours * 60 * 60 * 1000 +
+		minutes * 60 * 1000 +
+		seconds * 1000;
+		//@formatter:on
 	}
 }

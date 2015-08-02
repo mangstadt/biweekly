@@ -1,5 +1,6 @@
 package biweekly.io.json;
 
+import static biweekly.ICalVersion.V2_0;
 import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
@@ -16,7 +17,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import biweekly.ICalDataType;
-import static biweekly.ICalVersion.*;
 import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
@@ -44,6 +44,7 @@ import biweekly.util.Period;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
+import biweekly.util.UtcOffset;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -582,8 +583,8 @@ public class JCalWriterTest {
 				daylight.setRecurrenceRule(rrule);
 
 				daylight.addTimezoneName("EDT");
-				daylight.setTimezoneOffsetFrom(-5, 0);
-				daylight.setTimezoneOffsetTo(-4, 0);
+				daylight.setTimezoneOffsetFrom(new UtcOffset(false, 5, 0));
+				daylight.setTimezoneOffsetTo(new UtcOffset(false, 4, 0));
 
 				usEasternTz.addDaylightSavingsTime(daylight);
 			}
@@ -595,8 +596,8 @@ public class JCalWriterTest {
 				standard.setRecurrenceRule(rrule);
 
 				standard.addTimezoneName("EST");
-				standard.setTimezoneOffsetFrom(-4, 0);
-				standard.setTimezoneOffsetTo(-5, 0);
+				standard.setTimezoneOffsetFrom(new UtcOffset(false, 4, 0));
+				standard.setTimezoneOffsetTo(new UtcOffset(false, 5, 0));
 
 				usEasternTz.addStandardTime(standard);
 			}

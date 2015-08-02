@@ -62,6 +62,7 @@ import biweekly.util.IOUtils;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
+import biweekly.util.UtcOffset;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -877,16 +878,16 @@ public class ICalWriterTest {
 			{
 				StandardTime standard = new StandardTime();
 				standard.setDateStart(new DateTimeComponents(1998, 10, 25, 2, 0, 0, false));
-				standard.setTimezoneOffsetFrom(-4, 0);
-				standard.setTimezoneOffsetTo(-5, 0);
+				standard.setTimezoneOffsetFrom(new UtcOffset(false, 4, 0));
+				standard.setTimezoneOffsetTo(new UtcOffset(false, 5, 0));
 				standard.addTimezoneName("EST");
 				usEasternTz.addStandardTime(standard);
 			}
 			{
 				DaylightSavingsTime daylight = new DaylightSavingsTime();
 				daylight.setDateStart(new DateTimeComponents(1999, 4, 4, 2, 0, 0, false));
-				daylight.setTimezoneOffsetFrom(-5, 0);
-				daylight.setTimezoneOffsetTo(-4, 0);
+				daylight.setTimezoneOffsetFrom(new UtcOffset(false, 5, 0));
+				daylight.setTimezoneOffsetTo(new UtcOffset(false, 4, 0));
 				daylight.addTimezoneName("EDT");
 				usEasternTz.addDaylightSavingsTime(daylight);
 			}
@@ -1122,8 +1123,8 @@ public class ICalWriterTest {
 
 			StandardTime standard = new StandardTime();
 			standard.setDateStart(new DateTimeComponents(2007, 11, 4, 2, 0, 0, false));
-			standard.setTimezoneOffsetFrom(-4, 0);
-			standard.setTimezoneOffsetTo(-5, 0);
+			standard.setTimezoneOffsetFrom(new UtcOffset(false, 4, 0));
+			standard.setTimezoneOffsetTo(new UtcOffset(false, 5, 0));
 			standard.addTimezoneName("EST");
 			//@formatter:off
 			standard.setRecurrenceRule(new Recurrence.Builder
@@ -1148,8 +1149,8 @@ public class ICalWriterTest {
 		{
 			DaylightSavingsTime daylightSavings = new DaylightSavingsTime();
 			daylightSavings.setDateStart(new DateTimeComponents(2007, 3, 11, 2, 0, 0, false));
-			daylightSavings.setTimezoneOffsetFrom(-5, 0);
-			daylightSavings.setTimezoneOffsetTo(-4, 0);
+			daylightSavings.setTimezoneOffsetFrom(new UtcOffset(false, 5, 0));
+			daylightSavings.setTimezoneOffsetTo(new UtcOffset(false, 4, 0));
 			daylightSavings.addTimezoneName("EDT");
 			//@formatter:off
 			daylightSavings.setRecurrenceRule(new Recurrence.Builder
@@ -1162,8 +1163,8 @@ public class ICalWriterTest {
 
 			StandardTime standard = new StandardTime();
 			standard.setDateStart(new DateTimeComponents(2007, 11, 4, 2, 0, 0, false));
-			standard.setTimezoneOffsetFrom(-4, 0);
-			standard.setTimezoneOffsetTo(-5, 0);
+			standard.setTimezoneOffsetFrom(new UtcOffset(false, 4, 0));
+			standard.setTimezoneOffsetTo(new UtcOffset(false, 5, 0));
 			standard.addTimezoneName("EST");
 			//@formatter:off
 			standard.setRecurrenceRule(new Recurrence.Builder

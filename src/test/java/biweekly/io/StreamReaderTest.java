@@ -25,6 +25,7 @@ import biweekly.property.ICalProperty;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.ICalDate;
+import biweekly.util.UtcOffset;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -69,14 +70,14 @@ public class StreamReaderTest {
 				{
 					StandardTime standard = new StandardTime();
 					standard.setDateStart(new DateTimeComponents(2014, 9, 1, 2, 0, 0, false));
-					standard.setTimezoneOffsetFrom(10, 0);
-					standard.setTimezoneOffsetTo(9, 0);
+					standard.setTimezoneOffsetFrom(new UtcOffset(true, 10, 0));
+					standard.setTimezoneOffsetTo(new UtcOffset(true, 9, 0));
 					timezone.addStandardTime(standard);
 
 					DaylightSavingsTime daylight = new DaylightSavingsTime();
 					daylight.setDateStart(new DateTimeComponents(2014, 1, 1, 2, 0, 0, false));
-					daylight.setTimezoneOffsetFrom(9, 0);
-					daylight.setTimezoneOffsetTo(10, 0);
+					daylight.setTimezoneOffsetFrom(new UtcOffset(true, 9, 0));
+					daylight.setTimezoneOffsetTo(new UtcOffset(true, 10, 0));
 					timezone.addDaylightSavingsTime(daylight);
 				}
 				ical.addComponent(timezone);
@@ -206,14 +207,14 @@ public class StreamReaderTest {
 				{
 					StandardTime standard = new StandardTime();
 					standard.setDateStart(new DateTimeComponents(2014, 9, 1, 2, 0, 0, false));
-					standard.setTimezoneOffsetFrom(10, 0);
-					standard.setTimezoneOffsetTo(9, 0);
+					standard.setTimezoneOffsetFrom(new UtcOffset(true, 10, 0));
+					standard.setTimezoneOffsetTo(new UtcOffset(true, 9, 0));
 					timezone.addStandardTime(standard);
 
 					DaylightSavingsTime daylight = new DaylightSavingsTime();
 					daylight.setDateStart(new DateTimeComponents(2014, 1, 1, 2, 0, 0, false));
-					daylight.setTimezoneOffsetFrom(9, 0);
-					daylight.setTimezoneOffsetTo(10, 0);
+					daylight.setTimezoneOffsetFrom(new UtcOffset(true, 9, 0));
+					daylight.setTimezoneOffsetTo(new UtcOffset(true, 10, 0));
 					timezone.addDaylightSavingsTime(daylight);
 				}
 				ical.addComponent(timezone);

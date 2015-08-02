@@ -71,6 +71,7 @@ import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.ByDay;
 import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
+import biweekly.util.UtcOffset;
 import biweekly.util.XmlUtils;
 
 /*
@@ -1034,11 +1035,8 @@ public class XCalReaderTest {
 					assertEquals(Arrays.asList(4), rrule.getByMonth());
 
 					assertEquals("EDT", daylight.getTimezoneNames().get(0).getValue());
-					assertIntEquals(-5, daylight.getTimezoneOffsetFrom().getHourOffset());
-					assertIntEquals(0, daylight.getTimezoneOffsetFrom().getMinuteOffset());
-
-					assertIntEquals(-4, daylight.getTimezoneOffsetTo().getHourOffset());
-					assertIntEquals(0, daylight.getTimezoneOffsetTo().getMinuteOffset());
+					assertEquals(new UtcOffset(false, 5, 0), daylight.getTimezoneOffsetFrom().getValue());
+					assertEquals(new UtcOffset(false, 4, 0), daylight.getTimezoneOffsetTo().getValue());
 				}
 				{
 					StandardTime standard = timezone.getStandardTimes().get(0);
@@ -1052,11 +1050,8 @@ public class XCalReaderTest {
 					assertEquals(Arrays.asList(10), rrule.getByMonth());
 
 					assertEquals("EST", standard.getTimezoneNames().get(0).getValue());
-					assertIntEquals(-4, standard.getTimezoneOffsetFrom().getHourOffset());
-					assertIntEquals(0, standard.getTimezoneOffsetFrom().getMinuteOffset());
-
-					assertIntEquals(-5, standard.getTimezoneOffsetTo().getHourOffset());
-					assertIntEquals(0, standard.getTimezoneOffsetTo().getMinuteOffset());
+					assertEquals(new UtcOffset(false, 4, 0), standard.getTimezoneOffsetFrom().getValue());
+					assertEquals(new UtcOffset(false, 5, 0), standard.getTimezoneOffsetTo().getValue());
 				}
 
 				assertFalse(it.hasNext());
