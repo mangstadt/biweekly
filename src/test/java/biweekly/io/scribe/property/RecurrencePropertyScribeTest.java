@@ -1,5 +1,7 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
@@ -14,9 +16,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.junit.Rule;
 import org.junit.Test;
 
-import static biweekly.ICalVersion.*;
+import biweekly.ICalVersion;
+import biweekly.component.StandardTime;
+import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
 import biweekly.io.ParseContext;
 import biweekly.io.ParseContext.TimezonedDate;
@@ -25,6 +30,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.json.JsonValue;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.RecurrenceProperty;
+import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.ICalDate;
 import biweekly.util.ListMultimap;
 import biweekly.util.Recurrence;
@@ -61,6 +67,9 @@ import biweekly.util.Recurrence.Frequency;
  * @author Michael Angstadt
  */
 public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty> {
+	@Rule
+	public final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(2, 0);
+
 	private final ICalDate date = new ICalDate(date("2013-06-11"), false);
 	private final String dateStr = "20130611";
 	private final String dateStrExt = "2013-06-11";
@@ -278,11 +287,53 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void writeText_until() {
-		sensei.assertWriteText(withUntilDateTime).run("FREQ=WEEKLY;UNTIL=" + dateTimeStr);
-		sensei.assertWriteText(withUntilDateTime).tz(americaNewYork()).run("FREQ=WEEKLY;UNTIL=20130611T084302");
-		sensei.assertWriteText(withUntilDate).run("FREQ=WEEKLY;UNTIL=" + dateStr);
-		sensei.assertWriteText(withUntilDate).tz(americaNewYork()).run("FREQ=WEEKLY;UNTIL=" + dateStr);
+	public void writeText_until_datetime() {
+		String utc = "FREQ=WEEKLY;UNTIL=20130611T124302Z";
+		String floating = "FREQ=WEEKLY;UNTIL=20130611T144302";
+
+		//no DTSTART sibling
+		sensei.assertWriteText(withUntilDateTime).run(utc);
+		sensei.assertWriteText(withUntilDateTime).tz(americaNewYork()).run(utc);
+		sensei.assertWriteText(withUntilDateTime).tz(floating()).run(utc);
+
+		VEvent event = new VEvent();
+		event.addProperty(withUntilDateTime);
+		event.setDateStart(datetime);
+		sensei.assertWriteText(withUntilDateTime).parent(event).run(utc);
+		sensei.assertWriteText(withUntilDateTime).parent(event).tz(americaNewYork()).run(utc);
+		sensei.assertWriteText(withUntilDateTime).parent(event).tz(floating()).run(floating);
+		sensei.assertWriteText(withUntilDateTime).version(ICalVersion.V2_0_DEPRECATED).parent(event).tz(floating()).run(utc);
+
+		StandardTime standard = new StandardTime();
+		standard.addProperty(withUntilDateTime);
+		sensei.assertWriteText(withUntilDateTime).parent(standard).run(utc);
+		sensei.assertWriteText(withUntilDateTime).parent(standard).tz(americaNewYork()).run(utc);
+		sensei.assertWriteText(withUntilDateTime).parent(standard).tz(floating()).run(utc);
+	}
+
+	@Test
+	public void writeText_until_date() {
+		String expected = "FREQ=WEEKLY;UNTIL=" + dateStr;
+
+		//no DTSTART sibling
+		sensei.assertWriteText(withUntilDate).run(expected);
+		sensei.assertWriteText(withUntilDate).tz(americaNewYork()).run(expected);
+		sensei.assertWriteText(withUntilDate).tz(floating()).run(expected);
+
+		VEvent event = new VEvent();
+		event.addProperty(withUntilDate);
+		event.setDateStart(datetime);
+		sensei.assertWriteText(withUntilDate).parent(event).run(expected);
+		sensei.assertWriteText(withUntilDate).parent(event).tz(americaNewYork()).run(expected);
+		sensei.assertWriteText(withUntilDate).parent(event).tz(floating()).run(expected);
+		sensei.assertWriteText(withUntilDate).version(ICalVersion.V2_0_DEPRECATED).parent(event).tz(floating()).run(expected);
+
+		StandardTime standard = new StandardTime();
+		standard.addProperty(withUntilDate);
+		standard.setDateStart(datetime);
+		sensei.assertWriteText(withUntilDate).parent(standard).run(expected);
+		sensei.assertWriteText(withUntilDate).parent(standard).tz(americaNewYork()).run(expected);
+		sensei.assertWriteText(withUntilDate).parent(standard).tz(floating()).run(expected);
 	}
 
 	@Test
@@ -977,6 +1028,12 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 				assertEquals(expected, actual);
 			}
 		};
+	}
+
+	private static TimezoneInfo floating() {
+		TimezoneInfo tzinfo = new TimezoneInfo();
+		tzinfo.setGlobalFloatingTime(true);
+		return tzinfo;
 	}
 
 	private static TimezoneInfo americaNewYork() {

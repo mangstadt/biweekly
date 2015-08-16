@@ -12,13 +12,16 @@ import org.w3c.dom.Element;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
+import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
+import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
+import biweekly.property.DateStart;
 import biweekly.property.RecurrenceProperty;
 import biweekly.util.ICalDate;
 import biweekly.util.ListMultimap;
@@ -81,20 +84,6 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	@Override
 	protected ICalDataType _defaultDataType(ICalVersion version) {
 		return ICalDataType.RECUR;
-	}
-
-	@Override
-	protected ICalParameters _prepareParameters(T property, WriteContext context) {
-		if (isInObservance(context)) {
-			return property.getParameters();
-		}
-
-		Recurrence recur = property.getValue();
-		if (recur == null || recur.getUntil() == null) {
-			return property.getParameters();
-		}
-
-		return handleTzidParameter(property, recur.getUntil().hasTime(), context);
 	}
 
 	@Override
@@ -775,13 +764,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 		ICalDate until = recur.getUntil();
 		if (until != null) {
-			String dateStr;
-			if (isInObservance(context)) {
-				dateStr = date(until).observance(true).extended(extended).write();
-			} else {
-				dateStr = date(until, property, context).extended(extended).write();
-			}
-			components.put(UNTIL, dateStr);
+			components.put(UNTIL, writeUntil(until, context, extended));
 		}
 
 		if (recur.getCount() != null) {
@@ -825,6 +808,70 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		}
 
 		return components;
+	}
+
+	private String writeUntil(ICalDate until, WriteContext context, boolean extended) {
+		if (!until.hasTime()) {
+			return date(until).extended(extended).write();
+		}
+
+		/*
+		 * RFC 5545 p.41
+		 * 
+		 * In the case of the "STANDARD" and "DAYLIGHT" sub-components the UNTIL
+		 * rule part MUST always be specified as a date with UTC time. If
+		 * specified as a DATE-TIME value, then it MUST be specified in a UTC
+		 * time format.
+		 */
+
+		if (isInObservance(context)) {
+			return date(until).utc(true).extended(extended).write();
+		}
+
+		/*
+		 * RFC 2445 p.42
+		 * 
+		 * If specified as a date-time value, then it MUST be specified in an
+		 * UTC time format.
+		 */
+		if (context.getVersion() == ICalVersion.V2_0_DEPRECATED) {
+			return date(until).extended(extended).utc(true).write();
+		}
+
+		/*
+		 * RFC 5545 p.41
+		 * 
+		 * Furthermore, if the "DTSTART" property is specified as a date
+		 * with local time, then the UNTIL rule part MUST also be
+		 * specified as a date with local time. If the "DTSTART"
+		 * property is specified as a date with UTC time or a date with
+		 * local time and time zone reference, then the UNTIL rule part
+		 * MUST be specified as a date with UTC time.
+		 */
+
+		ICalComponent parent = context.getParent();
+		if (parent == null) {
+			return date(until).extended(extended).utc(true).write();
+		}
+
+		DateStart dtstart = parent.getProperty(DateStart.class);
+		if (dtstart == null) {
+			return date(until).extended(extended).utc(true).write();
+		}
+
+		/*
+		 * If DTSTART is floating, then UNTIL should be floating.
+		 */
+		TimezoneInfo tzinfo = context.getTimezoneInfo();
+		boolean dtstartFloating = tzinfo.isFloating(dtstart);
+		if (dtstartFloating) {
+			return date(until).extended(extended).tz(true, null).write();
+		}
+
+		/*
+		 * Otherwise, UNTIL should be UTC.
+		 */
+		return date(until).extended(extended).utc(true).write();
 	}
 
 	private void addIntegerListComponent(ListMultimap<String, Object> components, String name, List<Integer> values) {
