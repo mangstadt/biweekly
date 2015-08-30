@@ -12,6 +12,7 @@ import java.util.TimeZone;
 
 import biweekly.component.VTimezone;
 import biweekly.io.text.ICalReader;
+import biweekly.property.TimezoneId;
 import biweekly.util.IOUtils;
 
 /*
@@ -77,6 +78,32 @@ public class TzUrlDotOrgGenerator implements VTimezoneGenerator {
 
 			TimezoneInfo tzinfo = reader.getTimezoneInfo();
 			component = tzinfo.getComponents().iterator().next();
+
+			TimezoneId componentId = component.getTimezoneId();
+			if (componentId == null) {
+				/*
+				 * There should always be a TZID property, but just in case
+				 * there there isn't one, create one.
+				 */
+				component.setTimezoneId(timezone.getID());
+			} else if (!timezone.getID().equals(componentId.getValue())) {
+				/*
+				 * Ensure that the value of the TZID property is identical to
+				 * the ID of the Java TimeZone object. This is to ensure that
+				 * the values of the TZID parameters throughout the iCal match
+				 * the value of the VTIMEZONE component's TZID property.
+				 * 
+				 * For example, if tzurl.org is queried for the "PRC" timezone,
+				 * then a VTIMEZONE component with a TZID of "Asia/Shanghai" is
+				 * *actually* returned. This is a problem because iCal
+				 * properties use the value of the Java TimeZone object to get
+				 * the value of the TZID parameter, so the values of the TZID
+				 * parameters and the VTIMEZONE component's TZID property will
+				 * not be the same.
+				 */
+				componentId.setValue(timezone.getID());
+			}
+
 			cache.put(uri, component);
 			return component;
 		} catch (FileNotFoundException e) {
