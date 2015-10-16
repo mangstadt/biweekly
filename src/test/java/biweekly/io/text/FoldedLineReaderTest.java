@@ -139,12 +139,12 @@ public class FoldedLineReaderTest {
 		//a quoted-printable line whose additional lines *are* folded where the lines end in "="
 		"COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0A=\n" +
 		" Two=0D=0A=\n" +
-		" Three\n" +
+		"  Three\n" +
 
 		//a quoted-printable line whose additional lines *are* folded, where the lines don't end in "="
 		"COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0A\n" +
 		" Two=0D=0A\n" +
-		" Three\n";
+		"  Three\n";
 		//@formatter:on
 
 		FoldedLineReader reader = new FoldedLineReader(ical);
@@ -155,8 +155,8 @@ public class FoldedLineReaderTest {
 		assertEquals("COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0ATwo=0D=0AThree", reader.readLine());
 		assertEquals("COMMENT:Some QUOTED-PRINTABLE text=", reader.readLine());
 		assertEquals("COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0ATwo=0D=0AThree=0D=0AFour", reader.readLine());
-		assertEquals("COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0ATwo=0D=0AThree", reader.readLine());
-		assertEquals("COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0ATwo=0D=0AThree", reader.readLine());
+		assertEquals("COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0ATwo=0D=0A Three", reader.readLine());
+		assertEquals("COMMENT;ENCODING=QUOTED-PRINTABLE:One=0D=0ATwo=0D=0A Three", reader.readLine());
 		assertNull(reader.readLine());
 	}
 

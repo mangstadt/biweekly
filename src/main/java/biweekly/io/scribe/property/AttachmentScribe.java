@@ -97,6 +97,9 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 		value = unescape(value);
 
 		if (dataType == ICalDataType.BINARY || parameters.getEncoding() == Encoding.BASE64) {
+			//remove the folding whitespace left over from improperly-folded lines
+			value = removeWhitespace(value);
+
 			return new Attachment(null, Base64.decodeBase64(value));
 		}
 		return new Attachment(null, value);
@@ -157,5 +160,9 @@ public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
 			return new Attachment(null, Base64.decodeBase64(valueStr));
 		}
 		return new Attachment(null, valueStr);
+	}
+
+	private String removeWhitespace(String base64) {
+		return base64.replaceAll("[ \\t]", "");
 	}
 }

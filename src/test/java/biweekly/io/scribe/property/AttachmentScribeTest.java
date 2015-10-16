@@ -101,6 +101,11 @@ public class AttachmentScribeTest extends ScribeTest<Attachment> {
 		sensei.assertParseText(base64Data).dataType(ICalDataType.BINARY).param("ENCODING", "BASE64").run(has(data));
 		sensei.assertParseText(base64Data).dataType(ICalDataType.URI).param("ENCODING", "BASE64").run(has(data));
 
+		String base64DataWithWhitespace = base64Data.substring(0, base64Data.length() / 2) + "    " + base64Data.substring(base64Data.length() / 2);
+		sensei.assertParseText(base64DataWithWhitespace).dataType(ICalDataType.BINARY).run(has(data));
+		sensei.assertParseText(base64DataWithWhitespace).dataType(ICalDataType.BINARY).param("ENCODING", "BASE64").run(has(data));
+		sensei.assertParseText(base64DataWithWhitespace).dataType(ICalDataType.URI).param("ENCODING", "BASE64").run(has(data));
+
 		//if data type is URI and no ENCODING parameter is present, it treats the value as a URI
 		sensei.assertParseText(base64Data).dataType(ICalDataType.URI).run(has(base64Data));
 
