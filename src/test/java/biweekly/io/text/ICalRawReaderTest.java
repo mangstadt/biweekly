@@ -138,8 +138,8 @@ public class ICalRawReaderTest {
 
 	@Test
 	public void empty_value() throws Throwable {
-		String vcard = "COMMENT:";
-		ICalRawReader reader = create(vcard);
+		String ical = "COMMENT:";
+		ICalRawReader reader = create(ical);
 
 		ICalRawLine expected = line("COMMENT").value("").build();
 		ICalRawLine actual = reader.readLine();
@@ -198,13 +198,13 @@ public class ICalRawReaderTest {
 		//1.0 (removes)
 		{
 			//@formatter:off
-			String vcard = 
+			String ical = 
 			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:1.0\r\n" +
 			"ADR;TYPE\t= WOrK;TYPE \t=  dOM:;;123 Main Str;Austin;TX;12345;US\r\n" +
 			"END:VCALENDAR\r\n";
 			//@formatter:on
-			ICalRawReader reader = create(vcard);
+			ICalRawReader reader = create(ical);
 			reader.readLine();
 
 			ICalRawLine expected = line("ADR").param("TYPE", "WOrK").param("TYPE", "dOM").value(";;123 Main Str;Austin;TX;12345;US").build();
@@ -218,13 +218,13 @@ public class ICalRawReaderTest {
 		//2.0 (keeps)
 		{
 			//@formatter:off
-			String vcard = 
+			String ical = 
 			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:2.0\r\n" +
 			"ADR;TYPE\t= WOrK;TYPE \t=  dOM:;;123 Main Str;Austin;TX;12345;US\r\n" +
 			"END:VCALENDAR\r\n";
 			//@formatter:on
-			ICalRawReader reader = create(vcard);
+			ICalRawReader reader = create(ical);
 			reader.readLine();
 
 			ICalRawLine expected = line("ADR").param("TYPE\t", " WOrK").param("TYPE \t", "  dOM").value(";;123 Main Str;Austin;TX;12345;US").build();
@@ -241,13 +241,13 @@ public class ICalRawReaderTest {
 		//1.0 (doesn't recognize them)
 		{
 			//@formatter:off
-			String vcard = 
+			String ical = 
 			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:1.0\r\n" +
 			"ADR;TYPE=dom,\"foo,bar\\;baz\",work,foo=bar;PREF=1:;;123 Main Str;Austin;TX;12345;US\r\n" +
 			"END:VCALENDAR\r\n";
 			//@formatter:on
-			ICalRawReader reader = create(vcard);
+			ICalRawReader reader = create(ical);
 			reader.readLine();
 
 			ICalRawLine expected = line("ADR").param("TYPE", "dom,\"foo,bar;baz\",work,foo=bar").param("PREF", "1").value(";;123 Main Str;Austin;TX;12345;US").build();
@@ -261,13 +261,13 @@ public class ICalRawReaderTest {
 		//2.0
 		{
 			//@formatter:off
-			String vcard =
+			String ical =
 			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:2.0\r\n" +
 			"ADR;TYPE=dom,\"foo,bar;baz\",work,foo=bar;PREF=1:;;123 Main Str;Austin;TX;12345;US\r\n" +
 			"END:VCALENDAR\r\n";
 			//@formatter:on
-			ICalRawReader reader = create(vcard);
+			ICalRawReader reader = create(ical);
 			reader.readLine();
 
 			ICalRawLine expected = line("ADR").param("TYPE", "dom", "foo,bar;baz", "work", "foo=bar").param("PREF", "1").value(";;123 Main Str;Austin;TX;12345;US").build();
@@ -294,14 +294,14 @@ public class ICalRawReaderTest {
 			//9: un-escaped double quote (no special meaning in 2.1)
 			//a: caret that doesn't escape anything
 			//@formatter:off
-			String vcard = 
+			String ical = 
 			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:1.0\r\n" +
 			//          1    2     2     3        4     5            6        7  8       8   9   9     a
 			"ADR;LABEL=1\\23 ^^Main^^ St.^nSection\\; 12^NBuilding 20\\nApt 10\\N^'Austin^', \"TX\" 123^45:;;123 Main Str;Austin;TX;12345;US\r\n" +
 			"END:VCALENDAR\r\n";
 			//@formatter:on
-			ICalRawReader reader = create(vcard);
+			ICalRawReader reader = create(ical);
 			reader.setCaretDecodingEnabled(false);
 			reader.readLine();
 
@@ -326,14 +326,14 @@ public class ICalRawReaderTest {
 			//9: un-escaped double quote (no special meaning in 2.1)
 			//a: caret that doesn't escape anything
 			//@formatter:off
-			String vcard = 
+			String ical = 
 			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:1.0\r\n" +
 			//          1    2     2     3        4     5            6        7  8       8   9   9     a
 			"ADR;LABEL=1\\23 ^^Main^^ St.^nSection\\; 12^NBuilding 20\\nApt 10\\N^'Austin^', \"TX\" 123^45:;;123 Main Str;Austin;TX;12345;US\r\n" +
 			"END:VCALENDAR\r\n";
 			//@formatter:on
-			ICalRawReader reader = create(vcard);
+			ICalRawReader reader = create(ical);
 			reader.setCaretDecodingEnabled(true);
 			reader.readLine();
 
@@ -358,14 +358,14 @@ public class ICalRawReaderTest {
 			//8: backslash-escaped double quote (not part of the standard, included for interoperability)
 			//9: caret that doesn't escape anything
 			//@formatter:off
-			String vcard = 
+			String ical = 
 			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:2.0\r\n" +
 			//         0  1    2     2     3        0   4            5        6  7       7 0 8     8       9  0
 			"ADR;LABEL=\"1\\23 ^^Main^^ St.^nSection; 12^NBuilding 20\\nApt 10\\N^'Austin^', \\\"TX\\\" 123^45\":;;123 Main Str;Austin;TX;12345;US\r\n" +
 			"END:VCALENDAR\r\n";
 			//@formatter:on
-			ICalRawReader reader = create(vcard);
+			ICalRawReader reader = create(ical);
 			reader.setCaretDecodingEnabled(false);
 			reader.readLine();
 
@@ -390,14 +390,14 @@ public class ICalRawReaderTest {
 			//8: backslash-escaped double quote (not part of the standard, included for interoperability)
 			//9: caret that doesn't escape anything
 			//@formatter:off
-			String vcard = 
+			String ical = 
 			"BEGIN:VCALENDAR\r\n" +
 			"VERSION:2.0\r\n" +
 			//         0  1    2     2     3        0   4            5        6  7       7 0 8     8       9  0
 			"ADR;LABEL=\"1\\23 ^^Main^^ St.^nSection; 12^NBuilding 20\\nApt 10\\N^'Austin^', \\\"TX\\\" 123^45\":;;123 Main Str;Austin;TX;12345;US\r\n" +
 			"END:VCALENDAR\r\n";
 			//@formatter:on
-			ICalRawReader reader = create(vcard);
+			ICalRawReader reader = create(ical);
 			reader.setCaretDecodingEnabled(true);
 			reader.readLine();
 
@@ -426,8 +426,8 @@ public class ICalRawReaderTest {
 		assertNull(reader.readLine());
 	}
 
-	private static ICalRawReader create(String vcard) {
-		return new ICalRawReader(new StringReader(vcard));
+	private static ICalRawReader create(String ical) {
+		return new ICalRawReader(new StringReader(ical));
 	}
 
 	private static ICalRawLine.Builder line(String name) {
