@@ -378,7 +378,23 @@ public class VTodo extends ICalComponent {
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35</a>
 	 */
 	public DateStart setDateStart(Date dateStart) {
-		DateStart prop = (dateStart == null) ? null : new DateStart(dateStart);
+		return setDateStart(dateStart, true);
+	}
+
+	/**
+	 * Sets the date that the to-do starts.
+	 * @param dateStart the start date or null to remove
+	 * @param hasTime true if the date has a time component, false if it is
+	 * strictly a date (if false, the given Date object should be created by a
+	 * {@link java.util.Calendar Calendar} object that uses the JVM's default
+	 * timezone)
+	 * @return the property that was created
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
+	 * p.97-8</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35</a>
+	 */
+	public DateStart setDateStart(Date dateStart, boolean hasTime) {
+		DateStart prop = (dateStart == null) ? null : new DateStart(dateStart, hasTime);
 		setDateStart(prop);
 		return prop;
 	}
@@ -849,7 +865,24 @@ public class VTodo extends ICalComponent {
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.30</a>
 	 */
 	public DateDue setDateDue(Date dateDue) {
-		DateDue prop = (dateDue == null) ? null : new DateDue(dateDue);
+		return setDateDue(dateDue, true);
+	}
+
+	/**
+	 * Sets the date that a to-do is due by. This must NOT be set if a
+	 * {@link DurationProperty} is defined.
+	 * @param dateDue the due date or null to remove
+	 * @param hasTime true if the date has a time component, false if it is
+	 * strictly a date (if false, the given Date object should be created by a
+	 * {@link java.util.Calendar Calendar} object that uses the JVM's default
+	 * timezone)
+	 * @return the property that was created
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-96">RFC 5545
+	 * p.96-7</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.30</a>
+	 */
+	public DateDue setDateDue(Date dateDue, boolean hasTime) {
+		DateDue prop = (dateDue == null) ? null : new DateDue(dateDue, hasTime);
 		setDateDue(prop);
 		return prop;
 	}

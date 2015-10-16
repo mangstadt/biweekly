@@ -1,10 +1,13 @@
 package biweekly.property;
 
 import static biweekly.util.TestUtils.assertValidate;
+import static org.junit.Assert.assertSame;
 
 import java.util.Date;
 
 import org.junit.Test;
+
+import biweekly.util.ICalDate;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -42,5 +45,12 @@ public class DateOrDateTimePropertyTest {
 
 		property = new DateOrDateTimeProperty(new Date(), false);
 		assertValidate(property).run();
+	}
+
+	@Test
+	public void constructor() {
+		Date disguisedICalDate = new ICalDate(false);
+		DateOrDateTimeProperty property = new DateOrDateTimeProperty(disguisedICalDate);
+		assertSame(disguisedICalDate, property.getValue());
 	}
 }

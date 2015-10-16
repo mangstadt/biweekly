@@ -244,7 +244,22 @@ public class VFreeBusy extends ICalComponent {
 	 * p.97-8</a>
 	 */
 	public DateStart setDateStart(Date dateStart) {
-		DateStart prop = (dateStart == null) ? null : new DateStart(dateStart);
+		return setDateStart(dateStart, true);
+	}
+
+	/**
+	 * Sets the date that the free/busy entry starts.
+	 * @param dateStart the start date or null to remove
+	 * @param hasTime true if the date has a time component, false if it is
+	 * strictly a date (if false, the given Date object should be created by a
+	 * {@link java.util.Calendar Calendar} object that uses the JVM's default
+	 * timezone)
+	 * @return the property that was created
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
+	 * p.97-8</a>
+	 */
+	public DateStart setDateStart(Date dateStart, boolean hasTime) {
+		DateStart prop = (dateStart == null) ? null : new DateStart(dateStart, hasTime);
 		setDateStart(prop);
 		return prop;
 	}
@@ -277,7 +292,22 @@ public class VFreeBusy extends ICalComponent {
 	 * p.95-6</a>
 	 */
 	public DateEnd setDateEnd(Date dateEnd) {
-		DateEnd prop = (dateEnd == null) ? null : new DateEnd(dateEnd);
+		return setDateEnd(dateEnd, true);
+	}
+
+	/**
+	 * Sets the date that the free/busy entry ends.
+	 * @param dateEnd the end date or null to remove
+	 * @param hasTime true if the date has a time component, false if it is
+	 * strictly a date (if false, the given Date object should be created by a
+	 * {@link java.util.Calendar Calendar} object that uses the JVM's default
+	 * timezone)
+	 * @return the property that was created
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-95">RFC 5545
+	 * p.95-6</a>
+	 */
+	public DateEnd setDateEnd(Date dateEnd, boolean hasTime) {
+		DateEnd prop = (dateEnd == null) ? null : new DateEnd(dateEnd, hasTime);
 		setDateEnd(prop);
 		return prop;
 	}

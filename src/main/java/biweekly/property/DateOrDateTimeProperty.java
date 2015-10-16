@@ -57,7 +57,7 @@ public class DateOrDateTimeProperty extends ValuedProperty<ICalDate> {
 	 * strictly a date
 	 */
 	public DateOrDateTimeProperty(Date value, boolean hasTime) {
-		this((value == null) ? null : new ICalDate(value, hasTime));
+		this(createICalDate(value, hasTime));
 	}
 
 	/**
@@ -68,5 +68,12 @@ public class DateOrDateTimeProperty extends ValuedProperty<ICalDate> {
 	 */
 	public void setValue(Date value, boolean hasTime) {
 		setValue((value == null) ? null : new ICalDate(value, hasTime));
+	}
+
+	private static ICalDate createICalDate(Date value, boolean hasTime) {
+		if (value == null) {
+			return null;
+		}
+		return (value instanceof ICalDate) ? (ICalDate) value : new ICalDate(value, hasTime);
 	}
 }

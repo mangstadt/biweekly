@@ -232,7 +232,24 @@ public class VEvent extends ICalComponent {
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35</a>
 	 */
 	public DateStart setDateStart(Date dateStart) {
-		DateStart prop = (dateStart == null) ? null : new DateStart(dateStart);
+		return setDateStart(dateStart, true);
+	}
+
+	/**
+	 * Sets the date that the event starts (required if no {@link Method}
+	 * property is defined).
+	 * @param dateStart the start date or null to remove
+	 * @param hasTime true if the date has a time component, false if it is
+	 * strictly a date (if false, the given Date object should be created by a
+	 * {@link java.util.Calendar Calendar} object that uses the JVM's default
+	 * timezone)
+	 * @return the property that was created
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
+	 * p.97-8</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35</a>
+	 */
+	public DateStart setDateStart(Date dateStart, boolean hasTime) {
+		DateStart prop = (dateStart == null) ? null : new DateStart(dateStart, hasTime);
 		setDateStart(prop);
 		return prop;
 	}
@@ -701,7 +718,24 @@ public class VEvent extends ICalComponent {
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
 	 */
 	public DateEnd setDateEnd(Date dateEnd) {
-		DateEnd prop = (dateEnd == null) ? null : new DateEnd(dateEnd);
+		return setDateEnd(dateEnd, true);
+	}
+
+	/**
+	 * Sets the date that the event ends. This must NOT be set if a
+	 * {@link DurationProperty} is defined.
+	 * @param dateEnd the end date or null to remove
+	 * @param hasTime true if the date has a time component, false if it is
+	 * strictly a date (if false, the given Date object should be created by a
+	 * {@link java.util.Calendar Calendar} object that uses the JVM's default
+	 * timezone)
+	 * @return the property that was created
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-95">RFC 5545
+	 * p.95-6</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
+	 */
+	public DateEnd setDateEnd(Date dateEnd, boolean hasTime) {
+		DateEnd prop = (dateEnd == null) ? null : new DateEnd(dateEnd, hasTime);
 		setDateEnd(prop);
 		return prop;
 	}
