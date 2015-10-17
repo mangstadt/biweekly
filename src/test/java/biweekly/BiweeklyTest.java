@@ -374,32 +374,77 @@ public class BiweeklyTest {
 
 		//@formatter:off
 		Document expected = XmlUtils.toDocument(
-		 "<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
-		 "<icalendar xmlns=\"urn:ietf:params:xml:ns:icalendar-2.0\">" +
-		   "<vcalendar>" +
-		     "<properties>" +
-		       "<version><text>2.0</text></version>" +
-		     "</properties>" +
-		   "</vcalendar>" +
-		   "<vcalendar>" +
-		     "<properties>" +
-		       "<version><text>2.0</text></version>" +
-		       "<x-test1><unknown>value1</unknown></x-test1>" +
-		     "</properties>" +
-		   "</vcalendar>" +
-		   "<vcalendar>" +
-		     "<properties>" +
-		       "<version><text>2.0</text></version>" +
-		       "<x-test2><unknown>value2</unknown></x-test2>" +
-		     "</properties>" +
-		   "</vcalendar>" +
-		 "</icalendar>"
+		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
+		"<icalendar xmlns=\"urn:ietf:params:xml:ns:icalendar-2.0\">" +
+		  "<vcalendar>" +
+		    "<properties>" +
+		      "<version><text>2.0</text></version>" +
+		    "</properties>" +
+		  "</vcalendar>" +
+		  "<vcalendar>" +
+		    "<properties>" +
+		      "<version><text>2.0</text></version>" +
+		      "<x-test1><unknown>value1</unknown></x-test1>" +
+		    "</properties>" +
+		  "</vcalendar>" +
+		  "<vcalendar>" +
+		    "<properties>" +
+		      "<version><text>2.0</text></version>" +
+		      "<x-test2><unknown>value2</unknown></x-test2>" +
+		    "</properties>" +
+		  "</vcalendar>" +
+		"</icalendar>"
 		);
 		//@formatter:on
 
 		Document actual = Biweekly.writeXml(ical1, ical2, ical3).dom();
 
 		assertXMLEqual(expected, actual);
+	}
+
+	@Test
+	public void writeXml_version() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+
+		//@formatter:off
+		String expected = 
+		"<?xml version=\"1.1\" encoding=\"UTF-8\"?>" +
+		"<icalendar xmlns=\"urn:ietf:params:xml:ns:icalendar-2.0\">" +
+		  "<vcalendar>" +
+		    "<properties>" +
+		      "<version><text>2.0</text></version>" +
+		    "</properties>" +
+		  "</vcalendar>" +
+		"</icalendar>";
+		//@formatter:on
+
+		String actual = Biweekly.writeXml(ical).xmlVersion("1.1").go();
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void writeXml_indent() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+
+		//@formatter:off
+		String expected = 
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?><icalendar xmlns=\"urn:ietf:params:xml:ns:icalendar-2.0\">" + NEWLINE +
+		"  <vcalendar>" + NEWLINE +
+		"    <properties>" + NEWLINE +
+		"      <version>" + NEWLINE +
+		"        <text>2.0</text>" + NEWLINE +
+		"      </version>" + NEWLINE +
+		"    </properties>" + NEWLINE +
+		"  </vcalendar>" + NEWLINE +
+		"</icalendar>" + NEWLINE;
+		//@formatter:on
+
+		String actual = Biweekly.writeXml(ical).indent(2).go();
+
+		assertEquals(expected, actual);
 	}
 
 	@Test

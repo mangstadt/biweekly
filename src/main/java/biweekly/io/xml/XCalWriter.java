@@ -15,9 +15,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.xml.namespace.QName;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
@@ -48,7 +51,6 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.Version;
 import biweekly.property.Xml;
-import biweekly.util.StringUtils;
 import biweekly.util.XmlUtils;
 
 /*
@@ -162,40 +164,153 @@ public class XCalWriter extends StreamWriter {
 	private final ICalVersion targetVersion = ICalVersion.V2_0;
 	private final TransformerHandler handler;
 	private final boolean icalendarElementExists;
-	private String indent;
-	private int level = 0;
-	private boolean textNodeJustPrinted = false, started = false;
+	private boolean started = false;
 
 	/**
 	 * @param out the output stream to write to (UTF-8 encoding will be used)
 	 */
 	public XCalWriter(OutputStream out) {
-		this(utf8Writer(out));
+		this(out, -1);
 	}
 
 	/**
-	 * @param file the file to write to (UTF-8 encoding will be used).
+	 * @param out the output stream to write to (UTF-8 encoding will be used)
+	 * @param indent the number of indent spaces to use for pretty-printing or
+	 * "-1" to disable pretty-printing (disabled by default)
+	 */
+	public XCalWriter(OutputStream out, int indent) {
+		this(out, indent, null);
+	}
+
+	/**
+	 * @param out the output stream to write to (UTF-8 encoding will be used)
+	 * @param indent the number of indent spaces to use for pretty-printing or
+	 * "-1" to disable pretty-printing (disabled by default)
+	 * @param xmlVersion the XML version to use (defaults to "1.0") (Note: Many
+	 * JDKs only support 1.0 natively. For XML 1.1 support, add a JAXP library
+	 * like <a href=
+	 * "http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22xalan%22%20AND%20a%3A%22xalan%22"
+	 * >xalan</a> to your project)
+	 */
+	public XCalWriter(OutputStream out, int indent, String xmlVersion) {
+		this(utf8Writer(out), indent, xmlVersion);
+	}
+
+	/**
+	 * @param out the output stream to write to (UTF-8 encoding will be used)
+	 * @param outputProperties properties to assign to the JAXP
+	 * transformer (see {@link Transformer#setOutputProperties(Properties)}).
+	 */
+	public XCalWriter(OutputStream out, Map<String, String> outputProperties) {
+		this(utf8Writer(out), outputProperties);
+	}
+
+	/**
+	 * @param file the file to write to (UTF-8 encoding will be used)
 	 * @throws IOException if there's a problem opening the file
 	 */
 	public XCalWriter(File file) throws IOException {
-		this(utf8Writer(file));
+		this(file, -1);
+	}
+
+	/**
+	 * @param file the file to write to (UTF-8 encoding will be used)
+	 * @param indent the number of indent spaces to use for pretty-printing or
+	 * "-1" to disable pretty-printing (disabled by default)
+	 * @throws IOException if there's a problem opening the file
+	 */
+	public XCalWriter(File file, int indent) throws IOException {
+		this(file, indent, null);
+	}
+
+	/**
+	 * @param file the file to write to (UTF-8 encoding will be used)
+	 * @param indent the number of indent spaces to use for pretty-printing or
+	 * "-1" to disable pretty-printing (disabled by default)
+	 * @param xmlVersion the XML version to use (defaults to "1.0") (Note: Many
+	 * JDKs only support 1.0 natively. For XML 1.1 support, add a JAXP library
+	 * like <a href=
+	 * "http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22xalan%22%20AND%20a%3A%22xalan%22"
+	 * >xalan</a> to your project)
+	 * @throws IOException if there's a problem opening the file
+	 */
+	public XCalWriter(File file, int indent, String xmlVersion) throws IOException {
+		this(utf8Writer(file), indent, xmlVersion);
+	}
+
+	/**
+	 * @param file the file to write to (UTF-8 encoding will be used)
+	 * @param outputProperties properties to assign to the JAXP
+	 * transformer (see {@link Transformer#setOutputProperties(Properties)}).
+	 * @throws IOException if there's a problem opening the file
+	 */
+	public XCalWriter(File file, Map<String, String> outputProperties) throws IOException {
+		this(utf8Writer(file), outputProperties);
 	}
 
 	/**
 	 * @param writer the writer to write to
 	 */
 	public XCalWriter(Writer writer) {
-		this(writer, null);
+		this(writer, -1);
+	}
+
+	/**
+	 * @param writer the writer to write to
+	 * @param indent the number of indent spaces to use for pretty-printing or
+	 * "-1" to disable pretty-printing (disabled by default)
+	 */
+	public XCalWriter(Writer writer, int indent) {
+		this(writer, indent, null);
+	}
+
+	/**
+	 * @param writer the writer to write to
+	 * @param indent the number of indent spaces to use for pretty-printing or
+	 * "-1" to disable pretty-printing (disabled by default)
+	 * @param xmlVersion the XML version to use (defaults to "1.0") (Note: Many
+	 * JDKs only support 1.0 natively. For XML 1.1 support, add a JAXP library
+	 * like <a href=
+	 * "http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22xalan%22%20AND%20a%3A%22xalan%22"
+	 * >xalan</a> to your project)
+	 */
+	public XCalWriter(Writer writer, int indent, String xmlVersion) {
+		this(writer, createOutputProperties(indent, xmlVersion));
+	}
+
+	/**
+	 * @param writer the writer to write to
+	 * @param outputProperties properties to assign to the JAXP
+	 * transformer (see {@link Transformer#setOutputProperties(Properties)}).
+	 */
+	public XCalWriter(Writer writer, Map<String, String> outputProperties) {
+		this(writer, null, outputProperties);
 	}
 
 	/**
 	 * @param parent the DOM node to add child elements to
 	 */
 	public XCalWriter(Node parent) {
-		this(null, parent);
+		this(null, parent, new HashMap<String, String>());
 	}
 
-	private XCalWriter(Writer writer, Node parent) {
+	private static Map<String, String> createOutputProperties(int indent, String xmlVersion) {
+		Map<String, String> properties = new HashMap<String, String>();
+		properties.put(OutputKeys.METHOD, "xml");
+
+		if (indent >= 0) {
+			properties.put(OutputKeys.INDENT, "yes");
+			properties.put("{http://xml.apache.org/xslt}indent-amount", indent + "");
+		}
+
+		if (xmlVersion != null) {
+			properties.put(OutputKeys.VERSION, xmlVersion);
+		}
+
+		return properties;
+	}
+
+	private XCalWriter(Writer writer, Node parent, Map<String, String> outputProperties) {
 		this.writer = writer;
 
 		if (parent instanceof Document) {
@@ -213,17 +328,20 @@ public class XCalWriter extends StreamWriter {
 			throw new RuntimeException(e);
 		}
 
+		Transformer transformer = handler.getTransformer();
+
+		/*
+		 * Using Transformer#setOutputProperties(Properties) doesn't work for
+		 * some reason for setting the number of indentation spaces.
+		 */
+		for (Map.Entry<String, String> entry : outputProperties.entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue();
+			transformer.setOutputProperty(key, value);
+		}
+
 		Result result = (writer == null) ? new DOMResult(parent) : new StreamResult(writer);
 		handler.setResult(result);
-	}
-
-	/**
-	 * Set the indentation string to use for pretty-printing the output.
-	 * @param indent the indentation string (e.g. 2 spaces) or null to disable
-	 * pretty-printing (defaults to null)
-	 */
-	public void setIndent(String indent) {
-		this.indent = indent;
 	}
 
 	private boolean isICalendarElement(Node node) {
@@ -262,7 +380,6 @@ public class XCalWriter extends StreamWriter {
 				if (!icalendarElementExists) {
 					//don't output a <icalendar> element if the parent is a <icalendar> element
 					start(ICALENDAR);
-					level++;
 				}
 
 				started = true;
@@ -285,7 +402,6 @@ public class XCalWriter extends StreamWriter {
 		String name = scribe.getComponentName().toLowerCase();
 
 		start(name);
-		level++;
 
 		List properties = scribe.getProperties(component);
 		if (component instanceof ICalendar && component.getProperty(Version.class) == null) {
@@ -294,7 +410,6 @@ public class XCalWriter extends StreamWriter {
 
 		if (!properties.isEmpty()) {
 			start(PROPERTIES);
-			level++;
 
 			for (Object propertyObj : properties) {
 				context.setParent(component); //set parent here incase a scribe resets the parent
@@ -302,7 +417,6 @@ public class XCalWriter extends StreamWriter {
 				write(property);
 			}
 
-			level--;
 			end(PROPERTIES);
 		}
 
@@ -318,18 +432,13 @@ public class XCalWriter extends StreamWriter {
 		}
 		if (!subComponents.isEmpty()) {
 			start(COMPONENTS);
-			level++;
-
 			for (Object subComponentObj : subComponents) {
 				ICalComponent subComponent = (ICalComponent) subComponentObj;
 				write(subComponent);
 			}
-
-			level--;
 			end(COMPONENTS);
 		}
 
-		level--;
 		end(name);
 	}
 
@@ -358,12 +467,10 @@ public class XCalWriter extends StreamWriter {
 		}
 
 		start(propertyElement);
-		level++;
 
 		write(parameters);
 		write(propertyElement);
 
-		level--;
 		end(propertyElement);
 	}
 
@@ -377,11 +484,7 @@ public class XCalWriter extends StreamWriter {
 
 				if (element.hasChildNodes()) {
 					start(element);
-					level++;
-
 					write(element);
-
-					level--;
 					end(element);
 				} else {
 					childless(element);
@@ -404,12 +507,10 @@ public class XCalWriter extends StreamWriter {
 		}
 
 		start(PARAMETERS);
-		level++;
 
 		for (Map.Entry<String, List<String>> parameter : parameters) {
 			String parameterName = parameter.getKey().toLowerCase();
 			start(parameterName);
-			level++;
 
 			for (String parameterValue : parameter.getValue()) {
 				ICalDataType dataType = parameterDataTypes.get(parameterName);
@@ -420,25 +521,10 @@ public class XCalWriter extends StreamWriter {
 				end(dataTypeElementName);
 			}
 
-			level--;
 			end(parameterName);
 		}
 
-		level--;
 		end(PARAMETERS);
-	}
-
-	private void indent() throws SAXException {
-		if (indent == null) {
-			return;
-		}
-
-		/*
-		 * "\n" is hard-coded here because if the Windows "\r\n" is used, it
-		 * will encode the "\r" character for XML ("&#13;")
-		 */
-		String str = '\n' + StringUtils.repeat(indent, level);
-		handler.ignorableWhitespace(str.toCharArray(), 0, str.length());
 	}
 
 	/**
@@ -449,7 +535,6 @@ public class XCalWriter extends StreamWriter {
 	 */
 	private void childless(Element element) throws SAXException {
 		Attributes attributes = getElementAttributes(element);
-		indent();
 		handler.startElement(element.getNamespaceURI(), "", element.getLocalName(), attributes);
 		handler.endElement(element.getNamespaceURI(), "", element.getLocalName());
 	}
@@ -460,11 +545,11 @@ public class XCalWriter extends StreamWriter {
 	}
 
 	private void start(String element) throws SAXException {
-		start(element, null);
+		start(element, new AttributesImpl());
 	}
 
 	private void start(QName qname) throws SAXException {
-		start(qname, null);
+		start(qname, new AttributesImpl());
 	}
 
 	private void start(QName qname, Attributes attributes) throws SAXException {
@@ -476,7 +561,6 @@ public class XCalWriter extends StreamWriter {
 	}
 
 	private void start(String namespace, String element, Attributes attributes) throws SAXException {
-		indent();
 		handler.startElement(namespace, "", element, attributes);
 	}
 
@@ -493,17 +577,11 @@ public class XCalWriter extends StreamWriter {
 	}
 
 	private void end(String namespace, String element) throws SAXException {
-		if (!textNodeJustPrinted) {
-			indent();
-		}
-
 		handler.endElement(namespace, "", element);
-		textNodeJustPrinted = false;
 	}
 
 	private void text(String text) throws SAXException {
 		handler.characters(text.toCharArray(), 0, text.length());
-		textNodeJustPrinted = true;
 	}
 
 	private Attributes getElementAttributes(Element element) {
@@ -511,6 +589,12 @@ public class XCalWriter extends StreamWriter {
 		NamedNodeMap attributeNodes = element.getAttributes();
 		for (int i = 0; i < attributeNodes.getLength(); i++) {
 			Node node = attributeNodes.item(i);
+
+			String localName = node.getLocalName();
+			if ("xmlns".equals(localName)) {
+				continue;
+			}
+
 			attributes.addAttribute(node.getNamespaceURI(), "", node.getLocalName(), "", node.getNodeValue());
 		}
 		return attributes;
@@ -527,12 +611,10 @@ public class XCalWriter extends StreamWriter {
 				if (!icalendarElementExists) {
 					//don't output a <icalendar> element if the parent is a <icalendar> element
 					start(ICALENDAR);
-					level++;
 				}
 			}
 
 			if (!icalendarElementExists) {
-				level--;
 				end(ICALENDAR);
 			}
 			handler.endDocument();

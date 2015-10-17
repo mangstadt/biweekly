@@ -26,7 +26,13 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -283,7 +289,7 @@ public class XCalDocument {
 	}
 
 	/**
-	 * Writes the xCal document to a string without pretty-printing it.
+	 * Writes the xCal document to a string.
 	 * @return the XML string
 	 */
 	public String write() {
@@ -291,23 +297,50 @@ public class XCalDocument {
 	}
 
 	/**
-	 * Writes the xCal document to a string and pretty-prints it.
-	 * @param indent the number of indent spaces to use for pretty-printing
+	 * Writes the xCal document to a string.
+	 * @param indent the number of indent spaces to use for pretty-printing or
+	 * "-1" to disable pretty-printing (disabled by default)
 	 * @return the XML string
 	 */
 	public String write(int indent) {
+		return write(indent, null);
+	}
+
+	/**
+	 * Writes the xCal document to a string.
+	 * @param indent the number of indent spaces to use for pretty-printing or
+	 * "-1" to disable pretty-printing (disabled by default)
+	 * @param xmlVersion the XML version to use (defaults to "1.0") (Note: Many
+	 * JDKs only support 1.0 natively. For XML 1.1 support, add a JAXP library
+	 * like <a href=
+	 * "http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22xalan%22%20AND%20a%3A%22xalan%22"
+	 * >xalan</a> to your project)
+	 * @return the XML string
+	 */
+	public String write(int indent, String xmlVersion) {
+		return write(createOutputProperties(indent, xmlVersion));
+	}
+
+	/**
+	 * Writes the xCal document to a string.
+	 * @param outputProperties properties to assign to the JAXP
+	 * transformer (see {@link Transformer#setOutputProperty})
+	 * @return the XML string
+	 */
+	public String write(Map<String, String> outputProperties) {
 		StringWriter sw = new StringWriter();
 		try {
-			write(sw, indent);
+			write(sw, outputProperties);
 		} catch (TransformerException e) {
-			//writing to string
+			//shouldn't be thrown because we're writing to a string
+			throw new RuntimeException(e);
 		}
 		return sw.toString();
 	}
 
 	/**
-	 * Writes the xCal document to an output stream without pretty-printing it.
-	 * @param out the output stream
+	 * Writes the xCal document to an output stream.
+	 * @param out the output stream to write to (UTF-8 encoding will be used)
 	 * @throws TransformerException if there's a problem writing to the output
 	 * stream
 	 */
@@ -316,19 +349,49 @@ public class XCalDocument {
 	}
 
 	/**
-	 * Writes the xCal document to an output stream and pretty-prints it.
-	 * @param out the output stream
-	 * @param indent the number of indent spaces to use for pretty-printing
+	 * Writes the xCal document to an output stream.
+	 * @param out the output stream to write to (UTF-8 encoding will be used)
+	 * @param indent the number of indent spaces to use for pretty-printing or
+	 * "-1" to disable pretty-printing (disabled by default)
 	 * @throws TransformerException if there's a problem writing to the output
 	 * stream
 	 */
 	public void write(OutputStream out, int indent) throws TransformerException {
-		write(utf8Writer(out), indent);
+		write(out, indent, null);
 	}
 
 	/**
-	 * Writes the xCal document to a file without pretty-printing it.
-	 * @param file the file
+	 * Writes the xCal document to an output stream.
+	 * @param out the output stream to write to (UTF-8 encoding will be used)
+	 * @param indent the number of indent spaces to use for pretty-printing or
+	 * "-1" to disable pretty-printing (disabled by default)
+	 * @param xmlVersion the XML version to use (defaults to "1.0") (Note: Many
+	 * JDKs only support 1.0 natively. For XML 1.1 support, add a JAXP library
+	 * like <a href=
+	 * "http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22xalan%22%20AND%20a%3A%22xalan%22"
+	 * >xalan</a> to your project)
+	 * @throws TransformerException if there's a problem writing to the output
+	 * stream
+	 */
+	public void write(OutputStream out, int indent, String xmlVersion) throws TransformerException {
+		write(out, createOutputProperties(indent, xmlVersion));
+	}
+
+	/**
+	 * Writes the xCal document to an output stream.
+	 * @param out the output stream to write to (UTF-8 encoding will be used)
+	 * @param outputProperties properties to assign to the JAXP
+	 * transformer (see {@link Transformer#setOutputProperty})
+	 * @throws TransformerException if there's a problem writing to the output
+	 * stream
+	 */
+	public void write(OutputStream out, Map<String, String> outputProperties) throws TransformerException {
+		write(utf8Writer(out), outputProperties);
+	}
+
+	/**
+	 * Writes the xCal document to a file.
+	 * @param file the file to write to (UTF-8 encoding will be used)
 	 * @throws IOException if there's a problem writing to the file
 	 * @throws TransformerException if there's a problem writing the XML
 	 */
@@ -337,23 +400,53 @@ public class XCalDocument {
 	}
 
 	/**
-	 * Writes the xCal document to a file and pretty-prints it.
-	 * @param file the file stream
-	 * @param indent the number of indent spaces to use for pretty-printing
+	 * Writes the xCal document to a file.
+	 * @param file the file to write to (UTF-8 encoding will be used)
+	 * @param indent the number of indent spaces to use for pretty-printing or
+	 * "-1" to disable pretty-printing (disabled by default)
 	 * @throws IOException if there's a problem writing to the file
 	 * @throws TransformerException if there's a problem writing the XML
 	 */
 	public void write(File file, int indent) throws TransformerException, IOException {
+		write(file, indent, null);
+	}
+
+	/**
+	 * Writes the xCal document to a file.
+	 * @param file the file to write to (UTF-8 encoding will be used)
+	 * @param indent the number of indent spaces to use for pretty-printing or
+	 * "-1" to disable pretty-printing (disabled by default)
+	 * @param xmlVersion the XML version to use (defaults to "1.0") (Note: Many
+	 * JDKs only support 1.0 natively. For XML 1.1 support, add a JAXP library
+	 * like <a href=
+	 * "http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22xalan%22%20AND%20a%3A%22xalan%22"
+	 * >xalan</a> to your project)
+	 * @throws IOException if there's a problem writing to the file
+	 * @throws TransformerException if there's a problem writing the XML
+	 */
+	public void write(File file, int indent, String xmlVersion) throws TransformerException, IOException {
+		write(file, createOutputProperties(indent, xmlVersion));
+	}
+
+	/**
+	 * Writes the xCal document to a file.
+	 * @param file the file to write to (UTF-8 encoding will be used)
+	 * @param outputProperties properties to assign to the JAXP
+	 * transformer (see {@link Transformer#setOutputProperty})
+	 * @throws IOException if there's a problem writing to the file
+	 * @throws TransformerException if there's a problem writing the XML
+	 */
+	public void write(File file, Map<String, String> outputProperties) throws TransformerException, IOException {
 		Writer writer = utf8Writer(file);
 		try {
-			write(writer, indent);
+			write(writer, outputProperties);
 		} finally {
-			IOUtils.closeQuietly(writer);
+			writer.close();
 		}
 	}
 
 	/**
-	 * Writes the xCal document to a writer without pretty-printing it.
+	 * Writes the xCal document to a writer.
 	 * @param writer the writer
 	 * @throws TransformerException if there's a problem writing to the writer
 	 */
@@ -362,18 +455,80 @@ public class XCalDocument {
 	}
 
 	/**
-	 * Writes the xCal document to a writer and pretty-prints it.
+	 * Writes the xCal document to a writer.
 	 * @param writer the writer
-	 * @param indent the number of indent spaces to use for pretty-printing
+	 * @param indent the number of indent spaces to use for pretty-printing or
+	 * "-1" to disable pretty-printing (disabled by default)
 	 * @throws TransformerException if there's a problem writing to the writer
 	 */
 	public void write(Writer writer, int indent) throws TransformerException {
+		write(writer, indent, null);
+	}
+
+	/**
+	 * Writes the xCal document to a writer.
+	 * @param writer the writer
+	 * @param indent the number of indent spaces to use for pretty-printing or
+	 * "-1" to disable pretty-printing (disabled by default)
+	 * @param xmlVersion the XML version to use (defaults to "1.0") (Note: Many
+	 * JDKs only support 1.0 natively. For XML 1.1 support, add a JAXP library
+	 * like <a href=
+	 * "http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22xalan%22%20AND%20a%3A%22xalan%22"
+	 * >xalan</a> to your project)
+	 * @throws TransformerException if there's a problem writing to the writer
+	 */
+	public void write(Writer writer, int indent, String xmlVersion) throws TransformerException {
+		write(writer, createOutputProperties(indent, xmlVersion));
+	}
+
+	/**
+	 * Writes the xCal document to a writer.
+	 * @param writer the writer
+	 * @param outputProperties properties to assign to the JAXP
+	 * transformer (see {@link Transformer#setOutputProperty})
+	 * @throws TransformerException if there's a problem writing to the writer
+	 */
+	public void write(Writer writer, Map<String, String> outputProperties) throws TransformerException {
+		Transformer transformer;
+		try {
+			transformer = TransformerFactory.newInstance().newTransformer();
+		} catch (TransformerConfigurationException e) {
+			//should never be thrown because we're not doing anything fancy with the configuration
+			throw new RuntimeException(e);
+		} catch (TransformerFactoryConfigurationError e) {
+			//should never be thrown because we're not doing anything fancy with the configuration
+			throw new RuntimeException(e);
+		}
+
+		/*
+		 * Using Transformer#setOutputProperties(Properties) doesn't work for
+		 * some reason for setting the number of indentation spaces.
+		 */
+		for (Map.Entry<String, String> entry : outputProperties.entrySet()) {
+			String key = entry.getKey();
+			String value = entry.getValue();
+			transformer.setOutputProperty(key, value);
+		}
+
+		DOMSource source = new DOMSource(document);
+		StreamResult result = new StreamResult(writer);
+		transformer.transform(source, result);
+	}
+
+	private Map<String, String> createOutputProperties(int indent, String xmlVersion) {
 		Map<String, String> properties = new HashMap<String, String>();
+		properties.put(OutputKeys.METHOD, "xml");
+
 		if (indent >= 0) {
 			properties.put(OutputKeys.INDENT, "yes");
 			properties.put("{http://xml.apache.org/xslt}indent-amount", indent + "");
 		}
-		XmlUtils.toWriter(document, writer, properties);
+
+		if (xmlVersion != null) {
+			properties.put(OutputKeys.VERSION, xmlVersion);
+		}
+
+		return properties;
 	}
 
 	@Override
@@ -650,7 +805,7 @@ public class XCalDocument {
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		private Element buildPropertyElement(ICalProperty property) {
 			Element propertyElement;
-			ICalParameters parameters;
+			ICalPropertyScribe scribe = index.getPropertyScribe(property);
 
 			if (property instanceof Xml) {
 				Xml xml = (Xml) property;
@@ -663,28 +818,22 @@ public class XCalDocument {
 				//import the XML element into the xCal DOM
 				propertyElement = XmlUtils.getRootElement(value);
 				propertyElement = (Element) document.importNode(propertyElement, true);
-
-				//get parameters
-				parameters = property.getParameters();
 			} else {
-				ICalPropertyScribe propertyScribe = index.getPropertyScribe(property);
-				propertyElement = buildElement(propertyScribe.getQName());
+				propertyElement = buildElement(scribe.getQName());
 
 				//marshal value
 				try {
-					propertyScribe.writeXml(property, propertyElement, context);
+					scribe.writeXml(property, propertyElement, context);
 				} catch (SkipMeException e) {
 					return null;
 				}
-
-				//get parameters
-				parameters = propertyScribe.prepareParameters(property, context);
 			}
 
 			//build parameters
-			Element parametersWrapperElement = buildParametersElement(parameters);
-			if (parametersWrapperElement.hasChildNodes()) {
-				propertyElement.insertBefore(parametersWrapperElement, propertyElement.getFirstChild());
+			ICalParameters parameters = scribe.prepareParameters(property, context);
+			if (!parameters.isEmpty()) {
+				Element parametersElement = buildParametersElement(parameters);
+				propertyElement.insertBefore(parametersElement, propertyElement.getFirstChild());
 			}
 
 			return propertyElement;

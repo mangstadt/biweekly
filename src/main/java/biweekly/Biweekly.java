@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
@@ -1172,14 +1174,15 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the scribe class for a component
 		 * or property object cannot be found (only happens when an experimental
 		 * property/component scribe is not registered with the {@code register}
-		 * method.)
+		 * method)
 		 */
 		public String go() {
 			StringWriter sw = new StringWriter();
 			try {
 				go(sw);
 			} catch (IOException e) {
-				//writing to a string
+				//shouldn't be thrown because we're writing to a string
+				throw new RuntimeException(e);
 			}
 			return sw.toString();
 		}
@@ -1190,7 +1193,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the scribe class for a component
 		 * or property object cannot be found (only happens when an experimental
 		 * property/component scribe is not registered with the {@code register}
-		 * method.)
+		 * method)
 		 * @throws IOException if there's a problem writing to the output stream
 		 */
 		public void go(OutputStream out) throws IOException {
@@ -1203,7 +1206,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the scribe class for a component
 		 * or property object cannot be found (only happens when an experimental
 		 * property/component scribe is not registered with the {@code register}
-		 * method.)
+		 * method)
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file) throws IOException {
@@ -1218,7 +1221,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the scribe class for a component
 		 * or property object cannot be found (only happens when an experimental
 		 * property/component scribe is not registered with the {@code register}
-		 * method.)
+		 * method)
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file, boolean append) throws IOException {
@@ -1226,7 +1229,7 @@ public class Biweekly {
 			try {
 				go(icalWriter);
 			} finally {
-				IOUtils.closeQuietly(icalWriter);
+				icalWriter.close();
 			}
 		}
 
@@ -1236,7 +1239,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the scribe class for a component
 		 * or property object cannot be found (only happens when an experimental
 		 * property/component scribe is not registered with the {@code register}
-		 * method.)
+		 * method)
 		 * @throws IOException if there's a problem writing to the writer
 		 */
 		public void go(Writer writer) throws IOException {
@@ -1264,7 +1267,10 @@ public class Biweekly {
 	 * @see Biweekly#writeXml(ICalendar...)
 	 */
 	public static class WriterChainXml extends WriterChain<WriterChainXml> {
-		int indent = -1;
+		Map<String, String> outputProperties = new HashMap<String, String>();
+		{
+			outputProperties.put(OutputKeys.METHOD, "xml");
+		}
 		final Map<String, ICalDataType> parameterDataTypes = new HashMap<String, ICalDataType>(0);
 
 		WriterChainXml(Collection<ICalendar> icals) {
@@ -1296,11 +1302,44 @@ public class Biweekly {
 		/**
 		 * Sets the number of indent spaces to use for pretty-printing. If not
 		 * set, then the XML will not be pretty-printed.
-		 * @param indent the number of spaces
+		 * @param indent the number of spaces or -1 not to pretty-print
+		 * (default)
 		 * @return this
 		 */
 		public WriterChainXml indent(int indent) {
-			this.indent = indent;
+			if (indent < 0) {
+				return this_;
+			}
+
+			outputProperty(OutputKeys.INDENT, "yes");
+			return outputProperty("{http://xml.apache.org/xslt}indent-amount", indent + "");
+		}
+
+		/**
+		 * Sets the XML version to use. Note that many JDKs only support 1.0
+		 * natively. For XML 1.1 support, add a JAXP library like <a href=
+		 * "http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22xalan%22%20AND%20a%3A%22xalan%22"
+		 * >xalan</a> to your project.
+		 * @param xmlVersion the XML version (defaults to "1.0")
+		 * @return this
+		 */
+		public WriterChainXml xmlVersion(String xmlVersion) {
+			if (xmlVersion == null) {
+				return this_;
+			}
+
+			return outputProperty(OutputKeys.VERSION, xmlVersion);
+		}
+
+		/**
+		 * Assigns an output property to the JAXP transformer (see
+		 * {@link Transformer#setOutputProperty})
+		 * @param name the property name
+		 * @param value the property value
+		 * @return this
+		 */
+		public WriterChainXml outputProperty(String name, String value) {
+			outputProperties.put(name, value);
 			return this_;
 		}
 
@@ -1310,14 +1349,15 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the scribe class for a component
 		 * or property object cannot be found (only happens when an experimental
 		 * property/component scribe is not registered with the {@code register}
-		 * method.)
+		 * method)
 		 */
 		public String go() {
 			StringWriter sw = new StringWriter();
 			try {
 				go(sw);
 			} catch (TransformerException e) {
-				//writing to a string
+				//shouldn't be thrown because we're writing to a string
+				throw new RuntimeException(e);
 			}
 			return sw.toString();
 		}
@@ -1328,12 +1368,12 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the scribe class for a component
 		 * or property object cannot be found (only happens when an experimental
 		 * property/component scribe is not registered with the {@code register}
-		 * method.)
+		 * method)
 		 * @throws TransformerException if there's a problem writing the XML
 		 */
 		public void go(OutputStream out) throws TransformerException {
 			XCalDocument document = constructDocument();
-			document.write(out, indent);
+			document.write(out, outputProperties);
 		}
 
 		/**
@@ -1342,13 +1382,13 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the scribe class for a component
 		 * or property object cannot be found (only happens when an experimental
 		 * property/component scribe is not registered with the {@code register}
-		 * method.)
+		 * method)
 		 * @throws TransformerException if there's a problem writing the XML
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file) throws TransformerException, IOException {
 			XCalDocument document = constructDocument();
-			document.write(file, indent);
+			document.write(file, outputProperties);
 		}
 
 		/**
@@ -1357,12 +1397,12 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the scribe class for a component
 		 * or property object cannot be found (only happens when an experimental
 		 * property/component scribe is not registered with the {@code register}
-		 * method.)
+		 * method)
 		 * @throws TransformerException if there's a problem writing the XML
 		 */
 		public void go(Writer writer) throws TransformerException {
 			XCalDocument document = constructDocument();
-			document.write(writer, indent);
+			document.write(writer, outputProperties);
 		}
 
 		/**
@@ -1423,14 +1463,15 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the scribe class for a component
 		 * or property object cannot be found (only happens when an experimental
 		 * property/component scribe is not registered with the {@code register}
-		 * method.)
+		 * method)
 		 */
 		public String go() {
 			StringWriter sw = new StringWriter();
 			try {
 				go(sw);
 			} catch (IOException e) {
-				//writing to a string
+				//shouldn't be thrown because we're writing to a string
+				throw new RuntimeException(e);
 			}
 			return sw.toString();
 		}
@@ -1441,7 +1482,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the scribe class for a component
 		 * or property object cannot be found (only happens when an experimental
 		 * property/component scribe is not registered with the {@code register}
-		 * method.)
+		 * method)
 		 * @throws IOException if there's a problem writing to the output stream
 		 */
 		public void go(OutputStream out) throws IOException {
@@ -1454,7 +1495,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the scribe class for a component
 		 * or property object cannot be found (only happens when an experimental
 		 * property/component scribe is not registered with the {@code register}
-		 * method.)
+		 * method)
 		 * @throws IOException if there's a problem writing to the file
 		 */
 		public void go(File file) throws IOException {
@@ -1462,7 +1503,7 @@ public class Biweekly {
 			try {
 				go(jcalWriter);
 			} finally {
-				IOUtils.closeQuietly(jcalWriter);
+				jcalWriter.close();
 			}
 		}
 
@@ -1472,7 +1513,7 @@ public class Biweekly {
 		 * @throws IllegalArgumentException if the scribe class for a component
 		 * or property object cannot be found (only happens when an experimental
 		 * property/component scribe is not registered with the {@code register}
-		 * method.)
+		 * method)
 		 * @throws IOException if there's a problem writing to the writer
 		 */
 		public void go(Writer writer) throws IOException {

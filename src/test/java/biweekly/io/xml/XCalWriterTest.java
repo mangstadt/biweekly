@@ -109,6 +109,7 @@ public class XCalWriterTest {
 
 	@BeforeClass
 	public static void beforeClass() {
+		XMLUnit.setIgnoreAttributeOrder(true);
 		XMLUnit.setIgnoreWhitespace(true);
 	}
 
@@ -576,8 +577,7 @@ public class XCalWriterTest {
 
 	@Test
 	public void write_pretty_print() throws Exception {
-		writer = new XCalWriter(sw);
-		writer.setIndent("  ");
+		writer = new XCalWriter(sw, 2);
 
 		ProductId prodId = ical.setProductId("value");
 		prodId.setParameter("x-foo", "bar");
@@ -586,41 +586,78 @@ public class XCalWriterTest {
 		event.setDescription("description");
 		ical.addEvent(event);
 		writer.write(ical);
-
 		writer.close();
 
+		String actual = sw.toString();
+
+		String nl = "(\r\n|\n|\r)";
 		//@formatter:off
-		String expected =
-		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" + NEWLINE +
-		"<icalendar xmlns=\"" + XCAL_NS + "\">" + NEWLINE +
-		"  <vcalendar>" + NEWLINE +	
-		"    <properties>" + NEWLINE +
-		"      <version>" + NEWLINE +
-		"        <text>2.0</text>" + NEWLINE +
-		"      </version>" + NEWLINE +
-		"      <prodid>" + NEWLINE +
-		"        <parameters>" + NEWLINE +
-		"          <x-foo>" + NEWLINE + 
-		"            <unknown>bar</unknown>" + NEWLINE +
-		"          </x-foo>" + NEWLINE + 
-		"        </parameters>" + NEWLINE +
-		"        <text>value</text>" + NEWLINE +
-		"      </prodid>" + NEWLINE +
-		"    </properties>" + NEWLINE +
-		"    <components>" + NEWLINE +
-		"      <vevent>" + NEWLINE +
-		"        <properties>" + NEWLINE +
-		"          <description>" + NEWLINE + 
-		"            <text>description</text>" + NEWLINE +
-		"          </description>" + NEWLINE + 
-		"        </properties>" + NEWLINE +
-		"      </vevent>" + NEWLINE +
-		"    </components>" + NEWLINE +
-		"  </vcalendar>" + NEWLINE +
-		"</icalendar>" + NEWLINE;
+		String expectedRegex =
+		"<\\?xml version=\"1.0\" encoding=\"(utf|UTF)-8\"\\?><icalendar xmlns=\"" + XCAL_NS + "\">" + nl +
+		"  <vcalendar>" + nl +	
+		"    <properties>" + nl +
+		"      <version>" + nl +
+		"        <text>2\\.0</text>" + nl +
+		"      </version>" + nl +
+		"      <prodid>" + nl +
+		"        <parameters>" + nl +
+		"          <x-foo>" + nl + 
+		"            <unknown>bar</unknown>" + nl +
+		"          </x-foo>" + nl + 
+		"        </parameters>" + nl +
+		"        <text>value</text>" + nl +
+		"      </prodid>" + nl +
+		"    </properties>" + nl +
+		"    <components>" + nl +
+		"      <vevent>" + nl +
+		"        <properties>" + nl +
+		"          <description>" + nl + 
+		"            <text>description</text>" + nl +
+		"          </description>" + nl + 
+		"        </properties>" + nl +
+		"      </vevent>" + nl +
+		"    </components>" + nl +
+		"  </vcalendar>" + nl +
+		"</icalendar>" + nl;
 		//@formatter:on
 
-		assertOutput(expected);
+		assertTrue(actual.matches(expectedRegex));
+	}
+
+	@Test
+	public void write_xmlVersion_default() throws Exception {
+		StringWriter sw = new StringWriter();
+		XCalWriter writer = new XCalWriter(sw);
+		ICalendar ical = new ICalendar();
+		writer.write(ical);
+		writer.close();
+
+		String xml = sw.toString();
+		assertTrue(xml.matches("(?i)<\\?xml.*?version=\"1.0\".*?\\?>.*"));
+	}
+
+	@Test
+	public void write_xmlVersion_1_1() throws Exception {
+		StringWriter sw = new StringWriter();
+		XCalWriter writer = new XCalWriter(sw, -1, "1.1");
+		ICalendar ical = new ICalendar();
+		writer.write(ical);
+		writer.close();
+
+		String xml = sw.toString();
+		assertTrue(xml.matches("(?i)<\\?xml.*?version=\"1.1\".*?\\?>.*"));
+	}
+
+	@Test
+	public void write_xmlVersion_invalid() throws Exception {
+		StringWriter sw = new StringWriter();
+		XCalWriter writer = new XCalWriter(sw, -1, "10.17");
+		ICalendar ical = new ICalendar();
+		writer.write(ical);
+		writer.close();
+
+		String xml = sw.toString();
+		assertTrue(xml.matches("(?i)<\\?xml.*?version=\"1.0\".*?\\?>.*"));
 	}
 
 	@Test

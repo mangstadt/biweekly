@@ -114,6 +114,7 @@ public class XCalDocumentTest {
 
 	@BeforeClass
 	public static void beforeClass() {
+		XMLUnit.setIgnoreAttributeOrder(true);
 		XMLUnit.setIgnoreWhitespace(true);
 	}
 
@@ -670,6 +671,48 @@ public class XCalDocumentTest {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		Xml xml = new Xml("<company xmlns=\"http://example.com\"><boss>John Doe</boss></company>");
+		xml.addParameter("name", "value");
+		ical.addProperty(xml);
+
+		XCalDocument xcal = new XCalDocument();
+		xcal.add(ical);
+
+		Document actual = xcal.getDocument();
+
+		//@formatter:off
+		Document expected = XmlUtils.toDocument(
+		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
+			"<vcalendar>" +
+				"<properties>" +
+					"<version><text>2.0</text></version>" +
+					"<company xmlns=\"http://example.com\">" +
+						"<parameters xmlns=\"" + XCAL_NS + "\">" +
+							"<name><unknown>value</unknown></name>" +
+						"</parameters>" +
+						"<boss>John Doe</boss>" +
+					"</company>" +
+				"</properties>" +
+			"</vcalendar>" +
+		"</icalendar>");
+		//@formatter:on
+
+		/*
+		 * When using xalan as the JAXP parser, XMLUnit thinks the <name>
+		 * element in the "actual" DOM has the wrong namespace. But when you
+		 * inspect the DOM yourself, the <name> element *does* have the correct
+		 * namespace!
+		 * 
+		 * As a workaround, let's compare the string versions of the two DOMs.
+		 */
+		assertEquals(XmlUtils.toString(expected), XmlUtils.toString(actual));
+		//assertXMLEqual(expected, actual);
+	}
+
+	@Test
+	public void add_xml_property_null_value() throws Exception {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		Xml xml = new Xml((Document) null);
 		ical.addProperty(xml);
 
 		XCalDocument xcal = new XCalDocument();
@@ -682,9 +725,6 @@ public class XCalDocumentTest {
 			"<vcalendar>" +
 				"<properties>" +
 					"<version><text>2.0</text></version>" +
-					"<m:company xmlns:m=\"http://example.com\">" +
-						"<m:boss>John Doe</m:boss>" +
-					"</m:company>" +
 				"</properties>" +
 			"</vcalendar>" +
 		"</icalendar>");
@@ -911,7 +951,7 @@ public class XCalDocumentTest {
 		String actual = xcal.write();
 		//@formatter:off
 		String expected =
-		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" +
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
 			"<vcalendar>" +
 				"<properties>" +
@@ -935,10 +975,10 @@ public class XCalDocumentTest {
 		xcal.add(ical);
 
 		String actual = xcal.write(2);
+
 		//@formatter:off
 		String expected =
-		"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>" + NEWLINE +
-		"<icalendar xmlns=\"" + XCAL_NS + "\">" + NEWLINE +
+		"<?xml version=\"1.0\" encoding=\"UTF-8\"?><icalendar xmlns=\"" + XCAL_NS + "\">" + NEWLINE +
 		"  <vcalendar>" + NEWLINE +	
 		"    <properties>" + NEWLINE +
 		"      <version>" + NEWLINE + 
@@ -953,6 +993,36 @@ public class XCalDocumentTest {
 		//@formatter:on
 
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void write_xmlVerison_default() throws Throwable {
+		ICalendar ical = new ICalendar();
+		XCalDocument xcal = new XCalDocument();
+		xcal.add(ical);
+
+		String xml = xcal.write();
+		assertTrue(xml.matches("(?i)<\\?xml.*?version=\"1.0\".*?\\?>.*"));
+	}
+
+	@Test
+	public void write_xmlVerison_1_1() throws Throwable {
+		ICalendar ical = new ICalendar();
+		XCalDocument xcal = new XCalDocument();
+		xcal.add(ical);
+
+		String xml = xcal.write(-1, "1.1");
+		assertTrue(xml.matches("(?i)<\\?xml.*?version=\"1.1\".*?\\?>.*"));
+	}
+
+	@Test
+	public void write_xmlVerison_invalid() throws Throwable {
+		ICalendar ical = new ICalendar();
+		XCalDocument xcal = new XCalDocument();
+		xcal.add(ical);
+
+		String xml = xcal.write(-1, "10.17");
+		assertTrue(xml.matches("(?i)<\\?xml.*?version=\"1.0\".*?\\?>.*"));
 	}
 
 	@Test
