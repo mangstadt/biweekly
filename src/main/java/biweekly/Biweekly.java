@@ -3,43 +3,28 @@ package biweekly;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
-import biweekly.component.ICalComponent;
-import biweekly.io.StreamReader;
-import biweekly.io.json.JCalParseException;
+import biweekly.io.chain.ChainingJsonParser;
+import biweekly.io.chain.ChainingJsonStringParser;
+import biweekly.io.chain.ChainingJsonWriter;
+import biweekly.io.chain.ChainingTextParser;
+import biweekly.io.chain.ChainingTextStringParser;
+import biweekly.io.chain.ChainingTextWriter;
+import biweekly.io.chain.ChainingXmlMemoryParser;
+import biweekly.io.chain.ChainingXmlParser;
+import biweekly.io.chain.ChainingXmlWriter;
 import biweekly.io.json.JCalReader;
 import biweekly.io.json.JCalWriter;
-import biweekly.io.scribe.ScribeIndex;
-import biweekly.io.scribe.component.ICalComponentScribe;
-import biweekly.io.scribe.property.ICalPropertyScribe;
-import biweekly.io.text.ICalRawReader;
-import biweekly.io.text.ICalRawWriter;
 import biweekly.io.text.ICalReader;
 import biweekly.io.text.ICalWriter;
 import biweekly.io.xml.XCalDocument;
-import biweekly.io.xml.XCalDocument.XCalDocumentStreamWriter;
-import biweekly.property.ICalProperty;
 import biweekly.util.IOUtils;
-
-import com.fasterxml.jackson.core.JsonParseException;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -240,7 +225,7 @@ import com.fasterxml.jackson.core.JsonParseException;
  * </table>
  * @author Michael Angstadt
  */
-public class Biweekly {
+public final class Biweekly {
 	/**
 	 * The version of the library.
 	 */
@@ -272,8 +257,8 @@ public class Biweekly {
 	 * @param ical the iCalendar data
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ParserChainTextString parse(String ical) {
-		return new ParserChainTextString(ical);
+	public static ChainingTextStringParser parse(String ical) {
+		return new ChainingTextStringParser(ical);
 	}
 
 	/**
@@ -281,8 +266,8 @@ public class Biweekly {
 	 * @param file the iCalendar file
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ParserChainTextReader parse(File file) {
-		return new ParserChainTextReader(file);
+	public static ChainingTextParser<ChainingTextParser<?>> parse(File file) {
+		return new ChainingTextParser<ChainingTextParser<?>>(file);
 	}
 
 	/**
@@ -290,8 +275,8 @@ public class Biweekly {
 	 * @param in the input stream
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ParserChainTextReader parse(InputStream in) {
-		return new ParserChainTextReader(in);
+	public static ChainingTextParser<ChainingTextParser<?>> parse(InputStream in) {
+		return new ChainingTextParser<ChainingTextParser<?>>(in);
 	}
 
 	/**
@@ -299,8 +284,8 @@ public class Biweekly {
 	 * @param reader the reader
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ParserChainTextReader parse(Reader reader) {
-		return new ParserChainTextReader(reader);
+	public static ChainingTextParser<ChainingTextParser<?>> parse(Reader reader) {
+		return new ChainingTextParser<ChainingTextParser<?>>(reader);
 	}
 
 	/**
@@ -308,7 +293,7 @@ public class Biweekly {
 	 * @param icals the iCalendar objects to write
 	 * @return chainer object for completing the write operation
 	 */
-	public static WriterChainText write(ICalendar... icals) {
+	public static ChainingTextWriter write(ICalendar... icals) {
 		return write(Arrays.asList(icals));
 	}
 
@@ -317,8 +302,8 @@ public class Biweekly {
 	 * @param icals the iCalendar objects to write
 	 * @return chainer object for completing the write operation
 	 */
-	public static WriterChainText write(Collection<ICalendar> icals) {
-		return new WriterChainText(icals);
+	public static ChainingTextWriter write(Collection<ICalendar> icals) {
+		return new ChainingTextWriter(icals);
 	}
 
 	/**
@@ -326,8 +311,8 @@ public class Biweekly {
 	 * @param xml the XML string
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ParserChainXmlString parseXml(String xml) {
-		return new ParserChainXmlString(xml);
+	public static ChainingXmlMemoryParser parseXml(String xml) {
+		return new ChainingXmlMemoryParser(xml);
 	}
 
 	/**
@@ -335,8 +320,8 @@ public class Biweekly {
 	 * @param file the XML file
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ParserChainXmlReader parseXml(File file) {
-		return new ParserChainXmlReader(file);
+	public static ChainingXmlParser<ChainingXmlParser<?>> parseXml(File file) {
+		return new ChainingXmlParser<ChainingXmlParser<?>>(file);
 	}
 
 	/**
@@ -345,8 +330,8 @@ public class Biweekly {
 	 * @param in the input stream
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ParserChainXmlReader parseXml(InputStream in) {
-		return new ParserChainXmlReader(in);
+	public static ChainingXmlParser<ChainingXmlParser<?>> parseXml(InputStream in) {
+		return new ChainingXmlParser<ChainingXmlParser<?>>(in);
 	}
 
 	/**
@@ -364,8 +349,8 @@ public class Biweekly {
 	 * @param reader the reader
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ParserChainXmlReader parseXml(Reader reader) {
-		return new ParserChainXmlReader(reader);
+	public static ChainingXmlParser<ChainingXmlParser<?>> parseXml(Reader reader) {
+		return new ChainingXmlParser<ChainingXmlParser<?>>(reader);
 	}
 
 	/**
@@ -373,8 +358,8 @@ public class Biweekly {
 	 * @param document the XML document
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ParserChainXmlDocument parseXml(Document document) {
-		return new ParserChainXmlDocument(document);
+	public static ChainingXmlMemoryParser parseXml(Document document) {
+		return new ChainingXmlMemoryParser(document);
 	}
 
 	/**
@@ -382,7 +367,7 @@ public class Biweekly {
 	 * @param icals the iCalendar object(s) to write
 	 * @return chainer object for completing the write operation
 	 */
-	public static WriterChainXml writeXml(ICalendar... icals) {
+	public static ChainingXmlWriter writeXml(ICalendar... icals) {
 		return writeXml(Arrays.asList(icals));
 	}
 
@@ -391,8 +376,8 @@ public class Biweekly {
 	 * @param icals the iCalendar objects to write
 	 * @return chainer object for completing the write operation
 	 */
-	public static WriterChainXml writeXml(Collection<ICalendar> icals) {
-		return new WriterChainXml(icals);
+	public static ChainingXmlWriter writeXml(Collection<ICalendar> icals) {
+		return new ChainingXmlWriter(icals);
 	}
 
 	/**
@@ -400,8 +385,8 @@ public class Biweekly {
 	 * @param json the JSON data
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ParserChainJsonString parseJson(String json) {
-		return new ParserChainJsonString(json);
+	public static ChainingJsonStringParser parseJson(String json) {
+		return new ChainingJsonStringParser(json);
 	}
 
 	/**
@@ -409,8 +394,8 @@ public class Biweekly {
 	 * @param file the JSON file
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ParserChainJsonReader parseJson(File file) {
-		return new ParserChainJsonReader(file);
+	public static ChainingJsonParser<ChainingJsonParser<?>> parseJson(File file) {
+		return new ChainingJsonParser<ChainingJsonParser<?>>(file);
 	}
 
 	/**
@@ -418,8 +403,8 @@ public class Biweekly {
 	 * @param in the input stream
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ParserChainJsonReader parseJson(InputStream in) {
-		return new ParserChainJsonReader(in);
+	public static ChainingJsonParser<ChainingJsonParser<?>> parseJson(InputStream in) {
+		return new ChainingJsonParser<ChainingJsonParser<?>>(in);
 	}
 
 	/**
@@ -427,8 +412,8 @@ public class Biweekly {
 	 * @param reader the reader
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ParserChainJsonReader parseJson(Reader reader) {
-		return new ParserChainJsonReader(reader);
+	public static ChainingJsonParser<ChainingJsonParser<?>> parseJson(Reader reader) {
+		return new ChainingJsonParser<ChainingJsonParser<?>>(reader);
 	}
 
 	/**
@@ -436,7 +421,7 @@ public class Biweekly {
 	 * @param icals the iCalendar object(s) to write
 	 * @return chainer object for completing the write operation
 	 */
-	public static WriterChainJson writeJson(ICalendar... icals) {
+	public static ChainingJsonWriter writeJson(ICalendar... icals) {
 		return writeJson(Arrays.asList(icals));
 	}
 
@@ -445,1091 +430,8 @@ public class Biweekly {
 	 * @param icals the iCalendar objects to write
 	 * @return chainer object for completing the write operation
 	 */
-	public static WriterChainJson writeJson(Collection<ICalendar> icals) {
-		return new WriterChainJson(icals);
-	}
-
-	static abstract class ParserChain<T> {
-		//Note: "package" level is used so various fields/methods don't show up in the Javadocs, but are still visible to child classes
-		final ScribeIndex index = new ScribeIndex();
-
-		@SuppressWarnings("unchecked")
-		final T this_ = (T) this;
-
-		List<List<String>> warnings;
-
-		/**
-		 * Registers a property scribe.
-		 * @param scribe the scribe
-		 * @return this
-		 */
-		public T register(ICalPropertyScribe<? extends ICalProperty> scribe) {
-			index.register(scribe);
-			return this_;
-		}
-
-		/**
-		 * Registers a component scribe.
-		 * @param scribe the scribe
-		 * @return this
-		 */
-		public T register(ICalComponentScribe<? extends ICalComponent> scribe) {
-			index.register(scribe);
-			return this_;
-		}
-
-		/**
-		 * Provides a list for putting the parser warnings into.
-		 * @param warnings the list object to populate (it is a
-		 * "list of lists"--each parsed {@link ICalendar} object has its own
-		 * warnings list)
-		 * @return this
-		 */
-		public T warnings(List<List<String>> warnings) {
-			this.warnings = warnings;
-			return this_;
-		}
-
-		/**
-		 * Reads the first iCalendar object from the data stream.
-		 * @return the first iCalendar object or null if there are none
-		 * @throws IOException if there a problem reading from the data stream
-		 * @throws SAXException if there's a problem parsing the XML
-		 */
-		public abstract ICalendar first() throws IOException, SAXException;
-
-		/**
-		 * Reads all iCalendar objects from the data stream.
-		 * @return the parsed iCalendar objects
-		 * @throws IOException if there's a problem reading from the data stream
-		 * @throws SAXException if there's a problem parsing the XML
-		 */
-		public abstract List<ICalendar> all() throws IOException, SAXException;
-	}
-
-	///////////////////////////////////////////////////////
-	// plain-text
-	///////////////////////////////////////////////////////
-
-	static abstract class ParserChainText<T> extends ParserChain<T> {
-		boolean caretDecoding = true;
-		final boolean closeWhenDone;
-
-		private ParserChainText(boolean closeWhenDone) {
-			this.closeWhenDone = closeWhenDone;
-		}
-
-		/**
-		 * Sets whether the reader will decode parameter values that use
-		 * circumflex accent encoding (enabled by default). This escaping
-		 * mechanism allows newlines and double quotes to be included in
-		 * parameter values.
-		 * @param enable true to use circumflex accent decoding, false not to
-		 * @return this
-		 * @see ICalRawReader#setCaretDecodingEnabled(boolean)
-		 */
-		public T caretDecoding(boolean enable) {
-			caretDecoding = enable;
-			return this_;
-		}
-
-		@Override
-		public ICalendar first() throws IOException {
-			ICalReader parser = constructReader();
-
-			try {
-				ICalendar ical = parser.readNext();
-				if (warnings != null) {
-					warnings.add(parser.getWarnings());
-				}
-				return ical;
-			} finally {
-				if (closeWhenDone) {
-					IOUtils.closeQuietly(parser);
-				}
-			}
-		}
-
-		@Override
-		public List<ICalendar> all() throws IOException {
-			ICalReader parser = constructReader();
-
-			try {
-				List<ICalendar> icals = new ArrayList<ICalendar>();
-				ICalendar ical;
-				while ((ical = parser.readNext()) != null) {
-					if (warnings != null) {
-						warnings.add(parser.getWarnings());
-					}
-					icals.add(ical);
-				}
-				return icals;
-			} finally {
-				if (closeWhenDone) {
-					IOUtils.closeQuietly(parser);
-				}
-			}
-		}
-
-		private ICalReader constructReader() throws IOException {
-			ICalReader parser = _constructReader();
-			parser.setScribeIndex(index);
-			parser.setCaretDecodingEnabled(caretDecoding);
-			return parser;
-		}
-
-		abstract ICalReader _constructReader() throws IOException;
-	}
-
-	/**
-	 * Chainer class for parsing plain text iCalendar data streams.
-	 * @see Biweekly#parse(InputStream)
-	 * @see Biweekly#parse(File)
-	 * @see Biweekly#parse(Reader)
-	 */
-	public static class ParserChainTextReader extends ParserChainText<ParserChainTextReader> {
-		private final InputStream in;
-		private final File file;
-		private final Reader reader;
-
-		private ParserChainTextReader(InputStream in) {
-			super(false);
-			this.in = in;
-			this.reader = null;
-			this.file = null;
-		}
-
-		private ParserChainTextReader(File file) {
-			super(true);
-			this.in = null;
-			this.reader = null;
-			this.file = file;
-		}
-
-		private ParserChainTextReader(Reader reader) {
-			super(false);
-			this.in = null;
-			this.reader = reader;
-			this.file = null;
-		}
-
-		@Override
-		public ParserChainTextReader register(ICalPropertyScribe<? extends ICalProperty> scribe) {
-			return super.register(scribe);
-		}
-
-		@Override
-		public ParserChainTextReader register(ICalComponentScribe<? extends ICalComponent> scribe) {
-			return super.register(scribe);
-		}
-
-		@Override
-		public ParserChainTextReader warnings(List<List<String>> warnings) {
-			return super.warnings(warnings);
-		}
-
-		@Override
-		public ParserChainTextReader caretDecoding(boolean enable) {
-			return super.caretDecoding(enable);
-		}
-
-		@Override
-		ICalReader _constructReader() throws IOException {
-			if (in != null) {
-				return new ICalReader(in);
-			}
-			if (file != null) {
-				return new ICalReader(file);
-			}
-			return new ICalReader(reader);
-		}
-	}
-
-	/**
-	 * Chainer class for parsing plain text iCalendar strings.
-	 * @see Biweekly#parse(String)
-	 */
-	public static class ParserChainTextString extends ParserChainText<ParserChainTextString> {
-		private final String text;
-
-		private ParserChainTextString(String text) {
-			super(false);
-			this.text = text;
-		}
-
-		@Override
-		public ParserChainTextString register(ICalPropertyScribe<? extends ICalProperty> scribe) {
-			return super.register(scribe);
-		}
-
-		@Override
-		public ParserChainTextString register(ICalComponentScribe<? extends ICalComponent> scribe) {
-			return super.register(scribe);
-		}
-
-		@Override
-		public ParserChainTextString warnings(List<List<String>> warnings) {
-			return super.warnings(warnings);
-		}
-
-		@Override
-		public ParserChainTextString caretDecoding(boolean enable) {
-			return super.caretDecoding(enable);
-		}
-
-		@Override
-		ICalReader _constructReader() {
-			return new ICalReader(text);
-		}
-
-		@Override
-		public ICalendar first() {
-			try {
-				return super.first();
-			} catch (IOException e) {
-				//should never been thrown because we're reading from a string
-				throw new RuntimeException(e);
-			}
-		}
-
-		@Override
-		public List<ICalendar> all() {
-			try {
-				return super.all();
-			} catch (IOException e) {
-				//should never been thrown because we're reading from a string
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
-	///////////////////////////////////////////////////////
-	// XML
-	///////////////////////////////////////////////////////
-
-	static abstract class ParserChainXml<T> extends ParserChain<T> {
-		@Override
-		public ICalendar first() throws IOException, SAXException {
-			StreamReader reader = constructStreamReader();
-			ICalendar ical = reader.readNext();
-			if (warnings != null) {
-				warnings.add(reader.getWarnings());
-			}
-			return ical;
-		}
-
-		@Override
-		public List<ICalendar> all() throws IOException, SAXException {
-			StreamReader reader = constructStreamReader();
-			List<ICalendar> icals = new ArrayList<ICalendar>();
-			ICalendar ical = null;
-			while ((ical = reader.readNext()) != null) {
-				icals.add(ical);
-				if (warnings != null) {
-					warnings.add(reader.getWarnings());
-				}
-			}
-			return icals;
-		}
-
-		private StreamReader constructStreamReader() throws SAXException, IOException {
-			XCalDocument parser = _constructDocument();
-			StreamReader reader = parser.reader();
-			reader.setScribeIndex(index);
-			return reader;
-		}
-
-		abstract XCalDocument _constructDocument() throws IOException, SAXException;
-	}
-
-	/**
-	 * Chainer class for parsing XML-encoded iCalendar objects (xCal).
-	 * @see Biweekly#parseXml(String)
-	 */
-	public static class ParserChainXmlString extends ParserChainXml<ParserChainXmlString> {
-		private final String xml;
-
-		private ParserChainXmlString(String xml) {
-			this.xml = xml;
-		}
-
-		@Override
-		public ParserChainXmlString register(ICalPropertyScribe<? extends ICalProperty> scribe) {
-			return super.register(scribe);
-		}
-
-		@Override
-		public ParserChainXmlString register(ICalComponentScribe<? extends ICalComponent> scribe) {
-			return super.register(scribe);
-		}
-
-		@Override
-		public ParserChainXmlString warnings(List<List<String>> warnings) {
-			return super.warnings(warnings);
-		}
-
-		@Override
-		XCalDocument _constructDocument() throws SAXException {
-			return new XCalDocument(xml);
-		}
-
-		@Override
-		public ICalendar first() throws SAXException {
-			try {
-				return super.first();
-			} catch (IOException e) {
-				//should never been thrown because we're reading from a string
-				throw new RuntimeException(e);
-			}
-		}
-
-		@Override
-		public List<ICalendar> all() throws SAXException {
-			try {
-				return super.all();
-			} catch (IOException e) {
-				//should never been thrown because we're reading from a string
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
-	/**
-	 * Chainer class for parsing XML-encoded iCalendar objects (xCal).
-	 * @see Biweekly#parseXml(InputStream)
-	 * @see Biweekly#parseXml(File)
-	 * @see Biweekly#parseXml(Reader)
-	 */
-	public static class ParserChainXmlReader extends ParserChainXml<ParserChainXmlReader> {
-		private final InputStream in;
-		private final File file;
-		private final Reader reader;
-
-		private ParserChainXmlReader(InputStream in) {
-			this.in = in;
-			this.reader = null;
-			this.file = null;
-		}
-
-		private ParserChainXmlReader(File file) {
-			this.in = null;
-			this.reader = null;
-			this.file = file;
-		}
-
-		private ParserChainXmlReader(Reader reader) {
-			this.in = null;
-			this.reader = reader;
-			this.file = null;
-		}
-
-		@Override
-		public ParserChainXmlReader register(ICalPropertyScribe<? extends ICalProperty> scribe) {
-			return super.register(scribe);
-		}
-
-		@Override
-		public ParserChainXmlReader register(ICalComponentScribe<? extends ICalComponent> scribe) {
-			return super.register(scribe);
-		}
-
-		@Override
-		public ParserChainXmlReader warnings(List<List<String>> warnings) {
-			return super.warnings(warnings);
-		}
-
-		@Override
-		XCalDocument _constructDocument() throws IOException, SAXException {
-			if (in != null) {
-				return new XCalDocument(in);
-			}
-			if (file != null) {
-				return new XCalDocument(file);
-			}
-			return new XCalDocument(reader);
-		}
-	}
-
-	/**
-	 * Chainer class for parsing XML-encoded iCalendar objects (xCal).
-	 * @see Biweekly#parseXml(Document)
-	 */
-	public static class ParserChainXmlDocument extends ParserChainXml<ParserChainXmlDocument> {
-		private final Document document;
-
-		private ParserChainXmlDocument(Document document) {
-			this.document = document;
-		}
-
-		@Override
-		public ParserChainXmlDocument register(ICalPropertyScribe<? extends ICalProperty> scribe) {
-			return super.register(scribe);
-		}
-
-		@Override
-		public ParserChainXmlDocument register(ICalComponentScribe<? extends ICalComponent> scribe) {
-			return super.register(scribe);
-		}
-
-		@Override
-		public ParserChainXmlDocument warnings(List<List<String>> warnings) {
-			return super.warnings(warnings);
-		}
-
-		@Override
-		XCalDocument _constructDocument() {
-			return new XCalDocument(document);
-		}
-
-		@Override
-		public ICalendar first() {
-			try {
-				return super.first();
-			} catch (IOException e) {
-				//should never been thrown because we're reading from a DOM
-				throw new RuntimeException(e);
-			} catch (SAXException e) {
-				//should never been thrown because we're reading from a DOM
-				throw new RuntimeException(e);
-			}
-		}
-
-		@Override
-		public List<ICalendar> all() {
-			try {
-				return super.all();
-			} catch (IOException e) {
-				//should never been thrown because we're reading from a DOM
-				throw new RuntimeException(e);
-			} catch (SAXException e) {
-				//should never been thrown because we're reading from a DOM
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
-	///////////////////////////////////////////////////////
-	// JSON
-	///////////////////////////////////////////////////////
-
-	static abstract class ParserChainJson<T> extends ParserChain<T> {
-		final boolean closeWhenDone;
-
-		private ParserChainJson(boolean closeWhenDone) {
-			this.closeWhenDone = closeWhenDone;
-		}
-
-		/**
-		 * @throws JCalParseException if the jCal syntax is incorrect (the JSON
-		 * syntax may be valid, but it is not in the correct jCal format).
-		 * @throws JsonParseException if the JSON syntax is incorrect
-		 */
-		@Override
-		public ICalendar first() throws IOException {
-			JCalReader parser = constructReader();
-
-			try {
-				ICalendar ical = parser.readNext();
-				if (warnings != null) {
-					warnings.add(parser.getWarnings());
-				}
-				return ical;
-			} finally {
-				if (closeWhenDone) {
-					IOUtils.closeQuietly(parser);
-				}
-			}
-		}
-
-		/**
-		 * @throws JCalParseException if the jCal syntax is incorrect (the JSON
-		 * syntax may be valid, but it is not in the correct jCal format).
-		 * @throws JsonParseException if the JSON syntax is incorrect
-		 */
-		@Override
-		public List<ICalendar> all() throws IOException {
-			JCalReader parser = constructReader();
-
-			try {
-				List<ICalendar> icals = new ArrayList<ICalendar>();
-				ICalendar ical;
-				while ((ical = parser.readNext()) != null) {
-					if (warnings != null) {
-						warnings.add(parser.getWarnings());
-					}
-					icals.add(ical);
-				}
-				return icals;
-			} finally {
-				if (closeWhenDone) {
-					IOUtils.closeQuietly(parser);
-				}
-			}
-		}
-
-		private JCalReader constructReader() throws IOException {
-			JCalReader parser = _constructReader();
-			parser.setScribeIndex(index);
-			return parser;
-		}
-
-		abstract JCalReader _constructReader() throws IOException;
-	}
-
-	/**
-	 * Chainer class for parsing JSON-encoded iCalendar data streams (jCal).
-	 * @see Biweekly#parseJson(InputStream)
-	 * @see Biweekly#parseJson(File)
-	 * @see Biweekly#parseJson(Reader)
-	 */
-	public static class ParserChainJsonReader extends ParserChainJson<ParserChainJsonReader> {
-		private final InputStream in;
-		private final File file;
-		private final Reader reader;
-
-		private ParserChainJsonReader(InputStream in) {
-			super(false);
-			this.in = in;
-			this.reader = null;
-			this.file = null;
-		}
-
-		private ParserChainJsonReader(File file) {
-			super(true);
-			this.in = null;
-			this.reader = null;
-			this.file = file;
-		}
-
-		private ParserChainJsonReader(Reader reader) {
-			super(false);
-			this.in = null;
-			this.reader = reader;
-			this.file = null;
-		}
-
-		@Override
-		public ParserChainJsonReader register(ICalPropertyScribe<? extends ICalProperty> scribe) {
-			return super.register(scribe);
-		}
-
-		@Override
-		public ParserChainJsonReader register(ICalComponentScribe<? extends ICalComponent> scribe) {
-			return super.register(scribe);
-		}
-
-		@Override
-		public ParserChainJsonReader warnings(List<List<String>> warnings) {
-			return super.warnings(warnings);
-		}
-
-		@Override
-		JCalReader _constructReader() throws IOException {
-			if (in != null) {
-				return new JCalReader(in);
-			}
-			if (file != null) {
-				return new JCalReader(file);
-			}
-			return new JCalReader(reader);
-		}
-	}
-
-	/**
-	 * Chainer class for parsing JSON-encoded iCalendar strings (jCal).
-	 * @see Biweekly#parseJson(String)
-	 */
-	public static class ParserChainJsonString extends ParserChainJson<ParserChainJsonString> {
-		private final String text;
-
-		private ParserChainJsonString(String text) {
-			super(false);
-			this.text = text;
-		}
-
-		@Override
-		public ParserChainJsonString register(ICalPropertyScribe<? extends ICalProperty> scribe) {
-			return super.register(scribe);
-		}
-
-		@Override
-		public ParserChainJsonString register(ICalComponentScribe<? extends ICalComponent> scribe) {
-			return super.register(scribe);
-		}
-
-		@Override
-		public ParserChainJsonString warnings(List<List<String>> warnings) {
-			return super.warnings(warnings);
-		}
-
-		@Override
-		JCalReader _constructReader() {
-			return new JCalReader(text);
-		}
-
-		@Override
-		public ICalendar first() {
-			try {
-				return super.first();
-			} catch (IOException e) {
-				//should never been thrown because we're reading from a string
-				throw new RuntimeException(e);
-			}
-		}
-
-		@Override
-		public List<ICalendar> all() {
-			try {
-				return super.all();
-			} catch (IOException e) {
-				//should never been thrown because we're reading from a string
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
-	static abstract class WriterChain<T> {
-		final Collection<ICalendar> icals;
-		final ScribeIndex index = new ScribeIndex();
-
-		@SuppressWarnings("unchecked")
-		final T this_ = (T) this;
-
-		WriterChain(Collection<ICalendar> icals) {
-			this.icals = icals;
-		}
-
-		/**
-		 * Registers a property scribe.
-		 * @param scribe the scribe
-		 * @return this
-		 */
-		public T register(ICalPropertyScribe<? extends ICalProperty> scribe) {
-			index.register(scribe);
-			return this_;
-		}
-
-		/**
-		 * Registers a component scribe.
-		 * @param scribe the scribe
-		 * @return this
-		 */
-		public T register(ICalComponentScribe<? extends ICalComponent> scribe) {
-			index.register(scribe);
-			return this_;
-		}
-	}
-
-	///////////////////////////////////////////////////////
-	// plain-text
-	///////////////////////////////////////////////////////
-
-	/**
-	 * Chainer class for writing to plain text iCalendar data streams.
-	 * @see Biweekly#write(Collection)
-	 * @see Biweekly#write(ICalendar...)
-	 */
-	public static class WriterChainText extends WriterChain<WriterChainText> {
-		ICalVersion version = ICalVersion.V2_0;
-		boolean caretEncoding = false;
-
-		private WriterChainText(Collection<ICalendar> icals) {
-			super(icals);
-		}
-
-		/**
-		 * <p>
-		 * Sets whether the writer will apply circumflex accent encoding on
-		 * parameter values (disabled by default). This escaping mechanism
-		 * allows for newlines and double quotes to be included in parameter
-		 * values.
-		 * </p>
-		 * 
-		 * <p>
-		 * When disabled, the writer will replace newlines with spaces and
-		 * double quotes with single quotes.
-		 * </p>
-		 * @param enable true to use circumflex accent encoding, false not to
-		 * @return this
-		 * @see ICalRawWriter#setCaretEncodingEnabled(boolean)
-		 */
-		public WriterChainText caretEncoding(boolean enable) {
-			this.caretEncoding = enable;
-			return this_;
-		}
-
-		/**
-		 * Sets the iCal version to adhere to when writing (defaults to 2.0).
-		 * @param version the version
-		 * @return this
-		 */
-		public WriterChainText version(ICalVersion version) {
-			this.version = version;
-			return this_;
-		}
-
-		/**
-		 * Writes the iCalendar objects to a string.
-		 * @return the iCalendar string
-		 * @throws IllegalArgumentException if the scribe class for a component
-		 * or property object cannot be found (only happens when an experimental
-		 * property/component scribe is not registered with the {@code register}
-		 * method)
-		 */
-		public String go() {
-			StringWriter sw = new StringWriter();
-			try {
-				go(sw);
-			} catch (IOException e) {
-				//shouldn't be thrown because we're writing to a string
-				throw new RuntimeException(e);
-			}
-			return sw.toString();
-		}
-
-		/**
-		 * Writes the iCalendar objects to a data stream.
-		 * @param out the output stream to write to
-		 * @throws IllegalArgumentException if the scribe class for a component
-		 * or property object cannot be found (only happens when an experimental
-		 * property/component scribe is not registered with the {@code register}
-		 * method)
-		 * @throws IOException if there's a problem writing to the output stream
-		 */
-		public void go(OutputStream out) throws IOException {
-			go(new ICalWriter(out, version));
-		}
-
-		/**
-		 * Writes the iCalendar objects to a file.
-		 * @param file the file to write to
-		 * @throws IllegalArgumentException if the scribe class for a component
-		 * or property object cannot be found (only happens when an experimental
-		 * property/component scribe is not registered with the {@code register}
-		 * method)
-		 * @throws IOException if there's a problem writing to the file
-		 */
-		public void go(File file) throws IOException {
-			go(file, false);
-		}
-
-		/**
-		 * Writes the iCalendar objects to a file.
-		 * @param file the file to write to
-		 * @param append true to append to the end of the file, false to
-		 * overwrite it
-		 * @throws IllegalArgumentException if the scribe class for a component
-		 * or property object cannot be found (only happens when an experimental
-		 * property/component scribe is not registered with the {@code register}
-		 * method)
-		 * @throws IOException if there's a problem writing to the file
-		 */
-		public void go(File file, boolean append) throws IOException {
-			ICalWriter icalWriter = new ICalWriter(file, append, version);
-			try {
-				go(icalWriter);
-			} finally {
-				icalWriter.close();
-			}
-		}
-
-		/**
-		 * Writes the iCalendar objects to a data stream.
-		 * @param writer the writer to write to
-		 * @throws IllegalArgumentException if the scribe class for a component
-		 * or property object cannot be found (only happens when an experimental
-		 * property/component scribe is not registered with the {@code register}
-		 * method)
-		 * @throws IOException if there's a problem writing to the writer
-		 */
-		public void go(Writer writer) throws IOException {
-			go(new ICalWriter(writer, version));
-		}
-
-		private void go(ICalWriter icalWriter) throws IOException {
-			icalWriter.setScribeIndex(index);
-			icalWriter.setCaretEncodingEnabled(caretEncoding);
-
-			for (ICalendar ical : icals) {
-				icalWriter.write(ical);
-				icalWriter.flush();
-			}
-		}
-	}
-
-	///////////////////////////////////////////////////////
-	// XML
-	///////////////////////////////////////////////////////
-
-	/**
-	 * Chainer class for writing xCal documents (XML-encoded iCalendar objects).
-	 * @see Biweekly#writeXml(Collection)
-	 * @see Biweekly#writeXml(ICalendar...)
-	 */
-	public static class WriterChainXml extends WriterChain<WriterChainXml> {
-		Map<String, String> outputProperties = new HashMap<String, String>();
-		{
-			outputProperties.put(OutputKeys.METHOD, "xml");
-		}
-		final Map<String, ICalDataType> parameterDataTypes = new HashMap<String, ICalDataType>(0);
-
-		WriterChainXml(Collection<ICalendar> icals) {
-			super(icals);
-		}
-
-		@Override
-		public WriterChainXml register(ICalPropertyScribe<? extends ICalProperty> scribe) {
-			return super.register(scribe);
-		}
-
-		@Override
-		public WriterChainXml register(ICalComponentScribe<? extends ICalComponent> scribe) {
-			return super.register(scribe);
-		}
-
-		/**
-		 * Registers the data type of an experimental parameter. Experimental
-		 * parameters use the "unknown" xCal data type by default.
-		 * @param parameterName the parameter name (e.g. "x-foo")
-		 * @param dataType the data type
-		 * @return this
-		 */
-		public WriterChainXml register(String parameterName, ICalDataType dataType) {
-			parameterDataTypes.put(parameterName, dataType);
-			return this_;
-		}
-
-		/**
-		 * Sets the number of indent spaces to use for pretty-printing. If not
-		 * set, then the XML will not be pretty-printed.
-		 * @param indent the number of spaces or -1 not to pretty-print
-		 * (default)
-		 * @return this
-		 */
-		public WriterChainXml indent(int indent) {
-			if (indent < 0) {
-				return this_;
-			}
-
-			outputProperty(OutputKeys.INDENT, "yes");
-			return outputProperty("{http://xml.apache.org/xslt}indent-amount", indent + "");
-		}
-
-		/**
-		 * Sets the XML version to use. Note that many JDKs only support 1.0
-		 * natively. For XML 1.1 support, add a JAXP library like <a href=
-		 * "http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22xalan%22%20AND%20a%3A%22xalan%22"
-		 * >xalan</a> to your project.
-		 * @param xmlVersion the XML version (defaults to "1.0")
-		 * @return this
-		 */
-		public WriterChainXml xmlVersion(String xmlVersion) {
-			if (xmlVersion == null) {
-				return this_;
-			}
-
-			return outputProperty(OutputKeys.VERSION, xmlVersion);
-		}
-
-		/**
-		 * Assigns an output property to the JAXP transformer (see
-		 * {@link Transformer#setOutputProperty})
-		 * @param name the property name
-		 * @param value the property value
-		 * @return this
-		 */
-		public WriterChainXml outputProperty(String name, String value) {
-			outputProperties.put(name, value);
-			return this_;
-		}
-
-		/**
-		 * Writes the xCal document to a string.
-		 * @return the XML string
-		 * @throws IllegalArgumentException if the scribe class for a component
-		 * or property object cannot be found (only happens when an experimental
-		 * property/component scribe is not registered with the {@code register}
-		 * method)
-		 */
-		public String go() {
-			StringWriter sw = new StringWriter();
-			try {
-				go(sw);
-			} catch (TransformerException e) {
-				//shouldn't be thrown because we're writing to a string
-				throw new RuntimeException(e);
-			}
-			return sw.toString();
-		}
-
-		/**
-		 * Writes the xCal document to an output stream.
-		 * @param out the output stream to write to
-		 * @throws IllegalArgumentException if the scribe class for a component
-		 * or property object cannot be found (only happens when an experimental
-		 * property/component scribe is not registered with the {@code register}
-		 * method)
-		 * @throws TransformerException if there's a problem writing the XML
-		 */
-		public void go(OutputStream out) throws TransformerException {
-			XCalDocument document = constructDocument();
-			document.write(out, outputProperties);
-		}
-
-		/**
-		 * Writes the xCal document to a file.
-		 * @param file the file to write to
-		 * @throws IllegalArgumentException if the scribe class for a component
-		 * or property object cannot be found (only happens when an experimental
-		 * property/component scribe is not registered with the {@code register}
-		 * method)
-		 * @throws TransformerException if there's a problem writing the XML
-		 * @throws IOException if there's a problem writing to the file
-		 */
-		public void go(File file) throws TransformerException, IOException {
-			XCalDocument document = constructDocument();
-			document.write(file, outputProperties);
-		}
-
-		/**
-		 * Writes the xCal document to a writer.
-		 * @param writer the writer to write to
-		 * @throws IllegalArgumentException if the scribe class for a component
-		 * or property object cannot be found (only happens when an experimental
-		 * property/component scribe is not registered with the {@code register}
-		 * method)
-		 * @throws TransformerException if there's a problem writing the XML
-		 */
-		public void go(Writer writer) throws TransformerException {
-			XCalDocument document = constructDocument();
-			document.write(writer, outputProperties);
-		}
-
-		/**
-		 * Writes the xCal document to an XML DOM.
-		 * @return the XML DOM
-		 */
-		public Document dom() {
-			XCalDocument document = constructDocument();
-			return document.getDocument();
-		}
-
-		private XCalDocument constructDocument() {
-			XCalDocument document = new XCalDocument();
-			XCalDocumentStreamWriter writer = document.writer();
-			writer.setScribeIndex(index);
-
-			for (Map.Entry<String, ICalDataType> entry : parameterDataTypes.entrySet()) {
-				writer.registerParameterDataType(entry.getKey(), entry.getValue());
-			}
-			for (ICalendar ical : icals) {
-				writer.write(ical);
-			}
-
-			return document;
-		}
-	}
-
-	///////////////////////////////////////////////////////
-	// JSON
-	///////////////////////////////////////////////////////
-
-	/**
-	 * Chainer class for writing to JSON-encoded iCalendar data streams (jCal).
-	 * @see Biweekly#writeJson(Collection)
-	 * @see Biweekly#writeJson(ICalendar...)
-	 */
-	public static class WriterChainJson extends WriterChain<WriterChainJson> {
-		private boolean indent = false;
-
-		private WriterChainJson(Collection<ICalendar> icals) {
-			super(icals);
-		}
-
-		/**
-		 * Sets whether or not to pretty-print the JSON.
-		 * @param indent true to pretty-print it, false not to (defaults to
-		 * false)
-		 * @return this
-		 */
-		public WriterChainJson indent(boolean indent) {
-			this.indent = indent;
-			return this_;
-		}
-
-		/**
-		 * Writes the iCalendar objects to a string.
-		 * @return the iCalendar string
-		 * @throws IllegalArgumentException if the scribe class for a component
-		 * or property object cannot be found (only happens when an experimental
-		 * property/component scribe is not registered with the {@code register}
-		 * method)
-		 */
-		public String go() {
-			StringWriter sw = new StringWriter();
-			try {
-				go(sw);
-			} catch (IOException e) {
-				//shouldn't be thrown because we're writing to a string
-				throw new RuntimeException(e);
-			}
-			return sw.toString();
-		}
-
-		/**
-		 * Writes the iCalendar objects to a data stream.
-		 * @param out the output stream to write to
-		 * @throws IllegalArgumentException if the scribe class for a component
-		 * or property object cannot be found (only happens when an experimental
-		 * property/component scribe is not registered with the {@code register}
-		 * method)
-		 * @throws IOException if there's a problem writing to the output stream
-		 */
-		public void go(OutputStream out) throws IOException {
-			go(new JCalWriter(out, icals.size() > 1));
-		}
-
-		/**
-		 * Writes the iCalendar objects to a file.
-		 * @param file the file to write to
-		 * @throws IllegalArgumentException if the scribe class for a component
-		 * or property object cannot be found (only happens when an experimental
-		 * property/component scribe is not registered with the {@code register}
-		 * method)
-		 * @throws IOException if there's a problem writing to the file
-		 */
-		public void go(File file) throws IOException {
-			JCalWriter jcalWriter = new JCalWriter(file, icals.size() > 1);
-			try {
-				go(jcalWriter);
-			} finally {
-				jcalWriter.close();
-			}
-		}
-
-		/**
-		 * Writes the iCalendar objects to a data stream.
-		 * @param writer the writer to write to
-		 * @throws IllegalArgumentException if the scribe class for a component
-		 * or property object cannot be found (only happens when an experimental
-		 * property/component scribe is not registered with the {@code register}
-		 * method)
-		 * @throws IOException if there's a problem writing to the writer
-		 */
-		public void go(Writer writer) throws IOException {
-			go(new JCalWriter(writer, icals.size() > 1));
-		}
-
-		private void go(JCalWriter jcalWriter) throws IOException {
-			jcalWriter.setScribeIndex(index);
-			jcalWriter.setIndent(indent);
-
-			for (ICalendar ical : icals) {
-				jcalWriter.write(ical);
-				jcalWriter.flush();
-			}
-			jcalWriter.closeJsonStream();
-		}
+	public static ChainingJsonWriter writeJson(Collection<ICalendar> icals) {
+		return new ChainingJsonWriter(icals);
 	}
 
 	private Biweekly() {

@@ -243,7 +243,7 @@ public class BiweeklyTest {
 		assertEquals(0, ical.getExperimentalComponents().size());
 	}
 
-	@Test(expected = SAXException.class)
+	@Test(expected = RuntimeException.class)
 	public void parseXml_invalid() throws Throwable {
 		String xml = "invalid-xml";
 		Biweekly.parseXml(xml).first();
