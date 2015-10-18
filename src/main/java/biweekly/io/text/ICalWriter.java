@@ -216,7 +216,8 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	 * <p>
 	 * Sets whether the writer will apply circumflex accent encoding on
 	 * parameter values (disabled by default). This escaping mechanism allows
-	 * for newlines and double quotes to be included in parameter values.
+	 * for newlines and double quotes to be included in parameter values. This
+	 * will only be done for version 2.0 iCalendar objects.
 	 * </p>
 	 * 
 	 * <p>

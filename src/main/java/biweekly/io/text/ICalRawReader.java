@@ -274,7 +274,8 @@ public class ICalRawReader implements Closeable {
 	 * <p>
 	 * Sets whether the reader will decode parameter values that use circumflex
 	 * accent encoding (enabled by default). This escaping mechanism allows
-	 * newlines and double quotes to be included in parameter values.
+	 * newlines and double quotes to be included in parameter values. This only
+	 * applies to version 2.0 iCalendar objects.
 	 * </p>
 	 * 
 	 * <table border="1">
