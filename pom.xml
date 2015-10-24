@@ -110,7 +110,7 @@
 						The plugin must be instructed to retrieve the filtered files from the "target/classes" directory.
 						Otherwise, it will copy the unfiltered versions in "src/main/resources" to the JAR.
 						-->
-						<Include-Resource>{maven-resources}, {biweekly.properties=target/classes/biweekly.properties}</Include-Resource>
+						<Include-Resource>{maven-resources}, {biweekly/biweekly.properties=target/classes/biweekly/biweekly.properties}</Include-Resource>
 						
 						<!-- Mark Jackson as an optional dependency -->
 						<Import-Package>

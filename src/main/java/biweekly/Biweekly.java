@@ -239,7 +239,7 @@ public final class Biweekly {
 	static {
 		InputStream in = null;
 		try {
-			in = Biweekly.class.getResourceAsStream("/biweekly.properties");
+			in = Biweekly.class.getResourceAsStream("biweekly.properties");
 			Properties props = new Properties();
 			props.load(in);
 
