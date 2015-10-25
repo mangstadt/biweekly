@@ -4,12 +4,14 @@ import static biweekly.util.StringUtils.NEWLINE;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
 import biweekly.ICalVersion;
+import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.util.StringUtils;
 
@@ -46,24 +48,32 @@ import biweekly.util.StringUtils;
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalRawReader implements Closeable {
-	private final FoldedLineReader reader;
+	private final Reader reader;
 	private final List<String> components = new ArrayList<String>();
+	private final Buffer buffer = new Buffer();
+	private final Buffer unfoldedLine = new Buffer();
+
+	private boolean eos = false;
 	private boolean caretDecodingEnabled = true;
 	private ICalVersion version = null;
+	private int prevChar = -1;
+	private int propertyLineNum = 1;
+	private int lineNum = 1;
 
 	/**
-	 * @param reader the reader to wrap
+	 * @param reader the reader to read from
 	 */
 	public ICalRawReader(Reader reader) {
-		this.reader = new FoldedLineReader(reader);
+		this.reader = reader;
 	}
 
 	/**
-	 * Gets the line number of the last line that was read.
+	 * Gets the line number of the line that was just read. If the line was
+	 * folded, this will be the line number of the first line.
 	 * @return the line number
 	 */
-	public int getLineNum() {
-		return reader.getLineNum();
+	public int getLineNumber() {
+		return propertyLineNum;
 	}
 
 	/**
@@ -75,27 +85,137 @@ public class ICalRawReader implements Closeable {
 	}
 
 	/**
-	 * Parses the next line of the iCalendar file.
+	 * Parses the next line of the iCalendar file. Note that VERSION properties
+	 * with valid values are not returned by this method.
 	 * @return the next line or null if there are no more lines
 	 * @throws ICalParseException if a line cannot be parsed
 	 * @throws IOException if there's a problem reading from the input stream
 	 */
 	public ICalRawLine readLine() throws IOException {
-		String line = reader.readLine();
-		if (line == null) {
+		if (eos) {
 			return null;
 		}
 
-		String propertyName = null;
-		ICalParameters parameters = new ICalParameters();
-		String value = null;
+		propertyLineNum = lineNum;
+		buffer.clear();
+		unfoldedLine.clear();
 
-		char escapeChar = 0; //is the next char escaped?
-		boolean inQuotes = false; //are we inside of double quotes?
-		StringBuilder buffer = new StringBuilder();
+		/*
+		 * The property's name.
+		 */
+		String propertyName = null;
+
+		/*
+		 * The name of the parameter we're currently inside of.
+		 */
 		String curParamName = null;
-		for (int i = 0; i < line.length(); i++) {
-			char ch = line.charAt(i);
+
+		/*
+		 * The property's parameters.
+		 */
+		ICalParameters parameters = new ICalParameters();
+
+		/*
+		 * The character that used to escape the current character (for
+		 * parameter values).
+		 */
+		char escapeChar = 0;
+
+		/*
+		 * Are we currently inside a parameter value that is surrounded with
+		 * double-quotes?
+		 */
+		boolean inQuotes = false;
+
+		/*
+		 * Are we currently inside the property value?
+		 */
+		boolean inValue = false;
+
+		/*
+		 * Does the line use quoted-printable encoding, and does it end all of
+		 * its folded lines with a "=" character?
+		 */
+		boolean quotedPrintableLine = false;
+
+		/*
+		 * The current character.
+		 */
+		char ch = 0;
+
+		/*
+		 * The previous character.
+		 */
+		char prevChar;
+
+		while (true) {
+			prevChar = ch;
+
+			int read = nextChar();
+			if (read < 0) {
+				eos = true;
+				break;
+			}
+
+			ch = (char) read;
+
+			if (prevChar == '\r' && ch == '\n') {
+				/*
+				 * The newline was already processed when the "\r" character was
+				 * encountered, so ignore the accompanying "\n" character.
+				 */
+				continue;
+			}
+
+			if (isNewline(ch)) {
+				quotedPrintableLine = (inValue && prevChar == '=' && isQuotedPrintable(parameters));
+				if (quotedPrintableLine) {
+					/*
+					 * Remove the "=" character that some vCards put at the end
+					 * of quoted-printable lines that are followed by a folded
+					 * line.
+					 */
+					buffer.chop();
+					unfoldedLine.chop();
+				}
+
+				//keep track of the current line number
+				lineNum++;
+
+				continue;
+			}
+
+			if (isNewline(prevChar)) {
+				if (isWhitespace(ch)) {
+					/*
+					 * This line is a continuation of the previous line (the
+					 * line is folded).
+					 */
+					continue;
+				}
+
+				if (quotedPrintableLine) {
+					/*
+					 * The property's parameters indicate that the property
+					 * value is quoted-printable. And the previous line ended
+					 * with an equals sign. This means that folding whitespace
+					 * may not be prepended to folded lines like it should...
+					 */
+				} else {
+					/*
+					 * We're reached the end of the property.
+					 */
+					this.prevChar = ch;
+					break;
+				}
+			}
+
+			unfoldedLine.append(ch);
+
+			if (inValue) {
+				buffer.append(ch);
+				continue;
+			}
 
 			if (escapeChar != 0) {
 				//this character was escaped
@@ -110,7 +230,7 @@ public class ICalRawReader implements Closeable {
 						//incase a double quote is escaped with a backslash
 						buffer.append(ch);
 					} else if (ch == ';' && version == ICalVersion.V1_0) {
-						//semi-colons can only be escaped in 1.- parameter values
+						//semi-colons can only be escaped in 1.0 parameter values
 						//if a 2.0 param value has semi-colons, the value should be surrounded in double quotes
 						buffer.append(ch);
 					} else {
@@ -142,10 +262,10 @@ public class ICalRawReader implements Closeable {
 			if ((ch == ';' || ch == ':') && !inQuotes) {
 				if (propertyName == null) {
 					//property name
-					propertyName = buffer.toString();
+					propertyName = buffer.getAndClear();
 				} else {
 					//parameter value
-					String paramValue = buffer.toString();
+					String paramValue = buffer.getAndClear();
 					if (version == ICalVersion.V1_0) {
 						//1.0 allows whitespace to surround the "=", so remove it
 						paramValue = StringUtils.ltrim(paramValue);
@@ -153,35 +273,27 @@ public class ICalRawReader implements Closeable {
 					parameters.put(curParamName, paramValue);
 					curParamName = null;
 				}
-				buffer.setLength(0);
 
 				if (ch == ':') {
 					//the rest of the line is the property value
-					if (i < line.length() - 1) {
-						value = line.substring(i + 1);
-					} else {
-						value = "";
-					}
-					break;
+					inValue = true;
 				}
 				continue;
 			}
 
 			if (ch == ',' && !inQuotes && version != ICalVersion.V1_0) {
 				//multi-valued parameter
-				parameters.put(curParamName, buffer.toString());
-				buffer.setLength(0);
+				parameters.put(curParamName, buffer.getAndClear());
 				continue;
 			}
 
 			if (ch == '=' && curParamName == null) {
 				//parameter name
-				curParamName = buffer.toString();
+				curParamName = buffer.getAndClear();
 				if (version == ICalVersion.V1_0) {
 					//2.1 allows whitespace to surround the "=", so remove it
 					curParamName = StringUtils.rtrim(curParamName);
 				}
-				buffer.setLength(0);
 				continue;
 			}
 
@@ -194,9 +306,16 @@ public class ICalRawReader implements Closeable {
 			buffer.append(ch);
 		}
 
-		if (propertyName == null || value == null) {
-			throw new ICalParseException(line);
+		if (unfoldedLine.length() == 0) {
+			//input stream was empty
+			return null;
 		}
+
+		if (propertyName == null) {
+			throw new ICalParseException(unfoldedLine.get(), propertyLineNum);
+		}
+
+		String value = buffer.getAndClear();
 
 		if ("BEGIN".equalsIgnoreCase(propertyName)) {
 			components.add(value.toUpperCase());
@@ -318,7 +437,128 @@ public class ICalRawReader implements Closeable {
 	 * @return the character encoding or null if none is defined
 	 */
 	public Charset getEncoding() {
-		return reader.getEncoding();
+		if (reader instanceof InputStreamReader) {
+			InputStreamReader isr = (InputStreamReader) reader;
+			String charsetStr = isr.getEncoding();
+			return (charsetStr == null) ? null : Charset.forName(charsetStr);
+		}
+
+		return null;
+	}
+
+	private int nextChar() throws IOException {
+		if (prevChar >= 0) {
+			/*
+			 * Use the character that was left over from the previous invocation
+			 * of "readLine()".
+			 */
+			int ch = prevChar;
+			prevChar = -1;
+			return ch;
+		}
+
+		return reader.read();
+	}
+
+	private boolean isNewline(char ch) {
+		return ch == '\n' || ch == '\r';
+	}
+
+	private boolean isWhitespace(char ch) {
+		return ch == ' ' || ch == '\t';
+	}
+
+	/**
+	 * Determines if the property value is quoted-printable. This must be
+	 * checked in order to account for the fact that some vCards fold
+	 * quoted-printed lines in a non-standard way.
+	 * @param parameters the property's parameters
+	 * @return true if the property is quoted-printable, false if not
+	 */
+	private boolean isQuotedPrintable(ICalParameters parameters) {
+		if (parameters.getEncoding() == Encoding.QUOTED_PRINTABLE) {
+			return true;
+		}
+
+		List<String> namelessValues = parameters.get(null);
+		for (String value : namelessValues) {
+			if ("QUOTED-PRINTABLE".equalsIgnoreCase(value)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Wraps a {@link StringBuilder} object, providing utility methods.
+	 */
+	private static class Buffer {
+		private final StringBuilder sb = new StringBuilder();
+
+		/**
+		 * Clears the buffer.
+		 * @return this
+		 */
+		public Buffer clear() {
+			sb.setLength(0);
+			return this;
+		}
+
+		/**
+		 * Gets the buffer's contents.
+		 * @return the buffer's contents
+		 */
+		public String get() {
+			return sb.toString();
+		}
+
+		/**
+		 * Gets the buffer's contents, then clears it.
+		 * @return the buffer's contents
+		 */
+		public String getAndClear() {
+			String string = get();
+			clear();
+			return string;
+		}
+
+		/**
+		 * Appends a character to the buffer.
+		 * @param ch the character to append
+		 * @return this
+		 */
+		public Buffer append(char ch) {
+			sb.append(ch);
+			return this;
+		}
+
+		/**
+		 * Appends a character sequence to the buffer.
+		 * @param string the character sequence to append
+		 * @return this
+		 */
+		public Buffer append(CharSequence string) {
+			sb.append(string);
+			return this;
+		}
+
+		/**
+		 * Removes the last character from the buffer.
+		 * @return this
+		 */
+		public Buffer chop() {
+			sb.setLength(sb.length() - 1);
+			return this;
+		}
+
+		/**
+		 * Gets the length of the buffer.
+		 * @return the buffer's length
+		 */
+		public int length() {
+			return sb.length();
+		}
 	}
 
 	/**

@@ -1,14 +1,14 @@
 package biweekly.io.text;
 
+import static biweekly.ICalVersion.V2_0;
 import static biweekly.util.StringUtils.NEWLINE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.io.StringReader;
 
 import org.junit.Test;
-
-import static biweekly.ICalVersion.*;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -145,6 +145,13 @@ public class ICalRawReaderTest {
 		ICalRawLine actual = reader.readLine();
 		assertEquals(expected, actual);
 
+		assertNull(reader.readLine());
+	}
+
+	@Test
+	public void empty_just_newlines() throws Throwable {
+		String ical = "\r\n\r\n\r\n";
+		ICalRawReader reader = create(ical);
 		assertNull(reader.readLine());
 	}
 
@@ -424,6 +431,348 @@ public class ICalRawReaderTest {
 		assertEquals(expected, actual);
 
 		assertNull(reader.readLine());
+	}
+
+	@Test
+	public void non_standard_newlines() throws Throwable {
+		//@formatter:off
+		String ical =
+		"NOTE:note0\r\n" + //standard newline
+		"NOTE:note1\n" +
+		"NOTE:note2\r" +
+		"NOTE:note3"; //no trailing newline
+		//@formatter:on
+		ICalRawReader reader = create(ical);
+
+		assertEquals(line("NOTE").value("note0").build(), reader.readLine());
+		assertEquals(line("NOTE").value("note1").build(), reader.readLine());
+		assertEquals(line("NOTE").value("note2").build(), reader.readLine());
+		assertEquals(line("NOTE").value("note3").build(), reader.readLine());
+		assertNull(reader.readLine());
+	}
+
+	@Test
+	public void line_unfolding() throws Throwable {
+		//@formatter:off
+		String ical =
+
+		//unfolded line
+		"FN:Michael Angstadt\r\n" +
+
+		//empty lines should be ignored
+		"\r\n" +
+
+		//this line is folded
+		"NOTE:folded \r\n" +
+		" line\r\n" +
+
+		//this line is folded with multiple whitespace characters
+		"NOTE:one \r\n" +
+		" two \r\n" +
+		"  three \r\n" +
+		"\t \tfour\r\n";
+		//@formatter:on
+
+		ICalRawReader reader = create(ical);
+
+		ICalRawLine expected = line("FN").value("Michael Angstadt").build();
+		ICalRawLine actual = reader.readLine();
+		assertEquals(expected, actual);
+
+		expected = line("NOTE").value("folded line").build();
+		actual = reader.readLine();
+		assertEquals(expected, actual);
+
+		expected = line("NOTE").value("one two  three  \tfour").build();
+		actual = reader.readLine();
+		assertEquals(expected, actual);
+
+		assertNull(reader.readLine());
+	}
+
+	@Test
+	public void line_unfolding_empty_folded_line() throws Throwable {
+		//@formatter:off
+		String ical =
+		"NOTE:line1\r\n" +
+		" \r\n" +
+		" line2\r\n";
+		//@formatter:on
+		ICalRawReader reader = create(ical);
+
+		ICalRawLine expected = line("NOTE").value("line1line2").build();
+		ICalRawLine actual = reader.readLine();
+		assertEquals(expected, actual);
+
+		assertNull(reader.readLine());
+	}
+
+	@Test
+	public void line_unfolding_one_character_per_line() throws Throwable {
+		//@formatter:off
+		String ical =
+		"N\r\n" +
+		" O\r\n" +
+		" T\r\n" +
+		" E\r\n" +
+		" :\r\n" +
+		" v\r\n" +
+		" a\r\n" +
+		" l\r\n" +
+		" u\r\n" +
+		" e\r\n";
+		//@formatter:on
+		ICalRawReader reader = create(ical);
+
+		ICalRawLine expected = line("NOTE").value("value").build();
+		ICalRawLine actual = reader.readLine();
+		assertEquals(expected, actual);
+
+		assertNull(reader.readLine());
+	}
+
+	@Test
+	public void line_unfolding_parameters_on_multiple_lines() throws Throwable {
+		{
+			//@formatter:off
+			String ical =
+			"BEGIN:VCALENDAR\r\n" +
+				"VERSION:1.0\r\n" +
+				"NOTE;ONE=1;TWO=the nu\\;m\r\n" +
+				" ber two:value\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+			ICalRawReader reader = create(ical);
+			reader.readLine();
+
+			ICalRawLine expected = line("NOTE").param("ONE", "1").param("TWO", "the nu;mber two").value("value").build();
+			ICalRawLine actual = reader.readLine();
+			assertEquals(expected, actual);
+
+			reader.readLine();
+			assertNull(reader.readLine());
+		}
+
+		{
+			//@formatter:off
+			String ical =
+			"BEGIN:VCALENDAR\r\n" +
+				"VERSION:2.0\r\n" +
+				"NOTE;ONE=1;TWO=\"the nu;m\r\n" +
+				" ber two\":value\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
+			ICalRawReader reader = create(ical);
+			reader.readLine();
+
+			ICalRawLine expected = line("NOTE").param("ONE", "1").param("TWO", "the nu;mber two").value("value").build();
+			ICalRawLine actual = reader.readLine();
+			assertEquals(expected, actual);
+
+			reader.readLine();
+			assertNull(reader.readLine());
+		}
+	}
+
+	/**
+	 * Tests the issues that Outlook has with folded lines that are
+	 * quoted-printable.
+	 */
+	@Test
+	public void line_unfolding_quoted_printable() throws Throwable {
+		//@formatter:off
+		String ical =
+		
+		//one line
+		"LABEL;HOME;ENCODING=QUOTED-PRINTABLE:Silicon Alley 5\r\n" +
+
+		//two lines
+		//(without "ENCODING" subtype name)
+		"LABEL;HOME;QUOTED-PRINTABLE:Silicon Alley 5,=0D=0A=\r\n" +
+		"New York, New York  12345\r\n" +
+
+		//two lines with an empty line at the end
+		"LABEL;HOME;QUOTED-PRINTABLE:Silicon Alley 5,=0D=0A=\r\n" +
+		"New York, New York  12345=0D=0A=\r\n" +
+		"\r\n" +
+
+		//two lines with an empty line in the middle
+		"LABEL;HOME;QUOTED-PRINTABLE:Silicon Alley 5,=0D=0A=\r\n" +
+		"=\r\n" +
+		"New York, New York  12345\r\n" +
+
+		//three lines
+		"LABEL;HOME;ENCODING=QUOTED-PRINTABLE:Silicon Alley 5,=0D=0A=\r\n" +
+		"New York, New York  12345=0D=0A=\r\n" +
+		"USA\r\n" +
+
+		//four lines
+		"LABEL;HOME;ENCODING=QUOTED-PRINTABLE:Silicon Alley 5,=0D=0A=\r\n" +
+		"New York, New York  12345=0D=0A=\r\n" +
+		"USA=0D=0A=\r\n" +
+		"4th line\r\n" +
+
+		//a quoted-printable line whose additional lines *are* folded where the lines end in "="
+		"LABEL;HOME;ENCODING=QUOTED-PRINTABLE:Silicon Alley 5,=0D=0A=\r\n" +
+		" New York, New York  12345=0D=0A=\r\n" +
+		"  USA\r\n" +
+
+		//a quoted-printable line whose additional lines *are* folded, where the lines don't end in "="
+		"LABEL;HOME;ENCODING=QUOTED-PRINTABLE:Silicon Alley 5,=0D=0A\r\n" +
+		" New York, New York  12345=0D=0A\r\n" +
+		"  USA\r\n";
+		//@formatter:on
+
+		ICalRawReader reader = create(ical);
+
+		//@formatter:off
+		assertEquals(line("LABEL")
+			.param(null, "HOME")
+			.param("ENCODING", "QUOTED-PRINTABLE")
+			.value("Silicon Alley 5")
+			.build(),
+		reader.readLine());
+		
+		assertEquals(line("LABEL")
+			.param(null, "HOME")
+			.param(null, "QUOTED-PRINTABLE")
+			.value("Silicon Alley 5,=0D=0ANew York, New York  12345")
+			.build(),
+		reader.readLine());
+		
+		assertEquals(line("LABEL")
+			.param(null, "HOME")
+			.param(null, "QUOTED-PRINTABLE")
+			.value("Silicon Alley 5,=0D=0ANew York, New York  12345=0D=0A")
+			.build(),
+		reader.readLine());
+		
+		assertEquals(line("LABEL")
+			.param(null, "HOME")
+			.param(null, "QUOTED-PRINTABLE")
+			.value("Silicon Alley 5,=0D=0ANew York, New York  12345")
+			.build(),
+		reader.readLine());
+		
+		assertEquals(line("LABEL")
+			.param(null, "HOME")
+			.param("ENCODING", "QUOTED-PRINTABLE")
+			.value("Silicon Alley 5,=0D=0ANew York, New York  12345=0D=0AUSA")
+			.build(),
+		reader.readLine());
+
+		assertEquals(line("LABEL")
+			.param(null, "HOME")
+			.param("ENCODING", "QUOTED-PRINTABLE")
+			.value("Silicon Alley 5,=0D=0ANew York, New York  12345=0D=0AUSA=0D=0A4th line")
+			.build(),
+		reader.readLine());
+		
+		assertEquals(line("LABEL")
+			.param(null, "HOME")
+			.param("ENCODING", "QUOTED-PRINTABLE")
+			.value("Silicon Alley 5,=0D=0ANew York, New York  12345=0D=0A USA")
+			.build(),
+		reader.readLine());
+		
+		assertEquals(line("LABEL")
+			.param(null, "HOME")
+			.param("ENCODING", "QUOTED-PRINTABLE")
+			.value("Silicon Alley 5,=0D=0ANew York, New York  12345=0D=0A USA")
+			.build(),
+		reader.readLine());
+
+		//@formatter:on
+
+		assertNull(reader.readLine());
+	}
+
+	@Test
+	public void line_unfolding_quoted_printable_parameters_folded() throws Throwable {
+		//@formatter:off
+		String ical =
+		"NOTE;ENCOD\r\n" +
+		" ING=quoted-printable:foo=\r\n" +
+		"bar\r\n";
+		//@formatter:on
+		ICalRawReader reader = create(ical);
+
+		ICalRawLine expected = line("NOTE").param("ENCODING", "quoted-printable").value("foobar").build();
+		ICalRawLine actual = reader.readLine();
+		assertEquals(expected, actual);
+
+		assertNull(reader.readLine());
+	}
+
+	/**
+	 * Tests to make sure it's not just looking for the string
+	 * "quoted-printable" somewhere before the property value (like it used to
+	 * do).
+	 */
+	@Test
+	public void quoted_printable_detection_using_parameter() throws Throwable {
+		//@formatter:off
+		String ical =
+		"NOTE;PARAM=quoted-printable:foo=\r\n" +
+		"bar\r\n" +
+		"NOTE;quoted-printable:foo=\r\n" +
+		"bar\r\n" +
+		"NOTE;encoding=quoted-printable:foo=\r\n" +
+		"bar\r\n";
+		//@formatter:on
+		ICalRawReader reader = create(ical);
+
+		ICalRawLine expected = line("NOTE").param("PARAM", "quoted-printable").value("foo=").build();
+		ICalRawLine actual = reader.readLine();
+		assertEquals(expected, actual);
+
+		try {
+			reader.readLine();
+			fail();
+		} catch (ICalParseException e) {
+			//expected
+		}
+
+		expected = line("NOTE").param(null, "quoted-printable").value("foobar").build();
+		actual = reader.readLine();
+		assertEquals(expected, actual);
+
+		expected = line("NOTE").param("ENCODING", "quoted-printable").value("foobar").build();
+		actual = reader.readLine();
+		assertEquals(expected, actual);
+
+		assertNull(reader.readLine());
+	}
+
+	@Test
+	public void getLineNumber() throws Exception {
+		//@formatter:off
+		String ical =
+		"NOTE:one\n" +
+		" two\n" +
+		"\n" +
+		"NOTE:three\n" +
+		" four\n";
+		//@formatter:on
+
+		ICalRawReader reader = create(ical);
+
+		assertEquals(1, reader.getLineNumber());
+
+		reader.readLine();
+		assertEquals(1, reader.getLineNumber());
+
+		reader.readLine();
+		assertEquals(4, reader.getLineNumber());
+
+		assertNull(reader.readLine());
+	}
+
+	@Test(expected = ICalParseException.class)
+	public void invalid_line() throws Throwable {
+		String ical = "This is not a valid ical line.";
+		ICalRawReader reader = create(ical);
+		reader.readLine();
 	}
 
 	private static ICalRawReader create(String ical) {

@@ -34,16 +34,23 @@ import java.io.IOException;
 @SuppressWarnings("serial")
 public class ICalParseException extends IOException {
 	private final String line;
+	private final int lineNumber;
 
 	/**
 	 * @param line the line that couldn't be parsed
+	 * @param lineNumber the line number
 	 */
-	public ICalParseException(String line) {
-		super("Problem parsing iCal line: " + line);
+	public ICalParseException(String line, int lineNumber) {
+		super("Problem parsing iCal line " + lineNumber + ": " + line);
 		this.line = line;
+		this.lineNumber = lineNumber;
 	}
 
 	public String getLine() {
 		return line;
+	}
+
+	public int getLineNumber() {
+		return lineNumber;
 	}
 }

@@ -220,7 +220,7 @@ public class ICalReader extends StreamReader {
 			try {
 				line = reader.readLine();
 			} catch (ICalParseException e) {
-				warnings.add(reader.getLineNum(), null, 3, e.getLine());
+				warnings.add(e.getLineNumber(), null, 3, e.getLine());
 				continue;
 			}
 
@@ -271,7 +271,7 @@ public class ICalReader extends StreamReader {
 				boolean found = stack.popThrough(componentName);
 				if (!found) {
 					//END property does not match up with any BEGIN properties, so ignore
-					warnings.add(reader.getLineNum(), "END", 2);
+					warnings.add(reader.getLineNumber(), "END", 2);
 				}
 
 				continue;
@@ -290,7 +290,7 @@ public class ICalReader extends StreamReader {
 				try {
 					value = decodeQuotedPrintableValue(propertyName, parameters.getCharset(), value);
 				} catch (DecoderException e) {
-					warnings.add(reader.getLineNum(), propertyName, 31, e.getMessage());
+					warnings.add(reader.getLineNumber(), propertyName, 31, e.getMessage());
 				}
 				parameters.setEncoding(null);
 			}
@@ -335,10 +335,10 @@ public class ICalReader extends StreamReader {
 					ICalProperty property = scribe.parseText(v, dataType, parameters, context);
 					propertiesToAdd.add(property);
 				} catch (SkipMeException e) {
-					warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());
+					warnings.add(reader.getLineNumber(), propertyName, 0, e.getMessage());
 					continue;
 				} catch (CannotParseException e) {
-					warnings.add(reader.getLineNum(), propertyName, 1, v, e.getMessage());
+					warnings.add(reader.getLineNumber(), propertyName, 1, v, e.getMessage());
 
 					ICalProperty property = new RawPropertyScribe(propertyName).parseText(v, dataType, parameters, context);
 					propertiesToAdd.add(property);
@@ -350,7 +350,7 @@ public class ICalReader extends StreamReader {
 			boolean isVCal = reader.getVersion() == null || reader.getVersion() == ICalVersion.V1_0;
 			for (ICalProperty property : propertiesToAdd) {
 				for (Warning warning : context.getWarnings()) {
-					warnings.add(reader.getLineNum(), propertyName, warning);
+					warnings.add(reader.getLineNumber(), propertyName, warning);
 				}
 
 				if (isVCal) {
@@ -370,7 +370,7 @@ public class ICalReader extends StreamReader {
 			//add the components to the iCalendar object
 			for (Result<? extends ICalComponent> result : componentsToAdd) {
 				for (Warning warning : result.getWarnings()) {
-					warnings.add(reader.getLineNum(), propertyName, warning);
+					warnings.add(reader.getLineNumber(), propertyName, warning);
 				}
 
 				parentComponent.addComponent(result.getProperty());
@@ -393,7 +393,7 @@ public class ICalReader extends StreamReader {
 		}
 
 		if (reader.getVersion() != ICalVersion.V1_0) {
-			warnings.add(reader.getLineNum(), propertyName, 4, namelessParamValues);
+			warnings.add(reader.getLineNumber(), propertyName, 4, namelessParamValues);
 		}
 
 		for (String paramValue : namelessParamValues) {
@@ -441,7 +441,7 @@ public class ICalReader extends StreamReader {
 				charset = defaultQuotedPrintableCharset;
 
 				//the given charset was invalid, so add a warning
-				warnings.add(reader.getLineNum(), propertyName, 32, charsetParam, charset.name());
+				warnings.add(reader.getLineNumber(), propertyName, 32, charsetParam, charset.name());
 			}
 		}
 
