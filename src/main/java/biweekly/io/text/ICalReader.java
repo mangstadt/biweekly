@@ -3,6 +3,7 @@ package biweekly.io.text;
 import static biweekly.io.DataModelConverter.convert;
 import static biweekly.util.IOUtils.utf8Reader;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -137,7 +138,7 @@ public class ICalReader extends StreamReader {
 	 * @throws FileNotFoundException if the file doesn't exist
 	 */
 	public ICalReader(File file) throws FileNotFoundException {
-		this(utf8Reader(file));
+		this(new BufferedReader(utf8Reader(file)));
 	}
 
 	/**

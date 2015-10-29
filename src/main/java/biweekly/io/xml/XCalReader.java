@@ -7,6 +7,7 @@ import static biweekly.io.xml.XCalQNames.PARAMETERS;
 import static biweekly.io.xml.XCalQNames.PROPERTIES;
 import static biweekly.io.xml.XCalQNames.VCALENDAR;
 
+import java.io.BufferedInputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -161,7 +162,7 @@ public class XCalReader extends StreamReader {
 	 * @throws FileNotFoundException if the file doesn't exist
 	 */
 	public XCalReader(File file) throws FileNotFoundException {
-		this(new FileInputStream(file));
+		this(new BufferedInputStream(new FileInputStream(file)));
 	}
 
 	/**
