@@ -46,7 +46,7 @@ import biweekly.property.ICalProperty;
 /**
  * Chainer class for writing traditional, plain-text iCalendar objects.
  * @see Biweekly#write(Collection)
- * @see Biweekly#write(VCard...)
+ * @see Biweekly#write(ICalendar...)
  * @author Michael Angstadt
  */
 public class ChainingTextWriter extends ChainingWriter<ChainingTextWriter> {
@@ -181,7 +181,7 @@ public class ChainingTextWriter extends ChainingWriter<ChainingTextWriter> {
 
 		for (ICalendar ical : icals) {
 			if (version == null) {
-				//use the version that's assigned to each individual vCard
+				//use the version that's assigned to each individual iCalendar object
 				ICalVersion icalVersion = ical.getVersion();
 				if (icalVersion == null) {
 					icalVersion = ICalVersion.V2_0;

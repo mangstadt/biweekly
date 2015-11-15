@@ -54,7 +54,7 @@ import biweekly.property.ICalProperty;
 /**
  * Chainer class for writing xCal (XML-encoded iCalendar objects).
  * @see Biweekly#writeXml(Collection)
- * @see Biweekly#writeXml(VCard...)
+ * @see Biweekly#writeXml(ICalendar...)
  * @author Michael Angstadt
  */
 public class ChainingXmlWriter extends ChainingWriter<ChainingXmlWriter> {

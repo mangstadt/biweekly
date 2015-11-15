@@ -45,7 +45,7 @@ import biweekly.property.ICalProperty;
 /**
  * Chainer class for writing jCals (JSON-encoded iCalendar objects).
  * @see Biweekly#writeJson(Collection)
- * @see Biweekly#writeJson(VCard...)
+ * @see Biweekly#writeJson(ICalendar...)
  * @author Michael Angstadt
  */
 public class ChainingJsonWriter extends ChainingWriter<ChainingJsonWriter> {
@@ -60,8 +60,7 @@ public class ChainingJsonWriter extends ChainingWriter<ChainingJsonWriter> {
 
 	/**
 	 * Sets whether or not to pretty-print the JSON.
-	 * @param indent true to pretty-print it, false not to (defaults to
-	 * false)
+	 * @param indent true to pretty-print it, false not to (defaults to false)
 	 * @return this
 	 */
 	public ChainingJsonWriter indent(boolean indent) {

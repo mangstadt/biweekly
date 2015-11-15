@@ -171,9 +171,9 @@ public class ICalRawReader implements Closeable {
 				quotedPrintableLine = (inValue && prevChar == '=' && isQuotedPrintable(parameters));
 				if (quotedPrintableLine) {
 					/*
-					 * Remove the "=" character that some vCards put at the end
-					 * of quoted-printable lines that are followed by a folded
-					 * line.
+					 * Remove the "=" character that some iCalendar objects put
+					 * at the end of quoted-printable lines that are followed by
+					 * a folded line.
 					 */
 					buffer.chop();
 					unfoldedLine.chop();
@@ -470,7 +470,7 @@ public class ICalRawReader implements Closeable {
 
 	/**
 	 * Determines if the property value is quoted-printable. This must be
-	 * checked in order to account for the fact that some vCards fold
+	 * checked in order to account for the fact that some iCalendar objects fold
 	 * quoted-printed lines in a non-standard way.
 	 * @param parameters the property's parameters
 	 * @return true if the property is quoted-printable, false if not
