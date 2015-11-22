@@ -32,8 +32,17 @@ import java.util.Date;
  * @author Michael Angstadt
  */
 public final class Period {
-	private final Date startDate;
-	private final Date endDate;
+	/*
+	 * Note: The getter methods must not make copies of the date objects they
+	 * return! The date objects in this class must be directly referenced in
+	 * order to support timezones.
+	 * 
+	 * Yes, this means that this class is not fully immutable. Date objects can
+	 * be modified by calling "setTime()", but biweekly makes use of this method
+	 * in order to convert dates into their proper timezones.
+	 */
+	private final ICalDate startDate;
+	private final ICalDate endDate;
 	private final Duration duration;
 
 	/**
@@ -42,8 +51,22 @@ public final class Period {
 	 * @param endDate the end date
 	 */
 	public Period(Date startDate, Date endDate) {
-		this.startDate = copy(startDate);
-		this.endDate = copy(endDate);
+		//@formatter:off
+		this(
+			(startDate == null) ? null : new ICalDate(startDate),
+			(endDate == null) ? null : new ICalDate(endDate)
+		);
+		//@formatter:on
+	}
+
+	/**
+	 * Creates a new time period.
+	 * @param startDate the start date
+	 * @param endDate the end date
+	 */
+	public Period(ICalDate startDate, ICalDate endDate) {
+		this.startDate = startDate;
+		this.endDate = endDate;
 		duration = null;
 	}
 
@@ -53,7 +76,21 @@ public final class Period {
 	 * @param duration the length of time after the start date
 	 */
 	public Period(Date startDate, Duration duration) {
-		this.startDate = copy(startDate);
+		//@formatter:off
+		this(
+			(startDate == null) ? null : new ICalDate(startDate),
+			duration
+		);
+		//@formatter:on
+	}
+
+	/**
+	 * Creates a new time period.
+	 * @param startDate the start date
+	 * @param duration the length of time after the start date
+	 */
+	public Period(ICalDate startDate, Duration duration) {
+		this.startDate = startDate;
 		this.duration = duration;
 		endDate = null;
 	}
@@ -72,16 +109,16 @@ public final class Period {
 	 * Gets the start date.
 	 * @return the start date
 	 */
-	public Date getStartDate() {
-		return copy(startDate);
+	public ICalDate getStartDate() {
+		return startDate;
 	}
 
 	/**
 	 * Gets the end date. This will be null if a duration was defined.
 	 * @return the end date or null if not set
 	 */
-	public Date getEndDate() {
-		return copy(endDate);
+	public ICalDate getEndDate() {
+		return endDate;
 	}
 
 	/**
@@ -105,32 +142,19 @@ public final class Period {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
 		Period other = (Period) obj;
 		if (duration == null) {
-			if (other.duration != null)
-				return false;
-		} else if (!duration.equals(other.duration))
-			return false;
+			if (other.duration != null) return false;
+		} else if (!duration.equals(other.duration)) return false;
 		if (endDate == null) {
-			if (other.endDate != null)
-				return false;
-		} else if (!endDate.equals(other.endDate))
-			return false;
+			if (other.endDate != null) return false;
+		} else if (!endDate.equals(other.endDate)) return false;
 		if (startDate == null) {
-			if (other.startDate != null)
-				return false;
-		} else if (!startDate.equals(other.startDate))
-			return false;
+			if (other.startDate != null) return false;
+		} else if (!startDate.equals(other.startDate)) return false;
 		return true;
-	}
-
-	private Date copy(Date date) {
-		return (date == null) ? null : new Date(date.getTime());
 	}
 }

@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.TimeZone;
 
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -48,6 +49,7 @@ import biweekly.property.RecurrenceDates;
 import biweekly.property.RecurrenceId;
 import biweekly.property.Summary;
 import biweekly.util.DateTimeComponents;
+import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
 import biweekly.util.Period;
@@ -92,6 +94,13 @@ import biweekly.util.UtcOffset;
  */
 @SuppressWarnings("resource")
 public class JCalReaderTest {
+	/**
+	 * Set the timezone to something other than US/Eastern, since some examples
+	 * use this timezone.
+	 */
+	@ClassRule
+	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
+
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 

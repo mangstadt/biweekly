@@ -29,6 +29,7 @@ import javax.xml.transform.TransformerException;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -64,6 +65,7 @@ import biweekly.property.RecurrenceId;
 import biweekly.property.Summary;
 import biweekly.property.Xml;
 import biweekly.util.DateTimeComponents;
+import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
 import biweekly.util.Period;
@@ -103,6 +105,13 @@ import biweekly.util.XmlUtils;
  * @author Michael Angstadt
  */
 public class XCalReaderTest {
+	/**
+	 * Set the timezone to something other than US/Eastern, since some examples
+	 * use this timezone.
+	 */
+	@ClassRule
+	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
+
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 
