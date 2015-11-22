@@ -1,0 +1,283 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../../syntaxhighlighter.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Licensed to the Apache Software Foundation (ASF) under one or more<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * contributor license agreements.  See the NOTICE file distributed with<a name="line.3"></a>
+<span class="sourceLineNo">004</span> * this work for additional information regarding copyright ownership.<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * The ASF licenses this file to You under the Apache License, Version 2.0<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * (the "License"); you may not use this file except in compliance with<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * the License.  You may obtain a copy of the License at<a name="line.7"></a>
+<span class="sourceLineNo">008</span> * <a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      http://www.apache.org/licenses/LICENSE-2.0<a name="line.9"></a>
+<span class="sourceLineNo">010</span> * <a name="line.10"></a>
+<span class="sourceLineNo">011</span> * Unless required by applicable law or agreed to in writing, software<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * See the License for the specific language governing permissions and<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * limitations under the License.<a name="line.15"></a>
+<span class="sourceLineNo">016</span> */<a name="line.16"></a>
+<span class="sourceLineNo">017</span><a name="line.17"></a>
+<span class="sourceLineNo">018</span>package biweekly.util.org.apache.commons.codec.net;<a name="line.18"></a>
+<span class="sourceLineNo">019</span><a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.io.UnsupportedEncodingException;<a name="line.20"></a>
+<span class="sourceLineNo">021</span><a name="line.21"></a>
+<span class="sourceLineNo">022</span>import biweekly.util.org.apache.commons.codec.CharEncoding;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import biweekly.util.org.apache.commons.codec.DecoderException;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import biweekly.util.org.apache.commons.codec.EncoderException;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import biweekly.util.org.apache.commons.codec.StringDecoder;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import biweekly.util.org.apache.commons.codec.StringEncoder;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import biweekly.util.org.apache.commons.codec.binary.Base64;<a name="line.27"></a>
+<span class="sourceLineNo">028</span><a name="line.28"></a>
+<span class="sourceLineNo">029</span>/**<a name="line.29"></a>
+<span class="sourceLineNo">030</span> * &lt;p&gt;<a name="line.30"></a>
+<span class="sourceLineNo">031</span> * Identical to the Base64 encoding defined by &lt;a href="http://www.ietf.org/rfc/rfc1521.txt"&gt;RFC<a name="line.31"></a>
+<span class="sourceLineNo">032</span> * 1521&lt;/a&gt; and allows a character set to be specified.<a name="line.32"></a>
+<span class="sourceLineNo">033</span> * &lt;/p&gt;<a name="line.33"></a>
+<span class="sourceLineNo">034</span> * <a name="line.34"></a>
+<span class="sourceLineNo">035</span> * &lt;p&gt;<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * &lt;a href="http://www.ietf.org/rfc/rfc1522.txt"&gt;RFC 1522&lt;/a&gt; describes techniques to allow the encoding of non-ASCII<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * text in various portions of a RFC 822 [2] message header, in a manner which is unlikely to confuse existing message<a name="line.37"></a>
+<span class="sourceLineNo">038</span> * handling software.<a name="line.38"></a>
+<span class="sourceLineNo">039</span> * &lt;/p&gt;<a name="line.39"></a>
+<span class="sourceLineNo">040</span> * <a name="line.40"></a>
+<span class="sourceLineNo">041</span> * @see &lt;a href="http://www.ietf.org/rfc/rfc1522.txt"&gt;MIME (Multipurpose Internet Mail Extensions) Part Two: Message<a name="line.41"></a>
+<span class="sourceLineNo">042</span> *          Header Extensions for Non-ASCII Text&lt;/a&gt;<a name="line.42"></a>
+<span class="sourceLineNo">043</span> * <a name="line.43"></a>
+<span class="sourceLineNo">044</span> * @author Apache Software Foundation<a name="line.44"></a>
+<span class="sourceLineNo">045</span> * @since 1.3<a name="line.45"></a>
+<span class="sourceLineNo">046</span> * @version $Id: BCodec.java 1157192 2011-08-12 17:27:38Z ggregory $<a name="line.46"></a>
+<span class="sourceLineNo">047</span> */<a name="line.47"></a>
+<span class="sourceLineNo">048</span>public class BCodec extends RFC1522Codec implements StringEncoder, StringDecoder {<a name="line.48"></a>
+<span class="sourceLineNo">049</span>    /**<a name="line.49"></a>
+<span class="sourceLineNo">050</span>     * The default charset used for string decoding and encoding.<a name="line.50"></a>
+<span class="sourceLineNo">051</span>     */<a name="line.51"></a>
+<span class="sourceLineNo">052</span>    private final String charset;<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>    /**<a name="line.54"></a>
+<span class="sourceLineNo">055</span>     * Default constructor.<a name="line.55"></a>
+<span class="sourceLineNo">056</span>     */<a name="line.56"></a>
+<span class="sourceLineNo">057</span>    public BCodec() {<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        this(CharEncoding.UTF_8);<a name="line.58"></a>
+<span class="sourceLineNo">059</span>    }<a name="line.59"></a>
+<span class="sourceLineNo">060</span><a name="line.60"></a>
+<span class="sourceLineNo">061</span>    /**<a name="line.61"></a>
+<span class="sourceLineNo">062</span>     * Constructor which allows for the selection of a default charset<a name="line.62"></a>
+<span class="sourceLineNo">063</span>     * <a name="line.63"></a>
+<span class="sourceLineNo">064</span>     * @param charset<a name="line.64"></a>
+<span class="sourceLineNo">065</span>     *                  the default string charset to use.<a name="line.65"></a>
+<span class="sourceLineNo">066</span>     * <a name="line.66"></a>
+<span class="sourceLineNo">067</span>     * @see &lt;a href="http://download.oracle.com/javase/1.5.0/docs/api/java/nio/charset/Charset.html"&gt;Standard charsets&lt;/a&gt;<a name="line.67"></a>
+<span class="sourceLineNo">068</span>     */<a name="line.68"></a>
+<span class="sourceLineNo">069</span>    public BCodec(final String charset) {<a name="line.69"></a>
+<span class="sourceLineNo">070</span>        super();<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        this.charset = charset;<a name="line.71"></a>
+<span class="sourceLineNo">072</span>    }<a name="line.72"></a>
+<span class="sourceLineNo">073</span><a name="line.73"></a>
+<span class="sourceLineNo">074</span>    @Override<a name="line.74"></a>
+<span class="sourceLineNo">075</span>    protected String getEncoding() {<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        return "B";<a name="line.76"></a>
+<span class="sourceLineNo">077</span>    }<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>    @Override<a name="line.79"></a>
+<span class="sourceLineNo">080</span>    protected byte[] doEncoding(byte[] bytes) {<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        if (bytes == null) {<a name="line.81"></a>
+<span class="sourceLineNo">082</span>            return null;<a name="line.82"></a>
+<span class="sourceLineNo">083</span>        }<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        return Base64.encodeBase64(bytes);<a name="line.84"></a>
+<span class="sourceLineNo">085</span>    }<a name="line.85"></a>
+<span class="sourceLineNo">086</span><a name="line.86"></a>
+<span class="sourceLineNo">087</span>    @Override<a name="line.87"></a>
+<span class="sourceLineNo">088</span>    protected byte[] doDecoding(byte[] bytes) {<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        if (bytes == null) {<a name="line.89"></a>
+<span class="sourceLineNo">090</span>            return null;<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        }<a name="line.91"></a>
+<span class="sourceLineNo">092</span>        return Base64.decodeBase64(bytes);<a name="line.92"></a>
+<span class="sourceLineNo">093</span>    }<a name="line.93"></a>
+<span class="sourceLineNo">094</span><a name="line.94"></a>
+<span class="sourceLineNo">095</span>    /**<a name="line.95"></a>
+<span class="sourceLineNo">096</span>     * Encodes a string into its Base64 form using the specified charset. Unsafe characters are escaped.<a name="line.96"></a>
+<span class="sourceLineNo">097</span>     * <a name="line.97"></a>
+<span class="sourceLineNo">098</span>     * @param value<a name="line.98"></a>
+<span class="sourceLineNo">099</span>     *                  string to convert to Base64 form<a name="line.99"></a>
+<span class="sourceLineNo">100</span>     * @param charset<a name="line.100"></a>
+<span class="sourceLineNo">101</span>     *                  the charset for &lt;code&gt;value&lt;/code&gt;<a name="line.101"></a>
+<span class="sourceLineNo">102</span>     * @return Base64 string<a name="line.102"></a>
+<span class="sourceLineNo">103</span>     * <a name="line.103"></a>
+<span class="sourceLineNo">104</span>     * @throws EncoderException<a name="line.104"></a>
+<span class="sourceLineNo">105</span>     *                  thrown if a failure condition is encountered during the encoding process.<a name="line.105"></a>
+<span class="sourceLineNo">106</span>     */<a name="line.106"></a>
+<span class="sourceLineNo">107</span>    public String encode(final String value, final String charset) throws EncoderException {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>        if (value == null) {<a name="line.108"></a>
+<span class="sourceLineNo">109</span>            return null;<a name="line.109"></a>
+<span class="sourceLineNo">110</span>        }<a name="line.110"></a>
+<span class="sourceLineNo">111</span>        try {<a name="line.111"></a>
+<span class="sourceLineNo">112</span>            return encodeText(value, charset);<a name="line.112"></a>
+<span class="sourceLineNo">113</span>        } catch (UnsupportedEncodingException e) {<a name="line.113"></a>
+<span class="sourceLineNo">114</span>            throw new EncoderException(e.getMessage(), e);<a name="line.114"></a>
+<span class="sourceLineNo">115</span>        }<a name="line.115"></a>
+<span class="sourceLineNo">116</span>    }<a name="line.116"></a>
+<span class="sourceLineNo">117</span><a name="line.117"></a>
+<span class="sourceLineNo">118</span>    /**<a name="line.118"></a>
+<span class="sourceLineNo">119</span>     * Encodes a string into its Base64 form using the default charset. Unsafe characters are escaped.<a name="line.119"></a>
+<span class="sourceLineNo">120</span>     * <a name="line.120"></a>
+<span class="sourceLineNo">121</span>     * @param value<a name="line.121"></a>
+<span class="sourceLineNo">122</span>     *                  string to convert to Base64 form<a name="line.122"></a>
+<span class="sourceLineNo">123</span>     * @return Base64 string<a name="line.123"></a>
+<span class="sourceLineNo">124</span>     * <a name="line.124"></a>
+<span class="sourceLineNo">125</span>     * @throws EncoderException<a name="line.125"></a>
+<span class="sourceLineNo">126</span>     *                  thrown if a failure condition is encountered during the encoding process.<a name="line.126"></a>
+<span class="sourceLineNo">127</span>     */<a name="line.127"></a>
+<span class="sourceLineNo">128</span>    public String encode(String value) throws EncoderException {<a name="line.128"></a>
+<span class="sourceLineNo">129</span>        if (value == null) {<a name="line.129"></a>
+<span class="sourceLineNo">130</span>            return null;<a name="line.130"></a>
+<span class="sourceLineNo">131</span>        }<a name="line.131"></a>
+<span class="sourceLineNo">132</span>        return encode(value, getDefaultCharset());<a name="line.132"></a>
+<span class="sourceLineNo">133</span>    }<a name="line.133"></a>
+<span class="sourceLineNo">134</span><a name="line.134"></a>
+<span class="sourceLineNo">135</span>    /**<a name="line.135"></a>
+<span class="sourceLineNo">136</span>     * Decodes a Base64 string into its original form. Escaped characters are converted back to their original<a name="line.136"></a>
+<span class="sourceLineNo">137</span>     * representation.<a name="line.137"></a>
+<span class="sourceLineNo">138</span>     * <a name="line.138"></a>
+<span class="sourceLineNo">139</span>     * @param value<a name="line.139"></a>
+<span class="sourceLineNo">140</span>     *            Base64 string to convert into its original form<a name="line.140"></a>
+<span class="sourceLineNo">141</span>     * @return original string<a name="line.141"></a>
+<span class="sourceLineNo">142</span>     * @throws DecoderException<a name="line.142"></a>
+<span class="sourceLineNo">143</span>     *             A decoder exception is thrown if a failure condition is encountered during the decode process.<a name="line.143"></a>
+<span class="sourceLineNo">144</span>     */<a name="line.144"></a>
+<span class="sourceLineNo">145</span>    public String decode(String value) throws DecoderException {<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        if (value == null) {<a name="line.146"></a>
+<span class="sourceLineNo">147</span>            return null;<a name="line.147"></a>
+<span class="sourceLineNo">148</span>        }<a name="line.148"></a>
+<span class="sourceLineNo">149</span>        try {<a name="line.149"></a>
+<span class="sourceLineNo">150</span>            return decodeText(value);<a name="line.150"></a>
+<span class="sourceLineNo">151</span>        } catch (UnsupportedEncodingException e) {<a name="line.151"></a>
+<span class="sourceLineNo">152</span>            throw new DecoderException(e.getMessage(), e);<a name="line.152"></a>
+<span class="sourceLineNo">153</span>        }<a name="line.153"></a>
+<span class="sourceLineNo">154</span>    }<a name="line.154"></a>
+<span class="sourceLineNo">155</span><a name="line.155"></a>
+<span class="sourceLineNo">156</span>    /**<a name="line.156"></a>
+<span class="sourceLineNo">157</span>     * Encodes an object into its Base64 form using the default charset. Unsafe characters are escaped.<a name="line.157"></a>
+<span class="sourceLineNo">158</span>     * <a name="line.158"></a>
+<span class="sourceLineNo">159</span>     * @param value<a name="line.159"></a>
+<span class="sourceLineNo">160</span>     *                  object to convert to Base64 form<a name="line.160"></a>
+<span class="sourceLineNo">161</span>     * @return Base64 object<a name="line.161"></a>
+<span class="sourceLineNo">162</span>     * <a name="line.162"></a>
+<span class="sourceLineNo">163</span>     * @throws EncoderException<a name="line.163"></a>
+<span class="sourceLineNo">164</span>     *                  thrown if a failure condition is encountered during the encoding process.<a name="line.164"></a>
+<span class="sourceLineNo">165</span>     */<a name="line.165"></a>
+<span class="sourceLineNo">166</span>    public Object encode(Object value) throws EncoderException {<a name="line.166"></a>
+<span class="sourceLineNo">167</span>        if (value == null) {<a name="line.167"></a>
+<span class="sourceLineNo">168</span>            return null;<a name="line.168"></a>
+<span class="sourceLineNo">169</span>        } else if (value instanceof String) {<a name="line.169"></a>
+<span class="sourceLineNo">170</span>            return encode((String) value);<a name="line.170"></a>
+<span class="sourceLineNo">171</span>        } else {<a name="line.171"></a>
+<span class="sourceLineNo">172</span>            throw new EncoderException("Objects of type " +<a name="line.172"></a>
+<span class="sourceLineNo">173</span>                  value.getClass().getName() +<a name="line.173"></a>
+<span class="sourceLineNo">174</span>                  " cannot be encoded using BCodec");<a name="line.174"></a>
+<span class="sourceLineNo">175</span>        }<a name="line.175"></a>
+<span class="sourceLineNo">176</span>    }<a name="line.176"></a>
+<span class="sourceLineNo">177</span><a name="line.177"></a>
+<span class="sourceLineNo">178</span>    /**<a name="line.178"></a>
+<span class="sourceLineNo">179</span>     * Decodes a Base64 object into its original form. Escaped characters are converted back to their original<a name="line.179"></a>
+<span class="sourceLineNo">180</span>     * representation.<a name="line.180"></a>
+<span class="sourceLineNo">181</span>     * <a name="line.181"></a>
+<span class="sourceLineNo">182</span>     * @param value<a name="line.182"></a>
+<span class="sourceLineNo">183</span>     *                  Base64 object to convert into its original form<a name="line.183"></a>
+<span class="sourceLineNo">184</span>     * <a name="line.184"></a>
+<span class="sourceLineNo">185</span>     * @return original object<a name="line.185"></a>
+<span class="sourceLineNo">186</span>     * <a name="line.186"></a>
+<span class="sourceLineNo">187</span>     * @throws DecoderException<a name="line.187"></a>
+<span class="sourceLineNo">188</span>     *                  Thrown if the argument is not a &lt;code&gt;String&lt;/code&gt;. Thrown if a failure condition is<a name="line.188"></a>
+<span class="sourceLineNo">189</span>     *                  encountered during the decode process.<a name="line.189"></a>
+<span class="sourceLineNo">190</span>     */<a name="line.190"></a>
+<span class="sourceLineNo">191</span>    public Object decode(Object value) throws DecoderException {<a name="line.191"></a>
+<span class="sourceLineNo">192</span>        if (value == null) {<a name="line.192"></a>
+<span class="sourceLineNo">193</span>            return null;<a name="line.193"></a>
+<span class="sourceLineNo">194</span>        } else if (value instanceof String) {<a name="line.194"></a>
+<span class="sourceLineNo">195</span>            return decode((String) value);<a name="line.195"></a>
+<span class="sourceLineNo">196</span>        } else {<a name="line.196"></a>
+<span class="sourceLineNo">197</span>            throw new DecoderException("Objects of type " +<a name="line.197"></a>
+<span class="sourceLineNo">198</span>                  value.getClass().getName() +<a name="line.198"></a>
+<span class="sourceLineNo">199</span>                  " cannot be decoded using BCodec");<a name="line.199"></a>
+<span class="sourceLineNo">200</span>        }<a name="line.200"></a>
+<span class="sourceLineNo">201</span>    }<a name="line.201"></a>
+<span class="sourceLineNo">202</span><a name="line.202"></a>
+<span class="sourceLineNo">203</span>    /**<a name="line.203"></a>
+<span class="sourceLineNo">204</span>     * The default charset used for string decoding and encoding.<a name="line.204"></a>
+<span class="sourceLineNo">205</span>     * <a name="line.205"></a>
+<span class="sourceLineNo">206</span>     * @return the default string charset.<a name="line.206"></a>
+<span class="sourceLineNo">207</span>     */<a name="line.207"></a>
+<span class="sourceLineNo">208</span>    public String getDefaultCharset() {<a name="line.208"></a>
+<span class="sourceLineNo">209</span>        return this.charset;<a name="line.209"></a>
+<span class="sourceLineNo">210</span>    }<a name="line.210"></a>
+<span class="sourceLineNo">211</span>}<a name="line.211"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

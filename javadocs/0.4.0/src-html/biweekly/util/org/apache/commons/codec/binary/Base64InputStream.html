@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../../syntaxhighlighter.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>/*<a name="line.1"></a>
+<span class="sourceLineNo">002</span> * Licensed to the Apache Software Foundation (ASF) under one or more<a name="line.2"></a>
+<span class="sourceLineNo">003</span> * contributor license agreements.  See the NOTICE file distributed with<a name="line.3"></a>
+<span class="sourceLineNo">004</span> * this work for additional information regarding copyright ownership.<a name="line.4"></a>
+<span class="sourceLineNo">005</span> * The ASF licenses this file to You under the Apache License, Version 2.0<a name="line.5"></a>
+<span class="sourceLineNo">006</span> * (the "License"); you may not use this file except in compliance with<a name="line.6"></a>
+<span class="sourceLineNo">007</span> * the License.  You may obtain a copy of the License at<a name="line.7"></a>
+<span class="sourceLineNo">008</span> * <a name="line.8"></a>
+<span class="sourceLineNo">009</span> *      http://www.apache.org/licenses/LICENSE-2.0<a name="line.9"></a>
+<span class="sourceLineNo">010</span> * <a name="line.10"></a>
+<span class="sourceLineNo">011</span> * Unless required by applicable law or agreed to in writing, software<a name="line.11"></a>
+<span class="sourceLineNo">012</span> * distributed under the License is distributed on an "AS IS" BASIS,<a name="line.12"></a>
+<span class="sourceLineNo">013</span> * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.13"></a>
+<span class="sourceLineNo">014</span> * See the License for the specific language governing permissions and<a name="line.14"></a>
+<span class="sourceLineNo">015</span> * limitations under the License.<a name="line.15"></a>
+<span class="sourceLineNo">016</span> */<a name="line.16"></a>
+<span class="sourceLineNo">017</span><a name="line.17"></a>
+<span class="sourceLineNo">018</span>package biweekly.util.org.apache.commons.codec.binary;<a name="line.18"></a>
+<span class="sourceLineNo">019</span><a name="line.19"></a>
+<span class="sourceLineNo">020</span>import java.io.InputStream;<a name="line.20"></a>
+<span class="sourceLineNo">021</span><a name="line.21"></a>
+<span class="sourceLineNo">022</span>/**<a name="line.22"></a>
+<span class="sourceLineNo">023</span> * Provides Base64 encoding and decoding in a streaming fashion (unlimited size). When encoding the default lineLength<a name="line.23"></a>
+<span class="sourceLineNo">024</span> * is 76 characters and the default lineEnding is CRLF, but these can be overridden by using the appropriate<a name="line.24"></a>
+<span class="sourceLineNo">025</span> * constructor.<a name="line.25"></a>
+<span class="sourceLineNo">026</span> * &lt;p&gt;<a name="line.26"></a>
+<span class="sourceLineNo">027</span> * The default behaviour of the Base64InputStream is to DECODE, whereas the default behaviour of the Base64OutputStream<a name="line.27"></a>
+<span class="sourceLineNo">028</span> * is to ENCODE, but this behaviour can be overridden by using a different constructor.<a name="line.28"></a>
+<span class="sourceLineNo">029</span> * &lt;/p&gt;<a name="line.29"></a>
+<span class="sourceLineNo">030</span> * &lt;p&gt;<a name="line.30"></a>
+<span class="sourceLineNo">031</span> * This class implements section &lt;cite&gt;6.8. Base64 Content-Transfer-Encoding&lt;/cite&gt; from RFC 2045 &lt;cite&gt;Multipurpose<a name="line.31"></a>
+<span class="sourceLineNo">032</span> * Internet Mail Extensions (MIME) Part One: Format of Internet Message Bodies&lt;/cite&gt; by Freed and Borenstein.<a name="line.32"></a>
+<span class="sourceLineNo">033</span> * &lt;/p&gt;<a name="line.33"></a>
+<span class="sourceLineNo">034</span> * &lt;p&gt;<a name="line.34"></a>
+<span class="sourceLineNo">035</span> * Since this class operates directly on byte streams, and not character streams, it is hard-coded to only encode/decode<a name="line.35"></a>
+<span class="sourceLineNo">036</span> * character encodings which are compatible with the lower 127 ASCII chart (ISO-8859-1, Windows-1252, UTF-8, etc).<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * &lt;/p&gt;<a name="line.37"></a>
+<span class="sourceLineNo">038</span> * <a name="line.38"></a>
+<span class="sourceLineNo">039</span> * @author Apache Software Foundation <a name="line.39"></a>
+<span class="sourceLineNo">040</span> * @version $Id: Base64InputStream.java 1157192 2011-08-12 17:27:38Z ggregory $<a name="line.40"></a>
+<span class="sourceLineNo">041</span> * @see &lt;a href="http://www.ietf.org/rfc/rfc2045.txt"&gt;RFC 2045&lt;/a&gt;<a name="line.41"></a>
+<span class="sourceLineNo">042</span> * @since 1.4<a name="line.42"></a>
+<span class="sourceLineNo">043</span> */<a name="line.43"></a>
+<span class="sourceLineNo">044</span>public class Base64InputStream extends BaseNCodecInputStream {<a name="line.44"></a>
+<span class="sourceLineNo">045</span><a name="line.45"></a>
+<span class="sourceLineNo">046</span>    /**<a name="line.46"></a>
+<span class="sourceLineNo">047</span>     * Creates a Base64InputStream such that all data read is Base64-decoded from the original provided InputStream.<a name="line.47"></a>
+<span class="sourceLineNo">048</span>     * <a name="line.48"></a>
+<span class="sourceLineNo">049</span>     * @param in<a name="line.49"></a>
+<span class="sourceLineNo">050</span>     *            InputStream to wrap.<a name="line.50"></a>
+<span class="sourceLineNo">051</span>     */<a name="line.51"></a>
+<span class="sourceLineNo">052</span>    public Base64InputStream(InputStream in) {<a name="line.52"></a>
+<span class="sourceLineNo">053</span>        this(in, false);<a name="line.53"></a>
+<span class="sourceLineNo">054</span>    }<a name="line.54"></a>
+<span class="sourceLineNo">055</span><a name="line.55"></a>
+<span class="sourceLineNo">056</span>    /**<a name="line.56"></a>
+<span class="sourceLineNo">057</span>     * Creates a Base64InputStream such that all data read is either Base64-encoded or Base64-decoded from the original<a name="line.57"></a>
+<span class="sourceLineNo">058</span>     * provided InputStream.<a name="line.58"></a>
+<span class="sourceLineNo">059</span>     * <a name="line.59"></a>
+<span class="sourceLineNo">060</span>     * @param in<a name="line.60"></a>
+<span class="sourceLineNo">061</span>     *            InputStream to wrap.<a name="line.61"></a>
+<span class="sourceLineNo">062</span>     * @param doEncode<a name="line.62"></a>
+<span class="sourceLineNo">063</span>     *            true if we should encode all data read from us, false if we should decode.<a name="line.63"></a>
+<span class="sourceLineNo">064</span>     */<a name="line.64"></a>
+<span class="sourceLineNo">065</span>    public Base64InputStream(InputStream in, boolean doEncode) {<a name="line.65"></a>
+<span class="sourceLineNo">066</span>        super(in, new Base64(false), doEncode);<a name="line.66"></a>
+<span class="sourceLineNo">067</span>    }<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>    /**<a name="line.69"></a>
+<span class="sourceLineNo">070</span>     * Creates a Base64InputStream such that all data read is either Base64-encoded or Base64-decoded from the original<a name="line.70"></a>
+<span class="sourceLineNo">071</span>     * provided InputStream.<a name="line.71"></a>
+<span class="sourceLineNo">072</span>     * <a name="line.72"></a>
+<span class="sourceLineNo">073</span>     * @param in<a name="line.73"></a>
+<span class="sourceLineNo">074</span>     *            InputStream to wrap.<a name="line.74"></a>
+<span class="sourceLineNo">075</span>     * @param doEncode<a name="line.75"></a>
+<span class="sourceLineNo">076</span>     *            true if we should encode all data read from us, false if we should decode.<a name="line.76"></a>
+<span class="sourceLineNo">077</span>     * @param lineLength<a name="line.77"></a>
+<span class="sourceLineNo">078</span>     *            If doEncode is true, each line of encoded data will contain lineLength characters (rounded down to<a name="line.78"></a>
+<span class="sourceLineNo">079</span>     *            nearest multiple of 4). If lineLength &lt;=0, the encoded data is not divided into lines. If doEncode is<a name="line.79"></a>
+<span class="sourceLineNo">080</span>     *            false, lineLength is ignored.<a name="line.80"></a>
+<span class="sourceLineNo">081</span>     * @param lineSeparator<a name="line.81"></a>
+<span class="sourceLineNo">082</span>     *            If doEncode is true, each line of encoded data will be terminated with this byte sequence (e.g. \r\n).<a name="line.82"></a>
+<span class="sourceLineNo">083</span>     *            If lineLength &lt;= 0, the lineSeparator is not used. If doEncode is false lineSeparator is ignored.<a name="line.83"></a>
+<span class="sourceLineNo">084</span>     */<a name="line.84"></a>
+<span class="sourceLineNo">085</span>    public Base64InputStream(InputStream in, boolean doEncode, int lineLength, byte[] lineSeparator) {<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        super(in, new Base64(lineLength, lineSeparator), doEncode);<a name="line.86"></a>
+<span class="sourceLineNo">087</span>    }<a name="line.87"></a>
+<span class="sourceLineNo">088</span>}<a name="line.88"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>
