@@ -36,14 +36,14 @@
 	</developers>
 
 	<issueManagement>
-		<system>Sourceforge Issue Tracker</system>
-		<url>https://sourceforge.net/p/biweekly/tickets</url>
+		<system>Github Issue Tracker</system>
+		<url>https://github.com/mangstadt/biweekly/issues</url>
 	</issueManagement>
 
 	<scm>
-		<connection>scm:git:git://git.code.sf.net/p/biweekly/code_git</connection>
-		<developerConnection>scm:git:ssh://git.code.sf.net/p/biweekly/code_git</developerConnection>
-		<url>https://sourceforge.net/p/biweekly/code_git/ci/master/tree/</url>
+		<connection>scm:git:https://github.com/mangstadt/biweekly.git</connection>
+		<developerConnection>scm:git:https://github.com/mangstadt/biweekly.git</developerConnection>
+		<url>https://github.com/mangstadt/biweekly/commits/master</url>
 	</scm>
 	
 	<properties>
@@ -258,6 +258,29 @@
 						<param>biweekly.*</param>
 					</targetTests>
 				</configuration>
+			</plugin>
+			
+			<!-- 
+			For codecov.io.
+			-->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.5.201505241946</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
