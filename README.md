@@ -11,7 +11,7 @@
 biweekly is an iCalendar library written in Java. The project aims to provide a well documented, easy to use API for reading and writing iCalendar data.
 
 <p align="center"><strong><a href="https://github.com/mangstadt/biweekly/wiki/Downloads">Downloads</a> |
-<a href="http://biweekly.sourceforge.net/javadocs/0.4.4/">Javadocs</a> |
+<a href="http://mangstadt.github.io/biweekly/javadocs/latest/index.html">Javadocs</a> |
 <a href="#maven">Maven</a> | <a href="https://github.com/mangstadt/biweekly/wiki">Documentation</a></strong></p>
 
 # Code sample
