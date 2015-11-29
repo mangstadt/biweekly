@@ -61,10 +61,12 @@ public class ICalRawWriter implements Closeable, Flushable {
 	private static final Pattern newlineRegex = Pattern.compile("\\r\\n|\\r|\\n");
 
 	/**
-	 * Regular expression used to determine if a property name contains any
-	 * invalid characters.
+	 * List of characters which would break the syntax of the iCalendar object
+	 * if used inside a property name. The list of characters permitted by the
+	 * specification is much more strict, but the goal here is to be as lenient
+	 * as possible.
 	 */
-	private static final Pattern propertyNameRegex = Pattern.compile("(?i)[-a-z0-9]+");
+	private static final String invalidPropertyNameCharacters = ";:\n\r";
 
 	/**
 	 * The characters that are not valid in parameter values and that should be
@@ -304,8 +306,11 @@ public class ICalRawWriter implements Closeable, Flushable {
 	 */
 	public void writeProperty(String propertyName, ICalParameters parameters, String value) throws IOException {
 		//validate the property name
-		if (!propertyNameRegex.matcher(propertyName).matches()) {
-			throw new IllegalArgumentException("Property name invalid.  Property names can only contain letters, numbers, and hyphens.");
+		if (!isValidPropertyName(propertyName)) {
+			throw new IllegalArgumentException("Property name \"" + propertyName + "\" contains one or more invalid characters.  The following characters are not permitted: ;:\\n\\r");
+		}
+		if (beginsWithWhitespace(propertyName)) {
+			throw new IllegalArgumentException("Property name \"" + propertyName + "\" begins with one or more whitespace characters, which is not permitted.");
 		}
 
 		value = sanitizeValue(parameters, value);
@@ -376,6 +381,24 @@ public class ICalRawWriter implements Closeable, Flushable {
 		//write the property value
 		writer.append(value, useQuotedPrintable, quotedPrintableCharset);
 		writer.append(writer.getNewline());
+	}
+
+	private boolean isValidPropertyName(String name) {
+		for (int i = 0; i < invalidPropertyNameCharacters.length(); i++) {
+			char c = invalidPropertyNameCharacters.charAt(i);
+			if (name.indexOf(c) >= 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean beginsWithWhitespace(String string) {
+		if (string.length() == 0) {
+			return false;
+		}
+		char first = string.charAt(0);
+		return (first == ' ' || first == '\t');
 	}
 
 	/**

@@ -1214,7 +1214,7 @@ public class ICalWriterTest {
 
 	private class BadNameMarshaller extends ICalPropertyScribe<TestProperty> {
 		public BadNameMarshaller() {
-			super(TestProperty.class, "BAD*NAME", null);
+			super(TestProperty.class, "BAD:NAME", null);
 		}
 
 		@Override

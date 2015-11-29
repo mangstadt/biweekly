@@ -74,8 +74,13 @@ public class ICalRawWriterTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void invalid_property_name() throws Exception {
-		writer.writeProperty("INVALID*PROP", "value");
+	public void invalid_property_name_characters() throws Exception {
+		writer.writeProperty("INVALID:PROP", "value");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void invalid_property_name_whitespace() throws Exception {
+		writer.writeProperty(" INVALIDPROP", "value");
 	}
 
 	@Test

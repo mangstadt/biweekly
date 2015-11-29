@@ -1,12 +1,8 @@
 package biweekly.property;
 
-import java.util.List;
-import java.util.regex.Pattern;
+import static biweekly.util.TestUtils.assertValidate;
 
-import biweekly.ICalDataType;
-import biweekly.ICalVersion;
-import biweekly.Warning;
-import biweekly.component.ICalComponent;
+import org.junit.Test;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -34,41 +30,15 @@ import biweekly.component.ICalComponent;
  */
 
 /**
- * Represents a property that does not have a scribe associated with it.
  * @author Michael Angstadt
  */
-public class RawProperty extends ICalProperty {
-	private String name;
-	private ICalDataType dataType;
-	private String value;
+public class RawPropertyTest {
+	@Test
+	public void validate() {
+		RawProperty property = new RawProperty("foo:bar", "value");
+		assertValidate(property).run(52);
 
-	public RawProperty(String name, String value) {
-		this(name, null, value);
-	}
-
-	public RawProperty(String name, ICalDataType dataType, String value) {
-		this.name = name;
-		this.dataType = dataType;
-		this.value = value;
-	}
-
-	public String getValue() {
-		return value;
-	}
-
-	public ICalDataType getDataType() {
-		return dataType;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
-		Pattern validCharacters = Pattern.compile("(?i)[-a-z0-9]+");
-		if (!validCharacters.matcher(name).matches()) {
-			warnings.add(Warning.validate(52, name));
-		}
+		property = new RawProperty("foobar", "value");
+		assertValidate(property).run();
 	}
 }
