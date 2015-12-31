@@ -236,7 +236,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 				parameters.remove(ICalParameters.CN, name);
 			}
 
-			p = Pattern.compile("^mailto:(.*?)$");
+			p = Pattern.compile("(?i)^mailto:(.*?)$");
 			m = p.matcher(value);
 			if (m.find()) {
 				email = m.group(1);

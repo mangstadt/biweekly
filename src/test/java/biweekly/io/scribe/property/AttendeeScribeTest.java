@@ -1,5 +1,8 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -7,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import static biweekly.ICalVersion.*;
 import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.ParticipationLevel;
@@ -66,9 +68,8 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 
 	@Test
 	public void prepareParameters_cn() {
-		Attendee property = new Attendee(name, email);
-		sensei.assertPrepareParams(property).versions(V1_0).run();
-		sensei.assertPrepareParams(property).versions(V2_0_DEPRECATED, V2_0).expected("CN", name).run();
+		sensei.assertPrepareParams(withNameEmail).versions(V1_0).run();
+		sensei.assertPrepareParams(withNameEmail).versions(V2_0_DEPRECATED, V2_0).expected("CN", name).run();
 	}
 
 	@Test
@@ -97,7 +98,6 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		Attendee property = new Attendee(uri);
 		property.setParticipationLevel(ParticipationLevel.OPTIONAL);
 		property.setRole(Role.CHAIR);
-
 		sensei.assertPrepareParams(property).versions(V1_0).expected("EXPECT", "REQUEST").expected("ROLE", "CHAIR").run();
 		sensei.assertPrepareParams(property).versions(V2_0_DEPRECATED, V2_0).expected("ROLE", "CHAIR").run();
 	}
@@ -157,6 +157,8 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 
 		sensei.assertParseText("mailto:" + email).versions(V1_0).run(check(null, "mailto:" + email, null));
 		sensei.assertParseText("mailto:" + email).param("CN", name).versions(V2_0_DEPRECATED, V2_0).run(check(name, email, null));
+		sensei.assertParseText("MAILTO:" + email).versions(V1_0).run(check(null, "MAILTO:" + email, null));
+		sensei.assertParseText("MAILTO:" + email).param("CN", name).versions(V2_0_DEPRECATED, V2_0).run(check(name, email, null));
 	}
 
 	private Check<Attendee> check(final String name, final String email, final String uri) {

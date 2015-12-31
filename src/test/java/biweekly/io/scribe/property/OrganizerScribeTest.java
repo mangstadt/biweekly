@@ -71,6 +71,8 @@ public class OrganizerScribeTest extends ScribeTest<Organizer> {
 	public void parseText() {
 		sensei.assertParseText("mailto:" + email).run(check(null, email, null));
 		sensei.assertParseText("mailto:" + email).param("CN", name).run(check(name, email, null));
+		sensei.assertParseText("MAILTO:" + email).run(check(null, email, null));
+		sensei.assertParseText("MAILTO:" + email).param("CN", name).run(check(name, email, null));
 		sensei.assertParseText(uri).run(check(null, null, uri));
 	}
 

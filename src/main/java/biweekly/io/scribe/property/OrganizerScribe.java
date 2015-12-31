@@ -67,7 +67,7 @@ public class OrganizerScribe extends ICalPropertyScribe<Organizer> {
 		}
 
 		String uri = null, email = null;
-		Pattern p = Pattern.compile("^mailto:(.*?)$");
+		Pattern p = Pattern.compile("^(?i)mailto:(.*?)$");
 		Matcher m = p.matcher(value);
 		if (m.find()) {
 			email = m.group(1);
