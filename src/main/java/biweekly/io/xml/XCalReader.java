@@ -441,8 +441,7 @@ public class XCalReader extends StreamReader {
 					} catch (SkipMeException e) {
 						warnings.add(null, propertyName, 22, e.getMessage());
 					} catch (CannotParseException e) {
-						String xml = XmlUtils.toString(propertyElement);
-						warnings.add(null, propertyName, 33, xml, e.getMessage());
+						warnings.add(null, propertyName, 16, e.getMessage());
 
 						scribe = index.getPropertyScribe(Xml.class);
 						ICalProperty property = scribe.parseXml(propertyElement, parameters, context);
