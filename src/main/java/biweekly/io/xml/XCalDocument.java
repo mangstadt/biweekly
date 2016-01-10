@@ -317,8 +317,8 @@ public class XCalDocument {
 
 	/**
 	 * Writes the xCal document to a string.
-	 * @param outputProperties properties to assign to the JAXP
-	 * transformer (see {@link Transformer#setOutputProperty})
+	 * @param outputProperties properties to assign to the JAXP transformer (see
+	 * {@link Transformer#setOutputProperty})
 	 * @return the XML string
 	 */
 	public String write(Map<String, String> outputProperties) {
@@ -374,8 +374,8 @@ public class XCalDocument {
 	/**
 	 * Writes the xCal document to an output stream.
 	 * @param out the output stream to write to (UTF-8 encoding will be used)
-	 * @param outputProperties properties to assign to the JAXP
-	 * transformer (see {@link Transformer#setOutputProperty})
+	 * @param outputProperties properties to assign to the JAXP transformer (see
+	 * {@link Transformer#setOutputProperty})
 	 * @throws TransformerException if there's a problem writing to the output
 	 * stream
 	 */
@@ -425,8 +425,8 @@ public class XCalDocument {
 	/**
 	 * Writes the xCal document to a file.
 	 * @param file the file to write to (UTF-8 encoding will be used)
-	 * @param outputProperties properties to assign to the JAXP
-	 * transformer (see {@link Transformer#setOutputProperty})
+	 * @param outputProperties properties to assign to the JAXP transformer (see
+	 * {@link Transformer#setOutputProperty})
 	 * @throws IOException if there's a problem writing to the file
 	 * @throws TransformerException if there's a problem writing the XML
 	 */
@@ -478,8 +478,8 @@ public class XCalDocument {
 	/**
 	 * Writes the xCal document to a writer.
 	 * @param writer the writer
-	 * @param outputProperties properties to assign to the JAXP
-	 * transformer (see {@link Transformer#setOutputProperty})
+	 * @param outputProperties properties to assign to the JAXP transformer (see
+	 * {@link Transformer#setOutputProperty})
 	 * @throws TransformerException if there's a problem writing to the writer
 	 */
 	public void write(Writer writer, Map<String, String> outputProperties) throws TransformerException {
@@ -515,7 +515,7 @@ public class XCalDocument {
 
 		if (indent >= 0) {
 			properties.put(OutputKeys.INDENT, "yes");
-			properties.put("{http://xml.apache.org/xslt}indent-amount", indent + "");
+			properties.put("{http://xml.apache.org/xslt}indent-amount", Integer.toString(indent));
 		}
 
 		if (xmlVersion != null) {

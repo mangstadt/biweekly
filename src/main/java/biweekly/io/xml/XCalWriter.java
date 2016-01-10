@@ -198,8 +198,8 @@ public class XCalWriter extends StreamWriter {
 
 	/**
 	 * @param out the output stream to write to (UTF-8 encoding will be used)
-	 * @param outputProperties properties to assign to the JAXP
-	 * transformer (see {@link Transformer#setOutputProperties(Properties)}).
+	 * @param outputProperties properties to assign to the JAXP transformer (see
+	 * {@link Transformer#setOutputProperties(Properties)}).
 	 */
 	public XCalWriter(OutputStream out, Map<String, String> outputProperties) {
 		this(utf8Writer(out), outputProperties);
@@ -240,8 +240,8 @@ public class XCalWriter extends StreamWriter {
 
 	/**
 	 * @param file the file to write to (UTF-8 encoding will be used)
-	 * @param outputProperties properties to assign to the JAXP
-	 * transformer (see {@link Transformer#setOutputProperties(Properties)}).
+	 * @param outputProperties properties to assign to the JAXP transformer (see
+	 * {@link Transformer#setOutputProperties(Properties)}).
 	 * @throws IOException if there's a problem opening the file
 	 */
 	public XCalWriter(File file, Map<String, String> outputProperties) throws IOException {
@@ -280,8 +280,8 @@ public class XCalWriter extends StreamWriter {
 
 	/**
 	 * @param writer the writer to write to
-	 * @param outputProperties properties to assign to the JAXP
-	 * transformer (see {@link Transformer#setOutputProperties(Properties)}).
+	 * @param outputProperties properties to assign to the JAXP transformer (see
+	 * {@link Transformer#setOutputProperties(Properties)}).
 	 */
 	public XCalWriter(Writer writer, Map<String, String> outputProperties) {
 		this(writer, null, outputProperties);
@@ -300,7 +300,7 @@ public class XCalWriter extends StreamWriter {
 
 		if (indent >= 0) {
 			properties.put(OutputKeys.INDENT, "yes");
-			properties.put("{http://xml.apache.org/xslt}indent-amount", indent + "");
+			properties.put("{http://xml.apache.org/xslt}indent-amount", Integer.toString(indent));
 		}
 
 		if (xmlVersion != null) {

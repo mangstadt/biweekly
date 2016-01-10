@@ -447,7 +447,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			return Math.abs(value) + "-";
 		}
 
-		return value + "";
+		return Integer.toString(value);
 	}
 
 	private DayOfWeek parseDay(String value) {
@@ -841,12 +841,11 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		/*
 		 * RFC 5545 p.41
 		 * 
-		 * Furthermore, if the "DTSTART" property is specified as a date
-		 * with local time, then the UNTIL rule part MUST also be
-		 * specified as a date with local time. If the "DTSTART"
-		 * property is specified as a date with UTC time or a date with
-		 * local time and time zone reference, then the UNTIL rule part
-		 * MUST be specified as a date with UTC time.
+		 * Furthermore, if the "DTSTART" property is specified as a date with
+		 * local time, then the UNTIL rule part MUST also be specified as a date
+		 * with local time. If the "DTSTART" property is specified as a date
+		 * with UTC time or a date with local time and time zone reference, then
+		 * the UNTIL rule part MUST be specified as a date with UTC time.
 		 */
 
 		ICalComponent parent = context.getParent();
