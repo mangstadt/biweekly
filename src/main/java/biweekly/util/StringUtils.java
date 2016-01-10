@@ -32,7 +32,7 @@ import java.util.Map;
  * Helper class for dealing with strings.
  * @author Michael Angstadt
  */
-public class StringUtils {
+public final class StringUtils {
 	/**
 	 * The local computer's newline character sequence.
 	 */

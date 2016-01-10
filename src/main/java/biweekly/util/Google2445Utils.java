@@ -45,7 +45,7 @@ import com.google.ical.values.WeekdayNum;
  * @author Michael Angstadt
  * @see <a href="https://code.google.com/p/google-rfc-2445/">google-rfc-2445</a>
  */
-public class Google2445Utils {
+public final class Google2445Utils {
 	/**
 	 * Converts a biweekly {@link DateStart} object to a google-rfc-2445
 	 * {@link DateTimeValue} object.

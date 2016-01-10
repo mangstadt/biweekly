@@ -64,7 +64,7 @@ import org.xml.sax.SAXException;
  * Generic XML utility methods.
  * @author Michael Angstadt
  */
-public class XmlUtils {
+public final class XmlUtils {
 	/**
 	 * Creates a new XML document.
 	 * @return the XML document
