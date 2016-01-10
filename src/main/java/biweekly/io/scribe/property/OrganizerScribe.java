@@ -2,8 +2,6 @@ package biweekly.io.scribe.property;
 
 import java.util.EnumSet;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -67,10 +65,14 @@ public class OrganizerScribe extends ICalPropertyScribe<Organizer> {
 		}
 
 		String uri = null, email = null;
-		Pattern p = Pattern.compile("^(?i)mailto:(.*?)$");
-		Matcher m = p.matcher(value);
-		if (m.find()) {
-			email = m.group(1);
+		int colon = value.indexOf(':');
+		if (colon == 6) {
+			String scheme = value.substring(0, colon);
+			if (scheme.equalsIgnoreCase("mailto")) {
+				email = value.substring(colon + 1);
+			} else {
+				uri = value;
+			}
 		} else {
 			uri = value;
 		}

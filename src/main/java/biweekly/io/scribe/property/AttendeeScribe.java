@@ -1,8 +1,5 @@
 package biweekly.io.scribe.property;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
@@ -190,11 +187,11 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 				status = ParticipationStatus.get(statusStr);
 			}
 
-			Pattern p = Pattern.compile("^(.*?)<(.*?)>$");
-			Matcher m = p.matcher(value);
-			if (m.find()) {
-				name = m.group(1).trim();
-				email = m.group(2).trim();
+			int bracketStart = value.lastIndexOf('<');
+			int bracketEnd = value.lastIndexOf('>');
+			if (bracketStart >= 0 && bracketEnd >= 0 && bracketStart < bracketEnd) {
+				name = value.substring(0, bracketStart).trim();
+				email = value.substring(bracketStart + 1, bracketEnd).trim();
 			} else if (dataType == ICalDataType.URL) {
 				uri = value;
 			} else {
@@ -236,10 +233,14 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 				parameters.remove(ICalParameters.CN, name);
 			}
 
-			p = Pattern.compile("(?i)^mailto:(.*?)$");
-			m = p.matcher(value);
-			if (m.find()) {
-				email = m.group(1);
+			int colon = value.indexOf(':');
+			if (colon == 6) {
+				String scheme = value.substring(0, colon);
+				if (scheme.equalsIgnoreCase("mailto")) {
+					email = value.substring(colon + 1);
+				} else {
+					uri = value;
+				}
 			} else {
 				uri = value;
 			}

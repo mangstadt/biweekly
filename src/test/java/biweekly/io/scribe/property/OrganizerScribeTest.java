@@ -42,6 +42,7 @@ public class OrganizerScribeTest extends ScribeTest<Organizer> {
 	private final String email = "jdoe@example.com";
 	private final String uri = "http://example.com/jdoe";
 
+	private final Organizer empty = new Organizer(null, null);
 	private final Organizer withEmail = new Organizer(null, email);
 	private final Organizer withNameEmail = new Organizer(name, email);
 	private final Organizer withNameEmailUri = new Organizer(name, email);
@@ -65,6 +66,7 @@ public class OrganizerScribeTest extends ScribeTest<Organizer> {
 		sensei.assertWriteText(withEmail).run("mailto:" + email);
 		sensei.assertWriteText(withNameEmail).run("mailto:" + email);
 		sensei.assertWriteText(withNameEmailUri).run(uri);
+		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
@@ -73,6 +75,10 @@ public class OrganizerScribeTest extends ScribeTest<Organizer> {
 		sensei.assertParseText("mailto:" + email).param("CN", name).run(check(name, email, null));
 		sensei.assertParseText("MAILTO:" + email).run(check(null, email, null));
 		sensei.assertParseText("MAILTO:" + email).param("CN", name).run(check(name, email, null));
+		sensei.assertParseText("http:" + email).run(check(null, null, "http:" + email));
+		sensei.assertParseText("http:" + email).param("CN", name).run(check(name, null, "http:" + email));
+		sensei.assertParseText("mallto:" + email).run(check(null, null, "mallto:" + email));
+		sensei.assertParseText("mallto:" + email).param("CN", name).run(check(name, null, "mallto:" + email));
 		sensei.assertParseText(uri).run(check(null, null, uri));
 	}
 

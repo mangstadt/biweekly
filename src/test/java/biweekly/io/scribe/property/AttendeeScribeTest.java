@@ -50,7 +50,9 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 	private final String email = "jdoe@example.com";
 	private final String uri = "http://example.com/jdoe";
 
+	private final Attendee empty = new Attendee(null, null);
 	private final Attendee withEmail = new Attendee(null, email);
+	private final Attendee withName = new Attendee(name, null);
 	private final Attendee withNameEmail = new Attendee(name, email);
 	private final Attendee withNameEmailUri = new Attendee(name, email);
 	{
@@ -103,6 +105,13 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 	}
 
 	@Test
+	public void prepareParameters_role() {
+		Attendee property = new Attendee(uri);
+		property.setRole(Role.ORGANIZER);
+		sensei.assertPrepareParams(property).expected("ROLE", "ORGANIZER").run();
+	}
+
+	@Test
 	public void prepareParameters_status() {
 		Attendee property = new Attendee(uri);
 		property.setParticipationStatus(ParticipationStatus.ACCEPTED);
@@ -138,6 +147,9 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		sensei.assertWriteText(withEmail).version(V2_0_DEPRECATED).run("mailto:" + email);
 		sensei.assertWriteText(withEmail).version(V2_0).run("mailto:" + email);
 
+		sensei.assertWriteText(empty).run("");
+		sensei.assertWriteText(withName).run("");
+
 		sensei.assertWriteText(withNameEmail).version(V1_0).run(name + " <" + email + ">");
 		sensei.assertWriteText(withNameEmail).version(V2_0_DEPRECATED).run("mailto:" + email);
 		sensei.assertWriteText(withNameEmail).version(V2_0).run("mailto:" + email);
@@ -155,10 +167,39 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		sensei.assertParseText(name + " <" + email + ">").versions(V1_0).run(check(name, email, null));
 		sensei.assertParseText(name + " <" + email + ">").versions(V2_0_DEPRECATED, V2_0).run(check(null, null, name + " <" + email + ">"));
 
+		sensei.assertParseText(name + " <" + email + ">").param("STATUS", "ACCEPTED").versions(V1_0).run(new Check<Attendee>() {
+			public void check(Attendee property, ParseContext context) {
+				assertTrue(property.getParameters().isEmpty());
+				assertEquals(name, property.getCommonName());
+				assertEquals(email, property.getEmail());
+				assertNull(property.getUri());
+				assertEquals(ParticipationStatus.ACCEPTED, property.getParticipationStatus());
+			}
+		});
+
+		sensei.assertParseText("mailto:" + email).param("PARTSTAT", "ACCEPTED").versions(V2_0_DEPRECATED, V2_0).run(new Check<Attendee>() {
+			public void check(Attendee property, ParseContext context) {
+				assertTrue(property.getParameters().isEmpty());
+				assertNull(property.getCommonName());
+				assertEquals(email, property.getEmail());
+				assertNull(property.getUri());
+				assertEquals(ParticipationStatus.ACCEPTED, property.getParticipationStatus());
+			}
+		});
+
+		sensei.assertParseText(name + " >" + email + "<").versions(V1_0).run(check(null, name + " >" + email + "<", null));
+		sensei.assertParseText(name + " >" + email + "<").versions(V1_0).dataType(ICalDataType.URL).run(check(null, null, name + " >" + email + "<"));
+		sensei.assertParseText(name + " <" + email).versions(V1_0).run(check(null, name + " <" + email, null));
+		sensei.assertParseText(name + email + ">").versions(V1_0).run(check(null, name + email + ">", null));
+
 		sensei.assertParseText("mailto:" + email).versions(V1_0).run(check(null, "mailto:" + email, null));
 		sensei.assertParseText("mailto:" + email).param("CN", name).versions(V2_0_DEPRECATED, V2_0).run(check(name, email, null));
 		sensei.assertParseText("MAILTO:" + email).versions(V1_0).run(check(null, "MAILTO:" + email, null));
 		sensei.assertParseText("MAILTO:" + email).param("CN", name).versions(V2_0_DEPRECATED, V2_0).run(check(name, email, null));
+		sensei.assertParseText("mallto:" + email).versions(V1_0).run(check(null, "mallto:" + email, null));
+		sensei.assertParseText("mallto:" + email).param("CN", name).versions(V2_0_DEPRECATED, V2_0).run(check(name, null, "mallto:" + email));
+		sensei.assertParseText("http:" + email).versions(V1_0).run(check(null, "http:" + email, null));
+		sensei.assertParseText("http:" + email).param("CN", name).versions(V2_0_DEPRECATED, V2_0).run(check(name, null, "http:" + email));
 	}
 
 	private Check<Attendee> check(final String name, final String email, final String uri) {
