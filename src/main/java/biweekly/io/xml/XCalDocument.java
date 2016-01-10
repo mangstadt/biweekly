@@ -260,7 +260,7 @@ public class XCalDocument {
 	 * Adds an iCalendar object to this XML document.
 	 * @param ical the iCalendar object to add
 	 */
-	public void add(ICalendar ical) {
+	public void addICalendar(ICalendar ical) {
 		writer().write(ical);
 	}
 

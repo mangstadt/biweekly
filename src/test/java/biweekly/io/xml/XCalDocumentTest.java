@@ -684,7 +684,7 @@ public class XCalDocumentTest {
 		ical.addProperty(xml);
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.add(ical);
+		xcal.addICalendar(ical);
 
 		Document actual = xcal.getDocument();
 
@@ -725,7 +725,7 @@ public class XCalDocumentTest {
 		ical.addProperty(xml);
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.add(ical);
+		xcal.addICalendar(ical);
 
 		Document actual = xcal.getDocument();
 		//@formatter:off
@@ -747,7 +747,7 @@ public class XCalDocumentTest {
 		ical.addProperty(new Company(""));
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.add(ical);
+		xcal.addICalendar(ical);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -756,7 +756,7 @@ public class XCalDocumentTest {
 		ical.addComponent(new Party());
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.add(ical);
+		xcal.addICalendar(ical);
 	}
 
 	@Test
@@ -896,7 +896,7 @@ public class XCalDocumentTest {
 		Document expected = XmlUtils.toDocument("<root/>");
 		assertXMLEqual(expected, actual);
 
-		xcal.add(ical);
+		xcal.addICalendar(ical);
 
 		actual = xcal.getDocument();
 		//@formatter:off
@@ -928,7 +928,7 @@ public class XCalDocumentTest {
 		Document expected = XmlUtils.toDocument("<root><icalendar xmlns=\"" + XCAL_NS + "\"><foo/></icalendar></root>");
 		assertXMLEqual(expected, actual);
 
-		xcal.add(ical);
+		xcal.addICalendar(ical);
 
 		actual = xcal.getDocument();
 		//@formatter:off
@@ -955,7 +955,7 @@ public class XCalDocumentTest {
 		ical.addProperty(new Summary("summary"));
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.add(ical);
+		xcal.addICalendar(ical);
 
 		String actual = xcal.write();
 		//@formatter:off
@@ -981,7 +981,7 @@ public class XCalDocumentTest {
 		ical.addProperty(new Summary("summary"));
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.add(ical);
+		xcal.addICalendar(ical);
 
 		String actual = xcal.write(2);
 
@@ -1008,7 +1008,7 @@ public class XCalDocumentTest {
 	public void write_xmlVerison_default() throws Throwable {
 		ICalendar ical = new ICalendar();
 		XCalDocument xcal = new XCalDocument();
-		xcal.add(ical);
+		xcal.addICalendar(ical);
 
 		String xml = xcal.write();
 		assertTrue(xml.matches("(?i)<\\?xml.*?version=\"1.0\".*?\\?>.*"));
@@ -1018,7 +1018,7 @@ public class XCalDocumentTest {
 	public void write_xmlVerison_1_1() throws Throwable {
 		ICalendar ical = new ICalendar();
 		XCalDocument xcal = new XCalDocument();
-		xcal.add(ical);
+		xcal.addICalendar(ical);
 
 		String xml = xcal.write(-1, "1.1");
 		assertTrue(xml.matches("(?i)<\\?xml.*?version=\"1.1\".*?\\?>.*"));
@@ -1028,7 +1028,7 @@ public class XCalDocumentTest {
 	public void write_xmlVerison_invalid() throws Throwable {
 		ICalendar ical = new ICalendar();
 		XCalDocument xcal = new XCalDocument();
-		xcal.add(ical);
+		xcal.addICalendar(ical);
 
 		String xml = xcal.write(-1, "10.17");
 		assertTrue(xml.matches("(?i)<\\?xml.*?version=\"1.0\".*?\\?>.*"));
@@ -1041,7 +1041,7 @@ public class XCalDocumentTest {
 		ical.addProperty(new Summary("\u1e66ummary"));
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.add(ical);
+		xcal.addICalendar(ical);
 
 		File file = tempFolder.newFile();
 		xcal.write(file);
