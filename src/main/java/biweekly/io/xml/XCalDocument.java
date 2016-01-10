@@ -60,7 +60,6 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.Version;
 import biweekly.property.Xml;
-import biweekly.util.IOUtils;
 import biweekly.util.XmlUtils;
 
 /*
@@ -184,7 +183,7 @@ public class XCalDocument {
 		try {
 			return XmlUtils.toDocument(in);
 		} finally {
-			IOUtils.closeQuietly(in);
+			in.close();
 		}
 	}
 
@@ -231,14 +230,9 @@ public class XCalDocument {
 	 * Creates an empty xCal document.
 	 */
 	public XCalDocument() {
-		this(createRoot());
-	}
-
-	private static Document createRoot() {
-		Document document = XmlUtils.createDocument();
-		Element root = document.createElementNS(ICALENDAR.getNamespaceURI(), ICALENDAR.getLocalPart());
+		document = XmlUtils.createDocument();
+		root = document.createElementNS(ICALENDAR.getNamespaceURI(), ICALENDAR.getLocalPart());
 		document.appendChild(root);
-		return document;
 	}
 
 	/**
