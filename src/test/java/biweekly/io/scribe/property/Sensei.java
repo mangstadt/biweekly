@@ -327,7 +327,7 @@ public class Sensei<T extends ICalProperty> {
 			Document actual = createXCalElement();
 			WriteContext context = new WriteContext(V2_0, tzinfo);
 			context.setParent(parent);
-			scribe.writeXml(property, XmlUtils.getRootElement(actual), context);
+			scribe.writeXml(property, actual.getDocumentElement(), context);
 
 			Document expected = createXCalElement(expectedInnerXml);
 
@@ -524,7 +524,7 @@ public class Sensei<T extends ICalProperty> {
 			try {
 				ParseContext context = new ParseContext();
 				Document document = createXCalElement(innerXml);
-				Element element = XmlUtils.getRootElement(document);
+				Element element = document.getDocumentElement();
 				T property = scribe.parseXml(element, parameters, context);
 
 				if (exception != null) {

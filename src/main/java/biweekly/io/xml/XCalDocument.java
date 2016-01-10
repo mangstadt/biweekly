@@ -720,7 +720,7 @@ public class XCalDocument {
 
 			if (root == null) {
 				root = buildElement(ICALENDAR);
-				Element documentRoot = XmlUtils.getRootElement(document);
+				Element documentRoot = document.getDocumentElement();
 				if (documentRoot == null) {
 					document.appendChild(root);
 				} else {
@@ -810,7 +810,7 @@ public class XCalDocument {
 				}
 
 				//import the XML element into the xCal DOM
-				propertyElement = XmlUtils.getRootElement(value);
+				propertyElement = value.getDocumentElement();
 				propertyElement = (Element) document.importNode(propertyElement, true);
 			} else {
 				propertyElement = buildElement(scribe.getQName());

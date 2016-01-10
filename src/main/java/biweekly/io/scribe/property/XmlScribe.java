@@ -90,7 +90,7 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 		Xml xml = new Xml(element.getElement());
 
 		//remove the <parameters> element
-		Element root = XmlUtils.getRootElement(xml.getValue());
+		Element root = xml.getValue().getDocumentElement();
 		for (Element child : XmlUtils.toElementList(root.getChildNodes())) {
 			if ("parameters".equals(child.getLocalName()) && XCalNamespaceContext.XCAL_NS.equals(child.getNamespaceURI())) {
 				root.removeChild(child);

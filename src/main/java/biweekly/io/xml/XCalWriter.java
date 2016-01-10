@@ -455,7 +455,7 @@ public class XCalWriter extends StreamWriter {
 			if (value == null) {
 				return;
 			}
-			propertyElement = XmlUtils.getRootElement(value);
+			propertyElement = value.getDocumentElement();
 		} else {
 			QName qname = scribe.getQName();
 			propertyElement = DOC.createElementNS(qname.getNamespaceURI(), qname.getLocalPart());

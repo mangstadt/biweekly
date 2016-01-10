@@ -81,7 +81,7 @@ public class XmlScribeTest extends ScribeTest<Xml> {
 	@Test
 	public void parseXml() {
 		ParseContext context = new ParseContext();
-		Xml prop = scribe.parseXml(XmlUtils.getRootElement(value), new ICalParameters(), context);
+		Xml prop = scribe.parseXml(value.getDocumentElement(), new ICalParameters(), context);
 
 		assertXMLEqual(value, prop.getValue());
 		assertWarnings(0, context.getWarnings());
@@ -105,7 +105,7 @@ public class XmlScribeTest extends ScribeTest<Xml> {
 		ICalParameters parameters = new ICalParameters();
 		parameters.put("x-foo", "value");
 		ParseContext context = new ParseContext();
-		Xml prop = scribe.parseXml(XmlUtils.getRootElement(doc), parameters, context);
+		Xml prop = scribe.parseXml(doc.getDocumentElement(), parameters, context);
 
 		assertXMLEqual(value, prop.getValue());
 		assertWarnings(0, context.getWarnings());
