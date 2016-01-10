@@ -228,6 +228,21 @@ public class FoldedLineWriter extends Writer {
 					}
 				}
 
+				/*
+				 * If the last char is the low (second) char in a surrogate
+				 * pair, don't split the pair across two lines.
+				 */
+				if (Character.isLowSurrogate(c)) {
+					i++;
+					if (i >= end - 1) {
+						/*
+						 * Surrogate pair finishes the char array, so leave the
+						 * loop.
+						 */
+						break;
+					}
+				}
+
 				writer.write(cbuf, start, i - start);
 				if (quotedPrintable) {
 					writer.write('=');

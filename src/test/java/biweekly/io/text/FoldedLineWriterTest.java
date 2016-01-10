@@ -1,7 +1,11 @@
 package biweekly.io.text;
 
+import static biweekly.util.TestUtils.assertIntEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
 
@@ -128,5 +132,130 @@ public class FoldedLineWriterTest {
 
 		QuotedPrintableCodec codec = new QuotedPrintableCodec("ISO-8859-1");
 		assertEquals("test\n\u00e4\u00f6\u00fc\u00df\ntest", codec.decode("test=0A=E4=F6=FC=DF=0Atest"));
+	}
+
+	@Test
+	public void write_surrogate_pair() throws Exception {
+		StringWriter sw = new StringWriter();
+		FoldedLineWriter writer = new FoldedLineWriter(sw);
+		writer.setLineLength(5);
+
+		String str = "test\uD83D\uDCF0test"; // should not be split
+		writer.write(str);
+		writer.close();
+		String actual = sw.toString();
+
+		assertEquals("test\uD83D\uDCF0\r\n test", actual);
+	}
+
+	@Test
+	public void write_surrogate_pair_end() throws Exception {
+		StringWriter sw = new StringWriter();
+		FoldedLineWriter writer = new FoldedLineWriter(sw);
+		writer.setLineLength(5);
+
+		String str = "test\uD83D\uDCF0"; // should not be split
+		writer.write(str);
+		writer.close();
+		String actual = sw.toString();
+
+		assertEquals("test\uD83D\uDCF0", actual);
+	}
+
+	@Test
+	public void write_different_newlines() throws Exception {
+		StringWriter sw = new StringWriter();
+		FoldedLineWriter writer = new FoldedLineWriter(sw);
+		writer.setLineLength(8);
+		writer.write("one\r\ntwo three\rthree\nfour five");
+		writer.close();
+		String actual = sw.toString();
+
+		//@formatter:off
+		String expected =	
+		"one\r\n" +
+		"two thre\r\n" + //folded lines always use the newline sequence defined with writer.setNewline()
+		" e\r" +
+		"three\n" +
+		"four fiv\r\n" +
+		" e";
+		//@formatter:on
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void getLineLength_default() throws Exception {
+		StringWriter sw = new StringWriter();
+		FoldedLineWriter writer = new FoldedLineWriter(sw);
+		assertIntEquals(75, writer.getLineLength());
+		writer.close();
+	}
+
+	@Test
+	public void getIndent_default() throws Exception {
+		StringWriter sw = new StringWriter();
+		FoldedLineWriter writer = new FoldedLineWriter(sw);
+		assertEquals(" ", writer.getIndent());
+		writer.close();
+	}
+
+	@Test
+	public void setLineLength() throws Exception {
+		StringWriter sw = new StringWriter();
+		FoldedLineWriter writer = new FoldedLineWriter(sw);
+		writer.setLineLength(1);
+		assertIntEquals(1, writer.getLineLength());
+		writer.close();
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setLineLength_zero() throws Exception {
+		StringWriter sw = new StringWriter();
+		FoldedLineWriter writer = new FoldedLineWriter(sw);
+		writer.setLineLength(0);
+		writer.close();
+	}
+
+	@Test
+	public void setLineLength_null() throws Exception {
+		StringWriter sw = new StringWriter();
+		FoldedLineWriter writer = new FoldedLineWriter(sw);
+		writer.setLineLength(null); //valid value
+		writer.close();
+	}
+
+	@Test
+	public void getEncoding() throws Exception {
+		StringWriter sw = new StringWriter();
+		FoldedLineWriter writer = new FoldedLineWriter(sw);
+		assertNull(writer.getEncoding());
+		writer.close();
+
+		Charset charset = Charset.availableCharsets().values().iterator().next();
+		OutputStreamWriter osw = new OutputStreamWriter(new ByteArrayOutputStream(), charset);
+		writer = new FoldedLineWriter(osw);
+		assertEquals(charset, writer.getEncoding());
+		writer.close();
+	}
+
+	@Test
+	public void setIndent() throws Exception {
+		StringWriter sw = new StringWriter();
+		FoldedLineWriter writer = new FoldedLineWriter(sw);
+		writer.setLineLength(10);
+		String indent = "     ";
+		writer.setIndent(indent);
+		assertEquals(indent, writer.getIndent());
+		writer.close();
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setIndent_invalid() throws Exception {
+		StringWriter sw = new StringWriter();
+		FoldedLineWriter writer = new FoldedLineWriter(sw);
+		writer.setLineLength(10);
+		writer.setIndent("          ");
+		writer.close();
 	}
 }
