@@ -18,7 +18,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -144,7 +143,6 @@ public class XCalDocument {
 	private static final XCalNamespaceContext nsContext = new XCalNamespaceContext("xcal");
 
 	private final Document document;
-	private final ICalVersion targetVersion = ICalVersion.V2_0;
 	private Element icalendarRootElement;
 
 	/**
@@ -650,34 +648,7 @@ public class XCalDocument {
 		}
 	}
 
-	public class XCalDocumentStreamWriter extends StreamWriter {
-		/**
-		 * Defines the names of the XML elements that are used to hold each
-		 * parameter's value.
-		 */
-		private final Map<String, ICalDataType> parameterDataTypes = new HashMap<String, ICalDataType>();
-		{
-			registerParameterDataType(ICalParameters.CN, ICalDataType.TEXT);
-			registerParameterDataType(ICalParameters.ALTREP, ICalDataType.URI);
-			registerParameterDataType(ICalParameters.CUTYPE, ICalDataType.TEXT);
-			registerParameterDataType(ICalParameters.DELEGATED_FROM, ICalDataType.CAL_ADDRESS);
-			registerParameterDataType(ICalParameters.DELEGATED_TO, ICalDataType.CAL_ADDRESS);
-			registerParameterDataType(ICalParameters.DIR, ICalDataType.URI);
-			registerParameterDataType(ICalParameters.ENCODING, ICalDataType.TEXT);
-			registerParameterDataType(ICalParameters.FMTTYPE, ICalDataType.TEXT);
-			registerParameterDataType(ICalParameters.FBTYPE, ICalDataType.TEXT);
-			registerParameterDataType(ICalParameters.LANGUAGE, ICalDataType.TEXT);
-			registerParameterDataType(ICalParameters.MEMBER, ICalDataType.CAL_ADDRESS);
-			registerParameterDataType(ICalParameters.PARTSTAT, ICalDataType.TEXT);
-			registerParameterDataType(ICalParameters.RANGE, ICalDataType.TEXT);
-			registerParameterDataType(ICalParameters.RELATED, ICalDataType.TEXT);
-			registerParameterDataType(ICalParameters.RELTYPE, ICalDataType.TEXT);
-			registerParameterDataType(ICalParameters.ROLE, ICalDataType.TEXT);
-			registerParameterDataType(ICalParameters.RSVP, ICalDataType.BOOLEAN);
-			registerParameterDataType(ICalParameters.SENT_BY, ICalDataType.CAL_ADDRESS);
-			registerParameterDataType(ICalParameters.TZID, ICalDataType.TEXT);
-		}
-
+	public class XCalDocumentStreamWriter extends XCalWriterBase {
 		@Override
 		public void write(ICalendar ical) {
 			try {
@@ -701,21 +672,6 @@ public class XCalDocument {
 				}
 			}
 			icalendarRootElement.appendChild(element);
-		}
-
-		/**
-		 * Registers the data type of an experimental parameter. Experimental
-		 * parameters use the "unknown" xCal data type by default.
-		 * @param parameterName the parameter name (e.g. "x-foo")
-		 * @param dataType the data type or null to remove
-		 */
-		public void registerParameterDataType(String parameterName, ICalDataType dataType) {
-			parameterName = parameterName.toLowerCase();
-			if (dataType == null) {
-				parameterDataTypes.remove(parameterName);
-			} else {
-				parameterDataTypes.put(parameterName, dataType);
-			}
 		}
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -840,11 +796,6 @@ public class XCalDocument {
 			Element child = document.createElementNS(qname.getNamespaceURI(), qname.getLocalPart());
 			parent.appendChild(child);
 			return child;
-		}
-
-		@Override
-		protected ICalVersion getTargetVersion() {
-			return ICalVersion.V2_0;
 		}
 
 		public void close() {

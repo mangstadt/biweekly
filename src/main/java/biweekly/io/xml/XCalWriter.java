@@ -38,12 +38,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 import biweekly.ICalDataType;
-import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
 import biweekly.io.SkipMeException;
-import biweekly.io.StreamWriter;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
@@ -128,39 +126,11 @@ import biweekly.util.XmlUtils;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc6351">RFC 6351</a>
  */
-public class XCalWriter extends StreamWriter {
+public class XCalWriter extends XCalWriterBase {
 	//How to use SAX to write XML: http://stackoverflow.com/q/4898590
 	private final Document DOC = XmlUtils.createDocument();
 
-	/**
-	 * Defines the names of the XML elements that are used to hold each
-	 * parameter's value.
-	 */
-	private final Map<String, ICalDataType> parameterDataTypes = new HashMap<String, ICalDataType>();
-	{
-		registerParameterDataType(ICalParameters.CN, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.ALTREP, ICalDataType.URI);
-		registerParameterDataType(ICalParameters.CUTYPE, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.DELEGATED_FROM, ICalDataType.CAL_ADDRESS);
-		registerParameterDataType(ICalParameters.DELEGATED_TO, ICalDataType.CAL_ADDRESS);
-		registerParameterDataType(ICalParameters.DIR, ICalDataType.URI);
-		registerParameterDataType(ICalParameters.ENCODING, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.FMTTYPE, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.FBTYPE, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.LANGUAGE, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.MEMBER, ICalDataType.CAL_ADDRESS);
-		registerParameterDataType(ICalParameters.PARTSTAT, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.RANGE, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.RELATED, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.RELTYPE, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.ROLE, ICalDataType.TEXT);
-		registerParameterDataType(ICalParameters.RSVP, ICalDataType.BOOLEAN);
-		registerParameterDataType(ICalParameters.SENT_BY, ICalDataType.CAL_ADDRESS);
-		registerParameterDataType(ICalParameters.TZID, ICalDataType.TEXT);
-	}
-
 	private final Writer writer;
-	private final ICalVersion targetVersion = ICalVersion.V2_0;
 	private final TransformerHandler handler;
 	private final boolean icalendarElementExists;
 	private boolean started = false;
@@ -339,21 +309,6 @@ public class XCalWriter extends StreamWriter {
 		return XmlUtils.hasQName(node, ICALENDAR);
 	}
 
-	/**
-	 * Registers the data type of an experimental parameter. Experimental
-	 * parameters use the "unknown" data type by default.
-	 * @param parameterName the parameter name (e.g. "x-foo")
-	 * @param dataType the data type or null to remove
-	 */
-	public void registerParameterDataType(String parameterName, ICalDataType dataType) {
-		parameterName = parameterName.toLowerCase();
-		if (dataType == null) {
-			parameterDataTypes.remove(parameterName);
-		} else {
-			parameterDataTypes.put(parameterName, dataType);
-		}
-	}
-
 	@Override
 	protected void _write(ICalendar ical) throws IOException {
 		try {
@@ -372,11 +327,6 @@ public class XCalWriter extends StreamWriter {
 		} catch (SAXException e) {
 			throw new IOException(e);
 		}
-	}
-
-	@Override
-	protected ICalVersion getTargetVersion() {
-		return targetVersion;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
