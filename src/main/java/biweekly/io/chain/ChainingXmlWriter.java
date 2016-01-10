@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 
@@ -24,6 +23,7 @@ import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.xml.XCalDocument;
 import biweekly.io.xml.XCalDocument.XCalDocumentStreamWriter;
+import biweekly.io.xml.XCalOutputProperties;
 import biweekly.property.ICalProperty;
 
 /*
@@ -58,11 +58,7 @@ import biweekly.property.ICalProperty;
  * @author Michael Angstadt
  */
 public class ChainingXmlWriter extends ChainingWriter<ChainingXmlWriter> {
-	private final String INDENT_AMOUNT = "{http://xml.apache.org/xslt}indent-amount";
-	private final Map<String, String> outputProperties = new HashMap<String, String>();
-	{
-		outputProperties.put(OutputKeys.METHOD, "xml");
-	}
+	private final XCalOutputProperties outputProperties = new XCalOutputProperties();
 	private final Map<String, ICalDataType> parameterDataTypes = new HashMap<String, ICalDataType>(0);
 
 	/**
@@ -80,14 +76,9 @@ public class ChainingXmlWriter extends ChainingWriter<ChainingXmlWriter> {
 	 * @return this
 	 */
 	public ChainingXmlWriter indent(int indent) {
-		if (indent < 0) {
-			outputProperties.remove(OutputKeys.INDENT);
-			outputProperties.remove(INDENT_AMOUNT);
-			return this;
-		}
-
-		outputProperty(OutputKeys.INDENT, "yes");
-		return outputProperty(INDENT_AMOUNT, Integer.toString(indent));
+		Integer value = (indent < 0) ? null : indent;
+		outputProperties.setIndent(value);
+		return this;
 	}
 
 	/**
@@ -99,12 +90,8 @@ public class ChainingXmlWriter extends ChainingWriter<ChainingXmlWriter> {
 	 * @return this
 	 */
 	public ChainingXmlWriter xmlVersion(String xmlVersion) {
-		if (xmlVersion == null) {
-			outputProperties.remove(OutputKeys.VERSION);
-			return this;
-		}
-
-		return outputProperty(OutputKeys.VERSION, xmlVersion);
+		outputProperties.setXmlVersion(xmlVersion);
+		return this;
 	}
 
 	/**

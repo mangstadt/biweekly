@@ -639,7 +639,7 @@ public class XCalWriterTest {
 	@Test
 	public void write_xmlVersion_1_1() throws Exception {
 		StringWriter sw = new StringWriter();
-		XCalWriter writer = new XCalWriter(sw, -1, "1.1");
+		XCalWriter writer = new XCalWriter(sw, null, "1.1");
 		ICalendar ical = new ICalendar();
 		writer.write(ical);
 		writer.close();
@@ -651,7 +651,7 @@ public class XCalWriterTest {
 	@Test
 	public void write_xmlVersion_invalid() throws Exception {
 		StringWriter sw = new StringWriter();
-		XCalWriter writer = new XCalWriter(sw, -1, "10.17");
+		XCalWriter writer = new XCalWriter(sw, null, "10.17");
 		ICalendar ical = new ICalendar();
 		writer.write(ical);
 		writer.close();

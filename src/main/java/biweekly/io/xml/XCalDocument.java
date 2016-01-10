@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -277,23 +276,23 @@ public class XCalDocument {
 	 * @return the XML string
 	 */
 	public String write() {
-		return write(-1);
+		return write((Integer) null);
 	}
 
 	/**
 	 * Writes the xCal document to a string.
 	 * @param indent the number of indent spaces to use for pretty-printing or
-	 * "-1" to disable pretty-printing (disabled by default)
+	 * "null" to disable pretty-printing (disabled by default)
 	 * @return the XML string
 	 */
-	public String write(int indent) {
+	public String write(Integer indent) {
 		return write(indent, null);
 	}
 
 	/**
 	 * Writes the xCal document to a string.
 	 * @param indent the number of indent spaces to use for pretty-printing or
-	 * "-1" to disable pretty-printing (disabled by default)
+	 * "null" to disable pretty-printing (disabled by default)
 	 * @param xmlVersion the XML version to use (defaults to "1.0") (Note: Many
 	 * JDKs only support 1.0 natively. For XML 1.1 support, add a JAXP library
 	 * like <a href=
@@ -301,8 +300,8 @@ public class XCalDocument {
 	 * >xalan</a> to your project)
 	 * @return the XML string
 	 */
-	public String write(int indent, String xmlVersion) {
-		return write(createOutputProperties(indent, xmlVersion));
+	public String write(Integer indent, String xmlVersion) {
+		return write(new XCalOutputProperties(indent, xmlVersion));
 	}
 
 	/**
@@ -329,18 +328,18 @@ public class XCalDocument {
 	 * stream
 	 */
 	public void write(OutputStream out) throws TransformerException {
-		write(out, -1);
+		write(out, (Integer) null);
 	}
 
 	/**
 	 * Writes the xCal document to an output stream.
 	 * @param out the output stream to write to (UTF-8 encoding will be used)
 	 * @param indent the number of indent spaces to use for pretty-printing or
-	 * "-1" to disable pretty-printing (disabled by default)
+	 * "null" to disable pretty-printing (disabled by default)
 	 * @throws TransformerException if there's a problem writing to the output
 	 * stream
 	 */
-	public void write(OutputStream out, int indent) throws TransformerException {
+	public void write(OutputStream out, Integer indent) throws TransformerException {
 		write(out, indent, null);
 	}
 
@@ -348,7 +347,7 @@ public class XCalDocument {
 	 * Writes the xCal document to an output stream.
 	 * @param out the output stream to write to (UTF-8 encoding will be used)
 	 * @param indent the number of indent spaces to use for pretty-printing or
-	 * "-1" to disable pretty-printing (disabled by default)
+	 * "null" to disable pretty-printing (disabled by default)
 	 * @param xmlVersion the XML version to use (defaults to "1.0") (Note: Many
 	 * JDKs only support 1.0 natively. For XML 1.1 support, add a JAXP library
 	 * like <a href=
@@ -357,8 +356,8 @@ public class XCalDocument {
 	 * @throws TransformerException if there's a problem writing to the output
 	 * stream
 	 */
-	public void write(OutputStream out, int indent, String xmlVersion) throws TransformerException {
-		write(out, createOutputProperties(indent, xmlVersion));
+	public void write(OutputStream out, Integer indent, String xmlVersion) throws TransformerException {
+		write(out, new XCalOutputProperties(indent, xmlVersion));
 	}
 
 	/**
@@ -380,18 +379,18 @@ public class XCalDocument {
 	 * @throws TransformerException if there's a problem writing the XML
 	 */
 	public void write(File file) throws TransformerException, IOException {
-		write(file, -1);
+		write(file, (Integer) null);
 	}
 
 	/**
 	 * Writes the xCal document to a file.
 	 * @param file the file to write to (UTF-8 encoding will be used)
 	 * @param indent the number of indent spaces to use for pretty-printing or
-	 * "-1" to disable pretty-printing (disabled by default)
+	 * "null" to disable pretty-printing (disabled by default)
 	 * @throws IOException if there's a problem writing to the file
 	 * @throws TransformerException if there's a problem writing the XML
 	 */
-	public void write(File file, int indent) throws TransformerException, IOException {
+	public void write(File file, Integer indent) throws TransformerException, IOException {
 		write(file, indent, null);
 	}
 
@@ -399,7 +398,7 @@ public class XCalDocument {
 	 * Writes the xCal document to a file.
 	 * @param file the file to write to (UTF-8 encoding will be used)
 	 * @param indent the number of indent spaces to use for pretty-printing or
-	 * "-1" to disable pretty-printing (disabled by default)
+	 * "null" to disable pretty-printing (disabled by default)
 	 * @param xmlVersion the XML version to use (defaults to "1.0") (Note: Many
 	 * JDKs only support 1.0 natively. For XML 1.1 support, add a JAXP library
 	 * like <a href=
@@ -408,8 +407,8 @@ public class XCalDocument {
 	 * @throws IOException if there's a problem writing to the file
 	 * @throws TransformerException if there's a problem writing the XML
 	 */
-	public void write(File file, int indent, String xmlVersion) throws TransformerException, IOException {
-		write(file, createOutputProperties(indent, xmlVersion));
+	public void write(File file, Integer indent, String xmlVersion) throws TransformerException, IOException {
+		write(file, new XCalOutputProperties(indent, xmlVersion));
 	}
 
 	/**
@@ -435,17 +434,17 @@ public class XCalDocument {
 	 * @throws TransformerException if there's a problem writing to the writer
 	 */
 	public void write(Writer writer) throws TransformerException {
-		write(writer, -1);
+		write(writer, (Integer) null);
 	}
 
 	/**
 	 * Writes the xCal document to a writer.
 	 * @param writer the writer
 	 * @param indent the number of indent spaces to use for pretty-printing or
-	 * "-1" to disable pretty-printing (disabled by default)
+	 * "null" to disable pretty-printing (disabled by default)
 	 * @throws TransformerException if there's a problem writing to the writer
 	 */
-	public void write(Writer writer, int indent) throws TransformerException {
+	public void write(Writer writer, Integer indent) throws TransformerException {
 		write(writer, indent, null);
 	}
 
@@ -453,7 +452,7 @@ public class XCalDocument {
 	 * Writes the xCal document to a writer.
 	 * @param writer the writer
 	 * @param indent the number of indent spaces to use for pretty-printing or
-	 * "-1" to disable pretty-printing (disabled by default)
+	 * "null" to disable pretty-printing (disabled by default)
 	 * @param xmlVersion the XML version to use (defaults to "1.0") (Note: Many
 	 * JDKs only support 1.0 natively. For XML 1.1 support, add a JAXP library
 	 * like <a href=
@@ -461,8 +460,8 @@ public class XCalDocument {
 	 * >xalan</a> to your project)
 	 * @throws TransformerException if there's a problem writing to the writer
 	 */
-	public void write(Writer writer, int indent, String xmlVersion) throws TransformerException {
-		write(writer, createOutputProperties(indent, xmlVersion));
+	public void write(Writer writer, Integer indent, String xmlVersion) throws TransformerException {
+		write(writer, new XCalOutputProperties(indent, xmlVersion));
 	}
 
 	/**
@@ -497,22 +496,6 @@ public class XCalDocument {
 		DOMSource source = new DOMSource(document);
 		StreamResult result = new StreamResult(writer);
 		transformer.transform(source, result);
-	}
-
-	private Map<String, String> createOutputProperties(int indent, String xmlVersion) {
-		Map<String, String> properties = new HashMap<String, String>();
-		properties.put(OutputKeys.METHOD, "xml");
-
-		if (indent >= 0) {
-			properties.put(OutputKeys.INDENT, "yes");
-			properties.put("{http://xml.apache.org/xslt}indent-amount", Integer.toString(indent));
-		}
-
-		if (xmlVersion != null) {
-			properties.put(OutputKeys.VERSION, xmlVersion);
-		}
-
-		return properties;
 	}
 
 	@Override

@@ -1020,18 +1020,17 @@ public class XCalDocumentTest {
 		XCalDocument xcal = new XCalDocument();
 		xcal.addICalendar(ical);
 
-		String xml = xcal.write(-1, "1.1");
+		String xml = xcal.write(null, "1.1");
 		assertTrue(xml.matches("(?i)<\\?xml.*?version=\"1.1\".*?\\?>.*"));
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void write_xmlVerison_invalid() throws Throwable {
 		ICalendar ical = new ICalendar();
 		XCalDocument xcal = new XCalDocument();
 		xcal.addICalendar(ical);
 
-		String xml = xcal.write(-1, "10.17");
-		assertTrue(xml.matches("(?i)<\\?xml.*?version=\"1.0\".*?\\?>.*"));
+		xcal.write(-1, "10.17");
 	}
 
 	@Test

@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.xml.namespace.QName;
-import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -170,29 +169,29 @@ public class XCalWriter extends StreamWriter {
 	 * @param out the output stream to write to (UTF-8 encoding will be used)
 	 */
 	public XCalWriter(OutputStream out) {
-		this(out, -1);
+		this(out, (Integer) null);
 	}
 
 	/**
 	 * @param out the output stream to write to (UTF-8 encoding will be used)
 	 * @param indent the number of indent spaces to use for pretty-printing or
-	 * "-1" to disable pretty-printing (disabled by default)
+	 * "null" to disable pretty-printing (disabled by default)
 	 */
-	public XCalWriter(OutputStream out, int indent) {
+	public XCalWriter(OutputStream out, Integer indent) {
 		this(out, indent, null);
 	}
 
 	/**
 	 * @param out the output stream to write to (UTF-8 encoding will be used)
 	 * @param indent the number of indent spaces to use for pretty-printing or
-	 * "-1" to disable pretty-printing (disabled by default)
+	 * "null" to disable pretty-printing (disabled by default)
 	 * @param xmlVersion the XML version to use (defaults to "1.0") (Note: Many
 	 * JDKs only support 1.0 natively. For XML 1.1 support, add a JAXP library
 	 * like <a href=
 	 * "http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22xalan%22%20AND%20a%3A%22xalan%22"
 	 * >xalan</a> to your project)
 	 */
-	public XCalWriter(OutputStream out, int indent, String xmlVersion) {
+	public XCalWriter(OutputStream out, Integer indent, String xmlVersion) {
 		this(utf8Writer(out), indent, xmlVersion);
 	}
 
@@ -210,23 +209,23 @@ public class XCalWriter extends StreamWriter {
 	 * @throws IOException if there's a problem opening the file
 	 */
 	public XCalWriter(File file) throws IOException {
-		this(file, -1);
+		this(file, (Integer) null);
 	}
 
 	/**
 	 * @param file the file to write to (UTF-8 encoding will be used)
 	 * @param indent the number of indent spaces to use for pretty-printing or
-	 * "-1" to disable pretty-printing (disabled by default)
+	 * "null" to disable pretty-printing (disabled by default)
 	 * @throws IOException if there's a problem opening the file
 	 */
-	public XCalWriter(File file, int indent) throws IOException {
+	public XCalWriter(File file, Integer indent) throws IOException {
 		this(file, indent, null);
 	}
 
 	/**
 	 * @param file the file to write to (UTF-8 encoding will be used)
 	 * @param indent the number of indent spaces to use for pretty-printing or
-	 * "-1" to disable pretty-printing (disabled by default)
+	 * "null" to disable pretty-printing (disabled by default)
 	 * @param xmlVersion the XML version to use (defaults to "1.0") (Note: Many
 	 * JDKs only support 1.0 natively. For XML 1.1 support, add a JAXP library
 	 * like <a href=
@@ -234,7 +233,7 @@ public class XCalWriter extends StreamWriter {
 	 * >xalan</a> to your project)
 	 * @throws IOException if there's a problem opening the file
 	 */
-	public XCalWriter(File file, int indent, String xmlVersion) throws IOException {
+	public XCalWriter(File file, Integer indent, String xmlVersion) throws IOException {
 		this(utf8Writer(file), indent, xmlVersion);
 	}
 
@@ -252,30 +251,30 @@ public class XCalWriter extends StreamWriter {
 	 * @param writer the writer to write to
 	 */
 	public XCalWriter(Writer writer) {
-		this(writer, -1);
+		this(writer, (Integer) null);
 	}
 
 	/**
 	 * @param writer the writer to write to
 	 * @param indent the number of indent spaces to use for pretty-printing or
-	 * "-1" to disable pretty-printing (disabled by default)
+	 * "null" to disable pretty-printing (disabled by default)
 	 */
-	public XCalWriter(Writer writer, int indent) {
+	public XCalWriter(Writer writer, Integer indent) {
 		this(writer, indent, null);
 	}
 
 	/**
 	 * @param writer the writer to write to
 	 * @param indent the number of indent spaces to use for pretty-printing or
-	 * "-1" to disable pretty-printing (disabled by default)
+	 * "null" to disable pretty-printing (disabled by default)
 	 * @param xmlVersion the XML version to use (defaults to "1.0") (Note: Many
 	 * JDKs only support 1.0 natively. For XML 1.1 support, add a JAXP library
 	 * like <a href=
 	 * "http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22xalan%22%20AND%20a%3A%22xalan%22"
 	 * >xalan</a> to your project)
 	 */
-	public XCalWriter(Writer writer, int indent, String xmlVersion) {
-		this(writer, createOutputProperties(indent, xmlVersion));
+	public XCalWriter(Writer writer, Integer indent, String xmlVersion) {
+		this(writer, new XCalOutputProperties(indent, xmlVersion));
 	}
 
 	/**
@@ -292,22 +291,6 @@ public class XCalWriter extends StreamWriter {
 	 */
 	public XCalWriter(Node parent) {
 		this(null, parent, new HashMap<String, String>());
-	}
-
-	private static Map<String, String> createOutputProperties(int indent, String xmlVersion) {
-		Map<String, String> properties = new HashMap<String, String>();
-		properties.put(OutputKeys.METHOD, "xml");
-
-		if (indent >= 0) {
-			properties.put(OutputKeys.INDENT, "yes");
-			properties.put("{http://xml.apache.org/xslt}indent-amount", Integer.toString(indent));
-		}
-
-		if (xmlVersion != null) {
-			properties.put(OutputKeys.VERSION, xmlVersion);
-		}
-
-		return properties;
 	}
 
 	private XCalWriter(Writer writer, Node parent, Map<String, String> outputProperties) {
