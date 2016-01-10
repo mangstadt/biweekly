@@ -1,6 +1,8 @@
 package biweekly.property;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
@@ -187,5 +189,13 @@ public class Version extends ICalProperty {
 		if (maxVersion == null) {
 			warnings.add(Warning.validate(35));
 		}
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		values.put("minVersion", minVersion);
+		values.put("maxVersion", maxVersion);
+		return values;
 	}
 }

@@ -1,7 +1,9 @@
 package biweekly.property;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
@@ -143,5 +145,13 @@ public class Trigger extends ICalProperty {
 		if (duration != null && related == null) {
 			warnings.add(Warning.validate(10));
 		}
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		values.put("duration", duration);
+		values.put("date", date);
+		return values;
 	}
 }

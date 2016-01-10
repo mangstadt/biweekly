@@ -1,5 +1,7 @@
 package biweekly.property;
 
+import java.util.Map;
+
 import biweekly.component.VAlarm;
 
 /*
@@ -66,5 +68,14 @@ public class AudioAlarm extends VCalAlarmProperty {
 		this.data = data;
 		this.uri = null;
 		this.contentId = null;
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = super.toStringValues();
+		values.put("data", (data == null) ? "null" : "length: " + data.length);
+		values.put("uri", uri);
+		values.put("contentId", contentId);
+		return values;
 	}
 }

@@ -1,5 +1,7 @@
 package biweekly.property;
 
+import java.util.Map;
+
 import biweekly.component.VAlarm;
 
 /*
@@ -55,5 +57,12 @@ public class DisplayAlarm extends VCalAlarmProperty {
 	 */
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = super.toStringValues();
+		values.put("text", text);
+		return values;
 	}
 }

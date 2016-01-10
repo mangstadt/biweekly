@@ -1,6 +1,8 @@
 package biweekly.property;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
@@ -78,5 +80,12 @@ public class ValuedProperty<T> extends ICalProperty {
 	 */
 	public static <T> T getValue(ValuedProperty<T> property) {
 		return (property == null) ? null : property.getValue();
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		values.put("value", value);
+		return values;
 	}
 }

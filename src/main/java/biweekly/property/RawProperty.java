@@ -1,6 +1,8 @@
 package biweekly.property;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -70,5 +72,14 @@ public class RawProperty extends ICalProperty {
 		if (!validCharacters.containsOnly(name)) {
 			warnings.add(Warning.validate(52, name));
 		}
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		values.put("name", name);
+		values.put("value", value);
+		values.put("dataType", dataType);
+		return values;
 	}
 }

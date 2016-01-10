@@ -1,5 +1,7 @@
 package biweekly.property;
 
+import java.util.Map;
+
 import biweekly.component.VAlarm;
 
 /*
@@ -61,5 +63,12 @@ public class ProcedureAlarm extends VCalAlarmProperty {
 	 */
 	public void getPath(String path) {
 		this.path = path;
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = super.toStringValues();
+		values.put("path", path);
+		return values;
 	}
 }

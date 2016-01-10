@@ -1,6 +1,8 @@
 package biweekly.property;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
@@ -155,5 +157,14 @@ public class RequestStatus extends ICalProperty {
 		if (statusCode == null) {
 			warnings.add(Warning.validate(36));
 		}
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		values.put("statusCode", statusCode);
+		values.put("description", description);
+		values.put("exceptionText", exceptionText);
+		return values;
 	}
 }

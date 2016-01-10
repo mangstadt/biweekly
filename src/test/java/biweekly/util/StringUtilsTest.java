@@ -111,6 +111,13 @@ public class StringUtilsTest {
 	}
 
 	@Test
+	public void repeat_sb() {
+		StringBuilder sb = new StringBuilder("a");
+		StringUtils.repeat(' ', 2, sb);
+		assertEquals("a  ", sb.toString());
+	}
+
+	@Test
 	public void join_multiple() {
 		Collection<String> values = Arrays.asList("one", "two", "three");
 		assertEquals("ONE,TWO,THREE", StringUtils.join(values, ",", new JoinCallback<String>() {

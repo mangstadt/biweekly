@@ -3,7 +3,9 @@ package biweekly.property;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
@@ -169,5 +171,14 @@ public class Attachment extends ICalProperty {
 		if (uri == null && data == null && contentId == null) {
 			warnings.add(Warning.validate(26));
 		}
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		values.put("data", (data == null) ? "null" : "length: " + data.length);
+		values.put("uri", uri);
+		values.put("contentId", contentId);
+		return values;
 	}
 }

@@ -67,7 +67,7 @@ public class ParticipationLevel {
 		Map<ICalVersion, String> values = new HashMap<ICalVersion, String>();
 		values.put(ICalVersion.V1_0, "REQUIRE");
 		values.put(ICalVersion.V2_0_DEPRECATED, "REQ-PARTICIPANT");
-		values.put(ICalVersion.V2_0, "REQ-PARTICIPANT");
+		values.put(ICalVersion.V2_0, values.get(ICalVersion.V2_0_DEPRECATED));
 		REQUIRED = new ParticipationLevel(values);
 	}
 
@@ -79,7 +79,7 @@ public class ParticipationLevel {
 		Map<ICalVersion, String> values = new HashMap<ICalVersion, String>();
 		values.put(ICalVersion.V1_0, "REQUEST");
 		values.put(ICalVersion.V2_0_DEPRECATED, "OPT-PARTICIPANT");
-		values.put(ICalVersion.V2_0, "OPT-PARTICIPANT");
+		values.put(ICalVersion.V2_0, values.get(ICalVersion.V2_0_DEPRECATED));
 		OPTIONAL = new ParticipationLevel(values);
 	}
 
@@ -92,7 +92,7 @@ public class ParticipationLevel {
 		Map<ICalVersion, String> values = new HashMap<ICalVersion, String>();
 		values.put(ICalVersion.V1_0, "FYI");
 		values.put(ICalVersion.V2_0_DEPRECATED, "NON-PARTICIPANT");
-		values.put(ICalVersion.V2_0, "NON-PARTICIPANT");
+		values.put(ICalVersion.V2_0, values.get(ICalVersion.V2_0_DEPRECATED));
 		FYI = new ParticipationLevel(values);
 	}
 
@@ -117,6 +117,11 @@ public class ParticipationLevel {
 	 */
 	public String getValue(ICalVersion version) {
 		return values.get(version);
+	}
+
+	@Override
+	public String toString() {
+		return getValue(ICalVersion.V2_0);
 	}
 
 	/**

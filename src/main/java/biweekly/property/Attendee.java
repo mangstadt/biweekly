@@ -1,6 +1,8 @@
 package biweekly.property;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
@@ -394,5 +396,18 @@ public class Attendee extends ICalProperty {
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		//TODO
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		values.put("name", name);
+		values.put("email", email);
+		values.put("uri", uri);
+		values.put("role", role);
+		values.put("participationLevel", participationLevel);
+		values.put("status", status);
+		values.put("rsvp", rsvp);
+		return values;
 	}
 }

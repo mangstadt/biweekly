@@ -1,6 +1,8 @@
 package biweekly.property;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
@@ -173,5 +175,17 @@ public class Daylight extends ICalProperty {
 		if (daylight && (offset == null || start == null || end == null || standardName == null || daylightName == null)) {
 			warnings.add(Warning.validate(43));
 		}
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		values.put("daylight", daylight);
+		values.put("offset", offset);
+		values.put("start", start);
+		values.put("end", end);
+		values.put("standardName", standardName);
+		values.put("daylightName", daylightName);
+		return values;
 	}
 }

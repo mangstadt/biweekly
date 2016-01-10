@@ -12,6 +12,7 @@ import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.Status;
 import biweekly.util.ListMultimap;
+import biweekly.util.StringUtils;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -474,6 +475,27 @@ public abstract class ICalComponent {
 		String actualValue = actual.getValue().toLowerCase();
 		if (!allowedValues.contains(actualValue)) {
 			warnings.add(Warning.validate(13, actual.getValue(), allowedValues));
+		}
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		toString(0, sb);
+		return sb.toString();
+	}
+
+	private void toString(int depth, StringBuilder sb) {
+		StringUtils.repeat(' ', depth * 2, sb);
+		sb.append(getClass().getName()).append(StringUtils.NEWLINE);
+
+		depth++;
+		for (ICalProperty property : properties.values()) {
+			StringUtils.repeat(' ', depth * 2, sb);
+			sb.append(property).append(StringUtils.NEWLINE);
+		}
+		for (ICalComponent component : components.values()) {
+			component.toString(depth, sb);
 		}
 	}
 }

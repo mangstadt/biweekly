@@ -1,6 +1,8 @@
 package biweekly.property;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
@@ -117,5 +119,13 @@ public class Geo extends ICalProperty {
 		if (longitude == null) {
 			warnings.add(Warning.validate(42));
 		}
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		values.put("latitude", latitude);
+		values.put("longitude", longitude);
+		return values;
 	}
 }

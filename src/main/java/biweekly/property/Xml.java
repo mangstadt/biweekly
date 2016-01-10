@@ -1,5 +1,8 @@
 package biweekly.property;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -65,5 +68,12 @@ public class Xml extends ValuedProperty<Document> {
 	 */
 	public Xml(Document document) {
 		super(document);
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		values.put("value", (value == null) ? "null" : XmlUtils.toString(value));
+		return values;
 	}
 }

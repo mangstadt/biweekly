@@ -1,6 +1,8 @@
 package biweekly.property;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import biweekly.component.VAlarm;
 import biweekly.util.Duration;
@@ -71,5 +73,14 @@ public class VCalAlarmProperty extends ICalProperty {
 
 	public void setRepeat(Integer repeat) {
 		this.repeat = repeat;
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		values.put("start", start);
+		values.put("snooze", snooze);
+		values.put("repeat", repeat);
+		return values;
 	}
 }

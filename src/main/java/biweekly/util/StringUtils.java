@@ -84,10 +84,20 @@ public class StringUtils {
 		}
 
 		StringBuilder sb = new StringBuilder(count);
+		repeat(c, count, sb);
+		return sb.toString();
+	}
+
+	/**
+	 * Creates a string consisting of "count" occurrences of char "c".
+	 * @param c the character to repeat
+	 * @param count the number of times to repeat the character
+	 * @param sb the character sequence to append the characters to
+	 */
+	public static void repeat(char c, int count, StringBuilder sb) {
 		for (int i = 0; i < count; i++) {
 			sb.append(c);
 		}
-		return sb.toString();
 	}
 
 	/**

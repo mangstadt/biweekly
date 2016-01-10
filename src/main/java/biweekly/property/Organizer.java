@@ -1,5 +1,8 @@
 package biweekly.property;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import biweekly.component.VEvent;
 import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
@@ -148,5 +151,14 @@ public class Organizer extends ICalProperty {
 	@Override
 	public void setLanguage(String language) {
 		super.setLanguage(language);
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		values.put("name", name);
+		values.put("email", email);
+		values.put("uri", uri);
+		return values;
 	}
 }

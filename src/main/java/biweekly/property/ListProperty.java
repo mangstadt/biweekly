@@ -1,7 +1,9 @@
 package biweekly.property;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
@@ -87,5 +89,12 @@ public class ListProperty<T> extends ICalProperty {
 		if (values.isEmpty()) {
 			warnings.add(Warning.validate(26));
 		}
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		values.put("values", this.values);
+		return values;
 	}
 }

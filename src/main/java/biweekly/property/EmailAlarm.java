@@ -1,5 +1,7 @@
 package biweekly.property;
 
+import java.util.Map;
+
 import biweekly.component.VAlarm;
 
 /*
@@ -71,6 +73,14 @@ public class EmailAlarm extends VCalAlarmProperty {
 	 */
 	public void setNote(String note) {
 		this.note = note;
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = super.toStringValues();
+		values.put("email", email);
+		values.put("note", note);
+		return values;
 	}
 
 }

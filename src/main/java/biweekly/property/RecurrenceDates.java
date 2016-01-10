@@ -2,7 +2,9 @@ package biweekly.property;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
@@ -145,5 +147,13 @@ public class RecurrenceDates extends ICalProperty {
 				}
 			}
 		}
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		values.put("dates", dates);
+		values.put("periods", periods);
+		return values;
 	}
 }

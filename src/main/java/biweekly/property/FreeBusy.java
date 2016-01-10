@@ -2,7 +2,9 @@ package biweekly.property;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
@@ -142,5 +144,12 @@ public class FreeBusy extends ICalProperty {
 				break;
 			}
 		}
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		values.put("values", this.values);
+		return values;
 	}
 }

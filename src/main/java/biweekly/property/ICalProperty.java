@@ -2,7 +2,9 @@ package biweekly.property;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
@@ -312,5 +314,35 @@ public abstract class ICalProperty {
 	 */
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		//do nothing
+	}
+
+	/**
+	 * <p>
+	 * Gets string representations of the class's fields for the
+	 * {@link #toString} method.
+	 * </p>
+	 * <p>
+	 * Meant to be overridden by child classes. The default implementation
+	 * returns an empty map.
+	 * </p>
+	 * @return the values of the class's fields (key = field name, value = field
+	 * value)
+	 */
+	protected Map<String, Object> toStringValues() {
+		return Collections.emptyMap();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getClass().getName());
+		sb.append(" [parameters=").append(parameters);
+		for (Map.Entry<String, Object> field : toStringValues().entrySet()) {
+			String fieldName = field.getKey();
+			Object fieldValue = field.getValue();
+			sb.append(" | ").append(fieldName).append('=').append(fieldValue);
+		}
+		sb.append(']');
+		return sb.toString();
 	}
 }
