@@ -5,9 +5,8 @@ import java.io.Flushable;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.util.BitSet;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -15,6 +14,7 @@ import java.util.regex.Pattern;
 import biweekly.ICalVersion;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
+import biweekly.util.CharacterBitSet;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -50,15 +50,17 @@ import biweekly.parameter.ICalParameters;
  */
 public class ICalRawWriter implements Closeable, Flushable {
 	/**
-	 * Regular expression used to determine if a parameter value needs to be
-	 * quoted.
+	 * If any of these characters are found within a parameter value, then the
+	 * entire parameter value must be wrapped in double quotes (applies to
+	 * version 2.0 only).
 	 */
-	private static final Pattern quoteMeRegex = Pattern.compile(".*?[,:;].*");
+	private final CharacterBitSet specialParameterCharacters = new CharacterBitSet(",:;");
 
 	/**
 	 * Regular expression used to detect newline character sequences.
 	 */
-	private static final Pattern newlineRegex = Pattern.compile("\\r\\n|\\r|\\n");
+	private final Pattern newlineRegex = Pattern.compile("\\r\\n|\\r|\\n");
+	private final CharacterBitSet newlineBitSet = new CharacterBitSet("\r\n");
 
 	/**
 	 * List of characters which would break the syntax of the iCalendar object
@@ -66,48 +68,44 @@ public class ICalRawWriter implements Closeable, Flushable {
 	 * specification is much more strict, but the goal here is to be as lenient
 	 * as possible.
 	 */
-	private static final String invalidPropertyNameCharacters = ";:\n\r";
+	private final CharacterBitSet invalidPropertyNameCharacters = new CharacterBitSet(";:\n\r");
 
 	/**
-	 * The characters that are not valid in parameter values and that should be
-	 * removed.
+	 * List of characters which would break the syntax of the iCalendar object
+	 * if used inside a parameter value with caret encoding disabled. These
+	 * characters cannot be escaped or encoded, so they are impossible to
+	 * include inside of a parameter value. The list of characters permitted by
+	 * the specification is much more strict, but the goal here is to be as
+	 * lenient as possible.
 	 */
-	private static final Map<ICalVersion, BitSet> invalidParamValueChars;
-	static {
-		BitSet controlChars = new BitSet(128);
-		controlChars.set(0, 31);
-		controlChars.set(127);
-		controlChars.set('\t', false); //allow
-		controlChars.set('\n', false); //allow
-		controlChars.set('\r', false); //allow
+	private final Map<ICalVersion, CharacterBitSet> invalidParamValueChars;
+	{
+		Map<ICalVersion, CharacterBitSet> map = new EnumMap<ICalVersion, CharacterBitSet>(ICalVersion.class);
 
-		Map<ICalVersion, BitSet> map = new HashMap<ICalVersion, BitSet>();
-
-		//1.0
-		{
-			BitSet bitSet = new BitSet(128);
-			bitSet.or(controlChars);
-
-			bitSet.set(',');
-			bitSet.set('.');
-			bitSet.set(':');
-			bitSet.set('=');
-			bitSet.set('[');
-			bitSet.set(']');
-
-			map.put(ICalVersion.V1_0, bitSet);
-		}
-
-		//2.0
-		{
-			BitSet bitSet = new BitSet(128);
-			bitSet.or(controlChars);
-
-			map.put(ICalVersion.V2_0_DEPRECATED, bitSet);
-			map.put(ICalVersion.V2_0, bitSet);
-		}
+		map.put(ICalVersion.V1_0, new CharacterBitSet(",:\n\r")); //note: semicolons can be escaped
+		map.put(ICalVersion.V2_0_DEPRECATED, new CharacterBitSet("\"\r\n"));
+		map.put(ICalVersion.V2_0, map.get(ICalVersion.V2_0_DEPRECATED));
 
 		invalidParamValueChars = Collections.unmodifiableMap(map);
+	}
+
+	/**
+	 * List of characters which would break the syntax of the iCalendar object
+	 * if used inside a parameter value with caret encoding enabled. These
+	 * characters cannot be escaped or encoded, so they are impossible to
+	 * include inside of a parameter value. The list of characters permitted by
+	 * the specification is much more strict, but the goal here is to be as
+	 * lenient as possible.
+	 */
+	private final Map<ICalVersion, CharacterBitSet> invalidParamValueCharsWithCaretEncoding;
+	{
+		Map<ICalVersion, CharacterBitSet> map = new EnumMap<ICalVersion, CharacterBitSet>(ICalVersion.class);
+
+		map.put(ICalVersion.V1_0, invalidParamValueChars.get(ICalVersion.V1_0)); //1.0 does not support caret encoding
+		map.put(ICalVersion.V2_0_DEPRECATED, new CharacterBitSet(""));
+		map.put(ICalVersion.V2_0, map.get(ICalVersion.V2_0_DEPRECATED));
+
+		invalidParamValueCharsWithCaretEncoding = Collections.unmodifiableMap(map);
 	}
 
 	private final FoldedLineWriter writer;
@@ -134,35 +132,31 @@ public class ICalRawWriter implements Closeable, Flushable {
 	/**
 	 * <p>
 	 * Gets whether the writer will apply circumflex accent encoding on
-	 * parameter values (disabled by default). This escaping mechanism allows
-	 * for newlines and double quotes to be included in parameter values.
+	 * parameter values (disabled by default, only applies to version 2.0). This
+	 * escaping mechanism allows for newlines and double quotes to be included
+	 * in parameter values.
 	 * </p>
 	 * 
 	 * <p>
-	 * When disabled, the writer will replace newlines with spaces and double
-	 * quotes with single quotes.
+	 * Note that this encoding mechanism is defined separately from the
+	 * iCalendar specification and may not be supported by the iCalendar
+	 * consumer.
 	 * </p>
 	 * 
-	 * <table border="1">
+	 * <table class="simpleTable">
 	 * <tr>
-	 * <th>Character</th>
-	 * <th>Replacement<br>
-	 * (when disabled)</th>
-	 * <th>Replacement<br>
-	 * (when enabled)</th>
+	 * <th>Raw Character</th>
+	 * <th>Encoded Character</th>
 	 * </tr>
 	 * <tr>
 	 * <td>{@code "}</td>
-	 * <td>{@code '}</td>
 	 * <td>{@code ^'}</td>
 	 * </tr>
 	 * <tr>
 	 * <td><i>newline</i></td>
-	 * <td><code><i>space</i></code></td>
 	 * <td>{@code ^n}</td>
 	 * </tr>
 	 * <tr>
-	 * <td>{@code ^}</td>
 	 * <td>{@code ^}</td>
 	 * <td>{@code ^^}</td>
 	 * </tr>
@@ -173,8 +167,7 @@ public class ICalRawWriter implements Closeable, Flushable {
 	 * </p>
 	 * 
 	 * <pre>
-	 * GEO;X-ADDRESS="Pittsburgh Pirates^n115 Federal St^nPitt
-	 *  sburgh, PA 15212":40.446816;80.00566
+	 * GEO;X-ADDRESS="Pittsburgh Pirates^n115 Federal St^nPittsburgh, PA 15212":40.446816;80.00566
 	 * </pre>
 	 * 
 	 * @return true if circumflex accent encoding is enabled, false if not
@@ -187,36 +180,31 @@ public class ICalRawWriter implements Closeable, Flushable {
 	/**
 	 * <p>
 	 * Sets whether the writer will apply circumflex accent encoding on
-	 * parameter values (disabled by default). This escaping mechanism allows
-	 * for newlines and double quotes to be included in parameter values. This
-	 * will only be done for version 2.0 iCalendar objects.
+	 * parameter values (disabled by default, only applies to version 2.0). This
+	 * escaping mechanism allows for newlines and double quotes to be included
+	 * in parameter values.
 	 * </p>
 	 * 
 	 * <p>
-	 * When disabled, the writer will replace newlines with spaces and double
-	 * quotes with single quotes.
+	 * Note that this encoding mechanism is defined separately from the
+	 * iCalendar specification and may not be supported by the iCalendar
+	 * consumer.
 	 * </p>
 	 * 
-	 * <table border="1">
+	 * <table class="simpleTable">
 	 * <tr>
-	 * <th>Character</th>
-	 * <th>Replacement<br>
-	 * (when disabled)</th>
-	 * <th>Replacement<br>
-	 * (when enabled)</th>
+	 * <th>Raw Character</th>
+	 * <th>Encoded Character</th>
 	 * </tr>
 	 * <tr>
 	 * <td>{@code "}</td>
-	 * <td>{@code '}</td>
 	 * <td>{@code ^'}</td>
 	 * </tr>
 	 * <tr>
 	 * <td><i>newline</i></td>
-	 * <td><code><i>space</i></code></td>
 	 * <td>{@code ^n}</td>
 	 * </tr>
 	 * <tr>
-	 * <td>{@code ^}</td>
 	 * <td>{@code ^}</td>
 	 * <td>{@code ^^}</td>
 	 * </tr>
@@ -227,8 +215,7 @@ public class ICalRawWriter implements Closeable, Flushable {
 	 * </p>
 	 * 
 	 * <pre>
-	 * GEO;X-ADDRESS="Pittsburgh Pirates^n115 Federal St^nPitt
-	 *  sburgh, PA 15212":40.446816;80.00566
+	 * GEO;X-ADDRESS="Pittsburgh Pirates^n115 Federal St^nPittsburgh, PA 15212":40.446816;80.00566
 	 * </pre>
 	 * 
 	 * @param enable true to use circumflex accent encoding, false not to
@@ -255,29 +242,27 @@ public class ICalRawWriter implements Closeable, Flushable {
 	}
 
 	/**
-	 * Writes a property marking the beginning of a component (in other words,
-	 * writes a "BEGIN:NAME" property).
+	 * Writes a property marking the beginning of a component.
 	 * @param componentName the component name (e.g. "VEVENT")
-	 * @throws IOException if there's an I/O problem
+	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	public void writeBeginComponent(String componentName) throws IOException {
 		writeProperty("BEGIN", componentName);
 	}
 
 	/**
-	 * Writes a property marking the end of a component (in other words, writes
-	 * a "END:NAME" property).
+	 * Writes a property marking the end of a component.
 	 * @param componentName the component name (e.g. "VEVENT")
-	 * @throws IOException if there's an I/O problem
+	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	public void writeEndComponent(String componentName) throws IOException {
 		writeProperty("END", componentName);
 	}
 
 	/**
-	 * Writes a "VERSION" property, based on the iCalendar version that the
-	 * writer is adhering to.
-	 * @throws IOException if there's an I/O problem
+	 * Writes a "VERSION" property, setting its value to iCalendar version that
+	 * this writer is adhering to.
+	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	public void writeVersion() throws IOException {
 		writeProperty("VERSION", version.getVersion());
@@ -285,11 +270,12 @@ public class ICalRawWriter implements Closeable, Flushable {
 
 	/**
 	 * Writes a property to the iCalendar data stream.
-	 * @param propertyName the property name (e.g. "VERSION")
-	 * @param value the property value (e.g. "2.0")
-	 * @throws IllegalArgumentException if the property name contains invalid
-	 * characters
-	 * @throws IOException if there's an I/O problem
+	 * @param propertyName the property name (e.g. "SUMMARY")
+	 * @param value the property value
+	 * @throws IllegalArgumentException if the property data contains one or
+	 * more characters which break the iCalendar syntax and which cannot be
+	 * escaped or encoded
+	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	public void writeProperty(String propertyName, String value) throws IOException {
 		writeProperty(propertyName, new ICalParameters(), value);
@@ -297,17 +283,18 @@ public class ICalRawWriter implements Closeable, Flushable {
 
 	/**
 	 * Writes a property to the iCalendar data stream.
-	 * @param propertyName the property name (e.g. "VERSION")
+	 * @param propertyName the property name (e.g. "SUMMARY")
 	 * @param parameters the property parameters
-	 * @param value the property value (e.g. "2.0")
-	 * @throws IllegalArgumentException if the property name contains invalid
-	 * characters
-	 * @throws IOException if there's an I/O problem
+	 * @param value the property value
+	 * @throws IllegalArgumentException if the property data contains one or
+	 * more characters which break the iCalendar syntax and which cannot be
+	 * escaped or encoded
+	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	public void writeProperty(String propertyName, ICalParameters parameters, String value) throws IOException {
 		//validate the property name
-		if (!isValidPropertyName(propertyName)) {
-			throw new IllegalArgumentException("Property name \"" + propertyName + "\" contains one or more invalid characters.  The following characters are not permitted: ;:\\n\\r");
+		if (invalidPropertyNameCharacters.containsAny(propertyName)) {
+			throw new IllegalArgumentException("Property name \"" + propertyName + "\" contains one or more invalid characters.  The following characters are not permitted: " + printableCharacterList(invalidPropertyNameCharacters.characters()));
 		}
 		if (beginsWithWhitespace(propertyName)) {
 			throw new IllegalArgumentException("Property name \"" + propertyName + "\" begins with one or more whitespace characters, which is not permitted.");
@@ -366,7 +353,7 @@ public class ICalRawWriter implements Closeable, Flushable {
 				parameterValue = sanitizeParameterValue(parameterValue, parameterName, propertyName);
 
 				//surround with double quotes if contains special chars
-				if (containsSpecialChars(parameterValue)) {
+				if (specialParameterCharacters.containsAny(parameterValue)) {
 					writer.append('"').append(parameterValue).append('"');
 				} else {
 					writer.append(parameterValue);
@@ -383,16 +370,11 @@ public class ICalRawWriter implements Closeable, Flushable {
 		writer.append(writer.getNewline());
 	}
 
-	private boolean isValidPropertyName(String name) {
-		for (int i = 0; i < invalidPropertyNameCharacters.length(); i++) {
-			char c = invalidPropertyNameCharacters.charAt(i);
-			if (name.indexOf(c) >= 0) {
-				return false;
-			}
-		}
-		return true;
-	}
-
+	/**
+	 * Determines if a given string starts with whitespace.
+	 * @param string the string
+	 * @return true if it starts with whitespace, false if not
+	 */
 	private boolean beginsWithWhitespace(String string) {
 		if (string.length() == 0) {
 			return false;
@@ -412,10 +394,11 @@ public class ICalRawWriter implements Closeable, Flushable {
 			return "";
 		}
 
-		if (version == ICalVersion.V1_0 && containsNewlines(value)) {
+		if (version == ICalVersion.V1_0 && newlineBitSet.containsAny(value)) {
 			/*
 			 * 1.0 does not support the "\n" escape sequence (see "Delimiters"
-			 * sub-section in section 2 of the specs)
+			 * sub-section in section 2 of the specs) so encode the value in
+			 * quoted-printable encoding if any newline characters exist.
 			 */
 			parameters.setEncoding(Encoding.QUOTED_PRINTABLE);
 			return value;
@@ -425,73 +408,41 @@ public class ICalRawWriter implements Closeable, Flushable {
 	}
 
 	/**
-	 * Removes or escapes all invalid characters in a parameter value.
+	 * Sanitizes a parameter value for serialization.
 	 * @param parameterValue the parameter value
 	 * @param parameterName the parameter name
 	 * @param propertyName the name of the property to which the parameter
 	 * belongs
 	 * @return the sanitized parameter value
+	 * @throws IllegalArgumentException if the value contains invalid characters
 	 */
 	private String sanitizeParameterValue(String parameterValue, String parameterName, String propertyName) {
-		//remove invalid characters
-		parameterValue = removeInvalidParameterValueChars(parameterValue);
+		CharacterBitSet invalidChars = (caretEncodingEnabled ? invalidParamValueCharsWithCaretEncoding : invalidParamValueChars).get(version);
+		if (invalidChars.containsAny(parameterValue)) {
+			throw new IllegalArgumentException("Property \"" + propertyName + "\" has a parameter named \"" + parameterName + "\" whose value contains one or more invalid characters.  The following characters are not permitted: " + printableCharacterList(invalidChars.characters()));
+		}
 
+		String sanitizedValue = parameterValue;
 		switch (version) {
 		case V1_0:
-			//replace newlines with spaces
-			parameterValue = newlineRegex.matcher(parameterValue).replaceAll(" ");
+			//Note: 1.0 does not support caret encoding.
 
 			//escape backslashes
-			parameterValue = parameterValue.replace("\\", "\\\\");
+			sanitizedValue = sanitizedValue.replace("\\", "\\\\");
 
 			//escape semi-colons (see section 2)
-			parameterValue = parameterValue.replace(";", "\\;");
-
-			break;
+			return sanitizedValue.replace(";", "\\;");
 
 		default:
 			if (caretEncodingEnabled) {
-				//apply caret encoding
-				parameterValue = applyCaretEncoding(parameterValue);
-			} else {
-				//replace double quotes with single quotes
-				parameterValue = parameterValue.replace('"', '\'');
-
-				//replace newlines with spaces
-				parameterValue = newlineRegex.matcher(parameterValue).replaceAll(" ");
+				return applyCaretEncoding(sanitizedValue);
 			}
-
-			break;
+			return sanitizedValue;
 		}
-
-		return parameterValue;
 	}
 
-	/**
-	 * Removes invalid characters from a parameter value.
-	 * @param value the parameter value
-	 * @return the sanitized parameter value
-	 */
-	private String removeInvalidParameterValueChars(String value) {
-		BitSet invalidChars = invalidParamValueChars.get(version);
-		StringBuilder sb = null;
-
-		for (int i = 0; i < value.length(); i++) {
-			char ch = value.charAt(i);
-			if (invalidChars.get(ch)) {
-				if (sb == null) {
-					sb = new StringBuilder(value.length());
-					sb.append(value.substring(0, i));
-				}
-				continue;
-			}
-
-			if (sb != null) {
-				sb.append(ch);
-			}
-		}
-
-		return (sb == null) ? value : sb.toString();
+	private String printableCharacterList(String list) {
+		return list.replace("\n", "\\n").replace("\r", "\\r");
 	}
 
 	/**
@@ -507,46 +458,12 @@ public class ICalRawWriter implements Closeable, Flushable {
 	}
 
 	/**
-	 * Escapes all newline characters.
-	 * <p>
-	 * This method escapes the following newline sequences:
-	 * </p>
-	 * <ul>
-	 * <li>{@code \r\n}</li>
-	 * <li>{@code \r}</li>
-	 * <li>{@code \n}</li>
-	 * </ul>
-	 * @param text the text to escape
-	 * @return the escaped text
+	 * Escapes all newlines in a string.
+	 * @param string the string to escape
+	 * @return the escaped string
 	 */
-	private String escapeNewlines(String text) {
-		return newlineRegex.matcher(text).replaceAll("\\\\n");
-	}
-
-	/**
-	 * <p>
-	 * Determines if a string has at least one newline character sequence. The
-	 * newline character sequences are:
-	 * </p>
-	 * <ul>
-	 * <li>{@code \r\n}</li>
-	 * <li>{@code \r}</li>
-	 * <li>{@code \n}</li>
-	 * </ul>
-	 * @param text the text to escape
-	 * @return the escaped text
-	 */
-	private boolean containsNewlines(String text) {
-		return newlineRegex.matcher(text).find();
-	}
-
-	/**
-	 * Determines if a parameter value contains special characters.
-	 * @param parameterValue the parameter value
-	 * @return true if it contains special characters, false if not
-	 */
-	private boolean containsSpecialChars(String parameterValue) {
-		return quoteMeRegex.matcher(parameterValue).matches();
+	private String escapeNewlines(String string) {
+		return newlineRegex.matcher(string).replaceAll("\\\\n");
 	}
 
 	/**
@@ -559,6 +476,7 @@ public class ICalRawWriter implements Closeable, Flushable {
 
 	/**
 	 * Closes the underlying {@link Writer} object.
+	 * @throws IOException if there's a problem closing the writer
 	 */
 	public void close() throws IOException {
 		writer.close();

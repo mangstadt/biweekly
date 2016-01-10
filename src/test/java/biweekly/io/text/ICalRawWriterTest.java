@@ -2,7 +2,10 @@ package biweekly.io.text;
 
 import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
+import static biweekly.util.TestUtils.each;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -229,45 +232,69 @@ public class ICalRawWriterTest {
 	}
 
 	@Test
-	public void parameters_special_chars() throws Throwable {
-		//1.0 without caret escaping
-		//removes , : = [ ] FS
-		//replaces \ with \\
-		//replaces ; with \;
-		//replaces newline with space
-		assertParametersSpecialChars(V1_0, false, "PROP;X-TEST=^�\\\\\\;\"\t ;X-TEST=normal:\r\n");
+	public void invalid_parameter_value_characters() throws Throwable {
+		assert_invalid_parameter_value_characters(V1_0, ",:\r\n", false, true);
+		assert_invalid_parameter_value_characters(V1_0, ",:\r\n", true, true);
 
-		//1.0 with caret escaping (ignored)
-		//removes , : = [ ] FS
-		//replaces \ with \\
-		//replaces ; with \;
-		//replaces newline with space
-		assertParametersSpecialChars(V1_0, true, "PROP;X-TEST=^�\\\\\\;\"\t ;X-TEST=normal:\r\n");
-
-		//2.0 without caret escaping
-		//removes FS
-		//replaces \ with \\
-		//replaces newline with space
-		//replaces " with '
-		//surrounds in double quotes, since it contains , ; or :
-		assertParametersSpecialChars(V2_0, false, "PROP;X-TEST=\"^�\\,;:=[]'\t \",normal:\r\n");
-
-		//2.0 with caret escaping
-		//removes FS
-		//replaces ^ with ^^
-		//replaces newline with ^n
-		//replaces " with ^'
-		//surrounds in double quotes, since it contains , ; or :
-		assertParametersSpecialChars(V2_0, true, "PROP;X-TEST=\"^^�\\,;:=[]^'\t^n\",normal:\r\n");
+		for (ICalVersion version : each(V2_0_DEPRECATED, V2_0)) {
+			assert_invalid_parameter_value_characters(version, "\"\r\n", false, true);
+			assert_invalid_parameter_value_characters(version, "\"\r\n", true, false);
+		}
 	}
 
-	private void assertParametersSpecialChars(ICalVersion version, boolean caretEncodingEnabled, String expected) throws IOException {
+	private void assert_invalid_parameter_value_characters(ICalVersion version, String characters, boolean caretEncoding, boolean exceptionExpected) throws IOException {
+		StringWriter sw = new StringWriter();
+		ICalRawWriter writer = new ICalRawWriter(sw, version);
+		writer.setCaretEncodingEnabled(caretEncoding);
+		for (char c : characters.toCharArray()) {
+			ICalParameters parameters = new ICalParameters();
+			parameters.put("NAME", "value" + c);
+			try {
+				writer.writeProperty("PROP", parameters, "");
+				if (exceptionExpected) {
+					fail("IllegalArgumentException expected with character '" + c + "'.");
+				}
+			} catch (IllegalArgumentException e) {
+				if (!exceptionExpected) {
+					fail("IllegalArgumentException not expected with character '" + c + "'.");
+				}
+			}
+		}
+	}
+
+	@Test
+	public void parameters_special_chars() throws Throwable {
+		//1.0 without caret escaping
+		//replaces \ with \\
+		//replaces ; with \;
+		assertParametersSpecialChars("^\\;=[]\"\t" + ((char) 28), V1_0, false, "PROP;X-TEST=^\\\\\\;=[]\"\t" + ((char) 28) + ";X-TEST=normal:\r\n");
+
+		//1.0 with caret escaping (ignored)
+		//replaces \ with \\
+		//replaces ; with \;
+		assertParametersSpecialChars("^\\;=[]\"\t" + ((char) 28), V1_0, true, "PROP;X-TEST=^\\\\\\;=[]\"\t" + ((char) 28) + ";X-TEST=normal:\r\n");
+
+		for (ICalVersion version : each(V2_0_DEPRECATED, V2_0)) {
+			//2.0 without caret escaping
+			//surrounds in double quotes, since it contains , ; or :
+			assertParametersSpecialChars("^\\,;:=[]\t" + ((char) 28), version, false, "PROP;X-TEST=\"^\\,;:=[]\t" + ((char) 28) + "\",normal:\r\n");
+
+			//2.0 with caret escaping (same as 4.0)
+			//replaces ^ with ^^
+			//replaces newline with ^n
+			//replaces " with ^'
+			//surrounds in double quotes, since it contains , ; or :
+			assertParametersSpecialChars("^\\,;:=[]\"\t\n" + ((char) 28), version, true, "PROP;X-TEST=\"^^\\,;:=[]^'\t^n" + ((char) 28) + "\",normal:\r\n");
+		}
+	}
+
+	private void assertParametersSpecialChars(String paramValue, ICalVersion version, boolean caretEncodingEnabled, String expected) throws IOException {
 		StringWriter sw = new StringWriter();
 		ICalRawWriter writer = new ICalRawWriter(sw, version);
 		writer.setCaretEncodingEnabled(caretEncodingEnabled);
 
 		ICalParameters parameters = new ICalParameters();
-		parameters.put("X-TEST", "^�\\,;:=[]\"\t\n" + ((char) 28));
+		parameters.put("X-TEST", paramValue);
 		parameters.put("X-TEST", "normal");
 		writer.writeProperty("PROP", parameters, "");
 

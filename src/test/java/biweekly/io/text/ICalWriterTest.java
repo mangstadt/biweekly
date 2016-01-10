@@ -157,7 +157,7 @@ public class ICalWriterTest {
 		assertRegex(expected, actual);
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void bad_parameter_value_chars() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProductId().addParameter("X-TEST", "\"test\"");
@@ -165,18 +165,6 @@ public class ICalWriterTest {
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.write(ical);
-		writer.close();
-
-		//@formatter:off
-		String expected = 
-		"BEGIN:VCALENDAR\r\n" +
-			"VERSION:2\\.0\r\n" +
-			"PRODID;X-TEST='test':.*?\r\n" +
-		"END:VCALENDAR\r\n";
-		//@formatter:on
-
-		String actual = sw.toString();
-		assertRegex(expected, actual);
 	}
 
 	@Test

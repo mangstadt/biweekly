@@ -9,6 +9,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -313,8 +314,12 @@ public class BiweeklyTest {
 		"PRODID;X-TEST=the 'best' app:prodid\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
-		String actual = Biweekly.write(ical).go();
-		assertRegex(expected, actual);
+		try {
+			Biweekly.write(ical).go();
+			fail("IllegalArgumentException expected");
+		} catch (IllegalArgumentException e) {
+			//expected
+		}
 
 		//@formatter:off
 		expected =
@@ -323,7 +328,7 @@ public class BiweeklyTest {
 		"PRODID;X-TEST=the \\^'best\\^' app:prodid\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
-		actual = Biweekly.write(ical).caretEncoding(true).go();
+		String actual = Biweekly.write(ical).caretEncoding(true).go();
 		assertRegex(expected, actual);
 
 		//@formatter:off
@@ -333,8 +338,12 @@ public class BiweeklyTest {
 		"PRODID;X-TEST=the 'best' app:prodid\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
-		actual = Biweekly.write(ical).caretEncoding(false).go();
-		assertRegex(expected, actual);
+		try {
+			Biweekly.write(ical).go();
+			fail("IllegalArgumentException expected");
+		} catch (IllegalArgumentException e) {
+			//expected
+		}
 	}
 
 	@Test

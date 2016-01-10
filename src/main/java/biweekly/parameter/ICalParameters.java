@@ -2,7 +2,9 @@ package biweekly.parameter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -11,6 +13,7 @@ import biweekly.property.FreeBusy;
 import biweekly.property.RecurrenceId;
 import biweekly.property.RelatedTo;
 import biweekly.property.Trigger;
+import biweekly.util.CharacterBitSet;
 import biweekly.util.ListMultimap;
 
 /*
@@ -553,6 +556,48 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 */
 	public List<Warning> validate(ICalVersion version) {
 		List<Warning> warnings = new ArrayList<Warning>(0);
+
+		/*
+		 * Check for invalid characters in names and values.
+		 */
+		{
+			BitSet invalidValueChars = new BitSet(128);
+			invalidValueChars.set(0, 31);
+			invalidValueChars.set(127);
+			invalidValueChars.set('\t', false); //allow
+			invalidValueChars.set('\n', false); //allow
+			invalidValueChars.set('\r', false); //allow
+			if (version == ICalVersion.V1_0) {
+				invalidValueChars.set(',');
+				invalidValueChars.set('.');
+				invalidValueChars.set(':');
+				invalidValueChars.set('=');
+				invalidValueChars.set('[');
+				invalidValueChars.set(']');
+			}
+
+			CharacterBitSet validNameChars = new CharacterBitSet("-a-zA-Z0-9");
+			for (Map.Entry<String, List<String>> entry : this) {
+				String name = entry.getKey();
+
+				//check the parameter name
+				if (!validNameChars.containsOnly(name)) {
+					warnings.add(Warning.validate(54, name));
+				}
+
+				//check the parameter value(s)
+				List<String> values = entry.getValue();
+				for (String value : values) {
+					for (int i = 0; i < value.length(); i++) {
+						char c = value.charAt(i);
+						if (invalidValueChars.get(c)) {
+							warnings.add(Warning.validate(53, name, value, (int) c, i));
+							break;
+						}
+					}
+				}
+			}
+		}
 
 		final int nonStandardCode = 1, deprecated = 47;
 

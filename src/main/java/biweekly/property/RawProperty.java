@@ -1,12 +1,12 @@
 package biweekly.property;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
+import biweekly.util.CharacterBitSet;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -66,8 +66,8 @@ public class RawProperty extends ICalProperty {
 
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
-		Pattern validCharacters = Pattern.compile("(?i)[-a-z0-9]+");
-		if (!validCharacters.matcher(name).matches()) {
+		CharacterBitSet validCharacters = new CharacterBitSet("-a-zA-Z0-9");
+		if (!validCharacters.containsOnly(name)) {
 			warnings.add(Warning.validate(52, name));
 		}
 	}

@@ -1,5 +1,8 @@
 package biweekly.parameter;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
 
@@ -7,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import static biweekly.ICalVersion.*;
+import biweekly.ICalVersion;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -110,5 +113,27 @@ public class ICalParametersTest {
 		assertWarnings(0, params.validate(V1_0));
 		assertWarnings(0, params.validate(V2_0_DEPRECATED));
 		assertWarnings(1, params.validate(V2_0));
+	}
+
+	@Test
+	public void validate_parameter_name() {
+		params.replace("YES/NO", "value");
+		for (ICalVersion version : ICalVersion.values()) {
+			assertWarnings(1, params.validate(version));
+		}
+	}
+
+	@Test
+	public void validate_parameter_value_characters() {
+		for (char c : ",.:=[]".toCharArray()) {
+			params.replace("NAME", "value" + c);
+			assertWarnings(1, params.validate(V1_0));
+		}
+
+		char c = (char) 7;
+		params.replace("NAME", "value" + c);
+		for (ICalVersion version : ICalVersion.values()) {
+			assertWarnings(1, params.validate(version));
+		}
 	}
 }
