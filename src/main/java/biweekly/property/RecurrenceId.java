@@ -88,6 +88,14 @@ public class RecurrenceId extends DateOrDateTimeProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public RecurrenceId(RecurrenceId original) {
+		super(original);
+	}
+
+	/**
 	 * Gets the effective range of recurrence instances from the instance
 	 * specified by this property.
 	 * @return the range or null if not set
@@ -107,5 +115,10 @@ public class RecurrenceId extends DateOrDateTimeProperty {
 	 */
 	public void setRange(Range range) {
 		parameters.setRange(range);
+	}
+
+	@Override
+	public RecurrenceId copy() {
+		return new RecurrenceId(this);
 	}
 }

@@ -53,4 +53,17 @@ public class Method extends TextProperty {
 	public Method(String value) {
 		super(value);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Method(Method original) {
+		super(original);
+	}
+
+	@Override
+	public Method copy() {
+		return new Method(this);
+	}
 }

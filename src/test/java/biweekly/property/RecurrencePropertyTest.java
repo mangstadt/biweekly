@@ -1,5 +1,8 @@
 package biweekly.property;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
@@ -12,7 +15,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import static biweekly.ICalVersion.*;
 import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.Frequency;
@@ -50,7 +52,7 @@ import com.google.ical.compat.javautil.DateIterator;
 public class RecurrencePropertyTest {
 	@Test
 	public void getDateIterator_empty() {
-		RecurrenceProperty property = new RecurrenceProperty(null);
+		RecurrenceProperty property = new RecurrenceProperty((Recurrence) null);
 		Date start = date("2014-11-22 10:00:00");
 		DateIterator it = property.getDateIterator(start);
 		assertFalse(it.hasNext());
@@ -83,7 +85,7 @@ public class RecurrencePropertyTest {
 
 	@Test
 	public void validate() {
-		RecurrenceProperty property = new RecurrenceProperty(null);
+		RecurrenceProperty property = new RecurrenceProperty((Recurrence) null);
 		assertValidate(property).run(26);
 
 		property = new RecurrenceProperty(new Recurrence.Builder((Frequency) null).build());

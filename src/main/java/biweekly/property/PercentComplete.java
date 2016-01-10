@@ -59,11 +59,24 @@ public class PercentComplete extends IntegerProperty {
 		super(percent);
 	}
 
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public PercentComplete(PercentComplete original) {
+		super(original);
+	}
+
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		super.validate(components, version, warnings);
 		if (value != null && (value < 0 || value > 100)) {
 			warnings.add(Warning.validate(29, value));
 		}
+	}
+
+	@Override
+	public PercentComplete copy() {
+		return new PercentComplete(this);
 	}
 }

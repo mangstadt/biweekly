@@ -138,4 +138,17 @@ public class DateDue extends DateOrDateTimeProperty {
 	public DateDue(ICalDate dueDate) {
 		super(dueDate);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public DateDue(DateDue original) {
+		super(original);
+	}
+
+	@Override
+	public DateDue copy() {
+		return new DateDue(this);
+	}
 }

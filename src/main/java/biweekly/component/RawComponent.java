@@ -36,7 +36,21 @@ public class RawComponent extends ICalComponent {
 		this.name = name;
 	}
 
+	/**
+	 * Copy constructor.
+	 * @param original the component to make a copy of
+	 */
+	public RawComponent(RawComponent original) {
+		super(original);
+		this.name = original.name;
+	}
+
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public RawComponent copy() {
+		return new RawComponent(this);
 	}
 }

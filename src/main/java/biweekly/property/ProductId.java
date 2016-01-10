@@ -58,10 +58,23 @@ public class ProductId extends TextProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public ProductId(ProductId original) {
+		super(original);
+	}
+
+	/**
 	 * Creates a new product identifier property that represents this library.
 	 * @return the property
 	 */
 	public static ProductId biweekly() {
 		return new ProductId("-//Michael Angstadt//biweekly " + Biweekly.VERSION + "//EN");
+	}
+
+	@Override
+	public ProductId copy() {
+		return new ProductId(this);
 	}
 }

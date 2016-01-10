@@ -66,6 +66,22 @@ import biweekly.util.ICalDate;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
  */
 public class ExceptionDates extends ListProperty<ICalDate> {
+	public ExceptionDates() {
+		//empty
+	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public ExceptionDates(ExceptionDates original) {
+		super(original);
+		getValues().clear();
+		for (ICalDate date : original.getValues()) {
+			addValue(new ICalDate(date));
+		}
+	}
+
 	/**
 	 * Adds a value to this property.
 	 * @param value the value to add
@@ -91,5 +107,10 @@ public class ExceptionDates extends ListProperty<ICalDate> {
 				break;
 			}
 		}
+	}
+
+	@Override
+	public ExceptionDates copy() {
+		return new ExceptionDates(this);
 	}
 }

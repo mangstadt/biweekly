@@ -138,7 +138,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 	private final RecurrenceProperty withUntilDate = new RecurrenceProperty(new Recurrence.Builder(Frequency.WEEKLY).until(date).build());
 	private final RecurrenceProperty withUntilDateTime = new RecurrenceProperty(new Recurrence.Builder(Frequency.WEEKLY).until(datetime).build());
-	private final RecurrenceProperty empty = new RecurrenceProperty(null);
+	private final RecurrenceProperty empty = new RecurrenceProperty((Recurrence) null);
 
 	public RecurrencePropertyScribeTest() {
 		super(new RecurrencePropertyMarshallerImpl());
@@ -146,7 +146,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 
 	@Test
 	public void writeText_vcal() throws Exception {
-		RecurrenceProperty prop = new RecurrenceProperty(null);
+		RecurrenceProperty prop = new RecurrenceProperty((Recurrence) null);
 		String expected, actual;
 
 		prop.setValue(null);

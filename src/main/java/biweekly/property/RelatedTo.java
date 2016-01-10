@@ -61,6 +61,14 @@ public class RelatedTo extends TextProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public RelatedTo(RelatedTo original) {
+		super(original);
+	}
+
+	/**
 	 * Gets the relationship type.
 	 * @return the relationship type (e.g. "child") or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545
@@ -79,5 +87,10 @@ public class RelatedTo extends TextProperty {
 	 */
 	public void setRelationshipType(RelationshipType relationshipType) {
 		parameters.setRelationshipType(relationshipType);
+	}
+
+	@Override
+	public RelatedTo copy() {
+		return new RelatedTo(this);
 	}
 }

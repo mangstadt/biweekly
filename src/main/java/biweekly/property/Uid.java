@@ -61,11 +61,24 @@ public class Uid extends TextProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Uid(Uid original) {
+		super(original);
+	}
+
+	/**
 	 * Creates a UID property that contains a random UID.
 	 * @return the property
 	 */
 	public static Uid random() {
 		String uuid = UUID.randomUUID().toString();
 		return new Uid(uuid);
+	}
+
+	@Override
+	public Uid copy() {
+		return new Uid(this);
 	}
 }

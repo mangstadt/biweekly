@@ -35,7 +35,7 @@ import org.junit.Test;
 public class RequestStatusTest {
 	@Test
 	public void validate() {
-		RequestStatus property = new RequestStatus(null);
+		RequestStatus property = new RequestStatus((String) null);
 		assertValidate(property).run(36);
 
 		property = new RequestStatus("1.1.1");

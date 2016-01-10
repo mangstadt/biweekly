@@ -53,6 +53,14 @@ public class Comment extends TextProperty {
 		super(comment);
 	}
 
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Comment(Comment original) {
+		super(original);
+	}
+
 	@Override
 	public String getAltRepresentation() {
 		return super.getAltRepresentation();
@@ -71,5 +79,10 @@ public class Comment extends TextProperty {
 	@Override
 	public void setLanguage(String language) {
 		super.setLanguage(language);
+	}
+
+	@Override
+	public Comment copy() {
+		return new Comment(this);
 	}
 }

@@ -43,9 +43,9 @@ import biweekly.util.Duration;
 public class ProcedureAlarmScribeTest extends ScribeTest<ProcedureAlarm> {
 	private final Date start = date("2014-01-01 01:00:00 +0000");
 
-	private final ProcedureAlarm empty = new ProcedureAlarm(null);
+	private final ProcedureAlarm empty = new ProcedureAlarm((String) null);
 
-	private final ProcedureAlarm noValue = new ProcedureAlarm(null);
+	private final ProcedureAlarm noValue = new ProcedureAlarm((String) null);
 	{
 		noValue.setRepeat(5);
 		noValue.setSnooze(new Duration.Builder().minutes(10).build());

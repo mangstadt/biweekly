@@ -44,24 +44,58 @@ public class RawProperty extends ICalProperty {
 	private ICalDataType dataType;
 	private String value;
 
+	/**
+	 * Creates a raw property.
+	 * @param name the property name (e.g. "X-MS-ANNIVERSARY")
+	 * @param value the property value
+	 */
 	public RawProperty(String name, String value) {
 		this(name, null, value);
 	}
 
+	/**
+	 * Creates a raw property.
+	 * @param name the property name (e.g. "X-MS-ANNIVERSARY")
+	 * @param dataType the property value's data type
+	 * @param value the property value
+	 */
 	public RawProperty(String name, ICalDataType dataType, String value) {
 		this.name = name;
 		this.dataType = dataType;
 		this.value = value;
 	}
 
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public RawProperty(RawProperty original) {
+		super(original);
+		name = original.name;
+		dataType = original.dataType;
+		value = original.value;
+	}
+
+	/**
+	 * Gets the property value.
+	 * @return the property value
+	 */
 	public String getValue() {
 		return value;
 	}
 
+	/**
+	 * Gets the property value's data type.
+	 * @return the data type
+	 */
 	public ICalDataType getDataType() {
 		return dataType;
 	}
 
+	/**
+	 * Gets the property name.
+	 * @return the property name (e.g. "X-MS-ANNIVERSARY")
+	 */
 	public String getName() {
 		return name;
 	}
@@ -81,5 +115,10 @@ public class RawProperty extends ICalProperty {
 		values.put("value", value);
 		values.put("dataType", dataType);
 		return values;
+	}
+
+	@Override
+	public RawProperty copy() {
+		return new RawProperty(this);
 	}
 }

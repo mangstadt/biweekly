@@ -49,5 +49,20 @@ package biweekly.component;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-60">RFC 2445 p.60-7</a>
  */
 public class DaylightSavingsTime extends Observance {
-	//empty
+	public DaylightSavingsTime() {
+		//empty
+	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the component to make a copy of
+	 */
+	public DaylightSavingsTime(DaylightSavingsTime original) {
+		super(original);
+	}
+
+	@Override
+	public DaylightSavingsTime copy() {
+		return new DaylightSavingsTime(this);
+	}
 }

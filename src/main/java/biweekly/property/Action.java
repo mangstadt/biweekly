@@ -85,6 +85,14 @@ public class Action extends EnumProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Action(Action original) {
+		super(original);
+	}
+
+	/**
 	 * Creates an "audio" action property.
 	 * @return the property
 	 */
@@ -176,5 +184,10 @@ public class Action extends EnumProperty {
 		}
 
 		return Collections.emptyList();
+	}
+
+	@Override
+	public Action copy() {
+		return new Action(this);
 	}
 }

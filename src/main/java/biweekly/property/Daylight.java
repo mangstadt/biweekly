@@ -75,6 +75,20 @@ public class Daylight extends ICalProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Daylight(Daylight original) {
+		super(original);
+		daylight = original.daylight;
+		offset = original.offset;
+		start = new ICalDate(original.start);
+		end = new ICalDate(original.end);
+		standardName = original.standardName;
+		daylightName = original.daylightName;
+	}
+
+	/**
 	 * Gets whether this timezone observes daylight savings time.
 	 * @return true if it observes daylight savings time, false if not
 	 */
@@ -187,5 +201,10 @@ public class Daylight extends ICalProperty {
 		values.put("standardName", standardName);
 		values.put("daylightName", daylightName);
 		return values;
+	}
+
+	@Override
+	public Daylight copy() {
+		return new Daylight(this);
 	}
 }

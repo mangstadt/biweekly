@@ -68,6 +68,16 @@ public class Geo extends ICalProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Geo(Geo original) {
+		super(original);
+		latitude = original.latitude;
+		longitude = original.longitude;
+	}
+
+	/**
 	 * Gets the latitude.
 	 * @return the latitude
 	 */
@@ -127,5 +137,10 @@ public class Geo extends ICalProperty {
 		values.put("latitude", latitude);
 		values.put("longitude", longitude);
 		return values;
+	}
+
+	@Override
+	public Geo copy() {
+		return new Geo(this);
 	}
 }

@@ -79,6 +79,16 @@ public class Trigger extends ICalProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Trigger(Trigger original) {
+		super(original);
+		duration = original.duration;
+		date = new Date(original.date.getTime());
+	}
+
+	/**
 	 * Gets the relative time at which the alarm will trigger.
 	 * @return the relative time or null if an absolute time is set
 	 */
@@ -153,5 +163,10 @@ public class Trigger extends ICalProperty {
 		values.put("duration", duration);
 		values.put("date", date);
 		return values;
+	}
+
+	@Override
+	public Trigger copy() {
+		return new Trigger(this);
 	}
 }

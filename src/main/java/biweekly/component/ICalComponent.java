@@ -1,5 +1,6 @@
 package biweekly.component;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,24 @@ import biweekly.util.StringUtils;
 public abstract class ICalComponent {
 	protected final ListMultimap<Class<? extends ICalComponent>, ICalComponent> components = new ListMultimap<Class<? extends ICalComponent>, ICalComponent>();
 	protected final ListMultimap<Class<? extends ICalProperty>, ICalProperty> properties = new ListMultimap<Class<? extends ICalProperty>, ICalProperty>();
+
+	public ICalComponent() {
+		//empty
+	}
+
+	/**
+	 * Copy constructor. Performs a deep copy of the given component's
+	 * properties and sub-components.
+	 * @param original the component to make a copy of
+	 */
+	protected ICalComponent(ICalComponent original) {
+		for (ICalProperty property : original.properties.values()) {
+			addProperty(property.copy());
+		}
+		for (ICalComponent component : original.components.values()) {
+			addComponent(component.copy());
+		}
+	}
 
 	/**
 	 * Gets the first property of a given class.
@@ -496,6 +515,43 @@ public abstract class ICalComponent {
 		}
 		for (ICalComponent component : components.values()) {
 			component.toString(depth, sb);
+		}
+	}
+
+	/**
+	 * <p>
+	 * Creates a deep copy of this component object.
+	 * </p>
+	 * <p>
+	 * The default implementation of this method uses reflection to look for a
+	 * copy constructor. Child classes should override this method to avoid the
+	 * performance overhead involved in using reflection.
+	 * </p>
+	 * <p>
+	 * The child class's copy constructor, if present, MUST invoke the
+	 * {@link #ICalComponent(ICalComponent)} super constructor to ensure that
+	 * the component's properties and sub-components are copied.
+	 * </p>
+	 * <p>
+	 * This method MUST be overridden by the child class if the child class does
+	 * not have a copy constructor. Otherwise, an
+	 * {@link UnsupportedOperationException} will be thrown when an attempt is
+	 * made to copy the component (such as in the
+	 * {@link ICalendar#ICalendar(ICalendar) ICalendar class's copy constructor}
+	 * ).
+	 * </p>
+	 * @return the copy
+	 * @throws UnsupportedOperationException if the class does not have a copy
+	 * constructor or there is a problem invoking it
+	 */
+	public ICalComponent copy() {
+		Class<? extends ICalComponent> clazz = getClass();
+
+		try {
+			Constructor<? extends ICalComponent> copyConstructor = clazz.getConstructor(clazz);
+			return copyConstructor.newInstance(this);
+		} catch (Exception e) {
+			throw new UnsupportedOperationException("A problem occurred attempting to invoke the copy constructor of component class " + clazz.getName() + ".", e);
 		}
 	}
 }

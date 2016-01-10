@@ -52,4 +52,17 @@ public class TimezoneUrl extends TextProperty {
 	public TimezoneUrl(String url) {
 		super(url);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public TimezoneUrl(TimezoneUrl original) {
+		super(original);
+	}
+
+	@Override
+	public TimezoneUrl copy() {
+		return new TimezoneUrl(this);
+	}
 }

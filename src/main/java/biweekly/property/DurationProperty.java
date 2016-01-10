@@ -67,4 +67,12 @@ public class DurationProperty extends ValuedProperty<Duration> {
 	public DurationProperty(Duration duration) {
 		super(duration);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public DurationProperty(DurationProperty original) {
+		super(original);
+	}
 }

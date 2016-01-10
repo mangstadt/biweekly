@@ -113,6 +113,14 @@ public class VEvent extends ICalComponent {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the component to make a copy of
+	 */
+	public VEvent(VEvent original) {
+		super(original);
+	}
+
+	/**
 	 * Gets the unique identifier for this event. This component object comes
 	 * populated with a UID on creation. This is a <b>required</b> property.
 	 * @return the UID or null if not set
@@ -1385,5 +1393,10 @@ public class VEvent extends ICalComponent {
 		if (getProperties(RecurrenceRule.class).size() > 1) {
 			warnings.add(Warning.validate(6));
 		}
+	}
+
+	@Override
+	public VEvent copy() {
+		return new VEvent(this);
 	}
 }

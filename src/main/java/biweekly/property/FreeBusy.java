@@ -74,6 +74,21 @@ import biweekly.util.Period;
 public class FreeBusy extends ICalProperty {
 	private final List<Period> values = new ArrayList<Period>();
 
+	public FreeBusy() {
+		//empty
+	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public FreeBusy(FreeBusy original) {
+		super(original);
+		for (Period period : original.values) {
+			values.add(new Period(period));
+		}
+	}
+
 	/**
 	 * Adds a time period.
 	 * @param start the start date
@@ -151,5 +166,10 @@ public class FreeBusy extends ICalProperty {
 		Map<String, Object> values = new LinkedHashMap<String, Object>();
 		values.put("values", this.values);
 		return values;
+	}
+
+	@Override
+	public FreeBusy copy() {
+		return new FreeBusy(this);
 	}
 }

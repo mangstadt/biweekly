@@ -45,7 +45,7 @@ import biweekly.util.UtcOffset;
 public class VTimezoneTest {
 	@Test
 	public void validate_required() {
-		VTimezone component = new VTimezone(null);
+		VTimezone component = new VTimezone((String) null);
 		assertValidate(component).versions(V1_0).run(48, 2, 21);
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(2, 21);
 	}

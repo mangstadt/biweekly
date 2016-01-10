@@ -57,4 +57,17 @@ public class Created extends DateTimeProperty {
 	public Created(Date date) {
 		super(date);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Created(Created original) {
+		super(original);
+	}
+
+	@Override
+	public Created copy() {
+		return new Created(this);
+	}
 }

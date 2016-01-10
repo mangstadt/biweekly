@@ -90,6 +90,15 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the iCalendar object to make a copy of
+	 */
+	public ICalendar(ICalendar original) {
+		super(original);
+		version = original.version;
+	}
+
+	/**
 	 * Gets the version of this iCalendar object.
 	 * @return the version
 	 */

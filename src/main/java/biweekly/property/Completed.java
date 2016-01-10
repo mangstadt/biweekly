@@ -56,4 +56,17 @@ public class Completed extends DateTimeProperty {
 	public Completed(Date completed) {
 		super(completed);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Completed(Completed original) {
+		super(original);
+	}
+
+	@Override
+	public Completed copy() {
+		return new Completed(this);
+	}
 }

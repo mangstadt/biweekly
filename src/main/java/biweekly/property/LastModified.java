@@ -56,4 +56,17 @@ public class LastModified extends DateTimeProperty {
 	public LastModified(Date date) {
 		super(date);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public LastModified(LastModified original) {
+		super(original);
+	}
+
+	@Override
+	public LastModified copy() {
+		return new LastModified(this);
+	}
 }

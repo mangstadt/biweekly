@@ -40,7 +40,7 @@ import biweekly.util.Duration;
 public class TriggerTest {
 	@Test
 	public void validate() {
-		Trigger property = new Trigger(null);
+		Trigger property = new Trigger((Date) null);
 		assertValidate(property).run(33);
 
 		property = new Trigger(new Date());

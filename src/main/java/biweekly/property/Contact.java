@@ -57,6 +57,14 @@ public class Contact extends TextProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Contact(Contact original) {
+		super(original);
+	}
+
+	/**
 	 * @return the URI (such as a URL to a vCard) or null if not set
 	 */
 	@Override
@@ -80,5 +88,10 @@ public class Contact extends TextProperty {
 	@Override
 	public void setLanguage(String language) {
 		super.setLanguage(language);
+	}
+
+	@Override
+	public Contact copy() {
+		return new Contact(this);
 	}
 }

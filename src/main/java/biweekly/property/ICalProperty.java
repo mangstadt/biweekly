@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,7 +46,19 @@ public abstract class ICalProperty {
 	/**
 	 * The property parameters.
 	 */
-	protected ICalParameters parameters = new ICalParameters();
+	protected ICalParameters parameters;
+
+	public ICalProperty() {
+		parameters = new ICalParameters();
+	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	protected ICalProperty(ICalProperty original) {
+		parameters = new ICalParameters(original.parameters);
+	}
 
 	/**
 	 * Gets the property's parameters.
@@ -344,5 +357,42 @@ public abstract class ICalProperty {
 		}
 		sb.append(']');
 		return sb.toString();
+	}
+
+	/**
+	 * <p>
+	 * Creates a copy of this property object.
+	 * </p>
+	 * <p>
+	 * The default implementation of this method uses reflection to look for a
+	 * copy constructor. Child classes should override this method to avoid the
+	 * performance overhead involved in using reflection.
+	 * </p>
+	 * <p>
+	 * The child class's copy constructor, if present, MUST invoke the
+	 * {@link #ICalProperty(ICalProperty)} super constructor to ensure that the
+	 * parameters are also copied.
+	 * </p>
+	 * <p>
+	 * This method MUST be overridden by the child class if the child class does
+	 * not have a copy constructor. Otherwise, an
+	 * {@link UnsupportedOperationException} will be thrown when an attempt is
+	 * made to copy the property (such as in the
+	 * {@link ICalendar#ICalendar(ICalendar) ICalendar class's copy constructor}
+	 * ).
+	 * </p>
+	 * @return the copy
+	 * @throws UnsupportedOperationException if the class does not have a copy
+	 * constructor or there is a problem invoking it
+	 */
+	public ICalProperty copy() {
+		Class<? extends ICalProperty> clazz = getClass();
+
+		try {
+			Constructor<? extends ICalProperty> copyConstructor = clazz.getConstructor(clazz);
+			return copyConstructor.newInstance(this);
+		} catch (Exception e) {
+			throw new UnsupportedOperationException("A problem occurred attempting to invoke the copy constructor of property class " + clazz.getName() + ".", e);
+		}
 	}
 }

@@ -53,21 +53,21 @@ public class RequestStatusScribeTest extends ScribeTest<RequestStatus> {
 	{
 		withCodeData.setExceptionText(data);
 	}
-	private final RequestStatus withDescriptionData = new RequestStatus(null);
+	private final RequestStatus withDescriptionData = new RequestStatus((String) null);
 	{
 		withDescriptionData.setDescription(description);
 		withDescriptionData.setExceptionText(data);
 	}
 	private final RequestStatus withCode = new RequestStatus(code);
-	private final RequestStatus withDescription = new RequestStatus(null);
+	private final RequestStatus withDescription = new RequestStatus((String) null);
 	{
 		withDescription.setDescription(description);
 	}
-	private final RequestStatus withData = new RequestStatus(null);
+	private final RequestStatus withData = new RequestStatus((String) null);
 	{
 		withData.setExceptionText(data);
 	}
-	private final RequestStatus empty = new RequestStatus(null);
+	private final RequestStatus empty = new RequestStatus((String) null);
 
 	public RequestStatusScribeTest() {
 		super(new RequestStatusScribe());

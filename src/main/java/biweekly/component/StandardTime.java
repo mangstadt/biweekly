@@ -49,5 +49,20 @@ package biweekly.component;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-60">RFC 2445 p.60-7</a>
  */
 public class StandardTime extends Observance {
-	//empty
+	public StandardTime() {
+		//empty
+	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the component to make a copy of
+	 */
+	public StandardTime(StandardTime original) {
+		super(original);
+	}
+
+	@Override
+	public StandardTime copy() {
+		return new StandardTime(this);
+	}
 }

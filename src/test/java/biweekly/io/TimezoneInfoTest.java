@@ -55,7 +55,7 @@ public class TimezoneInfoTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void assign_no_tzid() {
-		VTimezone component = new VTimezone(null);
+		VTimezone component = new VTimezone((String) null);
 		TimeZone timezone = TimeZone.getDefault();
 		tzinfo.assign(component, timezone);
 	}

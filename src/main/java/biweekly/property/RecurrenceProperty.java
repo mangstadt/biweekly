@@ -60,6 +60,14 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public RecurrenceProperty(RecurrenceProperty original) {
+		super(original);
+	}
+
+	/**
 	 * Gets the date values of this recurrence property.
 	 * @param startDate the date that the recurrence starts (typically, the
 	 * value of its accompanying {@link DateStart} property)

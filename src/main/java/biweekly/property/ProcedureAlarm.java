@@ -48,6 +48,15 @@ public class ProcedureAlarm extends VCalAlarmProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public ProcedureAlarm(ProcedureAlarm original) {
+		super(original);
+		path = original.path;
+	}
+
+	/**
 	 * Gets the path or name of the procedure to run when the alarm is
 	 * triggered.
 	 * @return the path
@@ -70,5 +79,10 @@ public class ProcedureAlarm extends VCalAlarmProperty {
 		Map<String, Object> values = super.toStringValues();
 		values.put("path", path);
 		return values;
+	}
+
+	@Override
+	public ProcedureAlarm copy() {
+		return new ProcedureAlarm(this);
 	}
 }

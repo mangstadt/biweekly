@@ -1,5 +1,15 @@
 package biweekly.property;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
+
+import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 /*
  Copyright (c) 2013-2015, Michael Angstadt
  All rights reserved.
@@ -26,46 +36,42 @@ package biweekly.property;
  */
 
 /**
- * <p>
- * Defines a website that contains additional information about a component.
- * </p>
- * <p>
- * <b>Code sample:</b>
- * 
- * <pre class="brush:java">
- * VEvent event = new VEvent();
- * 
- * Url url = new Url(&quot;http://example.com&quot;);
- * event.setUrl(url);
- * </pre>
- * 
- * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
- * p.116-7</a>
- * @see <a href="http://tools.ietf.org/html/rfc2445#page-110">RFC 2445
- * p.110-1</a>
- * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.37</a>
  */
-public class Url extends TextProperty {
-	/**
-	 * Creates a URL property.
-	 * @param url the URL (e.g. "http://example.com/resource.ics")
-	 */
-	public Url(String url) {
-		super(url);
+public class XmlTest {
+	@Test(expected = SAXException.class)
+	public void invalid_xml() throws Throwable {
+		new Xml("not valid XML");
 	}
 
-	/**
-	 * Copy constructor.
-	 * @param original the property to make a copy of
-	 */
-	public Url(Url original) {
-		super(original);
+	@Test
+	public void copy() throws Throwable {
+		Xml property = new Xml("<root><foo attr=\"value\">text</foo></root>");
+		Xml copy = new Xml(property);
+
+		assertNotSame(property.getValue(), copy.getValue());
+		assertXMLEqual(property.getValue(), copy.getValue());
+		assertXMLNotSame(property.getValue().getDocumentElement(), copy.getValue().getDocumentElement());
 	}
 
-	@Override
-	public Url copy() {
-		return new Url(this);
+	@Test
+	public void copy_null_value() throws Throwable {
+		Xml property = new Xml((Document) null);
+		Xml copy = new Xml(property);
+
+		assertNull(property.getValue());
+		assertNull(copy.getValue());
+	}
+
+	private static void assertXMLNotSame(Node node1, Node node2) {
+		assertNotSame(node1, node2);
+
+		NodeList children1 = node1.getChildNodes();
+		NodeList children2 = node2.getChildNodes();
+		for (int i = 0; i < children1.getLength(); i++) {
+			Node child1 = children1.item(i);
+			Node child2 = children2.item(i);
+			assertXMLNotSame(child1, child2);
+		}
 	}
 }

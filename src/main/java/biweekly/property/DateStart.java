@@ -135,4 +135,17 @@ public class DateStart extends DateOrDateTimeProperty {
 	public DateStart(ICalDate startDate) {
 		super(startDate);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public DateStart(DateStart original) {
+		super(original);
+	}
+
+	@Override
+	public DateStart copy() {
+		return new DateStart(this);
+	}
 }

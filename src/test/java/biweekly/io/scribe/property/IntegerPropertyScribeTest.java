@@ -42,7 +42,7 @@ import biweekly.property.IntegerProperty;
  */
 public class IntegerPropertyScribeTest extends ScribeTest<IntegerProperty> {
 	private final IntegerProperty withValue = new IntegerProperty(5);
-	private final IntegerProperty empty = new IntegerProperty(null);
+	private final IntegerProperty empty = new IntegerProperty((Integer) null);
 
 	public IntegerPropertyScribeTest() {
 		super(new IntegerPropertyMarshallerImpl());

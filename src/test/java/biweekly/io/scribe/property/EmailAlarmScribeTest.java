@@ -43,9 +43,9 @@ import biweekly.util.Duration;
 public class EmailAlarmScribeTest extends ScribeTest<EmailAlarm> {
 	private final Date start = date("2014-01-01 01:00:00 +0000");
 
-	private final EmailAlarm empty = new EmailAlarm(null);
+	private final EmailAlarm empty = new EmailAlarm((String) null);
 
-	private final EmailAlarm noValue = new EmailAlarm(null);
+	private final EmailAlarm noValue = new EmailAlarm((String) null);
 	{
 		noValue.setRepeat(5);
 		noValue.setSnooze(new Duration.Builder().minutes(10).build());

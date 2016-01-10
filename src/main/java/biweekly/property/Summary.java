@@ -57,6 +57,14 @@ public class Summary extends TextProperty {
 		super(summary);
 	}
 
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Summary(Summary original) {
+		super(original);
+	}
+
 	@Override
 	public String getAltRepresentation() {
 		return super.getAltRepresentation();
@@ -75,5 +83,10 @@ public class Summary extends TextProperty {
 	@Override
 	public void setLanguage(String language) {
 		super.setLanguage(language);
+	}
+
+	@Override
+	public Summary copy() {
+		return new Summary(this);
 	}
 }

@@ -97,6 +97,14 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the component to make a copy of
+	 */
+	public VFreeBusy(VFreeBusy original) {
+		super(original);
+	}
+
+	/**
 	 * Gets the unique identifier for this free/busy entry. This component
 	 * object comes populated with a UID on creation. This is a <b>required</b>
 	 * property.
@@ -572,5 +580,10 @@ public class VFreeBusy extends ICalComponent {
 		if (dateStart != null && dateEnd != null && dateStart.compareTo(dateEnd) >= 0) {
 			warnings.add(Warning.validate(16));
 		}
+	}
+
+	@Override
+	public VFreeBusy copy() {
+		return new VFreeBusy(this);
 	}
 }

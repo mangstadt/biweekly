@@ -49,6 +49,14 @@ public abstract class EnumProperty extends TextProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public EnumProperty(EnumProperty original) {
+		super(original);
+	}
+
+	/**
 	 * Compares the property's value with a given string (case-insensitive).
 	 * @param value the string
 	 * @return true if it's equal, false if not

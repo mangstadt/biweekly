@@ -224,14 +224,14 @@ public class ICalTimeZoneTest {
 		{
 			StandardTime standard = new StandardTime();
 			standard.setDateStart(new DateTimeComponents(1998, 10, 25, 2, 0, 0, false));
-			standard.setTimezoneOffsetFrom(new TimezoneOffsetFrom(null));
-			standard.setTimezoneOffsetTo(new TimezoneOffsetTo(null));
+			standard.setTimezoneOffsetFrom(new TimezoneOffsetFrom((UtcOffset) null));
+			standard.setTimezoneOffsetTo(new TimezoneOffsetTo((UtcOffset) null));
 			component.addStandardTime(standard);
 
 			DaylightSavingsTime daylight = new DaylightSavingsTime();
 			daylight.setDateStart(new DateTimeComponents(1999, 4, 4, 2, 0, 0, false));
-			daylight.setTimezoneOffsetFrom(new TimezoneOffsetFrom(null));
-			daylight.setTimezoneOffsetTo(new TimezoneOffsetTo(null));
+			daylight.setTimezoneOffsetFrom(new TimezoneOffsetFrom((UtcOffset) null));
+			daylight.setTimezoneOffsetTo(new TimezoneOffsetTo((UtcOffset) null));
 			component.addDaylightSavingsTime(daylight);
 		}
 

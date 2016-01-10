@@ -104,6 +104,16 @@ public class Version extends ICalProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Version(Version original) {
+		super(original);
+		minVersion = original.minVersion;
+		maxVersion = original.maxVersion;
+	}
+
+	/**
 	 * Creates a version property that is set to the older vCalendar version
 	 * (1.0).
 	 * @return the property instance
@@ -197,5 +207,10 @@ public class Version extends ICalProperty {
 		values.put("minVersion", minVersion);
 		values.put("maxVersion", maxVersion);
 		return values;
+	}
+
+	@Override
+	public Version copy() {
+		return new Version(this);
 	}
 }

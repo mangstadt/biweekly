@@ -44,6 +44,16 @@ public class EmailAlarm extends VCalAlarmProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public EmailAlarm(EmailAlarm original) {
+		super(original);
+		email = original.email;
+		note = original.note;
+	}
+
+	/**
 	 * Gets the email address.
 	 * @return the email address
 	 */
@@ -83,4 +93,8 @@ public class EmailAlarm extends VCalAlarmProperty {
 		return values;
 	}
 
+	@Override
+	public EmailAlarm copy() {
+		return new EmailAlarm(this);
+	}
 }

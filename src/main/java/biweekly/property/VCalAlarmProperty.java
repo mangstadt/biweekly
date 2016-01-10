@@ -51,6 +51,21 @@ public class VCalAlarmProperty extends ICalProperty {
 	protected Duration snooze;
 	protected Integer repeat;
 
+	public VCalAlarmProperty() {
+		//empty
+	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public VCalAlarmProperty(VCalAlarmProperty original) {
+		super(original);
+		start = new Date(original.start.getTime());
+		snooze = original.snooze;
+		repeat = original.repeat;
+	}
+
 	public Date getStart() {
 		return start;
 	}

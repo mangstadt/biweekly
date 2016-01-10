@@ -50,6 +50,14 @@ public class Timezone extends UtcOffsetProperty {
 		super(offset);
 	}
 
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Timezone(Timezone original) {
+		super(original);
+	}
+
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		super.validate(components, version, warnings);
@@ -57,5 +65,10 @@ public class Timezone extends UtcOffsetProperty {
 		if (version != ICalVersion.V1_0) {
 			warnings.add(Warning.validate(45, version));
 		}
+	}
+
+	@Override
+	public Timezone copy() {
+		return new Timezone(this);
 	}
 }

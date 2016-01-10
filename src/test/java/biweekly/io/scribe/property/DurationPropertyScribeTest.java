@@ -42,7 +42,7 @@ public class DurationPropertyScribeTest extends ScribeTest<DurationProperty> {
 	private final String durationStr = duration.toString();
 
 	private final DurationProperty withDuration = new DurationProperty(duration);
-	private final DurationProperty empty = new DurationProperty(null);
+	private final DurationProperty empty = new DurationProperty((Duration) null);
 
 	public DurationPropertyScribeTest() {
 		super(new DurationPropertyScribe());

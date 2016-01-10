@@ -69,6 +69,15 @@ public class ListProperty<T> extends ICalProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public ListProperty(ListProperty<T> original) {
+		super(original);
+		values = new ArrayList<T>(original.values);
+	}
+
+	/**
 	 * Adds a value to this property.
 	 * @param value the value to add
 	 */

@@ -58,6 +58,14 @@ public class TimezoneName extends TextProperty {
 		super(name);
 	}
 
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public TimezoneName(TimezoneName original) {
+		super(original);
+	}
+
 	@Override
 	public String getLanguage() {
 		return super.getLanguage();
@@ -66,5 +74,10 @@ public class TimezoneName extends TextProperty {
 	@Override
 	public void setLanguage(String language) {
 		super.setLanguage(language);
+	}
+
+	@Override
+	public TimezoneName copy() {
+		return new TimezoneName(this);
 	}
 }

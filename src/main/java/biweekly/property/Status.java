@@ -104,6 +104,14 @@ public class Status extends EnumProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Status(Status original) {
+		super(original);
+	}
+
+	/**
 	 * Creates a "tentative" status property (only valid for event components).
 	 * @return the property
 	 */
@@ -332,5 +340,10 @@ public class Status extends EnumProperty {
 		}
 
 		return Collections.emptyList();
+	}
+
+	@Override
+	public Status copy() {
+		return new Status(this);
 	}
 }

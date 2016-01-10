@@ -54,6 +54,14 @@ public class Location extends TextProperty {
 		super(location);
 	}
 
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Location(Location original) {
+		super(original);
+	}
+
 	@Override
 	public String getAltRepresentation() {
 		return super.getAltRepresentation();
@@ -72,5 +80,10 @@ public class Location extends TextProperty {
 	@Override
 	public void setLanguage(String language) {
 		super.setLanguage(language);
+	}
+
+	@Override
+	public Location copy() {
+		return new Location(this);
 	}
 }

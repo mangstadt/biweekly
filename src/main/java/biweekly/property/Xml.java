@@ -70,10 +70,28 @@ public class Xml extends ValuedProperty<Document> {
 		super(document);
 	}
 
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Xml(Xml original) {
+		super(original);
+		if (original.value != null) {
+			value = XmlUtils.createDocument();
+			Node node = value.importNode(original.value.getDocumentElement(), true);
+			value.appendChild(node);
+		}
+	}
+
 	@Override
 	protected Map<String, Object> toStringValues() {
 		Map<String, Object> values = new LinkedHashMap<String, Object>();
 		values.put("value", (value == null) ? "null" : XmlUtils.toString(value));
 		return values;
+	}
+
+	@Override
+	public Xml copy() {
+		return new Xml(this);
 	}
 }

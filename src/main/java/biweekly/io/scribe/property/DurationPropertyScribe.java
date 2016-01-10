@@ -107,7 +107,7 @@ public class DurationPropertyScribe extends ICalPropertyScribe<DurationProperty>
 
 	private DurationProperty parse(String value) {
 		if (value == null) {
-			return new DurationProperty(null);
+			return new DurationProperty((Duration) null);
 		}
 
 		try {

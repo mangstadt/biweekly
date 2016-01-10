@@ -51,6 +51,15 @@ public class ValuedProperty<T> extends ICalProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public ValuedProperty(ValuedProperty<T> original) {
+		super(original);
+		value = original.value;
+	}
+
+	/**
 	 * Gets the value of this property.
 	 * @return the value
 	 */

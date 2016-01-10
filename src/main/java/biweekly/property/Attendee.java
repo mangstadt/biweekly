@@ -98,6 +98,21 @@ public class Attendee extends ICalProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Attendee(Attendee original) {
+		super(original);
+		name = original.name;
+		email = original.email;
+		uri = original.uri;
+		role = original.role;
+		participationLevel = original.participationLevel;
+		status = original.status;
+		rsvp = original.rsvp;
+	}
+
+	/**
 	 * Gets the attendee's email
 	 * @return the email (e.g. "jdoe@company.com")
 	 */
@@ -409,5 +424,10 @@ public class Attendee extends ICalProperty {
 		values.put("status", status);
 		values.put("rsvp", rsvp);
 		return values;
+	}
+
+	@Override
+	public Attendee copy() {
+		return new Attendee(this);
 	}
 }

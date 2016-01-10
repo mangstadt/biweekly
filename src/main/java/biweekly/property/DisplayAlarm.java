@@ -44,6 +44,15 @@ public class DisplayAlarm extends VCalAlarmProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public DisplayAlarm(DisplayAlarm original) {
+		super(original);
+		text = original.text;
+	}
+
+	/**
 	 * Gets the text to display when the alarm is triggered.
 	 * @return the display text
 	 */
@@ -64,5 +73,10 @@ public class DisplayAlarm extends VCalAlarmProperty {
 		Map<String, Object> values = super.toStringValues();
 		values.put("text", text);
 		return values;
+	}
+
+	@Override
+	public DisplayAlarm copy() {
+		return new DisplayAlarm(this);
 	}
 }

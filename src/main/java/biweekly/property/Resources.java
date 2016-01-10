@@ -74,6 +74,14 @@ public class Resources extends ListProperty<String> {
 		super(values);
 	}
 
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Resources(Resources original) {
+		super(original);
+	}
+
 	@Override
 	public String getAltRepresentation() {
 		return super.getAltRepresentation();
@@ -92,5 +100,10 @@ public class Resources extends ListProperty<String> {
 	@Override
 	public void setLanguage(String language) {
 		super.setLanguage(language);
+	}
+
+	@Override
+	public Resources copy() {
+		return new Resources(this);
 	}
 }

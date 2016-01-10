@@ -35,7 +35,7 @@ import org.junit.Test;
 public class ValuedPropertyTest {
 	@Test
 	public void validate() {
-		ValuedProperty<String> property = new ValuedProperty<String>(null);
+		ValuedProperty<String> property = new ValuedProperty<String>((String) null);
 		assertValidate(property).run(26);
 
 		property = new ValuedProperty<String>("value");

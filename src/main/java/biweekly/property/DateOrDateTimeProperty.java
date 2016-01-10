@@ -61,6 +61,15 @@ public class DateOrDateTimeProperty extends ValuedProperty<ICalDate> {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public DateOrDateTimeProperty(DateOrDateTimeProperty original) {
+		super(original);
+		value = new ICalDate(original.value);
+	}
+
+	/**
 	 * Sets the date-time value.
 	 * @param value the date-time value
 	 * @param hasTime true if the value has a time component, false if it is

@@ -41,7 +41,7 @@ public class VTimezoneScribe extends ICalComponentScribe<VTimezone> {
 
 	@Override
 	protected VTimezone _newInstance() {
-		return new VTimezone(null);
+		return new VTimezone((String) null);
 	}
 
 	@Override

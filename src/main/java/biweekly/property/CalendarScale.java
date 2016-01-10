@@ -99,6 +99,14 @@ public class CalendarScale extends EnumProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public CalendarScale(CalendarScale original) {
+		super(original);
+	}
+
+	/**
 	 * Creates a new property whose value is set to "gregorian".
 	 * @return the new property
 	 */
@@ -125,5 +133,10 @@ public class CalendarScale extends EnumProperty {
 			return Collections.emptyList();
 		}
 		return Arrays.asList(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
+	}
+
+	@Override
+	public CalendarScale copy() {
+		return new CalendarScale(this);
 	}
 }

@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import biweekly.component.VAlarm;
@@ -40,6 +41,21 @@ public class AudioAlarm extends VCalAlarmProperty {
 	private String contentId, uri;
 	private byte[] data;
 
+	public AudioAlarm() {
+		//empty
+	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public AudioAlarm(AudioAlarm original) {
+		super(original);
+		data = Arrays.copyOf(original.data, original.data.length);
+		uri = original.uri;
+		contentId = original.contentId;
+	}
+
 	public String getContentId() {
 		return contentId;
 	}
@@ -77,5 +93,10 @@ public class AudioAlarm extends VCalAlarmProperty {
 		values.put("uri", uri);
 		values.put("contentId", contentId);
 		return values;
+	}
+
+	@Override
+	public AudioAlarm copy() {
+		return new AudioAlarm(this);
 	}
 }

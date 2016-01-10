@@ -58,4 +58,17 @@ public class RecurrenceRule extends RecurrenceProperty {
 	public RecurrenceRule(Recurrence recur) {
 		super(recur);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public RecurrenceRule(RecurrenceRule original) {
+		super(original);
+	}
+
+	@Override
+	public RecurrenceRule copy() {
+		return new RecurrenceRule(this);
+	}
 }

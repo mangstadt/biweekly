@@ -43,4 +43,17 @@ public class TimezoneId extends TextProperty {
 	public TimezoneId(String timezone) {
 		super(timezone);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public TimezoneId(TimezoneId original) {
+		super(original);
+	}
+
+	@Override
+	public TimezoneId copy() {
+		return new TimezoneId(this);
+	}
 }

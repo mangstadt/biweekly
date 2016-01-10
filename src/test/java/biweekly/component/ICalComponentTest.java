@@ -1,7 +1,14 @@
 package biweekly.component;
 
+import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertWarnings;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,7 +111,74 @@ public class ICalComponentTest {
 		assertWarnings(0, warnings);
 	}
 
-	private class TestComponent extends ICalComponent {
+	@Test
+	public void copy() {
+		TestComponentWithCopyConstructor component = new TestComponentWithCopyConstructor();
+		component.addExperimentalProperty("PROP", "one");
+		RawComponent subComponent = new RawComponent("RAW");
+		subComponent.addExperimentalProperty("PROP", "two");
+		component.addComponent(subComponent);
+		TestComponentWithCopyConstructor copy = (TestComponentWithCopyConstructor) component.copy();
+
+		assertNotSame(component, copy);
+		assertSize(copy, 1, 1);
+		assertNotSame(component.getExperimentalProperty("PROP"), copy.getExperimentalProperty("PROP"));
+		assertEquals("one", copy.getExperimentalProperty("PROP").getValue());
+		assertNotSame(component.getExperimentalComponent("RAW"), copy.getExperimentalComponent("RAW"));
+		assertSize(copy.getExperimentalComponent("RAW"), 0, 1);
+		assertNotSame(component.getExperimentalComponent("RAW").getExperimentalProperty("PROP"), copy.getExperimentalComponent("RAW").getExperimentalProperty("PROP"));
+		assertEquals("two", copy.getExperimentalComponent("RAW").getExperimentalProperty("PROP").getValue());
+	}
+
+	@Test
+	public void copy_constructor_throws_exception() {
+		RuntimeException exception = new RuntimeException();
+		TestComponentCopyConstructorThrowsException component = new TestComponentCopyConstructorThrowsException(exception);
+		try {
+			component.copy();
+			fail("Expected an exception to be thrown.");
+		} catch (UnsupportedOperationException e) {
+			assertTrue(e.getCause() instanceof InvocationTargetException);
+			assertSame(e.getCause().getCause(), exception);
+		}
+	}
+
+	@Test
+	public void copy_no_copy_constructor_or_method() {
+		TestComponent component = new TestComponent();
+		try {
+			component.copy();
+			fail("Expected an exception to be thrown.");
+		} catch (UnsupportedOperationException e) {
+			assertTrue(e.getCause() instanceof NoSuchMethodException);
+		}
+	}
+
+	private static class TestComponent extends ICalComponent {
 		//empty
+	}
+
+	private static class TestComponentWithCopyConstructor extends ICalComponent {
+		public TestComponentWithCopyConstructor() {
+			//empty
+		}
+
+		@SuppressWarnings("unused")
+		public TestComponentWithCopyConstructor(TestComponentWithCopyConstructor original) {
+			super(original);
+		}
+	}
+
+	private static class TestComponentCopyConstructorThrowsException extends ICalComponent {
+		private final RuntimeException exception;
+
+		public TestComponentCopyConstructorThrowsException(RuntimeException exception) {
+			this.exception = exception;
+		}
+
+		@SuppressWarnings("unused")
+		public TestComponentCopyConstructorThrowsException(TestComponentCopyConstructorThrowsException original) {
+			throw original.exception;
+		}
 	}
 }

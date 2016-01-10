@@ -77,6 +77,14 @@ public class VTimezone extends ICalComponent {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the component to make a copy of
+	 */
+	public VTimezone(VTimezone original) {
+		super(original);
+	}
+
+	/**
 	 * Gets the ID for this timezone. This is a <b>required</b> property.
 	 * @return the timezone ID or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-102">RFC 5545
@@ -225,5 +233,10 @@ public class VTimezone extends ICalComponent {
 		if (getStandardTimes().isEmpty() && getDaylightSavingsTime().isEmpty()) {
 			warnings.add(Warning.validate(21));
 		}
+	}
+
+	@Override
+	public VTimezone copy() {
+		return new VTimezone(this);
 	}
 }

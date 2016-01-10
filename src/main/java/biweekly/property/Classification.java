@@ -85,6 +85,14 @@ public class Classification extends EnumProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Classification(Classification original) {
+		super(original);
+	}
+
+	/**
 	 * Creates a "public" classification property.
 	 * @return the property
 	 */
@@ -139,5 +147,10 @@ public class Classification extends EnumProperty {
 	@Override
 	protected Collection<String> getStandardValues(ICalVersion version) {
 		return Arrays.asList(PUBLIC, PRIVATE, CONFIDENTIAL);
+	}
+
+	@Override
+	public Classification copy() {
+		return new Classification(this);
 	}
 }

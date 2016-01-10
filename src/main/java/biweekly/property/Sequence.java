@@ -58,6 +58,14 @@ public class Sequence extends IntegerProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Sequence(Sequence original) {
+		super(original);
+	}
+
+	/**
 	 * Increments the sequence number.
 	 */
 	public void increment() {
@@ -66,5 +74,10 @@ public class Sequence extends IntegerProperty {
 		} else {
 			value++;
 		}
+	}
+
+	@Override
+	public Sequence copy() {
+		return new Sequence(this);
 	}
 }

@@ -76,6 +76,17 @@ public class Organizer extends ICalProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Organizer(Organizer original) {
+		super(original);
+		name = original.name;
+		email = original.email;
+		uri = original.uri;
+	}
+
+	/**
 	 * Gets the organizer's email
 	 * @return the email (e.g. "jdoe@company.com")
 	 */
@@ -160,5 +171,10 @@ public class Organizer extends ICalProperty {
 		values.put("email", email);
 		values.put("uri", uri);
 		return values;
+	}
+
+	@Override
+	public Organizer copy() {
+		return new Organizer(this);
 	}
 }

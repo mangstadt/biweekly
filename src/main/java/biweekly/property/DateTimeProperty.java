@@ -40,4 +40,13 @@ public class DateTimeProperty extends ValuedProperty<Date> {
 	public DateTimeProperty(Date value) {
 		super(value);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public DateTimeProperty(DateTimeProperty original) {
+		super(original);
+		value = new Date(original.value.getTime());
+	}
 }

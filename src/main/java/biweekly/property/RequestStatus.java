@@ -79,6 +79,17 @@ public class RequestStatus extends ICalProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public RequestStatus(RequestStatus original) {
+		super(original);
+		statusCode = original.statusCode;
+		description = original.description;
+		exceptionText = original.exceptionText;
+	}
+
+	/**
 	 * Gets the status code. The following status code families are defined:
 	 * <ul>
 	 * <li><b>1.x</b> - The request has been received, but is still being
@@ -166,5 +177,10 @@ public class RequestStatus extends ICalProperty {
 		values.put("description", description);
 		values.put("exceptionText", exceptionText);
 		return values;
+	}
+
+	@Override
+	public RequestStatus copy() {
+		return new RequestStatus(this);
 	}
 }

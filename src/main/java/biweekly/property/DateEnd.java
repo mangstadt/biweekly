@@ -134,4 +134,17 @@ public class DateEnd extends DateOrDateTimeProperty {
 	public DateEnd(ICalDate dateEnd) {
 		super(dateEnd);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public DateEnd(DateEnd original) {
+		super(original);
+	}
+
+	@Override
+	public DateEnd copy() {
+		return new DateEnd(this);
+	}
 }

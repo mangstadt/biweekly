@@ -57,4 +57,17 @@ public class TimezoneOffsetTo extends UtcOffsetProperty {
 	public TimezoneOffsetTo(UtcOffset offset) {
 		super(offset);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public TimezoneOffsetTo(TimezoneOffsetTo original) {
+		super(original);
+	}
+
+	@Override
+	public TimezoneOffsetTo copy() {
+		return new TimezoneOffsetTo(this);
+	}
 }

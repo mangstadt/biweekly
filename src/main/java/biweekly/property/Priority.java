@@ -57,6 +57,14 @@ public class Priority extends IntegerProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Priority(Priority original) {
+		super(original);
+	}
+
+	/**
 	 * Determines if this priority is considered "high" priority.
 	 * @return true if the priority is between 1 and 4, false if not
 	 */
@@ -100,5 +108,10 @@ public class Priority extends IntegerProperty {
 		int letter = ((value - 1) / 3) + 'A';
 		int number = ((value - 1) % 3) + 1;
 		return (char) letter + "" + number;
+	}
+
+	@Override
+	public Priority copy() {
+		return new Priority(this);
 	}
 }

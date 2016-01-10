@@ -80,6 +80,24 @@ public class RecurrenceDates extends ICalProperty {
 	private List<ICalDate> dates = new ArrayList<ICalDate>();
 	private List<Period> periods = new ArrayList<Period>();
 
+	public RecurrenceDates() {
+		//empty
+	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public RecurrenceDates(RecurrenceDates original) {
+		super(original);
+		for (ICalDate date : original.dates) {
+			dates.add(new ICalDate(date));
+		}
+		for (Period period : original.periods) {
+			periods.add(new Period(period));
+		}
+	}
+
 	/**
 	 * Gets the recurrence dates.
 	 * @return the dates
@@ -155,5 +173,10 @@ public class RecurrenceDates extends ICalProperty {
 		values.put("dates", dates);
 		values.put("periods", periods);
 		return values;
+	}
+
+	@Override
+	public RecurrenceDates copy() {
+		return new RecurrenceDates(this);
 	}
 }

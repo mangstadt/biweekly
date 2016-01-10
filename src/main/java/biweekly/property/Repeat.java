@@ -56,4 +56,17 @@ public class Repeat extends IntegerProperty {
 	public Repeat(Integer count) {
 		super(count);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Repeat(Repeat original) {
+		super(original);
+	}
+
+	@Override
+	public Repeat copy() {
+		return new Repeat(this);
+	}
 }

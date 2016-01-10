@@ -71,6 +71,14 @@ public class Categories extends ListProperty<String> {
 		super(categories);
 	}
 
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Categories(Categories original) {
+		super(original);
+	}
+
 	@Override
 	public String getLanguage() {
 		return super.getLanguage();
@@ -79,5 +87,10 @@ public class Categories extends ListProperty<String> {
 	@Override
 	public void setLanguage(String language) {
 		super.setLanguage(language);
+	}
+
+	@Override
+	public Categories copy() {
+		return new Categories(this);
 	}
 }

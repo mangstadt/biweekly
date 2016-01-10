@@ -203,7 +203,7 @@ public class StreamReaderTest {
 			protected ICalendar _readNext() {
 				ICalendar ical = new ICalendar();
 
-				VTimezone timezone = new VTimezone(null);
+				VTimezone timezone = new VTimezone((String) null);
 				{
 					StandardTime standard = new StandardTime();
 					standard.setDateStart(new DateTimeComponents(2014, 9, 1, 2, 0, 0, false));

@@ -91,6 +91,14 @@ public class VAlarm extends ICalComponent {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the component to make a copy of
+	 */
+	public VAlarm(VAlarm original) {
+		super(original);
+	}
+
+	/**
 	 * Creates an audio alarm.
 	 * @param trigger the trigger
 	 * @return the alarm
@@ -527,5 +535,10 @@ public class VAlarm extends ICalComponent {
 				}
 			}
 		}
+	}
+
+	@Override
+	public VAlarm copy() {
+		return new VAlarm(this);
 	}
 }

@@ -3,6 +3,7 @@ package biweekly.property;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,6 +108,17 @@ public class Attachment extends ICalProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Attachment(Attachment original) {
+		super(original);
+		data = Arrays.copyOf(original.data, original.data.length);
+		uri = original.uri;
+		contentId = original.contentId;
+	}
+
+	/**
 	 * Gets the attachment's binary data.
 	 * @return the binary data or null if not set
 	 */
@@ -180,5 +192,10 @@ public class Attachment extends ICalProperty {
 		values.put("uri", uri);
 		values.put("contentId", contentId);
 		return values;
+	}
+
+	@Override
+	public Attachment copy() {
+		return new Attachment(this);
 	}
 }

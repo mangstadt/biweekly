@@ -52,7 +52,7 @@ public class TriggerScribeTest extends ScribeTest<Trigger> {
 
 	private final Trigger withDateTime = new Trigger(datetime);
 	private final Trigger withDuration = new Trigger(duration, Related.START);
-	private final Trigger empty = new Trigger(null);
+	private final Trigger empty = new Trigger((Date) null);
 
 	public TriggerScribeTest() {
 		super(new TriggerScribe());

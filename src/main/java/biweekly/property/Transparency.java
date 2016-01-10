@@ -87,6 +87,14 @@ public class Transparency extends EnumProperty {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public Transparency(Transparency original) {
+		super(original);
+	}
+
+	/**
 	 * Creates a property that marks the event as being visible to free/busy
 	 * time searches.
 	 * @return the property
@@ -127,5 +135,10 @@ public class Transparency extends EnumProperty {
 	@Override
 	protected Collection<String> getStandardValues(ICalVersion version) {
 		return Arrays.asList(OPAQUE, TRANSPARENT);
+	}
+
+	@Override
+	public Transparency copy() {
+		return new Transparency(this);
 	}
 }

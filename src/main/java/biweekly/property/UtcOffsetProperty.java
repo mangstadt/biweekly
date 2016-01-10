@@ -35,4 +35,12 @@ public class UtcOffsetProperty extends ValuedProperty<UtcOffset> {
 	public UtcOffsetProperty(UtcOffset offset) {
 		super(offset);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public UtcOffsetProperty(UtcOffsetProperty original) {
+		super(original);
+	}
 }

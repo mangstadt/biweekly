@@ -3,14 +3,18 @@ package biweekly;
 import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
+import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertValidate;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 
 import java.util.List;
 
 import org.junit.Test;
 
 import biweekly.component.ICalComponent;
+import biweekly.component.VEvent;
 import biweekly.property.Geo;
 import biweekly.property.ICalProperty;
 
@@ -82,6 +86,35 @@ public class ICalendarTest {
 		ical.addComponent(outter2);
 
 		assertValidate(ical).warn(outter1, 1).warn(prop1, 2).warn(inner, 1).warn(prop2, 2).warn(outter2, 1).warn(prop3, 2).run();
+	}
+
+	@Test
+	public void copy() {
+		ICalendar ical = new ICalendar();
+		ical.setVersion(ICalVersion.V1_0);
+
+		VEvent event = new VEvent();
+		event.setSummary("value");
+		ical.addEvent(event);
+
+		ICalendar copy = new ICalendar(ical);
+
+		assertEquals(ical.getVersion(), copy.getVersion());
+		assertNotSame(ical, copy);
+		assertSize(copy, 1, 1);
+		assertNotSame(ical.getProductId(), copy.getProductId());
+		assertEquals(ical.getProductId().getValue(), copy.getProductId().getValue());
+
+		VEvent eventCopy = copy.getEvents().get(0);
+		assertNotSame(event, eventCopy);
+		assertSize(eventCopy, 0, 3);
+		assertNotSame(event.getUid(), eventCopy.getUid());
+		assertEquals(event.getUid().getValue(), eventCopy.getUid().getValue());
+		assertNotSame(event.getDateTimeStamp(), eventCopy.getDateTimeStamp());
+		assertEquals(event.getDateTimeStamp().getValue(), eventCopy.getDateTimeStamp().getValue());
+		assertNotSame(event.getSummary(), eventCopy.getSummary());
+		assertEquals(event.getSummary().getValue(), eventCopy.getSummary().getValue());
+
 	}
 
 	private class TestComponent extends ICalComponent {

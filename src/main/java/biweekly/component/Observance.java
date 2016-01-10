@@ -53,6 +53,18 @@ import biweekly.util.UtcOffset;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-60">RFC 2445 p.60-7</a>
  */
 public class Observance extends ICalComponent {
+	public Observance() {
+		//empty
+	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the component to make a copy of
+	 */
+	public Observance(Observance original) {
+		super(original);
+	}
+
 	/**
 	 * Gets the date that the timezone observance starts.
 	 * @return the start date or null if not set
@@ -333,5 +345,10 @@ public class Observance extends ICalComponent {
 		if (getProperties(RecurrenceRule.class).size() > 1) {
 			warnings.add(Warning.validate(6));
 		}
+	}
+
+	@Override
+	public Observance copy() {
+		return new Observance(this);
 	}
 }

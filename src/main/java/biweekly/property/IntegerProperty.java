@@ -37,4 +37,12 @@ public class IntegerProperty extends ValuedProperty<Integer> {
 	public IntegerProperty(Integer value) {
 		super(value);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public IntegerProperty(IntegerProperty original) {
+		super(original);
+	}
 }

@@ -101,6 +101,14 @@ public class VJournal extends ICalComponent {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param original the component to make a copy of
+	 */
+	public VJournal(VJournal original) {
+		super(original);
+	}
+
+	/**
 	 * Gets the unique identifier for this journal entry. This component object
 	 * comes populated with a UID on creation. This is a <b>required</b>
 	 * property.
@@ -992,5 +1000,10 @@ public class VJournal extends ICalComponent {
 		if (getProperties(RecurrenceRule.class).size() > 1) {
 			warnings.add(Warning.validate(6));
 		}
+	}
+
+	@Override
+	public VJournal copy() {
+		return new VJournal(this);
 	}
 }

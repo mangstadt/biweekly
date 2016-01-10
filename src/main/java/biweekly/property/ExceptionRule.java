@@ -68,6 +68,14 @@ public class ExceptionRule extends RecurrenceProperty {
 		super(recur);
 	}
 
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public ExceptionRule(ExceptionRule original) {
+		super(original);
+	}
+
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 		super.validate(components, version, warnings);
@@ -75,5 +83,10 @@ public class ExceptionRule extends RecurrenceProperty {
 		if (version == ICalVersion.V2_0) {
 			warnings.add(Warning.validate(37));
 		}
+	}
+
+	@Override
+	public ExceptionRule copy() {
+		return new ExceptionRule(this);
 	}
 }

@@ -67,4 +67,17 @@ public class DateTimeStamp extends DateTimeProperty {
 	public DateTimeStamp(Date date) {
 		super(date);
 	}
+
+	/**
+	 * Copy constructor.
+	 * @param original the property to make a copy of
+	 */
+	public DateTimeStamp(DateTimeStamp original) {
+		super(original);
+	}
+
+	@Override
+	public DateTimeStamp copy() {
+		return new DateTimeStamp(this);
+	}
 }
