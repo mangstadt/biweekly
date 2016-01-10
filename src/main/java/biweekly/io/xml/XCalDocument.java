@@ -9,7 +9,6 @@ import static biweekly.io.xml.XCalQNames.VCALENDAR;
 import static biweekly.util.IOUtils.utf8Writer;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -147,7 +146,7 @@ public class XCalDocument {
 
 	private final Document document;
 	private final ICalVersion targetVersion = ICalVersion.V2_0;
-	private Element root;
+	private Element icalendarRootElement;
 
 	/**
 	 * Parses an xCal document from a string.
@@ -175,16 +174,7 @@ public class XCalDocument {
 	 * @throws SAXException if there's a problem parsing the XML
 	 */
 	public XCalDocument(File file) throws SAXException, IOException {
-		this(readFile(file));
-	}
-
-	private static Document readFile(File file) throws SAXException, IOException {
-		InputStream in = new FileInputStream(file);
-		try {
-			return XmlUtils.toDocument(in);
-		} finally {
-			in.close();
-		}
+		this(XmlUtils.toDocument(file));
 	}
 
 	/**
@@ -220,7 +210,7 @@ public class XCalDocument {
 		try {
 			//find the <icalendar> element
 			String prefix = nsContext.getPrefix();
-			root = (Element) xpath.evaluate("//" + prefix + ":" + ICALENDAR.getLocalPart(), document, XPathConstants.NODE);
+			icalendarRootElement = (Element) xpath.evaluate("//" + prefix + ":" + ICALENDAR.getLocalPart(), document, XPathConstants.NODE);
 		} catch (XPathExpressionException e) {
 			//never thrown, xpath expression is hard coded
 		}
@@ -231,8 +221,8 @@ public class XCalDocument {
 	 */
 	public XCalDocument() {
 		document = XmlUtils.createDocument();
-		root = document.createElementNS(ICALENDAR.getNamespaceURI(), ICALENDAR.getLocalPart());
-		document.appendChild(root);
+		icalendarRootElement = document.createElementNS(ICALENDAR.getNamespaceURI(), ICALENDAR.getLocalPart());
+		document.appendChild(icalendarRootElement);
 	}
 
 	/**
@@ -658,7 +648,7 @@ public class XCalDocument {
 		}
 
 		private List<Element> getVCalendarElements() {
-			return (root == null) ? Collections.<Element> emptyList() : getChildElements(root, VCALENDAR);
+			return (icalendarRootElement == null) ? Collections.<Element> emptyList() : getChildElements(icalendarRootElement, VCALENDAR);
 		}
 
 		private List<Element> getChildElements(Element parent, QName qname) {
@@ -718,16 +708,16 @@ public class XCalDocument {
 		protected void _write(ICalendar ical) {
 			Element element = buildComponentElement(ical);
 
-			if (root == null) {
-				root = buildElement(ICALENDAR);
+			if (icalendarRootElement == null) {
+				icalendarRootElement = buildElement(ICALENDAR);
 				Element documentRoot = document.getDocumentElement();
 				if (documentRoot == null) {
-					document.appendChild(root);
+					document.appendChild(icalendarRootElement);
 				} else {
-					documentRoot.appendChild(root);
+					documentRoot.appendChild(icalendarRootElement);
 				}
 			}
-			root.appendChild(element);
+			icalendarRootElement.appendChild(element);
 		}
 
 		/**

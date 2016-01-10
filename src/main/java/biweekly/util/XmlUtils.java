@@ -1,5 +1,8 @@
 package biweekly.util;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -93,6 +96,22 @@ public final class XmlUtils {
 		} catch (IOException e) {
 			//reading from string
 			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Parses an XML document from a file.
+	 * @param file the file
+	 * @return the parsed DOM
+	 * @throws SAXException if the XML is not valid
+	 * @throws IOException if there is a problem reading from the file
+	 */
+	public static Document toDocument(File file) throws SAXException, IOException {
+		InputStream in = new BufferedInputStream(new FileInputStream(file));
+		try {
+			return XmlUtils.toDocument(in);
+		} finally {
+			in.close();
 		}
 	}
 
