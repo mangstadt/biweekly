@@ -312,7 +312,7 @@ public class ICalRawReader implements Closeable {
 		}
 
 		if (propertyName == null) {
-			throw new ICalParseException(unfoldedLine.get(), propertyLineNum);
+			throw new ICalParseException(unfoldedLine.get(), propertyLineNum, "Line is malformed--no colon character found.");
 		}
 
 		String value = buffer.getAndClear();

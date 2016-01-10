@@ -221,7 +221,7 @@ public class ICalReader extends StreamReader {
 			try {
 				line = reader.readLine();
 			} catch (ICalParseException e) {
-				warnings.add(e.getLineNumber(), null, 3, e.getLine());
+				warnings.add(e.getLineNumber(), null, 3, e.getMessage(), e.getLine());
 				continue;
 			}
 
