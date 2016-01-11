@@ -35,9 +35,8 @@ import java.util.Set;
  */
 
 /**
- * A multimap that uses {@link List} objects to store its values. The internal
- * {@link Map} implementation is a {@link LinkedHashMap} that uses
- * {@link ArrayList} for its values.
+ * A multimap that uses {@link ArrayList} objects to store its values. The
+ * internal {@link Map} implementation is a {@link LinkedHashMap}.
  * @author Michael Angstadt
  * @param <K> the key
  * @param <V> the value
@@ -282,12 +281,9 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
 
 		ListMultimap<?, ?> other = (ListMultimap<?, ?>) obj;
 		return map.equals(other.map);
