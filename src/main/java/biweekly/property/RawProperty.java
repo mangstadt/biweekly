@@ -121,4 +121,29 @@ public class RawProperty extends ICalProperty {
 	public RawProperty copy() {
 		return new RawProperty(this);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.toLowerCase().hashCode());
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		RawProperty other = (RawProperty) obj;
+		if (dataType != other.dataType) return false;
+		if (name == null) {
+			if (other.name != null) return false;
+		} else if (!name.equalsIgnoreCase(other.name)) return false;
+		if (value == null) {
+			if (other.value != null) return false;
+		} else if (!value.equals(other.value)) return false;
+		return true;
+	}
+
 }

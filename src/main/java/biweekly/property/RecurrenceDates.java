@@ -179,4 +179,26 @@ public class RecurrenceDates extends ICalProperty {
 	public RecurrenceDates copy() {
 		return new RecurrenceDates(this);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((dates == null) ? 0 : dates.hashCode());
+		result = prime * result + ((periods == null) ? 0 : periods.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		RecurrenceDates other = (RecurrenceDates) obj;
+		if (dates == null) {
+			if (other.dates != null) return false;
+		} else if (!dates.equals(other.dates)) return false;
+		if (periods == null) {
+			if (other.periods != null) return false;
+		} else if (!periods.equals(other.periods)) return false;
+		return true;
+	}
 }

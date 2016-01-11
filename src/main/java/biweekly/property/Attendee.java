@@ -430,4 +430,40 @@ public class Attendee extends ICalProperty {
 	public Attendee copy() {
 		return new Attendee(this);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((participationLevel == null) ? 0 : participationLevel.hashCode());
+		result = prime * result + ((role == null) ? 0 : role.hashCode());
+		result = prime * result + ((rsvp == null) ? 0 : rsvp.hashCode());
+		result = prime * result + ((status == null) ? 0 : status.hashCode());
+		result = prime * result + ((uri == null) ? 0 : uri.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		Attendee other = (Attendee) obj;
+		if (email == null) {
+			if (other.email != null) return false;
+		} else if (!email.equals(other.email)) return false;
+		if (name == null) {
+			if (other.name != null) return false;
+		} else if (!name.equals(other.name)) return false;
+		if (participationLevel != other.participationLevel) return false;
+		if (role != other.role) return false;
+		if (rsvp == null) {
+			if (other.rsvp != null) return false;
+		} else if (!rsvp.equals(other.rsvp)) return false;
+		if (status != other.status) return false;
+		if (uri == null) {
+			if (other.uri != null) return false;
+		} else if (!uri.equals(other.uri)) return false;
+		return true;
+	}
 }

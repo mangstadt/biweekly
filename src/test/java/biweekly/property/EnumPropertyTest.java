@@ -3,7 +3,10 @@ package biweekly.property;
 import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
+import static biweekly.util.TestUtils.assertEqualsAndHash;
+import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertWarnings;
+import static org.junit.Assert.assertNotEquals;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -70,6 +73,25 @@ public class EnumPropertyTest {
 		assertWarnings(1, prop.validate(null, V1_0));
 		assertWarnings(0, prop.validate(null, V2_0_DEPRECATED));
 		assertWarnings(0, prop.validate(null, V2_0));
+	}
+
+	@Test
+	public void equals() {
+		EnumPropertyImpl one = new EnumPropertyImpl("one");
+		assertEqualsMethodEssentials(one);
+		EnumPropertyImpl two = new EnumPropertyImpl("ONE");
+		assertEqualsAndHash(one, two);
+
+		one = new EnumPropertyImpl("one");
+		two = new EnumPropertyImpl("ONE");
+		two.addParameter("name", "value");
+		assertNotEquals(one, two);
+		assertNotEquals(two, one);
+
+		one = new EnumPropertyImpl("one");
+		two = new EnumPropertyImpl("two");
+		assertNotEquals(one, two);
+		assertNotEquals(two, one);
 	}
 
 	private class EnumPropertyImpl extends EnumProperty {

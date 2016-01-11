@@ -207,4 +207,40 @@ public class Daylight extends ICalProperty {
 	public Daylight copy() {
 		return new Daylight(this);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + (daylight ? 1231 : 1237);
+		result = prime * result + ((daylightName == null) ? 0 : daylightName.hashCode());
+		result = prime * result + ((end == null) ? 0 : end.hashCode());
+		result = prime * result + ((offset == null) ? 0 : offset.hashCode());
+		result = prime * result + ((standardName == null) ? 0 : standardName.hashCode());
+		result = prime * result + ((start == null) ? 0 : start.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		Daylight other = (Daylight) obj;
+		if (daylight != other.daylight) return false;
+		if (daylightName == null) {
+			if (other.daylightName != null) return false;
+		} else if (!daylightName.equals(other.daylightName)) return false;
+		if (end == null) {
+			if (other.end != null) return false;
+		} else if (!end.equals(other.end)) return false;
+		if (offset == null) {
+			if (other.offset != null) return false;
+		} else if (!offset.equals(other.offset)) return false;
+		if (standardName == null) {
+			if (other.standardName != null) return false;
+		} else if (!standardName.equals(other.standardName)) return false;
+		if (start == null) {
+			if (other.start != null) return false;
+		} else if (!start.equals(other.start)) return false;
+		return true;
+	}
 }

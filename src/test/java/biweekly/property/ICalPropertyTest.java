@@ -1,6 +1,9 @@
 package biweekly.property;
 
+import static biweekly.util.TestUtils.assertEqualsAndHash;
+import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -74,6 +77,33 @@ public class ICalPropertyTest {
 		} catch (UnsupportedOperationException e) {
 			assertTrue(e.getCause() instanceof NoSuchMethodException);
 		}
+	}
+
+	@Test
+	public void equals_essentials() {
+		ICalPropertyImpl one = new ICalPropertyImpl();
+		assertEqualsMethodEssentials(one);
+	}
+
+	@Test
+	public void equals_different_parameters() {
+		ICalPropertyImpl one = new ICalPropertyImpl();
+		one.addParameter("one", "value");
+		ICalPropertyImpl two = new ICalPropertyImpl();
+		two.addParameter("two", "value");
+
+		assertNotEquals(one, two);
+		assertNotEquals(two, one);
+	}
+
+	@Test
+	public void equals() {
+		ICalPropertyImpl one = new ICalPropertyImpl();
+		one.addParameter("one", "value");
+		ICalPropertyImpl two = new ICalPropertyImpl();
+		two.addParameter("one", "value");
+
+		assertEqualsAndHash(one, two);
 	}
 
 	private static class CopyConstructorTest extends ICalProperty {

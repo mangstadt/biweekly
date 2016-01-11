@@ -1,10 +1,12 @@
 package biweekly.io;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 
 import biweekly.component.VTimezone;
@@ -41,13 +43,13 @@ import biweekly.property.TimezoneId;
  * @author Michael Angstadt
  */
 public class TimezoneInfo {
-	private final Map<VTimezone, TimeZone> assignments = new HashMap<VTimezone, TimeZone>();
+	private final Map<VTimezone, TimeZone> assignments = new IdentityHashMap<VTimezone, TimeZone>();
 	private final Map<TimeZone, VTimezone> assignmentsReverse = new HashMap<TimeZone, VTimezone>();
 	private final Map<String, TimeZone> timezonesById = new HashMap<String, TimeZone>();
 
-	private final Map<ICalProperty, TimeZone> propertyTimeZones = new HashMap<ICalProperty, TimeZone>();
-	private final Set<ICalProperty> hasSolidusTimezone = new HashSet<ICalProperty>();
-	private final Set<ICalProperty> floatingProperties = new HashSet<ICalProperty>();
+	private final Map<ICalProperty, TimeZone> propertyTimeZones = new IdentityHashMap<ICalProperty, TimeZone>();
+	private final List<ICalProperty> hasSolidusTimezone = new ArrayList<ICalProperty>();
+	private final List<ICalProperty> floatingProperties = new ArrayList<ICalProperty>();
 
 	private VTimezoneGenerator generator = new TzUrlDotOrgGenerator(false);
 
@@ -125,7 +127,7 @@ public class TimezoneInfo {
 	public void setTimeZone(ICalProperty property, TimeZone timezone, boolean generateComponent) {
 		if (timezone == null) {
 			propertyTimeZones.remove(property);
-			hasSolidusTimezone.remove(property);
+			removeIdentity(hasSolidusTimezone, property);
 			return;
 		}
 
@@ -165,7 +167,7 @@ public class TimezoneInfo {
 	 * @return true if the property has a solidus timezone, false if not
 	 */
 	public boolean hasSolidusTimezone(ICalProperty property) {
-		return hasSolidusTimezone.contains(property);
+		return containsIdentity(hasSolidusTimezone, property);
 	}
 
 	/**
@@ -205,7 +207,7 @@ public class TimezoneInfo {
 	 * @return the component or null if it is not assigned to one
 	 */
 	public VTimezone getComponent(ICalProperty property) {
-		if (hasSolidusTimezone.contains(property)) {
+		if (containsIdentity(hasSolidusTimezone, property)) {
 			return null;
 		}
 
@@ -227,7 +229,7 @@ public class TimezoneInfo {
 		if (enable) {
 			floatingProperties.add(property);
 		} else {
-			floatingProperties.remove(property);
+			removeIdentity(floatingProperties, property);
 		}
 	}
 
@@ -238,7 +240,7 @@ public class TimezoneInfo {
 	 * @return true to format in floating time, false not to
 	 */
 	public boolean isFloating(ICalProperty property) {
-		if (floatingProperties.contains(property)) {
+		if (containsIdentity(floatingProperties, property)) {
 			return true;
 		}
 
@@ -286,5 +288,23 @@ public class TimezoneInfo {
 		if (id == null || id.getValue() == null || id.getValue().trim().length() == 0) {
 			throw new IllegalArgumentException("VTimezone component must have a non-empty TimezoneId property");
 		}
+	}
+
+	private <T> void removeIdentity(List<T> list, T object) {
+		Iterator<T> it = list.iterator();
+		while (it.hasNext()) {
+			if (object == it.next()) {
+				it.remove();
+			}
+		}
+	}
+
+	private <T> boolean containsIdentity(List<T> list, T object) {
+		for (T item : list) {
+			if (item == object) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

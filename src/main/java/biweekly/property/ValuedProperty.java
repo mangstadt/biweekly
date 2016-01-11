@@ -97,4 +97,22 @@ public class ValuedProperty<T> extends ICalProperty {
 		values.put("value", value);
 		return values;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		ValuedProperty<?> other = (ValuedProperty<?>) obj;
+		if (value == null) {
+			if (other.value != null) return false;
+		} else if (!value.equals(other.value)) return false;
+		return true;
+	}
 }

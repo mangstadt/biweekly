@@ -97,4 +97,26 @@ public class EmailAlarm extends VCalAlarmProperty {
 	public EmailAlarm copy() {
 		return new EmailAlarm(this);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((note == null) ? 0 : note.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		EmailAlarm other = (EmailAlarm) obj;
+		if (email == null) {
+			if (other.email != null) return false;
+		} else if (!email.equals(other.email)) return false;
+		if (note == null) {
+			if (other.note != null) return false;
+		} else if (!note.equals(other.note)) return false;
+		return true;
+	}
 }

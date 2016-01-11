@@ -1,8 +1,11 @@
 package biweekly.component;
 
+import static biweekly.util.TestUtils.assertEqualsAndHash;
+import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -52,13 +55,13 @@ public class ICalComponentTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void checkRequiredCardinality() {
-		TestComponent comp = new TestComponent();
-		comp.addProperty(new Summary(""));
-		comp.addProperty(new Description(""));
-		comp.addProperty(new Description(""));
+		ICalComponentImpl component = new ICalComponentImpl();
+		component.addProperty(new Summary(""));
+		component.addProperty(new Description(""));
+		component.addProperty(new Description(""));
 
 		List<Warning> warnings = new ArrayList<Warning>();
-		comp.checkRequiredCardinality(warnings, Summary.class, Description.class, Location.class);
+		component.checkRequiredCardinality(warnings, Summary.class, Description.class, Location.class);
 
 		//too many instances of Description and no instances of Location
 		assertWarnings(2, warnings);
@@ -67,13 +70,13 @@ public class ICalComponentTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void checkOptionalCardinality() {
-		TestComponent comp = new TestComponent();
-		comp.addProperty(new Summary(""));
-		comp.addProperty(new Description(""));
-		comp.addProperty(new Description(""));
+		ICalComponentImpl component = new ICalComponentImpl();
+		component.addProperty(new Summary(""));
+		component.addProperty(new Description(""));
+		component.addProperty(new Description(""));
 
 		List<Warning> warnings = new ArrayList<Warning>();
-		comp.checkOptionalCardinality(warnings, Summary.class, Description.class, Location.class);
+		component.checkOptionalCardinality(warnings, Summary.class, Description.class, Location.class);
 
 		//too many instances of Description
 		assertWarnings(1, warnings);
@@ -81,32 +84,32 @@ public class ICalComponentTest {
 
 	@Test
 	public void checkStatus_valid() {
-		TestComponent comp = new TestComponent();
-		comp.addProperty(Status.cancelled());
+		ICalComponentImpl component = new ICalComponentImpl();
+		component.addProperty(Status.cancelled());
 
 		List<Warning> warnings = new ArrayList<Warning>();
-		comp.checkStatus(warnings, Status.cancelled());
+		component.checkStatus(warnings, Status.cancelled());
 
 		assertWarnings(0, warnings);
 	}
 
 	@Test
 	public void checkStatus_invalid() {
-		TestComponent comp = new TestComponent();
-		comp.addProperty(Status.cancelled());
+		ICalComponentImpl component = new ICalComponentImpl();
+		component.addProperty(Status.cancelled());
 
 		List<Warning> warnings = new ArrayList<Warning>();
-		comp.checkStatus(warnings, Status.completed());
+		component.checkStatus(warnings, Status.completed());
 
 		assertWarnings(1, warnings);
 	}
 
 	@Test
 	public void checkStatus_null() {
-		TestComponent comp = new TestComponent();
+		ICalComponentImpl component = new ICalComponentImpl();
 
 		List<Warning> warnings = new ArrayList<Warning>();
-		comp.checkStatus(warnings, Status.cancelled());
+		component.checkStatus(warnings, Status.cancelled());
 
 		assertWarnings(0, warnings);
 	}
@@ -145,7 +148,7 @@ public class ICalComponentTest {
 
 	@Test
 	public void copy_no_copy_constructor_or_method() {
-		TestComponent component = new TestComponent();
+		ICalComponentImpl component = new ICalComponentImpl();
 		try {
 			component.copy();
 			fail("Expected an exception to be thrown.");
@@ -154,7 +157,104 @@ public class ICalComponentTest {
 		}
 	}
 
-	private static class TestComponent extends ICalComponent {
+	@Test
+	public void equals_essentials() {
+		ICalComponentImpl one = new ICalComponentImpl();
+		assertEqualsMethodEssentials(one);
+	}
+
+	@Test
+	public void equals_different_number_of_properties() {
+		ICalComponentImpl one = new ICalComponentImpl();
+		one.addExperimentalProperty("PROP", "value");
+
+		ICalComponentImpl two = new ICalComponentImpl();
+		two.addExperimentalProperty("PROP", "value");
+		two.addExperimentalProperty("PROP", "value");
+
+		assertNotEquals(one, two);
+		assertNotEquals(two, one);
+	}
+
+	@Test
+	public void equals_different_number_of_components() {
+		ICalComponentImpl one = new ICalComponentImpl();
+		one.addExperimentalComponent("COMP");
+
+		ICalComponentImpl two = new ICalComponentImpl();
+		two.addExperimentalComponent("COMP");
+		two.addExperimentalComponent("COMP");
+
+		assertNotEquals(one, two);
+		assertNotEquals(two, one);
+	}
+
+	@Test
+	public void equals_properties_not_equal() {
+		ICalComponentImpl one = new ICalComponentImpl();
+		one.addExperimentalProperty("PROP", "one");
+
+		ICalComponentImpl two = new ICalComponentImpl();
+		one.addExperimentalProperty("PROP", "two");
+
+		assertNotEquals(one, two);
+		assertNotEquals(two, one);
+	}
+
+	@Test
+	public void equals_ignore_order() {
+		ICalComponentImpl one = new ICalComponentImpl();
+		one.addExperimentalProperty("PROP", "one");
+		one.addExperimentalProperty("PROP", "two");
+		one.addExperimentalProperty("PROP", "three");
+		one.addExperimentalComponent("COMP");
+
+		ICalComponentImpl two = new ICalComponentImpl();
+		two.addExperimentalComponent("COMP");
+		two.addExperimentalProperty("PROP", "two");
+		two.addExperimentalProperty("PROP", "one");
+		two.addExperimentalProperty("PROP", "three");
+
+		assertEqualsAndHash(one, two);
+	}
+
+	@Test
+	public void equals_multiple_identical_properties() {
+		ICalComponentImpl one = new ICalComponentImpl();
+		one.addExperimentalProperty("PROP", "one");
+		one.addExperimentalProperty("PROP", "one");
+		one.addExperimentalProperty("PROP", "two");
+
+		ICalComponentImpl two = new ICalComponentImpl();
+		two.addExperimentalProperty("PROP", "one");
+		two.addExperimentalProperty("PROP", "two");
+		two.addExperimentalProperty("PROP", "one");
+
+		assertEqualsAndHash(one, two);
+	}
+
+	/**
+	 * This tests to make sure that, if some hashing mechanism is used to
+	 * determine equality, identical properties in the same vCard are not
+	 * treated as a single property when they are put in a HashSet.
+	 */
+	@Test
+	public void equals_multiple_identical_properties_not_equal() {
+		ICalComponentImpl one = new ICalComponentImpl();
+		one.addExperimentalProperty("PROP", "one");
+		one.addExperimentalProperty("PROP", "one");
+		one.addExperimentalProperty("PROP", "two");
+
+		ICalComponentImpl two = new ICalComponentImpl();
+		two.addExperimentalProperty("PROP", "one");
+		two.addExperimentalProperty("PROP", "two");
+		two.addExperimentalProperty("PROP", "two");
+
+		assertNotEquals(one, two);
+		assertNotEquals(two, one);
+	}
+
+	private static class ICalComponentImpl extends ICalComponent {
 		//empty
 	}
 

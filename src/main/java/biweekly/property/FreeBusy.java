@@ -172,4 +172,22 @@ public class FreeBusy extends ICalProperty {
 	public FreeBusy copy() {
 		return new FreeBusy(this);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((values == null) ? 0 : values.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		FreeBusy other = (FreeBusy) obj;
+		if (values == null) {
+			if (other.values != null) return false;
+		} else if (!values.equals(other.values)) return false;
+		return true;
+	}
 }

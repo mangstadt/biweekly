@@ -3,6 +3,7 @@ package biweekly.component;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -553,5 +554,96 @@ public abstract class ICalComponent {
 		} catch (Exception e) {
 			throw new UnsupportedOperationException("A problem occurred attempting to invoke the copy constructor of component class " + clazz.getName() + ".", e);
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+
+		int propertiesHash = 1;
+		for (ICalProperty property : properties.values()) {
+			propertiesHash += property.hashCode();
+		}
+		result = prime * result + propertiesHash;
+
+		int componentsHash = 1;
+		for (ICalComponent component : components.values()) {
+			componentsHash += component.hashCode();
+		}
+		result = prime * result + componentsHash;
+
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		ICalComponent other = (ICalComponent) obj;
+
+		if (properties.size() != other.properties.size()) return false;
+		if (components.size() != other.components.size()) return false;
+
+		for (Map.Entry<Class<? extends ICalProperty>, List<ICalProperty>> entry : properties) {
+			Class<? extends ICalProperty> key = entry.getKey();
+			List<ICalProperty> value = entry.getValue();
+			List<ICalProperty> otherValue = other.properties.get(key);
+
+			/*
+			 * The properties are stored in a ListMultimap. This class never
+			 * returns null. It returns an empty list when the key is not found.
+			 * But keep the null check just incase.
+			 */
+			if (value == null) {
+				if (otherValue != null || !other.properties.containsKey(key)) {
+					return false;
+				}
+				continue;
+			}
+
+			if (otherValue == null || value.size() != otherValue.size()) {
+				return false;
+			}
+
+			List<ICalProperty> otherValueCopy = new ArrayList<ICalProperty>(otherValue);
+			for (ICalProperty property : value) {
+				if (!otherValueCopy.remove(property)) {
+					return false;
+				}
+			}
+		}
+
+		for (Map.Entry<Class<? extends ICalComponent>, List<ICalComponent>> entry : components) {
+			Class<? extends ICalComponent> key = entry.getKey();
+			List<ICalComponent> value = entry.getValue();
+			List<ICalComponent> otherValue = other.components.get(key);
+
+			/*
+			 * The properties are stored in a ListMultimap. This class never
+			 * returns null. It returns an empty list when the key is not found.
+			 * But keep the null check just incase.
+			 */
+			if (value == null) {
+				if (otherValue != null || !other.components.containsKey(key)) {
+					return false;
+				}
+				continue;
+			}
+
+			if (otherValue == null || value.size() != otherValue.size()) {
+				return false;
+			}
+
+			List<ICalComponent> otherValueCopy = new ArrayList<ICalComponent>(otherValue);
+			for (ICalComponent component : value) {
+				if (!otherValueCopy.remove(component)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 }

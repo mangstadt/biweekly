@@ -479,4 +479,20 @@ public class ICalendar extends ICalComponent {
 	public void writeJson(Writer writer) throws IOException {
 		Biweekly.writeJson(this).go(writer);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((version == null) ? 0 : version.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		ICalendar other = (ICalendar) obj;
+		if (version != other.version) return false;
+		return true;
+	}
 }

@@ -169,4 +169,26 @@ public class Trigger extends ICalProperty {
 	public Trigger copy() {
 		return new Trigger(this);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((date == null) ? 0 : date.hashCode());
+		result = prime * result + ((duration == null) ? 0 : duration.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		Trigger other = (Trigger) obj;
+		if (date == null) {
+			if (other.date != null) return false;
+		} else if (!date.equals(other.date)) return false;
+		if (duration == null) {
+			if (other.duration != null) return false;
+		} else if (!duration.equals(other.duration)) return false;
+		return true;
+	}
 }

@@ -183,4 +183,30 @@ public class RequestStatus extends ICalProperty {
 	public RequestStatus copy() {
 		return new RequestStatus(this);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((exceptionText == null) ? 0 : exceptionText.hashCode());
+		result = prime * result + ((statusCode == null) ? 0 : statusCode.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		RequestStatus other = (RequestStatus) obj;
+		if (description == null) {
+			if (other.description != null) return false;
+		} else if (!description.equals(other.description)) return false;
+		if (exceptionText == null) {
+			if (other.exceptionText != null) return false;
+		} else if (!exceptionText.equals(other.exceptionText)) return false;
+		if (statusCode == null) {
+			if (other.statusCode != null) return false;
+		} else if (!statusCode.equals(other.statusCode)) return false;
+		return true;
+	}
 }

@@ -98,4 +98,30 @@ public class VCalAlarmProperty extends ICalProperty {
 		values.put("repeat", repeat);
 		return values;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((repeat == null) ? 0 : repeat.hashCode());
+		result = prime * result + ((snooze == null) ? 0 : snooze.hashCode());
+		result = prime * result + ((start == null) ? 0 : start.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		VCalAlarmProperty other = (VCalAlarmProperty) obj;
+		if (repeat == null) {
+			if (other.repeat != null) return false;
+		} else if (!repeat.equals(other.repeat)) return false;
+		if (snooze == null) {
+			if (other.snooze != null) return false;
+		} else if (!snooze.equals(other.snooze)) return false;
+		if (start == null) {
+			if (other.start != null) return false;
+		} else if (!start.equals(other.start)) return false;
+		return true;
+	}
 }

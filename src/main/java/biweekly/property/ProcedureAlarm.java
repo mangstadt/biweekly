@@ -85,4 +85,22 @@ public class ProcedureAlarm extends VCalAlarmProperty {
 	public ProcedureAlarm copy() {
 		return new ProcedureAlarm(this);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((path == null) ? 0 : path.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		ProcedureAlarm other = (ProcedureAlarm) obj;
+		if (path == null) {
+			if (other.path != null) return false;
+		} else if (!path.equals(other.path)) return false;
+		return true;
+	}
 }

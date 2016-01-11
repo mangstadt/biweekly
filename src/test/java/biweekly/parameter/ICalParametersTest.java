@@ -3,8 +3,11 @@ package biweekly.parameter;
 import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
+import static biweekly.util.TestUtils.assertEqualsAndHash;
+import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertWarnings;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -135,5 +138,99 @@ public class ICalParametersTest {
 		for (ICalVersion version : ICalVersion.values()) {
 			assertWarnings(1, params.validate(version));
 		}
+	}
+
+	@Test
+	public void equals_essentials() {
+		ICalParameters one = new ICalParameters();
+		one.put("foo", "bar");
+		assertEqualsMethodEssentials(one);
+	}
+
+	@Test
+	public void equals_different_number_of_parameters() {
+		ICalParameters one = new ICalParameters();
+		one.put("foo", "one");
+
+		ICalParameters two = new ICalParameters();
+		two.put("foo", "one");
+		two.put("foo", "two");
+
+		assertNotEquals(one, two);
+		assertNotEquals(two, one);
+	}
+
+	@Test
+	public void equals_case_insensitive() {
+		ICalParameters one = new ICalParameters();
+		one.put("foo", "bar");
+
+		ICalParameters two = new ICalParameters();
+		two.put("FOO", "BAR");
+
+		assertEqualsAndHash(one, two);
+	}
+
+	@Test
+	public void equals_order_does_not_matter() {
+		ICalParameters one = new ICalParameters();
+		one.put("foo", "one");
+		one.put("foo", "two");
+		one.put("foo", "three");
+
+		ICalParameters two = new ICalParameters();
+		two.put("foo", "TWO");
+		two.put("foo", "one");
+		two.put("foo", "three");
+
+		assertEqualsAndHash(one, two);
+	}
+
+	@Test
+	public void equals_duplicate_values() {
+		ICalParameters one = new ICalParameters();
+		one.put("foo", "one");
+		one.put("foo", "one");
+		one.put("foo", "two");
+
+		ICalParameters two = new ICalParameters();
+		two.put("foo", "one");
+		two.put("foo", "one");
+		two.put("foo", "two");
+
+		assertEqualsAndHash(one, two);
+	}
+
+	@Test
+	public void equals_different_duplicates_same_value_size() {
+		ICalParameters one = new ICalParameters();
+		one.put("foo", "one");
+		one.put("foo", "one");
+		one.put("foo", "two");
+
+		ICalParameters two = new ICalParameters();
+		two.put("foo", "one");
+		two.put("foo", "two");
+		two.put("foo", "two");
+
+		assertNotEquals(one, two);
+		assertNotEquals(two, one);
+	}
+
+	@Test
+	public void equals_multiple_keys() {
+		ICalParameters one = new ICalParameters();
+		one.put("foo", "BAR");
+		one.put("super", "man");
+		one.put("super", "bad");
+		one.put("hello", "world");
+
+		ICalParameters two = new ICalParameters();
+		two.put("hello", "world");
+		two.put("super", "MAN");
+		two.put("foo", "bar");
+		two.put("super", "bad");
+
+		assertEqualsAndHash(one, two);
 	}
 }

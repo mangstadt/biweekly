@@ -143,4 +143,26 @@ public class Geo extends ICalProperty {
 	public Geo copy() {
 		return new Geo(this);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((latitude == null) ? 0 : latitude.hashCode());
+		result = prime * result + ((longitude == null) ? 0 : longitude.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		Geo other = (Geo) obj;
+		if (latitude == null) {
+			if (other.latitude != null) return false;
+		} else if (!latitude.equals(other.latitude)) return false;
+		if (longitude == null) {
+			if (other.longitude != null) return false;
+		} else if (!longitude.equals(other.longitude)) return false;
+		return true;
+	}
 }

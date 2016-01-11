@@ -99,4 +99,28 @@ public class AudioAlarm extends VCalAlarmProperty {
 	public AudioAlarm copy() {
 		return new AudioAlarm(this);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((contentId == null) ? 0 : contentId.hashCode());
+		result = prime * result + Arrays.hashCode(data);
+		result = prime * result + ((uri == null) ? 0 : uri.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!super.equals(obj)) return false;
+		AudioAlarm other = (AudioAlarm) obj;
+		if (contentId == null) {
+			if (other.contentId != null) return false;
+		} else if (!contentId.equals(other.contentId)) return false;
+		if (uri == null) {
+			if (other.uri != null) return false;
+		} else if (!uri.equals(other.uri)) return false;
+		if (!Arrays.equals(data, other.data)) return false;
+		return true;
+	}
 }
