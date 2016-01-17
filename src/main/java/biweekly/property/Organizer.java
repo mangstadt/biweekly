@@ -190,6 +190,7 @@ public class Organizer extends ICalProperty {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		Organizer other = (Organizer) obj;
 		if (email == null) {

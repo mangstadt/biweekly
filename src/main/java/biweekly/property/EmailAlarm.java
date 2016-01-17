@@ -109,6 +109,7 @@ public class EmailAlarm extends VCalAlarmProperty {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		EmailAlarm other = (EmailAlarm) obj;
 		if (email == null) {

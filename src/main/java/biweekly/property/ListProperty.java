@@ -117,6 +117,7 @@ public class ListProperty<T> extends ICalProperty {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		ListProperty<?> other = (ListProperty<?>) obj;
 		if (values == null) {

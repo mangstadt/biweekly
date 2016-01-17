@@ -223,6 +223,7 @@ public class Daylight extends ICalProperty {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		Daylight other = (Daylight) obj;
 		if (daylight != other.daylight) return false;

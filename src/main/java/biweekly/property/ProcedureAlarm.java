@@ -96,6 +96,7 @@ public class ProcedureAlarm extends VCalAlarmProperty {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		ProcedureAlarm other = (ProcedureAlarm) obj;
 		if (path == null) {

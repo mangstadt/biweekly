@@ -108,6 +108,7 @@ public class ValuedProperty<T> extends ICalProperty {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		ValuedProperty<?> other = (ValuedProperty<?>) obj;
 		if (value == null) {

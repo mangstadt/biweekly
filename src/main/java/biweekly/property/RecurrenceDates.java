@@ -191,6 +191,7 @@ public class RecurrenceDates extends ICalProperty {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		RecurrenceDates other = (RecurrenceDates) obj;
 		if (dates == null) {

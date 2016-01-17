@@ -211,6 +211,7 @@ public class Attachment extends ICalProperty {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		Attachment other = (Attachment) obj;
 		if (contentId == null) {

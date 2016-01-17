@@ -111,6 +111,7 @@ public class VCalAlarmProperty extends ICalProperty {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		VCalAlarmProperty other = (VCalAlarmProperty) obj;
 		if (repeat == null) {

@@ -134,6 +134,7 @@ public class RawProperty extends ICalProperty {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		RawProperty other = (RawProperty) obj;
 		if (dataType != other.dataType) return false;

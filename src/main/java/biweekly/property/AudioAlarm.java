@@ -112,6 +112,7 @@ public class AudioAlarm extends VCalAlarmProperty {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		AudioAlarm other = (AudioAlarm) obj;
 		if (contentId == null) {

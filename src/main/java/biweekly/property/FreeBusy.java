@@ -183,6 +183,7 @@ public class FreeBusy extends ICalProperty {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		FreeBusy other = (FreeBusy) obj;
 		if (values == null) {

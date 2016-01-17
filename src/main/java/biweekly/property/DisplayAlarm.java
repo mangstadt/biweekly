@@ -90,6 +90,7 @@ public class DisplayAlarm extends VCalAlarmProperty {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		DisplayAlarm other = (DisplayAlarm) obj;
 		if (text == null) {

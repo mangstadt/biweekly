@@ -196,6 +196,7 @@ public class RequestStatus extends ICalProperty {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		RequestStatus other = (RequestStatus) obj;
 		if (description == null) {

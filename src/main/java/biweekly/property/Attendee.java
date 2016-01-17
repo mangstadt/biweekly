@@ -447,6 +447,7 @@ public class Attendee extends ICalProperty {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		Attendee other = (Attendee) obj;
 		if (email == null) {
