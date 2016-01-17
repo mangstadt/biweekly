@@ -5,13 +5,17 @@ import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 import org.junit.Test;
+
+import biweekly.parameter.ICalParameters;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -104,6 +108,45 @@ public class ICalPropertyTest {
 		two.addParameter("one", "value");
 
 		assertEqualsAndHash(one, two);
+	}
+
+	@Test
+	public void parameters() {
+		ICalPropertyImpl property = new ICalPropertyImpl();
+		assertEquals(new ICalParameters(), property.getParameters());
+
+		try {
+			property.setParameters(null);
+			fail("NPE expected.");
+		} catch (NullPointerException e) {
+			//expected
+		}
+
+		ICalParameters parameters = new ICalParameters();
+		property.setParameters(parameters);
+		assertSame(parameters, property.getParameters());
+
+		property.addParameter("PARAM", "value");
+		property.addParameter("PARAM", "value2");
+		assertEquals("value", property.getParameter("PARAM"));
+		assertEquals(Arrays.asList("value", "value2"), property.getParameters("PARAM"));
+		ICalParameters expected = new ICalParameters();
+		expected.put("PARAM", "value");
+		expected.put("PARAM", "value2");
+		assertEquals(expected, property.getParameters());
+
+		property.setParameter("PARAM", "one");
+		assertEquals("one", property.getParameter("PARAM"));
+		assertEquals(Arrays.asList("one"), property.getParameters("PARAM"));
+		expected = new ICalParameters();
+		expected.put("PARAM", "one");
+		assertEquals(expected, property.getParameters());
+
+		property.removeParameter("PARAM");
+		assertNull(property.getParameter("PARAM"));
+		assertEquals(Arrays.asList(), property.getParameters("PARAM"));
+		expected = new ICalParameters();
+		assertEquals(expected, property.getParameters());
 	}
 
 	private static class CopyConstructorTest extends ICalProperty {

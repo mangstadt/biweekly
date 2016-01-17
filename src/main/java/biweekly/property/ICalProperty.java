@@ -70,9 +70,12 @@ public abstract class ICalProperty {
 
 	/**
 	 * Sets the property's parameters
-	 * @param parameters the parameters
+	 * @param parameters the parameters (cannot be null)
 	 */
 	public void setParameters(ICalParameters parameters) {
+		if (parameters == null) {
+			throw new NullPointerException("Parameters object cannot be null.");
+		}
 		this.parameters = parameters;
 	}
 
