@@ -66,7 +66,7 @@ public class DateOrDateTimeProperty extends ValuedProperty<ICalDate> {
 	 */
 	public DateOrDateTimeProperty(DateOrDateTimeProperty original) {
 		super(original);
-		value = new ICalDate(original.value);
+		value = (original.value == null) ? null : new ICalDate(original.value);
 	}
 
 	/**

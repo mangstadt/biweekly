@@ -4,6 +4,7 @@ import static biweekly.ICalVersion.V2_0;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -449,7 +450,7 @@ public class TestUtils {
 		}
 	}
 
-	private static boolean checkCodes(List<Warning> warnings, Integer... expectedCodes) {
+	public static boolean checkCodes(List<Warning> warnings, Integer... expectedCodes) {
 		if (warnings.size() != expectedCodes.length) {
 			return false;
 		}
@@ -497,6 +498,17 @@ public class TestUtils {
 		assertEquals(one, two);
 		assertEquals(two, one);
 		assertEquals(one.hashCode(), two.hashCode());
+	}
+
+	/**
+	 * Asserts that calling {@code one.equals(two)} and {@code two.equals(one)}
+	 * will both return false.
+	 * @param one the first object
+	 * @param two the second object
+	 */
+	public static void assertNotEqualsBothWays(Object one, Object two) {
+		assertNotEquals(one, two);
+		assertNotEquals(two, one);
 	}
 
 	private TestUtils() {

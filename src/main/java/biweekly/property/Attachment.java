@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -82,7 +83,7 @@ public class Attachment extends ICalProperty {
 	 * @throws IOException if there's a problem reading from the file
 	 */
 	public Attachment(String formatType, File file) throws IOException {
-		this.data = IOUtils.toByteArray(new FileInputStream(file), true);
+		this.data = IOUtils.toByteArray(new BufferedInputStream(new FileInputStream(file)), true);
 		setFormatType(formatType);
 	}
 
@@ -113,7 +114,7 @@ public class Attachment extends ICalProperty {
 	 */
 	public Attachment(Attachment original) {
 		super(original);
-		data = Arrays.copyOf(original.data, original.data.length);
+		data = (original.data == null) ? null : Arrays.copyOf(original.data, original.data.length);
 		uri = original.uri;
 		contentId = original.contentId;
 	}

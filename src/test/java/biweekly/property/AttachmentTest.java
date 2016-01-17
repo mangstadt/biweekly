@@ -1,6 +1,17 @@
 package biweekly.property;
 
+import static biweekly.property.PropertySensei.assertCopy;
+import static biweekly.property.PropertySensei.assertEqualsMethod;
+import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertValidate;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -34,6 +45,57 @@ import org.junit.Test;
  */
 public class AttachmentTest {
 	@Test
+	public void constructors() throws Exception {
+		Attachment property = new Attachment("image/png", "data".getBytes());
+		assertEquals("image/png", property.getFormatType());
+		assertNull(property.getUri());
+		assertArrayEquals("data".getBytes(), property.getData());
+		assertNull(property.getContentId());
+
+		property = new Attachment("image/png", "uri");
+		assertEquals("image/png", property.getFormatType());
+		assertEquals("uri", property.getUri());
+		assertNull(property.getData());
+		assertNull(property.getContentId());
+
+		File file = new File("pom.xml");
+		property = new Attachment("image/png", file);
+		assertEquals("image/png", property.getFormatType());
+		assertNull(property.getUri());
+		assertEquals(file.length(), property.getData().length);
+		assertNull(property.getContentId());
+	}
+
+	@Test
+	public void set_value() {
+		Attachment property = new Attachment("image/png", "data".getBytes());
+
+		property.setUri("uri");
+		assertEquals("image/png", property.getFormatType());
+		assertEquals("uri", property.getUri());
+		assertNull(property.getData());
+		assertNull(property.getContentId());
+
+		property.setData("data".getBytes());
+		assertEquals("image/png", property.getFormatType());
+		assertNull(property.getUri());
+		assertArrayEquals("data".getBytes(), property.getData());
+		assertNull(property.getContentId());
+
+		property.setContentId("contentID");
+		assertEquals("image/png", property.getFormatType());
+		assertNull(property.getUri());
+		assertArrayEquals("data".getBytes(), property.getData());
+		assertEquals("contentID", property.getContentId());
+
+		property.setFormatType("image/jpeg");
+		assertEquals("image/jpeg", property.getFormatType());
+		assertNull(property.getUri());
+		assertArrayEquals("data".getBytes(), property.getData());
+		assertEquals("contentID", property.getContentId());
+	}
+
+	@Test
 	public void validate() {
 		Attachment attach = new Attachment(null, (byte[]) null);
 		assertValidate(attach).run(26);
@@ -47,5 +109,94 @@ public class AttachmentTest {
 		attach = new Attachment(null, (byte[]) null);
 		attach.setContentId("content-id");
 		assertValidate(attach).run();
+	}
+
+	@Test
+	public void toStringValues() {
+		Attachment property = new Attachment(null, (String) null);
+		assertFalse(property.toStringValues().isEmpty());
+
+		property = new Attachment("image/png", "uri");
+		assertFalse(property.toStringValues().isEmpty());
+
+		property = new Attachment("image/png", "data".getBytes());
+		assertFalse(property.toStringValues().isEmpty());
+	}
+
+	@Test
+	public void copy() {
+		Attachment original = new Attachment("image/png", "uri");
+		assertCopy(original);
+
+		original = new Attachment("image/png", "data".getBytes());
+		assertCopy(original).notSame("getData");
+
+		original = new Attachment("image/png", "uri");
+		original.setContentId("contentID");
+		assertCopy(original);
+	}
+
+	@Test
+	public void equals() {
+		List<ICalProperty> properties = new ArrayList<ICalProperty>();
+
+		Attachment property = new Attachment(null, (String) null);
+		properties.add(property);
+
+		property = new Attachment(null, "uri");
+		properties.add(property);
+
+		property = new Attachment("image/png", "uri");
+		properties.add(property);
+
+		property = new Attachment("image/png", "uri2");
+		properties.add(property);
+
+		property = new Attachment("image/png2", "uri");
+		properties.add(property);
+
+		property = new Attachment("image/png", "uri");
+		property.setContentId("contentID");
+		properties.add(property);
+
+		property = new Attachment("image/png", "uri");
+		property.setContentId("contentID2");
+		properties.add(property);
+
+		property = new Attachment(null, "data".getBytes());
+		properties.add(property);
+
+		property = new Attachment("image/png", "data".getBytes());
+		properties.add(property);
+
+		property = new Attachment("image/png", "data2".getBytes());
+		properties.add(property);
+
+		property = new Attachment("image/png2", "data".getBytes());
+		properties.add(property);
+
+		property = new Attachment("image/png", "data".getBytes());
+		property.setContentId("contentID");
+		properties.add(property);
+
+		property = new Attachment("image/png", "data".getBytes());
+		property.setContentId("contentID2");
+		properties.add(property);
+
+		assertNothingIsEqual(properties);
+
+		//@formatter:off
+
+		assertEqualsMethod(Attachment.class, "image/png", "uri")
+		.constructor(new Class<?>[]{String.class, String.class}, null, null).test()
+		.constructor(new Class<?>[]{String.class, String.class}, null, "uri").test()
+		.constructor("image/png", "uri")
+			.test()
+			.method("setContentId", "contentId")
+		.constructor(new Class<?>[]{String.class, byte[].class}, null, "data".getBytes()).test()
+		.constructor("image/png", "data".getBytes())
+			.test()
+			.method("setContentId", "contentId");
+		//@formatter:on
 	}
 }

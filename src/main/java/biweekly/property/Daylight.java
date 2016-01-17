@@ -82,8 +82,8 @@ public class Daylight extends ICalProperty {
 		super(original);
 		daylight = original.daylight;
 		offset = original.offset;
-		start = new ICalDate(original.start);
-		end = new ICalDate(original.end);
+		start = (original.start == null) ? null : new ICalDate(original.start);
+		end = (original.end == null) ? null : new ICalDate(original.end);
 		standardName = original.standardName;
 		daylightName = original.daylightName;
 	}
