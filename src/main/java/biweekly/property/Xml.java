@@ -41,14 +41,22 @@ import biweekly.util.XmlUtils;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc6321#page-17">RFC 6321 p.17-8</a>
  */
-public class Xml extends ValuedProperty<Document> {
+/*
+ * Note: This class does not extend ValuedProperty because of issues
+ * implementing "equals". ValuedProperty's "equals" method calls the "equals"
+ * method on the "value" field. However, equals method for the "Document" class
+ * does not check for true equality.
+ */
+public class Xml extends ICalProperty {
+	private Document value;
+
 	/**
 	 * Creates an XML property.
 	 * @param xml the XML to use as the property's value
 	 * @throws SAXException if the XML cannot be parsed
 	 */
 	public Xml(String xml) throws SAXException {
-		super(XmlUtils.toDocument(xml));
+		this(XmlUtils.toDocument(xml));
 	}
 
 	/**
@@ -57,7 +65,7 @@ public class Xml extends ValuedProperty<Document> {
 	 * element is imported into an empty {@link Document} object)
 	 */
 	public Xml(Element element) {
-		super(XmlUtils.createDocument());
+		this(XmlUtils.createDocument());
 		Node imported = value.importNode(element, true);
 		value.appendChild(imported);
 	}
@@ -67,7 +75,7 @@ public class Xml extends ValuedProperty<Document> {
 	 * @param document the XML document to use as the property's value
 	 */
 	public Xml(Document document) {
-		super(document);
+		value = document;
 	}
 
 	/**
@@ -78,9 +86,28 @@ public class Xml extends ValuedProperty<Document> {
 		super(original);
 		if (original.value != null) {
 			value = XmlUtils.createDocument();
-			Node node = value.importNode(original.value.getDocumentElement(), true);
-			value.appendChild(node);
+			Element root = original.value.getDocumentElement();
+			if (root != null) {
+				Node node = value.importNode(root, true);
+				value.appendChild(node);
+			}
 		}
+	}
+
+	/**
+	 * Gets the value of this property.
+	 * @return the value
+	 */
+	public Document getValue() {
+		return value;
+	}
+
+	/**
+	 * Sets the value of this property.
+	 * @param value the value
+	 */
+	public void setValue(Document value) {
+		this.value = value;
 	}
 
 	@Override
@@ -106,8 +133,7 @@ public class Xml extends ValuedProperty<Document> {
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
+		if (!super.equals(obj)) return false;
 		Xml other = (Xml) obj;
 		if (value == null) {
 			if (other.value != null) return false;
