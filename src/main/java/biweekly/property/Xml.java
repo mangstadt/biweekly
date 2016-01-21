@@ -1,6 +1,7 @@
 package biweekly.property;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Document;
@@ -8,6 +9,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import biweekly.ICalVersion;
+import biweekly.Warning;
+import biweekly.component.ICalComponent;
 import biweekly.util.XmlUtils;
 
 /*
@@ -56,7 +60,7 @@ public class Xml extends ICalProperty {
 	 * @throws SAXException if the XML cannot be parsed
 	 */
 	public Xml(String xml) throws SAXException {
-		this(XmlUtils.toDocument(xml));
+		this((xml == null) ? null : XmlUtils.toDocument(xml));
 	}
 
 	/**
@@ -65,9 +69,11 @@ public class Xml extends ICalProperty {
 	 * element is imported into an empty {@link Document} object)
 	 */
 	public Xml(Element element) {
-		this(XmlUtils.createDocument());
-		Node imported = value.importNode(element, true);
-		value.appendChild(imported);
+		this((element == null) ? null : XmlUtils.createDocument());
+		if (element != null) {
+			Node imported = value.importNode(element, true);
+			value.appendChild(imported);
+		}
 	}
 
 	/**
@@ -108,6 +114,13 @@ public class Xml extends ICalProperty {
 	 */
 	public void setValue(Document value) {
 		this.value = value;
+	}
+
+	@Override
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+		if (value == null) {
+			warnings.add(Warning.validate(26));
+		}
 	}
 
 	@Override

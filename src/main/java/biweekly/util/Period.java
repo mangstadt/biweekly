@@ -100,8 +100,8 @@ public final class Period {
 	 * @param period the period to copy
 	 */
 	public Period(Period period) {
-		this.startDate = new ICalDate(period.startDate);
-		this.endDate = new ICalDate(period.endDate);
+		this.startDate = (period.startDate == null) ? null : new ICalDate(period.startDate);
+		this.endDate = (period.endDate == null) ? null : new ICalDate(period.endDate);
 		this.duration = period.duration;
 	}
 

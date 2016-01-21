@@ -10,12 +10,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import biweekly.util.TestUtils;
 
 /*
- Copyright (c) 2012-2015, Michael Angstadt
+ Copyright (c) 2013-2015, Michael Angstadt
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -37,10 +39,6 @@ import biweekly.util.TestUtils;
  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
- The views and conclusions contained in the software and documentation are those
- of the authors and should not be interpreted as representing official policies, 
- either expressed or implied, of the FreeBSD Project.
  */
 
 /**
@@ -107,6 +105,44 @@ public class PropertySensei {
 			}
 			return this;
 		}
+
+		/**
+		 * Asserts that a given method returns different objects when invoked
+		 * from each copy. If the object is a {@link Collection}, also asserts
+		 * that each object in the collection is different.
+		 * @param methodName the name of the method to call (should be a
+		 * "getter" method)
+		 * @return this
+		 */
+		public CopyAsserter notSameDeep(String methodName) {
+			try {
+				Method method = original.getClass().getMethod(methodName);
+				Object fromOriginal = method.invoke(original);
+				Object fromConstructorCopy = method.invoke(copyFromConstructor);
+				Object fromMethodCopy = method.invoke(copyFromMethod);
+
+				String message = "Object returned by \"" + methodName + "\" is the same object, but it shouldn't be.";
+				assertNotSame(message, fromOriginal, fromConstructorCopy);
+				assertNotSame(message, fromOriginal, fromMethodCopy);
+
+				if (fromOriginal instanceof Collection) {
+					Iterator<?> fromOriginalCollection = ((Collection<?>) fromOriginal).iterator();
+					Iterator<?> fromConstructorCopyCollection = ((Collection<?>) fromConstructorCopy).iterator();
+					Iterator<?> fromMethodCopyCollection = ((Collection<?>) fromMethodCopy).iterator();
+					while (fromOriginalCollection.hasNext()) {
+						Object one = fromOriginalCollection.next();
+						Object two = fromConstructorCopyCollection.next();
+						Object three = fromMethodCopyCollection.next();
+
+						assertNotSame(one, two);
+						assertNotSame(one, three);
+					}
+				}
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			return this;
+		}
 	}
 
 	/**
@@ -129,6 +165,28 @@ public class PropertySensei {
 		return new EqualsMethodAsserter(clazz, constructorValues);
 	}
 
+	/**
+	 * <p>
+	 * Asserts some essential behaviors of the equals method (see
+	 * {@link TestUtils#assertEqualsMethodEssentials}). Also asserts that the
+	 * fields in the {@link ICalProperty} base class are checked.
+	 * </p>
+	 * <p>
+	 * Calling the chaining methods of the object that this method returns will
+	 * create identical instances of the given property and assert that the
+	 * instances are equal and have identical hash codes.
+	 * </p>
+	 * @param clazz the property class
+	 * @param parameterTypes the parameter types of the constructor that will be
+	 * used for creating instances that test the equals method essentials
+	 * @param constructorValues values to pass into the constructor for creating
+	 * instances that test the equals method essentials
+	 * @return a chainer object to perform the test
+	 */
+	public static EqualsMethodAsserter assertEqualsMethod(Class<? extends ICalProperty> clazz, Class<?> parameterTypes[], Object... constructorValues) {
+		return new EqualsMethodAsserter(clazz, parameterTypes, constructorValues);
+	}
+
 	public static class EqualsMethodAsserter {
 		private final Class<? extends ICalProperty> clazz;
 		private Constructor<? extends ICalProperty> constructor;
@@ -137,12 +195,16 @@ public class PropertySensei {
 		private List<Object[]> methodValues = new ArrayList<Object[]>();
 
 		public EqualsMethodAsserter(Class<? extends ICalProperty> clazz, Object... constructorValues) {
+			this(clazz, toTypes(constructorValues), constructorValues);
+		}
+
+		public EqualsMethodAsserter(Class<? extends ICalProperty> clazz, Class<?> parameterTypes[], Object... constructorValues) {
 			this.clazz = clazz;
 
 			try {
 				Constructor<? extends ICalProperty> constructor;
 				ICalProperty instance1, instance2;
-				constructor = clazz.getConstructor(toTypes(constructorValues));
+				constructor = clazz.getConstructor(parameterTypes);
 				instance1 = constructor.newInstance(constructorValues);
 				instance2 = constructor.newInstance(constructorValues);
 
@@ -257,7 +319,7 @@ public class PropertySensei {
 			return instance;
 		}
 
-		private Class<?>[] toTypes(Object... values) {
+		private static Class<?>[] toTypes(Object... values) {
 			Class<?> parameterTypes[] = new Class<?>[values.length];
 			for (int i = 0; i < values.length; i++) {
 				parameterTypes[i] = values[i].getClass();

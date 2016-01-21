@@ -352,13 +352,13 @@ public abstract class ICalProperty {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getName());
-		sb.append(" [parameters=").append(parameters);
+		sb.append(" [ parameters=").append(parameters);
 		for (Map.Entry<String, Object> field : toStringValues().entrySet()) {
 			String fieldName = field.getKey();
 			Object fieldValue = field.getValue();
 			sb.append(" | ").append(fieldName).append('=').append(fieldValue);
 		}
-		sb.append(']');
+		sb.append(" ]");
 		return sb.toString();
 	}
 
@@ -403,7 +403,7 @@ public abstract class ICalProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((parameters == null) ? 0 : parameters.hashCode());
+		result = prime * result + parameters.hashCode();
 		return result;
 	}
 
@@ -413,9 +413,7 @@ public abstract class ICalProperty {
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		ICalProperty other = (ICalProperty) obj;
-		if (parameters == null) {
-			if (other.parameters != null) return false;
-		} else if (!parameters.equals(other.parameters)) return false;
+		if (!parameters.equals(other.parameters)) return false;
 		return true;
 	}
 }

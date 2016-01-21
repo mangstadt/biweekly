@@ -1,6 +1,12 @@
 package biweekly.property;
 
+import static biweekly.property.PropertySensei.assertCopy;
+import static biweekly.property.PropertySensei.assertEqualsMethod;
+import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertValidate;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -34,11 +40,71 @@ import org.junit.Test;
  */
 public class ValuedPropertyTest {
 	@Test
+	public void constructors() throws Exception {
+		ValuedProperty<String> property = new ValuedProperty<String>((String) null);
+		assertNull(property.getValue());
+
+		property = new ValuedProperty<String>("value");
+		assertEquals("value", property.getValue());
+	}
+
+	@Test
+	public void set_value() {
+		ValuedProperty<String> property = new ValuedProperty<String>((String) null);
+
+		property.setValue("value");
+		assertEquals("value", property.getValue());
+	}
+
+	@Test
+	public void getValue() {
+		ValuedProperty<String> property = new ValuedProperty<String>("value");
+		assertEquals("value", ValuedProperty.getValue(property));
+
+		property = new ValuedProperty<String>((String) null);
+		assertNull(ValuedProperty.getValue(property));
+
+		assertNull(ValuedProperty.getValue(null));
+	}
+
+	@Test
 	public void validate() {
 		ValuedProperty<String> property = new ValuedProperty<String>((String) null);
 		assertValidate(property).run(26);
 
 		property = new ValuedProperty<String>("value");
 		assertValidate(property).run();
+	}
+
+	@Test
+	public void toStringValues() {
+		ValuedProperty<String> property = new ValuedProperty<String>("value");
+		assertFalse(property.toStringValues().isEmpty());
+	}
+
+	@Test
+	public void copy() {
+		ValuedProperty<String> original = new ValuedProperty<String>((String) null);
+		assertCopy(original);
+
+		original = new ValuedProperty<String>("value");
+		assertCopy(original);
+	}
+
+	@Test
+	public void equals() {
+		//@formatter:off
+		assertNothingIsEqual(
+			new ValuedProperty<String>((String) null),
+			new ValuedProperty<String>("value"),
+			new ValuedProperty<String>("value2"),
+			new ValuedProperty<Integer>(1)
+		);
+
+		Class<?> parameterTypes[] = new Class<?>[]{Object.class};
+		assertEqualsMethod(ValuedProperty.class, parameterTypes, "value")
+		.constructor(parameterTypes, (Object)null).test()
+		.constructor(parameterTypes, "value").test();
+		//@formatter:on
 	}
 }

@@ -3,10 +3,16 @@ package biweekly.property;
 import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
+import static biweekly.property.PropertySensei.assertCopy;
+import static biweekly.property.PropertySensei.assertEqualsMethod;
+import static biweekly.property.PropertySensei.assertNothingIsEqual;
+import static biweekly.util.TestUtils.assertCollectionContains;
 import static biweekly.util.TestUtils.assertEqualsAndHash;
-import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
-import static biweekly.util.TestUtils.assertWarnings;
-import static org.junit.Assert.assertNotEquals;
+import static biweekly.util.TestUtils.assertValidate;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,57 +52,109 @@ import biweekly.ICalVersion;
  */
 public class EnumPropertyTest {
 	@Test
+	public void constructors() throws Exception {
+		EnumPropertyImpl property = new EnumPropertyImpl();
+		assertNull(property.getValue());
+
+		property = new EnumPropertyImpl("value");
+		assertEquals("value", property.getValue());
+	}
+
+	@Test
+	public void set_value() {
+		EnumPropertyImpl property = new EnumPropertyImpl();
+
+		property.setValue("value");
+		assertEquals("value", property.getValue());
+		assertTrue(property.is("value"));
+		assertTrue(property.is("VALUE"));
+		assertFalse(property.is("notvalue"));
+		assertCollectionContains(property.getValueSupportedVersions());
+
+		property.setValue("one");
+		assertCollectionContains(property.getValueSupportedVersions(), V1_0);
+
+		property.setValue("two");
+		assertCollectionContains(property.getValueSupportedVersions(), V2_0_DEPRECATED, V2_0);
+	}
+
+	@Test
+	public void getValueSupportedVersions() {
+		EnumPropertyDefaultImpl property = new EnumPropertyDefaultImpl();
+		assertEquals(Arrays.asList(), property.getValueSupportedVersions());
+
+		property = new EnumPropertyDefaultImpl();
+		property.setValue("value");
+		assertCollectionContains(property.getValueSupportedVersions(), ICalVersion.values());
+	}
+
+	@Test
 	public void validate() {
 		//null value
-		EnumPropertyImpl prop = new EnumPropertyImpl(null);
-		assertWarnings(1, prop.validate(null, V1_0));
-		assertWarnings(1, prop.validate(null, V2_0_DEPRECATED));
-		assertWarnings(1, prop.validate(null, V2_0));
+		EnumPropertyImpl prop = new EnumPropertyImpl();
+		assertValidate(prop).run(26);
 
 		//invalid value
 		prop = new EnumPropertyImpl("three");
-		assertWarnings(1, prop.validate(null, V1_0));
-		assertWarnings(1, prop.validate(null, V2_0_DEPRECATED));
-		assertWarnings(1, prop.validate(null, V2_0));
+		assertValidate(prop).run(28);
 
 		prop = new EnumPropertyImpl("");
-		assertWarnings(1, prop.validate(null, V1_0));
-		assertWarnings(1, prop.validate(null, V2_0_DEPRECATED));
-		assertWarnings(1, prop.validate(null, V2_0));
+		assertValidate(prop).run(28);
 
 		prop = new EnumPropertyImpl("ONE");
-		assertWarnings(0, prop.validate(null, V1_0));
-		assertWarnings(1, prop.validate(null, V2_0_DEPRECATED));
-		assertWarnings(1, prop.validate(null, V2_0));
+		assertValidate(prop).versions(V1_0).run();
+		assertValidate(prop).versions(V2_0_DEPRECATED, V2_0).run(46);
 
 		prop = new EnumPropertyImpl("TWO");
-		assertWarnings(1, prop.validate(null, V1_0));
-		assertWarnings(0, prop.validate(null, V2_0_DEPRECATED));
-		assertWarnings(0, prop.validate(null, V2_0));
+		assertValidate(prop).versions(V1_0).run(46);
+		assertValidate(prop).versions(V2_0_DEPRECATED, V2_0).run();
+	}
+
+	@Test
+	public void toStringValues() {
+		EnumPropertyImpl property = new EnumPropertyImpl();
+		assertFalse(property.toStringValues().isEmpty());
+	}
+
+	@Test
+	public void copy() {
+		EnumPropertyImpl original = new EnumPropertyImpl("value");
+		assertCopy(original);
+
+		original = new EnumPropertyImpl();
+		assertCopy(original);
 	}
 
 	@Test
 	public void equals() {
+		//@formatter:off
+		assertNothingIsEqual(
+			new EnumPropertyImpl(),
+			new EnumPropertyImpl("one"),
+			new EnumPropertyImpl("two")
+		);
+
+		assertEqualsMethod(EnumPropertyImpl.class)
+		.constructor().test()
+		.constructor("value").test();
+		//@formatter:on
+
 		EnumPropertyImpl one = new EnumPropertyImpl("one");
-		assertEqualsMethodEssentials(one);
 		EnumPropertyImpl two = new EnumPropertyImpl("ONE");
 		assertEqualsAndHash(one, two);
-
-		one = new EnumPropertyImpl("one");
-		two = new EnumPropertyImpl("ONE");
-		two.addParameter("name", "value");
-		assertNotEquals(one, two);
-		assertNotEquals(two, one);
-
-		one = new EnumPropertyImpl("one");
-		two = new EnumPropertyImpl("two");
-		assertNotEquals(one, two);
-		assertNotEquals(two, one);
 	}
 
-	private class EnumPropertyImpl extends EnumProperty {
+	public static class EnumPropertyImpl extends EnumProperty {
+		public EnumPropertyImpl() {
+			super((String) null);
+		}
+
 		public EnumPropertyImpl(String value) {
 			super(value);
+		}
+
+		public EnumPropertyImpl(EnumPropertyImpl original) {
+			super(original);
 		}
 
 		@Override
@@ -122,6 +180,17 @@ public class EnumPropertyTest {
 				return Arrays.asList(V2_0, V2_0_DEPRECATED);
 			}
 
+			return Collections.emptyList();
+		}
+	}
+
+	public static class EnumPropertyDefaultImpl extends EnumProperty {
+		public EnumPropertyDefaultImpl() {
+			super((String) null);
+		}
+
+		@Override
+		protected Collection<String> getStandardValues(ICalVersion version) {
 			return Collections.emptyList();
 		}
 	}

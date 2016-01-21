@@ -1,6 +1,13 @@
 package biweekly.property;
 
+import static biweekly.property.PropertySensei.assertCopy;
+import static biweekly.property.PropertySensei.assertEqualsMethod;
+import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertValidate;
+import static biweekly.util.TestUtils.date;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 
@@ -39,6 +46,59 @@ import biweekly.util.Duration;
  */
 public class TriggerTest {
 	@Test
+	public void constructors() throws Exception {
+		Trigger property = new Trigger((Date) null);
+		assertNull(property.getDate());
+		assertNull(property.getDuration());
+		assertNull(property.getRelated());
+
+		Date date = new Date();
+		property = new Trigger(date);
+		assertEquals(date, property.getDate());
+		assertNull(property.getDuration());
+		assertNull(property.getRelated());
+
+		Duration duration = new Duration.Builder().hours(1).build();
+		property = new Trigger(duration, Related.START);
+		assertNull(property.getDate());
+		assertEquals(duration, property.getDuration());
+		assertEquals(Related.START, property.getRelated());
+	}
+
+	@Test
+	public void set_value() {
+		Trigger property = new Trigger((Date) null);
+
+		Date date = new Date();
+		property.setDate(date);
+		assertEquals(date, property.getDate());
+		assertNull(property.getDuration());
+		assertNull(property.getRelated());
+
+		Duration duration = new Duration.Builder().hours(1).build();
+		property.setDuration(duration, Related.START);
+		assertNull(property.getDate());
+		assertEquals(duration, property.getDuration());
+		assertEquals(Related.START, property.getRelated());
+
+		property.setRelated(Related.END);
+		assertNull(property.getDate());
+		assertEquals(duration, property.getDuration());
+		assertEquals(Related.END, property.getRelated());
+
+		property.setDate(date);
+		assertEquals(date, property.getDate());
+		assertNull(property.getDuration());
+		assertNull(property.getRelated());
+
+		property.setRelated(Related.END);
+		assertEquals(date, property.getDate());
+		assertNull(property.getDuration());
+		assertEquals(Related.END, property.getRelated());
+
+	}
+
+	@Test
 	public void validate() {
 		Trigger property = new Trigger((Date) null);
 		assertValidate(property).run(33);
@@ -51,5 +111,43 @@ public class TriggerTest {
 
 		property = new Trigger(new Duration.Builder().build(), Related.END);
 		assertValidate(property).run();
+	}
+
+	@Test
+	public void toStringValues() {
+		Trigger property = new Trigger(new Date());
+		assertFalse(property.toStringValues().isEmpty());
+	}
+
+	@Test
+	public void copy() {
+		Trigger original = new Trigger((Date) null);
+		assertCopy(original);
+
+		original = new Trigger(new Date());
+		assertCopy(original).notSame("getDate");
+
+		original = new Trigger(new Duration.Builder().hours(1).build(), Related.START);
+		assertCopy(original);
+	}
+
+	@Test
+	public void equals() {
+		//@formatter:off
+		assertNothingIsEqual(
+			new Trigger((Date)null),
+			new Trigger(date("2016-01-21")),
+			new Trigger(date("2016-01-22")),
+			new Trigger(new Duration.Builder().hours(1).build(), null),
+			new Trigger(new Duration.Builder().hours(1).build(), Related.START),
+			new Trigger(new Duration.Builder().hours(1).build(), Related.END),
+			new Trigger(new Duration.Builder().hours(2).build(), Related.START)
+		);
+
+		assertEqualsMethod(Trigger.class, new Date())
+		.constructor(new Class<?>[]{Date.class}, (Date)null).test()
+		.constructor(new Date()).test()
+		.constructor(new Duration.Builder().hours(1).build(), Related.START).test();
+		//@formatter:on
 	}
 }

@@ -2,6 +2,7 @@ package biweekly.property;
 
 import static biweekly.util.TestUtils.assertEqualsAndHash;
 import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
+import static biweekly.util.TestUtils.assertValidate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
@@ -9,12 +10,19 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
+import biweekly.ICalVersion;
 import biweekly.parameter.ICalParameters;
 
 /*
@@ -46,6 +54,15 @@ import biweekly.parameter.ICalParameters;
  * @author Michael Angstadt
  */
 public class ICalPropertyTest {
+	@SuppressWarnings("unchecked")
+	@Test
+	public void validate() {
+		ICalPropertyImpl property = spy(new ICalPropertyImpl());
+		property.addParameter("PARAM", "value,");
+		assertValidate(property).versions(ICalVersion.V1_0).run(53);
+		verify(property).validate(anyList(), eq(ICalVersion.V1_0), anyList());
+	}
+
 	@Test
 	public void copy() {
 		CopyConstructorTest property = new CopyConstructorTest("value");
@@ -142,11 +159,35 @@ public class ICalPropertyTest {
 		expected.put("PARAM", "one");
 		assertEquals(expected, property.getParameters());
 
+		property.setParameter("PARAM", Arrays.asList("two", "three"));
+		assertEquals("two", property.getParameter("PARAM"));
+		assertEquals(Arrays.asList("two", "three"), property.getParameters("PARAM"));
+		expected = new ICalParameters();
+		expected.put("PARAM", "two");
+		expected.put("PARAM", "three");
+		assertEquals(expected, property.getParameters());
+
 		property.removeParameter("PARAM");
 		assertNull(property.getParameter("PARAM"));
 		assertEquals(Arrays.asList(), property.getParameters("PARAM"));
 		expected = new ICalParameters();
 		assertEquals(expected, property.getParameters());
+	}
+
+	@Test
+	public void toStringValues() {
+		ICalPropertyImpl property = new ICalPropertyImpl();
+		assertTrue(property.toStringValues().isEmpty());
+	}
+
+	@Test
+	public void toString_() {
+		ICalProperty property = new ICalPropertyImpl();
+		assertEquals(ICalPropertyImpl.class.getName() + " [ parameters={} ]", property.toString());
+
+		property = new CopyConstructorTest("text");
+		property.addParameter("PARAM", "value");
+		assertEquals(CopyConstructorTest.class.getName() + " [ parameters={PARAM=[value]} | value=text ]", property.toString());
 	}
 
 	private static class CopyConstructorTest extends ICalProperty {
@@ -160,6 +201,13 @@ public class ICalPropertyTest {
 		public CopyConstructorTest(CopyConstructorTest original) {
 			super(original);
 			value = original.value;
+		}
+
+		@Override
+		protected Map<String, Object> toStringValues() {
+			Map<String, Object> values = new LinkedHashMap<String, Object>();
+			values.put("value", value);
+			return values;
 		}
 	}
 

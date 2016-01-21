@@ -72,10 +72,10 @@ import biweekly.util.Period;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-95">RFC 2445 p.95-6</a>
  */
 public class FreeBusy extends ICalProperty {
-	private final List<Period> values = new ArrayList<Period>();
+	private final List<Period> values;
 
 	public FreeBusy() {
-		//empty
+		values = new ArrayList<Period>();
 	}
 
 	/**
@@ -84,6 +84,7 @@ public class FreeBusy extends ICalProperty {
 	 */
 	public FreeBusy(FreeBusy original) {
 		super(original);
+		values = new ArrayList<Period>(original.values.size());
 		for (Period period : original.values) {
 			values.add(new Period(period));
 		}
@@ -95,7 +96,7 @@ public class FreeBusy extends ICalProperty {
 	 * @param end the end date
 	 */
 	public void addValue(Date start, Date end) {
-		values.add(new Period(start, end));
+		addValue(new Period(start, end));
 	}
 
 	/**
@@ -104,7 +105,18 @@ public class FreeBusy extends ICalProperty {
 	 * @param duration the duration
 	 */
 	public void addValue(Date start, Duration duration) {
-		values.add(new Period(start, duration));
+		addValue(new Period(start, duration));
+	}
+
+	/**
+	 * Adds a time period.
+	 * @param period the time period to add (cannot be null)
+	 */
+	public void addValue(Period period) {
+		if (period == null) {
+			throw new NullPointerException("Period cannot be null.");
+		}
+		values.add(period);
 	}
 
 	/**
@@ -177,7 +189,7 @@ public class FreeBusy extends ICalProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((values == null) ? 0 : values.hashCode());
+		result = prime * result + values.hashCode();
 		return result;
 	}
 
@@ -186,9 +198,7 @@ public class FreeBusy extends ICalProperty {
 		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		FreeBusy other = (FreeBusy) obj;
-		if (values == null) {
-			if (other.values != null) return false;
-		} else if (!values.equals(other.values)) return false;
+		if (!values.equals(other.values)) return false;
 		return true;
 	}
 }

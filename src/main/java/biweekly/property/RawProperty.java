@@ -85,6 +85,14 @@ public class RawProperty extends ICalProperty {
 	}
 
 	/**
+	 * Sets the property value.
+	 * @param value the property value
+	 */
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	/**
 	 * Gets the property value's data type.
 	 * @return the data type
 	 */
@@ -93,11 +101,28 @@ public class RawProperty extends ICalProperty {
 	}
 
 	/**
+	 * Sets the property value's data type.
+	 * @param dataType the data type
+	 * @return
+	 */
+	public void setDataType(ICalDataType dataType) {
+		this.dataType = dataType;
+	}
+
+	/**
 	 * Gets the property name.
 	 * @return the property name (e.g. "X-MS-ANNIVERSARY")
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * Sets the property name.
+	 * @param name the property name (e.g. "X-MS-ANNIVERSARY")
+	 */
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Override

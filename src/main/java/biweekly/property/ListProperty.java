@@ -54,7 +54,7 @@ public class ListProperty<T> extends ICalProperty {
 	 * @param values the values to initialize the property with
 	 */
 	public ListProperty(T... values) {
-		this();
+		this.values = new ArrayList<T>(values.length);
 		for (T value : values) {
 			this.values.add(value);
 		}
@@ -62,9 +62,12 @@ public class ListProperty<T> extends ICalProperty {
 
 	/**
 	 * Creates a new list property.
-	 * @param values the values to initialize the property with
+	 * @param values the values to initialize the property with (cannot be null)
 	 */
 	public ListProperty(List<T> values) {
+		if (values == null) {
+			throw new NullPointerException("List cannot be null.");
+		}
 		this.values = values;
 	}
 
@@ -111,7 +114,7 @@ public class ListProperty<T> extends ICalProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((values == null) ? 0 : values.hashCode());
+		result = prime * result + values.hashCode();
 		return result;
 	}
 
@@ -120,9 +123,7 @@ public class ListProperty<T> extends ICalProperty {
 		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		ListProperty<?> other = (ListProperty<?>) obj;
-		if (values == null) {
-			if (other.values != null) return false;
-		} else if (!values.equals(other.values)) return false;
+		if (!values.equals(other.values)) return false;
 		return true;
 	}
 }

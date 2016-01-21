@@ -84,8 +84,8 @@ public class Trigger extends ICalProperty {
 	 */
 	public Trigger(Trigger original) {
 		super(original);
+		date = (original.date == null) ? null : new Date(original.date.getTime());
 		duration = original.duration;
-		date = new Date(original.date.getTime());
 	}
 
 	/**

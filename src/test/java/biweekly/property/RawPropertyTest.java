@@ -1,8 +1,16 @@
 package biweekly.property;
 
+import static biweekly.property.PropertySensei.assertCopy;
+import static biweekly.property.PropertySensei.assertEqualsMethod;
+import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertValidate;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
+import org.junit.Assert;
 import org.junit.Test;
+
+import biweekly.ICalDataType;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -34,11 +42,82 @@ import org.junit.Test;
  */
 public class RawPropertyTest {
 	@Test
+	public void constructors() throws Exception {
+		RawProperty property = new RawProperty("name", "value");
+		assertEquals("name", property.getName());
+		assertEquals("value", property.getValue());
+		assertNull(property.getDataType());
+
+		property = new RawProperty("name", ICalDataType.TEXT, "value");
+		assertEquals("name", property.getName());
+		assertEquals("value", property.getValue());
+		assertEquals(ICalDataType.TEXT, property.getDataType());
+	}
+
+	@Test
+	public void set_value() {
+		RawProperty property = new RawProperty("name", "value");
+
+		property.setName("name2");
+		assertEquals("name2", property.getName());
+		assertEquals("value", property.getValue());
+		assertNull(property.getDataType());
+
+		property.setValue("value2");
+		assertEquals("name2", property.getName());
+		assertEquals("value2", property.getValue());
+		assertNull(property.getDataType());
+
+		property.setDataType(ICalDataType.TEXT);
+		assertEquals("name2", property.getName());
+		assertEquals("value2", property.getValue());
+		assertEquals(ICalDataType.TEXT, property.getDataType());
+	}
+
+	@Test
 	public void validate() {
 		RawProperty property = new RawProperty("foo:bar", "value");
 		assertValidate(property).run(52);
 
 		property = new RawProperty("foobar", "value");
 		assertValidate(property).run();
+	}
+
+	@Test
+	public void toStringValues() {
+		RawProperty property = new RawProperty("name", "value");
+		Assert.assertFalse(property.toStringValues().isEmpty());
+	}
+
+	@Test
+	public void copy() {
+		RawProperty original = new RawProperty("name", ICalDataType.TEXT, "value");
+		assertCopy(original);
+	}
+
+	@Test
+	public void equals() {
+		//@formatter:off
+		assertNothingIsEqual(
+			new RawProperty(null, null),
+			new RawProperty("name", null),
+			new RawProperty(null, "value"),
+			new RawProperty(null, ICalDataType.TEXT, null),
+			new RawProperty("name", ICalDataType.TEXT, null),
+			new RawProperty(null, ICalDataType.TEXT, "value"),
+			new RawProperty("name", "value"),
+			new RawProperty("name2", "value"),
+			new RawProperty("name", "value2"),
+			new RawProperty("name2", "value2"),
+			new RawProperty("name", ICalDataType.TEXT, "value"),
+			new RawProperty("name", ICalDataType.URI, "value")
+		);
+		
+		assertEqualsMethod(RawProperty.class, "name", "value")
+		.constructor(new Class<?>[]{String.class, String.class}, null, null).test()
+		.constructor("name", "value").test()
+		.constructor("NAME", "value").test()
+		.constructor("name", ICalDataType.TEXT, "value").test();
+		//@formatter:on
 	}
 }

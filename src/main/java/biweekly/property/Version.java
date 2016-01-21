@@ -213,4 +213,27 @@ public class Version extends ICalProperty {
 	public Version copy() {
 		return new Version(this);
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((maxVersion == null) ? 0 : maxVersion.hashCode());
+		result = prime * result + ((minVersion == null) ? 0 : minVersion.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!super.equals(obj)) return false;
+		Version other = (Version) obj;
+		if (maxVersion == null) {
+			if (other.maxVersion != null) return false;
+		} else if (!maxVersion.equals(other.maxVersion)) return false;
+		if (minVersion == null) {
+			if (other.minVersion != null) return false;
+		} else if (!minVersion.equals(other.minVersion)) return false;
+		return true;
+	}
 }

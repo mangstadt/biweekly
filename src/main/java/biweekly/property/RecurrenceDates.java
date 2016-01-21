@@ -77,11 +77,12 @@ import biweekly.util.Period;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34</a>
  */
 public class RecurrenceDates extends ICalProperty {
-	private List<ICalDate> dates = new ArrayList<ICalDate>();
-	private List<Period> periods = new ArrayList<Period>();
+	private final List<ICalDate> dates;
+	private final List<Period> periods;
 
 	public RecurrenceDates() {
-		//empty
+		dates = new ArrayList<ICalDate>();
+		periods = new ArrayList<Period>();
 	}
 
 	/**
@@ -90,9 +91,13 @@ public class RecurrenceDates extends ICalProperty {
 	 */
 	public RecurrenceDates(RecurrenceDates original) {
 		super(original);
+
+		dates = new ArrayList<ICalDate>(original.dates.size());
 		for (ICalDate date : original.dates) {
 			dates.add(new ICalDate(date));
 		}
+
+		periods = new ArrayList<Period>(original.periods.size());
 		for (Period period : original.periods) {
 			periods.add(new Period(period));
 		}
@@ -119,7 +124,8 @@ public class RecurrenceDates extends ICalProperty {
 	 * @param date the date to add
 	 */
 	public void addDate(Date date) {
-		addDate(new ICalDate(date, true));
+		ICalDate icalDate = (date instanceof ICalDate) ? (ICalDate) date : new ICalDate(date, true);
+		addDate(icalDate);
 	}
 
 	/**
@@ -184,8 +190,8 @@ public class RecurrenceDates extends ICalProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((dates == null) ? 0 : dates.hashCode());
-		result = prime * result + ((periods == null) ? 0 : periods.hashCode());
+		result = prime * result + dates.hashCode();
+		result = prime * result + periods.hashCode();
 		return result;
 	}
 
@@ -194,12 +200,8 @@ public class RecurrenceDates extends ICalProperty {
 		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		RecurrenceDates other = (RecurrenceDates) obj;
-		if (dates == null) {
-			if (other.dates != null) return false;
-		} else if (!dates.equals(other.dates)) return false;
-		if (periods == null) {
-			if (other.periods != null) return false;
-		} else if (!periods.equals(other.periods)) return false;
+		if (!dates.equals(other.dates)) return false;
+		if (!periods.equals(other.periods)) return false;
 		return true;
 	}
 }

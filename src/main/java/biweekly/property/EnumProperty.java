@@ -74,13 +74,11 @@ public abstract class EnumProperty extends TextProperty {
 
 	/**
 	 * Gets the iCalendar versions that this property's value is supported in.
+	 * Meant to be overridden by the child class.
 	 * @return the supported versions
 	 */
 	protected Collection<ICalVersion> getValueSupportedVersions() {
-		if (value == null) {
-			return Collections.emptyList();
-		}
-		return Arrays.asList(ICalVersion.values());
+		return (value == null) ? Collections.<ICalVersion> emptyList() : Arrays.asList(ICalVersion.values());
 	}
 
 	@Override
@@ -107,7 +105,7 @@ public abstract class EnumProperty extends TextProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((parameters == null) ? 0 : parameters.hashCode());
+		result = prime * result + parameters.hashCode();
 		result = prime * result + ((value == null) ? 0 : value.toLowerCase().hashCode());
 		return result;
 	}
@@ -118,9 +116,7 @@ public abstract class EnumProperty extends TextProperty {
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		EnumProperty other = (EnumProperty) obj;
-		if (parameters == null) {
-			if (other.parameters != null) return false;
-		} else if (!parameters.equals(other.parameters)) return false;
+		if (!parameters.equals(other.parameters)) return false;
 		if (value == null) {
 			if (other.value != null) return false;
 		} else if (!value.equalsIgnoreCase(other.value)) return false;
