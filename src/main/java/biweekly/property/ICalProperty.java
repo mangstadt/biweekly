@@ -368,7 +368,7 @@ public abstract class ICalProperty {
 	 * </p>
 	 * <p>
 	 * The default implementation of this method uses reflection to look for a
-	 * copy constructor. Child classes should override this method to avoid the
+	 * copy constructor. Child classes SHOULD override this method to avoid the
 	 * performance overhead involved in using reflection.
 	 * </p>
 	 * <p>
