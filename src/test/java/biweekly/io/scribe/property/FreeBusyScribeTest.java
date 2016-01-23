@@ -89,6 +89,7 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 		sensei.assertParseText(startStr + "/" + endStr).run(hasSingle);
 		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/" + durationStr).run(hasMultiple);
 
+		sensei.assertParseText(startStr + "/").cannotParse();
 		sensei.assertParseText(startStr + "/" + endStr + ",invalid/" + durationStr).cannotParse();
 		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/invalid").cannotParse();
 		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/").cannotParse();

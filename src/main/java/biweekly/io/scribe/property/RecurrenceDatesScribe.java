@@ -321,13 +321,12 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		if (dataType == PERIOD) {
 			//parse as periods
 			for (String timePeriodStr : valueStrs) {
-				String timePeriodStrSplit[] = timePeriodStr.split("/");
-
-				if (timePeriodStrSplit.length < 2) {
+				int slash = timePeriodStr.indexOf('/');
+				if (slash < 0) {
 					throw new CannotParseException(13);
 				}
 
-				String startStr = timePeriodStrSplit[0];
+				String startStr = timePeriodStr.substring(0, slash);
 				ICalDate start;
 				try {
 					start = date(startStr).parse();
@@ -335,7 +334,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 					throw new CannotParseException(10, startStr);
 				}
 
-				String endStr = timePeriodStrSplit[1];
+				String endStr = timePeriodStr.substring(slash + 1);
 				ICalDate end = null;
 				try {
 					end = date(endStr).parse();

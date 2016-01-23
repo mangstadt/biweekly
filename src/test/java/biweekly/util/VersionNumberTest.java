@@ -1,8 +1,9 @@
 package biweekly.util;
 
+import static biweekly.util.TestUtils.assertEqualsAndHash;
+import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
+import static biweekly.util.TestUtils.assertNotEqualsBothWays;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -40,6 +41,11 @@ public class VersionNumberTest {
 		new VersionNumber("1.2-beta");
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void invalid_multiple_dots() {
+		new VersionNumber("1..2");
+	}
+
 	@Test
 	public void toString_() {
 		VersionNumber version = new VersionNumber("1.23.0.4");
@@ -65,17 +71,11 @@ public class VersionNumberTest {
 	public void equals_() {
 		VersionNumber a = new VersionNumber("1.2");
 		VersionNumber b = new VersionNumber("1.2");
-		assertTrue(a.equals(b));
+		assertEqualsMethodEssentials(a);
+		assertEqualsAndHash(a, b);
 
 		a = new VersionNumber("1.3");
 		b = new VersionNumber("1.2");
-		assertFalse(a.equals(b));
-
-		a = new VersionNumber("1.3");
-		b = null;
-		assertFalse(a.equals(b));
-
-		a = new VersionNumber("1.3");
-		assertFalse(a.equals(""));
+		assertNotEqualsBothWays(a, b);
 	}
 }

@@ -209,13 +209,12 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 		FreeBusy property = new FreeBusy();
 
 		for (String period : periods) {
-			String periodSplit[] = period.split("/");
-
-			if (periodSplit.length < 2) {
+			int slash = period.indexOf('/');
+			if (slash < 0) {
 				throw new CannotParseException(13);
 			}
 
-			String startStr = periodSplit[0];
+			String startStr = period.substring(0, slash);
 			ICalDate start = null;
 			try {
 				start = date(startStr).parse();
@@ -223,7 +222,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 				throw new CannotParseException(10, startStr);
 			}
 
-			String endStr = periodSplit[1];
+			String endStr = period.substring(slash + 1);
 			ICalDate end = null;
 			try {
 				end = date(endStr).parse();

@@ -1,6 +1,8 @@
 package biweekly.util;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -32,7 +34,7 @@ import java.util.Arrays;
  * @author Michael Angstadt
  */
 public class VersionNumber implements Comparable<VersionNumber> {
-	private final Integer parts[];
+	private final List<Integer> parts;
 
 	/**
 	 * Creates a new version number.
@@ -40,27 +42,36 @@ public class VersionNumber implements Comparable<VersionNumber> {
 	 * @throws IllegalArgumentException if the version string is invalid
 	 */
 	public VersionNumber(String version) {
-		if (!version.matches("[0-9]+(\\.[0-9]+)*")) {
-			throw new IllegalArgumentException("Invalid version format.");
-		}
+		parts = new ArrayList<Integer>();
 
-		String parts[] = version.split("\\.");
-		this.parts = new Integer[parts.length];
-		for (int i = 0; i < parts.length; i++) {
-			this.parts[i] = Integer.valueOf(parts[i]);
+		int start = 0;
+		for (int i = 0; i < version.length(); i++) {
+			char c = version.charAt(i);
+			if (c == '.') {
+				addNumber(version, start, i);
+				start = i + 1;
+			}
 		}
+		addNumber(version, start, version.length());
+	}
+
+	private void addNumber(String version, int fromIndex, int toIndex) {
+		String numberStr = version.substring(fromIndex, toIndex);
+		Integer number = Integer.valueOf(numberStr);
+		parts.add(number);
 	}
 
 	public int compareTo(VersionNumber that) {
-		int length = Math.max(this.parts.length, that.parts.length);
-		for (int i = 0; i < length; i++) {
-			int thisPart = (i < this.parts.length) ? this.parts[i] : 0;
-			int thatPart = (i < that.parts.length) ? that.parts[i] : 0;
+		Iterator<Integer> it = parts.iterator();
+		Iterator<Integer> it2 = that.parts.iterator();
+		while (it.hasNext() || it2.hasNext()) {
+			Integer number = it.hasNext() ? it.next() : 0;
+			Integer number2 = it2.hasNext() ? it2.next() : 0;
 
-			if (thisPart < thatPart) {
+			if (number < number2) {
 				return -1;
 			}
-			if (thisPart > thatPart) {
+			if (number > number2) {
 				return 1;
 			}
 		}
@@ -71,7 +82,7 @@ public class VersionNumber implements Comparable<VersionNumber> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + Arrays.hashCode(parts);
+		result = prime * result + parts.hashCode();
 		return result;
 	}
 
@@ -81,12 +92,12 @@ public class VersionNumber implements Comparable<VersionNumber> {
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		VersionNumber other = (VersionNumber) obj;
-		if (!Arrays.equals(parts, other.parts)) return false;
+		if (!parts.equals(other.parts)) return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return StringUtils.join(Arrays.asList(parts), ".");
+		return StringUtils.join(parts, ".");
 	}
 }

@@ -1027,10 +1027,13 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 				continue;
 			}
 
-			String[] split = component.split("=", 2);
+			int equals = component.indexOf('=');
 
-			String name = unescape(split[0].toUpperCase());
-			List<String> values = (split.length > 1) ? list(split[1]) : Arrays.asList("");
+			String name = (equals < 0) ? component : component.substring(0, equals);
+			name = name.toUpperCase();
+			name = unescape(name);
+
+			List<String> values = (equals < 0) ? Arrays.asList("") : list(component.substring(equals + 1));
 
 			map.putAll(name, values);
 		}
