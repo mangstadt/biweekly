@@ -1,12 +1,16 @@
 package biweekly.component;
 
+import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertEqualsAndHash;
 import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertWarnings;
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -17,9 +21,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import biweekly.ICalDataType;
 import biweekly.Warning;
 import biweekly.property.Description;
 import biweekly.property.Location;
+import biweekly.property.RawProperty;
 import biweekly.property.Status;
 import biweekly.property.Summary;
 
@@ -52,6 +58,353 @@ import biweekly.property.Summary;
  * @author Michael Angstadt
  */
 public class ICalComponentTest {
+	@Test
+	public void constructors() {
+		ICalComponentImpl component = new ICalComponentImpl();
+		assertSize(component, 0, 0);
+	}
+
+	@Test
+	public void getProperty_addProperty() {
+		ICalComponentImpl component = new ICalComponentImpl();
+		Summary property = new Summary("value");
+
+		assertNull(component.getProperty(Summary.class));
+
+		component.addProperty(property);
+		assertSame(property, component.getProperty(Summary.class));
+
+		component.addProperty(new Summary("value2"));
+		assertSame(property, component.getProperty(Summary.class));
+	}
+
+	@Test
+	public void getProperties() {
+		ICalComponentImpl component = new ICalComponentImpl();
+		Summary property = new Summary("value");
+		Summary property2 = new Summary("value2");
+
+		assertEquals(asList(), component.getProperties(Summary.class));
+
+		component.addProperty(property);
+		assertEquals(asList(property), component.getProperties(Summary.class));
+
+		component.addProperty(property2);
+		assertEquals(asList(property, property2), component.getProperties(Summary.class));
+	}
+
+	@Test
+	public void setProperty() {
+		ICalComponentImpl component = new ICalComponentImpl();
+		Summary property = new Summary("value");
+		Summary property2 = new Summary("value2");
+
+		assertEquals(asList(), component.setProperty(property));
+		assertEquals(asList(property), component.getProperties(Summary.class));
+
+		component.addProperty(property2);
+		assertEquals(asList(property, property2), component.getProperties(Summary.class));
+		assertEquals(asList(property, property2), component.setProperty(property));
+		assertEquals(asList(property), component.getProperties(Summary.class));
+
+		assertEquals(asList(property), component.setProperty(Summary.class, null));
+		assertEquals(asList(), component.getProperties(Summary.class));
+
+		assertEquals(asList(), component.setProperty(Summary.class, property));
+		assertEquals(asList(property), component.getProperties(Summary.class));
+
+		assertEquals(asList(property), component.setProperty(Summary.class, property2));
+		assertEquals(asList(property2), component.getProperties(Summary.class));
+	}
+
+	@Test
+	public void removeProperty() {
+		ICalComponentImpl component = new ICalComponentImpl();
+		Summary property = new Summary("value");
+		Summary property2 = new Summary("value2");
+
+		component.addProperty(property);
+		assertEquals(asList(property), component.getProperties(Summary.class));
+
+		assertFalse(component.removeProperty(property2));
+		assertEquals(asList(property), component.getProperties(Summary.class));
+
+		assertTrue(component.removeProperty(property));
+		assertEquals(asList(), component.getProperties(Summary.class));
+	}
+
+	@Test
+	public void removeProperties() {
+		ICalComponentImpl component = new ICalComponentImpl();
+		Summary property = new Summary("value");
+		Summary property2 = new Summary("value2");
+
+		assertEquals(asList(), component.getProperties(Summary.class));
+		assertEquals(asList(), component.removeProperties(Summary.class));
+
+		component.addProperty(property);
+		component.addProperty(property2);
+		assertEquals(asList(property, property2), component.getProperties(Summary.class));
+		assertEquals(asList(property, property2), component.removeProperties(Summary.class));
+		assertEquals(asList(), component.getProperties(Summary.class));
+	}
+
+	@Test
+	public void addExperimentalProperty() {
+		ICalComponentImpl component = new ICalComponentImpl();
+
+		RawProperty property = component.addExperimentalProperty("NAME", "value");
+		assertEquals("NAME", property.getName());
+		assertEquals("value", property.getValue());
+		assertNull(property.getDataType());
+		assertSame(property, component.getExperimentalProperty("NAME"));
+
+		RawProperty property2 = component.addExperimentalProperty("NAME2", ICalDataType.TEXT, "value2");
+		assertEquals("NAME2", property2.getName());
+		assertEquals("value2", property2.getValue());
+		assertEquals(ICalDataType.TEXT, property2.getDataType());
+		assertSame(property2, component.getExperimentalProperty("NAME2"));
+	}
+
+	@Test
+	public void getExperimentalProperty() {
+		ICalComponentImpl component = new ICalComponentImpl();
+
+		assertNull(component.getExperimentalProperty("NAME"));
+
+		component.addExperimentalProperty("NAME2", "value");
+		RawProperty property = component.addExperimentalProperty("NAME", "value");
+		component.addExperimentalProperty("NAME3", "value");
+		assertSame(property, component.getExperimentalProperty("NAME"));
+		assertSame(property, component.getExperimentalProperty("name"));
+
+		component.addExperimentalProperty("NAME", "value2");
+		assertSame(property, component.getExperimentalProperty("NAME"));
+		assertSame(property, component.getExperimentalProperty("name"));
+	}
+
+	@Test
+	public void getExperimentalProperties_byName() {
+		ICalComponentImpl component = new ICalComponentImpl();
+
+		assertEquals(asList(), component.getExperimentalProperties("NAME"));
+
+		component.addExperimentalProperty("NAME2", "value");
+		RawProperty property = component.addExperimentalProperty("NAME", "value");
+		assertEquals(asList(property), component.getExperimentalProperties("NAME"));
+		assertEquals(asList(property), component.getExperimentalProperties("name"));
+
+		RawProperty property2 = component.addExperimentalProperty("NAME", "value2");
+		assertEquals(asList(property, property2), component.getExperimentalProperties("NAME"));
+		assertEquals(asList(property, property2), component.getExperimentalProperties("name"));
+	}
+
+	@Test
+	public void getExperimentalProperties() {
+		ICalComponentImpl component = new ICalComponentImpl();
+
+		assertEquals(asList(), component.getExperimentalProperties());
+
+		RawProperty property = component.addExperimentalProperty("NAME", "value");
+		assertEquals(asList(property), component.getExperimentalProperties());
+
+		RawProperty property2 = component.addExperimentalProperty("NAME2", "value2");
+		assertEquals(asList(property, property2), component.getExperimentalProperties());
+	}
+
+	@Test
+	public void setExperimentalProperty() {
+		ICalComponentImpl component = new ICalComponentImpl();
+
+		RawProperty property = component.setExperimentalProperty("NAME", "value");
+		assertEquals("NAME", property.getName());
+		assertEquals("value", property.getValue());
+		assertNull(property.getDataType());
+		assertEquals(asList(property), component.getExperimentalProperties("NAME"));
+
+		RawProperty property2 = component.setExperimentalProperty("NAME", ICalDataType.TEXT, "value2");
+		assertEquals("NAME", property2.getName());
+		assertEquals("value2", property2.getValue());
+		assertEquals(ICalDataType.TEXT, property2.getDataType());
+		assertEquals(asList(property2), component.getExperimentalProperties("NAME"));
+	}
+
+	@Test
+	public void removeExperimentalProperties() {
+		ICalComponentImpl component = new ICalComponentImpl();
+
+		assertEquals(asList(), component.removeExperimentalProperties("NAME"));
+
+		RawProperty property = component.addExperimentalProperty("NAME", "value");
+		RawProperty property2 = component.addExperimentalProperty("NAME", "value2");
+		assertEquals(asList(property, property2), component.removeExperimentalProperties("name"));
+		assertEquals(asList(), component.getExperimentalProperties("NAME"));
+	}
+
+	@Test
+	public void getComponent_addComponent() {
+		ICalComponentImpl component = new ICalComponentImpl();
+		VEvent subComponent = new VEvent();
+
+		assertNull(component.getComponent(VEvent.class));
+
+		component.addComponent(subComponent);
+		assertSame(subComponent, component.getComponent(VEvent.class));
+	}
+
+	@Test
+	public void getComponents() {
+		ICalComponentImpl component = new ICalComponentImpl();
+		VEvent subComponent = new VEvent();
+		VEvent subComponent2 = new VEvent();
+
+		assertEquals(asList(), component.getComponents(VEvent.class));
+
+		component.addComponent(subComponent);
+		assertEquals(asList(subComponent), component.getComponents(VEvent.class));
+
+		component.addComponent(subComponent2);
+		assertEquals(asList(subComponent, subComponent2), component.getComponents(VEvent.class));
+	}
+
+	@Test
+	public void setComponent() {
+		ICalComponentImpl component = new ICalComponentImpl();
+		VEvent subComponent = new VEvent();
+		VEvent subComponent2 = new VEvent();
+
+		assertEquals(asList(), component.setComponent(subComponent));
+		assertEquals(asList(subComponent), component.getComponents(VEvent.class));
+
+		component.addComponent(subComponent2);
+		assertEquals(asList(subComponent, subComponent2), component.getComponents(VEvent.class));
+		assertEquals(asList(subComponent, subComponent2), component.setComponent(subComponent));
+		assertEquals(asList(subComponent), component.getComponents(VEvent.class));
+
+		assertEquals(asList(subComponent), component.setComponent(VEvent.class, null));
+		assertEquals(asList(), component.getComponents(VEvent.class));
+
+		assertEquals(asList(), component.setComponent(VEvent.class, subComponent));
+		assertEquals(asList(subComponent), component.getComponents(VEvent.class));
+
+		assertEquals(asList(subComponent), component.setComponent(VEvent.class, subComponent2));
+		assertEquals(asList(subComponent2), component.getComponents(VEvent.class));
+	}
+
+	@Test
+	public void removeComponent() {
+		ICalComponentImpl component = new ICalComponentImpl();
+		VEvent subComponent = new VEvent();
+		VEvent subComponent2 = new VEvent();
+
+		component.addComponent(subComponent);
+		assertEquals(asList(subComponent), component.getComponents(VEvent.class));
+
+		assertFalse(component.removeComponent(subComponent2));
+		assertEquals(asList(subComponent), component.getComponents(VEvent.class));
+
+		assertTrue(component.removeComponent(subComponent));
+		assertEquals(asList(), component.getComponents(VEvent.class));
+	}
+
+	@Test
+	public void removeComponents() {
+		ICalComponentImpl component = new ICalComponentImpl();
+		VEvent subComponent = new VEvent();
+		VEvent subComponent2 = new VEvent();
+
+		assertEquals(asList(), component.getComponents(VEvent.class));
+		assertEquals(asList(), component.removeComponents(VEvent.class));
+
+		component.addComponent(subComponent);
+		component.addComponent(subComponent2);
+		assertEquals(asList(subComponent, subComponent2), component.getComponents(VEvent.class));
+		assertEquals(asList(subComponent, subComponent2), component.removeComponents(VEvent.class));
+		assertEquals(asList(), component.getComponents(VEvent.class));
+	}
+
+	@Test
+	public void addExperimentalComponent() {
+		ICalComponentImpl component = new ICalComponentImpl();
+
+		RawComponent subComponent = component.addExperimentalComponent("NAME");
+		assertEquals("NAME", subComponent.getName());
+		assertSize(subComponent, 0, 0);
+		assertSame(subComponent, component.getExperimentalComponent("NAME"));
+	}
+
+	@Test
+	public void getExperimentalComponent() {
+		ICalComponentImpl component = new ICalComponentImpl();
+
+		assertNull(component.getExperimentalComponent("NAME"));
+
+		component.addExperimentalComponent("NAME2");
+		RawComponent subComponent = component.addExperimentalComponent("NAME");
+		component.addExperimentalComponent("NAME3");
+		assertSame(subComponent, component.getExperimentalComponent("NAME"));
+		assertSame(subComponent, component.getExperimentalComponent("name"));
+
+		component.addExperimentalComponent("NAME");
+		assertSame(subComponent, component.getExperimentalComponent("NAME"));
+		assertSame(subComponent, component.getExperimentalComponent("name"));
+	}
+
+	@Test
+	public void getExperimentalComponents_byName() {
+		ICalComponentImpl component = new ICalComponentImpl();
+
+		assertEquals(asList(), component.getExperimentalComponents("NAME"));
+
+		component.addExperimentalComponent("NAME2");
+		RawComponent subComponent = component.addExperimentalComponent("NAME");
+		component.addExperimentalComponent("NAME3");
+		assertEquals(asList(subComponent), component.getExperimentalComponents("NAME"));
+		assertEquals(asList(subComponent), component.getExperimentalComponents("name"));
+
+		RawComponent subComponent2 = component.addExperimentalComponent("NAME");
+		assertEquals(asList(subComponent, subComponent2), component.getExperimentalComponents("NAME"));
+		assertEquals(asList(subComponent, subComponent2), component.getExperimentalComponents("name"));
+	}
+
+	@Test
+	public void getExperimentalComponents() {
+		ICalComponentImpl component = new ICalComponentImpl();
+
+		assertEquals(asList(), component.getExperimentalComponents());
+
+		RawComponent subComponent = component.addExperimentalComponent("NAME");
+		assertEquals(asList(subComponent), component.getExperimentalComponents());
+
+		RawComponent subComponent2 = component.addExperimentalComponent("NAME2");
+		assertEquals(asList(subComponent, subComponent2), component.getExperimentalComponents());
+	}
+
+	@Test
+	public void setExperimentalComponent() {
+		ICalComponentImpl component = new ICalComponentImpl();
+
+		RawComponent subComponent = component.setExperimentalComponent("NAME");
+		assertEquals("NAME", subComponent.getName());
+		assertEquals(asList(subComponent), component.getExperimentalComponents("NAME"));
+
+		RawComponent subComponent2 = component.setExperimentalComponent("NAME");
+		assertEquals("NAME", subComponent2.getName());
+		assertEquals(asList(subComponent2), component.getExperimentalComponents("NAME"));
+	}
+
+	@Test
+	public void removeExperimentalComponents() {
+		ICalComponentImpl component = new ICalComponentImpl();
+
+		assertEquals(asList(), component.removeExperimentalComponents("NAME"));
+
+		RawComponent subComponent = component.addExperimentalComponent("NAME");
+		RawComponent subComponent2 = component.addExperimentalComponent("NAME");
+		assertEquals(asList(subComponent, subComponent2), component.removeExperimentalComponents("name"));
+		assertEquals(asList(), component.getExperimentalComponents("NAME"));
+	}
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void checkRequiredCardinality() {
@@ -195,7 +548,19 @@ public class ICalComponentTest {
 		one.addExperimentalProperty("PROP", "one");
 
 		ICalComponentImpl two = new ICalComponentImpl();
-		one.addExperimentalProperty("PROP", "two");
+		two.addExperimentalProperty("PROP", "two");
+
+		assertNotEquals(one, two);
+		assertNotEquals(two, one);
+	}
+
+	@Test
+	public void equals_components_not_equal() {
+		ICalComponentImpl one = new ICalComponentImpl();
+		one.addExperimentalComponent("COMP");
+
+		ICalComponentImpl two = new ICalComponentImpl();
+		two.addExperimentalComponent("COMP2");
 
 		assertNotEquals(one, two);
 		assertNotEquals(two, one);
@@ -252,6 +617,37 @@ public class ICalComponentTest {
 
 		assertNotEquals(one, two);
 		assertNotEquals(two, one);
+	}
+
+	@Test
+	public void toString_() {
+		//@formatter:off
+		ICalComponentImpl component = new ICalComponentImpl();
+		assertEquals(
+			component.getClass().getName() + NEWLINE,
+		component.toString());
+
+		component.addExperimentalProperty("NAME", "value");
+		assertEquals(
+			component.getClass().getName() + NEWLINE +
+			"  biweekly.property.RawProperty [ parameters={} | name=NAME | value=value | dataType=null ]" + NEWLINE,
+		component.toString());
+
+		RawComponent subComponent = component.addExperimentalComponent("COMP");
+		assertEquals(
+			component.getClass().getName() + NEWLINE +
+			"  biweekly.property.RawProperty [ parameters={} | name=NAME | value=value | dataType=null ]" + NEWLINE +
+			"  biweekly.component.RawComponent" + NEWLINE,
+		component.toString());
+
+		subComponent.addExperimentalProperty("NAME2", "value");
+		assertEquals(
+			component.getClass().getName() + NEWLINE +
+			"  biweekly.property.RawProperty [ parameters={} | name=NAME | value=value | dataType=null ]" + NEWLINE +
+			"  biweekly.component.RawComponent" + NEWLINE +
+			"    biweekly.property.RawProperty [ parameters={} | name=NAME2 | value=value | dataType=null ]" + NEWLINE,
+		component.toString());
+		//@formatter:on
 	}
 
 	private static class ICalComponentImpl extends ICalComponent {

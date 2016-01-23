@@ -46,11 +46,12 @@ import biweekly.util.StringUtils;
  * @author Michael Angstadt
  */
 public abstract class ICalComponent {
-	protected final ListMultimap<Class<? extends ICalComponent>, ICalComponent> components = new ListMultimap<Class<? extends ICalComponent>, ICalComponent>();
-	protected final ListMultimap<Class<? extends ICalProperty>, ICalProperty> properties = new ListMultimap<Class<? extends ICalProperty>, ICalProperty>();
+	protected final ListMultimap<Class<? extends ICalComponent>, ICalComponent> components;
+	protected final ListMultimap<Class<? extends ICalProperty>, ICalProperty> properties;
 
 	public ICalComponent() {
-		//empty
+		components = new ListMultimap<Class<? extends ICalComponent>, ICalComponent>();
+		properties = new ListMultimap<Class<? extends ICalProperty>, ICalProperty>();
 	}
 
 	/**
@@ -59,9 +60,12 @@ public abstract class ICalComponent {
 	 * @param original the component to make a copy of
 	 */
 	protected ICalComponent(ICalComponent original) {
+		properties = new ListMultimap<Class<? extends ICalProperty>, ICalProperty>(original.properties.size());
 		for (ICalProperty property : original.properties.values()) {
 			addProperty(property.copy());
 		}
+
+		components = new ListMultimap<Class<? extends ICalComponent>, ICalComponent>(original.components.size());
 		for (ICalComponent component : original.components.values()) {
 			addComponent(component.copy());
 		}
@@ -79,17 +83,12 @@ public abstract class ICalComponent {
 	/**
 	 * Gets all properties of a given class.
 	 * @param clazz the property class
-	 * @return the properties
+	 * @return the properties (modifications to this list, such as adding or
+	 * removing items, have NO effect on the backing list)
 	 */
 	public <T extends ICalProperty> List<T> getProperties(Class<T> clazz) {
-		List<ICalProperty> props = properties.get(clazz);
-
-		//cast to the requested class
-		List<T> ret = new ArrayList<T>(props.size());
-		for (ICalProperty property : props) {
-			ret.add(clazz.cast(property));
-		}
-		return ret;
+		List<ICalProperty> properties = this.properties.get(clazz);
+		return castList(properties, clazz);
 	}
 
 	/**
@@ -109,12 +108,13 @@ public abstract class ICalComponent {
 	}
 
 	/**
-	 * Replaces all existing properties of the given class with a single
-	 * property instance.
-	 * @param property the property (must not be null)
+	 * Replaces all existing properties of the given property instance's class
+	 * with the given property instance.
+	 * @param property the property
+	 * @return the properties that were replaced
 	 */
-	public void setProperty(ICalProperty property) {
-		properties.replace(property.getClass(), property);
+	public List<ICalProperty> setProperty(ICalProperty property) {
+		return properties.replace(property.getClass(), property);
 	}
 
 	/**
@@ -123,35 +123,59 @@ public abstract class ICalComponent {
 	 * of that property will be removed.
 	 * @param clazz the property class (e.g. "DateStart.class")
 	 * @param property the property or null to remove
+	 * @return the properties that were replaced
 	 */
-	public <T extends ICalProperty> void setProperty(Class<T> clazz, T property) {
-		properties.replace(clazz, property);
+	public <T extends ICalProperty> List<T> setProperty(Class<T> clazz, T property) {
+		List<ICalProperty> replaced = properties.replace(clazz, property);
+		return castList(replaced, clazz);
 	}
 
 	/**
-	 * Removes properties from the iCalendar object.
+	 * Removes a specific property instance from this component.
+	 * @param property the property to remove
+	 * @return true if it was removed, false if it wasn't found
+	 */
+	public <T extends ICalProperty> boolean removeProperty(T property) {
+		return properties.remove(property.getClass(), property);
+	}
+
+	/**
+	 * Removes all properties of a given class from this component.
 	 * @param clazz the class of the properties to remove (e.g.
 	 * "DateStart.class")
+	 * @return the removed properties
 	 */
-	public void removeProperties(Class<? extends ICalProperty> clazz) {
-		properties.removeAll(clazz);
+	public <T extends ICalProperty> List<T> removeProperties(Class<T> clazz) {
+		List<ICalProperty> removed = properties.removeAll(clazz);
+		return castList(removed, clazz);
 	}
 
 	/**
-	 * Removes components from the iCalendar object.
-	 * @param clazz the class of the components to remove (e.g. "VEvent.class")
+	 * Removes a specific sub-component instance from this component.
+	 * @param component the component to remove
+	 * @return true if it was removed, false if it wasn't found
 	 */
-	public void removeComponents(Class<? extends ICalComponent> clazz) {
-		components.removeAll(clazz);
+	public <T extends ICalComponent> boolean removeComponent(T component) {
+		return components.remove(component.getClass(), component);
+	}
+
+	/**
+	 * Removes all sub-components of the given class from this component.
+	 * @param clazz the class of the components to remove (e.g. "VEvent.class")
+	 * @return the removed components
+	 */
+	public <T extends ICalComponent> List<T> removeComponents(Class<T> clazz) {
+		List<ICalComponent> removed = components.removeAll(clazz);
+		return castList(removed, clazz);
 	}
 
 	/**
 	 * Gets the first experimental property with a given name.
-	 * @param name the property name (e.g. "X-ALT-DESC")
-	 * @return the property or null if none were found
+	 * @param name the property name (case insensitive, e.g. "X-ALT-DESC")
+	 * @return the experimental property or null if none were found
 	 */
 	public RawProperty getExperimentalProperty(String name) {
-		for (RawProperty raw : getProperties(RawProperty.class)) {
+		for (RawProperty raw : getExperimentalProperties()) {
 			if (raw.getName().equalsIgnoreCase(name)) {
 				return raw;
 			}
@@ -161,24 +185,24 @@ public abstract class ICalComponent {
 
 	/**
 	 * Gets all experimental properties with a given name.
-	 * @param name the property name (e.g. "X-ALT-DESC")
-	 * @return the properties
+	 * @param name the property name (case insensitive, e.g. "X-ALT-DESC")
+	 * @return the experimental properties (modifications to this list, such as
+	 * adding or removing items, have NO effect on the backing list)
 	 */
 	public List<RawProperty> getExperimentalProperties(String name) {
-		List<RawProperty> props = new ArrayList<RawProperty>();
-
-		for (RawProperty raw : getProperties(RawProperty.class)) {
+		List<RawProperty> rawProperties = new ArrayList<RawProperty>();
+		for (RawProperty raw : getExperimentalProperties()) {
 			if (raw.getName().equalsIgnoreCase(name)) {
-				props.add(raw);
+				rawProperties.add(raw);
 			}
 		}
-
-		return props;
+		return rawProperties;
 	}
 
 	/**
 	 * Gets all experimental properties associated with this component.
-	 * @return the properties
+	 * @return the experimental properties (modifications to this list, such as
+	 * adding or removing items, have NO effect on the backing list)
 	 */
 	public List<RawProperty> getExperimentalProperties() {
 		return getProperties(RawProperty.class);
@@ -197,7 +221,7 @@ public abstract class ICalComponent {
 	/**
 	 * Adds an experimental property to this component.
 	 * @param name the property name (e.g. "X-ALT-DESC")
-	 * @param dataType the property's data type (e.g. "text") or null if unknown
+	 * @param dataType the property's data type or null if unknown
 	 * @param value the property value
 	 * @return the property object that was created
 	 */
@@ -222,49 +246,46 @@ public abstract class ICalComponent {
 	 * Adds an experimental property to this component, removing all existing
 	 * properties that have the same name.
 	 * @param name the property name (e.g. "X-ALT-DESC")
-	 * @param dataType the property's data type (e.g. "text") or null if unknown
+	 * @param dataType the property's data type or null if unknown
 	 * @param value the property value
 	 * @return the property object that was created
 	 */
 	public RawProperty setExperimentalProperty(String name, ICalDataType dataType, String value) {
-		removeExperimentalProperty(name);
+		removeExperimentalProperties(name);
 		return addExperimentalProperty(name, dataType, value);
 	}
 
 	/**
 	 * Removes all experimental properties that have the given name.
 	 * @param name the component name (e.g. "X-ALT-DESC")
+	 * @return the removed properties
 	 */
-	public void removeExperimentalProperty(String name) {
-		List<RawProperty> xproperties = getExperimentalProperties(name);
-		for (RawProperty xproperty : xproperties) {
-			properties.remove(xproperty.getClass(), xproperty);
+	public List<RawProperty> removeExperimentalProperties(String name) {
+		List<RawProperty> toRemove = getExperimentalProperties(name);
+		for (RawProperty property : toRemove) {
+			removeProperty(property);
 		}
+		return toRemove;
 	}
 
 	/**
-	 * Gets the first component of a given class.
+	 * Gets the first sub-component of a given class.
 	 * @param clazz the component class
-	 * @return the component or null if not found
+	 * @return the sub-component or null if not found
 	 */
 	public <T extends ICalComponent> T getComponent(Class<T> clazz) {
 		return clazz.cast(components.first(clazz));
 	}
 
 	/**
-	 * Gets all components of a given class.
+	 * Gets all sub-components of a given class.
 	 * @param clazz the component class
-	 * @return the components
+	 * @return the sub-components (modifications to this list, such as adding or
+	 * removing items, have NO effect on the backing list)
 	 */
 	public <T extends ICalComponent> List<T> getComponents(Class<T> clazz) {
 		List<ICalComponent> comp = components.get(clazz);
-
-		//cast to the requested class
-		List<T> ret = new ArrayList<T>(comp.size());
-		for (ICalComponent property : comp) {
-			ret.add(clazz.cast(property));
-		}
-		return ret;
+		return castList(comp, clazz);
 	}
 
 	/**
@@ -284,31 +305,34 @@ public abstract class ICalComponent {
 	}
 
 	/**
-	 * Replaces all components of a given class with the given component.
-	 * @param component the component (must not be null)
+	 * Replaces all sub-components of a given class with the given component.
+	 * @param component the component
+	 * @return the replaced sub-components
 	 */
-	public void setComponent(ICalComponent component) {
-		components.replace(component.getClass(), component);
+	public List<ICalComponent> setComponent(ICalComponent component) {
+		return components.replace(component.getClass(), component);
 	}
 
 	/**
-	 * Replaces all components of a given class with the given component. If the
-	 * component instance is null, then all instances of that component will be
-	 * removed.
+	 * Replaces all sub-components of a given class with the given component. If
+	 * the component instance is null, then all instances of that component will
+	 * be removed.
 	 * @param clazz the component's class
 	 * @param component the component or null to remove
+	 * @return the replaced sub-components
 	 */
-	public <T extends ICalComponent> void setComponent(Class<T> clazz, T component) {
-		components.replace(clazz, component);
+	public <T extends ICalComponent> List<T> setComponent(Class<T> clazz, T component) {
+		List<ICalComponent> replaced = components.replace(clazz, component);
+		return castList(replaced, clazz);
 	}
 
 	/**
 	 * Gets the first experimental sub-component with a given name.
-	 * @param name the component name (e.g. "X-PARTY")
-	 * @return the component or null if none were found
+	 * @param name the component name (case insensitive, e.g. "X-PARTY")
+	 * @return the experimental component or null if none were found
 	 */
 	public RawComponent getExperimentalComponent(String name) {
-		for (RawComponent raw : getComponents(RawComponent.class)) {
+		for (RawComponent raw : getExperimentalComponents()) {
 			if (raw.getName().equalsIgnoreCase(name)) {
 				return raw;
 			}
@@ -318,24 +342,24 @@ public abstract class ICalComponent {
 
 	/**
 	 * Gets all experimental sub-component with a given name.
-	 * @param name the component name (e.g. "X-PARTY")
-	 * @return the components
+	 * @param name the component name (case insensitive, e.g. "X-PARTY")
+	 * @return the experimental components (modifications to this list, such as
+	 * adding or removing items, have NO effect on the backing list)
 	 */
 	public List<RawComponent> getExperimentalComponents(String name) {
-		List<RawComponent> props = new ArrayList<RawComponent>();
-
-		for (RawComponent raw : getComponents(RawComponent.class)) {
+		List<RawComponent> rawComponents = new ArrayList<RawComponent>();
+		for (RawComponent raw : getExperimentalComponents()) {
 			if (raw.getName().equalsIgnoreCase(name)) {
-				props.add(raw);
+				rawComponents.add(raw);
 			}
 		}
-
-		return props;
+		return rawComponents;
 	}
 
 	/**
 	 * Gets all experimental sub-components associated with this component.
-	 * @return the sub-components
+	 * @return the experimental components (modifications to this list, such as
+	 * adding or removing items, have NO effect on the backing list)
 	 */
 	public List<RawComponent> getExperimentalComponents() {
 		return getComponents(RawComponent.class);
@@ -358,7 +382,7 @@ public abstract class ICalComponent {
 	 * @param name the component name (e.g. "X-PARTY")
 	 * @return the component object that was created
 	 */
-	public RawComponent setExperimentalComponents(String name) {
+	public RawComponent setExperimentalComponent(String name) {
 		removeExperimentalComponents(name);
 		return addExperimentalComponent(name);
 	}
@@ -366,12 +390,14 @@ public abstract class ICalComponent {
 	/**
 	 * Removes all experimental sub-components that have the given name.
 	 * @param name the component name (e.g. "X-PARTY")
+	 * @return the removed sub-components
 	 */
-	public void removeExperimentalComponents(String name) {
-		List<RawComponent> xcomponents = getExperimentalComponents(name);
-		for (RawComponent xcomponent : xcomponents) {
-			components.remove(xcomponent.getClass(), xcomponent);
+	public List<RawComponent> removeExperimentalComponents(String name) {
+		List<RawComponent> toRemove = getExperimentalComponents(name);
+		for (RawComponent component : toRemove) {
+			removeComponent(component);
 		}
+		return toRemove;
 	}
 
 	/**
@@ -525,7 +551,7 @@ public abstract class ICalComponent {
 	 * </p>
 	 * <p>
 	 * The default implementation of this method uses reflection to look for a
-	 * copy constructor. Child classes should override this method to avoid the
+	 * copy constructor. Child classes SHOULD override this method to avoid the
 	 * performance overhead involved in using reflection.
 	 * </p>
 	 * <p>
@@ -554,6 +580,21 @@ public abstract class ICalComponent {
 		} catch (Exception e) {
 			throw new UnsupportedOperationException("A problem occurred attempting to invoke the copy constructor of component class " + clazz.getName() + ".", e);
 		}
+	}
+
+	/**
+	 * Casts all objects in the given list to the given class, adding the casted
+	 * objects to a new list.
+	 * @param list the list to cast
+	 * @param castTo the class to cast to
+	 * @return the new list
+	 */
+	private static <T> List<T> castList(List<?> list, Class<T> castTo) {
+		List<T> casted = new ArrayList<T>(list.size());
+		for (Object object : list) {
+			casted.add(castTo.cast(object));
+		}
+		return casted;
 	}
 
 	@Override
@@ -586,10 +627,17 @@ public abstract class ICalComponent {
 		if (properties.size() != other.properties.size()) return false;
 		if (components.size() != other.components.size()) return false;
 
-		for (Map.Entry<Class<? extends ICalProperty>, List<ICalProperty>> entry : properties) {
-			Class<? extends ICalProperty> key = entry.getKey();
-			List<ICalProperty> value = entry.getValue();
-			List<ICalProperty> otherValue = other.properties.get(key);
+		if (!compareMultimaps(properties, other.properties)) return false;
+		if (!compareMultimaps(components, other.components)) return false;
+
+		return true;
+	}
+
+	private static <K, V> boolean compareMultimaps(ListMultimap<K, V> map1, ListMultimap<K, V> map2) {
+		for (Map.Entry<K, List<V>> entry : map1) {
+			K key = entry.getKey();
+			List<V> value = entry.getValue();
+			List<V> otherValue = map2.get(key);
 
 			/*
 			 * The properties are stored in a ListMultimap. This class never
@@ -597,7 +645,7 @@ public abstract class ICalComponent {
 			 * But keep the null check just incase.
 			 */
 			if (value == null) {
-				if (otherValue != null || !other.properties.containsKey(key)) {
+				if (otherValue != null || !map2.containsKey(key)) {
 					return false;
 				}
 				continue;
@@ -607,43 +655,13 @@ public abstract class ICalComponent {
 				return false;
 			}
 
-			List<ICalProperty> otherValueCopy = new ArrayList<ICalProperty>(otherValue);
-			for (ICalProperty property : value) {
+			List<V> otherValueCopy = new ArrayList<V>(otherValue);
+			for (V property : value) {
 				if (!otherValueCopy.remove(property)) {
 					return false;
 				}
 			}
 		}
-
-		for (Map.Entry<Class<? extends ICalComponent>, List<ICalComponent>> entry : components) {
-			Class<? extends ICalComponent> key = entry.getKey();
-			List<ICalComponent> value = entry.getValue();
-			List<ICalComponent> otherValue = other.components.get(key);
-
-			/*
-			 * The properties are stored in a ListMultimap. This class never
-			 * returns null. It returns an empty list when the key is not found.
-			 * But keep the null check just incase.
-			 */
-			if (value == null) {
-				if (otherValue != null || !other.components.containsKey(key)) {
-					return false;
-				}
-				continue;
-			}
-
-			if (otherValue == null || value.size() != otherValue.size()) {
-				return false;
-			}
-
-			List<ICalComponent> otherValueCopy = new ArrayList<ICalComponent>(otherValue);
-			for (ICalComponent component : value) {
-				if (!otherValueCopy.remove(component)) {
-					return false;
-				}
-			}
-		}
-
 		return true;
 	}
 }
