@@ -240,9 +240,11 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 					email = value.substring(colon + 1);
 				} else {
 					uri = value;
+					email = parameters.first("EMAIL");
 				}
 			} else {
 				uri = value;
+				email = parameters.first("EMAIL");
 			}
 
 			break;
