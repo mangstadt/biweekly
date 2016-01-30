@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import biweekly.ICalVersion;
+import biweekly.Messages;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.util.CharacterBitSet;
@@ -294,10 +295,10 @@ public class ICalRawWriter implements Closeable, Flushable {
 	public void writeProperty(String propertyName, ICalParameters parameters, String value) throws IOException {
 		//validate the property name
 		if (invalidPropertyNameCharacters.containsAny(propertyName)) {
-			throw new IllegalArgumentException("Property name \"" + propertyName + "\" contains one or more invalid characters.  The following characters are not permitted: " + printableCharacterList(invalidPropertyNameCharacters.characters()));
+			throw Messages.INSTANCE.getIllegalArgumentException(8, propertyName, printableCharacterList(invalidPropertyNameCharacters.characters()));
 		}
 		if (beginsWithWhitespace(propertyName)) {
-			throw new IllegalArgumentException("Property name \"" + propertyName + "\" begins with one or more whitespace characters, which is not permitted.");
+			throw Messages.INSTANCE.getIllegalArgumentException(9, propertyName);
 		}
 
 		value = sanitizeValue(parameters, value);
@@ -419,7 +420,7 @@ public class ICalRawWriter implements Closeable, Flushable {
 	private String sanitizeParameterValue(String parameterValue, String parameterName, String propertyName) {
 		CharacterBitSet invalidChars = (caretEncodingEnabled ? invalidParamValueCharsWithCaretEncoding : invalidParamValueChars).get(version);
 		if (invalidChars.containsAny(parameterValue)) {
-			throw new IllegalArgumentException("Property \"" + propertyName + "\" has a parameter named \"" + parameterName + "\" whose value contains one or more invalid characters.  The following characters are not permitted: " + printableCharacterList(invalidChars.characters()));
+			throw Messages.INSTANCE.getIllegalArgumentException(10, propertyName, parameterName, printableCharacterList(invalidChars.characters()));
 		}
 
 		String sanitizedValue = parameterValue;

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalVersion;
+import biweekly.Messages;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 
@@ -66,7 +67,7 @@ public class ListProperty<T> extends ICalProperty {
 	 */
 	public ListProperty(List<T> values) {
 		if (values == null) {
-			throw new NullPointerException("List cannot be null.");
+			throw new NullPointerException(Messages.INSTANCE.getExceptionMessage(18));
 		}
 		this.values = values;
 	}

@@ -2,6 +2,7 @@ package biweekly.io;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
+import biweekly.Messages;
 import biweekly.component.ICalComponent;
 import biweekly.component.RawComponent;
 import biweekly.io.scribe.ScribeIndex;
@@ -63,9 +65,13 @@ public abstract class StreamWriter implements Closeable {
 	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	public void write(ICalendar ical) throws IOException {
-		Collection<Class<? extends Object>> unregistered = findScribeless(ical);
+		Collection<Class<?>> unregistered = findScribeless(ical);
 		if (!unregistered.isEmpty()) {
-			throw new IllegalArgumentException("No scribes were found for the following component/property classes: " + unregistered);
+			List<String> classNames = new ArrayList<String>(unregistered.size());
+			for (Class<?> clazz : unregistered) {
+				classNames.add(clazz.getName());
+			}
+			throw Messages.INSTANCE.getIllegalArgumentException(13, classNames);
 		}
 
 		context = new WriteContext(getTargetVersion(), tzinfo);

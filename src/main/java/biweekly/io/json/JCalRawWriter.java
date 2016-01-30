@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalDataType;
+import biweekly.Messages;
 import biweekly.parameter.ICalParameters;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -122,7 +123,7 @@ public class JCalRawWriter implements Closeable, Flushable {
 	 */
 	public void writeEndComponent() throws IOException {
 		if (stack.isEmpty()) {
-			throw new IllegalStateException("Call \"writeStartComponent\" first.");
+			throw new IllegalStateException(Messages.INSTANCE.getExceptionMessage(2));
 		}
 		Info cur = stack.removeLast();
 
@@ -166,10 +167,10 @@ public class JCalRawWriter implements Closeable, Flushable {
 	 */
 	public void writeProperty(String propertyName, ICalParameters parameters, ICalDataType dataType, JCalValue value) throws IOException {
 		if (stack.isEmpty()) {
-			throw new IllegalStateException("Call \"writeStartComponent\" first.");
+			throw new IllegalStateException(Messages.INSTANCE.getExceptionMessage(2));
 		}
 		if (componentEnded) {
-			throw new IllegalStateException("Cannot write a property after calling \"writeEndComponent\".");
+			throw new IllegalStateException(Messages.INSTANCE.getExceptionMessage(3));
 		}
 
 		generator.writeStartArray();

@@ -235,7 +235,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			Pattern p = Pattern.compile("^([A-Z]+)(\\d+)$");
 			Matcher m = p.matcher(firstToken);
 			if (!m.find()) {
-				throw new CannotParseException("Invalid token: " + firstToken);
+				throw new CannotParseException(40, firstToken);
 			}
 
 			frequencyStr = m.group(1);
@@ -401,7 +401,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 				}
 			};
 		} else {
-			throw new CannotParseException("Unrecognized frequency: " + frequencyStr);
+			throw new CannotParseException(41, frequencyStr);
 		}
 
 		builder.frequency(frequency);
@@ -453,7 +453,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	private DayOfWeek parseDay(String value) {
 		DayOfWeek day = DayOfWeek.valueOfAbbr(value);
 		if (day == null) {
-			throw new CannotParseException("Invalid day: " + value);
+			throw new CannotParseException(42, value);
 		}
 
 		return day;

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
+import biweekly.Messages;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.parameter.ICalParameters;
@@ -74,7 +75,7 @@ public abstract class ICalProperty {
 	 */
 	public void setParameters(ICalParameters parameters) {
 		if (parameters == null) {
-			throw new NullPointerException("Parameters object cannot be null.");
+			throw new NullPointerException(Messages.INSTANCE.getExceptionMessage(16));
 		}
 		this.parameters = parameters;
 	}
@@ -395,7 +396,7 @@ public abstract class ICalProperty {
 			Constructor<? extends ICalProperty> copyConstructor = clazz.getConstructor(clazz);
 			return copyConstructor.newInstance(this);
 		} catch (Exception e) {
-			throw new UnsupportedOperationException("A problem occurred attempting to invoke the copy constructor of property class " + clazz.getName() + ".", e);
+			throw new UnsupportedOperationException(Messages.INSTANCE.getExceptionMessage(17, clazz.getName()), e);
 		}
 	}
 

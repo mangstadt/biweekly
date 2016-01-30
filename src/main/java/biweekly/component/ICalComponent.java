@@ -8,6 +8,7 @@ import java.util.Map;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
+import biweekly.Messages;
 import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.Warning;
 import biweekly.property.ICalProperty;
@@ -578,7 +579,7 @@ public abstract class ICalComponent {
 			Constructor<? extends ICalComponent> copyConstructor = clazz.getConstructor(clazz);
 			return copyConstructor.newInstance(this);
 		} catch (Exception e) {
-			throw new UnsupportedOperationException("A problem occurred attempting to invoke the copy constructor of component class " + clazz.getName() + ".", e);
+			throw new UnsupportedOperationException(Messages.INSTANCE.getExceptionMessage(1, clazz.getName()), e);
 		}
 	}
 

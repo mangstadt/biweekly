@@ -4,6 +4,8 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import biweekly.Messages;
+
 /*
  Copyright (c) 2013-2015, Michael Angstadt
  All rights reserved.
@@ -70,7 +72,7 @@ public final class UtcOffset {
 		Matcher m = timeZoneRegex.matcher(text);
 
 		if (!m.find()) {
-			throw new IllegalArgumentException("Offset string is not in ISO8610 format: " + text);
+			throw Messages.INSTANCE.getIllegalArgumentException(21, text);
 		}
 
 		String signStr = m.group(1);

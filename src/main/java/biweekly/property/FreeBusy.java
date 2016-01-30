@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalVersion;
+import biweekly.Messages;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.parameter.FreeBusyType;
@@ -114,7 +115,7 @@ public class FreeBusy extends ICalProperty {
 	 */
 	public void addValue(Period period) {
 		if (period == null) {
-			throw new NullPointerException("Period cannot be null.");
+			throw new NullPointerException(Messages.INSTANCE.getExceptionMessage(15));
 		}
 		values.add(period);
 	}

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import biweekly.ICalVersion;
+import biweekly.Messages;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.util.StringUtils;
@@ -312,7 +313,7 @@ public class ICalRawReader implements Closeable {
 		}
 
 		if (propertyName == null) {
-			throw new ICalParseException(unfoldedLine.get(), propertyLineNum, "Line is malformed--no colon character found.");
+			throw new ICalParseException(unfoldedLine.get(), propertyLineNum, Messages.INSTANCE.getExceptionMessage(7));
 		}
 
 		String value = buffer.getAndClear();

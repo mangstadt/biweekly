@@ -9,6 +9,8 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import biweekly.Messages;
+
 /*
  Copyright (c) 2013-2015, Michael Angstadt
  All rights reserved.
@@ -91,7 +93,7 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents>,
 	public static DateTimeComponents parse(String dateString, Boolean hasTime) {
 		Matcher m = regex.matcher(dateString);
 		if (!m.find()) {
-			throw new IllegalArgumentException("Cannot parse date: " + dateString);
+			throw Messages.INSTANCE.getIllegalArgumentException(19, dateString);
 		}
 
 		int i = 1;

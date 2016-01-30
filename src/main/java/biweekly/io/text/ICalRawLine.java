@@ -2,6 +2,7 @@ package biweekly.io.text;
 
 import java.util.Arrays;
 
+import biweekly.Messages;
 import biweekly.parameter.ICalParameters;
 
 /*
@@ -84,28 +85,19 @@ public class ICalRawLine {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
 		ICalRawLine other = (ICalRawLine) obj;
 		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
+			if (other.name != null) return false;
+		} else if (!name.equals(other.name)) return false;
 		if (parameters == null) {
-			if (other.parameters != null)
-				return false;
-		} else if (!parameters.equals(other.parameters))
-			return false;
+			if (other.parameters != null) return false;
+		} else if (!parameters.equals(other.parameters)) return false;
 		if (value == null) {
-			if (other.value != null)
-				return false;
-		} else if (!value.equals(other.value))
-			return false;
+			if (other.value != null) return false;
+		} else if (!value.equals(other.value)) return false;
 		return true;
 	}
 
@@ -130,7 +122,7 @@ public class ICalRawLine {
 
 		public ICalRawLine build() {
 			if (name == null) {
-				throw new IllegalArgumentException("Property name required.");
+				throw Messages.INSTANCE.getIllegalArgumentException(6);
 			}
 			return new ICalRawLine(name, parameters, value);
 		}

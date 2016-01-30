@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import biweekly.Messages;
+
 /*
  Copyright (c) 2013-2015, Michael Angstadt
  All rights reserved.
@@ -75,7 +77,7 @@ public final class Duration {
 	 */
 	public static Duration parse(String value) {
 		if (!value.matches("-?P.*")) {
-			throw new IllegalArgumentException("Invalid duration string: " + value);
+			throw Messages.INSTANCE.getIllegalArgumentException(20, value);
 		}
 
 		//@formatter:off
@@ -295,40 +297,26 @@ public final class Duration {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
 		Duration other = (Duration) obj;
 		if (days == null) {
-			if (other.days != null)
-				return false;
-		} else if (!days.equals(other.days))
-			return false;
+			if (other.days != null) return false;
+		} else if (!days.equals(other.days)) return false;
 		if (hours == null) {
-			if (other.hours != null)
-				return false;
-		} else if (!hours.equals(other.hours))
-			return false;
+			if (other.hours != null) return false;
+		} else if (!hours.equals(other.hours)) return false;
 		if (minutes == null) {
-			if (other.minutes != null)
-				return false;
-		} else if (!minutes.equals(other.minutes))
-			return false;
-		if (prior != other.prior)
-			return false;
+			if (other.minutes != null) return false;
+		} else if (!minutes.equals(other.minutes)) return false;
+		if (prior != other.prior) return false;
 		if (seconds == null) {
-			if (other.seconds != null)
-				return false;
-		} else if (!seconds.equals(other.seconds))
-			return false;
+			if (other.seconds != null) return false;
+		} else if (!seconds.equals(other.seconds)) return false;
 		if (weeks == null) {
-			if (other.weeks != null)
-				return false;
-		} else if (!weeks.equals(other.weeks))
-			return false;
+			if (other.weeks != null) return false;
+		} else if (!weeks.equals(other.weeks)) return false;
 		return true;
 	}
 

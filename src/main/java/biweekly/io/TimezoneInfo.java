@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import biweekly.Messages;
 import biweekly.component.VTimezone;
 import biweekly.property.ICalProperty;
 import biweekly.property.TimezoneId;
@@ -286,7 +287,7 @@ public class TimezoneInfo {
 	private void checkForId(VTimezone timezone) {
 		TimezoneId id = timezone.getTimezoneId();
 		if (id == null || id.getValue() == null || id.getValue().trim().length() == 0) {
-			throw new IllegalArgumentException("VTimezone component must have a non-empty TimezoneId property");
+			throw Messages.INSTANCE.getIllegalArgumentException(14);
 		}
 	}
 

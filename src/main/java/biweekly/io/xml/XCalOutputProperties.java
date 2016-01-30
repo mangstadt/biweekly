@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import javax.xml.transform.OutputKeys;
 
+import biweekly.Messages;
+
 /*
  Copyright (c) 2013-2015, Michael Angstadt
  All rights reserved.
@@ -86,7 +88,7 @@ public class XCalOutputProperties extends HashMap<String, String> {
 		}
 
 		if (indent < 0) {
-			throw new IllegalArgumentException("Indent amount cannot be less than zero.");
+			throw Messages.INSTANCE.getIllegalArgumentException(11);
 		}
 
 		put(OutputKeys.INDENT, "yes");

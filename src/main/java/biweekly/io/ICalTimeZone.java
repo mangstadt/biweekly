@@ -17,6 +17,7 @@ import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.TimeZone;
 
+import biweekly.Messages;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.Observance;
 import biweekly.component.StandardTime;
@@ -173,7 +174,7 @@ public class ICalTimeZone extends TimeZone {
 	 */
 	@Override
 	public void setRawOffset(int offset) {
-		throw new UnsupportedOperationException("Unable to set the raw offset.  Modify the VTIMEZONE component instead.");
+		throw new UnsupportedOperationException(Messages.INSTANCE.getExceptionMessage(12));
 	}
 
 	@Override

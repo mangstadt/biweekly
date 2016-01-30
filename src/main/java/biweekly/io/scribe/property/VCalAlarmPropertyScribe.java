@@ -84,7 +84,7 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 		try {
 			start = (next == null) ? null : date(next).parse();
 		} catch (IllegalArgumentException e) {
-			throw new CannotParseException("");
+			throw new CannotParseException(27, next);
 		}
 
 		next = next(it);
@@ -92,7 +92,7 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 		try {
 			snooze = (next == null) ? null : Duration.parse(next);
 		} catch (IllegalArgumentException e) {
-			throw new CannotParseException("");
+			throw new CannotParseException(26, next);
 		}
 
 		next = next(it);
@@ -100,7 +100,7 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 		try {
 			repeat = (next == null) ? null : Integer.valueOf(next);
 		} catch (IllegalArgumentException e) {
-			throw new CannotParseException("");
+			throw new CannotParseException(24, next);
 		}
 
 		T property = create(dataType, it);

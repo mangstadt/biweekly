@@ -63,6 +63,27 @@ public enum Messages {
 	}
 
 	/**
+	 * Gets an exception message.
+	 * @param code the message code
+	 * @param args the message arguments
+	 * @return the message or null if not found
+	 */
+	public String getExceptionMessage(int code, Object... args) {
+		return getMessage("exception." + code, args);
+	}
+
+	/**
+	 * Builds an {@link IllegalArgumentException} from an exception message.
+	 * @param code the message code
+	 * @param args the message arguments
+	 * @return the exception or null if the message was not found
+	 */
+	public IllegalArgumentException getIllegalArgumentException(int code, Object... args) {
+		String message = getExceptionMessage(code, args);
+		return (message == null) ? null : new IllegalArgumentException(message);
+	}
+
+	/**
 	 * Gets a message.
 	 * @param key the message key
 	 * @param args the message arguments
