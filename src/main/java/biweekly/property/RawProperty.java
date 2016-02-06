@@ -103,7 +103,6 @@ public class RawProperty extends ICalProperty {
 	/**
 	 * Sets the property value's data type.
 	 * @param dataType the data type
-	 * @return
 	 */
 	public void setDataType(ICalDataType dataType) {
 		this.dataType = dataType;
