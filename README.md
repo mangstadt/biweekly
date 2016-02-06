@@ -77,7 +77,7 @@ String str = Biweekly.write(ical).go();
 <dependency>
    <groupId>net.sf.biweekly</groupId>
    <artifactId>biweekly</artifactId>
-   <version>0.4.4</version>
+   <version>0.4.5</version>
 </dependency>
 ```
 
