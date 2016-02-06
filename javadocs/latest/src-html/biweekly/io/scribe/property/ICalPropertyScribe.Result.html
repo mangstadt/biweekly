@@ -1035,303 +1035,306 @@
 <span class="sourceLineNo">1027</span>                                continue;<a name="line.1027"></a>
 <span class="sourceLineNo">1028</span>                        }<a name="line.1028"></a>
 <span class="sourceLineNo">1029</span><a name="line.1029"></a>
-<span class="sourceLineNo">1030</span>                        String[] split = component.split("=", 2);<a name="line.1030"></a>
+<span class="sourceLineNo">1030</span>                        int equals = component.indexOf('=');<a name="line.1030"></a>
 <span class="sourceLineNo">1031</span><a name="line.1031"></a>
-<span class="sourceLineNo">1032</span>                        String name = unescape(split[0].toUpperCase());<a name="line.1032"></a>
-<span class="sourceLineNo">1033</span>                        List&lt;String&gt; values = (split.length &gt; 1) ? list(split[1]) : Arrays.asList("");<a name="line.1033"></a>
-<span class="sourceLineNo">1034</span><a name="line.1034"></a>
-<span class="sourceLineNo">1035</span>                        map.putAll(name, values);<a name="line.1035"></a>
-<span class="sourceLineNo">1036</span>                }<a name="line.1036"></a>
+<span class="sourceLineNo">1032</span>                        String name = (equals &lt; 0) ? component : component.substring(0, equals);<a name="line.1032"></a>
+<span class="sourceLineNo">1033</span>                        name = name.toUpperCase();<a name="line.1033"></a>
+<span class="sourceLineNo">1034</span>                        name = unescape(name);<a name="line.1034"></a>
+<span class="sourceLineNo">1035</span><a name="line.1035"></a>
+<span class="sourceLineNo">1036</span>                        List&lt;String&gt; values = (equals &lt; 0) ? Arrays.asList("") : list(component.substring(equals + 1));<a name="line.1036"></a>
 <span class="sourceLineNo">1037</span><a name="line.1037"></a>
-<span class="sourceLineNo">1038</span>                return map;<a name="line.1038"></a>
-<span class="sourceLineNo">1039</span>        }<a name="line.1039"></a>
+<span class="sourceLineNo">1038</span>                        map.putAll(name, values);<a name="line.1038"></a>
+<span class="sourceLineNo">1039</span>                }<a name="line.1039"></a>
 <span class="sourceLineNo">1040</span><a name="line.1040"></a>
-<span class="sourceLineNo">1041</span>        /**<a name="line.1041"></a>
-<span class="sourceLineNo">1042</span>         * Parses a date string.<a name="line.1042"></a>
-<span class="sourceLineNo">1043</span>         * @param value the date string<a name="line.1043"></a>
-<span class="sourceLineNo">1044</span>         * @return the factory object<a name="line.1044"></a>
-<span class="sourceLineNo">1045</span>         */<a name="line.1045"></a>
-<span class="sourceLineNo">1046</span>        protected static DateParser date(String value) {<a name="line.1046"></a>
-<span class="sourceLineNo">1047</span>                return new DateParser(value);<a name="line.1047"></a>
-<span class="sourceLineNo">1048</span>        }<a name="line.1048"></a>
-<span class="sourceLineNo">1049</span><a name="line.1049"></a>
-<span class="sourceLineNo">1050</span>        /**<a name="line.1050"></a>
-<span class="sourceLineNo">1051</span>         * Factory class for parsing dates.<a name="line.1051"></a>
-<span class="sourceLineNo">1052</span>         */<a name="line.1052"></a>
-<span class="sourceLineNo">1053</span>        protected static class DateParser {<a name="line.1053"></a>
-<span class="sourceLineNo">1054</span>                private String value;<a name="line.1054"></a>
-<span class="sourceLineNo">1055</span>                private Boolean hasTime;<a name="line.1055"></a>
-<span class="sourceLineNo">1056</span><a name="line.1056"></a>
-<span class="sourceLineNo">1057</span>                /**<a name="line.1057"></a>
-<span class="sourceLineNo">1058</span>                 * Creates a new date writer object.<a name="line.1058"></a>
-<span class="sourceLineNo">1059</span>                 * @param value the date string to parse<a name="line.1059"></a>
-<span class="sourceLineNo">1060</span>                 */<a name="line.1060"></a>
-<span class="sourceLineNo">1061</span>                public DateParser(String value) {<a name="line.1061"></a>
-<span class="sourceLineNo">1062</span>                        this.value = value;<a name="line.1062"></a>
-<span class="sourceLineNo">1063</span>                }<a name="line.1063"></a>
-<span class="sourceLineNo">1064</span><a name="line.1064"></a>
-<span class="sourceLineNo">1065</span>                /**<a name="line.1065"></a>
-<span class="sourceLineNo">1066</span>                 * Forces the value to be parsed as a date-time or date value.<a name="line.1066"></a>
-<span class="sourceLineNo">1067</span>                 * @param hasTime true to parsed as a date-timme value, false to parse<a name="line.1067"></a>
-<span class="sourceLineNo">1068</span>                 * as a date value, null to parse as whatever value it is (defaults to<a name="line.1068"></a>
-<span class="sourceLineNo">1069</span>                 * null)<a name="line.1069"></a>
-<span class="sourceLineNo">1070</span>                 * @return this<a name="line.1070"></a>
-<span class="sourceLineNo">1071</span>                 */<a name="line.1071"></a>
-<span class="sourceLineNo">1072</span>                public DateParser hasTime(Boolean hasTime) {<a name="line.1072"></a>
-<span class="sourceLineNo">1073</span>                        this.hasTime = hasTime;<a name="line.1073"></a>
-<span class="sourceLineNo">1074</span>                        return this;<a name="line.1074"></a>
-<span class="sourceLineNo">1075</span>                }<a name="line.1075"></a>
-<span class="sourceLineNo">1076</span><a name="line.1076"></a>
-<span class="sourceLineNo">1077</span>                /**<a name="line.1077"></a>
-<span class="sourceLineNo">1078</span>                 * Parses the date string.<a name="line.1078"></a>
-<span class="sourceLineNo">1079</span>                 * @return the parsed date<a name="line.1079"></a>
-<span class="sourceLineNo">1080</span>                 * @throws IllegalArgumentException if the date string is invalid<a name="line.1080"></a>
-<span class="sourceLineNo">1081</span>                 */<a name="line.1081"></a>
-<span class="sourceLineNo">1082</span>                public ICalDate parse() {<a name="line.1082"></a>
-<span class="sourceLineNo">1083</span>                        DateTimeComponents components = DateTimeComponents.parse(value, hasTime);<a name="line.1083"></a>
-<span class="sourceLineNo">1084</span>                        Date date = components.toDate();<a name="line.1084"></a>
-<span class="sourceLineNo">1085</span>                        boolean hasTime = components.hasTime();<a name="line.1085"></a>
-<span class="sourceLineNo">1086</span><a name="line.1086"></a>
-<span class="sourceLineNo">1087</span>                        return new ICalDate(date, components, hasTime);<a name="line.1087"></a>
-<span class="sourceLineNo">1088</span>                }<a name="line.1088"></a>
-<span class="sourceLineNo">1089</span>        }<a name="line.1089"></a>
-<span class="sourceLineNo">1090</span><a name="line.1090"></a>
-<span class="sourceLineNo">1091</span>        /**<a name="line.1091"></a>
-<span class="sourceLineNo">1092</span>         * Formats a date as a string.<a name="line.1092"></a>
-<span class="sourceLineNo">1093</span>         * @param date the date<a name="line.1093"></a>
-<span class="sourceLineNo">1094</span>         * @return the factory object<a name="line.1094"></a>
-<span class="sourceLineNo">1095</span>         */<a name="line.1095"></a>
-<span class="sourceLineNo">1096</span>        protected static DateWriter date(Date date) {<a name="line.1096"></a>
-<span class="sourceLineNo">1097</span>                return date((date == null) ? null : new ICalDate(date));<a name="line.1097"></a>
-<span class="sourceLineNo">1098</span>        }<a name="line.1098"></a>
-<span class="sourceLineNo">1099</span><a name="line.1099"></a>
-<span class="sourceLineNo">1100</span>        /**<a name="line.1100"></a>
-<span class="sourceLineNo">1101</span>         * Formats a date as a string.<a name="line.1101"></a>
-<span class="sourceLineNo">1102</span>         * @param date the date<a name="line.1102"></a>
-<span class="sourceLineNo">1103</span>         * @return the factory object<a name="line.1103"></a>
-<span class="sourceLineNo">1104</span>         */<a name="line.1104"></a>
-<span class="sourceLineNo">1105</span>        protected static DateWriter date(ICalDate date) {<a name="line.1105"></a>
-<span class="sourceLineNo">1106</span>                return new DateWriter(date);<a name="line.1106"></a>
-<span class="sourceLineNo">1107</span>        }<a name="line.1107"></a>
-<span class="sourceLineNo">1108</span><a name="line.1108"></a>
-<span class="sourceLineNo">1109</span>        protected static DateWriter date(Date date, ICalProperty property, WriteContext context) {<a name="line.1109"></a>
-<span class="sourceLineNo">1110</span>                return date((date == null) ? null : new ICalDate(date), property, context);<a name="line.1110"></a>
-<span class="sourceLineNo">1111</span>        }<a name="line.1111"></a>
-<span class="sourceLineNo">1112</span><a name="line.1112"></a>
-<span class="sourceLineNo">1113</span>        protected static DateWriter date(ICalDate date, ICalProperty property, WriteContext context) {<a name="line.1113"></a>
-<span class="sourceLineNo">1114</span>                TimezoneInfo tzinfo = context.getTimezoneInfo();<a name="line.1114"></a>
-<span class="sourceLineNo">1115</span>                boolean floating = tzinfo.isFloating(property);<a name="line.1115"></a>
-<span class="sourceLineNo">1116</span>                TimeZone tz = tzinfo.getTimeZoneToWriteIn(property);<a name="line.1116"></a>
-<span class="sourceLineNo">1117</span>                context.addDate(date, floating, tz);<a name="line.1117"></a>
-<span class="sourceLineNo">1118</span><a name="line.1118"></a>
-<span class="sourceLineNo">1119</span>                return date(date).tz(floating, tz);<a name="line.1119"></a>
-<span class="sourceLineNo">1120</span>        }<a name="line.1120"></a>
+<span class="sourceLineNo">1041</span>                return map;<a name="line.1041"></a>
+<span class="sourceLineNo">1042</span>        }<a name="line.1042"></a>
+<span class="sourceLineNo">1043</span><a name="line.1043"></a>
+<span class="sourceLineNo">1044</span>        /**<a name="line.1044"></a>
+<span class="sourceLineNo">1045</span>         * Parses a date string.<a name="line.1045"></a>
+<span class="sourceLineNo">1046</span>         * @param value the date string<a name="line.1046"></a>
+<span class="sourceLineNo">1047</span>         * @return the factory object<a name="line.1047"></a>
+<span class="sourceLineNo">1048</span>         */<a name="line.1048"></a>
+<span class="sourceLineNo">1049</span>        protected static DateParser date(String value) {<a name="line.1049"></a>
+<span class="sourceLineNo">1050</span>                return new DateParser(value);<a name="line.1050"></a>
+<span class="sourceLineNo">1051</span>        }<a name="line.1051"></a>
+<span class="sourceLineNo">1052</span><a name="line.1052"></a>
+<span class="sourceLineNo">1053</span>        /**<a name="line.1053"></a>
+<span class="sourceLineNo">1054</span>         * Factory class for parsing dates.<a name="line.1054"></a>
+<span class="sourceLineNo">1055</span>         */<a name="line.1055"></a>
+<span class="sourceLineNo">1056</span>        protected static class DateParser {<a name="line.1056"></a>
+<span class="sourceLineNo">1057</span>                private String value;<a name="line.1057"></a>
+<span class="sourceLineNo">1058</span>                private Boolean hasTime;<a name="line.1058"></a>
+<span class="sourceLineNo">1059</span><a name="line.1059"></a>
+<span class="sourceLineNo">1060</span>                /**<a name="line.1060"></a>
+<span class="sourceLineNo">1061</span>                 * Creates a new date writer object.<a name="line.1061"></a>
+<span class="sourceLineNo">1062</span>                 * @param value the date string to parse<a name="line.1062"></a>
+<span class="sourceLineNo">1063</span>                 */<a name="line.1063"></a>
+<span class="sourceLineNo">1064</span>                public DateParser(String value) {<a name="line.1064"></a>
+<span class="sourceLineNo">1065</span>                        this.value = value;<a name="line.1065"></a>
+<span class="sourceLineNo">1066</span>                }<a name="line.1066"></a>
+<span class="sourceLineNo">1067</span><a name="line.1067"></a>
+<span class="sourceLineNo">1068</span>                /**<a name="line.1068"></a>
+<span class="sourceLineNo">1069</span>                 * Forces the value to be parsed as a date-time or date value.<a name="line.1069"></a>
+<span class="sourceLineNo">1070</span>                 * @param hasTime true to parsed as a date-timme value, false to parse<a name="line.1070"></a>
+<span class="sourceLineNo">1071</span>                 * as a date value, null to parse as whatever value it is (defaults to<a name="line.1071"></a>
+<span class="sourceLineNo">1072</span>                 * null)<a name="line.1072"></a>
+<span class="sourceLineNo">1073</span>                 * @return this<a name="line.1073"></a>
+<span class="sourceLineNo">1074</span>                 */<a name="line.1074"></a>
+<span class="sourceLineNo">1075</span>                public DateParser hasTime(Boolean hasTime) {<a name="line.1075"></a>
+<span class="sourceLineNo">1076</span>                        this.hasTime = hasTime;<a name="line.1076"></a>
+<span class="sourceLineNo">1077</span>                        return this;<a name="line.1077"></a>
+<span class="sourceLineNo">1078</span>                }<a name="line.1078"></a>
+<span class="sourceLineNo">1079</span><a name="line.1079"></a>
+<span class="sourceLineNo">1080</span>                /**<a name="line.1080"></a>
+<span class="sourceLineNo">1081</span>                 * Parses the date string.<a name="line.1081"></a>
+<span class="sourceLineNo">1082</span>                 * @return the parsed date<a name="line.1082"></a>
+<span class="sourceLineNo">1083</span>                 * @throws IllegalArgumentException if the date string is invalid<a name="line.1083"></a>
+<span class="sourceLineNo">1084</span>                 */<a name="line.1084"></a>
+<span class="sourceLineNo">1085</span>                public ICalDate parse() {<a name="line.1085"></a>
+<span class="sourceLineNo">1086</span>                        DateTimeComponents components = DateTimeComponents.parse(value, hasTime);<a name="line.1086"></a>
+<span class="sourceLineNo">1087</span>                        Date date = components.toDate();<a name="line.1087"></a>
+<span class="sourceLineNo">1088</span>                        boolean hasTime = components.hasTime();<a name="line.1088"></a>
+<span class="sourceLineNo">1089</span><a name="line.1089"></a>
+<span class="sourceLineNo">1090</span>                        return new ICalDate(date, components, hasTime);<a name="line.1090"></a>
+<span class="sourceLineNo">1091</span>                }<a name="line.1091"></a>
+<span class="sourceLineNo">1092</span>        }<a name="line.1092"></a>
+<span class="sourceLineNo">1093</span><a name="line.1093"></a>
+<span class="sourceLineNo">1094</span>        /**<a name="line.1094"></a>
+<span class="sourceLineNo">1095</span>         * Formats a date as a string.<a name="line.1095"></a>
+<span class="sourceLineNo">1096</span>         * @param date the date<a name="line.1096"></a>
+<span class="sourceLineNo">1097</span>         * @return the factory object<a name="line.1097"></a>
+<span class="sourceLineNo">1098</span>         */<a name="line.1098"></a>
+<span class="sourceLineNo">1099</span>        protected static DateWriter date(Date date) {<a name="line.1099"></a>
+<span class="sourceLineNo">1100</span>                return date((date == null) ? null : new ICalDate(date));<a name="line.1100"></a>
+<span class="sourceLineNo">1101</span>        }<a name="line.1101"></a>
+<span class="sourceLineNo">1102</span><a name="line.1102"></a>
+<span class="sourceLineNo">1103</span>        /**<a name="line.1103"></a>
+<span class="sourceLineNo">1104</span>         * Formats a date as a string.<a name="line.1104"></a>
+<span class="sourceLineNo">1105</span>         * @param date the date<a name="line.1105"></a>
+<span class="sourceLineNo">1106</span>         * @return the factory object<a name="line.1106"></a>
+<span class="sourceLineNo">1107</span>         */<a name="line.1107"></a>
+<span class="sourceLineNo">1108</span>        protected static DateWriter date(ICalDate date) {<a name="line.1108"></a>
+<span class="sourceLineNo">1109</span>                return new DateWriter(date);<a name="line.1109"></a>
+<span class="sourceLineNo">1110</span>        }<a name="line.1110"></a>
+<span class="sourceLineNo">1111</span><a name="line.1111"></a>
+<span class="sourceLineNo">1112</span>        protected static DateWriter date(Date date, ICalProperty property, WriteContext context) {<a name="line.1112"></a>
+<span class="sourceLineNo">1113</span>                return date((date == null) ? null : new ICalDate(date), property, context);<a name="line.1113"></a>
+<span class="sourceLineNo">1114</span>        }<a name="line.1114"></a>
+<span class="sourceLineNo">1115</span><a name="line.1115"></a>
+<span class="sourceLineNo">1116</span>        protected static DateWriter date(ICalDate date, ICalProperty property, WriteContext context) {<a name="line.1116"></a>
+<span class="sourceLineNo">1117</span>                TimezoneInfo tzinfo = context.getTimezoneInfo();<a name="line.1117"></a>
+<span class="sourceLineNo">1118</span>                boolean floating = tzinfo.isFloating(property);<a name="line.1118"></a>
+<span class="sourceLineNo">1119</span>                TimeZone tz = tzinfo.getTimeZoneToWriteIn(property);<a name="line.1119"></a>
+<span class="sourceLineNo">1120</span>                context.addDate(date, floating, tz);<a name="line.1120"></a>
 <span class="sourceLineNo">1121</span><a name="line.1121"></a>
-<span class="sourceLineNo">1122</span>        /**<a name="line.1122"></a>
-<span class="sourceLineNo">1123</span>         * Factory class for writing dates.<a name="line.1123"></a>
-<span class="sourceLineNo">1124</span>         */<a name="line.1124"></a>
-<span class="sourceLineNo">1125</span>        protected static class DateWriter {<a name="line.1125"></a>
-<span class="sourceLineNo">1126</span>                private ICalDate date;<a name="line.1126"></a>
-<span class="sourceLineNo">1127</span>                private TimeZone timezone;<a name="line.1127"></a>
-<span class="sourceLineNo">1128</span>                private boolean observance = false;<a name="line.1128"></a>
-<span class="sourceLineNo">1129</span>                private boolean extended = false;<a name="line.1129"></a>
-<span class="sourceLineNo">1130</span>                private boolean utc = false;<a name="line.1130"></a>
-<span class="sourceLineNo">1131</span><a name="line.1131"></a>
-<span class="sourceLineNo">1132</span>                /**<a name="line.1132"></a>
-<span class="sourceLineNo">1133</span>                 * Creates a new date writer object.<a name="line.1133"></a>
-<span class="sourceLineNo">1134</span>                 * @param date the date to format<a name="line.1134"></a>
-<span class="sourceLineNo">1135</span>                 */<a name="line.1135"></a>
-<span class="sourceLineNo">1136</span>                public DateWriter(ICalDate date) {<a name="line.1136"></a>
-<span class="sourceLineNo">1137</span>                        this.date = date;<a name="line.1137"></a>
-<span class="sourceLineNo">1138</span>                }<a name="line.1138"></a>
-<span class="sourceLineNo">1139</span><a name="line.1139"></a>
-<span class="sourceLineNo">1140</span>                /**<a name="line.1140"></a>
-<span class="sourceLineNo">1141</span>                 * Sets whether the property is within an observance or not.<a name="line.1141"></a>
-<span class="sourceLineNo">1142</span>                 * @param observance true if it's in an observance, false if not<a name="line.1142"></a>
-<span class="sourceLineNo">1143</span>                 * (defaults to false)<a name="line.1143"></a>
-<span class="sourceLineNo">1144</span>                 * @return this<a name="line.1144"></a>
-<span class="sourceLineNo">1145</span>                 */<a name="line.1145"></a>
-<span class="sourceLineNo">1146</span>                public DateWriter observance(boolean observance) {<a name="line.1146"></a>
-<span class="sourceLineNo">1147</span>                        this.observance = observance;<a name="line.1147"></a>
-<span class="sourceLineNo">1148</span>                        return this;<a name="line.1148"></a>
-<span class="sourceLineNo">1149</span>                }<a name="line.1149"></a>
-<span class="sourceLineNo">1150</span><a name="line.1150"></a>
-<span class="sourceLineNo">1151</span>                /**<a name="line.1151"></a>
-<span class="sourceLineNo">1152</span>                 * Sets whether to write the value in UTC or not.<a name="line.1152"></a>
-<span class="sourceLineNo">1153</span>                 * @param utc true to write in UTC, false not to<a name="line.1153"></a>
-<span class="sourceLineNo">1154</span>                 * @return this<a name="line.1154"></a>
-<span class="sourceLineNo">1155</span>                 */<a name="line.1155"></a>
-<span class="sourceLineNo">1156</span>                public DateWriter utc(boolean utc) {<a name="line.1156"></a>
-<span class="sourceLineNo">1157</span>                        this.utc = utc;<a name="line.1157"></a>
-<span class="sourceLineNo">1158</span>                        return this;<a name="line.1158"></a>
-<span class="sourceLineNo">1159</span>                }<a name="line.1159"></a>
-<span class="sourceLineNo">1160</span><a name="line.1160"></a>
-<span class="sourceLineNo">1161</span>                /**<a name="line.1161"></a>
-<span class="sourceLineNo">1162</span>                 * Sets the timezone.<a name="line.1162"></a>
-<span class="sourceLineNo">1163</span>                 * @param floating true to use floating time, false not to<a name="line.1163"></a>
-<span class="sourceLineNo">1164</span>                 * @param timezone the timezone<a name="line.1164"></a>
-<span class="sourceLineNo">1165</span>                 * @return this<a name="line.1165"></a>
-<span class="sourceLineNo">1166</span>                 */<a name="line.1166"></a>
-<span class="sourceLineNo">1167</span>                public DateWriter tz(boolean floating, TimeZone timezone) {<a name="line.1167"></a>
-<span class="sourceLineNo">1168</span>                        if (floating) {<a name="line.1168"></a>
-<span class="sourceLineNo">1169</span>                                timezone = TimeZone.getDefault();<a name="line.1169"></a>
-<span class="sourceLineNo">1170</span>                        }<a name="line.1170"></a>
-<span class="sourceLineNo">1171</span>                        this.timezone = timezone;<a name="line.1171"></a>
-<span class="sourceLineNo">1172</span>                        return this;<a name="line.1172"></a>
-<span class="sourceLineNo">1173</span>                }<a name="line.1173"></a>
-<span class="sourceLineNo">1174</span><a name="line.1174"></a>
-<span class="sourceLineNo">1175</span>                /**<a name="line.1175"></a>
-<span class="sourceLineNo">1176</span>                 * Sets whether to use extended format or basic.<a name="line.1176"></a>
-<span class="sourceLineNo">1177</span>                 * @param extended true to use extended format, false to use basic<a name="line.1177"></a>
-<span class="sourceLineNo">1178</span>                 * (defaults to "false")<a name="line.1178"></a>
-<span class="sourceLineNo">1179</span>                 * @return this<a name="line.1179"></a>
-<span class="sourceLineNo">1180</span>                 */<a name="line.1180"></a>
-<span class="sourceLineNo">1181</span>                public DateWriter extended(boolean extended) {<a name="line.1181"></a>
-<span class="sourceLineNo">1182</span>                        this.extended = extended;<a name="line.1182"></a>
-<span class="sourceLineNo">1183</span>                        return this;<a name="line.1183"></a>
-<span class="sourceLineNo">1184</span>                }<a name="line.1184"></a>
-<span class="sourceLineNo">1185</span><a name="line.1185"></a>
-<span class="sourceLineNo">1186</span>                /**<a name="line.1186"></a>
-<span class="sourceLineNo">1187</span>                 * Creates the date string.<a name="line.1187"></a>
-<span class="sourceLineNo">1188</span>                 * @return the date string<a name="line.1188"></a>
-<span class="sourceLineNo">1189</span>                 */<a name="line.1189"></a>
-<span class="sourceLineNo">1190</span>                public String write() {<a name="line.1190"></a>
-<span class="sourceLineNo">1191</span>                        if (date == null) {<a name="line.1191"></a>
-<span class="sourceLineNo">1192</span>                                return "";<a name="line.1192"></a>
-<span class="sourceLineNo">1193</span>                        }<a name="line.1193"></a>
-<span class="sourceLineNo">1194</span><a name="line.1194"></a>
-<span class="sourceLineNo">1195</span>                        if (observance) {<a name="line.1195"></a>
-<span class="sourceLineNo">1196</span>                                DateTimeComponents components = date.getRawComponents();<a name="line.1196"></a>
-<span class="sourceLineNo">1197</span>                                if (components == null) {<a name="line.1197"></a>
-<span class="sourceLineNo">1198</span>                                        ICalDateFormat format = extended ? ICalDateFormat.DATE_TIME_EXTENDED_WITHOUT_TZ : ICalDateFormat.DATE_TIME_BASIC_WITHOUT_TZ;<a name="line.1198"></a>
-<span class="sourceLineNo">1199</span>                                        return format.format(date);<a name="line.1199"></a>
-<span class="sourceLineNo">1200</span>                                }<a name="line.1200"></a>
-<span class="sourceLineNo">1201</span><a name="line.1201"></a>
-<span class="sourceLineNo">1202</span>                                return components.toString(true, extended);<a name="line.1202"></a>
-<span class="sourceLineNo">1203</span>                        }<a name="line.1203"></a>
+<span class="sourceLineNo">1122</span>                return date(date).tz(floating, tz);<a name="line.1122"></a>
+<span class="sourceLineNo">1123</span>        }<a name="line.1123"></a>
+<span class="sourceLineNo">1124</span><a name="line.1124"></a>
+<span class="sourceLineNo">1125</span>        /**<a name="line.1125"></a>
+<span class="sourceLineNo">1126</span>         * Factory class for writing dates.<a name="line.1126"></a>
+<span class="sourceLineNo">1127</span>         */<a name="line.1127"></a>
+<span class="sourceLineNo">1128</span>        protected static class DateWriter {<a name="line.1128"></a>
+<span class="sourceLineNo">1129</span>                private ICalDate date;<a name="line.1129"></a>
+<span class="sourceLineNo">1130</span>                private TimeZone timezone;<a name="line.1130"></a>
+<span class="sourceLineNo">1131</span>                private boolean observance = false;<a name="line.1131"></a>
+<span class="sourceLineNo">1132</span>                private boolean extended = false;<a name="line.1132"></a>
+<span class="sourceLineNo">1133</span>                private boolean utc = false;<a name="line.1133"></a>
+<span class="sourceLineNo">1134</span><a name="line.1134"></a>
+<span class="sourceLineNo">1135</span>                /**<a name="line.1135"></a>
+<span class="sourceLineNo">1136</span>                 * Creates a new date writer object.<a name="line.1136"></a>
+<span class="sourceLineNo">1137</span>                 * @param date the date to format<a name="line.1137"></a>
+<span class="sourceLineNo">1138</span>                 */<a name="line.1138"></a>
+<span class="sourceLineNo">1139</span>                public DateWriter(ICalDate date) {<a name="line.1139"></a>
+<span class="sourceLineNo">1140</span>                        this.date = date;<a name="line.1140"></a>
+<span class="sourceLineNo">1141</span>                }<a name="line.1141"></a>
+<span class="sourceLineNo">1142</span><a name="line.1142"></a>
+<span class="sourceLineNo">1143</span>                /**<a name="line.1143"></a>
+<span class="sourceLineNo">1144</span>                 * Sets whether the property is within an observance or not.<a name="line.1144"></a>
+<span class="sourceLineNo">1145</span>                 * @param observance true if it's in an observance, false if not<a name="line.1145"></a>
+<span class="sourceLineNo">1146</span>                 * (defaults to false)<a name="line.1146"></a>
+<span class="sourceLineNo">1147</span>                 * @return this<a name="line.1147"></a>
+<span class="sourceLineNo">1148</span>                 */<a name="line.1148"></a>
+<span class="sourceLineNo">1149</span>                public DateWriter observance(boolean observance) {<a name="line.1149"></a>
+<span class="sourceLineNo">1150</span>                        this.observance = observance;<a name="line.1150"></a>
+<span class="sourceLineNo">1151</span>                        return this;<a name="line.1151"></a>
+<span class="sourceLineNo">1152</span>                }<a name="line.1152"></a>
+<span class="sourceLineNo">1153</span><a name="line.1153"></a>
+<span class="sourceLineNo">1154</span>                /**<a name="line.1154"></a>
+<span class="sourceLineNo">1155</span>                 * Sets whether to write the value in UTC or not.<a name="line.1155"></a>
+<span class="sourceLineNo">1156</span>                 * @param utc true to write in UTC, false not to<a name="line.1156"></a>
+<span class="sourceLineNo">1157</span>                 * @return this<a name="line.1157"></a>
+<span class="sourceLineNo">1158</span>                 */<a name="line.1158"></a>
+<span class="sourceLineNo">1159</span>                public DateWriter utc(boolean utc) {<a name="line.1159"></a>
+<span class="sourceLineNo">1160</span>                        this.utc = utc;<a name="line.1160"></a>
+<span class="sourceLineNo">1161</span>                        return this;<a name="line.1161"></a>
+<span class="sourceLineNo">1162</span>                }<a name="line.1162"></a>
+<span class="sourceLineNo">1163</span><a name="line.1163"></a>
+<span class="sourceLineNo">1164</span>                /**<a name="line.1164"></a>
+<span class="sourceLineNo">1165</span>                 * Sets the timezone.<a name="line.1165"></a>
+<span class="sourceLineNo">1166</span>                 * @param floating true to use floating time, false not to<a name="line.1166"></a>
+<span class="sourceLineNo">1167</span>                 * @param timezone the timezone<a name="line.1167"></a>
+<span class="sourceLineNo">1168</span>                 * @return this<a name="line.1168"></a>
+<span class="sourceLineNo">1169</span>                 */<a name="line.1169"></a>
+<span class="sourceLineNo">1170</span>                public DateWriter tz(boolean floating, TimeZone timezone) {<a name="line.1170"></a>
+<span class="sourceLineNo">1171</span>                        if (floating) {<a name="line.1171"></a>
+<span class="sourceLineNo">1172</span>                                timezone = TimeZone.getDefault();<a name="line.1172"></a>
+<span class="sourceLineNo">1173</span>                        }<a name="line.1173"></a>
+<span class="sourceLineNo">1174</span>                        this.timezone = timezone;<a name="line.1174"></a>
+<span class="sourceLineNo">1175</span>                        return this;<a name="line.1175"></a>
+<span class="sourceLineNo">1176</span>                }<a name="line.1176"></a>
+<span class="sourceLineNo">1177</span><a name="line.1177"></a>
+<span class="sourceLineNo">1178</span>                /**<a name="line.1178"></a>
+<span class="sourceLineNo">1179</span>                 * Sets whether to use extended format or basic.<a name="line.1179"></a>
+<span class="sourceLineNo">1180</span>                 * @param extended true to use extended format, false to use basic<a name="line.1180"></a>
+<span class="sourceLineNo">1181</span>                 * (defaults to "false")<a name="line.1181"></a>
+<span class="sourceLineNo">1182</span>                 * @return this<a name="line.1182"></a>
+<span class="sourceLineNo">1183</span>                 */<a name="line.1183"></a>
+<span class="sourceLineNo">1184</span>                public DateWriter extended(boolean extended) {<a name="line.1184"></a>
+<span class="sourceLineNo">1185</span>                        this.extended = extended;<a name="line.1185"></a>
+<span class="sourceLineNo">1186</span>                        return this;<a name="line.1186"></a>
+<span class="sourceLineNo">1187</span>                }<a name="line.1187"></a>
+<span class="sourceLineNo">1188</span><a name="line.1188"></a>
+<span class="sourceLineNo">1189</span>                /**<a name="line.1189"></a>
+<span class="sourceLineNo">1190</span>                 * Creates the date string.<a name="line.1190"></a>
+<span class="sourceLineNo">1191</span>                 * @return the date string<a name="line.1191"></a>
+<span class="sourceLineNo">1192</span>                 */<a name="line.1192"></a>
+<span class="sourceLineNo">1193</span>                public String write() {<a name="line.1193"></a>
+<span class="sourceLineNo">1194</span>                        if (date == null) {<a name="line.1194"></a>
+<span class="sourceLineNo">1195</span>                                return "";<a name="line.1195"></a>
+<span class="sourceLineNo">1196</span>                        }<a name="line.1196"></a>
+<span class="sourceLineNo">1197</span><a name="line.1197"></a>
+<span class="sourceLineNo">1198</span>                        if (observance) {<a name="line.1198"></a>
+<span class="sourceLineNo">1199</span>                                DateTimeComponents components = date.getRawComponents();<a name="line.1199"></a>
+<span class="sourceLineNo">1200</span>                                if (components == null) {<a name="line.1200"></a>
+<span class="sourceLineNo">1201</span>                                        ICalDateFormat format = extended ? ICalDateFormat.DATE_TIME_EXTENDED_WITHOUT_TZ : ICalDateFormat.DATE_TIME_BASIC_WITHOUT_TZ;<a name="line.1201"></a>
+<span class="sourceLineNo">1202</span>                                        return format.format(date);<a name="line.1202"></a>
+<span class="sourceLineNo">1203</span>                                }<a name="line.1203"></a>
 <span class="sourceLineNo">1204</span><a name="line.1204"></a>
-<span class="sourceLineNo">1205</span>                        if (utc) {<a name="line.1205"></a>
-<span class="sourceLineNo">1206</span>                                ICalDateFormat format = extended ? ICalDateFormat.UTC_TIME_EXTENDED : ICalDateFormat.UTC_TIME_BASIC;<a name="line.1206"></a>
-<span class="sourceLineNo">1207</span>                                return format.format(date);<a name="line.1207"></a>
-<span class="sourceLineNo">1208</span>                        }<a name="line.1208"></a>
-<span class="sourceLineNo">1209</span><a name="line.1209"></a>
-<span class="sourceLineNo">1210</span>                        ICalDateFormat format;<a name="line.1210"></a>
-<span class="sourceLineNo">1211</span>                        TimeZone timezone = this.timezone;<a name="line.1211"></a>
-<span class="sourceLineNo">1212</span>                        if (date.hasTime()) {<a name="line.1212"></a>
-<span class="sourceLineNo">1213</span>                                if (timezone == null) {<a name="line.1213"></a>
-<span class="sourceLineNo">1214</span>                                        format = extended ? ICalDateFormat.UTC_TIME_EXTENDED : ICalDateFormat.UTC_TIME_BASIC;<a name="line.1214"></a>
-<span class="sourceLineNo">1215</span>                                } else {<a name="line.1215"></a>
-<span class="sourceLineNo">1216</span>                                        format = extended ? ICalDateFormat.DATE_TIME_EXTENDED_WITHOUT_TZ : ICalDateFormat.DATE_TIME_BASIC_WITHOUT_TZ;<a name="line.1216"></a>
-<span class="sourceLineNo">1217</span>                                }<a name="line.1217"></a>
-<span class="sourceLineNo">1218</span>                        } else {<a name="line.1218"></a>
-<span class="sourceLineNo">1219</span>                                format = extended ? ICalDateFormat.DATE_EXTENDED : ICalDateFormat.DATE_BASIC;<a name="line.1219"></a>
-<span class="sourceLineNo">1220</span>                                timezone = null;<a name="line.1220"></a>
-<span class="sourceLineNo">1221</span>                        }<a name="line.1221"></a>
-<span class="sourceLineNo">1222</span><a name="line.1222"></a>
-<span class="sourceLineNo">1223</span>                        return format.format(date, timezone);<a name="line.1223"></a>
-<span class="sourceLineNo">1224</span>                }<a name="line.1224"></a>
-<span class="sourceLineNo">1225</span>        }<a name="line.1225"></a>
-<span class="sourceLineNo">1226</span><a name="line.1226"></a>
-<span class="sourceLineNo">1227</span>        /**<a name="line.1227"></a>
-<span class="sourceLineNo">1228</span>         * Adds a TZID parameter to a property's parameter list if necessary.<a name="line.1228"></a>
-<span class="sourceLineNo">1229</span>         * @param property the property<a name="line.1229"></a>
-<span class="sourceLineNo">1230</span>         * @param hasTime true if the property value has a time component, false if<a name="line.1230"></a>
-<span class="sourceLineNo">1231</span>         * not<a name="line.1231"></a>
-<span class="sourceLineNo">1232</span>         * @param context the write context<a name="line.1232"></a>
-<span class="sourceLineNo">1233</span>         * @return the property's new set of parameters<a name="line.1233"></a>
-<span class="sourceLineNo">1234</span>         */<a name="line.1234"></a>
-<span class="sourceLineNo">1235</span>        protected static ICalParameters handleTzidParameter(ICalProperty property, boolean hasTime, WriteContext context) {<a name="line.1235"></a>
-<span class="sourceLineNo">1236</span>                ICalParameters parameters = property.getParameters();<a name="line.1236"></a>
-<span class="sourceLineNo">1237</span><a name="line.1237"></a>
-<span class="sourceLineNo">1238</span>                //date values don't have timezones<a name="line.1238"></a>
-<span class="sourceLineNo">1239</span>                if (!hasTime) {<a name="line.1239"></a>
-<span class="sourceLineNo">1240</span>                        return parameters;<a name="line.1240"></a>
-<span class="sourceLineNo">1241</span>                }<a name="line.1241"></a>
-<span class="sourceLineNo">1242</span><a name="line.1242"></a>
-<span class="sourceLineNo">1243</span>                //vCal doesn't use the TZID parameter<a name="line.1243"></a>
-<span class="sourceLineNo">1244</span>                if (context.getVersion() == ICalVersion.V1_0) {<a name="line.1244"></a>
-<span class="sourceLineNo">1245</span>                        return parameters;<a name="line.1245"></a>
-<span class="sourceLineNo">1246</span>                }<a name="line.1246"></a>
-<span class="sourceLineNo">1247</span><a name="line.1247"></a>
-<span class="sourceLineNo">1248</span>                //floating values don't have timezones<a name="line.1248"></a>
-<span class="sourceLineNo">1249</span>                TimezoneInfo tzinfo = context.getTimezoneInfo();<a name="line.1249"></a>
-<span class="sourceLineNo">1250</span>                boolean floating = tzinfo.isFloating(property);<a name="line.1250"></a>
-<span class="sourceLineNo">1251</span>                if (floating) {<a name="line.1251"></a>
-<span class="sourceLineNo">1252</span>                        return parameters;<a name="line.1252"></a>
-<span class="sourceLineNo">1253</span>                }<a name="line.1253"></a>
-<span class="sourceLineNo">1254</span><a name="line.1254"></a>
-<span class="sourceLineNo">1255</span>                //property is being formatted in UTC<a name="line.1255"></a>
-<span class="sourceLineNo">1256</span>                TimeZone timezone = tzinfo.getTimeZoneToWriteIn(property);<a name="line.1256"></a>
-<span class="sourceLineNo">1257</span>                if (timezone == null) {<a name="line.1257"></a>
-<span class="sourceLineNo">1258</span>                        return parameters;<a name="line.1258"></a>
-<span class="sourceLineNo">1259</span>                }<a name="line.1259"></a>
-<span class="sourceLineNo">1260</span><a name="line.1260"></a>
-<span class="sourceLineNo">1261</span>                String id = (tzinfo.hasSolidusTimezone(property) ? "/" : "") + timezone.getID();<a name="line.1261"></a>
-<span class="sourceLineNo">1262</span>                parameters = new ICalParameters(parameters);<a name="line.1262"></a>
-<span class="sourceLineNo">1263</span>                parameters.setTimezoneId(id);<a name="line.1263"></a>
-<span class="sourceLineNo">1264</span>                return parameters;<a name="line.1264"></a>
-<span class="sourceLineNo">1265</span>        }<a name="line.1265"></a>
-<span class="sourceLineNo">1266</span><a name="line.1266"></a>
-<span class="sourceLineNo">1267</span>        /**<a name="line.1267"></a>
-<span class="sourceLineNo">1268</span>         * Creates a {@link CannotParseException}, indicating that the XML elements<a name="line.1268"></a>
-<span class="sourceLineNo">1269</span>         * that the parser expected to find are missing from the property's XML<a name="line.1269"></a>
-<span class="sourceLineNo">1270</span>         * element.<a name="line.1270"></a>
-<span class="sourceLineNo">1271</span>         * @param dataTypes the expected data types (null for "unknown")<a name="line.1271"></a>
-<span class="sourceLineNo">1272</span>         */<a name="line.1272"></a>
-<span class="sourceLineNo">1273</span>        protected static CannotParseException missingXmlElements(ICalDataType... dataTypes) {<a name="line.1273"></a>
-<span class="sourceLineNo">1274</span>                String[] elements = new String[dataTypes.length];<a name="line.1274"></a>
-<span class="sourceLineNo">1275</span>                for (int i = 0; i &lt; dataTypes.length; i++) {<a name="line.1275"></a>
-<span class="sourceLineNo">1276</span>                        ICalDataType dataType = dataTypes[i];<a name="line.1276"></a>
-<span class="sourceLineNo">1277</span>                        elements[i] = (dataType == null) ? "unknown" : dataType.getName().toLowerCase();<a name="line.1277"></a>
-<span class="sourceLineNo">1278</span>                }<a name="line.1278"></a>
-<span class="sourceLineNo">1279</span>                return missingXmlElements(elements);<a name="line.1279"></a>
-<span class="sourceLineNo">1280</span>        }<a name="line.1280"></a>
-<span class="sourceLineNo">1281</span><a name="line.1281"></a>
-<span class="sourceLineNo">1282</span>        /**<a name="line.1282"></a>
-<span class="sourceLineNo">1283</span>         * Creates a {@link CannotParseException}, indicating that the XML elements<a name="line.1283"></a>
-<span class="sourceLineNo">1284</span>         * that the parser expected to find are missing from property's XML element.<a name="line.1284"></a>
-<span class="sourceLineNo">1285</span>         * @param elements the names of the expected XML elements.<a name="line.1285"></a>
-<span class="sourceLineNo">1286</span>         */<a name="line.1286"></a>
-<span class="sourceLineNo">1287</span>        protected static CannotParseException missingXmlElements(String... elements) {<a name="line.1287"></a>
-<span class="sourceLineNo">1288</span>                return new CannotParseException(23, Arrays.toString(elements));<a name="line.1288"></a>
-<span class="sourceLineNo">1289</span>        }<a name="line.1289"></a>
-<span class="sourceLineNo">1290</span><a name="line.1290"></a>
-<span class="sourceLineNo">1291</span>        /**<a name="line.1291"></a>
-<span class="sourceLineNo">1292</span>         * Represents the result of an unmarshal operation.<a name="line.1292"></a>
-<span class="sourceLineNo">1293</span>         * @author Michael Angstadt<a name="line.1293"></a>
-<span class="sourceLineNo">1294</span>         * @param &lt;T&gt; the unmarshalled property class<a name="line.1294"></a>
-<span class="sourceLineNo">1295</span>         */<a name="line.1295"></a>
-<span class="sourceLineNo">1296</span>        public static class Result&lt;T&gt; {<a name="line.1296"></a>
-<span class="sourceLineNo">1297</span>                private final T property;<a name="line.1297"></a>
-<span class="sourceLineNo">1298</span>                private final List&lt;Warning&gt; warnings;<a name="line.1298"></a>
-<span class="sourceLineNo">1299</span><a name="line.1299"></a>
-<span class="sourceLineNo">1300</span>                /**<a name="line.1300"></a>
-<span class="sourceLineNo">1301</span>                 * Creates a new result.<a name="line.1301"></a>
-<span class="sourceLineNo">1302</span>                 * @param property the property object<a name="line.1302"></a>
-<span class="sourceLineNo">1303</span>                 * @param warnings the warnings<a name="line.1303"></a>
-<span class="sourceLineNo">1304</span>                 */<a name="line.1304"></a>
-<span class="sourceLineNo">1305</span>                public Result(T property, List&lt;Warning&gt; warnings) {<a name="line.1305"></a>
-<span class="sourceLineNo">1306</span>                        this.property = property;<a name="line.1306"></a>
-<span class="sourceLineNo">1307</span>                        this.warnings = warnings;<a name="line.1307"></a>
-<span class="sourceLineNo">1308</span>                }<a name="line.1308"></a>
-<span class="sourceLineNo">1309</span><a name="line.1309"></a>
-<span class="sourceLineNo">1310</span>                /**<a name="line.1310"></a>
-<span class="sourceLineNo">1311</span>                 * Gets the warnings.<a name="line.1311"></a>
-<span class="sourceLineNo">1312</span>                 * @return the warnings<a name="line.1312"></a>
-<span class="sourceLineNo">1313</span>                 */<a name="line.1313"></a>
-<span class="sourceLineNo">1314</span>                public List&lt;Warning&gt; getWarnings() {<a name="line.1314"></a>
-<span class="sourceLineNo">1315</span>                        return warnings;<a name="line.1315"></a>
-<span class="sourceLineNo">1316</span>                }<a name="line.1316"></a>
-<span class="sourceLineNo">1317</span><a name="line.1317"></a>
-<span class="sourceLineNo">1318</span>                /**<a name="line.1318"></a>
-<span class="sourceLineNo">1319</span>                 * Gets the property object.<a name="line.1319"></a>
-<span class="sourceLineNo">1320</span>                 * @return the property object<a name="line.1320"></a>
-<span class="sourceLineNo">1321</span>                 */<a name="line.1321"></a>
-<span class="sourceLineNo">1322</span>                public T getProperty() {<a name="line.1322"></a>
-<span class="sourceLineNo">1323</span>                        return property;<a name="line.1323"></a>
-<span class="sourceLineNo">1324</span>                }<a name="line.1324"></a>
-<span class="sourceLineNo">1325</span>        }<a name="line.1325"></a>
-<span class="sourceLineNo">1326</span>}<a name="line.1326"></a>
+<span class="sourceLineNo">1205</span>                                return components.toString(true, extended);<a name="line.1205"></a>
+<span class="sourceLineNo">1206</span>                        }<a name="line.1206"></a>
+<span class="sourceLineNo">1207</span><a name="line.1207"></a>
+<span class="sourceLineNo">1208</span>                        if (utc) {<a name="line.1208"></a>
+<span class="sourceLineNo">1209</span>                                ICalDateFormat format = extended ? ICalDateFormat.UTC_TIME_EXTENDED : ICalDateFormat.UTC_TIME_BASIC;<a name="line.1209"></a>
+<span class="sourceLineNo">1210</span>                                return format.format(date);<a name="line.1210"></a>
+<span class="sourceLineNo">1211</span>                        }<a name="line.1211"></a>
+<span class="sourceLineNo">1212</span><a name="line.1212"></a>
+<span class="sourceLineNo">1213</span>                        ICalDateFormat format;<a name="line.1213"></a>
+<span class="sourceLineNo">1214</span>                        TimeZone timezone = this.timezone;<a name="line.1214"></a>
+<span class="sourceLineNo">1215</span>                        if (date.hasTime()) {<a name="line.1215"></a>
+<span class="sourceLineNo">1216</span>                                if (timezone == null) {<a name="line.1216"></a>
+<span class="sourceLineNo">1217</span>                                        format = extended ? ICalDateFormat.UTC_TIME_EXTENDED : ICalDateFormat.UTC_TIME_BASIC;<a name="line.1217"></a>
+<span class="sourceLineNo">1218</span>                                } else {<a name="line.1218"></a>
+<span class="sourceLineNo">1219</span>                                        format = extended ? ICalDateFormat.DATE_TIME_EXTENDED_WITHOUT_TZ : ICalDateFormat.DATE_TIME_BASIC_WITHOUT_TZ;<a name="line.1219"></a>
+<span class="sourceLineNo">1220</span>                                }<a name="line.1220"></a>
+<span class="sourceLineNo">1221</span>                        } else {<a name="line.1221"></a>
+<span class="sourceLineNo">1222</span>                                format = extended ? ICalDateFormat.DATE_EXTENDED : ICalDateFormat.DATE_BASIC;<a name="line.1222"></a>
+<span class="sourceLineNo">1223</span>                                timezone = null;<a name="line.1223"></a>
+<span class="sourceLineNo">1224</span>                        }<a name="line.1224"></a>
+<span class="sourceLineNo">1225</span><a name="line.1225"></a>
+<span class="sourceLineNo">1226</span>                        return format.format(date, timezone);<a name="line.1226"></a>
+<span class="sourceLineNo">1227</span>                }<a name="line.1227"></a>
+<span class="sourceLineNo">1228</span>        }<a name="line.1228"></a>
+<span class="sourceLineNo">1229</span><a name="line.1229"></a>
+<span class="sourceLineNo">1230</span>        /**<a name="line.1230"></a>
+<span class="sourceLineNo">1231</span>         * Adds a TZID parameter to a property's parameter list if necessary.<a name="line.1231"></a>
+<span class="sourceLineNo">1232</span>         * @param property the property<a name="line.1232"></a>
+<span class="sourceLineNo">1233</span>         * @param hasTime true if the property value has a time component, false if<a name="line.1233"></a>
+<span class="sourceLineNo">1234</span>         * not<a name="line.1234"></a>
+<span class="sourceLineNo">1235</span>         * @param context the write context<a name="line.1235"></a>
+<span class="sourceLineNo">1236</span>         * @return the property's new set of parameters<a name="line.1236"></a>
+<span class="sourceLineNo">1237</span>         */<a name="line.1237"></a>
+<span class="sourceLineNo">1238</span>        protected static ICalParameters handleTzidParameter(ICalProperty property, boolean hasTime, WriteContext context) {<a name="line.1238"></a>
+<span class="sourceLineNo">1239</span>                ICalParameters parameters = property.getParameters();<a name="line.1239"></a>
+<span class="sourceLineNo">1240</span><a name="line.1240"></a>
+<span class="sourceLineNo">1241</span>                //date values don't have timezones<a name="line.1241"></a>
+<span class="sourceLineNo">1242</span>                if (!hasTime) {<a name="line.1242"></a>
+<span class="sourceLineNo">1243</span>                        return parameters;<a name="line.1243"></a>
+<span class="sourceLineNo">1244</span>                }<a name="line.1244"></a>
+<span class="sourceLineNo">1245</span><a name="line.1245"></a>
+<span class="sourceLineNo">1246</span>                //vCal doesn't use the TZID parameter<a name="line.1246"></a>
+<span class="sourceLineNo">1247</span>                if (context.getVersion() == ICalVersion.V1_0) {<a name="line.1247"></a>
+<span class="sourceLineNo">1248</span>                        return parameters;<a name="line.1248"></a>
+<span class="sourceLineNo">1249</span>                }<a name="line.1249"></a>
+<span class="sourceLineNo">1250</span><a name="line.1250"></a>
+<span class="sourceLineNo">1251</span>                //floating values don't have timezones<a name="line.1251"></a>
+<span class="sourceLineNo">1252</span>                TimezoneInfo tzinfo = context.getTimezoneInfo();<a name="line.1252"></a>
+<span class="sourceLineNo">1253</span>                boolean floating = tzinfo.isFloating(property);<a name="line.1253"></a>
+<span class="sourceLineNo">1254</span>                if (floating) {<a name="line.1254"></a>
+<span class="sourceLineNo">1255</span>                        return parameters;<a name="line.1255"></a>
+<span class="sourceLineNo">1256</span>                }<a name="line.1256"></a>
+<span class="sourceLineNo">1257</span><a name="line.1257"></a>
+<span class="sourceLineNo">1258</span>                //property is being formatted in UTC<a name="line.1258"></a>
+<span class="sourceLineNo">1259</span>                TimeZone timezone = tzinfo.getTimeZoneToWriteIn(property);<a name="line.1259"></a>
+<span class="sourceLineNo">1260</span>                if (timezone == null) {<a name="line.1260"></a>
+<span class="sourceLineNo">1261</span>                        return parameters;<a name="line.1261"></a>
+<span class="sourceLineNo">1262</span>                }<a name="line.1262"></a>
+<span class="sourceLineNo">1263</span><a name="line.1263"></a>
+<span class="sourceLineNo">1264</span>                String id = (tzinfo.hasSolidusTimezone(property) ? "/" : "") + timezone.getID();<a name="line.1264"></a>
+<span class="sourceLineNo">1265</span>                parameters = new ICalParameters(parameters);<a name="line.1265"></a>
+<span class="sourceLineNo">1266</span>                parameters.setTimezoneId(id);<a name="line.1266"></a>
+<span class="sourceLineNo">1267</span>                return parameters;<a name="line.1267"></a>
+<span class="sourceLineNo">1268</span>        }<a name="line.1268"></a>
+<span class="sourceLineNo">1269</span><a name="line.1269"></a>
+<span class="sourceLineNo">1270</span>        /**<a name="line.1270"></a>
+<span class="sourceLineNo">1271</span>         * Creates a {@link CannotParseException}, indicating that the XML elements<a name="line.1271"></a>
+<span class="sourceLineNo">1272</span>         * that the parser expected to find are missing from the property's XML<a name="line.1272"></a>
+<span class="sourceLineNo">1273</span>         * element.<a name="line.1273"></a>
+<span class="sourceLineNo">1274</span>         * @param dataTypes the expected data types (null for "unknown")<a name="line.1274"></a>
+<span class="sourceLineNo">1275</span>         */<a name="line.1275"></a>
+<span class="sourceLineNo">1276</span>        protected static CannotParseException missingXmlElements(ICalDataType... dataTypes) {<a name="line.1276"></a>
+<span class="sourceLineNo">1277</span>                String[] elements = new String[dataTypes.length];<a name="line.1277"></a>
+<span class="sourceLineNo">1278</span>                for (int i = 0; i &lt; dataTypes.length; i++) {<a name="line.1278"></a>
+<span class="sourceLineNo">1279</span>                        ICalDataType dataType = dataTypes[i];<a name="line.1279"></a>
+<span class="sourceLineNo">1280</span>                        elements[i] = (dataType == null) ? "unknown" : dataType.getName().toLowerCase();<a name="line.1280"></a>
+<span class="sourceLineNo">1281</span>                }<a name="line.1281"></a>
+<span class="sourceLineNo">1282</span>                return missingXmlElements(elements);<a name="line.1282"></a>
+<span class="sourceLineNo">1283</span>        }<a name="line.1283"></a>
+<span class="sourceLineNo">1284</span><a name="line.1284"></a>
+<span class="sourceLineNo">1285</span>        /**<a name="line.1285"></a>
+<span class="sourceLineNo">1286</span>         * Creates a {@link CannotParseException}, indicating that the XML elements<a name="line.1286"></a>
+<span class="sourceLineNo">1287</span>         * that the parser expected to find are missing from property's XML element.<a name="line.1287"></a>
+<span class="sourceLineNo">1288</span>         * @param elements the names of the expected XML elements.<a name="line.1288"></a>
+<span class="sourceLineNo">1289</span>         */<a name="line.1289"></a>
+<span class="sourceLineNo">1290</span>        protected static CannotParseException missingXmlElements(String... elements) {<a name="line.1290"></a>
+<span class="sourceLineNo">1291</span>                return new CannotParseException(23, Arrays.toString(elements));<a name="line.1291"></a>
+<span class="sourceLineNo">1292</span>        }<a name="line.1292"></a>
+<span class="sourceLineNo">1293</span><a name="line.1293"></a>
+<span class="sourceLineNo">1294</span>        /**<a name="line.1294"></a>
+<span class="sourceLineNo">1295</span>         * Represents the result of an unmarshal operation.<a name="line.1295"></a>
+<span class="sourceLineNo">1296</span>         * @author Michael Angstadt<a name="line.1296"></a>
+<span class="sourceLineNo">1297</span>         * @param &lt;T&gt; the unmarshalled property class<a name="line.1297"></a>
+<span class="sourceLineNo">1298</span>         */<a name="line.1298"></a>
+<span class="sourceLineNo">1299</span>        public static class Result&lt;T&gt; {<a name="line.1299"></a>
+<span class="sourceLineNo">1300</span>                private final T property;<a name="line.1300"></a>
+<span class="sourceLineNo">1301</span>                private final List&lt;Warning&gt; warnings;<a name="line.1301"></a>
+<span class="sourceLineNo">1302</span><a name="line.1302"></a>
+<span class="sourceLineNo">1303</span>                /**<a name="line.1303"></a>
+<span class="sourceLineNo">1304</span>                 * Creates a new result.<a name="line.1304"></a>
+<span class="sourceLineNo">1305</span>                 * @param property the property object<a name="line.1305"></a>
+<span class="sourceLineNo">1306</span>                 * @param warnings the warnings<a name="line.1306"></a>
+<span class="sourceLineNo">1307</span>                 */<a name="line.1307"></a>
+<span class="sourceLineNo">1308</span>                public Result(T property, List&lt;Warning&gt; warnings) {<a name="line.1308"></a>
+<span class="sourceLineNo">1309</span>                        this.property = property;<a name="line.1309"></a>
+<span class="sourceLineNo">1310</span>                        this.warnings = warnings;<a name="line.1310"></a>
+<span class="sourceLineNo">1311</span>                }<a name="line.1311"></a>
+<span class="sourceLineNo">1312</span><a name="line.1312"></a>
+<span class="sourceLineNo">1313</span>                /**<a name="line.1313"></a>
+<span class="sourceLineNo">1314</span>                 * Gets the warnings.<a name="line.1314"></a>
+<span class="sourceLineNo">1315</span>                 * @return the warnings<a name="line.1315"></a>
+<span class="sourceLineNo">1316</span>                 */<a name="line.1316"></a>
+<span class="sourceLineNo">1317</span>                public List&lt;Warning&gt; getWarnings() {<a name="line.1317"></a>
+<span class="sourceLineNo">1318</span>                        return warnings;<a name="line.1318"></a>
+<span class="sourceLineNo">1319</span>                }<a name="line.1319"></a>
+<span class="sourceLineNo">1320</span><a name="line.1320"></a>
+<span class="sourceLineNo">1321</span>                /**<a name="line.1321"></a>
+<span class="sourceLineNo">1322</span>                 * Gets the property object.<a name="line.1322"></a>
+<span class="sourceLineNo">1323</span>                 * @return the property object<a name="line.1323"></a>
+<span class="sourceLineNo">1324</span>                 */<a name="line.1324"></a>
+<span class="sourceLineNo">1325</span>                public T getProperty() {<a name="line.1325"></a>
+<span class="sourceLineNo">1326</span>                        return property;<a name="line.1326"></a>
+<span class="sourceLineNo">1327</span>                }<a name="line.1327"></a>
+<span class="sourceLineNo">1328</span>        }<a name="line.1328"></a>
+<span class="sourceLineNo">1329</span>}<a name="line.1329"></a>
 
 
 
