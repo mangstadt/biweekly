@@ -29,17 +29,16 @@ import java.util.UUID;
 
 /**
  * <p>
- * Defines a unique identifier for a component. Note that all components are
- * automatically given random UIDs on creation.
+ * Defines a unique identifier for a component. Note that all components that
+ * require UID properties are automatically given a random one on creation.
  * </p>
  * <p>
  * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
- * //all components are given random UIDs on creation
  * 
- * Uid uid = new Uid(&quot;...&quot;);
+ * Uid uid = new Uid(&quot;19970610T172345Z-AF23B2@example.com&quot;);
  * event.setUid(uid);
  * </pre>
  * 
@@ -54,7 +53,7 @@ import java.util.UUID;
 public class Uid extends TextProperty {
 	/**
 	 * Creates a UID property.
-	 * @param uid the UID
+	 * @param uid the UID (can be anything)
 	 */
 	public Uid(String uid) {
 		super(uid);
@@ -69,7 +68,8 @@ public class Uid extends TextProperty {
 	}
 
 	/**
-	 * Creates a UID property that contains a random UID.
+	 * Creates a UID property that contains a {@link UUID universally unique
+	 * identifier}.
 	 * @return the property
 	 */
 	public static Uid random() {
