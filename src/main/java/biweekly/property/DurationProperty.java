@@ -75,4 +75,9 @@ public class DurationProperty extends ValuedProperty<Duration> {
 	public DurationProperty(DurationProperty original) {
 		super(original);
 	}
+
+	@Override
+	public DurationProperty copy() {
+		return new DurationProperty(this);
+	}
 }
