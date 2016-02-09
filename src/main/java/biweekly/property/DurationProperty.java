@@ -62,7 +62,7 @@ import biweekly.util.Duration;
 public class DurationProperty extends ValuedProperty<Duration> {
 	/**
 	 * Creates a duration property.
-	 * @param duration the duration value (e.g. "2 hours nad 30 minutes")
+	 * @param duration the duration value (e.g. "2 hours and 30 minutes")
 	 */
 	public DurationProperty(Duration duration) {
 		super(duration);
