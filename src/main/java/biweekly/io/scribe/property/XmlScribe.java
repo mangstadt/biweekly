@@ -81,8 +81,11 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 
 	@Override
 	protected void _writeXml(Xml property, XCalElement element, WriteContext context) {
+		/*
+		 * Note: Xml properties are handled as a special case when writing xCal
+		 * documents, so this method should never get called.
+		 */
 		super._writeXml(property, element, context);
-		//Xml properties are handled as a special case when writing xCal documents, so this method should never get called (see: "XCalDocument" class)
 	}
 
 	@Override
