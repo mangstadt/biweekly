@@ -1,5 +1,7 @@
 package biweekly.property;
 
+import biweekly.ICalendar;
+
 /*
  Copyright (c) 2013-2015, Michael Angstadt
  All rights reserved.
@@ -32,6 +34,13 @@ package biweekly.property;
  * the {@link Summary} property.
  * </p>
  * <p>
+ * If defined in the top-level {@link ICalendar} component, it contains a
+ * detailed description of the calendar as a whole. An iCalendar object can only
+ * have one description, but multiple Description properties can exist in order
+ * to specify the description in multiple languages. In this case, each property
+ * instance must be assigned a LANGUAGE parameter.
+ * </p>
+ * <p>
  * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
@@ -47,6 +56,9 @@ package biweekly.property;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545 p.84-5</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-81">RFC 2445 p.81-2</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.30</a>
+ * @see <a
+ * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+ * p.6</a>
  */
 public class Description extends TextProperty {
 	/**

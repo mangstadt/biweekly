@@ -2,14 +2,10 @@ package biweekly.io.scribe.property;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
-import biweekly.parameter.Encoding;
-import biweekly.parameter.ICalParameters;
 import biweekly.property.Attachment;
-import biweekly.util.org.apache.commons.codec.binary.Base64;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -40,129 +36,102 @@ import biweekly.util.org.apache.commons.codec.binary.Base64;
  * Marshals {@link Attachment} properties.
  * @author Michael Angstadt
  */
-public class AttachmentScribe extends ICalPropertyScribe<Attachment> {
+public class AttachmentScribe extends BinaryPropertyScribe<Attachment> {
 	public AttachmentScribe() {
-		super(Attachment.class, "ATTACH", ICalDataType.URI);
-	}
-
-	@Override
-	protected ICalParameters _prepareParameters(Attachment property, WriteContext context) {
-		ICalParameters copy = new ICalParameters(property.getParameters());
-
-		if (property.getUri() != null) {
-			copy.setEncoding(null);
-		} else if (property.getData() != null) {
-			copy.setEncoding(Encoding.BASE64);
-		}
-
-		return copy;
+		super(Attachment.class, "ATTACH");
 	}
 
 	@Override
 	protected ICalDataType _dataType(Attachment property, ICalVersion version) {
-		if (property.getUri() != null) {
-			return (version == ICalVersion.V1_0) ? ICalDataType.URL : ICalDataType.URI;
-		}
-		if (property.getData() != null) {
-			return ICalDataType.BINARY;
-		}
 		if (property.getContentId() != null) {
 			return (version == ICalVersion.V1_0) ? ICalDataType.CONTENT_ID : ICalDataType.URI;
 		}
-		return defaultDataType(version);
+		return super._dataType(property, version);
 	}
 
 	@Override
-	protected String _writeText(Attachment property, WriteContext context) {
-		String uri = property.getUri();
-		if (uri != null) {
-			return uri;
+	protected Attachment newInstance(byte[] data) {
+		/*
+		 * Note: "formatType" will be set when the parameters are assigned to
+		 * the property object.
+		 */
+		return new Attachment(null, data);
+	}
+
+	@Override
+	protected Attachment newInstance(String value, ICalDataType dataType) {
+		/*
+		 * Note: "formatType" will be set when the parameters are assigned to
+		 * the property object.
+		 */
+
+		if (dataType == ICalDataType.CONTENT_ID) {
+			String contentId = getCidUriValue(value);
+			if (contentId == null) {
+				contentId = value;
+			}
+			Attachment attach = new Attachment(null, (String) null);
+			attach.setContentId(contentId);
+			return attach;
 		}
 
-		byte data[] = property.getData();
-		if (data != null) {
-			return Base64.encodeBase64String(data);
-		}
-
-		String contentId = property.getContentId();
+		String contentId = getCidUriValue(value);
 		if (contentId != null) {
-			return (context.getVersion() == ICalVersion.V1_0) ? contentId : "CID:" + contentId;
+			Attachment attach = new Attachment(null, (String) null);
+			attach.setContentId(contentId);
+			return attach;
 		}
 
-		return "";
-	}
-
-	@Override
-	protected Attachment _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		value = unescape(value);
-
-		if (dataType == ICalDataType.BINARY || parameters.getEncoding() == Encoding.BASE64) {
-			//remove the folding whitespace left over from improperly-folded lines
-			value = removeWhitespace(value);
-
-			return new Attachment(null, Base64.decodeBase64(value));
-		}
 		return new Attachment(null, value);
 	}
 
 	@Override
-	protected void _writeXml(Attachment property, XCalElement element, WriteContext context) {
-		String uri = property.getUri();
-		if (uri != null) {
-			element.append(ICalDataType.URI, uri);
-			return;
+	protected String _writeText(Attachment property, WriteContext context) {
+		String contentId = property.getContentId();
+		if (contentId != null) {
+			return (context.getVersion() == ICalVersion.V1_0) ? '<' + contentId + '>' : "cid:" + contentId;
 		}
 
-		byte data[] = property.getData();
-		if (data != null) {
-			element.append(ICalDataType.BINARY, Base64.encodeBase64String(data));
-			return;
-		}
-
-		element.append(defaultDataType(context.getVersion()), "");
+		return super._writeText(property, context);
 	}
 
 	@Override
-	protected Attachment _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
-		String uri = element.first(ICalDataType.URI);
-		if (uri != null) {
-			return new Attachment(null, uri);
+	protected void _writeXml(Attachment property, XCalElement element, WriteContext context) {
+		String contentId = property.getContentId();
+		if (contentId != null) {
+			element.append(ICalDataType.URI, "cid:" + contentId);
+			return;
 		}
 
-		String base64Data = element.first(ICalDataType.BINARY);
-		if (base64Data != null) {
-			return new Attachment(null, Base64.decodeBase64(base64Data)); //formatType will be set when the parameters are assigned to the property object
-		}
-
-		throw missingXmlElements(ICalDataType.URI, ICalDataType.BINARY);
+		super._writeXml(property, element, context);
 	}
 
 	@Override
 	protected JCalValue _writeJson(Attachment property, WriteContext context) {
-		String uri = property.getUri();
-		if (uri != null) {
-			return JCalValue.single(uri);
+		String contentId = property.getContentId();
+		if (contentId != null) {
+			return JCalValue.single("cid:" + contentId);
 		}
 
-		byte data[] = property.getData();
-		if (data != null) {
-			return JCalValue.single(Base64.encodeBase64String(data));
-		}
-
-		return JCalValue.single("");
+		return super._writeJson(property, context);
 	}
 
-	@Override
-	protected Attachment _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		String valueStr = value.asSingle();
-
-		if (dataType == ICalDataType.BINARY) {
-			return new Attachment(null, Base64.decodeBase64(valueStr));
+	/**
+	 * Gets the value of the given "cid" URI.
+	 * @param uri the "cid" URI
+	 * @return the URI value or null if the given string is not a "cid" URI
+	 */
+	private static String getCidUriValue(String uri) {
+		int colon = uri.indexOf(':');
+		if (colon == 3) {
+			String scheme = uri.substring(0, colon);
+			return "cid".equalsIgnoreCase(scheme) ? uri.substring(colon + 1) : null;
 		}
-		return new Attachment(null, valueStr);
-	}
 
-	private String removeWhitespace(String base64) {
-		return base64.replaceAll("[ \\t]", "");
+		if (uri.length() > 0 && uri.charAt(0) == '<' && uri.charAt(uri.length() - 1) == '>') {
+			return uri.substring(1, uri.length() - 1);
+		}
+
+		return null;
 	}
 }

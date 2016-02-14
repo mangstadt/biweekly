@@ -54,12 +54,9 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 	private final Attendee withEmail = new Attendee(null, email);
 	private final Attendee withName = new Attendee(name, null);
 	private final Attendee withNameEmail = new Attendee(name, email);
-	private final Attendee withNameEmailUri = new Attendee(name, email);
-	{
-		withNameEmailUri.setUri(uri);
-	}
+	private final Attendee withNameEmailUri = new Attendee(name, email, uri);
 
-	private final Attendee withRoleUri = new Attendee(uri);
+	private final Attendee withRoleUri = new Attendee(null, null, uri);
 	{
 		withRoleUri.setRole(Role.ATTENDEE);
 	}
@@ -75,8 +72,14 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 	}
 
 	@Test
+	public void prepareParameters_email() {
+		sensei.assertPrepareParams(withNameEmailUri).versions(V1_0).run();
+		sensei.assertPrepareParams(withNameEmailUri).versions(V2_0_DEPRECATED, V2_0).expected("CN", name).expected("EMAIL", email).run();
+	}
+
+	@Test
 	public void prepareParameters_rsvp() {
-		Attendee property = new Attendee(uri);
+		Attendee property = new Attendee(null, null, uri);
 
 		property.setRsvp(true);
 		sensei.assertPrepareParams(property).versions(V1_0).expected("RSVP", "YES").run();
@@ -89,7 +92,7 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 
 	@Test
 	public void prepareParameters_level() {
-		Attendee property = new Attendee(uri);
+		Attendee property = new Attendee(null, null, uri);
 		property.setParticipationLevel(ParticipationLevel.OPTIONAL);
 		sensei.assertPrepareParams(property).versions(V1_0).expected("EXPECT", "REQUEST").run();
 		sensei.assertPrepareParams(property).versions(V2_0_DEPRECATED, V2_0).expected("ROLE", "OPT-PARTICIPANT").run();
@@ -97,7 +100,7 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 
 	@Test
 	public void prepareParameters_level_chair_role() {
-		Attendee property = new Attendee(uri);
+		Attendee property = new Attendee(null, null, uri);
 		property.setParticipationLevel(ParticipationLevel.OPTIONAL);
 		property.setRole(Role.CHAIR);
 		sensei.assertPrepareParams(property).versions(V1_0).expected("EXPECT", "REQUEST").expected("ROLE", "CHAIR").run();
@@ -106,14 +109,14 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 
 	@Test
 	public void prepareParameters_role() {
-		Attendee property = new Attendee(uri);
+		Attendee property = new Attendee(null, null, uri);
 		property.setRole(Role.ORGANIZER);
 		sensei.assertPrepareParams(property).expected("ROLE", "ORGANIZER").run();
 	}
 
 	@Test
 	public void prepareParameters_status() {
-		Attendee property = new Attendee(uri);
+		Attendee property = new Attendee(null, null, uri);
 		property.setParticipationStatus(ParticipationStatus.ACCEPTED);
 		sensei.assertPrepareParams(property).versions(V1_0).expected("STATUS", "ACCEPTED").run();
 		sensei.assertPrepareParams(property).versions(V2_0_DEPRECATED, V2_0).expected("PARTSTAT", "ACCEPTED").run();
@@ -121,7 +124,7 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 
 	@Test
 	public void prepareParameters_status_needs_action() {
-		Attendee property = new Attendee(uri);
+		Attendee property = new Attendee(null, null, uri);
 		property.setParticipationStatus(ParticipationStatus.NEEDS_ACTION);
 		sensei.assertPrepareParams(property).versions(V1_0).expected("STATUS", "NEEDS ACTION").run();
 		sensei.assertPrepareParams(property).versions(V2_0_DEPRECATED, V2_0).expected("PARTSTAT", "NEEDS-ACTION").run();
@@ -129,14 +132,14 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 
 	@Test
 	public void dataType() {
-		Attendee property = new Attendee(name, email);
-		sensei.assertDataType(property).versions(V1_0).run(null);
+		Attendee property = new Attendee(name, email, uri);
+		sensei.assertDataType(property).versions(V1_0).run(ICalDataType.URL);
 		sensei.assertDataType(property).versions(V2_0_DEPRECATED, V2_0).run(ICalDataType.CAL_ADDRESS);
 	}
 
 	@Test
 	public void dataType_uri() {
-		Attendee property = new Attendee(uri);
+		Attendee property = new Attendee(null, null, uri);
 		sensei.assertDataType(property).versions(V1_0).run(ICalDataType.URL);
 		sensei.assertDataType(property).versions(V2_0_DEPRECATED, V2_0).run(ICalDataType.CAL_ADDRESS);
 	}
@@ -199,7 +202,7 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		sensei.assertParseText("mallto:" + email).versions(V1_0).run(check(null, "mallto:" + email, null));
 		sensei.assertParseText("mallto:" + email).param("CN", name).versions(V2_0_DEPRECATED, V2_0).run(check(name, null, "mallto:" + email));
 		sensei.assertParseText("http:" + email).versions(V1_0).run(check(null, "http:" + email, null));
-		sensei.assertParseText("http:" + email).param("CN", name).versions(V2_0_DEPRECATED, V2_0).run(check(name, null, "http:" + email));
+		sensei.assertParseText("http:" + email).param("CN", name).param("EMAIL", email).versions(V2_0_DEPRECATED, V2_0).run(check(name, email, "http:" + email));
 	}
 
 	private Check<Attendee> check(final String name, final String email, final String uri) {

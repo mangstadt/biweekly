@@ -11,6 +11,7 @@ import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.Categories;
 import biweekly.property.Classification;
+import biweekly.property.Color;
 import biweekly.property.Comment;
 import biweekly.property.Contact;
 import biweekly.property.Created;
@@ -19,6 +20,7 @@ import biweekly.property.DateTimeStamp;
 import biweekly.property.Description;
 import biweekly.property.ExceptionDates;
 import biweekly.property.ExceptionRule;
+import biweekly.property.Image;
 import biweekly.property.LastModified;
 import biweekly.property.Method;
 import biweekly.property.Organizer;
@@ -968,6 +970,71 @@ public class VJournal extends ICalComponent {
 		addProperty(exceptionRule);
 	}
 
+	/**
+	 * Gets the color that clients may use when displaying the journal entry
+	 * (for example, a background color).
+	 * @return the property or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01
+	 * p.9</a>
+	 */
+	public Color getColor() {
+		return getProperty(Color.class);
+	}
+
+	/**
+	 * Sets the color that clients may use when displaying the journal entry
+	 * (for example, a background color).
+	 * @param color the property or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01
+	 * p.79</a>
+	 */
+	public void setColor(Color color) {
+		setProperty(Color.class, color);
+	}
+
+	/**
+	 * Sets the color that clients may use when displaying the journal entry
+	 * (for example, a background color).
+	 * @param color the color name (case insensitive) or null to remove.
+	 * Acceptable values are defined in <a
+	 * href="https://www.w3.org/TR/2011/REC-css3-color-20110607/#svg-color"
+	 * >Section 4.3 of the CSS Color Module Level 3 Recommendation</a>. For
+	 * example, "aliceblue", "green", "navy".
+	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01
+	 * p.9</a>
+	 */
+	public Color setColor(String color) {
+		Color prop = (color == null) ? null : new Color(color);
+		setColor(prop);
+		return prop;
+	}
+
+	/**
+	 * Gets the images that are associated with the journal entry.
+	 * @return the properties
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-10">draft-ietf-calext-extensions-01
+	 * p.10</a>
+	 */
+	public List<Image> getImages() {
+		return getProperties(Image.class);
+	}
+
+	/**
+	 * Adds an image that is associated with the journal entry.
+	 * @param image the property to add
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-10">draft-ietf-calext-extensions-01
+	 * p.10</a>
+	 */
+	public void addImage(Image image) {
+		addProperty(image);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
@@ -976,7 +1043,7 @@ public class VJournal extends ICalComponent {
 		}
 
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
-		checkOptionalCardinality(warnings, Classification.class, Created.class, DateStart.class, LastModified.class, Organizer.class, RecurrenceId.class, Sequence.class, Status.class, Summary.class, Url.class);
+		checkOptionalCardinality(warnings, Classification.class, Created.class, DateStart.class, LastModified.class, Organizer.class, RecurrenceId.class, Sequence.class, Status.class, Summary.class, Url.class, Color.class);
 		checkStatus(warnings, Status.draft(), Status.final_(), Status.cancelled());
 
 		//DTSTART and RECURRENCE-ID must have the same data type

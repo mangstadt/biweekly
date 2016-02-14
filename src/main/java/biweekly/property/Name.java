@@ -1,6 +1,6 @@
 package biweekly.property;
 
-import java.util.List;
+import biweekly.ICalendar;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -29,57 +29,71 @@ import java.util.List;
 
 /**
  * <p>
- * Defines a list of keywords that describe the component to which it belongs.
+ * Defines a human-readable name for the calendar as a whole.
  * </p>
  * <p>
- * <b>Code sample:</b>
+ * An {@link ICalendar} component can only have one name, but multiple Name
+ * properties can exist in order to specify the name in multiple languages. In
+ * this case, each property instance must be assigned a LANGUAGE parameter.
+ * </p>
+ * <p>
+ * <b>Single language:</b>
  * 
  * <pre class="brush:java">
- * VEvent event = new VEvent();
+ * ICalendar ical = new ICalendar();
  * 
- * Categories categories = new Categories(&quot;conference&quot;, &quot;meeting&quot;);
- * event.addCategories(categories);
+ * Name name = new Name(&quot;Company Vacation Days&quot;);
+ * ical.addName(name);
+ * </pre>
+ * 
+ * </p>
+ * 
+ * <p>
+ * <b>Multiple languages:</b>
+ * 
+ * <pre class="brush:java">
+ * ICalendar ical = new ICalendar();
+ * 
+ * Name englishName = new Name(&quot;Company Vacation Days&quot;);
+ * englishName.setLanguage(&quot;en&quot;);
+ * ical.addName(englishName);
+ * 
+ * Name frenchName = new Name(&quot;Société Jours de Vacances&quot;);
+ * frenchName.setLanguage(&quot;fr&quot;);
+ * ical.addName(frenchName);
  * </pre>
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545 p.81-2</a>
- * @see <a href="http://tools.ietf.org/html/rfc2445#page-78">RFC 2445 p.78-9</a>
- * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.28</a>
  * @see <a
- * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
- * p.7</a>
+ * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-5">draft-ietf-calext-extensions-01
+ * p.5</a>
  */
-public class Categories extends ListProperty<String> {
+public class Name extends TextProperty {
 	/**
-	 * Creates a new categories property.
+	 * Creates a name property.
+	 * @param name the name of the calendar
 	 */
-	public Categories() {
-		super();
-	}
-
-	/**
-	 * Creates a new categories property.
-	 * @param categories the categories to initialize the property with
-	 */
-	public Categories(String... categories) {
-		super(categories);
-	}
-
-	/**
-	 * Creates a new categories property.
-	 * @param categories the categories to initialize the property with
-	 */
-	public Categories(List<String> categories) {
-		super(categories);
+	public Name(String name) {
+		super(name);
 	}
 
 	/**
 	 * Copy constructor.
 	 * @param original the property to make a copy of
 	 */
-	public Categories(Categories original) {
+	public Name(Name original) {
 		super(original);
+	}
+
+	@Override
+	public String getAltRepresentation() {
+		return super.getAltRepresentation();
+	}
+
+	@Override
+	public void setAltRepresentation(String uri) {
+		super.setAltRepresentation(uri);
 	}
 
 	@Override
@@ -93,7 +107,7 @@ public class Categories extends ListProperty<String> {
 	}
 
 	@Override
-	public Categories copy() {
-		return new Categories(this);
+	public Name copy() {
+		return new Name(this);
 	}
 }

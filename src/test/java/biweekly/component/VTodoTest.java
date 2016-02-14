@@ -1,5 +1,8 @@
 package biweekly.component;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
 
@@ -7,8 +10,8 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import static biweekly.ICalVersion.*;
 import biweekly.property.Classification;
+import biweekly.property.Color;
 import biweekly.property.Completed;
 import biweekly.property.Created;
 import biweekly.property.DateDue;
@@ -104,9 +107,11 @@ public class VTodoTest {
 		component.addProperty(new Url(""));
 		component.addProperty(new RecurrenceId(new Date()));
 		component.addProperty(new RecurrenceId(new Date()));
+		component.addProperty(new Color(""));
+		component.addProperty(new Color(""));
 
-		assertValidate(component).versions(V1_0).warn(status1, 46).warn(status2, 46).run(13);
-		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
+		assertValidate(component).versions(V1_0).warn(status1, 46).warn(status2, 46).run(13, 3);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
 	}
 
 	@Test

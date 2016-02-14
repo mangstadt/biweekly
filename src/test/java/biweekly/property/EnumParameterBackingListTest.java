@@ -1,6 +1,13 @@
 package biweekly.property;
 
-import java.util.Date;
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
+
+import biweekly.parameter.Display;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -28,48 +35,38 @@ import java.util.Date;
  */
 
 /**
- * <p>
- * Defines the time that the calendar data in a component was last changed.
- * </p>
- * <p>
- * <b>Code sample:</b>
- * 
- * <pre class="brush:java">
- * VEvent event = new VEvent();
- * 
- * Date datetime = ...
- * LastModified lastModified = new LastModified(datetime);
- * event.setLastModified(lastModified);
- * </pre>
- * 
- * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545 p.138</a>
- * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445 p.131</a>
- * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
- * @see <a
- * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
- * p.7</a>
  */
-public class LastModified extends DateTimeProperty {
-	/**
-	 * Creates a last modified property.
-	 * @param date the date
-	 */
-	public LastModified(Date date) {
-		super(date);
+public class EnumParameterBackingListTest {
+	@Test
+	public void test() {
+		EnumParameterBackingListProperty property = new EnumParameterBackingListProperty();
+		List<Display> display = property.getDisplay();
+
+		display.add(Display.BADGE);
+		assertEquals(Arrays.asList("BADGE"), property.getParameters().get("DISPLAY"));
+
+		display.add(Display.FULLSIZE);
+		assertEquals(Arrays.asList("BADGE", "FULLSIZE"), property.getParameters().get("DISPLAY"));
+
+		property.getParameters().removeAll("DISPLAY");
+		assertEquals(Arrays.asList(), display);
+
+		display.add(Display.BADGE);
+		assertEquals(Arrays.asList("BADGE"), property.getParameters().get("DISPLAY"));
+
+		display.clear();
+		assertEquals(Arrays.asList(), property.getParameters().get("DISPLAY"));
 	}
 
-	/**
-	 * Copy constructor.
-	 * @param original the property to make a copy of
-	 */
-	public LastModified(LastModified original) {
-		super(original);
-	}
-
-	@Override
-	public LastModified copy() {
-		return new LastModified(this);
+	private static class EnumParameterBackingListProperty extends ICalProperty {
+		public List<Display> getDisplay() {
+			return new EnumParameterBackingList<Display>("DISPLAY") {
+				@Override
+				protected Display get(String parameterValue) {
+					return Display.get(parameterValue);
+				}
+			};
+		}
 	}
 }

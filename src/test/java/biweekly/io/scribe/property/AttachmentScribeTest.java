@@ -87,70 +87,85 @@ public class AttachmentScribeTest extends ScribeTest<Attachment> {
 	public void writeText() {
 		sensei.assertWriteText(withUrl).run(url);
 		sensei.assertWriteText(withData).run(base64Data);
-		sensei.assertWriteText(withContentId).version(V1_0).run(contentId);
-		sensei.assertWriteText(withContentId).version(V2_0_DEPRECATED).run("CID:" + contentId);
-		sensei.assertWriteText(withContentId).version(V2_0).run("CID:" + contentId);
+		sensei.assertWriteText(withContentId).version(V1_0).run('<' + contentId + '>');
+		sensei.assertWriteText(withContentId).version(V2_0_DEPRECATED).run("cid:" + contentId);
+		sensei.assertWriteText(withContentId).version(V2_0).run("cid:" + contentId);
 		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void parseText_uri() {
-		sensei.assertParseText(url).dataType(ICalDataType.URI).run(has(url));
-
-		sensei.assertParseText(base64Data).dataType(ICalDataType.BINARY).run(has(data));
+	public void parseText() {
+		sensei.assertParseText(url).dataType(ICalDataType.URI).run(hasUri(url));
 		sensei.assertParseText(base64Data).dataType(ICalDataType.BINARY).param("ENCODING", "BASE64").run(has(data));
-		sensei.assertParseText(base64Data).dataType(ICalDataType.URI).param("ENCODING", "BASE64").run(has(data));
 
-		String base64DataWithWhitespace = base64Data.substring(0, base64Data.length() / 2) + "    " + base64Data.substring(base64Data.length() / 2);
-		sensei.assertParseText(base64DataWithWhitespace).dataType(ICalDataType.BINARY).run(has(data));
-		sensei.assertParseText(base64DataWithWhitespace).dataType(ICalDataType.BINARY).param("ENCODING", "BASE64").run(has(data));
-		sensei.assertParseText(base64DataWithWhitespace).dataType(ICalDataType.URI).param("ENCODING", "BASE64").run(has(data));
-
-		//if data type is URI and no ENCODING parameter is present, it treats the value as a URI
-		sensei.assertParseText(base64Data).dataType(ICalDataType.URI).run(has(base64Data));
-
-		sensei.assertParseText("").dataType(ICalDataType.URI).run(has(""));
-		sensei.assertParseText("").dataType(ICalDataType.BINARY).run(has(new byte[0]));
+		sensei.assertParseText(contentId).dataType(ICalDataType.CONTENT_ID).run(hasCid(contentId));
+		sensei.assertParseText('<' + contentId + '>').dataType(ICalDataType.CONTENT_ID).run(hasCid(contentId));
+		sensei.assertParseText('<' + contentId).dataType(ICalDataType.CONTENT_ID).run(hasCid('<' + contentId));
+		sensei.assertParseText(contentId + '>').dataType(ICalDataType.CONTENT_ID).run(hasCid(contentId + '>'));
+		sensei.assertParseText("cid:" + contentId).dataType(ICalDataType.CONTENT_ID).run(hasCid(contentId));
+		sensei.assertParseText("CID:" + contentId).dataType(ICalDataType.CONTENT_ID).run(hasCid(contentId));
+		sensei.assertParseText("cid:" + contentId).run(hasCid(contentId));
+		sensei.assertParseText("CID:" + contentId).run(hasCid(contentId));
+		sensei.assertParseText("aaa:" + contentId).run(hasUri("aaa:" + contentId));
+		sensei.assertParseText("http:" + contentId).run(hasUri("http:" + contentId));
+		sensei.assertParseText("").dataType(ICalDataType.CONTENT_ID).run(hasCid(""));
 	}
 
 	@Test
-	public void writeXml_uri() {
+	public void writeXml() {
 		sensei.assertWriteXml(withUrl).run("<uri>" + url + "</uri>");
 		sensei.assertWriteXml(withData).run("<binary>" + base64Data + "</binary>");
+		sensei.assertWriteXml(withContentId).run("<uri>cid:" + contentId + "</uri>");
 		sensei.assertWriteXml(empty).run("<uri/>");
 	}
 
 	@Test
-	public void parseXml_uri() {
-		sensei.assertParseXml("<uri>" + url + "</uri>").run(has(url));
+	public void parseXml() {
+		sensei.assertParseXml("<uri>" + url + "</uri>").run(hasUri(url));
 		sensei.assertParseXml("<binary>" + base64Data + "</binary>").run(has(data));
 
-		//<uri> is preferred
-		sensei.assertParseXml("<uri>" + url + "</uri><binary>" + base64Data + "</binary>").run(has(url));
+		sensei.assertParseXml("<uri>cid:" + contentId + "</uri>").run(hasCid(contentId));
+		sensei.assertParseXml("<uri>CID:" + contentId + "</uri>").run(hasCid(contentId));
+		sensei.assertParseXml("<uri>aaa:" + contentId + "</uri>").run(hasUri("aaa:" + contentId));
+		sensei.assertParseXml("<uri>http:" + contentId + "</uri>").run(hasUri("http:" + contentId));
 
 		sensei.assertParseXml("").cannotParse();
 	}
 
 	@Test
-	public void writeJson_uri() {
+	public void writeJson() {
 		sensei.assertWriteJson(withUrl).run(url);
 		sensei.assertWriteJson(withData).run(base64Data);
+		sensei.assertWriteJson(withContentId).run("cid:" + contentId);
 		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
-	public void parseJson_uri() {
-		sensei.assertParseJson(url).dataType(ICalDataType.URI).run(has(url));
-		sensei.assertParseJson("").dataType(ICalDataType.URI).run(has(""));
+	public void parseJson() {
+		sensei.assertParseJson(url).dataType(ICalDataType.URI).run(hasUri(url));
 		sensei.assertParseJson(base64Data).dataType(ICalDataType.BINARY).run(has(data));
-		sensei.assertParseJson("").dataType(ICalDataType.BINARY).run(has(new byte[0]));
+		sensei.assertParseJson("cid:" + contentId).dataType(ICalDataType.URI).run(hasCid(contentId));
+		sensei.assertParseJson("CID:" + contentId).dataType(ICalDataType.URI).run(hasCid(contentId));
+		sensei.assertParseJson("aaa:" + contentId).dataType(ICalDataType.URI).run(hasUri("aaa:" + contentId));
+		sensei.assertParseJson("http:" + contentId).dataType(ICalDataType.URI).run(hasUri("http:" + contentId));
 	}
 
-	private Check<Attachment> has(final String url) {
+	private Check<Attachment> hasUri(final String url) {
 		return new Check<Attachment>() {
 			public void check(Attachment property, ParseContext context) {
 				assertEquals(url, property.getUri());
 				assertNull(property.getData());
+				assertNull(property.getContentId());
+			}
+		};
+	}
+
+	private Check<Attachment> hasCid(final String cid) {
+		return new Check<Attachment>() {
+			public void check(Attachment property, ParseContext context) {
+				assertNull(property.getUri());
+				assertNull(property.getData());
+				assertEquals(cid, property.getContentId());
 			}
 		};
 	}
@@ -160,6 +175,7 @@ public class AttachmentScribeTest extends ScribeTest<Attachment> {
 			public void check(Attachment property, ParseContext context) {
 				assertNull(property.getUri());
 				assertArrayEquals(data, property.getData());
+				assertNull(property.getContentId());
 			}
 		};
 	}

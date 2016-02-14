@@ -27,8 +27,10 @@ import biweekly.io.scribe.property.AudioAlarmScribe;
 import biweekly.io.scribe.property.CalendarScaleScribe;
 import biweekly.io.scribe.property.CategoriesScribe;
 import biweekly.io.scribe.property.ClassificationScribe;
+import biweekly.io.scribe.property.ColorScribe;
 import biweekly.io.scribe.property.CommentScribe;
 import biweekly.io.scribe.property.CompletedScribe;
+import biweekly.io.scribe.property.ConferenceScribe;
 import biweekly.io.scribe.property.ContactScribe;
 import biweekly.io.scribe.property.CreatedScribe;
 import biweekly.io.scribe.property.DateDueScribe;
@@ -45,9 +47,11 @@ import biweekly.io.scribe.property.ExceptionRuleScribe;
 import biweekly.io.scribe.property.FreeBusyScribe;
 import biweekly.io.scribe.property.GeoScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
+import biweekly.io.scribe.property.ImageScribe;
 import biweekly.io.scribe.property.LastModifiedScribe;
 import biweekly.io.scribe.property.LocationScribe;
 import biweekly.io.scribe.property.MethodScribe;
+import biweekly.io.scribe.property.NameScribe;
 import biweekly.io.scribe.property.OrganizerScribe;
 import biweekly.io.scribe.property.PercentCompleteScribe;
 import biweekly.io.scribe.property.PriorityScribe;
@@ -57,11 +61,13 @@ import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.io.scribe.property.RecurrenceDatesScribe;
 import biweekly.io.scribe.property.RecurrenceIdScribe;
 import biweekly.io.scribe.property.RecurrenceRuleScribe;
+import biweekly.io.scribe.property.RefreshIntervalScribe;
 import biweekly.io.scribe.property.RelatedToScribe;
 import biweekly.io.scribe.property.RepeatScribe;
 import biweekly.io.scribe.property.RequestStatusScribe;
 import biweekly.io.scribe.property.ResourcesScribe;
 import biweekly.io.scribe.property.SequenceScribe;
+import biweekly.io.scribe.property.SourceScribe;
 import biweekly.io.scribe.property.StatusScribe;
 import biweekly.io.scribe.property.SummaryScribe;
 import biweekly.io.scribe.property.TimezoneIdScribe;
@@ -226,6 +232,14 @@ public class ScribeIndex {
 		registerStandard(new EmailAlarmScribe());
 		registerStandard(new ProcedureAlarmScribe());
 		registerStandard(new TimezoneScribe());
+
+		//draft-ietf-calext-extensions-01
+		registerStandard(new ColorScribe());
+		registerStandard(new ConferenceScribe());
+		registerStandard(new ImageScribe());
+		registerStandard(new NameScribe());
+		registerStandard(new SourceScribe());
+		registerStandard(new RefreshIntervalScribe());
 	}
 
 	private final Map<String, ICalComponentScribe<? extends ICalComponent>> experimentalCompByName = new HashMap<String, ICalComponentScribe<? extends ICalComponent>>(0);

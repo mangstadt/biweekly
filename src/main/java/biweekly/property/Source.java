@@ -1,7 +1,5 @@
 package biweekly.property;
 
-import java.util.List;
-
 /*
  Copyright (c) 2013-2015, Michael Angstadt
  All rights reserved.
@@ -29,71 +27,43 @@ import java.util.List;
 
 /**
  * <p>
- * Defines a list of keywords that describe the component to which it belongs.
+ * Defines a URI where the calendar data can be refreshed from.
  * </p>
  * <p>
  * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * VEvent event = new VEvent();
+ * ICalendar ical = new ICalendar();
  * 
- * Categories categories = new Categories(&quot;conference&quot;, &quot;meeting&quot;);
- * event.addCategories(categories);
+ * Source source = new Source(&quot;http://example.com/holidays.ics&quot;);
+ * ical.setSource(source);
  * </pre>
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545 p.81-2</a>
- * @see <a href="http://tools.ietf.org/html/rfc2445#page-78">RFC 2445 p.78-9</a>
- * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.28</a>
  * @see <a
- * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
- * p.7</a>
+ * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-8">draft-ietf-calext-extensions-01
+ * p.8</a>
  */
-public class Categories extends ListProperty<String> {
+public class Source extends TextProperty {
 	/**
-	 * Creates a new categories property.
+	 * Creates a source property.
+	 * @param uri the URI (e.g. "http://example.com/holidays.ics")
 	 */
-	public Categories() {
-		super();
-	}
-
-	/**
-	 * Creates a new categories property.
-	 * @param categories the categories to initialize the property with
-	 */
-	public Categories(String... categories) {
-		super(categories);
-	}
-
-	/**
-	 * Creates a new categories property.
-	 * @param categories the categories to initialize the property with
-	 */
-	public Categories(List<String> categories) {
-		super(categories);
+	public Source(String uri) {
+		super(uri);
 	}
 
 	/**
 	 * Copy constructor.
 	 * @param original the property to make a copy of
 	 */
-	public Categories(Categories original) {
+	public Source(Source original) {
 		super(original);
 	}
 
 	@Override
-	public String getLanguage() {
-		return super.getLanguage();
-	}
-
-	@Override
-	public void setLanguage(String language) {
-		super.setLanguage(language);
-	}
-
-	@Override
-	public Categories copy() {
-		return new Categories(this);
+	public Source copy() {
+		return new Source(this);
 	}
 }

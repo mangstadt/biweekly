@@ -57,6 +57,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	public static final String ENCODING = "ENCODING";
 	public static final String FMTTYPE = "FMTTYPE";
 	public static final String FBTYPE = "FBTYPE";
+	public static final String LABEL = "LABEL";
 	public static final String LANGUAGE = "LANGUAGE";
 	public static final String MEMBER = "MEMBER";
 	public static final String PARTSTAT = "PARTSTAT";
@@ -342,6 +343,28 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 */
 	public void setFreeBusyType(FreeBusyType fbType) {
 		replace(FBTYPE, (fbType == null) ? null : fbType.getValue());
+	}
+
+	/**
+	 * Gets a human-readable label for the property.
+	 * @return the label or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16">draft-ietf-calext-extensions-01
+	 * p.16</a>
+	 */
+	public String getLabel() {
+		return first(LABEL);
+	}
+
+	/**
+	 * Sets a human-readable label for the property.
+	 * @param label the label or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16">draft-ietf-calext-extensions-01
+	 * p.16</a>
+	 */
+	public void setLabel(String label) {
+		replace(LABEL, label);
 	}
 
 	/**

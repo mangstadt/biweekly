@@ -45,15 +45,7 @@ import biweekly.util.XmlUtils;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc6321#page-17">RFC 6321 p.17-8</a>
  */
-/*
- * Note: This class does not extend ValuedProperty because of issues
- * implementing "equals". ValuedProperty's "equals" method calls the "equals"
- * method on the "value" field. However, equals method for the "Document" class
- * does not check for true equality.
- */
-public class Xml extends ICalProperty {
-	private Document value;
-
+public class Xml extends ValuedProperty<Document> {
 	/**
 	 * Creates an XML property.
 	 * @param xml the XML to use as the property's value
@@ -81,7 +73,7 @@ public class Xml extends ICalProperty {
 	 * @param document the XML document to use as the property's value
 	 */
 	public Xml(Document document) {
-		value = document;
+		super(document);
 	}
 
 	/**
@@ -98,22 +90,6 @@ public class Xml extends ICalProperty {
 				value.appendChild(node);
 			}
 		}
-	}
-
-	/**
-	 * Gets the value of this property.
-	 * @return the value
-	 */
-	public Document getValue() {
-		return value;
-	}
-
-	/**
-	 * Sets the value of this property.
-	 * @param value the value
-	 */
-	public void setValue(Document value) {
-		this.value = value;
 	}
 
 	@Override
@@ -136,24 +112,13 @@ public class Xml extends ICalProperty {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((value == null) ? 0 : XmlUtils.toString(value).hashCode());
-		return result;
+	protected int valueHashCode() {
+		return XmlUtils.toString(value).hashCode();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!super.equals(obj)) return false;
-		Xml other = (Xml) obj;
-		if (value == null) {
-			if (other.value != null) return false;
-		} else {
-			if (other.value == null) return false;
-			if (!XmlUtils.toString(value).equals(XmlUtils.toString(other.value))) return false;
-		}
-		return true;
+	protected boolean valueEquals(Document otherValue) {
+		if (otherValue == null) return false;
+		return XmlUtils.toString(value).equals(XmlUtils.toString(otherValue));
 	}
 }

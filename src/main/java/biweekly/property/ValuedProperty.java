@@ -103,7 +103,7 @@ public class ValuedProperty<T> extends ICalProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		result = prime * result + ((value == null) ? 0 : valueHashCode());
 		return result;
 	}
 
@@ -111,10 +111,58 @@ public class ValuedProperty<T> extends ICalProperty {
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
-		ValuedProperty<?> other = (ValuedProperty<?>) obj;
+
+		/*
+		 * This cast will not fail because each property's Class objects are
+		 * checked for equality in super.equals().
+		 */
+		@SuppressWarnings("unchecked")
+		ValuedProperty<T> other = (ValuedProperty<T>) obj;
+
 		if (value == null) {
 			if (other.value != null) return false;
-		} else if (!value.equals(other.value)) return false;
+		} else if (!valueEquals(other.value)) return false;
 		return true;
+	}
+
+	/**
+	 * <p>
+	 * Calculates the hash code of this property's value.
+	 * </p>
+	 * <p>
+	 * This method is meant by to overridden by child classes whose value's hash
+	 * code cannot be calculated by just invoking {@code hashCode()}. For
+	 * example, a property whose value is case insensitive. The default
+	 * implementation of this method calls {@code value.hashCode()}.
+	 * </p>
+	 * <p>
+	 * This method is only invoked when this property's value is not null.
+	 * </p>
+	 * @return the value's hash code
+	 */
+	protected int valueHashCode() {
+		return value.hashCode();
+	}
+
+	/**
+	 * <p>
+	 * Compares this property's value with another property's value for
+	 * equality.
+	 * </p>
+	 * <p>
+	 * This method is meant by to overridden by child classes when their value's
+	 * equality cannot be calculated by just invoking {@code equals()}. For
+	 * example, a property whose value is case insensitive. The default
+	 * implementation of this method calls {@code value.equals(otherValue)}.
+	 * </p>
+	 * <p>
+	 * This method is only invoked when this property's value is not null.
+	 * </p>
+	 * @param otherValue the other property's value
+	 * @return true if this property's value is equal to the other property's
+	 * value, false if not
+	 */
+	protected boolean valueEquals(T otherValue) {
+		return value.equals(otherValue);
 	}
 }

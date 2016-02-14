@@ -85,14 +85,20 @@ public class AttachmentTest {
 		property.setContentId("contentID");
 		assertEquals("image/png", property.getFormatType());
 		assertNull(property.getUri());
-		assertArrayEquals("data".getBytes(), property.getData());
+		assertNull(property.getData());
 		assertEquals("contentID", property.getContentId());
 
 		property.setFormatType("image/jpeg");
 		assertEquals("image/jpeg", property.getFormatType());
 		assertNull(property.getUri());
-		assertArrayEquals("data".getBytes(), property.getData());
+		assertNull(property.getData());
 		assertEquals("contentID", property.getContentId());
+
+		property.setUri("uri");
+		assertEquals("image/jpeg", property.getFormatType());
+		assertEquals("uri", property.getUri());
+		assertNull(property.getData());
+		assertNull(property.getContentId());
 	}
 
 	@Test
@@ -155,14 +161,6 @@ public class AttachmentTest {
 		property = new Attachment("image/png2", "uri");
 		properties.add(property);
 
-		property = new Attachment("image/png", "uri");
-		property.setContentId("contentID");
-		properties.add(property);
-
-		property = new Attachment("image/png", "uri");
-		property.setContentId("contentID2");
-		properties.add(property);
-
 		property = new Attachment(null, "data".getBytes());
 		properties.add(property);
 
@@ -175,12 +173,20 @@ public class AttachmentTest {
 		property = new Attachment("image/png2", "data".getBytes());
 		properties.add(property);
 
-		property = new Attachment("image/png", "data".getBytes());
+		property = new Attachment(null, (String) null);
 		property.setContentId("contentID");
 		properties.add(property);
 
-		property = new Attachment("image/png", "data".getBytes());
+		property = new Attachment("image/png", (String) null);
+		property.setContentId("contentID");
+		properties.add(property);
+
+		property = new Attachment("image/png", (String) null);
 		property.setContentId("contentID2");
+		properties.add(property);
+
+		property = new Attachment("image/png2", (String) null);
+		property.setContentId("contentID");
 		properties.add(property);
 
 		assertNothingIsEqual(properties);

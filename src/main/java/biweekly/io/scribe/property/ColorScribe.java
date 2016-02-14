@@ -1,6 +1,7 @@
-package biweekly.property;
+package biweekly.io.scribe.property;
 
-import java.util.Date;
+import biweekly.ICalVersion;
+import biweekly.property.Color;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -28,48 +29,16 @@ import java.util.Date;
  */
 
 /**
- * <p>
- * Defines the time that the calendar data in a component was last changed.
- * </p>
- * <p>
- * <b>Code sample:</b>
- * 
- * <pre class="brush:java">
- * VEvent event = new VEvent();
- * 
- * Date datetime = ...
- * LastModified lastModified = new LastModified(datetime);
- * event.setLastModified(lastModified);
- * </pre>
- * 
- * </p>
+ * Marshals {@link Color} properties.
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545 p.138</a>
- * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445 p.131</a>
- * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
- * @see <a
- * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
- * p.7</a>
  */
-public class LastModified extends DateTimeProperty {
-	/**
-	 * Creates a last modified property.
-	 * @param date the date
-	 */
-	public LastModified(Date date) {
-		super(date);
-	}
-
-	/**
-	 * Copy constructor.
-	 * @param original the property to make a copy of
-	 */
-	public LastModified(LastModified original) {
-		super(original);
+public class ColorScribe extends TextPropertyScribe<Color> {
+	public ColorScribe() {
+		super(Color.class, "COLOR");
 	}
 
 	@Override
-	public LastModified copy() {
-		return new LastModified(this);
+	protected Color newInstance(String value, ICalVersion version) {
+		return new Color(value);
 	}
 }

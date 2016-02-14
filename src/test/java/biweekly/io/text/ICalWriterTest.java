@@ -1084,7 +1084,7 @@ public class ICalWriterTest {
 			ical.addTodo(todo);
 		}
 
-		assertValidate(ical).versions(V1_0).warn(event, 13).run();
+		assertValidate(ical).versions(V1_0).run();
 		assertExample(ical, "vcal-example3.vcs", new TimezoneInfo(), V1_0);
 	}
 

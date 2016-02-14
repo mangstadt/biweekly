@@ -145,6 +145,13 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			copy.put(ICalParameters.CN, name);
 		}
 
+		//EMAIL parameter
+		String uri = property.getUri();
+		String email = property.getEmail();
+		if (uri != null && email != null && context.getVersion() != ICalVersion.V1_0) {
+			copy.put("EMAIL", email);
+		}
+
 		return copy;
 	}
 
@@ -233,15 +240,21 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 				parameters.remove(ICalParameters.CN, name);
 			}
 
-			int colon = value.indexOf(':');
-			if (colon == 6) {
-				String scheme = value.substring(0, colon);
-				if (scheme.equalsIgnoreCase("mailto")) {
-					email = value.substring(colon + 1);
+			email = parameters.first("EMAIL");
+			if (email == null) {
+				int colon = value.indexOf(':');
+				if (colon == 6) {
+					String scheme = value.substring(0, colon);
+					if (scheme.equalsIgnoreCase("mailto")) {
+						email = value.substring(colon + 1);
+					} else {
+						uri = value;
+					}
 				} else {
 					uri = value;
 				}
 			} else {
+				parameters.remove("EMAIL", email);
 				uri = value;
 			}
 
@@ -255,12 +268,11 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			parameters.remove(ICalParameters.ROLE, roleStr);
 		}
 
-		Attendee attendee = new Attendee(name, email);
+		Attendee attendee = new Attendee(name, email, uri);
 		attendee.setParticipationStatus(status);
 		attendee.setParticipationLevel(level);
 		attendee.setRole(role);
 		attendee.setRsvp(rsvp);
-		attendee.setUri(uri);
 
 		return attendee;
 	}

@@ -1,5 +1,7 @@
 package biweekly.property;
 
+import biweekly.ICalendar;
+
 /*
  Copyright (c) 2013-2015, Michael Angstadt
  All rights reserved.
@@ -30,6 +32,11 @@ package biweekly.property;
  * Defines a website that contains additional information about a component.
  * </p>
  * <p>
+ * If defined in the top-level {@link ICalendar} component, this property
+ * defines the location of a more dynamic, alternate representation of the
+ * calendar (for example, a Google Calendar).
+ * </p>
+ * <p>
  * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
@@ -46,6 +53,9 @@ package biweekly.property;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-110">RFC 2445
  * p.110-1</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.37</a>
+ * @see <a
+ * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+ * p.6</a>
  */
 public class Url extends TextProperty {
 	/**

@@ -1,6 +1,7 @@
 package biweekly.property;
 
 import java.lang.reflect.Constructor;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import biweekly.ICalendar;
 import biweekly.Messages;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
+import biweekly.parameter.EnumParameterValue;
 import biweekly.parameter.ICalParameters;
 
 /*
@@ -175,6 +177,28 @@ public abstract class ICalProperty {
 	 */
 	void setFormatType(String formatType) {
 		parameters.setFormatType(formatType);
+	}
+
+	/**
+	 * Gets the human-readable label for this property.
+	 * @return the label or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16">draft-ietf-calext-extensions-01
+	 * p.16</a>
+	 */
+	String getLabel() {
+		return parameters.getLabel();
+	}
+
+	/**
+	 * Sets the human-readable label for this property.
+	 * @param label the label or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16">draft-ietf-calext-extensions-01
+	 * p.16</a>
+	 */
+	void setLabel(String label) {
+		parameters.setLabel(label);
 	}
 
 	/**
@@ -416,5 +440,60 @@ public abstract class ICalProperty {
 		ICalProperty other = (ICalProperty) obj;
 		if (!parameters.equals(other.parameters)) return false;
 		return true;
+	}
+
+	/**
+	 * A list that automatically converts parameter value Strings from
+	 * {@link ICalParameters} to the appropriate {@link EnumParameterValue}
+	 * objects that some parameters use. The list is backed by the property's
+	 * {@link ICalParameters}, so any changes made to the list will affect the
+	 * property's {@link ICalParameters} object and vice versa.
+	 * @param <T> the enum parameter class
+	 */
+	protected abstract class EnumParameterBackingList<T extends EnumParameterValue> extends AbstractList<T> {
+		private final String parameterName;
+
+		public EnumParameterBackingList(String parameterName) {
+			this.parameterName = parameterName;
+		}
+
+		@Override
+		public void add(int index, T display) {
+			List<String> values = values();
+			if (values.isEmpty()) {
+				parameters.put(parameterName, display.getValue());
+			} else {
+				values.add(index, display.getValue());
+			}
+		}
+
+		@Override
+		public T remove(int index) {
+			String removed = values().remove(index);
+			return get(removed);
+		}
+
+		@Override
+		public T get(int index) {
+			String value = values().get(index);
+			return get(value);
+		}
+
+		@Override
+		public T set(int index, T display) {
+			String replaced = values().set(index, display.getValue());
+			return get(replaced);
+		}
+
+		@Override
+		public int size() {
+			return values().size();
+		}
+
+		protected abstract T get(String parameterValue);
+
+		private List<String> values() {
+			return parameters.get(parameterName);
+		}
 	}
 }

@@ -1,6 +1,6 @@
 package biweekly.property;
 
-import java.util.List;
+import biweekly.util.Duration;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -29,71 +29,46 @@ import java.util.List;
 
 /**
  * <p>
- * Defines a list of keywords that describe the component to which it belongs.
+ * Defines the suggested minimum polling interval for checking for updates to
+ * the calendar data.
  * </p>
+ * 
  * <p>
  * <b>Code sample:</b>
  * 
  * <pre class="brush:java">
- * VEvent event = new VEvent();
+ * ICalendar ical = new ICalendar()
  * 
- * Categories categories = new Categories(&quot;conference&quot;, &quot;meeting&quot;);
- * event.addCategories(categories);
+ * Duration duration = Duration.builder().weeks(1).build();
+ * RefreshInterval refreshInterval = new RefreshInterval(duration);
+ * ical.setRefreshInterval(refreshInterval);
  * </pre>
  * 
  * </p>
  * @author Michael Angstadt
- * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545 p.81-2</a>
- * @see <a href="http://tools.ietf.org/html/rfc2445#page-78">RFC 2445 p.78-9</a>
- * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.28</a>
  * @see <a
  * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
  * p.7</a>
  */
-public class Categories extends ListProperty<String> {
+public class RefreshInterval extends ValuedProperty<Duration> {
 	/**
-	 * Creates a new categories property.
+	 * Creates a refresh interval property.
+	 * @param duration the duration value (e.g. "2 hours and 30 minutes")
 	 */
-	public Categories() {
-		super();
-	}
-
-	/**
-	 * Creates a new categories property.
-	 * @param categories the categories to initialize the property with
-	 */
-	public Categories(String... categories) {
-		super(categories);
-	}
-
-	/**
-	 * Creates a new categories property.
-	 * @param categories the categories to initialize the property with
-	 */
-	public Categories(List<String> categories) {
-		super(categories);
+	public RefreshInterval(Duration duration) {
+		super(duration);
 	}
 
 	/**
 	 * Copy constructor.
 	 * @param original the property to make a copy of
 	 */
-	public Categories(Categories original) {
+	public RefreshInterval(RefreshInterval original) {
 		super(original);
 	}
 
 	@Override
-	public String getLanguage() {
-		return super.getLanguage();
-	}
-
-	@Override
-	public void setLanguage(String language) {
-		super.setLanguage(language);
-	}
-
-	@Override
-	public Categories copy() {
-		return new Categories(this);
+	public RefreshInterval copy() {
+		return new RefreshInterval(this);
 	}
 }

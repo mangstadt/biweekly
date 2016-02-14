@@ -49,6 +49,9 @@ import java.util.UUID;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-111">RFC 2445
  * p.111-2</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.37</a>
+ * @see <a
+ * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+ * p.6</a>
  */
 public class Uid extends TextProperty {
 	/**

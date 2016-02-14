@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.transform.TransformerException;
 
@@ -16,9 +19,21 @@ import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
 import biweekly.component.VTodo;
 import biweekly.property.CalendarScale;
+import biweekly.property.Categories;
+import biweekly.property.Color;
+import biweekly.property.Description;
 import biweekly.property.Geo;
+import biweekly.property.ICalProperty;
+import biweekly.property.Image;
+import biweekly.property.LastModified;
 import biweekly.property.Method;
+import biweekly.property.Name;
 import biweekly.property.ProductId;
+import biweekly.property.RefreshInterval;
+import biweekly.property.Source;
+import biweekly.property.Uid;
+import biweekly.property.Url;
+import biweekly.util.Duration;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -216,6 +231,405 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
+	 * Gets the human-readable name of the calendar as a whole. Multiple
+	 * instances should only exist if the name is defined in multiple languages.
+	 * @return the properties
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-5">draft-ietf-calext-extensions-01
+	 * p.5</a>
+	 */
+	public List<Name> getNames() {
+		return getProperties(Name.class);
+	}
+
+	/**
+	 * <p>
+	 * Assigns a human-readable name to the calendar as a whole.
+	 * </p>
+	 * <p>
+	 * An iCalendar object can only have one name, but multiple {@link Name}
+	 * properties can exist in order to specify the name in multiple languages.
+	 * In this case, each property instance must be assigned a LANGUAGE
+	 * parameter.
+	 * </p>
+	 * @param name the property to add
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-5">draft-ietf-calext-extensions-01
+	 * p.5</a>
+	 */
+	public void addName(Name name) {
+		addProperty(name);
+	}
+
+	/**
+	 * <p>
+	 * Assigns a human-readable name to the calendar as a whole.
+	 * </p>
+	 * <p>
+	 * An iCalendar object can only have one name, but multiple {@link Name}
+	 * properties can exist in order to specify the name in multiple languages.
+	 * In this case, each property instance must be assigned a LANGUAGE
+	 * parameter.
+	 * </p>
+	 * @param name the name
+	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-5">draft-ietf-calext-extensions-01
+	 * p.5</a>
+	 */
+	public Name addName(String name) {
+		Name prop = new Name(name);
+		addProperty(prop);
+		return prop;
+	}
+
+	/**
+	 * Gets the human-readable description of the calendar as a whole. Multiple
+	 * instances should only exist if the description is defined in multiple
+	 * languages.
+	 * @return the properties
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+	 * p.6</a>
+	 */
+	public List<Description> getDescriptions() {
+		return getProperties(Description.class);
+	}
+
+	/**
+	 * <p>
+	 * Assigns a human-readable description to the calendar as a whole.
+	 * </p>
+	 * <p>
+	 * An iCalendar object can only have one description, but multiple
+	 * {@link Description} properties can exist in order to specify the
+	 * description in multiple languages. In this case, each property instance
+	 * must be assigned a LANGUAGE parameter.
+	 * </p>
+	 * @param description the property to add
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+	 * p.6</a>
+	 */
+	public void addDescription(Description description) {
+		addProperty(description);
+	}
+
+	/**
+	 * <p>
+	 * Assigns a human-readable description to the calendar as a whole.
+	 * </p>
+	 * <p>
+	 * An iCalendar object can only have one description, but multiple
+	 * {@link Description} properties can exist in order to specify the
+	 * description in multiple languages. In this case, each property instance
+	 * must be assigned a LANGUAGE parameter.
+	 * </p>
+	 * @param description the description
+	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+	 * p.6</a>
+	 */
+	public Description addDescription(String description) {
+		Description prop = new Description(description);
+		addProperty(prop);
+		return prop;
+	}
+
+	/**
+	 * Gets the calendar's unique identifier.
+	 * @return the property or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+	 * p.6</a>
+	 */
+	public Uid getUid() {
+		return getProperty(Uid.class);
+	}
+
+	/**
+	 * Sets a unique identifier for the calendar.
+	 * @param uid the property or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+	 * p.6</a>
+	 */
+	public void setUid(Uid uid) {
+		setProperty(Uid.class, uid);
+	}
+
+	/**
+	 * Sets a unique identifier for the calendar.
+	 * @param uid the unique identifier or null to remove
+	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+	 * p.6</a>
+	 */
+	public Uid setUid(String uid) {
+		Uid prop = (uid == null) ? null : new Uid(uid);
+		setUid(prop);
+		return prop;
+	}
+
+	/**
+	 * Gets the date and time that the information in this calendar object was
+	 * last revised.
+	 * @return the property or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
+	 */
+	public LastModified getLastModified() {
+		return getProperty(LastModified.class);
+	}
+
+	/**
+	 * Sets the date and time that the information in this calendar object was
+	 * last revised.
+	 * @param lastModified the property or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
+	 */
+	public void setLastModified(LastModified lastModified) {
+		setProperty(LastModified.class, lastModified);
+	}
+
+	/**
+	 * Sets the date and time that the information in this calendar object was
+	 * last revised.
+	 * @param lastModified the date and time or null to remove
+	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
+	 */
+	public LastModified setLastModified(Date lastModified) {
+		LastModified prop = (lastModified == null) ? null : new LastModified(lastModified);
+		setLastModified(prop);
+		return prop;
+	}
+
+	/**
+	 * Gets the location of a more dynamic, alternate representation of the
+	 * calendar (such as a website that allows you to interact with the calendar
+	 * data).
+	 * @return the property or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
+	 */
+	public Url getUrl() {
+		return getProperty(Url.class);
+	}
+
+	/**
+	 * Sets the location of a more dynamic, alternate representation of the
+	 * calendar (such as a website that allows you to interact with the calendar
+	 * data).
+	 * @param url the property or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
+	 */
+	public void setUrl(Url url) {
+		setProperty(Url.class, url);
+	}
+
+	/**
+	 * Sets the location of a more dynamic, alternate representation of the
+	 * calendar (such as a website that allows you to interact with the calendar
+	 * data).
+	 * @param url the URL or null to remove
+	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
+	 */
+	public Url setUrl(String url) {
+		Url prop = (url == null) ? null : new Url(url);
+		setUrl(prop);
+		return prop;
+	}
+
+	/**
+	 * Gets a list of keywords that describe the calendar.
+	 * @return the properties
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
+	 */
+	public List<Categories> getCategories() {
+		return getProperties(Categories.class);
+	}
+
+	/**
+	 * Adds a list of keywords that describe the calendar.
+	 * @param categories the property to add
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
+	 */
+	public void addCategories(Categories categories) {
+		addProperty(categories);
+	}
+
+	/**
+	 * Adds a list of keywords that describe the calendar.
+	 * @param categories the categories to add
+	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
+	 */
+	public Categories addCategories(String... categories) {
+		Categories prop = new Categories(categories);
+		addProperty(prop);
+		return prop;
+	}
+
+	/**
+	 * Gets the suggested minimum polling interval for checking for updates to
+	 * the calendar data.
+	 * @return the property or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
+	 */
+	public RefreshInterval getRefreshInterval() {
+		return getProperty(RefreshInterval.class);
+	}
+
+	/**
+	 * Sets the suggested minimum polling interval for checking for updates to
+	 * the calendar data.
+	 * @param refreshInterval the property or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
+	 */
+	public void setRefreshInterval(RefreshInterval refreshInterval) {
+		setProperty(RefreshInterval.class, refreshInterval);
+	}
+
+	/**
+	 * Sets the suggested minimum polling interval for checking for updates to
+	 * the calendar data.
+	 * @param refreshInterval the refresh interval or null to remove
+	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
+	 */
+	public RefreshInterval setRefreshInterval(Duration refreshInterval) {
+		RefreshInterval prop = (refreshInterval == null) ? null : new RefreshInterval(refreshInterval);
+		setRefreshInterval(prop);
+		return prop;
+	}
+
+	/**
+	 * Gets the location that the calendar data can be refreshed from.
+	 * @return the property or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-8">draft-ietf-calext-extensions-01
+	 * p.8</a>
+	 */
+	public Source getSource() {
+		return getProperty(Source.class);
+	}
+
+	/**
+	 * Sets the location that the calendar data can be refreshed from.
+	 * @param source the property or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-8">draft-ietf-calext-extensions-01
+	 * p.8</a>
+	 */
+	public void setSource(Source source) {
+		setProperty(Source.class, source);
+	}
+
+	/**
+	 * Sets the location that the calendar data can be refreshed from.
+	 * @param source the property or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-8">draft-ietf-calext-extensions-01
+	 * p.8</a>
+	 */
+	public Source setSource(String url) {
+		Source prop = (url == null) ? null : new Source(url);
+		setSource(prop);
+		return prop;
+	}
+
+	/**
+	 * Gets the color that clients may use when displaying the calendar (for
+	 * example, a background color).
+	 * @return the property or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01
+	 * p.9</a>
+	 */
+	public Color getColor() {
+		return getProperty(Color.class);
+	}
+
+	/**
+	 * Sets the color that clients may use when displaying the calendar (for
+	 * example, a background color).
+	 * @param color the property or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01
+	 * p.79</a>
+	 */
+	public void setColor(Color color) {
+		setProperty(Color.class, color);
+	}
+
+	/**
+	 * Sets the color that clients may use when displaying the calendar (for
+	 * example, a background color).
+	 * @param color the color name (case insensitive) or null to remove.
+	 * Acceptable values are defined in <a
+	 * href="https://www.w3.org/TR/2011/REC-css3-color-20110607/#svg-color"
+	 * >Section 4.3 of the CSS Color Module Level 3 Recommendation</a>. For
+	 * example, "aliceblue", "green", "navy".
+	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01
+	 * p.9</a>
+	 */
+	public Color setColor(String color) {
+		Color prop = (color == null) ? null : new Color(color);
+		setColor(prop);
+		return prop;
+	}
+
+	/**
+	 * Gets the images that are associated with the calendar.
+	 * @return the properties
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-10">draft-ietf-calext-extensions-01
+	 * p.10</a>
+	 */
+	public List<Image> getImages() {
+		return getProperties(Image.class);
+	}
+
+	/**
+	 * Adds an image that is associated with the calendar.
+	 * @param image the property to add
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-10">draft-ietf-calext-extensions-01
+	 * p.10</a>
+	 */
+	public void addImage(Image image) {
+		addProperty(image);
+	}
+
+	/**
 	 * Gets the events.
 	 * @return the events
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-52">RFC 5545
@@ -326,6 +740,31 @@ public class ICalendar extends ICalComponent {
 
 			if (getProperty(Geo.class) != null) {
 				warnings.add(Warning.validate(44));
+			}
+		}
+
+		checkOptionalCardinality(warnings, Uid.class, LastModified.class, Url.class, RefreshInterval.class, Color.class, Source.class);
+		checkUniqueLanguages(warnings, Name.class);
+		checkUniqueLanguages(warnings, Description.class);
+	}
+
+	private void checkUniqueLanguages(List<Warning> warnings, Class<? extends ICalProperty> clazz) {
+		List<? extends ICalProperty> properties = getProperties(clazz);
+		if (properties.size() <= 1) {
+			return;
+		}
+
+		Set<String> languages = new HashSet<String>(properties.size());
+		for (ICalProperty property : properties) {
+			String language = property.getParameters().getLanguage();
+			if (language != null) {
+				language = language.toLowerCase();
+			}
+
+			boolean added = languages.add(language);
+			if (!added) {
+				warnings.add(Warning.validate(55, clazz.getSimpleName()));
+				break;
 			}
 		}
 	}

@@ -84,16 +84,18 @@ public class Attendee extends ICalProperty {
 	 * @param email the attendee's email (e.g. "jdoe@example.com")
 	 */
 	public Attendee(String name, String email) {
-		this.name = name;
-		this.email = email;
+		this(name, email, null);
 	}
 
 	/**
 	 * Creates an attendee property.
-	 * @param uri a URI representing the attendee (typically, an email address,
-	 * e.g. "mailto:johndoe@example.com")
+	 * @param name the attendee's name (e.g. "John Doe")
+	 * @param email the attendee's email (e.g. "jdoe@example.com")
+	 * @param uri a URI representing the attendee
 	 */
-	public Attendee(String uri) {
+	public Attendee(String name, String email, String uri) {
+		this.name = name;
+		this.email = email;
 		this.uri = uri;
 	}
 

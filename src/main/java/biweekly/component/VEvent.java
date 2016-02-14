@@ -11,7 +11,9 @@ import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.Categories;
 import biweekly.property.Classification;
+import biweekly.property.Color;
 import biweekly.property.Comment;
+import biweekly.property.Conference;
 import biweekly.property.Contact;
 import biweekly.property.Created;
 import biweekly.property.DateEnd;
@@ -22,6 +24,7 @@ import biweekly.property.DurationProperty;
 import biweekly.property.ExceptionDates;
 import biweekly.property.ExceptionRule;
 import biweekly.property.Geo;
+import biweekly.property.Image;
 import biweekly.property.LastModified;
 import biweekly.property.Location;
 import biweekly.property.Method;
@@ -1323,6 +1326,93 @@ public class VEvent extends ICalComponent {
 		addProperty(exceptionRule);
 	}
 
+	/**
+	 * Gets the color that clients may use when displaying the event (for
+	 * example, a background color).
+	 * @return the property or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01
+	 * p.9</a>
+	 */
+	public Color getColor() {
+		return getProperty(Color.class);
+	}
+
+	/**
+	 * Sets the color that clients may use when displaying the event (for
+	 * example, a background color).
+	 * @param color the property or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01
+	 * p.79</a>
+	 */
+	public void setColor(Color color) {
+		setProperty(Color.class, color);
+	}
+
+	/**
+	 * Sets the color that clients may use when displaying the event (for
+	 * example, a background color).
+	 * @param color the color name (case insensitive) or null to remove.
+	 * Acceptable values are defined in <a
+	 * href="https://www.w3.org/TR/2011/REC-css3-color-20110607/#svg-color"
+	 * >Section 4.3 of the CSS Color Module Level 3 Recommendation</a>. For
+	 * example, "aliceblue", "green", "navy".
+	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01
+	 * p.9</a>
+	 */
+	public Color setColor(String color) {
+		Color prop = (color == null) ? null : new Color(color);
+		setColor(prop);
+		return prop;
+	}
+
+	/**
+	 * Gets the images that are associated with the event.
+	 * @return the properties
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-10">draft-ietf-calext-extensions-01
+	 * p.10</a>
+	 */
+	public List<Image> getImages() {
+		return getProperties(Image.class);
+	}
+
+	/**
+	 * Adds an image that is associated with the event.
+	 * @param image the property to add
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-10">draft-ietf-calext-extensions-01
+	 * p.10</a>
+	 */
+	public void addImage(Image image) {
+		addProperty(image);
+	}
+
+	/**
+	 * Gets information related to the event's conference system.
+	 * @return the properties
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-11">draft-ietf-calext-extensions-01
+	 * p.11</a>
+	 */
+	public List<Conference> getConferences() {
+		return getProperties(Conference.class);
+	}
+
+	/**
+	 * Adds information related to the event's conference system.
+	 * @param image the property to add
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-11">draft-ietf-calext-extensions-01
+	 * p.11</a>
+	 */
+	public void addConference(Conference conference) {
+		addProperty(conference);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
@@ -1331,10 +1421,12 @@ public class VEvent extends ICalComponent {
 			checkOptionalCardinality(warnings, Classification.class, Created.class, Description.class, Geo.class, LastModified.class, Location.class, Organizer.class, Priority.class, Status.class, Summary.class, Transparency.class, Url.class, RecurrenceId.class);
 		}
 
+		checkOptionalCardinality(warnings, Color.class);
+
 		Status validStatuses[];
 		switch (version) {
 		case V1_0:
-			validStatuses = new Status[] { Status.tentative(), Status.confirmed(), Status.cancelled(), Status.declined(), Status.delegated(), Status.sent() };
+			validStatuses = new Status[] { Status.tentative(), Status.confirmed(), Status.declined(), Status.needsAction(), Status.sent(), Status.delegated() };
 			break;
 		default:
 			validStatuses = new Status[] { Status.tentative(), Status.confirmed(), Status.cancelled() };

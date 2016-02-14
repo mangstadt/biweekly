@@ -9,14 +9,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
 
 import biweekly.component.ICalComponent;
 import biweekly.component.VEvent;
+import biweekly.property.Color;
+import biweekly.property.Description;
 import biweekly.property.Geo;
 import biweekly.property.ICalProperty;
+import biweekly.property.LastModified;
+import biweekly.property.Name;
+import biweekly.property.ProductId;
+import biweekly.property.RefreshInterval;
+import biweekly.property.Source;
+import biweekly.property.Uid;
+import biweekly.property.Url;
+import biweekly.util.Duration;
 
 /*
  Copyright (c) 2013-2015, Michael Angstadt
@@ -54,7 +65,7 @@ public class ICalendarTest {
 	}
 
 	@Test
-	public void validate() {
+	public void validate_no_component() {
 		ICalendar ical = new ICalendar();
 		assertValidate(ical).versions(V1_0).run();
 		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run(4);
@@ -62,9 +73,83 @@ public class ICalendarTest {
 		ical.addExperimentalComponent("X-TEST");
 		assertValidate(ical).run();
 
+	}
+
+	@Test
+	public void validate_cardinality_required() {
+		ICalendar ical = new ICalendar();
+		ical.addExperimentalComponent("X-SUPPRESS-NO-COMPONENT-WARNING");
+		assertValidate(ical).run();
+
+		ProductId prodid = new ProductId("value");
+		ical.addProperty(prodid);
+		assertValidate(ical).versions(V1_0).run();
+		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run(3);
+	}
+
+	@Test
+	public void validate_cardinality_optional() {
+		ICalendar ical = new ICalendar();
+		ical.addExperimentalComponent("X-SUPPRESS-NO-COMPONENT-WARNING");
+		assertValidate(ical).run();
+
+		ical.addProperty(new Uid("value"));
+		ical.addProperty(new LastModified(new Date()));
+		ical.addProperty(new Url(""));
+		ical.addProperty(new RefreshInterval(new Duration.Builder().hours(1).build()));
+		ical.addProperty(new Color("value"));
+		ical.addProperty(new Source("value"));
+		assertValidate(ical).run();
+
+		ical.addProperty(new Uid("value"));
+		ical.addProperty(new LastModified(new Date()));
+		ical.addProperty(new Url(""));
+		ical.addProperty(new RefreshInterval(new Duration.Builder().hours(1).build()));
+		ical.addProperty(new Color("value"));
+		ical.addProperty(new Source("value"));
+		assertValidate(ical).run(3, 3, 3, 3, 3, 3);
+	}
+
+	@Test
+	public void validate_geo() {
+		ICalendar ical = new ICalendar();
+		ical.addExperimentalComponent("X-SUPPRESS-NO-COMPONENT-WARNING");
 		ical.addProperty(new Geo(1.0, 2.0));
+
 		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run(44);
 		assertValidate(ical).versions(V1_0).run();
+	}
+
+	@Test
+	public void validate_name() {
+		ICalendar ical = new ICalendar();
+		ical.addExperimentalComponent("X-SUPPRESS-NO-COMPONENT-WARNING");
+		assertValidate(ical).run();
+
+		ical.addName("name1");
+		assertValidate(ical).run();
+
+		Name name2 = ical.addName("name2");
+		assertValidate(ical).run(55);
+
+		name2.setLanguage("fr");
+		assertValidate(ical).run();
+	}
+
+	@Test
+	public void validate_description() {
+		ICalendar ical = new ICalendar();
+		ical.addExperimentalComponent("X-SUPPRESS-NO-COMPONENT-WARNING");
+		assertValidate(ical).run();
+
+		ical.addDescription("description2");
+		assertValidate(ical).run();
+
+		Description description2 = ical.addDescription("description2");
+		assertValidate(ical).run(55);
+
+		description2.setLanguage("fr");
+		assertValidate(ical).run();
 	}
 
 	@Test
