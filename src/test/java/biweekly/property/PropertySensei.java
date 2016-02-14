@@ -348,7 +348,7 @@ public class PropertySensei {
 		for (ICalProperty property : properties) {
 			for (ICalProperty property2 : properties) {
 				if (property != property2) {
-					assertNotEquals(property, property2);
+					assertNotEquals("Properties should not be equal:\n" + property + "\n" + property2, property, property2);
 				}
 			}
 		}
