@@ -252,10 +252,12 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 					}
 				} else {
 					uri = value;
+					email = parameters.first("EMAIL");
 				}
 			} else {
 				parameters.remove("EMAIL", email);
 				uri = value;
+				email = parameters.first("EMAIL");
 			}
 
 			break;
