@@ -1,12 +1,14 @@
 package biweekly.component;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertValidate;
 
 import java.util.Date;
 
 import org.junit.Test;
 
-import static biweekly.ICalVersion.*;
 import biweekly.parameter.Related;
 import biweekly.property.Action;
 import biweekly.property.Attachment;
@@ -90,15 +92,15 @@ public class VAlarmTest {
 		component = new VAlarm(Action.email(), new Trigger(new Date()));
 		component.setSummary("");
 		component.setDescription("");
-		component.addAttendee(new Attendee(""));
+		component.addAttendee(new Attendee(null, null, ""));
 		assertValidate(component).run();
 
 		//only EMAIL alarms can have attendees
 		component = new VAlarm(Action.audio(), new Trigger(new Date()));
-		component.addAttendee(new Attendee(""));
+		component.addAttendee(new Attendee(null, null, ""));
 		assertValidate(component).run(9);
 		component = new VAlarm(Action.display(), new Trigger(new Date()));
-		component.addAttendee(new Attendee(""));
+		component.addAttendee(new Attendee(null, null, ""));
 		assertValidate(component).run(9, 2);
 	}
 
