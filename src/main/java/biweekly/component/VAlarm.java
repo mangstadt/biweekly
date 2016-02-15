@@ -78,6 +78,10 @@ import biweekly.util.Duration;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-67">RFC 2445
  * p.67-73</a>
  */
+/*
+ * Note: References to the vCal 1.0 spec are omitted from the property
+ * getter/setter method Javadocs because vCal does not use the VALARM component.
+ */
 public class VAlarm extends ICalComponent {
 	/**
 	 * Creates a new alarm. Consider using one of the static factory methods
@@ -180,6 +184,8 @@ public class VAlarm extends ICalComponent {
 	 * @return the attachments (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-80">RFC 5545
 	 * p.80-1</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-77">RFC 2445
+	 * p.77-8</a>
 	 */
 	public List<Attachment> getAttachments() {
 		return getProperties(Attachment.class);
@@ -191,6 +197,8 @@ public class VAlarm extends ICalComponent {
 	 * @param attachment the attachment to add
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-80">RFC 5545
 	 * p.80-1</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-77">RFC 2445
+	 * p.77-8</a>
 	 */
 	public void addAttachment(Attachment attachment) {
 		addProperty(attachment);
@@ -212,6 +220,8 @@ public class VAlarm extends ICalComponent {
 	 * @return the description or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545
 	 * p.84-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-81">RFC 2445
+	 * p.81-2</a>
 	 */
 	public Description getDescription() {
 		return getProperty(Description.class);
@@ -233,6 +243,8 @@ public class VAlarm extends ICalComponent {
 	 * @param description the description or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545
 	 * p.84-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-81">RFC 2445
+	 * p.81-2</a>
 	 */
 	public void setDescription(Description description) {
 		setProperty(Description.class, description);
@@ -255,6 +267,8 @@ public class VAlarm extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545
 	 * p.84-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-81">RFC 2445
+	 * p.81-2</a>
 	 */
 	public Description setDescription(String description) {
 		Description prop = (description == null) ? null : new Description(description);
@@ -276,6 +290,8 @@ public class VAlarm extends ICalComponent {
 	 * @return the summary or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545
 	 * p.93-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-89">RFC 2445
+	 * p.89-90</a>
 	 */
 	public Summary getSummary() {
 		return getProperty(Summary.class);
@@ -295,6 +311,8 @@ public class VAlarm extends ICalComponent {
 	 * @param summary the summary or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545
 	 * p.93-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-89">RFC 2445
+	 * p.89-90</a>
 	 */
 	public void setSummary(Summary summary) {
 		setProperty(Summary.class, summary);
@@ -315,6 +333,8 @@ public class VAlarm extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545
 	 * p.93-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-89">RFC 2445
+	 * p.89-90</a>
 	 */
 	public Summary setSummary(String summary) {
 		Summary prop = (summary == null) ? null : new Summary(summary);
@@ -328,6 +348,8 @@ public class VAlarm extends ICalComponent {
 	 * @return the email recipients (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-102">RFC 2445
+	 * p.102-4</a>
 	 */
 	public List<Attendee> getAttendees() {
 		return getProperties(Attendee.class);
@@ -339,6 +361,8 @@ public class VAlarm extends ICalComponent {
 	 * @param attendee the email recipient
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-102">RFC 2445
+	 * p.102-4</a>
 	 */
 	public void addAttendee(Attendee attendee) {
 		addProperty(attendee);
@@ -349,6 +373,8 @@ public class VAlarm extends ICalComponent {
 	 * @return the action or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-132">RFC 5545
 	 * p.132-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-126">RFC 2445
+	 * p.126</a>
 	 */
 	public Action getAction() {
 		return getProperty(Action.class);
@@ -359,6 +385,8 @@ public class VAlarm extends ICalComponent {
 	 * @param action the action or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-132">RFC 5545
 	 * p.132-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-126">RFC 2445
+	 * p.126</a>
 	 */
 	public void setAction(Action action) {
 		setProperty(Action.class, action);
@@ -369,6 +397,8 @@ public class VAlarm extends ICalComponent {
 	 * @return the duration or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-99">RFC 5545
 	 * p.99</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-94">RFC 2445
+	 * p.94-5</a>
 	 */
 	public DurationProperty getDuration() {
 		return getProperty(DurationProperty.class);
@@ -379,6 +409,8 @@ public class VAlarm extends ICalComponent {
 	 * @param duration the duration or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-99">RFC 5545
 	 * p.99</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-94">RFC 2445
+	 * p.94-5</a>
 	 */
 	public void setDuration(DurationProperty duration) {
 		setProperty(DurationProperty.class, duration);
@@ -390,6 +422,8 @@ public class VAlarm extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-99">RFC 5545
 	 * p.99</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-94">RFC 2445
+	 * p.94-5</a>
 	 */
 	public DurationProperty setDuration(Duration duration) {
 		DurationProperty prop = (duration == null) ? null : new DurationProperty(duration);
@@ -403,6 +437,8 @@ public class VAlarm extends ICalComponent {
 	 * @return the repeat count or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-133">RFC 5545
 	 * p.133</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-126">RFC 2445
+	 * p.126-7</a>
 	 */
 	public Repeat getRepeat() {
 		return getProperty(Repeat.class);
@@ -414,6 +450,8 @@ public class VAlarm extends ICalComponent {
 	 * @param repeat the repeat count or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-133">RFC 5545
 	 * p.133</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-126">RFC 2445
+	 * p.126-7</a>
 	 */
 	public void setRepeat(Repeat repeat) {
 		setProperty(Repeat.class, repeat);
@@ -427,6 +465,8 @@ public class VAlarm extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-133">RFC 5545
 	 * p.133</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-126">RFC 2445
+	 * p.126-7</a>
 	 */
 	public Repeat setRepeat(Integer count) {
 		Repeat prop = (count == null) ? null : new Repeat(count);
@@ -441,6 +481,8 @@ public class VAlarm extends ICalComponent {
 	 * @param pauseDuration the length of the pause between repeats
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-133">RFC 5545
 	 * p.133</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-126">RFC 2445
+	 * p.126-7</a>
 	 */
 	public void setRepeat(int count, Duration pauseDuration) {
 		Repeat repeat = new Repeat(count);
@@ -454,6 +496,8 @@ public class VAlarm extends ICalComponent {
 	 * @return the trigger time or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-133">RFC 5545
 	 * p.133-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-127">RFC 2445
+	 * p.127-9</a>
 	 */
 	public Trigger getTrigger() {
 		return getProperty(Trigger.class);
@@ -464,6 +508,8 @@ public class VAlarm extends ICalComponent {
 	 * @param trigger the trigger time or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-133">RFC 5545
 	 * p.133-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-127">RFC 2445
+	 * p.127-9</a>
 	 */
 	public void setTrigger(Trigger trigger) {
 		setProperty(Trigger.class, trigger);

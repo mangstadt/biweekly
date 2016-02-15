@@ -66,6 +66,11 @@ import biweekly.property.TimezoneUrl;
  * p.62-71</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-60">RFC 2445 p.60-7</a>
  */
+/*
+ * Note: References to the vCal 1.0 spec are omitted from the property
+ * getter/setter method Javadocs because vCal does not use the VTIMEZONE
+ * component.
+ */
 public class VTimezone extends ICalComponent {
 	/**
 	 * Creates a new timezone component.
@@ -89,6 +94,8 @@ public class VTimezone extends ICalComponent {
 	 * @return the timezone ID or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-102">RFC 5545
 	 * p.102-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-97">RFC 2445
+	 * p.97-8</a>
 	 */
 	public TimezoneId getTimezoneId() {
 		return getProperty(TimezoneId.class);
@@ -99,6 +106,8 @@ public class VTimezone extends ICalComponent {
 	 * @param timezoneId the timezone ID or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-102">RFC 5545
 	 * p.102-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-97">RFC 2445
+	 * p.97-8</a>
 	 */
 	public void setTimezoneId(TimezoneId timezoneId) {
 		setProperty(TimezoneId.class, timezoneId);
@@ -110,6 +119,8 @@ public class VTimezone extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-102">RFC 5545
 	 * p.102-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-97">RFC 2445
+	 * p.97-8</a>
 	 */
 	public TimezoneId setTimezoneId(String timezoneId) {
 		TimezoneId prop = (timezoneId == null) ? null : new TimezoneId(timezoneId);
@@ -122,6 +133,8 @@ public class VTimezone extends ICalComponent {
 	 * @return the last modified date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131</a>
 	 */
 	public LastModified getLastModified() {
 		return getProperty(LastModified.class);
@@ -132,6 +145,8 @@ public class VTimezone extends ICalComponent {
 	 * @param lastModified the last modified date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131</a>
 	 */
 	public void setLastModified(LastModified lastModified) {
 		setProperty(LastModified.class, lastModified);
@@ -143,6 +158,8 @@ public class VTimezone extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131</a>
 	 */
 	public LastModified setLastModified(Date lastModified) {
 		LastModified prop = (lastModified == null) ? null : new LastModified(lastModified);
@@ -156,6 +173,8 @@ public class VTimezone extends ICalComponent {
 	 * @return the URL or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-106">RFC 5545
 	 * p.106</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-101">RFC 2445
+	 * p.101</a>
 	 */
 	public TimezoneUrl getTimezoneUrl() {
 		return getProperty(TimezoneUrl.class);
@@ -167,6 +186,8 @@ public class VTimezone extends ICalComponent {
 	 * @param url the URL or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-106">RFC 5545
 	 * p.106</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-101">RFC 2445
+	 * p.101</a>
 	 */
 	public void setTimezoneUrl(TimezoneUrl url) {
 		setProperty(TimezoneUrl.class, url);
@@ -180,6 +201,8 @@ public class VTimezone extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-106">RFC 5545
 	 * p.106</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-101">RFC 2445
+	 * p.101</a>
 	 */
 	public TimezoneUrl setTimezoneUrl(String url) {
 		TimezoneUrl prop = (url == null) ? null : new TimezoneUrl(url);
@@ -190,6 +213,10 @@ public class VTimezone extends ICalComponent {
 	/**
 	 * Gets the timezone's "standard" observance time ranges.
 	 * @return the "standard" observance time ranges (this list is immutable)
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
+	 * p.62-71</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-60">RFC 2445
+	 * p.60-7</a>
 	 */
 	public List<StandardTime> getStandardTimes() {
 		return getComponents(StandardTime.class);
@@ -198,6 +225,10 @@ public class VTimezone extends ICalComponent {
 	/**
 	 * Adds a "standard" observance time range.
 	 * @param standardTime the "standard" observance time
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
+	 * p.62-71</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-60">RFC 2445
+	 * p.60-7</a>
 	 */
 	public void addStandardTime(StandardTime standardTime) {
 		addComponent(standardTime);
@@ -207,6 +238,10 @@ public class VTimezone extends ICalComponent {
 	 * Gets the timezone's "daylight savings" observance time ranges.
 	 * @return the "daylight savings" observance time ranges (this list is
 	 * immutable)
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
+	 * p.62-71</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-60">RFC 2445
+	 * p.60-7</a>
 	 */
 	public List<DaylightSavingsTime> getDaylightSavingsTime() {
 		return getComponents(DaylightSavingsTime.class);
@@ -215,6 +250,10 @@ public class VTimezone extends ICalComponent {
 	/**
 	 * Adds a "daylight savings" observance time range.
 	 * @param daylightSavingsTime the "daylight savings" observance time
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
+	 * p.62-71</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-60">RFC 2445
+	 * p.60-7</a>
 	 */
 	public void addDaylightSavingsTime(DaylightSavingsTime daylightSavingsTime) {
 		addComponent(daylightSavingsTime);

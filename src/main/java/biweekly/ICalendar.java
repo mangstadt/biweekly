@@ -140,6 +140,11 @@ public class ICalendar extends ICalComponent {
 	 * {@link ICalendar} objects are initialized with a product ID representing
 	 * this library.
 	 * @return the property instance or null if not set
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545
+	 * p.78-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-75">RFC 2445
+	 * p.75-6</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
 	 */
 	public ProductId getProductId() {
 		return getProperty(ProductId.class);
@@ -150,6 +155,11 @@ public class ICalendar extends ICalComponent {
 	 * {@link ICalendar} objects are initialized with a product ID representing
 	 * this library.
 	 * @param prodId the property instance or null to remove
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545
+	 * p.78-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-75">RFC 2445
+	 * p.75-6</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
 	 */
 	public void setProductId(ProductId prodId) {
 		setProperty(ProductId.class, prodId);
@@ -162,6 +172,11 @@ public class ICalendar extends ICalComponent {
 	 * @param prodId a unique string representing the application (e.g.
 	 * "-//Company//Application//EN") or null to remove
 	 * @return the property that was created
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545
+	 * p.78-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-75">RFC 2445
+	 * p.75-6</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
 	 */
 	public ProductId setProductId(String prodId) {
 		ProductId property = (prodId == null) ? null : new ProductId(prodId);
@@ -173,6 +188,10 @@ public class ICalendar extends ICalComponent {
 	 * Gets the calendar system that this iCalendar object uses. If none is
 	 * specified, then the calendar is assumed to be in Gregorian format.
 	 * @return the calendar system or null if not set
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-76">RFC 5545
+	 * p.76-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-73">RFC 2445
+	 * p.73-4</a>
 	 */
 	public CalendarScale getCalendarScale() {
 		return getProperty(CalendarScale.class);
@@ -182,6 +201,10 @@ public class ICalendar extends ICalComponent {
 	 * Sets the calendar system that this iCalendar object uses. If none is
 	 * specified, then the calendar is assumed to be in Gregorian format.
 	 * @param calendarScale the calendar system or null to remove
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-76">RFC 5545
+	 * p.76-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-73">RFC 2445
+	 * p.73-4</a>
 	 */
 	public void setCalendarScale(CalendarScale calendarScale) {
 		setProperty(CalendarScale.class, calendarScale);
@@ -191,6 +214,10 @@ public class ICalendar extends ICalComponent {
 	 * Gets the value of the Content-Type "method" parameter if the iCalendar
 	 * object is defined as a MIME message entity.
 	 * @return the property or null if not set
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545
+	 * p.77-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-74">RFC 2445
+	 * p.74-5</a>
 	 */
 	public Method getMethod() {
 		return getProperty(Method.class);
@@ -200,6 +227,10 @@ public class ICalendar extends ICalComponent {
 	 * Sets the value of the Content-Type "method" parameter if the iCalendar
 	 * object is defined as a MIME message entity.
 	 * @param method the property or null to remove
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545
+	 * p.77-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-74">RFC 2445
+	 * p.74-5</a>
 	 */
 	public void setMethod(Method method) {
 		setProperty(Method.class, method);
@@ -210,6 +241,10 @@ public class ICalendar extends ICalComponent {
 	 * object is defined as a MIME message entity.
 	 * @param method the method or null to remove
 	 * @return the property that was created
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545
+	 * p.77-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-74">RFC 2445
+	 * p.74-5</a>
 	 */
 	public Method setMethod(String method) {
 		Method property = (method == null) ? null : new Method(method);
@@ -227,7 +262,10 @@ public class ICalendar extends ICalComponent {
 	 * In this case, each property instance must be assigned a LANGUAGE
 	 * parameter.
 	 * </p>
-	 * @return the name properties (this list is immutable)
+	 * @return the names (this list is immutable)
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-5">draft-ietf-calext-extensions-01
+	 * p.5</a>
 	 */
 	public List<Name> getNames() {
 		return getProperties(Name.class);
@@ -236,6 +274,9 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Sets the human-readable name of the calendar as a whole.
 	 * @param name the name or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-5">draft-ietf-calext-extensions-01
+	 * p.5</a>
 	 */
 	public void setName(Name name) {
 		setProperty(Name.class, name);
@@ -245,6 +286,9 @@ public class ICalendar extends ICalComponent {
 	 * Sets the human-readable name of the calendar as a whole.
 	 * @param name the name or null to remove
 	 * @return the property that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-5">draft-ietf-calext-extensions-01
+	 * p.5</a>
 	 */
 	public Name setName(String name) {
 		Name property = (name == null) ? null : new Name(name);
@@ -263,6 +307,9 @@ public class ICalendar extends ICalComponent {
 	 * parameter.
 	 * </p>
 	 * @param name the name
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-5">draft-ietf-calext-extensions-01
+	 * p.5</a>
 	 */
 	public void addName(Name name) {
 		addProperty(name);
@@ -280,6 +327,9 @@ public class ICalendar extends ICalComponent {
 	 * </p>
 	 * @param name the name (e.g. "Company Vacation Days")
 	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-5">draft-ietf-calext-extensions-01
+	 * p.5</a>
 	 */
 	public Name addName(String name) {
 		Name property = new Name(name);
@@ -297,7 +347,10 @@ public class ICalendar extends ICalComponent {
 	 * description in multiple languages. In this case, each property instance
 	 * must be assigned a LANGUAGE parameter.
 	 * </p>
-	 * @return the description properties (this list is immutable)
+	 * @return the descriptions (this list is immutable)
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+	 * p.6</a>
 	 */
 	public List<Description> getDescriptions() {
 		return getProperties(Description.class);
@@ -306,6 +359,9 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Sets the human-readable description of the calendar as a whole.
 	 * @param description the description or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+	 * p.6</a>
 	 */
 	public void setDescription(Description description) {
 		setProperty(Description.class, description);
@@ -315,6 +371,9 @@ public class ICalendar extends ICalComponent {
 	 * Sets the human-readable description of the calendar as a whole.
 	 * @param description the description or null to remove
 	 * @return the property that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+	 * p.6</a>
 	 */
 	public Description setDescription(String description) {
 		Description property = (description == null) ? null : new Description(description);
@@ -333,6 +392,9 @@ public class ICalendar extends ICalComponent {
 	 * must be assigned a LANGUAGE parameter.
 	 * </p>
 	 * @param description the description
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+	 * p.6</a>
 	 */
 	public void addDescription(Description description) {
 		addProperty(description);
@@ -350,6 +412,9 @@ public class ICalendar extends ICalComponent {
 	 * </p>
 	 * @param description the description
 	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+	 * p.6</a>
 	 */
 	public Description addDescription(String description) {
 		Description property = new Description(description);
@@ -360,6 +425,9 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the calendar's unique identifier.
 	 * @return the unique identifier or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+	 * p.6</a>
 	 */
 	public Uid getUid() {
 		return getProperty(Uid.class);
@@ -368,6 +436,9 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Sets the calendar's unique identifier.
 	 * @param uid the unique identifier or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+	 * p.6</a>
 	 */
 	public void setUid(Uid uid) {
 		setProperty(Uid.class, uid);
@@ -377,6 +448,9 @@ public class ICalendar extends ICalComponent {
 	 * Sets the calendar's unique identifier.
 	 * @param uid the unique identifier or null to remove
 	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
+	 * p.6</a>
 	 */
 	public Uid setUid(String uid) {
 		Uid property = (uid == null) ? null : new Uid(uid);
@@ -387,7 +461,10 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the date and time that the information in this calendar object was
 	 * last revised.
-	 * @return the date/time or null if not set
+	 * @return the last modified time or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
 	 */
 	public LastModified getLastModified() {
 		return getProperty(LastModified.class);
@@ -396,7 +473,10 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Sets the date and time that the information in this calendar object was
 	 * last revised.
-	 * @param lastModified the property or null to remove
+	 * @param lastModified the last modified time or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
 	 */
 	public void setLastModified(LastModified lastModified) {
 		setProperty(LastModified.class, lastModified);
@@ -407,6 +487,9 @@ public class ICalendar extends ICalComponent {
 	 * last revised.
 	 * @param lastModified the date and time or null to remove
 	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
 	 */
 	public LastModified setLastModified(Date lastModified) {
 		LastModified property = (lastModified == null) ? null : new LastModified(lastModified);
@@ -419,6 +502,9 @@ public class ICalendar extends ICalComponent {
 	 * calendar (such as a website that allows you to interact with the calendar
 	 * data).
 	 * @return the URL or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
 	 */
 	public Url getUrl() {
 		return getProperty(Url.class);
@@ -429,6 +515,9 @@ public class ICalendar extends ICalComponent {
 	 * calendar (such as a website that allows you to interact with the calendar
 	 * data).
 	 * @param url the URL or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
 	 */
 	public void setUrl(Url url) {
 		setProperty(Url.class, url);
@@ -440,6 +529,9 @@ public class ICalendar extends ICalComponent {
 	 * data).
 	 * @param url the URL or null to remove
 	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
 	 */
 	public Url setUrl(String url) {
 		Url property = (url == null) ? null : new Url(url);
@@ -450,6 +542,9 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the keywords that describe the calendar.
 	 * @return the categories (this list is immutable)
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
 	 */
 	public List<Categories> getCategories() {
 		return getProperties(Categories.class);
@@ -458,6 +553,9 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Adds a list of keywords that describe the calendar.
 	 * @param categories the categories to add
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
 	 */
 	public void addCategories(Categories categories) {
 		addProperty(categories);
@@ -467,6 +565,9 @@ public class ICalendar extends ICalComponent {
 	 * Adds a list of keywords that describe the calendar.
 	 * @param categories the categories to add
 	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
 	 */
 	public Categories addCategories(String... categories) {
 		Categories prop = new Categories(categories);
@@ -478,6 +579,9 @@ public class ICalendar extends ICalComponent {
 	 * Gets the suggested minimum polling interval for checking for updates to
 	 * the calendar data.
 	 * @return the refresh interval or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
 	 */
 	public RefreshInterval getRefreshInterval() {
 		return getProperty(RefreshInterval.class);
@@ -487,6 +591,9 @@ public class ICalendar extends ICalComponent {
 	 * Sets the suggested minimum polling interval for checking for updates to
 	 * the calendar data.
 	 * @param refreshInterval the refresh interval or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
 	 */
 	public void setRefreshInterval(RefreshInterval refreshInterval) {
 		setProperty(RefreshInterval.class, refreshInterval);
@@ -497,6 +604,9 @@ public class ICalendar extends ICalComponent {
 	 * the calendar data.
 	 * @param refreshInterval the refresh interval or null to remove
 	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
+	 * p.7</a>
 	 */
 	public RefreshInterval setRefreshInterval(Duration refreshInterval) {
 		RefreshInterval property = (refreshInterval == null) ? null : new RefreshInterval(refreshInterval);
@@ -507,6 +617,9 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the location that the calendar data can be refreshed from.
 	 * @return the source or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-8">draft-ietf-calext-extensions-01
+	 * p.8</a>
 	 */
 	public Source getSource() {
 		return getProperty(Source.class);
@@ -515,6 +628,9 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Sets the location that the calendar data can be refreshed from.
 	 * @param source the source or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-8">draft-ietf-calext-extensions-01
+	 * p.8</a>
 	 */
 	public void setSource(Source source) {
 		setProperty(Source.class, source);
@@ -524,6 +640,9 @@ public class ICalendar extends ICalComponent {
 	 * Sets the location that the calendar data can be refreshed from.
 	 * @param source the source or null to remove
 	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-8">draft-ietf-calext-extensions-01
+	 * p.8</a>
 	 */
 	public Source setSource(String url) {
 		Source property = (url == null) ? null : new Source(url);
@@ -535,6 +654,9 @@ public class ICalendar extends ICalComponent {
 	 * Gets the color that clients may use when displaying the calendar (for
 	 * example, a background color).
 	 * @return the color or null if not set
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01
+	 * p.9</a>
 	 */
 	public Color getColor() {
 		return getProperty(Color.class);
@@ -544,6 +666,9 @@ public class ICalendar extends ICalComponent {
 	 * Sets the color that clients may use when displaying the calendar (for
 	 * example, a background color).
 	 * @param color the color or null to remove
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01
+	 * p.9</a>
 	 */
 	public void setColor(Color color) {
 		setProperty(Color.class, color);
@@ -558,6 +683,9 @@ public class ICalendar extends ICalComponent {
 	 * >Section 4.3 of the CSS Color Module Level 3 Recommendation</a>. For
 	 * example, "aliceblue", "green", "navy".
 	 * @return the property object that was created
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01
+	 * p.9</a>
 	 */
 	public Color setColor(String color) {
 		Color property = (color == null) ? null : new Color(color);
@@ -568,6 +696,9 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the images that are associated with the calendar.
 	 * @return the images (this list is immutable)
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-10">draft-ietf-calext-extensions-01
+	 * p.10</a>
 	 */
 	public List<Image> getImages() {
 		return getProperties(Image.class);
@@ -576,6 +707,9 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Adds an image that is associated with the calendar.
 	 * @param image the image
+	 * @see <a
+	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-10">draft-ietf-calext-extensions-01
+	 * p.10</a>
 	 */
 	public void addImage(Image image) {
 		addProperty(image);
@@ -584,6 +718,11 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the calendar's events.
 	 * @return the events (this list is immutable)
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-52">RFC 5545
+	 * p.52-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-52">RFC 2445
+	 * p.52-4</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.13</a>
 	 */
 	public List<VEvent> getEvents() {
 		return getComponents(VEvent.class);
@@ -592,6 +731,11 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Adds an event to the calendar.
 	 * @param event the event
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-52">RFC 5545
+	 * p.52-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-52">RFC 2445
+	 * p.52-4</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.13</a>
 	 */
 	public void addEvent(VEvent event) {
 		addComponent(event);
@@ -600,6 +744,11 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the calendar's to-do tasks.
 	 * @return the to-do tasks (this list is immutable)
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545
+	 * p.55-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-55">RFC 2445
+	 * p.55-6</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.14</a>
 	 */
 	public List<VTodo> getTodos() {
 		return getComponents(VTodo.class);
@@ -608,6 +757,11 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Adds a to-do task to the calendar.
 	 * @param todo the to-do task
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545
+	 * p.55-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-55">RFC 2445
+	 * p.55-6</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.14</a>
 	 */
 	public void addTodo(VTodo todo) {
 		addComponent(todo);
@@ -616,6 +770,10 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the calendar's journal entries.
 	 * @return the journal entries (this list is immutable)
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545
+	 * p.57-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-56">RFC 2445
+	 * p.56-7</a>
 	 */
 	public List<VJournal> getJournals() {
 		return getComponents(VJournal.class);
@@ -624,6 +782,10 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Adds a journal entry to the calendar.
 	 * @param journal the journal entry
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545
+	 * p.57-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-56">RFC 2445
+	 * p.56-7</a>
 	 */
 	public void addJournal(VJournal journal) {
 		addComponent(journal);
@@ -632,6 +794,10 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the calendar's free/busy entries.
 	 * @return the free/busy entries (this list is immutable)
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-59">RFC 5545
+	 * p.59-62</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-58">RFC 2445
+	 * p.58-60</a>
 	 */
 	public List<VFreeBusy> getFreeBusies() {
 		return getComponents(VFreeBusy.class);
@@ -640,6 +806,10 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Adds a free/busy entry to the calendar.
 	 * @param freeBusy the free/busy entry
+	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-59">RFC 5545
+	 * p.59-62</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-58">RFC 2445
+	 * p.58-60</a>
 	 */
 	public void addFreeBusy(VFreeBusy freeBusy) {
 		addComponent(freeBusy);

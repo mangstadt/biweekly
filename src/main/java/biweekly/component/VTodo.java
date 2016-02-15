@@ -129,6 +129,8 @@ public class VTodo extends ICalComponent {
 	 * @return the UID or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-117">RFC 5545
 	 * p.117-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-111">RFC 2445
+	 * p.111-2</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.37</a>
 	 */
 	public Uid getUid() {
@@ -142,6 +144,8 @@ public class VTodo extends ICalComponent {
 	 * @param uid the UID or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-117">RFC 5545
 	 * p.117-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-111">RFC 2445
+	 * p.111-2</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.37</a>
 	 */
 	public void setUid(Uid uid) {
@@ -156,6 +160,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-117">RFC 5545
 	 * p.117-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-111">RFC 2445
+	 * p.111-2</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.37</a>
 	 */
 	public Uid setUid(String uid) {
@@ -174,6 +180,8 @@ public class VTodo extends ICalComponent {
 	 * @return the date time stamp or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-137">RFC 5545
 	 * p.137-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-130">RFC 2445
+	 * p.130-1</a>
 	 */
 	public DateTimeStamp getDateTimeStamp() {
 		return getProperty(DateTimeStamp.class);
@@ -189,6 +197,8 @@ public class VTodo extends ICalComponent {
 	 * @param dateTimeStamp the date time stamp or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-137">RFC 5545
 	 * p.137-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-130">RFC 2445
+	 * p.130-1</a>
 	 */
 	public void setDateTimeStamp(DateTimeStamp dateTimeStamp) {
 		setProperty(DateTimeStamp.class, dateTimeStamp);
@@ -205,6 +215,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-137">RFC 5545
 	 * p.137-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-130">RFC 2445
+	 * p.130-1</a>
 	 */
 	public DateTimeStamp setDateTimeStamp(Date dateTimeStamp) {
 		DateTimeStamp prop = (dateTimeStamp == null) ? null : new DateTimeStamp(dateTimeStamp);
@@ -218,6 +230,8 @@ public class VTodo extends ICalComponent {
 	 * @return the classification level or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-82">RFC 5545
 	 * p.82-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-79">RFC 2445
+	 * p.79-80</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.28-9</a>
 	 */
 	public Classification getClassification() {
@@ -230,6 +244,8 @@ public class VTodo extends ICalComponent {
 	 * @param classification the classification level or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-82">RFC 5545
 	 * p.82-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-79">RFC 2445
+	 * p.79-80</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.28-9</a>
 	 */
 	public void setClassification(Classification classification) {
@@ -244,6 +260,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-82">RFC 5545
 	 * p.82-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-79">RFC 2445
+	 * p.79-80</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.28-9</a>
 	 */
 	public Classification setClassification(String classification) {
@@ -257,6 +275,8 @@ public class VTodo extends ICalComponent {
 	 * @return the completion date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-94">RFC 5545
 	 * p.94-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-90">RFC 2445
+	 * p.90-1</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.29</a>
 	 */
 	public Completed getCompleted() {
@@ -268,6 +288,8 @@ public class VTodo extends ICalComponent {
 	 * @param completed the completion date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-94">RFC 5545
 	 * p.94-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-90">RFC 2445
+	 * p.90-1</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.29</a>
 	 */
 	public void setCompleted(Completed completed) {
@@ -280,6 +302,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-94">RFC 5545
 	 * p.94-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-90">RFC 2445
+	 * p.90-1</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.29</a>
 	 */
 	public Completed setCompleted(Date completed) {
@@ -293,6 +317,8 @@ public class VTodo extends ICalComponent {
 	 * @return the creation date-time or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545
 	 * p.136</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-129">RFC 2445
+	 * p.129-30</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.29</a>
 	 */
 	public Created getCreated() {
@@ -304,6 +330,8 @@ public class VTodo extends ICalComponent {
 	 * @param created the creation date-time or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545
 	 * p.136</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-129">RFC 2445
+	 * p.129-30</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.29</a>
 	 */
 	public void setCreated(Created created) {
@@ -316,6 +344,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545
 	 * p.136</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-129">RFC 2445
+	 * p.129-30</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.29</a>
 	 */
 	public Created setCreated(Date created) {
@@ -330,6 +360,8 @@ public class VTodo extends ICalComponent {
 	 * @return the description or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545
 	 * p.84-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-81">RFC 2445
+	 * p.81-2</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.30</a>
 	 */
 	public Description getDescription() {
@@ -342,6 +374,8 @@ public class VTodo extends ICalComponent {
 	 * @param description the description or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545
 	 * p.84-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-81">RFC 2445
+	 * p.81-2</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.30</a>
 	 */
 	public void setDescription(Description description) {
@@ -355,6 +389,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545
 	 * p.84-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-81">RFC 2445
+	 * p.81-2</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.30</a>
 	 */
 	public Description setDescription(String description) {
@@ -368,6 +404,8 @@ public class VTodo extends ICalComponent {
 	 * @return the start date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-93">RFC 2445
+	 * p.93-4</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35</a>
 	 */
 	public DateStart getDateStart() {
@@ -379,6 +417,8 @@ public class VTodo extends ICalComponent {
 	 * @param dateStart the start date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-93">RFC 2445
+	 * p.93-4</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35</a>
 	 */
 	public void setDateStart(DateStart dateStart) {
@@ -391,6 +431,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-93">RFC 2445
+	 * p.93-4</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35</a>
 	 */
 	public DateStart setDateStart(Date dateStart) {
@@ -407,6 +449,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-93">RFC 2445
+	 * p.93-4</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35</a>
 	 */
 	public DateStart setDateStart(Date dateStart, boolean hasTime) {
@@ -420,7 +464,10 @@ public class VTodo extends ICalComponent {
 	 * @return the geographical coordinates or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-85">RFC 5545
 	 * p.85-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-82">RFC 2445
+	 * p.82-3</a>
 	 */
+	//Note: vCal 1.0 spec is omitted because GEO is not used in vCal 1.0 to-dos
 	public Geo getGeo() {
 		return getProperty(Geo.class);
 	}
@@ -430,7 +477,10 @@ public class VTodo extends ICalComponent {
 	 * @param geo the geographical coordinates or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-85">RFC 5545
 	 * p.85-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-82">RFC 2445
+	 * p.82-3</a>
 	 */
+	//Note: vCal 1.0 spec is omitted because GEO is not used in vCal 1.0 to-dos
 	public void setGeo(Geo geo) {
 		setProperty(Geo.class, geo);
 	}
@@ -440,6 +490,8 @@ public class VTodo extends ICalComponent {
 	 * @return the last modified date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
 	 */
 	public LastModified getLastModified() {
@@ -451,6 +503,8 @@ public class VTodo extends ICalComponent {
 	 * @param lastModified the last modified date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
 	 */
 	public void setLastModified(LastModified lastModified) {
@@ -463,6 +517,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
 	 */
 	public LastModified setLastModified(Date lastModified) {
@@ -476,6 +532,8 @@ public class VTodo extends ICalComponent {
 	 * @return the location or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-87">RFC 5545
 	 * p.87-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-84">RFC 2445
+	 * p.84</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.32</a>
 	 */
 	public Location getLocation() {
@@ -487,6 +545,8 @@ public class VTodo extends ICalComponent {
 	 * @param location the location or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-87">RFC 5545
 	 * p.87-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-84">RFC 2445
+	 * p.84</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.32</a>
 	 */
 	public void setLocation(Location location) {
@@ -499,6 +559,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-87">RFC 5545
 	 * p.87-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-84">RFC 2445
+	 * p.84</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.32</a>
 	 */
 	public Location setLocation(String location) {
@@ -512,6 +574,8 @@ public class VTodo extends ICalComponent {
 	 * @return the organizer or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
 	 * p.111-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-106">RFC 2445
+	 * p.106-7</a>
 	 */
 	public Organizer getOrganizer() {
 		return getProperty(Organizer.class);
@@ -522,6 +586,8 @@ public class VTodo extends ICalComponent {
 	 * @param organizer the organizer or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
 	 * p.111-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-106">RFC 2445
+	 * p.106-7</a>
 	 */
 	public void setOrganizer(Organizer organizer) {
 		setProperty(Organizer.class, organizer);
@@ -534,6 +600,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
 	 * p.111-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-106">RFC 2445
+	 * p.106-7</a>
 	 */
 	public Organizer setOrganizer(String email) {
 		Organizer prop = (email == null) ? null : new Organizer(null, email);
@@ -546,6 +614,8 @@ public class VTodo extends ICalComponent {
 	 * @return the percent complete or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-88">RFC 5545
 	 * p.88-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-85">RFC 2445
+	 * p.85</a>
 	 */
 	public PercentComplete getPercentComplete() {
 		return getProperty(PercentComplete.class);
@@ -556,6 +626,8 @@ public class VTodo extends ICalComponent {
 	 * @param percentComplete the percent complete or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-88">RFC 5545
 	 * p.88-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-85">RFC 2445
+	 * p.85</a>
 	 */
 	public void setPercentComplete(PercentComplete percentComplete) {
 		setProperty(PercentComplete.class, percentComplete);
@@ -567,6 +639,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-88">RFC 5545
 	 * p.88-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-85">RFC 2445
+	 * p.85</a>
 	 */
 	public PercentComplete setPercentComplete(Integer percent) {
 		PercentComplete prop = (percent == null) ? null : new PercentComplete(percent);
@@ -579,6 +653,8 @@ public class VTodo extends ICalComponent {
 	 * @return the priority or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-89">RFC 5545
 	 * p.89-90</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-85">RFC 2445
+	 * p.85-7</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.33</a>
 	 */
 	public Priority getPriority() {
@@ -590,6 +666,8 @@ public class VTodo extends ICalComponent {
 	 * @param priority the priority or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-89">RFC 5545
 	 * p.89-90</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-85">RFC 2445
+	 * p.85-7</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.33</a>
 	 */
 	public void setPriority(Priority priority) {
@@ -603,6 +681,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-89">RFC 5545
 	 * p.89-90</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-85">RFC 2445
+	 * p.85-7</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.33</a>
 	 */
 	public Priority setPriority(Integer priority) {
@@ -619,6 +699,8 @@ public class VTodo extends ICalComponent {
 	 * @return the recurrence ID or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-112">RFC 5545
 	 * p.112-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-107">RFC 2445
+	 * p.107-9</a>
 	 */
 	public RecurrenceId getRecurrenceId() {
 		return getProperty(RecurrenceId.class);
@@ -632,6 +714,8 @@ public class VTodo extends ICalComponent {
 	 * @param recurrenceId the recurrence ID or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-112">RFC 5545
 	 * p.112-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-107">RFC 2445
+	 * p.107-9</a>
 	 */
 	public void setRecurrenceId(RecurrenceId recurrenceId) {
 		setProperty(RecurrenceId.class, recurrenceId);
@@ -646,6 +730,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-112">RFC 5545
 	 * p.112-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-107">RFC 2445
+	 * p.107-9</a>
 	 */
 	public RecurrenceId setRecurrenceId(Date originalStartDate) {
 		RecurrenceId prop = (originalStartDate == null) ? null : new RecurrenceId(originalStartDate);
@@ -659,6 +745,8 @@ public class VTodo extends ICalComponent {
 	 * @return the sequence number
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131-3</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35</a>
 	 */
 	public Sequence getSequence() {
@@ -671,6 +759,8 @@ public class VTodo extends ICalComponent {
 	 * @param sequence the sequence number
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131-3</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35</a>
 	 */
 	public void setSequence(Sequence sequence) {
@@ -684,6 +774,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131-3</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35</a>
 	 */
 	public Sequence setSequence(Integer sequence) {
@@ -697,6 +789,8 @@ public class VTodo extends ICalComponent {
 	 * increment this number every time he or she makes a significant change.
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131-3</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35</a>
 	 */
 	public void incrementSequence() {
@@ -713,6 +807,8 @@ public class VTodo extends ICalComponent {
 	 * @return the status or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-92">RFC 5545
 	 * p.92-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-88">RFC 2445
+	 * p.88-9</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35-6</a>
 	 */
 	public Status getStatus() {
@@ -733,6 +829,8 @@ public class VTodo extends ICalComponent {
 	 * @param status the status or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-92">RFC 5545
 	 * p.92-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-88">RFC 2445
+	 * p.88-9</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35-6</a>
 	 */
 	public void setStatus(Status status) {
@@ -744,6 +842,9 @@ public class VTodo extends ICalComponent {
 	 * @return the summary or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545
 	 * p.93-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-89">RFC 2445
+	 * p.89-90</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.36</a>
 	 */
 	public Summary getSummary() {
 		return getProperty(Summary.class);
@@ -754,6 +855,9 @@ public class VTodo extends ICalComponent {
 	 * @param summary the summary or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545
 	 * p.93-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-89">RFC 2445
+	 * p.89-90</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.36</a>
 	 */
 	public void setSummary(Summary summary) {
 		setProperty(Summary.class, summary);
@@ -765,6 +869,9 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545
 	 * p.93-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-89">RFC 2445
+	 * p.89-90</a>
+	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.36</a>
 	 */
 	public Summary setSummary(String summary) {
 		Summary prop = (summary == null) ? null : new Summary(summary);
@@ -778,6 +885,8 @@ public class VTodo extends ICalComponent {
 	 * @return the URL or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
 	 * p.116-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-110">RFC 2445
+	 * p.110-1</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.37</a>
 	 */
 	public Url getUrl() {
@@ -790,6 +899,8 @@ public class VTodo extends ICalComponent {
 	 * @param url the URL or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
 	 * p.116-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-110">RFC 2445
+	 * p.110-1</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.37</a>
 	 */
 	public void setUrl(Url url) {
@@ -804,6 +915,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
 	 * p.116-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-110">RFC 2445
+	 * p.110-1</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.37</a>
 	 */
 	public Url setUrl(String url) {
@@ -817,6 +930,8 @@ public class VTodo extends ICalComponent {
 	 * @return the recurrence rule or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
 	 * p.122-32</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-117">RFC 2445
+	 * p.117-25</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34</a>
 	 */
 	public RecurrenceRule getRecurrenceRule() {
@@ -829,6 +944,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
 	 * p.122-32</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-117">RFC 2445
+	 * p.117-25</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34</a>
 	 */
 	public RecurrenceRule setRecurrenceRule(Recurrence recur) {
@@ -842,6 +959,8 @@ public class VTodo extends ICalComponent {
 	 * @param recurrenceRule the recurrence rule or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
 	 * p.122-32</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-117">RFC 2445
+	 * p.117-25</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34</a>
 	 */
 	public void setRecurrenceRule(RecurrenceRule recurrenceRule) {
@@ -853,6 +972,8 @@ public class VTodo extends ICalComponent {
 	 * @return the due date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-96">RFC 5545
 	 * p.96-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-92">RFC 2445
+	 * p.92-3</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.30</a>
 	 */
 	public DateDue getDateDue() {
@@ -865,6 +986,8 @@ public class VTodo extends ICalComponent {
 	 * @param dateDue the due date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-96">RFC 5545
 	 * p.96-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-92">RFC 2445
+	 * p.92-3</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.30</a>
 	 */
 	public void setDateDue(DateDue dateDue) {
@@ -878,6 +1001,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-96">RFC 5545
 	 * p.96-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-92">RFC 2445
+	 * p.92-3</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.30</a>
 	 */
 	public DateDue setDateDue(Date dateDue) {
@@ -895,6 +1020,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-96">RFC 5545
 	 * p.96-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-92">RFC 2445
+	 * p.92-3</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.30</a>
 	 */
 	public DateDue setDateDue(Date dateDue, boolean hasTime) {
@@ -908,6 +1035,8 @@ public class VTodo extends ICalComponent {
 	 * @return the duration or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-99">RFC 5545
 	 * p.99</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-94">RFC 2445
+	 * p.94-5</a>
 	 */
 	public DurationProperty getDuration() {
 		return getProperty(DurationProperty.class);
@@ -919,6 +1048,8 @@ public class VTodo extends ICalComponent {
 	 * @param duration the duration or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-99">RFC 5545
 	 * p.99</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-94">RFC 2445
+	 * p.94-5</a>
 	 */
 	public void setDuration(DurationProperty duration) {
 		setProperty(DurationProperty.class, duration);
@@ -931,6 +1062,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-99">RFC 5545
 	 * p.99</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-94">RFC 2445
+	 * p.94-5</a>
 	 */
 	public DurationProperty setDuration(Duration duration) {
 		DurationProperty prop = (duration == null) ? null : new DurationProperty(duration);
@@ -943,6 +1076,8 @@ public class VTodo extends ICalComponent {
 	 * @return the attachments (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-80">RFC 5545
 	 * p.80-1</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-77">RFC 2445
+	 * p.77-8</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25</a>
 	 */
 	public List<Attachment> getAttachments() {
@@ -954,6 +1089,8 @@ public class VTodo extends ICalComponent {
 	 * @param attachment the attachment to add
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-80">RFC 5545
 	 * p.80-1</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-77">RFC 2445
+	 * p.77-8</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25</a>
 	 */
 	public void addAttachment(Attachment attachment) {
@@ -965,6 +1102,8 @@ public class VTodo extends ICalComponent {
 	 * @return the attendees (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-102">RFC 2445
+	 * p.102-4</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25-7</a>
 	 */
 	public List<Attendee> getAttendees() {
@@ -976,6 +1115,8 @@ public class VTodo extends ICalComponent {
 	 * @param attendee the attendee
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-102">RFC 2445
+	 * p.102-4</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25-7</a>
 	 */
 	public void addAttendee(Attendee attendee) {
@@ -988,6 +1129,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-102">RFC 2445
+	 * p.102-4</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25-7</a>
 	 */
 	public Attendee addAttendee(String email) {
@@ -1001,6 +1144,8 @@ public class VTodo extends ICalComponent {
 	 * @return the categories (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545
 	 * p.81-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-78">RFC 2445
+	 * p.78-9</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.28</a>
 	 */
 	public List<Categories> getCategories() {
@@ -1013,6 +1158,8 @@ public class VTodo extends ICalComponent {
 	 * @param categories the categories to add
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545
 	 * p.81-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-78">RFC 2445
+	 * p.78-9</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.28</a>
 	 */
 	public void addCategories(Categories categories) {
@@ -1025,6 +1172,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545
 	 * p.81-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-78">RFC 2445
+	 * p.78-9</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.28</a>
 	 */
 	public Categories addCategories(String... categories) {
@@ -1039,6 +1188,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545
 	 * p.81-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-78">RFC 2445
+	 * p.78-9</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.28</a>
 	 */
 	public Categories addCategories(List<String> categories) {
@@ -1052,6 +1203,8 @@ public class VTodo extends ICalComponent {
 	 * @return the comments (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
 	 * p.83-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-80">RFC 2445
+	 * p.80-1</a>
 	 */
 	public List<Comment> getComments() {
 		return getProperties(Comment.class);
@@ -1062,6 +1215,8 @@ public class VTodo extends ICalComponent {
 	 * @param comment the comment to add
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
 	 * p.83-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-80">RFC 2445
+	 * p.80-1</a>
 	 */
 	public void addComment(Comment comment) {
 		addProperty(comment);
@@ -1073,6 +1228,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
 	 * p.83-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-80">RFC 2445
+	 * p.80-1</a>
 	 */
 	public Comment addComment(String comment) {
 		Comment prop = new Comment(comment);
@@ -1085,6 +1242,8 @@ public class VTodo extends ICalComponent {
 	 * @return the contacts (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
 	 * p.109-11</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-104">RFC 2445
+	 * p.104-6</a>
 	 */
 	public List<Contact> getContacts() {
 		return getProperties(Contact.class);
@@ -1095,6 +1254,8 @@ public class VTodo extends ICalComponent {
 	 * @param contact the contact
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
 	 * p.109-11</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-104">RFC 2445
+	 * p.104-6</a>
 	 */
 	public void addContact(Contact contact) {
 		addProperty(contact);
@@ -1106,6 +1267,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
 	 * p.109-11</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-104">RFC 2445
+	 * p.104-6</a>
 	 */
 	public Contact addContact(String contact) {
 		Contact prop = new Contact(contact);
@@ -1119,6 +1282,8 @@ public class VTodo extends ICalComponent {
 	 * @return the list of exceptions (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-118">RFC 5545
 	 * p.118-20</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-112">RFC 2445
+	 * p.112-4</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
 	 */
 	public List<ExceptionDates> getExceptionDates() {
@@ -1132,6 +1297,8 @@ public class VTodo extends ICalComponent {
 	 * @param exceptionDates the list of exceptions
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-118">RFC 5545
 	 * p.118-20</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-112">RFC 2445
+	 * p.112-4</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
 	 */
 	public void addExceptionDates(ExceptionDates exceptionDates) {
@@ -1143,6 +1310,8 @@ public class VTodo extends ICalComponent {
 	 * @return the response
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-141">RFC 5545
 	 * p.141-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-134">RFC 2445
+	 * p.134-6</a>
 	 */
 	public RequestStatus getRequestStatus() {
 		return getProperty(RequestStatus.class);
@@ -1153,6 +1322,8 @@ public class VTodo extends ICalComponent {
 	 * @param requestStatus the response
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-141">RFC 5545
 	 * p.141-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-134">RFC 2445
+	 * p.134-6</a>
 	 */
 	public void setRequestStatus(RequestStatus requestStatus) {
 		setProperty(RequestStatus.class, requestStatus);
@@ -1163,6 +1334,8 @@ public class VTodo extends ICalComponent {
 	 * @return the relationships (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-115">RFC 5545
 	 * p.115-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-109-10">RFC 2445
+	 * p.109-10</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.33-4</a>
 	 */
 	public List<RelatedTo> getRelatedTo() {
@@ -1174,6 +1347,8 @@ public class VTodo extends ICalComponent {
 	 * @param relatedTo the relationship
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-115">RFC 5545
 	 * p.115-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-109-10">RFC 2445
+	 * p.109-10</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.33-4</a>
 	 */
 	public void addRelatedTo(RelatedTo relatedTo) {
@@ -1196,6 +1371,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-115">RFC 5545
 	 * p.115-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-109-10">RFC 2445
+	 * p.109-10</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.33-4</a>
 	 */
 	public RelatedTo addRelatedTo(String uid) {
@@ -1209,6 +1386,8 @@ public class VTodo extends ICalComponent {
 	 * @return the resources (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-91">RFC 5545
 	 * p.91</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-87">RFC 2445
+	 * p.87-8</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34-5</a>
 	 */
 	public List<Resources> getResources() {
@@ -1221,6 +1400,8 @@ public class VTodo extends ICalComponent {
 	 * @param resources the resources to add
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-91">RFC 5545
 	 * p.91</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-87">RFC 2445
+	 * p.87-8</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34-5</a>
 	 */
 	public void addResources(Resources resources) {
@@ -1233,6 +1414,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-91">RFC 5545
 	 * p.91</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-87">RFC 2445
+	 * p.87-8</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34-5</a>
 	 */
 	public Resources addResources(String... resources) {
@@ -1247,6 +1430,8 @@ public class VTodo extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-91">RFC 5545
 	 * p.91</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-87">RFC 2445
+	 * p.87-8</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34-5</a>
 	 */
 	public Resources addResources(List<String> resources) {
@@ -1261,6 +1446,8 @@ public class VTodo extends ICalComponent {
 	 * @return the recurrence dates (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-120">RFC 5545
 	 * p.120-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-115">RFC 2445
+	 * p.115-7</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34</a>
 	 */
 	public List<RecurrenceDates> getRecurrenceDates() {
@@ -1273,6 +1460,8 @@ public class VTodo extends ICalComponent {
 	 * @param recurrenceDates the recurrence dates
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-120">RFC 5545
 	 * p.120-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-115">RFC 2445
+	 * p.115-7</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34</a>
 	 */
 	public void addRecurrenceDates(RecurrenceDates recurrenceDates) {
@@ -1284,6 +1473,8 @@ public class VTodo extends ICalComponent {
 	 * @return the alarms (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-71">RFC 5545
 	 * p.71-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-67">RFC 2445
+	 * p.67-73</a>
 	 */
 	public List<VAlarm> getAlarms() {
 		return getComponents(VAlarm.class);
@@ -1294,6 +1485,8 @@ public class VTodo extends ICalComponent {
 	 * @param alarm the alarm
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-71">RFC 5545
 	 * p.71-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-67">RFC 2445
+	 * p.67-73</a>
 	 */
 	public void addAlarm(VAlarm alarm) {
 		addComponent(alarm);
@@ -1409,7 +1602,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Adds an image that is associated with the to-do task.
-	 * @param image the property to add
+	 * @param image the image
 	 * @see <a
 	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-10">draft-ietf-calext-extensions-01
 	 * p.10</a>
@@ -1431,7 +1624,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Adds information related to the to-do task's conference system.
-	 * @param image the property to add
+	 * @param conference the conference
 	 * @see <a
 	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-11">draft-ietf-calext-extensions-01
 	 * p.11</a>

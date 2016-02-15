@@ -76,6 +76,11 @@ import biweekly.util.ICalDate;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-58">RFC 2445
  * p.58-60</a>
  */
+/*
+ * Note: References to the vCal 1.0 spec are omitted from the property
+ * getter/setter method Javadocs because vCal does not use the VFREEBUSY
+ * component.
+ */
 public class VFreeBusy extends ICalComponent {
 	/**
 	 * <p>
@@ -111,6 +116,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the UID or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-117">RFC 5545
 	 * p.117-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-111">RFC 2445
+	 * p.111-2</a>
 	 */
 	public Uid getUid() {
 		return getProperty(Uid.class);
@@ -123,6 +130,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @param uid the UID or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-117">RFC 5545
 	 * p.117-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-111">RFC 2445
+	 * p.111-2</a>
 	 */
 	public void setUid(Uid uid) {
 		setProperty(Uid.class, uid);
@@ -136,6 +145,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-117">RFC 5545
 	 * p.117-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-111">RFC 2445
+	 * p.111-2</a>
 	 */
 	public Uid setUid(String uid) {
 		Uid prop = (uid == null) ? null : new Uid(uid);
@@ -153,6 +164,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the date time stamp or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-137">RFC 5545
 	 * p.137-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-130">RFC 2445
+	 * p.130-1</a>
 	 */
 	public DateTimeStamp getDateTimeStamp() {
 		return getProperty(DateTimeStamp.class);
@@ -168,6 +181,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @param dateTimeStamp the date time stamp or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-137">RFC 5545
 	 * p.137-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-130">RFC 2445
+	 * p.130-1</a>
 	 */
 	public void setDateTimeStamp(DateTimeStamp dateTimeStamp) {
 		setProperty(DateTimeStamp.class, dateTimeStamp);
@@ -184,6 +199,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-137">RFC 5545
 	 * p.137-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-130">RFC 2445
+	 * p.130-1</a>
 	 */
 	public DateTimeStamp setDateTimeStamp(Date dateTimeStamp) {
 		DateTimeStamp prop = (dateTimeStamp == null) ? null : new DateTimeStamp(dateTimeStamp);
@@ -196,6 +213,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the contact or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
 	 * p.109-11</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-104">RFC 2445
+	 * p.104-6</a>
 	 */
 	public Contact getContact() {
 		return getProperty(Contact.class);
@@ -206,6 +225,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @param contact the contact or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
 	 * p.109-11</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-104">RFC 2445
+	 * p.104-6</a>
 	 */
 	public void setContact(Contact contact) {
 		setProperty(Contact.class, contact);
@@ -217,6 +238,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
 	 * p.109-11</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-104">RFC 2445
+	 * p.104-6</a>
 	 */
 	public Contact addContact(String contact) {
 		Contact prop = new Contact(contact);
@@ -229,6 +252,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the start date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-93">RFC 2445
+	 * p.93-4</a>
 	 */
 	public DateStart getDateStart() {
 		return getProperty(DateStart.class);
@@ -239,6 +264,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @param dateStart the start date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-93">RFC 2445
+	 * p.93-4</a>
 	 */
 	public void setDateStart(DateStart dateStart) {
 		setProperty(DateStart.class, dateStart);
@@ -250,6 +277,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-93">RFC 2445
+	 * p.93-4</a>
 	 */
 	public DateStart setDateStart(Date dateStart) {
 		return setDateStart(dateStart, true);
@@ -265,6 +294,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-93">RFC 2445
+	 * p.93-4</a>
 	 */
 	public DateStart setDateStart(Date dateStart, boolean hasTime) {
 		DateStart prop = (dateStart == null) ? null : new DateStart(dateStart, hasTime);
@@ -277,6 +308,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the end date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-95">RFC 5545
 	 * p.95-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-91">RFC 2445
+	 * p.91-2</a>
 	 */
 	public DateEnd getDateEnd() {
 		return getProperty(DateEnd.class);
@@ -287,6 +320,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @param dateEnd the end date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-95">RFC 5545
 	 * p.95-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-91">RFC 2445
+	 * p.91-2</a>
 	 */
 	public void setDateEnd(DateEnd dateEnd) {
 		setProperty(DateEnd.class, dateEnd);
@@ -298,6 +333,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-95">RFC 5545
 	 * p.95-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-91">RFC 2445
+	 * p.91-2</a>
 	 */
 	public DateEnd setDateEnd(Date dateEnd) {
 		return setDateEnd(dateEnd, true);
@@ -313,6 +350,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-95">RFC 5545
 	 * p.95-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-91">RFC 2445
+	 * p.91-2</a>
 	 */
 	public DateEnd setDateEnd(Date dateEnd, boolean hasTime) {
 		DateEnd prop = (dateEnd == null) ? null : new DateEnd(dateEnd, hasTime);
@@ -325,6 +364,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the person requesting the free/busy time or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
 	 * p.111-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-106">RFC 2445
+	 * p.106-7</a>
 	 */
 	public Organizer getOrganizer() {
 		return getProperty(Organizer.class);
@@ -336,6 +377,8 @@ public class VFreeBusy extends ICalComponent {
 	 * remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
 	 * p.111-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-106">RFC 2445
+	 * p.106-7</a>
 	 */
 	public void setOrganizer(Organizer organizer) {
 		setProperty(Organizer.class, organizer);
@@ -348,6 +391,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
 	 * p.111-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-106">RFC 2445
+	 * p.106-7</a>
 	 */
 	public Organizer setOrganizer(String email) {
 		Organizer prop = (email == null) ? null : new Organizer(null, email);
@@ -361,6 +406,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the URL or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
 	 * p.116-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-110">RFC 2445
+	 * p.110-1</a>
 	 */
 	public Url getUrl() {
 		return getProperty(Url.class);
@@ -372,6 +419,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @param url the URL or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
 	 * p.116-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-110">RFC 2445
+	 * p.110-1</a>
 	 */
 	public void setUrl(Url url) {
 		setProperty(Url.class, url);
@@ -385,6 +434,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
 	 * p.116-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-110">RFC 2445
+	 * p.110-1</a>
 	 */
 	public Url setUrl(String url) {
 		Url prop = (url == null) ? null : new Url(url);
@@ -397,6 +448,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the attendees (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-102">RFC 2445
+	 * p.102-4</a>
 	 */
 	public List<Attendee> getAttendees() {
 		return getProperties(Attendee.class);
@@ -407,6 +460,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @param attendee the attendee
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-102">RFC 2445
+	 * p.102-4</a>
 	 */
 	public void addAttendee(Attendee attendee) {
 		addProperty(attendee);
@@ -417,6 +472,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the comments (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
 	 * p.83-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-80">RFC 2445
+	 * p.80-1</a>
 	 */
 	public List<Comment> getComments() {
 		return getProperties(Comment.class);
@@ -427,6 +484,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @param comment the comment to add
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
 	 * p.83-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-80">RFC 2445
+	 * p.80-1</a>
 	 */
 	public void addComment(Comment comment) {
 		addProperty(comment);
@@ -438,6 +497,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
 	 * p.83-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-80">RFC 2445
+	 * p.80-1</a>
 	 */
 	public Comment addComment(String comment) {
 		Comment prop = new Comment(comment);
@@ -451,6 +512,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the availabilities (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-100">RFC 5545
 	 * p.100-1</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-95">RFC 2445
+	 * p.95-6</a>
 	 */
 	public List<FreeBusy> getFreeBusy() {
 		return getProperties(FreeBusy.class);
@@ -464,6 +527,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @param freeBusy the availabilities
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-100">RFC 5545
 	 * p.100-1</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-95">RFC 2445
+	 * p.95-6</a>
 	 */
 	public void addFreeBusy(FreeBusy freeBusy) {
 		addProperty(freeBusy);
@@ -480,6 +545,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the property that was created/modified
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-100">RFC 5545
 	 * p.100-1</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-95">RFC 2445
+	 * p.95-6</a>
 	 */
 	public FreeBusy addFreeBusy(FreeBusyType type, Date start, Date end) {
 		FreeBusy found = findByFbType(type);
@@ -498,6 +565,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the property that was created/modified
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-100">RFC 5545
 	 * p.100-1</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-95">RFC 2445
+	 * p.95-6</a>
 	 */
 	public FreeBusy addFreeBusy(FreeBusyType type, Date start, Duration duration) {
 		FreeBusy found = findByFbType(type);
@@ -528,6 +597,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @return the response
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-141">RFC 5545
 	 * p.141-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-134">RFC 2445
+	 * p.134-6</a>
 	 */
 	public RequestStatus getRequestStatus() {
 		return getProperty(RequestStatus.class);
@@ -538,6 +609,8 @@ public class VFreeBusy extends ICalComponent {
 	 * @param requestStatus the response
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-141">RFC 5545
 	 * p.141-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-134">RFC 2445
+	 * p.134-6</a>
 	 */
 	public void setRequestStatus(RequestStatus requestStatus) {
 		setProperty(RequestStatus.class, requestStatus);

@@ -82,6 +82,11 @@ import biweekly.util.Recurrence;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-57">RFC 5545 p.57-9</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-56">RFC 2445 p.56-7</a>
  */
+/*
+ * Note: References to the vCal 1.0 spec are omitted from the property
+ * getter/setter method Javadocs because vCal does not use the VJOURNAL
+ * component.
+ */
 public class VJournal extends ICalComponent {
 	/**
 	 * <p>
@@ -117,6 +122,8 @@ public class VJournal extends ICalComponent {
 	 * @return the UID or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-117">RFC 5545
 	 * p.117-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-111">RFC 2445
+	 * p.111-2</a>
 	 */
 	public Uid getUid() {
 		return getProperty(Uid.class);
@@ -129,6 +136,8 @@ public class VJournal extends ICalComponent {
 	 * @param uid the UID or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-117">RFC 5545
 	 * p.117-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-111">RFC 2445
+	 * p.111-2</a>
 	 */
 	public void setUid(Uid uid) {
 		setProperty(Uid.class, uid);
@@ -142,6 +151,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-117">RFC 5545
 	 * p.117-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-111">RFC 2445
+	 * p.111-2</a>
 	 */
 	public Uid setUid(String uid) {
 		Uid prop = (uid == null) ? null : new Uid(uid);
@@ -159,6 +170,8 @@ public class VJournal extends ICalComponent {
 	 * @return the date time stamp or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-137">RFC 5545
 	 * p.137-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-130">RFC 2445
+	 * p.130-1</a>
 	 */
 	public DateTimeStamp getDateTimeStamp() {
 		return getProperty(DateTimeStamp.class);
@@ -174,6 +187,8 @@ public class VJournal extends ICalComponent {
 	 * @param dateTimeStamp the date time stamp or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-137">RFC 5545
 	 * p.137-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-130">RFC 2445
+	 * p.130-1</a>
 	 */
 	public void setDateTimeStamp(DateTimeStamp dateTimeStamp) {
 		setProperty(DateTimeStamp.class, dateTimeStamp);
@@ -190,6 +205,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-137">RFC 5545
 	 * p.137-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-130">RFC 2445
+	 * p.130-1</a>
 	 */
 	public DateTimeStamp setDateTimeStamp(Date dateTimeStamp) {
 		DateTimeStamp prop = (dateTimeStamp == null) ? null : new DateTimeStamp(dateTimeStamp);
@@ -203,6 +220,8 @@ public class VJournal extends ICalComponent {
 	 * @return the classification level or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-82">RFC 5545
 	 * p.82-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-79">RFC 2445
+	 * p.79-80</a>
 	 */
 	public Classification getClassification() {
 		return getProperty(Classification.class);
@@ -214,6 +233,8 @@ public class VJournal extends ICalComponent {
 	 * @param classification the classification level or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-82">RFC 5545
 	 * p.82-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-79">RFC 2445
+	 * p.79-80</a>
 	 */
 	public void setClassification(Classification classification) {
 		setProperty(Classification.class, classification);
@@ -227,6 +248,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-82">RFC 5545
 	 * p.82-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-79">RFC 2445
+	 * p.79-80</a>
 	 */
 	public Classification setClassification(String classification) {
 		Classification prop = (classification == null) ? null : new Classification(classification);
@@ -239,6 +262,8 @@ public class VJournal extends ICalComponent {
 	 * @return the creation date-time or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545
 	 * p.136</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-129">RFC 2445
+	 * p.129-30</a>
 	 */
 	public Created getCreated() {
 		return getProperty(Created.class);
@@ -249,6 +274,8 @@ public class VJournal extends ICalComponent {
 	 * @param created the creation date-time or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545
 	 * p.136</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-129">RFC 2445
+	 * p.129-30</a>
 	 */
 	public void setCreated(Created created) {
 		setProperty(Created.class, created);
@@ -260,6 +287,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545
 	 * p.136</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-129">RFC 2445
+	 * p.129-30</a>
 	 */
 	public Created setCreated(Date created) {
 		Created prop = (created == null) ? null : new Created(created);
@@ -272,6 +301,8 @@ public class VJournal extends ICalComponent {
 	 * @return the start date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-93">RFC 2445
+	 * p.93-4</a>
 	 */
 	public DateStart getDateStart() {
 		return getProperty(DateStart.class);
@@ -282,6 +313,8 @@ public class VJournal extends ICalComponent {
 	 * @param dateStart the start date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-93">RFC 2445
+	 * p.93-4</a>
 	 */
 	public void setDateStart(DateStart dateStart) {
 		setProperty(DateStart.class, dateStart);
@@ -293,6 +326,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-93">RFC 2445
+	 * p.93-4</a>
 	 */
 	public DateStart setDateStart(Date dateStart) {
 		return setDateStart(dateStart, true);
@@ -308,6 +343,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
 	 * p.97-8</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-93">RFC 2445
+	 * p.93-4</a>
 	 */
 	public DateStart setDateStart(Date dateStart, boolean hasTime) {
 		DateStart prop = (dateStart == null) ? null : new DateStart(dateStart, hasTime);
@@ -320,6 +357,8 @@ public class VJournal extends ICalComponent {
 	 * @return the last modified date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131</a>
 	 */
 	public LastModified getLastModified() {
 		return getProperty(LastModified.class);
@@ -330,6 +369,8 @@ public class VJournal extends ICalComponent {
 	 * @param lastModified the last modified date or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131</a>
 	 */
 	public void setLastModified(LastModified lastModified) {
 		setProperty(LastModified.class, lastModified);
@@ -341,6 +382,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131</a>
 	 */
 	public LastModified setLastModified(Date lastModified) {
 		LastModified prop = (lastModified == null) ? null : new LastModified(lastModified);
@@ -353,6 +396,8 @@ public class VJournal extends ICalComponent {
 	 * @return the organizer or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
 	 * p.111-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-106">RFC 2445
+	 * p.106-7</a>
 	 */
 	public Organizer getOrganizer() {
 		return getProperty(Organizer.class);
@@ -363,6 +408,8 @@ public class VJournal extends ICalComponent {
 	 * @param organizer the organizer or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
 	 * p.111-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-106">RFC 2445
+	 * p.106-7</a>
 	 */
 	public void setOrganizer(Organizer organizer) {
 		setProperty(Organizer.class, organizer);
@@ -375,6 +422,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
 	 * p.111-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-106">RFC 2445
+	 * p.106-7</a>
 	 */
 	public Organizer setOrganizer(String email) {
 		Organizer prop = (email == null) ? null : new Organizer(null, email);
@@ -390,6 +439,8 @@ public class VJournal extends ICalComponent {
 	 * @return the recurrence ID or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-112">RFC 5545
 	 * p.112-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-107">RFC 2445
+	 * p.107-9</a>
 	 */
 	public RecurrenceId getRecurrenceId() {
 		return getProperty(RecurrenceId.class);
@@ -403,6 +454,8 @@ public class VJournal extends ICalComponent {
 	 * @param recurrenceId the recurrence ID or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-112">RFC 5545
 	 * p.112-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-107">RFC 2445
+	 * p.107-9</a>
 	 */
 	public void setRecurrenceId(RecurrenceId recurrenceId) {
 		setProperty(RecurrenceId.class, recurrenceId);
@@ -417,6 +470,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-112">RFC 5545
 	 * p.112-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-107">RFC 2445
+	 * p.107-9</a>
 	 */
 	public RecurrenceId setRecurrenceId(Date originalStartDate) {
 		RecurrenceId prop = (originalStartDate == null) ? null : new RecurrenceId(originalStartDate);
@@ -430,6 +485,8 @@ public class VJournal extends ICalComponent {
 	 * @return the sequence number
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131-3</a>
 	 */
 	public Sequence getSequence() {
 		return getProperty(Sequence.class);
@@ -441,6 +498,8 @@ public class VJournal extends ICalComponent {
 	 * @param sequence the sequence number
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131-3</a>
 	 */
 	public void setSequence(Sequence sequence) {
 		setProperty(Sequence.class, sequence);
@@ -453,6 +512,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131-3</a>
 	 */
 	public Sequence setSequence(Integer sequence) {
 		Sequence prop = (sequence == null) ? null : new Sequence(sequence);
@@ -465,6 +526,8 @@ public class VJournal extends ICalComponent {
 	 * increment this number every time he or she makes a significant change.
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
 	 * p.138-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445
+	 * p.131-3</a>
 	 */
 	public void incrementSequence() {
 		Sequence sequence = getSequence();
@@ -480,6 +543,8 @@ public class VJournal extends ICalComponent {
 	 * @return the status or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-92">RFC 5545
 	 * p.92-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-88">RFC 2445
+	 * p.88-9</a>
 	 */
 	public Status getStatus() {
 		return getProperty(Status.class);
@@ -498,6 +563,8 @@ public class VJournal extends ICalComponent {
 	 * @param status the status or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-92">RFC 5545
 	 * p.92-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-88">RFC 2445
+	 * p.88-9</a>
 	 */
 	public void setStatus(Status status) {
 		setProperty(Status.class, status);
@@ -508,6 +575,8 @@ public class VJournal extends ICalComponent {
 	 * @return the summary or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545
 	 * p.93-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-89">RFC 2445
+	 * p.89-90</a>
 	 */
 	public Summary getSummary() {
 		return getProperty(Summary.class);
@@ -518,6 +587,8 @@ public class VJournal extends ICalComponent {
 	 * @param summary the summary or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545
 	 * p.93-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-89">RFC 2445
+	 * p.89-90</a>
 	 */
 	public void setSummary(Summary summary) {
 		setProperty(Summary.class, summary);
@@ -529,6 +600,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545
 	 * p.93-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-89">RFC 2445
+	 * p.89-90</a>
 	 */
 	public Summary setSummary(String summary) {
 		Summary prop = (summary == null) ? null : new Summary(summary);
@@ -542,6 +615,8 @@ public class VJournal extends ICalComponent {
 	 * @return the URL or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
 	 * p.116-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-110">RFC 2445
+	 * p.110-1</a>
 	 */
 	public Url getUrl() {
 		return getProperty(Url.class);
@@ -553,6 +628,8 @@ public class VJournal extends ICalComponent {
 	 * @param url the URL or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
 	 * p.116-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-110">RFC 2445
+	 * p.110-1</a>
 	 */
 	public void setUrl(Url url) {
 		setProperty(Url.class, url);
@@ -566,6 +643,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
 	 * p.116-7</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-110">RFC 2445
+	 * p.110-1</a>
 	 */
 	public Url setUrl(String url) {
 		Url prop = (url == null) ? null : new Url(url);
@@ -578,6 +657,8 @@ public class VJournal extends ICalComponent {
 	 * @return the recurrence rule or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
 	 * p.122-32</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-117">RFC 2445
+	 * p.117-25</a>
 	 */
 	public RecurrenceRule getRecurrenceRule() {
 		return getProperty(RecurrenceRule.class);
@@ -589,6 +670,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
 	 * p.122-32</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-117">RFC 2445
+	 * p.117-25</a>
 	 */
 	public RecurrenceRule setRecurrenceRule(Recurrence recur) {
 		RecurrenceRule prop = (recur == null) ? null : new RecurrenceRule(recur);
@@ -601,6 +684,8 @@ public class VJournal extends ICalComponent {
 	 * @param recurrenceRule the recurrence rule or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-122">RFC 5545
 	 * p.122-32</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-117">RFC 2445
+	 * p.117-25</a>
 	 */
 	public void setRecurrenceRule(RecurrenceRule recurrenceRule) {
 		setProperty(RecurrenceRule.class, recurrenceRule);
@@ -611,6 +696,8 @@ public class VJournal extends ICalComponent {
 	 * @return the attachments (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-80">RFC 5545
 	 * p.80-1</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-77">RFC 2445
+	 * p.77-8</a>
 	 */
 	public List<Attachment> getAttachments() {
 		return getProperties(Attachment.class);
@@ -621,6 +708,8 @@ public class VJournal extends ICalComponent {
 	 * @param attachment the attachment to add
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-80">RFC 5545
 	 * p.80-1</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-77">RFC 2445
+	 * p.77-8</a>
 	 */
 	public void addAttachment(Attachment attachment) {
 		addProperty(attachment);
@@ -631,6 +720,8 @@ public class VJournal extends ICalComponent {
 	 * @return the attendees (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-102">RFC 2445
+	 * p.102-4</a>
 	 */
 	public List<Attendee> getAttendees() {
 		return getProperties(Attendee.class);
@@ -641,6 +732,8 @@ public class VJournal extends ICalComponent {
 	 * @param attendee the attendee
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-102">RFC 2445
+	 * p.102-4</a>
 	 */
 	public void addAttendee(Attendee attendee) {
 		addProperty(attendee);
@@ -652,6 +745,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-102">RFC 2445
+	 * p.102-4</a>
 	 */
 	public Attendee addAttendee(String email) {
 		Attendee prop = new Attendee(null, email);
@@ -664,6 +759,8 @@ public class VJournal extends ICalComponent {
 	 * @return the categories (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545
 	 * p.81-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-78">RFC 2445
+	 * p.78-9</a>
 	 */
 	public List<Categories> getCategories() {
 		return getProperties(Categories.class);
@@ -675,6 +772,8 @@ public class VJournal extends ICalComponent {
 	 * @param categories the categories to add
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545
 	 * p.81-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-78">RFC 2445
+	 * p.78-9</a>
 	 */
 	public void addCategories(Categories categories) {
 		addProperty(categories);
@@ -686,6 +785,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545
 	 * p.81-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-78">RFC 2445
+	 * p.78-9</a>
 	 */
 	public Categories addCategories(String... categories) {
 		Categories prop = new Categories(categories);
@@ -699,6 +800,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545
 	 * p.81-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-78">RFC 2445
+	 * p.78-9</a>
 	 */
 	public Categories addCategories(List<String> categories) {
 		Categories prop = new Categories(categories);
@@ -711,6 +814,8 @@ public class VJournal extends ICalComponent {
 	 * @return the comments (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
 	 * p.83-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-80">RFC 2445
+	 * p.80-1</a>
 	 */
 	public List<Comment> getComments() {
 		return getProperties(Comment.class);
@@ -721,6 +826,8 @@ public class VJournal extends ICalComponent {
 	 * @param comment the comment to add
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
 	 * p.83-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-80">RFC 2445
+	 * p.80-1</a>
 	 */
 	public void addComment(Comment comment) {
 		addProperty(comment);
@@ -732,6 +839,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
 	 * p.83-4</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-80">RFC 2445
+	 * p.80-1</a>
 	 */
 	public Comment addComment(String comment) {
 		Comment prop = new Comment(comment);
@@ -744,6 +853,8 @@ public class VJournal extends ICalComponent {
 	 * @return the contacts (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
 	 * p.109-11</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-104">RFC 2445
+	 * p.104-6</a>
 	 */
 	public List<Contact> getContacts() {
 		return getProperties(Contact.class);
@@ -754,6 +865,8 @@ public class VJournal extends ICalComponent {
 	 * @param contact the contact
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
 	 * p.109-11</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-104">RFC 2445
+	 * p.104-6</a>
 	 */
 	public void addContact(Contact contact) {
 		addProperty(contact);
@@ -765,6 +878,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
 	 * p.109-11</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-104">RFC 2445
+	 * p.104-6</a>
 	 */
 	public Contact addContact(String contact) {
 		Contact prop = new Contact(contact);
@@ -779,6 +894,8 @@ public class VJournal extends ICalComponent {
 	 * @return the descriptions (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545
 	 * p.84-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-81">RFC 2445
+	 * p.81-2</a>
 	 */
 	public List<Description> getDescriptions() {
 		return getProperties(Description.class);
@@ -791,6 +908,8 @@ public class VJournal extends ICalComponent {
 	 * @param description the description
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545
 	 * p.84-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-81">RFC 2445
+	 * p.81-2</a>
 	 */
 	public void addDescription(Description description) {
 		addProperty(description);
@@ -804,6 +923,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545
 	 * p.84-5</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-81">RFC 2445
+	 * p.81-2</a>
 	 */
 	public Description addDescription(String description) {
 		Description prop = new Description(description);
@@ -817,6 +938,8 @@ public class VJournal extends ICalComponent {
 	 * @return the list of exceptions (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-118">RFC 5545
 	 * p.118-20</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-112">RFC 2445
+	 * p.112-4</a>
 	 */
 	public List<ExceptionDates> getExceptionDates() {
 		return getProperties(ExceptionDates.class);
@@ -829,6 +952,8 @@ public class VJournal extends ICalComponent {
 	 * @param exceptionDates the list of exceptions
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-118">RFC 5545
 	 * p.118-20</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-112">RFC 2445
+	 * p.112-4</a>
 	 */
 	public void addExceptionDates(ExceptionDates exceptionDates) {
 		addProperty(exceptionDates);
@@ -839,6 +964,8 @@ public class VJournal extends ICalComponent {
 	 * @return the relationships (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-115">RFC 5545
 	 * p.115-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-109-10">RFC 2445
+	 * p.109-10</a>
 	 */
 	public List<RelatedTo> getRelatedTo() {
 		return getProperties(RelatedTo.class);
@@ -849,6 +976,8 @@ public class VJournal extends ICalComponent {
 	 * @param relatedTo the relationship
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-115">RFC 5545
 	 * p.115-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-109-10">RFC 2445
+	 * p.109-10</a>
 	 */
 	public void addRelatedTo(RelatedTo relatedTo) {
 		//TODO create a method that accepts a component and make the RelatedTo property invisible to the user
@@ -870,6 +999,8 @@ public class VJournal extends ICalComponent {
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-115">RFC 5545
 	 * p.115-6</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-109-10">RFC 2445
+	 * p.109-10</a>
 	 */
 	public RelatedTo addRelatedTo(String uid) {
 		RelatedTo prop = new RelatedTo(uid);
@@ -883,6 +1014,8 @@ public class VJournal extends ICalComponent {
 	 * @return the recurrence dates (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-120">RFC 5545
 	 * p.120-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-115">RFC 2445
+	 * p.115-7</a>
 	 */
 	public List<RecurrenceDates> getRecurrenceDates() {
 		return getProperties(RecurrenceDates.class);
@@ -894,6 +1027,8 @@ public class VJournal extends ICalComponent {
 	 * @param recurrenceDates the recurrence dates
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-120">RFC 5545
 	 * p.120-2</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-115">RFC 2445
+	 * p.115-7</a>
 	 */
 	public void addRecurrenceDates(RecurrenceDates recurrenceDates) {
 		addProperty(recurrenceDates);
@@ -904,6 +1039,8 @@ public class VJournal extends ICalComponent {
 	 * @return the response
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-141">RFC 5545
 	 * p.141-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-134">RFC 2445
+	 * p.134-6</a>
 	 */
 	public RequestStatus getRequestStatus() {
 		return getProperty(RequestStatus.class);
@@ -914,6 +1051,8 @@ public class VJournal extends ICalComponent {
 	 * @param requestStatus the response
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-141">RFC 5545
 	 * p.141-3</a>
+	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-134">RFC 2445
+	 * p.134-6</a>
 	 */
 	public void setRequestStatus(RequestStatus requestStatus) {
 		setProperty(RequestStatus.class, requestStatus);
