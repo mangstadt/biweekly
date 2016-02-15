@@ -526,7 +526,7 @@ public class JCalWriterTest {
 		}
 
 		assertValidate(ical).versions(V2_0).run();
-		assertExample(ical, "jcal-draft-example1.json", new TimezoneInfo());
+		assertExample(ical, "rfc7265-example1.json", new TimezoneInfo());
 	}
 
 	@Test
@@ -604,7 +604,7 @@ public class JCalWriterTest {
 		}
 		tzinfo.assign(usEasternTz, eastern);
 		tzinfo.setDefaultTimeZone(eastern);
-		assertExample(ical, "jcal-draft-example2.json", tzinfo);
+		assertExample(ical, "rfc7265-example2.json", tzinfo);
 	}
 
 	private void assertExample(ICalendar ical, String exampleFileName, TimezoneInfo tzinfo) throws IOException {

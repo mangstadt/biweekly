@@ -519,7 +519,7 @@ public class JCalReaderTest {
 
 	@Test
 	public void jcal_draft_example1() throws Throwable {
-		JCalReader reader = read("jcal-draft-example1.json");
+		JCalReader reader = read("rfc7265-example1.json");
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 1, 2);
 
@@ -545,7 +545,7 @@ public class JCalReaderTest {
 
 	@Test
 	public void jcal_draft_example2() throws Throwable {
-		JCalReader reader = read("jcal-draft-example2.json");
+		JCalReader reader = read("rfc7265-example2.json");
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 2, 1);
 
