@@ -227,7 +227,7 @@ public class ICalendar extends ICalComponent {
 	 * In this case, each property instance must be assigned a LANGUAGE
 	 * parameter.
 	 * </p>
-	 * @return the name properties
+	 * @return the name properties (this list is immutable)
 	 */
 	public List<Name> getNames() {
 		return getProperties(Name.class);
@@ -297,7 +297,7 @@ public class ICalendar extends ICalComponent {
 	 * description in multiple languages. In this case, each property instance
 	 * must be assigned a LANGUAGE parameter.
 	 * </p>
-	 * @return the description properties
+	 * @return the description properties (this list is immutable)
 	 */
 	public List<Description> getDescriptions() {
 		return getProperties(Description.class);
@@ -449,7 +449,7 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Gets the keywords that describe the calendar.
-	 * @return the categories
+	 * @return the categories (this list is immutable)
 	 */
 	public List<Categories> getCategories() {
 		return getProperties(Categories.class);
@@ -567,7 +567,7 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Gets the images that are associated with the calendar.
-	 * @return the images
+	 * @return the images (this list is immutable)
 	 */
 	public List<Image> getImages() {
 		return getProperties(Image.class);
@@ -583,7 +583,7 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Gets the calendar's events.
-	 * @return the events
+	 * @return the events (this list is immutable)
 	 */
 	public List<VEvent> getEvents() {
 		return getComponents(VEvent.class);
@@ -599,7 +599,7 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Gets the calendar's to-do tasks.
-	 * @return the to-do tasks
+	 * @return the to-do tasks (this list is immutable)
 	 */
 	public List<VTodo> getTodos() {
 		return getComponents(VTodo.class);
@@ -615,7 +615,7 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Gets the calendar's journal entries.
-	 * @return the journal entries
+	 * @return the journal entries (this list is immutable)
 	 */
 	public List<VJournal> getJournals() {
 		return getComponents(VJournal.class);
@@ -631,7 +631,7 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Gets the calendar's free/busy entries.
-	 * @return the free/busy entries
+	 * @return the free/busy entries (this list is immutable)
 	 */
 	public List<VFreeBusy> getFreeBusies() {
 		return getComponents(VFreeBusy.class);

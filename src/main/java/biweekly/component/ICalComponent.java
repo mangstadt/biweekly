@@ -2,6 +2,7 @@ package biweekly.component;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +44,7 @@ import biweekly.util.StringUtils;
  */
 
 /**
- * Base class for all iCalendar components.
+ * Base class for all iCalendar component classes.
  * @author Michael Angstadt
  */
 public abstract class ICalComponent {
@@ -84,8 +85,7 @@ public abstract class ICalComponent {
 	/**
 	 * Gets all properties of a given class.
 	 * @param clazz the property class
-	 * @return the properties (modifications to this list, such as adding or
-	 * removing items, have NO effect on the backing list)
+	 * @return the properties (this list is immutable)
 	 */
 	public <T extends ICalProperty> List<T> getProperties(Class<T> clazz) {
 		List<ICalProperty> properties = this.properties.get(clazz);
@@ -123,8 +123,9 @@ public abstract class ICalComponent {
 	 * property instance. If the property instance is null, then all instances
 	 * of that property will be removed.
 	 * @param clazz the property class (e.g. "DateStart.class")
-	 * @param property the property or null to remove
-	 * @return the properties that were replaced
+	 * @param property the property or null to remove all properties of the
+	 * given class
+	 * @return the properties that were replaced (this list is immutable)
 	 */
 	public <T extends ICalProperty> List<T> setProperty(Class<T> clazz, T property) {
 		List<ICalProperty> replaced = properties.replace(clazz, property);
@@ -144,7 +145,7 @@ public abstract class ICalComponent {
 	 * Removes all properties of a given class from this component.
 	 * @param clazz the class of the properties to remove (e.g.
 	 * "DateStart.class")
-	 * @return the removed properties
+	 * @return the removed properties (this list is immutable)
 	 */
 	public <T extends ICalProperty> List<T> removeProperties(Class<T> clazz) {
 		List<ICalProperty> removed = properties.removeAll(clazz);
@@ -163,7 +164,7 @@ public abstract class ICalComponent {
 	/**
 	 * Removes all sub-components of the given class from this component.
 	 * @param clazz the class of the components to remove (e.g. "VEvent.class")
-	 * @return the removed components
+	 * @return the removed components (this list is immutable)
 	 */
 	public <T extends ICalComponent> List<T> removeComponents(Class<T> clazz) {
 		List<ICalComponent> removed = components.removeAll(clazz);
@@ -187,23 +188,21 @@ public abstract class ICalComponent {
 	/**
 	 * Gets all experimental properties with a given name.
 	 * @param name the property name (case insensitive, e.g. "X-ALT-DESC")
-	 * @return the experimental properties (modifications to this list, such as
-	 * adding or removing items, have NO effect on the backing list)
+	 * @return the experimental properties (this list is immutable)
 	 */
 	public List<RawProperty> getExperimentalProperties(String name) {
-		List<RawProperty> rawProperties = new ArrayList<RawProperty>();
-		for (RawProperty raw : getExperimentalProperties()) {
-			if (raw.getName().equalsIgnoreCase(name)) {
-				rawProperties.add(raw);
+		List<RawProperty> properties = new ArrayList<RawProperty>();
+		for (RawProperty property : getExperimentalProperties()) {
+			if (property.getName().equalsIgnoreCase(name)) {
+				properties.add(property);
 			}
 		}
-		return rawProperties;
+		return properties;
 	}
 
 	/**
 	 * Gets all experimental properties associated with this component.
-	 * @return the experimental properties (modifications to this list, such as
-	 * adding or removing items, have NO effect on the backing list)
+	 * @return the experimental properties (this list is immutable)
 	 */
 	public List<RawProperty> getExperimentalProperties() {
 		return getProperties(RawProperty.class);
@@ -281,8 +280,7 @@ public abstract class ICalComponent {
 	/**
 	 * Gets all sub-components of a given class.
 	 * @param clazz the component class
-	 * @return the sub-components (modifications to this list, such as adding or
-	 * removing items, have NO effect on the backing list)
+	 * @return the sub-components (this list is immutable)
 	 */
 	public <T extends ICalComponent> List<T> getComponents(Class<T> clazz) {
 		List<ICalComponent> comp = components.get(clazz);
@@ -319,8 +317,9 @@ public abstract class ICalComponent {
 	 * the component instance is null, then all instances of that component will
 	 * be removed.
 	 * @param clazz the component's class
-	 * @param component the component or null to remove
-	 * @return the replaced sub-components
+	 * @param component the component or null to remove all components of the
+	 * given class
+	 * @return the replaced sub-components (this list is immutable)
 	 */
 	public <T extends ICalComponent> List<T> setComponent(Class<T> clazz, T component) {
 		List<ICalComponent> replaced = components.replace(clazz, component);
@@ -333,9 +332,9 @@ public abstract class ICalComponent {
 	 * @return the experimental component or null if none were found
 	 */
 	public RawComponent getExperimentalComponent(String name) {
-		for (RawComponent raw : getExperimentalComponents()) {
-			if (raw.getName().equalsIgnoreCase(name)) {
-				return raw;
+		for (RawComponent component : getExperimentalComponents()) {
+			if (component.getName().equalsIgnoreCase(name)) {
+				return component;
 			}
 		}
 		return null;
@@ -344,23 +343,21 @@ public abstract class ICalComponent {
 	/**
 	 * Gets all experimental sub-component with a given name.
 	 * @param name the component name (case insensitive, e.g. "X-PARTY")
-	 * @return the experimental components (modifications to this list, such as
-	 * adding or removing items, have NO effect on the backing list)
+	 * @return the experimental components (this list is immutable)
 	 */
 	public List<RawComponent> getExperimentalComponents(String name) {
-		List<RawComponent> rawComponents = new ArrayList<RawComponent>();
-		for (RawComponent raw : getExperimentalComponents()) {
-			if (raw.getName().equalsIgnoreCase(name)) {
-				rawComponents.add(raw);
+		List<RawComponent> components = new ArrayList<RawComponent>();
+		for (RawComponent component : getExperimentalComponents()) {
+			if (component.getName().equalsIgnoreCase(name)) {
+				components.add(component);
 			}
 		}
-		return rawComponents;
+		return components;
 	}
 
 	/**
 	 * Gets all experimental sub-components associated with this component.
-	 * @return the experimental components (modifications to this list, such as
-	 * adding or removing items, have NO effect on the backing list)
+	 * @return the experimental components (this list is immutable)
 	 */
 	public List<RawComponent> getExperimentalComponents() {
 		return getComponents(RawComponent.class);
@@ -402,12 +399,22 @@ public abstract class ICalComponent {
 	}
 
 	/**
-	 * Checks the component for data consistency problems or deviations from the
-	 * spec. These problems will not prevent the component from being written to
-	 * a data stream, but may prevent it from being parsed correctly by the
-	 * consuming application. These problems can largely be avoided by reading
-	 * the Javadocs of the component class, or by being familiar with the
-	 * iCalendar standard.
+	 * <p>
+	 * Checks this component for data consistency problems or deviations from
+	 * the specifications.
+	 * </p>
+	 * <p>
+	 * The existence of validation warnings will not prevent the component
+	 * object from being written to a data stream. Syntactically-correct output
+	 * will still be produced. However, the consuming application may have
+	 * trouble interpreting some of the data due to the presence of these
+	 * warnings.
+	 * </p>
+	 * <p>
+	 * These problems can largely be avoided by reading the Javadocs of the
+	 * component and property classes, or by being familiar with the iCalendar
+	 * standard.
+	 * </p>
 	 * @param hierarchy the hierarchy of components that the component belongs
 	 * to
 	 * @param version the version to validate against
@@ -588,14 +595,14 @@ public abstract class ICalComponent {
 	 * objects to a new list.
 	 * @param list the list to cast
 	 * @param castTo the class to cast to
-	 * @return the new list
+	 * @return the new list (immutable)
 	 */
 	private static <T> List<T> castList(List<?> list, Class<T> castTo) {
 		List<T> casted = new ArrayList<T>(list.size());
 		for (Object object : list) {
 			casted.add(castTo.cast(object));
 		}
-		return casted;
+		return Collections.unmodifiableList(casted);
 	}
 
 	@Override

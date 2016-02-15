@@ -392,16 +392,9 @@ public class VFreeBusy extends ICalComponent {
 		return prop;
 	}
 
-	//
-	//zero or more
-	//	private List<Attendee> attendees;
-	//	private List<Comment> comments;
-	//	private List<FreeBusy> freeBusy;
-	//	private List<Rstatus> rstatus;
-
 	/**
 	 * Gets the people who are involved in the free/busy entry.
-	 * @return the attendees
+	 * @return the attendees (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
 	 */
@@ -421,7 +414,7 @@ public class VFreeBusy extends ICalComponent {
 
 	/**
 	 * Gets the comments attached to the free/busy entry.
-	 * @return the comments
+	 * @return the comments (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
 	 * p.83-4</a>
 	 */
@@ -455,7 +448,7 @@ public class VFreeBusy extends ICalComponent {
 	/**
 	 * Gets the person's availabilities over certain time periods (for example,
 	 * "free" between 1pm-3pm, but "busy" between 3pm-4pm).
-	 * @return the availabilities
+	 * @return the availabilities (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-100">RFC 5545
 	 * p.100-1</a>
 	 */

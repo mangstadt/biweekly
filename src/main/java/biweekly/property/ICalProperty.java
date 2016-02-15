@@ -42,7 +42,7 @@ import biweekly.parameter.ICalParameters;
  */
 
 /**
- * Base class for all iCalendar properties.
+ * Base class for all iCalendar property classes.
  * @author Michael Angstadt
  */
 public abstract class ICalProperty {
@@ -94,10 +94,10 @@ public abstract class ICalProperty {
 	/**
 	 * Gets all values of a parameter with the given name.
 	 * @param name the parameter name (case insensitive, e.g. "LANGUAGE")
-	 * @return the parameter values
+	 * @return the parameter values (this list is immutable)
 	 */
 	public List<String> getParameters(String name) {
-		return parameters.get(name);
+		return Collections.unmodifiableList(parameters.get(name));
 	}
 
 	/**
@@ -135,7 +135,12 @@ public abstract class ICalProperty {
 		parameters.removeAll(name);
 	}
 
-	//Note: The following parameter helper methods are package-scoped to prevent them from cluttering up the Javadocs
+	/*
+	 * Note: The following parameter helper methods are package-scoped so that
+	 * property classes can choose which ones they want to make public on their
+	 * Javadoc page. Doing this also allows for the methods' Javadocs to be
+	 * defined in one place.
+	 */
 
 	/**
 	 * Gets a URI pointing to additional information about the entity
@@ -316,12 +321,21 @@ public abstract class ICalProperty {
 	}
 
 	/**
+	 * <p>
 	 * Checks the property for data consistency problems or deviations from the
-	 * spec. These problems will not prevent the property from being written to
-	 * a data stream, but may prevent it from being parsed correctly by the
-	 * consuming application. These problems can largely be avoided by reading
-	 * the Javadocs of the property class, or by being familiar with the
-	 * iCalendar standard.
+	 * specifications.
+	 * </p>
+	 * <p>
+	 * The existence of validation warnings will not prevent the property object
+	 * from being written to a data stream. Syntactically-correct output will
+	 * still be produced. However, the consuming application may have trouble
+	 * interpreting some of the data due to the presence of these warnings.
+	 * </p>
+	 * <p>
+	 * These problems can largely be avoided by reading the Javadocs of the
+	 * component and property classes, or by being familiar with the iCalendar
+	 * standard.
+	 * </p>
 	 * @param components the hierarchy of components that the property belongs
 	 * to
 	 * @param version the version to validate against
@@ -342,7 +356,7 @@ public abstract class ICalProperty {
 	/**
 	 * <p>
 	 * Checks the property for data consistency problems or deviations from the
-	 * spec.
+	 * specifications.
 	 * </p>
 	 * <p>
 	 * This method should be overridden by child classes that wish to provide

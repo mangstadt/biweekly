@@ -940,7 +940,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Gets any attachments that are associated with the to-do task.
-	 * @return the attachments
+	 * @return the attachments (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-80">RFC 5545
 	 * p.80-1</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25</a>
@@ -962,7 +962,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Gets the people who are involved in the to-do task.
-	 * @return the attendees
+	 * @return the attendees (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25-7</a>
@@ -998,7 +998,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Gets a list of "tags" or "keywords" that describe the to-do task.
-	 * @return the categories
+	 * @return the categories (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545
 	 * p.81-2</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.28</a>
@@ -1049,7 +1049,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Gets the comments attached to the to-do task.
-	 * @return the comments
+	 * @return the comments (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
 	 * p.83-4</a>
 	 */
@@ -1082,7 +1082,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Gets the contacts associated with the to-do task.
-	 * @return the contacts
+	 * @return the contacts (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
 	 * p.109-11</a>
 	 */
@@ -1116,7 +1116,7 @@ public class VTodo extends ICalComponent {
 	/**
 	 * Gets the list of exceptions to the recurrence rule defined in the to-do
 	 * task (if one is defined).
-	 * @return the list of exceptions
+	 * @return the list of exceptions (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-118">RFC 5545
 	 * p.118-20</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
@@ -1160,7 +1160,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Gets the components that the to-do task is related to.
-	 * @return the relationships
+	 * @return the relationships (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-115">RFC 5545
 	 * p.115-6</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.33-4</a>
@@ -1206,7 +1206,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Gets the resources that are needed for the to-do task.
-	 * @return the resources
+	 * @return the resources (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-91">RFC 5545
 	 * p.91</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34-5</a>
@@ -1258,7 +1258,7 @@ public class VTodo extends ICalComponent {
 	/**
 	 * Gets the list of dates/periods that help define the recurrence rule of
 	 * this to-do task (if one is defined).
-	 * @return the recurrence dates
+	 * @return the recurrence dates (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-120">RFC 5545
 	 * p.120-2</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34</a>
@@ -1281,7 +1281,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Gets the alarms that are assigned to this to-do task.
-	 * @return the alarms
+	 * @return the alarms (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-71">RFC 5545
 	 * p.71-6</a>
 	 */
@@ -1307,7 +1307,7 @@ public class VTodo extends ICalComponent {
 	 * Note that this property has been removed from the latest version of the
 	 * iCal specification. Its use should be avoided.
 	 * </p>
-	 * @return the exception rules
+	 * @return the exception rules (this list is immutable)
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-114">RFC 2445
 	 * p.114-15</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
@@ -1398,7 +1398,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Gets the images that are associated with the to-do task.
-	 * @return the properties
+	 * @return the images (this list is immutable)
 	 * @see <a
 	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-10">draft-ietf-calext-extensions-01
 	 * p.10</a>
@@ -1420,7 +1420,7 @@ public class VTodo extends ICalComponent {
 
 	/**
 	 * Gets information related to the to-do task's conference system.
-	 * @return the properties
+	 * @return the conferences (this list is immutable)
 	 * @see <a
 	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-11">draft-ietf-calext-extensions-01
 	 * p.11</a>

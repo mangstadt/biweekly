@@ -189,7 +189,7 @@ public class VTimezone extends ICalComponent {
 
 	/**
 	 * Gets the timezone's "standard" observance time ranges.
-	 * @return the "standard" observance time ranges
+	 * @return the "standard" observance time ranges (this list is immutable)
 	 */
 	public List<StandardTime> getStandardTimes() {
 		return getComponents(StandardTime.class);
@@ -205,7 +205,8 @@ public class VTimezone extends ICalComponent {
 
 	/**
 	 * Gets the timezone's "daylight savings" observance time ranges.
-	 * @return the "daylight savings" observance time ranges
+	 * @return the "daylight savings" observance time ranges (this list is
+	 * immutable)
 	 */
 	public List<DaylightSavingsTime> getDaylightSavingsTime() {
 		return getComponents(DaylightSavingsTime.class);
