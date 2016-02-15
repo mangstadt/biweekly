@@ -4,50 +4,6 @@
     ["prodid", {}, "text", "-//Example Corp.//Example Client//EN"]
   ],
   [
-    ["vevent",
-      [
-        ["dtstamp", {}, "date-time", "2006-02-06T00:11:21Z"],
-        ["dtstart",
-         { "tzid": "US/Eastern" },
-         "date-time",
-         "2006-01-02T12:00:00"
-        ],
-        ["duration", {}, "duration", "PT1H"],
-        ["rrule", {}, "recur", {"freq": "DAILY", "count": 5 }],
-        ["rdate",
-         { "tzid": "US/Eastern" },
-         "period",
-         "2006-01-02T15:00:00/PT2H"
-        ],
-        ["summary", {}, "text", "Event #2"],
-        ["description",
-         {},
-         "text",
-         "We are having a meeting all this week at 12 pm for one hour, with an additional meeting on the first day 2 hours long.\nPlease bring your own lunch for the 12 pm meetings."
-        ],
-        ["uid", {}, "text", "00959BC664CA650E933C892C@example.com"]
-      ],
-      []
-    ],
-    ["vevent",
-      [
-        ["dtstamp", {}, "date-time", "2006-02-06T00:11:21Z"],
-        ["dtstart",
-         { "tzid": "US/Eastern" },
-         "date-time",
-         "2006-01-02T14:00:00"
-        ],
-        ["duration", {}, "duration", "PT1H"],
-        ["recurrence-id",
-         { "tzid": "US/Eastern" },
-         "date-time",
-         "2006-01-04T12:00:00"
-        ],
-        ["summary", {}, "text", "Event #2"],
-        ["uid", {}, "text", "00959BC664CA650E933C892C@example.com"]
-      ],
-      []
-    ],
     ["vtimezone",
       [
         ["tzid", {}, "text", "US/Eastern"],
@@ -91,6 +47,50 @@
           []
         ]
       ]
+    ],
+    ["vevent",
+      [
+        ["dtstamp", {}, "date-time", "2006-02-06T00:11:21Z"],
+        ["dtstart",
+         { "tzid": "US/Eastern" },
+         "date-time",
+         "2006-01-02T12:00:00"
+        ],
+        ["duration", {}, "duration", "PT1H"],
+        ["rrule", {}, "recur", {"freq": "DAILY", "count": 5 }],
+        ["rdate",
+         { "tzid": "US/Eastern" },
+         "period",
+         "2006-01-02T15:00:00/PT2H"
+        ],
+        ["summary", {}, "text", "Event #2"],
+        ["description",
+         {},
+         "text",
+         "We are having a meeting all this week at 12 pm for one hour, with an additional meeting on the first day 2 hours long.\nPlease bring your own lunch for the 12 pm meetings."
+        ],
+        ["uid", {}, "text", "00959BC664CA650E933C892C@example.com"]
+      ],
+      []
+    ],
+    ["vevent",
+      [
+        ["dtstamp", {}, "date-time", "2006-02-06T00:11:21Z"],
+        ["dtstart",
+         { "tzid": "US/Eastern" },
+         "date-time",
+         "2006-01-02T14:00:00"
+        ],
+        ["duration", {}, "duration", "PT1H"],
+        ["recurrence-id",
+         { "tzid": "US/Eastern" },
+         "date-time",
+         "2006-01-04T12:00:00"
+        ],
+        ["summary", {}, "text", "Event #2"],
+        ["uid", {}, "text", "00959BC664CA650E933C892C@example.com"]
+      ],
+      []
     ]
   ]
 ]

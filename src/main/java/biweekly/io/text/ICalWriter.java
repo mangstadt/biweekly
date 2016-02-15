@@ -281,13 +281,13 @@ public class ICalWriter extends StreamWriter implements Flushable {
 			writeProperty(property);
 		}
 
-		Collection subComponents = componentScribe.getComponents(component);
+		List subComponents = componentScribe.getComponents(component);
 		if (inICalRoot) {
 			//add the VTIMEZONE components
 			Collection<VTimezone> timezones = tzinfo.getComponents();
 			for (VTimezone timezone : timezones) {
 				if (!subComponents.contains(timezone)) {
-					subComponents.add(timezone);
+					subComponents.add(0, timezone);
 				}
 			}
 		}
