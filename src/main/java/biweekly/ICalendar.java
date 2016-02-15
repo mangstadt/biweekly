@@ -18,6 +18,10 @@ import biweekly.component.VEvent;
 import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
 import biweekly.component.VTodo;
+import biweekly.io.json.JCalWriter;
+import biweekly.io.text.ICalWriter;
+import biweekly.io.xml.XCalDocument;
+import biweekly.io.xml.XCalWriter;
 import biweekly.property.CalendarScale;
 import biweekly.property.Categories;
 import biweekly.property.Color;
@@ -83,6 +87,10 @@ import biweekly.util.Duration;
  * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2445">RFC 2445</a>
+ * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0</a>
+ * @see <a
+ * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01">draft-ietf-calext-extensions-01</a>
  */
 public class ICalendar extends ICalComponent {
 	private ICalVersion version;
@@ -92,9 +100,7 @@ public class ICalendar extends ICalComponent {
 	 * Creates a new iCalendar object.
 	 * </p>
 	 * <p>
-	 * The following properties are auto-generated on object creation. These
-	 * properties <b>must</b> be present in order for the iCalendar object to be
-	 * valid:
+	 * The following properties are auto-generated on object creation.
 	 * <ul>
 	 * <li>{@link ProductId} - Set to a value that represents this library.</li>
 	 * </ul>
@@ -132,11 +138,8 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the name of the application that created the iCalendar object. All
 	 * {@link ICalendar} objects are initialized with a product ID representing
-	 * this library. It is a <b>required</b> property.
+	 * this library.
 	 * @return the property instance or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545
-	 * p.78-9</a>
-	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
 	 */
 	public ProductId getProductId() {
 		return getProperty(ProductId.class);
@@ -145,11 +148,8 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Sets the name of the application that created the iCalendar object. All
 	 * {@link ICalendar} objects are initialized with a product ID representing
-	 * this library. It is a <b>required</b> property.
+	 * this library.
 	 * @param prodId the property instance or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545
-	 * p.78-9</a>
-	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
 	 */
 	public void setProductId(ProductId prodId) {
 		setProperty(ProductId.class, prodId);
@@ -162,22 +162,17 @@ public class ICalendar extends ICalComponent {
 	 * @param prodId a unique string representing the application (e.g.
 	 * "-//Company//Application//EN") or null to remove
 	 * @return the property that was created
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545
-	 * p.78-9</a>
-	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
 	 */
 	public ProductId setProductId(String prodId) {
-		ProductId prop = (prodId == null) ? null : new ProductId(prodId);
-		setProductId(prop);
-		return prop;
+		ProductId property = (prodId == null) ? null : new ProductId(prodId);
+		setProductId(property);
+		return property;
 	}
 
 	/**
 	 * Gets the calendar system that this iCalendar object uses. If none is
 	 * specified, then the calendar is assumed to be in Gregorian format.
 	 * @return the calendar system or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-76">RFC 5545
-	 * p.76-7</a>
 	 */
 	public CalendarScale getCalendarScale() {
 		return getProperty(CalendarScale.class);
@@ -187,8 +182,6 @@ public class ICalendar extends ICalComponent {
 	 * Sets the calendar system that this iCalendar object uses. If none is
 	 * specified, then the calendar is assumed to be in Gregorian format.
 	 * @param calendarScale the calendar system or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-76">RFC 5545
-	 * p.76-7</a>
 	 */
 	public void setCalendarScale(CalendarScale calendarScale) {
 		setProperty(CalendarScale.class, calendarScale);
@@ -198,8 +191,6 @@ public class ICalendar extends ICalComponent {
 	 * Gets the value of the Content-Type "method" parameter if the iCalendar
 	 * object is defined as a MIME message entity.
 	 * @return the property or null if not set
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545
-	 * p.77-8</a>
 	 */
 	public Method getMethod() {
 		return getProperty(Method.class);
@@ -209,8 +200,6 @@ public class ICalendar extends ICalComponent {
 	 * Sets the value of the Content-Type "method" parameter if the iCalendar
 	 * object is defined as a MIME message entity.
 	 * @param method the property or null to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545
-	 * p.77-8</a>
 	 */
 	public void setMethod(Method method) {
 		setProperty(Method.class, method);
@@ -221,25 +210,46 @@ public class ICalendar extends ICalComponent {
 	 * object is defined as a MIME message entity.
 	 * @param method the method or null to remove
 	 * @return the property that was created
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545
-	 * p.77-8</a>
 	 */
 	public Method setMethod(String method) {
-		Method prop = (method == null) ? null : new Method(method);
-		setMethod(prop);
-		return prop;
+		Method property = (method == null) ? null : new Method(method);
+		setMethod(property);
+		return property;
 	}
 
 	/**
-	 * Gets the human-readable name of the calendar as a whole. Multiple
-	 * instances should only exist if the name is defined in multiple languages.
-	 * @return the properties
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-5">draft-ietf-calext-extensions-01
-	 * p.5</a>
+	 * <p>
+	 * Gets the human-readable name of the calendar as a whole.
+	 * </p>
+	 * <p>
+	 * An iCalendar object can only have one name, but multiple {@link Name}
+	 * properties can exist in order to specify the name in multiple languages.
+	 * In this case, each property instance must be assigned a LANGUAGE
+	 * parameter.
+	 * </p>
+	 * @return the name properties
 	 */
 	public List<Name> getNames() {
 		return getProperties(Name.class);
+	}
+
+	/**
+	 * Sets the human-readable name of the calendar as a whole.
+	 * @param name the name or null to remove
+	 */
+	public void setName(Name name) {
+		setProperty(Name.class, name);
+	}
+
+	/**
+	 * Sets the human-readable name of the calendar as a whole.
+	 * @param name the name or null to remove
+	 * @return the property that was created
+	 */
+	public Name setName(String name) {
+		Name property = (name == null) ? null : new Name(name);
+		setName(property);
+		return property;
 	}
 
 	/**
@@ -252,10 +262,7 @@ public class ICalendar extends ICalComponent {
 	 * In this case, each property instance must be assigned a LANGUAGE
 	 * parameter.
 	 * </p>
-	 * @param name the property to add
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-5">draft-ietf-calext-extensions-01
-	 * p.5</a>
+	 * @param name the name
 	 */
 	public void addName(Name name) {
 		addProperty(name);
@@ -271,29 +278,48 @@ public class ICalendar extends ICalComponent {
 	 * In this case, each property instance must be assigned a LANGUAGE
 	 * parameter.
 	 * </p>
-	 * @param name the name
+	 * @param name the name (e.g. "Company Vacation Days")
 	 * @return the property object that was created
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-5">draft-ietf-calext-extensions-01
-	 * p.5</a>
 	 */
 	public Name addName(String name) {
-		Name prop = new Name(name);
-		addProperty(prop);
-		return prop;
+		Name property = new Name(name);
+		addProperty(property);
+		return property;
 	}
 
 	/**
-	 * Gets the human-readable description of the calendar as a whole. Multiple
-	 * instances should only exist if the description is defined in multiple
-	 * languages.
-	 * @return the properties
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
-	 * p.6</a>
+	 * <p>
+	 * Gets the human-readable description of the calendar as a whole.
+	 * </p>
+	 * <p>
+	 * An iCalendar object can only have one description, but multiple
+	 * {@link Description} properties can exist in order to specify the
+	 * description in multiple languages. In this case, each property instance
+	 * must be assigned a LANGUAGE parameter.
+	 * </p>
+	 * @return the description properties
 	 */
 	public List<Description> getDescriptions() {
 		return getProperties(Description.class);
+	}
+
+	/**
+	 * Sets the human-readable description of the calendar as a whole.
+	 * @param description the description or null to remove
+	 */
+	public void setDescription(Description description) {
+		setProperty(Description.class, description);
+	}
+
+	/**
+	 * Sets the human-readable description of the calendar as a whole.
+	 * @param description the description or null to remove
+	 * @return the property that was created
+	 */
+	public Description setDescription(String description) {
+		Description property = (description == null) ? null : new Description(description);
+		setDescription(property);
+		return property;
 	}
 
 	/**
@@ -306,10 +332,7 @@ public class ICalendar extends ICalComponent {
 	 * description in multiple languages. In this case, each property instance
 	 * must be assigned a LANGUAGE parameter.
 	 * </p>
-	 * @param description the property to add
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
-	 * p.6</a>
+	 * @param description the description
 	 */
 	public void addDescription(Description description) {
 		addProperty(description);
@@ -327,59 +350,44 @@ public class ICalendar extends ICalComponent {
 	 * </p>
 	 * @param description the description
 	 * @return the property object that was created
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
-	 * p.6</a>
 	 */
 	public Description addDescription(String description) {
-		Description prop = new Description(description);
-		addProperty(prop);
-		return prop;
+		Description property = new Description(description);
+		addProperty(property);
+		return property;
 	}
 
 	/**
 	 * Gets the calendar's unique identifier.
-	 * @return the property or null if not set
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
-	 * p.6</a>
+	 * @return the unique identifier or null if not set
 	 */
 	public Uid getUid() {
 		return getProperty(Uid.class);
 	}
 
 	/**
-	 * Sets a unique identifier for the calendar.
-	 * @param uid the property or null to remove
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
-	 * p.6</a>
+	 * Sets the calendar's unique identifier.
+	 * @param uid the unique identifier or null to remove
 	 */
 	public void setUid(Uid uid) {
 		setProperty(Uid.class, uid);
 	}
 
 	/**
-	 * Sets a unique identifier for the calendar.
+	 * Sets the calendar's unique identifier.
 	 * @param uid the unique identifier or null to remove
 	 * @return the property object that was created
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
-	 * p.6</a>
 	 */
 	public Uid setUid(String uid) {
-		Uid prop = (uid == null) ? null : new Uid(uid);
-		setUid(prop);
-		return prop;
+		Uid property = (uid == null) ? null : new Uid(uid);
+		setUid(property);
+		return property;
 	}
 
 	/**
 	 * Gets the date and time that the information in this calendar object was
 	 * last revised.
-	 * @return the property or null if not set
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
-	 * p.7</a>
+	 * @return the date/time or null if not set
 	 */
 	public LastModified getLastModified() {
 		return getProperty(LastModified.class);
@@ -389,9 +397,6 @@ public class ICalendar extends ICalComponent {
 	 * Sets the date and time that the information in this calendar object was
 	 * last revised.
 	 * @param lastModified the property or null to remove
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
-	 * p.7</a>
 	 */
 	public void setLastModified(LastModified lastModified) {
 		setProperty(LastModified.class, lastModified);
@@ -402,24 +407,18 @@ public class ICalendar extends ICalComponent {
 	 * last revised.
 	 * @param lastModified the date and time or null to remove
 	 * @return the property object that was created
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
-	 * p.7</a>
 	 */
 	public LastModified setLastModified(Date lastModified) {
-		LastModified prop = (lastModified == null) ? null : new LastModified(lastModified);
-		setLastModified(prop);
-		return prop;
+		LastModified property = (lastModified == null) ? null : new LastModified(lastModified);
+		setLastModified(property);
+		return property;
 	}
 
 	/**
 	 * Gets the location of a more dynamic, alternate representation of the
 	 * calendar (such as a website that allows you to interact with the calendar
 	 * data).
-	 * @return the property or null if not set
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
-	 * p.7</a>
+	 * @return the URL or null if not set
 	 */
 	public Url getUrl() {
 		return getProperty(Url.class);
@@ -429,10 +428,7 @@ public class ICalendar extends ICalComponent {
 	 * Sets the location of a more dynamic, alternate representation of the
 	 * calendar (such as a website that allows you to interact with the calendar
 	 * data).
-	 * @param url the property or null to remove
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
-	 * p.7</a>
+	 * @param url the URL or null to remove
 	 */
 	public void setUrl(Url url) {
 		setProperty(Url.class, url);
@@ -444,22 +440,16 @@ public class ICalendar extends ICalComponent {
 	 * data).
 	 * @param url the URL or null to remove
 	 * @return the property object that was created
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
-	 * p.7</a>
 	 */
 	public Url setUrl(String url) {
-		Url prop = (url == null) ? null : new Url(url);
-		setUrl(prop);
-		return prop;
+		Url property = (url == null) ? null : new Url(url);
+		setUrl(property);
+		return property;
 	}
 
 	/**
-	 * Gets a list of keywords that describe the calendar.
-	 * @return the properties
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
-	 * p.7</a>
+	 * Gets the keywords that describe the calendar.
+	 * @return the categories
 	 */
 	public List<Categories> getCategories() {
 		return getProperties(Categories.class);
@@ -467,10 +457,7 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Adds a list of keywords that describe the calendar.
-	 * @param categories the property to add
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
-	 * p.7</a>
+	 * @param categories the categories to add
 	 */
 	public void addCategories(Categories categories) {
 		addProperty(categories);
@@ -480,9 +467,6 @@ public class ICalendar extends ICalComponent {
 	 * Adds a list of keywords that describe the calendar.
 	 * @param categories the categories to add
 	 * @return the property object that was created
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
-	 * p.7</a>
 	 */
 	public Categories addCategories(String... categories) {
 		Categories prop = new Categories(categories);
@@ -493,10 +477,7 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Gets the suggested minimum polling interval for checking for updates to
 	 * the calendar data.
-	 * @return the property or null if not set
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
-	 * p.7</a>
+	 * @return the refresh interval or null if not set
 	 */
 	public RefreshInterval getRefreshInterval() {
 		return getProperty(RefreshInterval.class);
@@ -505,10 +486,7 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Sets the suggested minimum polling interval for checking for updates to
 	 * the calendar data.
-	 * @param refreshInterval the property or null to remove
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
-	 * p.7</a>
+	 * @param refreshInterval the refresh interval or null to remove
 	 */
 	public void setRefreshInterval(RefreshInterval refreshInterval) {
 		setProperty(RefreshInterval.class, refreshInterval);
@@ -519,22 +497,16 @@ public class ICalendar extends ICalComponent {
 	 * the calendar data.
 	 * @param refreshInterval the refresh interval or null to remove
 	 * @return the property object that was created
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
-	 * p.7</a>
 	 */
 	public RefreshInterval setRefreshInterval(Duration refreshInterval) {
-		RefreshInterval prop = (refreshInterval == null) ? null : new RefreshInterval(refreshInterval);
-		setRefreshInterval(prop);
-		return prop;
+		RefreshInterval property = (refreshInterval == null) ? null : new RefreshInterval(refreshInterval);
+		setRefreshInterval(property);
+		return property;
 	}
 
 	/**
 	 * Gets the location that the calendar data can be refreshed from.
-	 * @return the property or null if not set
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-8">draft-ietf-calext-extensions-01
-	 * p.8</a>
+	 * @return the source or null if not set
 	 */
 	public Source getSource() {
 		return getProperty(Source.class);
@@ -542,10 +514,7 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Sets the location that the calendar data can be refreshed from.
-	 * @param source the property or null to remove
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-8">draft-ietf-calext-extensions-01
-	 * p.8</a>
+	 * @param source the source or null to remove
 	 */
 	public void setSource(Source source) {
 		setProperty(Source.class, source);
@@ -553,24 +522,19 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Sets the location that the calendar data can be refreshed from.
-	 * @param source the property or null to remove
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-8">draft-ietf-calext-extensions-01
-	 * p.8</a>
+	 * @param source the source or null to remove
+	 * @return the property object that was created
 	 */
 	public Source setSource(String url) {
-		Source prop = (url == null) ? null : new Source(url);
-		setSource(prop);
-		return prop;
+		Source property = (url == null) ? null : new Source(url);
+		setSource(property);
+		return property;
 	}
 
 	/**
 	 * Gets the color that clients may use when displaying the calendar (for
 	 * example, a background color).
-	 * @return the property or null if not set
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01
-	 * p.9</a>
+	 * @return the color or null if not set
 	 */
 	public Color getColor() {
 		return getProperty(Color.class);
@@ -579,10 +543,7 @@ public class ICalendar extends ICalComponent {
 	/**
 	 * Sets the color that clients may use when displaying the calendar (for
 	 * example, a background color).
-	 * @param color the property or null to remove
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01
-	 * p.79</a>
+	 * @param color the color or null to remove
 	 */
 	public void setColor(Color color) {
 		setProperty(Color.class, color);
@@ -597,22 +558,16 @@ public class ICalendar extends ICalComponent {
 	 * >Section 4.3 of the CSS Color Module Level 3 Recommendation</a>. For
 	 * example, "aliceblue", "green", "navy".
 	 * @return the property object that was created
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01
-	 * p.9</a>
 	 */
 	public Color setColor(String color) {
-		Color prop = (color == null) ? null : new Color(color);
-		setColor(prop);
-		return prop;
+		Color property = (color == null) ? null : new Color(color);
+		setColor(property);
+		return property;
 	}
 
 	/**
 	 * Gets the images that are associated with the calendar.
-	 * @return the properties
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-10">draft-ietf-calext-extensions-01
-	 * p.10</a>
+	 * @return the images
 	 */
 	public List<Image> getImages() {
 		return getProperties(Image.class);
@@ -620,106 +575,93 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Adds an image that is associated with the calendar.
-	 * @param image the property to add
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-10">draft-ietf-calext-extensions-01
-	 * p.10</a>
+	 * @param image the image
 	 */
 	public void addImage(Image image) {
 		addProperty(image);
 	}
 
 	/**
-	 * Gets the events.
+	 * Gets the calendar's events.
 	 * @return the events
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-52">RFC 5545
-	 * p.52-5</a>
-	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.13</a>
 	 */
 	public List<VEvent> getEvents() {
 		return getComponents(VEvent.class);
 	}
 
 	/**
-	 * Adds an event.
+	 * Adds an event to the calendar.
 	 * @param event the event
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-52">RFC 5545
-	 * p.52-5</a>
-	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.13</a>
 	 */
 	public void addEvent(VEvent event) {
 		addComponent(event);
 	}
 
 	/**
-	 * Gets the to-dos.
-	 * @return the to-dos
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545
-	 * p.55-7</a>
-	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.14</a>
+	 * Gets the calendar's to-do tasks.
+	 * @return the to-do tasks
 	 */
 	public List<VTodo> getTodos() {
 		return getComponents(VTodo.class);
 	}
 
 	/**
-	 * Adds a to-do.
-	 * @param todo the to-do
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545
-	 * p.55-7</a>
-	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.14</a>
+	 * Adds a to-do task to the calendar.
+	 * @param todo the to-do task
 	 */
 	public void addTodo(VTodo todo) {
 		addComponent(todo);
 	}
 
 	/**
-	 * Gets the journal entries.
+	 * Gets the calendar's journal entries.
 	 * @return the journal entries
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545
-	 * p.57-9</a>
 	 */
 	public List<VJournal> getJournals() {
 		return getComponents(VJournal.class);
 	}
 
 	/**
-	 * Adds a journal entry.
+	 * Adds a journal entry to the calendar.
 	 * @param journal the journal entry
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545
-	 * p.57-9</a>
 	 */
 	public void addJournal(VJournal journal) {
 		addComponent(journal);
 	}
 
 	/**
-	 * Gets the free/busy entries.
+	 * Gets the calendar's free/busy entries.
 	 * @return the free/busy entries
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-59">RFC 5545
-	 * p.59-62</a>
 	 */
 	public List<VFreeBusy> getFreeBusies() {
 		return getComponents(VFreeBusy.class);
 	}
 
 	/**
-	 * Adds a free/busy entry.
+	 * Adds a free/busy entry to the calendar.
 	 * @param freeBusy the free/busy entry
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-59">RFC 5545
-	 * p.59-62</a>
 	 */
 	public void addFreeBusy(VFreeBusy freeBusy) {
 		addComponent(freeBusy);
 	}
 
 	/**
+	 * <p>
 	 * Checks this iCalendar object for data consistency problems or deviations
-	 * from the spec. These problems will not prevent the iCalendar object from
-	 * being written to a data stream, but may prevent it from being parsed
-	 * correctly by the consuming application. These problems can largely be
-	 * avoided by reading the Javadocs of the component and property classes, or
-	 * by being familiar with the iCalendar standard.
+	 * from the specifications.
+	 * </p>
+	 * <p>
+	 * The existence of validation warnings will not prevent the iCalendar
+	 * object from being written to a data stream. Syntactically-correct output
+	 * will still be produced. However, the consuming application may have
+	 * trouble interpreting some of the data due to the presence of these
+	 * warnings.
+	 * </p>
+	 * <p>
+	 * These problems can largely be avoided by reading the Javadocs of the
+	 * component and property classes, or by being familiar with the iCalendar
+	 * standard.
+	 * </p>
 	 * @param version the version to validate against
 	 * @return the validation warnings
 	 */
@@ -770,8 +712,18 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Marshals this iCalendar object to its plain text representation.
+	 * <p>
+	 * Marshals this iCalendar object to its traditional, plain-text
+	 * representation.
+	 * </p>
+	 * <p>
+	 * If this iCalendar object contains user-defined property or component
+	 * objects, you must use the {@link Biweekly} or {@link ICalWriter} classes
+	 * instead in order to register the scribe classes.
+	 * </p>
 	 * @return the plain text representation
+	 * @throws IllegalArgumentException if this iCalendar object contains
+	 * user-defined property or component objects
 	 */
 	public String write() {
 		ICalVersion version = (this.version == null) ? ICalVersion.V2_0 : this.version;
@@ -779,9 +731,19 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Marshals this iCalendar object to its plain text representation.
+	 * <p>
+	 * Marshals this iCalendar object to its traditional, plain-text
+	 * representation.
+	 * </p>
+	 * <p>
+	 * If this iCalendar object contains user-defined property or component
+	 * objects, you must use the {@link Biweekly} or {@link ICalWriter} classes
+	 * instead in order to register the scribe classes.
+	 * </p>
 	 * @param file the file to write to
-	 * @throws IOException if there's an I/O problem
+	 * @throws IllegalArgumentException if this iCalendar object contains
+	 * user-defined property or component objects
+	 * @throws IOException if there's an problem writing to the file
 	 */
 	public void write(File file) throws IOException {
 		ICalVersion version = (this.version == null) ? ICalVersion.V2_0 : this.version;
@@ -789,9 +751,19 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Marshals this iCalendar object to its plain text representation.
-	 * @param out the data stream to write to
-	 * @throws IOException if there's an I/O problem
+	 * <p>
+	 * Marshals this iCalendar object to its traditional, plain-text
+	 * representation.
+	 * </p>
+	 * <p>
+	 * If this iCalendar object contains user-defined property or component
+	 * objects, you must use the {@link Biweekly} or {@link ICalWriter} classes
+	 * instead in order to register the scribe classes.
+	 * </p>
+	 * @param out the output stream to write to
+	 * @throws IllegalArgumentException if this iCalendar object contains
+	 * user-defined property or component objects
+	 * @throws IOException if there's a problem writing to the output stream
 	 */
 	public void write(OutputStream out) throws IOException {
 		ICalVersion version = (this.version == null) ? ICalVersion.V2_0 : this.version;
@@ -799,9 +771,19 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Marshals this iCalendar object to its plain text representation.
-	 * @param writer the data stream to write to
-	 * @throws IOException if there's an I/O problem
+	 * <p>
+	 * Marshals this iCalendar object to its traditional, plain-text
+	 * representation.
+	 * </p>
+	 * <p>
+	 * If this iCalendar object contains user-defined property or component
+	 * objects, you must use the {@link Biweekly} or {@link ICalWriter} classes
+	 * instead in order to register the scribe classes.
+	 * </p>
+	 * @param writer the writer to write to
+	 * @throws IllegalArgumentException if this iCalendar object contains
+	 * user-defined property or component objects
+	 * @throws IOException if there's a problem writing to the writer
 	 */
 	public void write(Writer writer) throws IOException {
 		ICalVersion version = (this.version == null) ? ICalVersion.V2_0 : this.version;
@@ -809,12 +791,17 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Marshals this iCalendar object to its XML representation (xCal). If the
-	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the scribe
+	 * <p>
+	 * Marshals this iCalendar object to its XML representation (xCal).
+	 * </p>
+	 * <p>
+	 * If this iCalendar object contains user-defined property or component
+	 * objects, you must use the {@link Biweekly}, {@link XCalWriter}, or
+	 * {@link XCalDocument} classes instead in order to register the scribe
 	 * classes.
+	 * </p>
 	 * @return the XML document
-	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * @throws IllegalArgumentException if this iCalendar object contains
 	 * user-defined property or component objects
 	 */
 	public String writeXml() {
@@ -822,55 +809,75 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Marshals this iCalendar object to its XML representation (xCal). If the
-	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the scribe
+	 * <p>
+	 * Marshals this iCalendar object to its XML representation (xCal).
+	 * </p>
+	 * <p>
+	 * If this iCalendar object contains user-defined property or component
+	 * objects, you must use the {@link Biweekly}, {@link XCalWriter}, or
+	 * {@link XCalDocument} classes instead in order to register the scribe
 	 * classes.
+	 * </p>
 	 * @param file the file to write to
-	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * @throws IllegalArgumentException if this iCalendar object contains
 	 * user-defined property or component objects
-	 * @throws TransformerException if there's an I/O problem
-	 * @throws IOException if the file cannot be written to
+	 * @throws TransformerException if there's a problem writing to the file
+	 * @throws IOException if there's a problem opening the file
 	 */
 	public void writeXml(File file) throws TransformerException, IOException {
 		Biweekly.writeXml(this).indent(2).go(file);
 	}
 
 	/**
-	 * Marshals this iCalendar object to its XML representation (xCal). If the
-	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the scribe
+	 * <p>
+	 * Marshals this iCalendar object to its XML representation (xCal).
+	 * </p>
+	 * <p>
+	 * If this iCalendar object contains user-defined property or component
+	 * objects, you must use the {@link Biweekly}, {@link XCalWriter}, or
+	 * {@link XCalDocument} classes instead in order to register the scribe
 	 * classes.
-	 * @param out the data stream to write to
-	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * </p>
+	 * @param out the output stream to write to
+	 * @throws IllegalArgumentException if this iCalendar object contains
 	 * user-defined property or component objects
-	 * @throws TransformerException if there's an I/O problem
+	 * @throws TransformerException if there's a problem writing to the output
+	 * stream
 	 */
 	public void writeXml(OutputStream out) throws TransformerException {
 		Biweekly.writeXml(this).indent(2).go(out);
 	}
 
 	/**
-	 * Marshals this iCalendar object to its XML representation (xCal). If the
-	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the scribe
+	 * <p>
+	 * Marshals this iCalendar object to its XML representation (xCal).
+	 * </p>
+	 * <p>
+	 * If this iCalendar object contains user-defined property or component
+	 * objects, you must use the {@link Biweekly}, {@link XCalWriter}, or
+	 * {@link XCalDocument} classes instead in order to register the scribe
 	 * classes.
-	 * @param writer the data stream to write to
-	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * </p>
+	 * @param writer the writer to write to
+	 * @throws IllegalArgumentException if this iCalendar object contains
 	 * user-defined property or component objects
-	 * @throws TransformerException if there's an I/O problem
+	 * @throws TransformerException if there's a problem writing to the writer
 	 */
 	public void writeXml(Writer writer) throws TransformerException {
 		Biweekly.writeXml(this).indent(2).go(writer);
 	}
 
 	/**
-	 * Marshals this iCalendar object to its JSON representation (jCal). If the
-	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the scribe
-	 * classes.
+	 * <p>
+	 * Marshals this iCalendar object to its JSON representation (jCal).
+	 * </p>
+	 * <p>
+	 * If this iCalendar object contains user-defined property or component
+	 * objects, you must use the {@link Biweekly} or {@link JCalWriter} classes
+	 * instead in order to register the scribe classes.
+	 * </p>
 	 * @return the JSON string
-	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * @throws IllegalArgumentException if this iCalendar object contains
 	 * user-defined property or component objects
 	 */
 	public String writeJson() {
@@ -878,12 +885,16 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Marshals this iCalendar object to its JSON representation (jCal). If the
-	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the scribe
-	 * classes.
+	 * <p>
+	 * Marshals this iCalendar object to its JSON representation (jCal).
+	 * </p>
+	 * <p>
+	 * If this iCalendar object contains user-defined property or component
+	 * objects, you must use the {@link Biweekly} or {@link JCalWriter} classes
+	 * instead in order to register the scribe classes.
+	 * </p>
 	 * @param file the file to write to
-	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * @throws IllegalArgumentException if this iCalendar object contains
 	 * user-defined property or component objects
 	 * @throws IOException if there's a problem writing to the file
 	 */
@@ -892,12 +903,16 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Marshals this iCalendar object to its JSON representation (jCal). If the
-	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the scribe
-	 * classes.
-	 * @param out the data stream to write to
-	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * <p>
+	 * Marshals this iCalendar object to its JSON representation (jCal).
+	 * </p>
+	 * <p>
+	 * If this iCalendar object contains user-defined property or component
+	 * objects, you must use the {@link Biweekly} or {@link JCalWriter} classes
+	 * instead in order to register the scribe classes.
+	 * </p>
+	 * @param out the output stream to write to
+	 * @throws IllegalArgumentException if this iCalendar object contains
 	 * user-defined property or component objects
 	 * @throws IOException if there's a problem writing to the output stream
 	 */
@@ -906,12 +921,16 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Marshals this iCalendar object to its JSON representation (jCal). If the
-	 * iCalendar object contains user-defined property or component objects, use
-	 * the {@link Biweekly} class instead, in order to register the scribe
-	 * classes.
-	 * @param writer the data stream to write to
-	 * @throws IllegalArgumentException if the iCalendar object contains
+	 * <p>
+	 * Marshals this iCalendar object to its JSON representation (jCal).
+	 * </p>
+	 * <p>
+	 * If this iCalendar object contains user-defined property or component
+	 * objects, you must use the {@link Biweekly} or {@link JCalWriter} classes
+	 * instead in order to register the scribe classes.
+	 * </p>
+	 * @param writer the writer to write to
+	 * @throws IllegalArgumentException if this iCalendar object contains
 	 * user-defined property or component objects
 	 * @throws IOException if there's a problem writing to the writer
 	 */
