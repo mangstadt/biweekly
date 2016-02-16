@@ -1,8 +1,8 @@
 ["vcalendar",
   [
     ["version", {}, "text", "2.0"],
-    ["calscale", {}, "text", "GREGORIAN"],
-    ["prodid", {}, "text", "-//Example Inc.//Example Calendar//EN"]
+    ["prodid", {}, "text", "-//Example Inc.//Example Calendar//EN"],
+    ["calscale", {}, "text", "GREGORIAN"]
   ],
   [
     ["vevent",

@@ -1,10 +1,16 @@
 package biweekly.io.scribe.component;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
 import java.util.List;
+
+import org.junit.Test;
 
 import biweekly.ICalendar;
 import biweekly.property.ICalProperty;
 import biweekly.property.ProductId;
+import biweekly.property.RawProperty;
 import biweekly.property.Version;
 
 /*
@@ -35,35 +41,21 @@ import biweekly.property.Version;
 /**
  * @author Michael Angstadt
  */
-public class ICalendarScribe extends ICalComponentScribe<ICalendar> {
-	public ICalendarScribe() {
-		super(ICalendar.class, "VCALENDAR");
-	}
+public class ICalendarScribeTest {
+	@Test
+	public void getProperties() {
+		ICalendarScribe scribe = new ICalendarScribe();
 
-	@Override
-	protected ICalendar _newInstance() {
-		return new ICalendar();
-	}
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+		RawProperty property1 = ical.addExperimentalProperty("X-NAME", "value1");
+		ProductId prodId = ical.setProductId("value");
+		RawProperty property2 = ical.addExperimentalProperty("X-NAME", "value2");
+		Version version = new Version("2.0");
+		ical.addProperty(version);
 
-	@Override
-	public List<ICalProperty> getProperties(ICalendar component) {
-		List<ICalProperty> properties = component.getProperties().values();
-
-		/*
-		 * Move VERSION properties to the front (if any are present), followed
-		 * by PRODID properties. This is not required by the specs, but may help
-		 * with interoperability because all the examples in the specs put the
-		 * VERSION and PRODID at the very beginning of the iCalendar.
-		 */
-		moveToFront(ProductId.class, component, properties);
-		moveToFront(Version.class, component, properties);
-
-		return properties;
-	}
-
-	private <T extends ICalProperty> void moveToFront(Class<T> clazz, ICalendar component, List<ICalProperty> properties) {
-		List<T> toMove = component.getProperties(clazz);
-		properties.removeAll(toMove);
-		properties.addAll(0, toMove);
+		List<ICalProperty> expected = Arrays.asList(version, prodId, property1, property2);
+		List<ICalProperty> actual = scribe.getProperties(ical);
+		assertEquals(expected, actual);
 	}
 }
