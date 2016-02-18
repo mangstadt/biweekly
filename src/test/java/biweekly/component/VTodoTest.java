@@ -63,65 +63,120 @@ import biweekly.util.Recurrence.Frequency;
  */
 public class VTodoTest {
 	@Test
-	public void validate_required() {
+	public void validate_cardinality_required() {
 		VTodo component = new VTodo();
 		component.getProperties().clear();
 		assertValidate(component).versions(V1_0).run();
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(2, 2);
+
+		component.setUid("");
+		component.setDateTimeStamp(new Date());
+		assertValidate(component).run();
 	}
 
 	@Test
-	public void validate_optional() {
+	public void validate_cardinality_optional() {
 		VTodo component = new VTodo();
 		component.addProperty(Classification.confidential());
+		component.addProperty(new Completed(new Date()));
+		component.addProperty(new Created(new Date()));
+		component.addProperty(new Description(""));
+		component.addProperty(new DateStart(new Date()));
+		component.addProperty(new Geo(1.1, 1.1));
+		component.addProperty(new LastModified(new Date()));
+		component.addProperty(new Location(""));
+		component.addProperty(new Organizer("", ""));
+		component.addProperty(new PercentComplete(0));
+		component.addProperty(new Priority(0));
+		component.addProperty(new Sequence(0));
+		component.addProperty(Status.needsAction());
+		component.addProperty(new Summary(""));
+		component.addProperty(new Url(""));
+		component.addProperty(new RecurrenceId(new Date()));
+		component.addProperty(new Color(""));
+		assertValidate(component).versions(V1_0).run();
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run();
+
 		component.addProperty(Classification.confidential());
 		component.addProperty(new Completed(new Date()));
-		component.addProperty(new Completed(new Date()));
-		component.addProperty(new Created(new Date()));
 		component.addProperty(new Created(new Date()));
 		component.addProperty(new Description(""));
-		component.addProperty(new Description(""));
-		component.addProperty(new DateStart(new Date()));
 		component.addProperty(new DateStart(new Date()));
 		component.addProperty(new Geo(1.1, 1.1));
-		component.addProperty(new Geo(1.1, 1.1));
-		component.addProperty(new LastModified(new Date()));
 		component.addProperty(new LastModified(new Date()));
 		component.addProperty(new Location(""));
-		component.addProperty(new Location(""));
-		component.addProperty(new Organizer(null, null));
-		component.addProperty(new Organizer(null, null));
-		component.addProperty(new PercentComplete(1));
-		component.addProperty(new PercentComplete(1));
-		component.addProperty(new Priority(1));
-		component.addProperty(new Priority(1));
-		component.addProperty(new Sequence(1));
-		component.addProperty(new Sequence(1));
-		Status status1 = Status.cancelled();
-		component.addProperty(status1);
-		Status status2 = Status.cancelled();
-		component.addProperty(status2);
-		component.addProperty(new Summary(""));
+		component.addProperty(new Organizer("", ""));
+		component.addProperty(new PercentComplete(0));
+		component.addProperty(new Priority(0));
+		component.addProperty(new Sequence(0));
+		component.addProperty(Status.needsAction());
 		component.addProperty(new Summary(""));
 		component.addProperty(new Url(""));
-		component.addProperty(new Url(""));
-		component.addProperty(new RecurrenceId(new Date()));
 		component.addProperty(new RecurrenceId(new Date()));
 		component.addProperty(new Color(""));
-		component.addProperty(new Color(""));
-
-		assertValidate(component).versions(V1_0).warn(status1, 46).warn(status2, 46).run(13, 3);
+		assertValidate(component).versions(V1_0).run(3);
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3);
 	}
 
 	@Test
 	public void validate_status() {
 		VTodo component = new VTodo();
-		Status status = Status.draft();
-		component.setStatus(status);
 
+		Status status = Status.accepted();
+		component.setStatus(status);
+		assertValidate(component).versions(V1_0).run();
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).warn(status, 46).run(13);
+
+		status = Status.cancelled();
+		component.setStatus(status);
+		assertValidate(component).versions(V1_0).warn(status, 46).run(13);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run();
+
+		status = Status.completed();
+		component.setStatus(status);
+		assertValidate(component).run();
+
+		status = Status.confirmed();
+		component.setStatus(status);
+		assertValidate(component).run(13);
+
+		status = Status.declined();
+		component.setStatus(status);
+		assertValidate(component).versions(V1_0).run();
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).warn(status, 46).run(13);
+
+		status = Status.delegated();
+		component.setStatus(status);
+		assertValidate(component).versions(V1_0).run();
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).warn(status, 46).run(13);
+
+		status = Status.draft();
+		component.setStatus(status);
 		assertValidate(component).versions(V1_0).warn(status, 46).run(13);
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(13);
+
+		status = Status.final_();
+		component.setStatus(status);
+		assertValidate(component).versions(V1_0).warn(status, 46).run(13);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(13);
+
+		status = Status.inProgress();
+		component.setStatus(status);
+		assertValidate(component).versions(V1_0).warn(status, 46).run(13);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run();
+
+		status = Status.needsAction();
+		component.setStatus(status);
+		assertValidate(component).run();
+
+		status = Status.sent();
+		component.setStatus(status);
+		assertValidate(component).versions(V1_0).run();
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).warn(status, 46).run(13);
+
+		status = Status.tentative();
+		component.setStatus(status);
+		assertValidate(component).run(13);
 	}
 
 	@Test

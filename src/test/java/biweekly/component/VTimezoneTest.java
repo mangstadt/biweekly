@@ -44,18 +44,25 @@ import biweekly.util.UtcOffset;
  */
 public class VTimezoneTest {
 	@Test
-	public void validate_required() {
+	public void validate_cardinality_required() {
 		VTimezone component = new VTimezone((String) null);
 		assertValidate(component).versions(V1_0).run(48, 2, 21);
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(2, 21);
+
+		component.setTimezoneId("");
+		assertValidate(component).versions(V1_0).run(48, 21);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(21);
 	}
 
 	@Test
-	public void validate_optional() {
+	public void validate_cardinality_optional() {
 		VTimezone component = new VTimezone("");
 		component.addProperty(new LastModified(new Date()));
-		component.addProperty(new LastModified(new Date()));
 		component.addProperty(new TimezoneUrl(""));
+		assertValidate(component).versions(V1_0).run(48, 21);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(21);
+
+		component.addProperty(new LastModified(new Date()));
 		component.addProperty(new TimezoneUrl(""));
 		assertValidate(component).versions(V1_0).run(48, 3, 3, 21);
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(3, 3, 21);
@@ -63,22 +70,32 @@ public class VTimezoneTest {
 
 	@Test
 	public void validate_observance_required() {
+		VTimezone component = new VTimezone("");
+		assertValidate(component).versions(V1_0).run(48, 21);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(21);
+
 		StandardTime standard = new StandardTime();
 		standard.setDateStart(new DateStart(new Date()));
-		standard.setTimezoneOffsetFrom(new UtcOffset(true, 1, 0));
-		standard.setTimezoneOffsetTo(new UtcOffset(true, 1, 0));
-		VTimezone component = new VTimezone("");
+		standard.setTimezoneOffsetFrom(new UtcOffset(0));
+		standard.setTimezoneOffsetTo(new UtcOffset(0));
 		component.addStandardTime(standard);
 		assertValidate(component).versions(V1_0).warn(standard, 48).run(48);
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run();
 
+		component.removeComponent(standard);
+		assertValidate(component).versions(V1_0).run(48, 21);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(21);
+
 		DaylightSavingsTime daylight = new DaylightSavingsTime();
 		daylight.setDateStart(new DateStart(new Date()));
-		daylight.setTimezoneOffsetFrom(new UtcOffset(true, 1, 0));
-		daylight.setTimezoneOffsetTo(new UtcOffset(true, 1, 0));
-		component = new VTimezone("");
+		daylight.setTimezoneOffsetFrom(new UtcOffset(0));
+		daylight.setTimezoneOffsetTo(new UtcOffset(0));
 		component.addDaylightSavingsTime(daylight);
 		assertValidate(component).versions(V1_0).warn(daylight, 48).run(48);
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run();
+
+		component.removeComponent(daylight);
+		assertValidate(component).versions(V1_0).run(48, 21);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(21);
 	}
 }

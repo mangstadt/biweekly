@@ -66,15 +66,21 @@ public class VEventTest {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
 		component.getProperties().clear();
+		component.setDateStart(new Date()); //suppress "no start date" warning
+
 		assertValidate(component).parents(parent).versions(V1_0).run();
-		assertValidate(component).parents(parent).versions(V2_0_DEPRECATED, V2_0).run(2, 2, 14);
+		assertValidate(component).parents(parent).versions(V2_0_DEPRECATED, V2_0).run(2, 2);
+
+		component.setUid("");
+		component.setDateTimeStamp(new Date());
+		assertValidate(component).parents(parent).run();
 	}
 
 	@Test
 	public void validate_cardinality_optional() {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
-		component.setDateStart(new Date()); //suppress warning
+		component.setDateStart(new Date()); //suppress "no start date" warning
 		assertValidate(component).parents(parent).run();
 
 		component.addProperty(Classification.confidential());
@@ -131,13 +137,11 @@ public class VEventTest {
 
 		status = Status.completed();
 		component.setStatus(status);
-		assertValidate(component).parents(parent).versions(V1_0).run(13);
-		assertValidate(component).parents(parent).versions(V2_0_DEPRECATED, V2_0).run(13);
+		assertValidate(component).parents(parent).run(13);
 
 		status = Status.confirmed();
 		component.setStatus(status);
-		assertValidate(component).parents(parent).versions(V1_0).run();
-		assertValidate(component).parents(parent).versions(V2_0_DEPRECATED, V2_0).run();
+		assertValidate(component).parents(parent).run();
 
 		status = Status.declined();
 		component.setStatus(status);
@@ -176,20 +180,24 @@ public class VEventTest {
 
 		status = Status.tentative();
 		component.setStatus(status);
-		assertValidate(component).parents(parent).versions(V1_0).run();
-		assertValidate(component).parents(parent).versions(V2_0_DEPRECATED, V2_0).run();
+		assertValidate(component).parents(parent).run();
 	}
 
 	@Test
 	public void validate_dateStart_and_method_relationship() {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
+		assertValidate(component).parents(parent).versions(V1_0).run();
+		assertValidate(component).parents(parent).versions(V2_0_DEPRECATED, V2_0).run(14);
+
 		component.setDateStart(new Date());
 		assertValidate(component).parents(parent).run();
 
-		parent = new TestComponent();
+		component.removeProperties(DateStart.class);
+		assertValidate(component).parents(parent).versions(V1_0).run();
+		assertValidate(component).parents(parent).versions(V2_0_DEPRECATED, V2_0).run(14);
+
 		parent.addProperty(new Method(""));
-		component = new VEvent();
 		assertValidate(component).parents(parent).run();
 	}
 
@@ -239,6 +247,8 @@ public class VEventTest {
 
 	@Test
 	public void validate_time_in_rrule() {
+		TestComponent parent = new TestComponent();
+
 		//@formatter:off
 		Recurrence[] recurrences = {
 			new Recurrence.Builder(Frequency.DAILY).byHour(1).build(),
@@ -247,7 +257,6 @@ public class VEventTest {
 		};
 		//@formatter:on
 		for (Recurrence recurrence : recurrences) {
-			TestComponent parent = new TestComponent();
 			VEvent component = new VEvent();
 			component.setDateStart(new DateStart(date("2000-01-01"), false));
 			component.setDateEnd(new DateEnd(date("2000-01-10"), false));

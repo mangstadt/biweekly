@@ -1,11 +1,15 @@
 package biweekly.component;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
 
+import java.util.Date;
+
 import org.junit.Test;
 
-import static biweekly.ICalVersion.*;
 import biweekly.property.Contact;
 import biweekly.property.DateEnd;
 import biweekly.property.DateStart;
@@ -42,25 +46,33 @@ import biweekly.property.Url;
  */
 public class VFreeBusyTest {
 	@Test
-	public void validate_required() {
+	public void validate_cardinality_required() {
 		VFreeBusy component = new VFreeBusy();
 		component.getProperties().clear();
 		assertValidate(component).versions(V1_0).run(48, 2, 2);
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(2, 2);
+
+		component.setUid("");
+		component.setDateTimeStamp(new Date());
+		assertValidate(component).versions(V1_0).run(48);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run();
 	}
 
 	@Test
-	public void validate_optional() {
+	public void validate_cardinality_optional() {
 		VFreeBusy component = new VFreeBusy();
 		component.addProperty(new Contact(""));
-		component.addProperty(new Contact(""));
-		component.addProperty(new DateStart(date("2000-01-01")));
 		component.addProperty(new DateStart(date("2000-01-01")));
 		component.addProperty(new DateEnd(date("2000-01-10")));
-		component.addProperty(new DateEnd(date("2000-01-10")));
-		component.addProperty(new Organizer(null, null));
 		component.addProperty(new Organizer(null, null));
 		component.addProperty(new Url(""));
+		assertValidate(component).versions(V1_0).run(48);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run();
+
+		component.addProperty(new Contact(""));
+		component.addProperty(new DateStart(date("2000-01-01")));
+		component.addProperty(new DateEnd(date("2000-01-10")));
+		component.addProperty(new Organizer("", ""));
 		component.addProperty(new Url(""));
 		assertValidate(component).versions(V1_0).run(48, 3, 3, 3, 3, 3);
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(3, 3, 3, 3, 3);

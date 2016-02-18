@@ -49,6 +49,12 @@ public class ObservanceTest {
 		Observance component = new Observance();
 		assertValidate(component).versions(V1_0).run(48, 2, 2, 2);
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(2, 2, 2);
+
+		component.setDateStart(new DateStart(new Date()));
+		component.setTimezoneOffsetFrom(new UtcOffset(0));
+		component.setTimezoneOffsetTo(new UtcOffset(0));
+		assertValidate(component).versions(V1_0).run(48);
+		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run();
 	}
 
 	@Test

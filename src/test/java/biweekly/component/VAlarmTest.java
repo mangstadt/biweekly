@@ -49,6 +49,10 @@ public class VAlarmTest {
 	public void validate_required() {
 		VAlarm component = new VAlarm(null, null);
 		assertValidate(component).run(2, 2);
+
+		component.setAction(Action.audio());
+		component.setTrigger(new Trigger(new Date()));
+		assertValidate(component).run();
 	}
 
 	@Test
@@ -130,40 +134,51 @@ public class VAlarmTest {
 
 	@Test
 	public void validate_related_end() {
-		VEvent event = new VEvent();
 		VAlarm component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.END));
+
+		VEvent event = new VEvent();
 		assertValidate(component).parents(event).run(12);
 
 		event = new VEvent();
 		event.setDateStart(new Date());
 		event.setDateEnd(new Date());
-		component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.END));
 		assertValidate(component).parents(event).run();
 
 		event = new VEvent();
 		event.setDateStart(new Date());
+		assertValidate(component).parents(event).run(12);
+
+		event = new VEvent();
 		event.setDuration(new Duration.Builder().build());
-		component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.END));
+		assertValidate(component).parents(event).run(12);
+
+		event = new VEvent();
+		event.setDateStart(new Date());
+		event.setDuration(new Duration.Builder().build());
 		assertValidate(component).parents(event).run();
 
 		VTodo todo = new VTodo();
-		component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.END));
 		assertValidate(component).parents(todo).run(12);
 
 		todo = new VTodo();
 		todo.setDateStart(new Date());
-		component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.END));
-		assertValidate(component).parents(todo).run(12);
-
-		todo = new VTodo();
-		todo.setDuration(new Duration.Builder().build());
-		component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.END));
-		assertValidate(component).parents(todo).run(12);
-
-		todo = new VTodo();
-		todo.setDateStart(new Date());
-		todo.setDuration(new Duration.Builder().build());
-		component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.END));
+		todo.setDateDue(new Date());
 		assertValidate(component).parents(todo).run();
+
+		todo = new VTodo();
+		todo.setDateStart(new Date());
+		assertValidate(component).parents(todo).run(12);
+
+		todo = new VTodo();
+		todo.setDuration(new Duration.Builder().build());
+		assertValidate(component).parents(todo).run(12);
+
+		todo = new VTodo();
+		todo.setDateStart(new Date());
+		todo.setDuration(new Duration.Builder().build());
+		assertValidate(component).parents(todo).run();
+
+		VJournal journal = new VJournal();
+		assertValidate(component).parents(journal).run();
 	}
 }
