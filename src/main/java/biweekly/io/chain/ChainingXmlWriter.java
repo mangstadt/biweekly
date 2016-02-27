@@ -27,7 +27,7 @@ import biweekly.io.xml.XCalOutputProperties;
 import biweekly.property.ICalProperty;
 
 /*
- Copyright (c) 2013-2015, Michael Angstadt
+ Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without

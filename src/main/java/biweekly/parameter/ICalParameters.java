@@ -18,7 +18,7 @@ import biweekly.util.CharacterBitSet;
 import biweekly.util.ListMultimap;
 
 /*
- Copyright (c) 2013-2015, Michael Angstadt
+ Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
