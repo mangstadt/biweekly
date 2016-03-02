@@ -457,11 +457,16 @@ public abstract class ICalProperty {
 	}
 
 	/**
-	 * A list that automatically converts parameter value Strings from
-	 * {@link ICalParameters} to the appropriate {@link EnumParameterValue}
-	 * objects that some parameters use. The list is backed by the property's
-	 * {@link ICalParameters}, so any changes made to the list will affect the
-	 * property's {@link ICalParameters} object and vice versa.
+	 * <p>
+	 * A list that automatically converts parameter value Strings from the
+	 * property's {@link ICalParameters} object to the appropriate
+	 * {@link EnumParameterValue} object that some parameters use.
+	 * </p>
+	 * <p>
+	 * The list is backed by the property's {@link ICalParameters} object, so
+	 * any changes made to the list will affect the property's
+	 * {@link ICalParameters} object and vice versa.
+	 * </p>
 	 * @param <T> the enum parameter class
 	 */
 	protected abstract class EnumParameterBackingList<T extends EnumParameterValue> extends AbstractList<T> {
@@ -473,6 +478,11 @@ public abstract class ICalProperty {
 
 		@Override
 		public void add(int index, T display) {
+			/*
+			 * Note: If a property name does not exist, then the parameters
+			 * object will return an empty list. Any objects added to this empty
+			 * list will NOT be added to the parameters object.
+			 */
 			List<String> values = values();
 			if (values.isEmpty()) {
 				parameters.put(parameterName, display.getValue());
@@ -505,6 +515,58 @@ public abstract class ICalProperty {
 		}
 
 		protected abstract T get(String parameterValue);
+
+		private List<String> values() {
+			return parameters.get(parameterName);
+		}
+	}
+
+	/**
+	 * A list that holds parameter values, which is backed by the property's
+	 * {@link ICalParameters} object. Any changes made to the list will affect
+	 * the property's {@link ICalParameters} object and vice versa.
+	 */
+	protected class ParameterBackingList extends AbstractList<String> {
+		private final String parameterName;
+
+		public ParameterBackingList(String parameterName) {
+			this.parameterName = parameterName;
+		}
+
+		@Override
+		public void add(int index, String value) {
+			/*
+			 * Note: If a property name does not exist, then the parameters
+			 * object will return an empty list. Any objects added to this empty
+			 * list will NOT be added to the parameters object.
+			 */
+			List<String> values = values();
+			if (values.isEmpty()) {
+				parameters.put(parameterName, value);
+			} else {
+				values.add(index, value);
+			}
+		}
+
+		@Override
+		public String remove(int index) {
+			return values().remove(index);
+		}
+
+		@Override
+		public String get(int index) {
+			return values().get(index);
+		}
+
+		@Override
+		public String set(int index, String value) {
+			return values().set(index, value);
+		}
+
+		@Override
+		public int size() {
+			return values().size();
+		}
 
 		private List<String> values() {
 			return parameters.get(parameterName);

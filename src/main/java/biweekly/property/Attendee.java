@@ -9,6 +9,7 @@ import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.VAlarm;
 import biweekly.parameter.CalendarUserType;
+import biweekly.parameter.ICalParameters;
 import biweekly.parameter.ParticipationLevel;
 import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
@@ -77,6 +78,10 @@ public class Attendee extends ICalProperty {
 	private ParticipationLevel participationLevel;
 	private ParticipationStatus status;
 	private Boolean rsvp;
+
+	private final List<String> members = new ParameterBackingList(ICalParameters.MEMBER);
+	private final List<String> delegatedFrom = new ParameterBackingList(ICalParameters.DELEGATED_FROM);
+	private final List<String> delegatedTo = new ParameterBackingList(ICalParameters.DELEGATED_TO);
 
 	/**
 	 * Creates an attendee property.
@@ -191,23 +196,7 @@ public class Attendee extends ICalProperty {
 	 * p.21-2</a>
 	 */
 	public List<String> getMembers() {
-		return parameters.getMembers();
-	}
-
-	/**
-	 * <p>
-	 * Adds a group that the attendee is a member of.
-	 * </p>
-	 * <p>
-	 * <b>Supported versions:</b> {@code 2.0}
-	 * </p>
-	 * @param uri the group URI (typically, an email address URI, e.g.
-	 * "mailto:mailinglist@example.com")
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
-	 * p.21-2</a>
-	 */
-	public void addMember(String uri) {
-		parameters.addMember(uri);
+		return members;
 	}
 
 	/**
@@ -310,24 +299,7 @@ public class Attendee extends ICalProperty {
 	 * p.17</a>
 	 */
 	public List<String> getDelegatedFrom() {
-		return parameters.getDelegatedFrom();
-	}
-
-	/**
-	 * <p>
-	 * Adds a person who has delegated his or her responsibility to the
-	 * attendee.
-	 * </p>
-	 * <p>
-	 * <b>Supported versions:</b> {@code 2.0}
-	 * </p>
-	 * @param uri the delegator (typically an email URI, e.g.
-	 * "mailto:janedoe@example.com")
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
-	 * p.17</a>
-	 */
-	public void addDelegatedFrom(String uri) {
-		parameters.addDelegatedFrom(uri);
+		return delegatedFrom;
 	}
 
 	/**
@@ -344,24 +316,7 @@ public class Attendee extends ICalProperty {
 	 * p.17-8</a>
 	 */
 	public List<String> getDelegatedTo() {
-		return parameters.getDelegatedTo();
-	}
-
-	/**
-	 * <p>
-	 * Adds a person to which the attendee has delegated his or her
-	 * responsibility.
-	 * </p>
-	 * <p>
-	 * <b>Supported versions:</b> {@code 2.0}
-	 * </p>
-	 * @param uri the delegatee (typically an email URI, e.g.
-	 * "mailto:janedoe@example.com")
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
-	 * p.17-8</a>
-	 */
-	public void addDelegatedTo(String uri) {
-		parameters.addDelegatedTo(uri);
+		return delegatedTo;
 	}
 
 	@Override
