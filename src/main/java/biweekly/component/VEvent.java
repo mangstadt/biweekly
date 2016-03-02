@@ -102,8 +102,7 @@ public class VEvent extends ICalComponent {
 	 * Creates a new event.
 	 * </p>
 	 * <p>
-	 * The following properties are auto-generated on object creation. These
-	 * properties <b>must</b> be present in order for the event to be valid:
+	 * The following properties are auto-generated on object creation.
 	 * <ul>
 	 * <li>{@link Uid} - Set to a UUID.</li>
 	 * <li>{@link DateTimeStamp} - Set to the current date-time.</li>
