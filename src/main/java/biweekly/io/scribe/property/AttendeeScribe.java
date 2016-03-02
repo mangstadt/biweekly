@@ -93,7 +93,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 		switch (context.getVersion()) {
 		case V1_0:
 			if (role != null) {
-				copy.put("ROLE", role.getValue());
+				copy.put(ICalParameters.ROLE, role.getValue());
 			}
 			if (level != null) {
 				copy.put("EXPECT", level.getValue(context.getVersion()));
@@ -111,7 +111,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			}
 
 			if (value != null) {
-				copy.put("ROLE", value);
+				copy.put(ICalParameters.ROLE, value);
 			}
 			break;
 		}
@@ -131,7 +131,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 				break;
 
 			default:
-				paramName = "PARTSTAT";
+				paramName = ICalParameters.PARTSTAT;
 				paramValue = partStat.getValue();
 				break;
 			}
@@ -149,7 +149,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 		String uri = property.getUri();
 		String email = property.getEmail();
 		if (uri != null && email != null && context.getVersion() != ICalVersion.V1_0) {
-			copy.put("EMAIL", email);
+			copy.put(ICalParameters.EMAIL, email);
 		}
 
 		return copy;
@@ -229,9 +229,9 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 				}
 			}
 
-			String partStat = parameters.first("PARTSTAT");
+			String partStat = parameters.first(ICalParameters.PARTSTAT);
 			if (partStat != null) {
-				parameters.remove("PARTSTAT", partStat);
+				parameters.remove(ICalParameters.PARTSTAT, partStat);
 				status = ParticipationStatus.get(partStat);
 			}
 
@@ -240,7 +240,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 				parameters.remove(ICalParameters.CN, name);
 			}
 
-			email = parameters.first("EMAIL");
+			email = parameters.first(ICalParameters.EMAIL);
 			if (email == null) {
 				int colon = value.indexOf(':');
 				if (colon == 6) {
@@ -254,7 +254,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 					uri = value;
 				}
 			} else {
-				parameters.remove("EMAIL", email);
+				parameters.remove(ICalParameters.EMAIL, email);
 				uri = value;
 			}
 
