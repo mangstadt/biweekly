@@ -8,6 +8,7 @@ import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.parameter.Display;
+import biweekly.parameter.ICalParameters;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -68,7 +69,7 @@ import biweekly.parameter.Display;
  * p.10</a>
  */
 public class Image extends BinaryProperty {
-	private final List<Display> displays = new EnumParameterBackingList<Display>("DISPLAY") {
+	private final List<Display> displays = new EnumParameterBackingList<Display>(ICalParameters.DISPLAY) {
 		@Override
 		protected Display get(String parameterValue) {
 			return Display.get(parameterValue);

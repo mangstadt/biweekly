@@ -3,6 +3,7 @@ package biweekly.property;
 import java.util.List;
 
 import biweekly.parameter.Feature;
+import biweekly.parameter.ICalParameters;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -55,7 +56,7 @@ import biweekly.parameter.Feature;
 public class Conference extends ICalProperty {
 	private String uri, text;
 
-	private final List<Feature> features = new EnumParameterBackingList<Feature>("FEATURE") {
+	private final List<Feature> features = new EnumParameterBackingList<Feature>(ICalParameters.FEATURE) {
 		@Override
 		protected Feature get(String parameterValue) {
 			return Feature.get(parameterValue);

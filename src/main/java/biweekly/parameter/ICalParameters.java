@@ -54,7 +54,10 @@ public class ICalParameters extends ListMultimap<String, String> {
 	public static final String DELEGATED_FROM = "DELEGATED-FROM";
 	public static final String DELEGATED_TO = "DELEGATED-TO";
 	public static final String DIR = "DIR";
+	public static final String DISPLAY = "DISPLAY";
+	public static final String EMAIL = "EMAIL";
 	public static final String ENCODING = "ENCODING";
+	public static final String FEATURE = "FEATURE";
 	public static final String FMTTYPE = "FMTTYPE";
 	public static final String FBTYPE = "FBTYPE";
 	public static final String LABEL = "LABEL";

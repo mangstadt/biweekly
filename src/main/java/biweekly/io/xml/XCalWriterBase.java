@@ -52,9 +52,13 @@ abstract class XCalWriterBase extends StreamWriter {
 		registerParameterDataType(ICalParameters.DELEGATED_FROM, ICalDataType.CAL_ADDRESS);
 		registerParameterDataType(ICalParameters.DELEGATED_TO, ICalDataType.CAL_ADDRESS);
 		registerParameterDataType(ICalParameters.DIR, ICalDataType.URI);
+		registerParameterDataType(ICalParameters.DISPLAY, ICalDataType.TEXT);
+		registerParameterDataType(ICalParameters.EMAIL, ICalDataType.TEXT);
 		registerParameterDataType(ICalParameters.ENCODING, ICalDataType.TEXT);
+		registerParameterDataType(ICalParameters.FEATURE, ICalDataType.TEXT);
 		registerParameterDataType(ICalParameters.FMTTYPE, ICalDataType.TEXT);
 		registerParameterDataType(ICalParameters.FBTYPE, ICalDataType.TEXT);
+		registerParameterDataType(ICalParameters.LABEL, ICalDataType.TEXT);
 		registerParameterDataType(ICalParameters.LANGUAGE, ICalDataType.TEXT);
 		registerParameterDataType(ICalParameters.MEMBER, ICalDataType.CAL_ADDRESS);
 		registerParameterDataType(ICalParameters.PARTSTAT, ICalDataType.TEXT);
