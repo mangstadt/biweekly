@@ -74,7 +74,7 @@ class Filters {
           if (wkst.javaDayNum <= dow.javaDayNum) {
             dateWeekNo = 1 + (instance / 7);
           } else {
-            dateWeekNo = (instance / 7);
+            dateWeekNo = instance / 7;
           }
 
           // TODO(msamuel): according to section 4.3.10

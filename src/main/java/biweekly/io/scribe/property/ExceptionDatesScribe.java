@@ -66,7 +66,7 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICa
 		if (property.getValues().isEmpty()) {
 			hasTime = false;
 		} else {
-			hasTime = (dataType(property, context.getVersion()) == DATE_TIME);
+			hasTime = dataType(property, context.getVersion()) == DATE_TIME;
 		}
 		return handleTzidParameter(property, hasTime, context);
 	}
@@ -99,7 +99,7 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICa
 	protected ICalDate readValue(ExceptionDates property, String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		ICalDate date;
 		try {
-			boolean hasTime = (dataType == DATE_TIME);
+			boolean hasTime = dataType == DATE_TIME;
 			date = date(value).hasTime(hasTime).parse();
 		} catch (IllegalArgumentException e) {
 			throw new CannotParseException(19);

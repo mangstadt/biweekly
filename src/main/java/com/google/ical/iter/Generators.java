@@ -211,7 +211,7 @@ final class Generators {
             || year != builder.year) {
           int hoursBetween = daysBetween(
               builder, year, month, day) * 24 - hour;
-          nhour = ((interval - (hoursBetween % interval)) % interval);
+          nhour = (interval - (hoursBetween % interval)) % interval;
           if (nhour > 23) {
             // Don't update day so that the difference calculation above is
             // correct when this function is reentered with a different day
@@ -263,7 +263,7 @@ final class Generators {
           int minutesBetween = (daysBetween(
               builder, year, month, day) * 24 + builder.hour - hour) * 60
               - minute;
-          nminute = ((interval - (minutesBetween % interval)) % interval);
+          nminute = (interval - (minutesBetween % interval)) % interval;
           if (nminute > 59) {
             // Don't update day so that the difference calculation above is
             // correct when this function is reentered with a different day
@@ -322,7 +322,7 @@ final class Generators {
           int secondsBetween = ((daysBetween(
               builder, year, month, day) * 24 + builder.hour - hour) * 60
               + builder.minute - minute) * 60 - second ;
-          nsecond = ((interval - (secondsBetween % interval)) % interval);
+          nsecond = (interval - (secondsBetween % interval)) % interval;
           if (nsecond > 59) {
             // Don't update day so that the difference calculation above is
             // correct when this function is reentered with a different day
