@@ -36,7 +36,7 @@ import java.util.ResourceBundle;
 public enum Messages {
 	INSTANCE;
 
-	private final ResourceBundle messages;
+	private final transient ResourceBundle messages;
 
 	private Messages() {
 		messages = ResourceBundle.getBundle("biweekly/messages");

@@ -2,10 +2,12 @@
 
 package com.google.ical.util;
 
+import java.io.Serializable;
+
 /**
  * A function with a boolean return value useful for filtering.
  */
-public interface Predicate<T> {
+public interface Predicate<T> extends Serializable {
 
   /**
    * Applies this Predicate to the given object.
