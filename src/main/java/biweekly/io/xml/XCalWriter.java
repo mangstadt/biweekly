@@ -517,7 +517,7 @@ public class XCalWriter extends XCalWriterBase {
 		handler.characters(text.toCharArray(), 0, text.length());
 	}
 
-	private Attributes getElementAttributes(Element element) {
+	private static Attributes getElementAttributes(Element element) {
 		AttributesImpl attributes = new AttributesImpl();
 		NamedNodeMap attributeNodes = element.getAttributes();
 		for (int i = 0; i < attributeNodes.getLength(); i++) {

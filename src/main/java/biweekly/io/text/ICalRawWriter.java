@@ -376,7 +376,7 @@ public class ICalRawWriter implements Closeable, Flushable {
 	 * @param string the string
 	 * @return true if it starts with whitespace, false if not
 	 */
-	private boolean beginsWithWhitespace(String string) {
+	private static boolean beginsWithWhitespace(String string) {
 		if (string.length() == 0) {
 			return false;
 		}
@@ -442,7 +442,7 @@ public class ICalRawWriter implements Closeable, Flushable {
 		}
 	}
 
-	private String printableCharacterList(String list) {
+	private static String printableCharacterList(String list) {
 		return list.replace("\n", "\\n").replace("\r", "\\r");
 	}
 

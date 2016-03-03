@@ -461,11 +461,11 @@ public class ICalRawReader implements Closeable {
 		return reader.read();
 	}
 
-	private boolean isNewline(char ch) {
+	private static boolean isNewline(char ch) {
 		return ch == '\n' || ch == '\r';
 	}
 
-	private boolean isWhitespace(char ch) {
+	private static boolean isWhitespace(char ch) {
 		return ch == ' ' || ch == '\t';
 	}
 
