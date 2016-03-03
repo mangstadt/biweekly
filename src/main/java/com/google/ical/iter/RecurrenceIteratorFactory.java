@@ -461,7 +461,7 @@ public class RecurrenceIteratorFactory {
         break;
     }
 
-    Generator instanceGenerator = null;
+    Generator instanceGenerator;
     if (0 != bySetPos.length) {
       instanceGenerator = InstanceGenerators.bySetPosInstanceGenerator(
           bySetPos, freq, wkst, filter,

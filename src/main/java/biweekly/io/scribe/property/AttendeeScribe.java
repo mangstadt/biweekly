@@ -71,7 +71,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 		//2.0 - Uses the values "TRUE" and "FALSE"
 		Boolean rsvp = property.getRsvp();
 		if (rsvp != null) {
-			String value = null;
+			String value;
 			switch (context.getVersion()) {
 			case V1_0:
 				value = rsvp ? "YES" : "NO";

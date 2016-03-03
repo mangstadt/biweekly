@@ -64,7 +64,8 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 		String one = it.next();
 		String two = it.next();
 
-		String min = null, max = null;
+		String min = null;
+		String max;
 		if (two == null) {
 			max = one;
 		} else {

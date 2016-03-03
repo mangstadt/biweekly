@@ -432,7 +432,7 @@ public class ICalReader extends StreamReader {
 	 */
 	private String decodeQuotedPrintableValue(String propertyName, String charsetParam, String value) throws DecoderException {
 		//determine the character set
-		Charset charset = null;
+		Charset charset;
 		if (charsetParam == null) {
 			charset = defaultQuotedPrintableCharset;
 		} else {

@@ -129,7 +129,7 @@ public abstract class StreamReader implements Closeable {
 	 */
 	public List<ICalendar> readAll() throws IOException {
 		List<ICalendar> icals = new ArrayList<ICalendar>();
-		ICalendar ical = null;
+		ICalendar ical;
 		while ((ical = readNext()) != null) {
 			icals.add(ical);
 		}

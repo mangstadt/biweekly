@@ -69,7 +69,7 @@ public class TimeUtils {
       return time;
     }
 
-    long timetMillis = 0;
+    long timetMillis;
 
     if (sense > 0) {
       // time is in UTC
