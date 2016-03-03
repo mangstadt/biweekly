@@ -384,10 +384,8 @@ public class Observance extends ICalComponent {
 		if (dateStart != null && rrule != null) {
 			ICalDate start = dateStart.getValue();
 			Recurrence recur = rrule.getValue();
-			if (start != null && recur != null) {
-				if (!start.hasTime() && (!recur.getByHour().isEmpty() || !recur.getByMinute().isEmpty() || !recur.getBySecond().isEmpty())) {
-					warnings.add(Warning.validate(5));
-				}
+			if (start != null && recur != null && !start.hasTime() && (!recur.getByHour().isEmpty() || !recur.getByMinute().isEmpty() || !recur.getBySecond().isEmpty())) {
+				warnings.add(Warning.validate(5));
 			}
 		}
 

@@ -523,10 +523,8 @@ public class VAlarm extends ICalComponent {
 		Action action = getAction();
 		if (action != null) {
 			//AUDIO alarms should not have more than 1 attachment
-			if (action.isAudio()) {
-				if (getAttachments().size() > 1) {
-					warnings.add(Warning.validate(7));
-				}
+			if (action.isAudio() &&  getAttachments().size() > 1) {
+				warnings.add(Warning.validate(7));
 			}
 
 			//DESCRIPTION is required for DISPLAY alarms 
