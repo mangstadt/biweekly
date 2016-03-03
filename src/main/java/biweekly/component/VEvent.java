@@ -1607,7 +1607,7 @@ public class VEvent extends ICalComponent {
 
 		checkOptionalCardinality(warnings, Color.class);
 
-		Status validStatuses[];
+		Status[] validStatuses;
 		switch (version) {
 		case V1_0:
 			validStatuses = new Status[] { Status.tentative(), Status.confirmed(), Status.declined(), Status.needsAction(), Status.sent(), Status.delegated() };

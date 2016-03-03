@@ -79,7 +79,7 @@ public class BaseNCodecInputStream extends FilterInputStream {
      *             if offset, len or buffer size are invalid
      */
     @Override
-    public int read(byte b[], int offset, int len) throws IOException {
+    public int read(byte[] b, int offset, int len) throws IOException {
         if (b == null) {
             throw new NullPointerException();
         } else if (offset < 0 || len < 0) {

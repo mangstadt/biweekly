@@ -37,8 +37,8 @@ import biweekly.ICalVersion;
  * @author Michael Angstadt
  */
 public class VersionedEnumParameterValue extends EnumParameterValue {
-	private static final ICalVersion allVersions[] = ICalVersion.values();
-	protected final ICalVersion supportedVersions[];
+	private static final ICalVersion[] allVersions = ICalVersion.values();
+	protected final ICalVersion[] supportedVersions;
 
 	public VersionedEnumParameterValue(String value, ICalVersion... supportedVersions) {
 		super(value);
