@@ -277,8 +277,8 @@ public class TimeUtils {
    * is not a TimeValue.
    */
   public static DateValue toDateValue(DateValue dv) {
-    return (!(dv instanceof TimeValue) ? dv
-            : new DateValueImpl(dv.year(), dv.month(), dv.day()));
+    return !(dv instanceof TimeValue) ? dv
+            : new DateValueImpl(dv.year(), dv.month(), dv.day());
   }
 
   private static final TimeZone BOGUS_TIMEZONE =

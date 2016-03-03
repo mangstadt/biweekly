@@ -68,7 +68,7 @@ public class JsonValue {
 		this.object = object;
 		value = null;
 		array = null;
-		isNull = (object == null);
+		isNull = object == null;
 	}
 
 	/**

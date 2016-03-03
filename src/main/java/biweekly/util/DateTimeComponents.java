@@ -105,7 +105,7 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents>,
 
 		String hourStr = m.group(i++);
 		if (hasTime == null) {
-			hasTime = (hourStr != null);
+			hasTime = hourStr != null;
 		}
 		if (!hasTime) {
 			return new DateTimeComponents(year, month, date);

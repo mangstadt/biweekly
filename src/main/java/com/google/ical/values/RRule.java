@@ -190,7 +190,7 @@ public class RRule extends AbstractIcalObject {
     }
     if (0 == nPerPeriod) { nPerPeriod = 1; }
 
-    return ((freqLengthDays / nPerPeriod) * this.interval);
+    return (freqLengthDays / nPerPeriod) * this.interval;
   }
 
   /** the frequency of repetition */

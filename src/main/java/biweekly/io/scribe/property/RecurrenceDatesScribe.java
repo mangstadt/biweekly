@@ -68,7 +68,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 			hasTime = false;
 		} else {
 			ICalDataType dataType = dataType(property, context.getVersion());
-			hasTime = (dataType == DATE_TIME || dataType == PERIOD);
+			hasTime = dataType == DATE_TIME || dataType == PERIOD;
 		}
 		return handleTzidParameter(property, hasTime, context);
 	}
@@ -356,7 +356,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		}
 
 		//parse as dates
-		boolean hasTime = (dataType == DATE_TIME);
+		boolean hasTime = dataType == DATE_TIME;
 		for (String valueStr : valueStrs) {
 			ICalDate date;
 			try {

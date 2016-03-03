@@ -124,7 +124,7 @@ public final class UtcOffset {
 	public String toString(boolean extended) {
 		StringBuilder sb = new StringBuilder();
 
-		boolean positive = (millis >= 0);
+		boolean positive = millis >= 0;
 		long hour = Math.abs(millisToHours(millis));
 		long minute = Math.abs(millisToMinutes(millis));
 

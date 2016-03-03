@@ -570,9 +570,9 @@ public class VAlarm extends ICalComponent {
 					boolean noEndDate = false;
 
 					if (parent instanceof VEvent) {
-						noEndDate = (parent.getProperty(DateEnd.class) == null && (parent.getProperty(DateStart.class) == null || parent.getProperty(DurationProperty.class) == null));
+						noEndDate = parent.getProperty(DateEnd.class) == null && (parent.getProperty(DateStart.class) == null || parent.getProperty(DurationProperty.class) == null);
 					} else if (parent instanceof VTodo) {
-						noEndDate = (parent.getProperty(DateDue.class) == null && (parent.getProperty(DateStart.class) == null || parent.getProperty(DurationProperty.class) == null));
+						noEndDate = parent.getProperty(DateDue.class) == null && (parent.getProperty(DateStart.class) == null || parent.getProperty(DurationProperty.class) == null);
 					}
 
 					if (noEndDate) {
