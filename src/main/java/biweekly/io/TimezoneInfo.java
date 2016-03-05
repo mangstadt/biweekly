@@ -291,7 +291,7 @@ public class TimezoneInfo {
 		}
 	}
 
-	private <T> void removeIdentity(List<T> list, T object) {
+	private static <T> void removeIdentity(List<T> list, T object) {
 		Iterator<T> it = list.iterator();
 		while (it.hasNext()) {
 			if (object == it.next()) {
@@ -300,7 +300,7 @@ public class TimezoneInfo {
 		}
 	}
 
-	private <T> boolean containsIdentity(List<T> list, T object) {
+	private static <T> boolean containsIdentity(List<T> list, T object) {
 		for (T item : list) {
 			if (item == object) {
 				return true;

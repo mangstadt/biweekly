@@ -103,7 +103,7 @@ public class RequestStatusScribe extends ICalPropertyScribe<RequestStatus> {
 		return requestStatus;
 	}
 
-	private String s(String str) {
+	private static String s(String str) {
 		return (str == null || str.length() == 0) ? null : str;
 	}
 

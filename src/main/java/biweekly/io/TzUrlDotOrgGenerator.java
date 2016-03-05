@@ -117,7 +117,7 @@ public class TzUrlDotOrgGenerator implements VTimezoneGenerator {
 		}
 	}
 
-	private IllegalArgumentException notFound(Exception e) {
+	private static IllegalArgumentException notFound(Exception e) {
 		return new IllegalArgumentException("Timezone ID not recognized.", e);
 	}
 }
