@@ -1,5 +1,7 @@
 package biweekly;
 
+import java.io.Serializable;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -29,7 +31,8 @@ package biweekly;
  * Represents a warning.
  * @author Michael Angstadt
  */
-public class Warning {
+public class Warning implements Serializable {
+	private static final long serialVersionUID = 992007104513833624L;
 	private final Integer code;
 	private final String message;
 

@@ -35,8 +35,8 @@ import com.fasterxml.jackson.core.JsonToken;
  * but it's not in the correct jCal format).
  * @author Michael Angstadt
  */
-@SuppressWarnings("serial")
 public class JCalParseException extends IOException {
+	private static final long serialVersionUID = -2447563507966434472L;
 	private final JsonToken expected, actual;
 
 	/**

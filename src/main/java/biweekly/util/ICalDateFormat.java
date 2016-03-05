@@ -75,10 +75,11 @@ public enum ICalDateFormat {
 	DATE_TIME_EXTENDED(
 	"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-\\+]\\d{2}:\\d{2}",
 	"yyyy-MM-dd'T'HH:mm:ssZ"){
-		@SuppressWarnings("serial")
 		@Override
 		public DateFormat getDateFormat(TimeZone timezone) {
 			DateFormat df = new SimpleDateFormat(formatStr){
+				private static final long serialVersionUID = -297452842012115768L;
+
 				@Override
 				public Date parse(String str) throws ParseException {
 					//remove the colon from the timezone offset

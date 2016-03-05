@@ -31,8 +31,8 @@ import java.io.IOException;
  * Thrown when there's a problem parsing a plain-text iCalendar file.
  * @author Michael Angstadt
  */
-@SuppressWarnings("serial")
 public class ICalParseException extends IOException {
+	private static final long serialVersionUID = -7347495806076993029L;
 	private final String line;
 	private final int lineNumber;
 

@@ -2,7 +2,6 @@
 
 package com.google.ical.util;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -124,8 +123,7 @@ public class Predicates {
   }
 
   /** @see Predicates#alwaysTrue */
-  private static class AlwaysTruePredicate<T> implements Predicate<T>,
-      Serializable {
+  private static class AlwaysTruePredicate<T> implements Predicate<T> {
     private static final long serialVersionUID = 8759914710239461322L;
     public boolean apply(T t) {
       return true;
@@ -135,8 +133,7 @@ public class Predicates {
   }
 
   /** @see Predicates#alwaysFalse */
-  private static class AlwaysFalsePredicate<T> implements Predicate<T>,
-      Serializable {
+  private static class AlwaysFalsePredicate<T> implements Predicate<T> {
     private static final long serialVersionUID = -565481022115659695L;
     public boolean apply(T t) {
       return false;
@@ -146,7 +143,7 @@ public class Predicates {
   }
 
   /** @see Predicates#not */
-  private static class NotPredicate<T> implements Predicate<T>, Serializable {
+  private static class NotPredicate<T> implements Predicate<T> {
     private static final long serialVersionUID = -5113445916422049953L;
     private final Predicate<? super T> predicate;
 
@@ -159,7 +156,7 @@ public class Predicates {
   }
 
   /** @see Predicates#and */
-  private static class AndPredicate<T> implements Predicate<T>, Serializable {
+  private static class AndPredicate<T> implements Predicate<T> {
     private static final long serialVersionUID = 1022358602593297546L;
     private final Predicate<? super T>[] components;
 
@@ -177,7 +174,7 @@ public class Predicates {
   }
 
   /** @see Predicates#or */
-  private static class OrPredicate<T> implements Predicate<T>, Serializable {
+  private static class OrPredicate<T> implements Predicate<T> {
     private static final long serialVersionUID = -7942366790698074803L;
     private final Predicate<? super T>[] components;
 

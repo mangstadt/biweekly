@@ -33,8 +33,9 @@ import java.text.DecimalFormatSymbols;
  * that a "." is used as decimal separater, no matter the locale.
  * @author Michael Angstadt
  */
-@SuppressWarnings("serial")
 public class ICalFloatFormatter extends DecimalFormat {
+	private static final long serialVersionUID = 7755109373108919576L;
+
 	/**
 	 * Creates a new formatter with a max of 6 decimals.
 	 */

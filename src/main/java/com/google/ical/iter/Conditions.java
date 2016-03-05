@@ -27,7 +27,8 @@ final class Conditions {
   /** constructs a condition that fails after passing count dates. */
   static Predicate<DateValue> countCondition(final int count) {
     return new Predicate<DateValue>() {
-      int count_ = count;
+	  private static final long serialVersionUID = -3770774958208833665L;
+	  int count_ = count;
       public boolean apply(DateValue _) {
         return --count_ >= 0;
       }
@@ -44,6 +45,7 @@ final class Conditions {
    */
   static Predicate<DateValue> untilCondition(final DateValue until) {
     return new Predicate<DateValue>() {
+      private static final long serialVersionUID = -130394842437801858L;
       public boolean apply(DateValue date) {
         return date.compareTo(until) <= 0;
       }

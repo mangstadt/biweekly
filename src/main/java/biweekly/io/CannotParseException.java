@@ -33,8 +33,8 @@ import biweekly.Warning;
  * date string).
  * @author Michael Angstadt
  */
-@SuppressWarnings("serial")
 public class CannotParseException extends RuntimeException {
+	private static final long serialVersionUID = 5286121765702004202L;
 	private final Warning warning;
 
 	/**

@@ -34,8 +34,8 @@ import biweekly.Warning;
  * included in the parsed {@link ICalendar} object.
  * @author Michael Angstadt
  */
-@SuppressWarnings("serial")
 public class SkipMeException extends RuntimeException {
+	private static final long serialVersionUID = -4029746115565159207L;
 	private final Warning warning;
 
 	/**

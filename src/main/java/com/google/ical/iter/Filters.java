@@ -48,7 +48,8 @@ class Filters {
   static Predicate<DateValue> byDayFilter(
       final WeekdayNum[] days, final boolean weeksInYear, final Weekday wkst) {
     return new Predicate<DateValue>() {
-        public boolean apply(DateValue date) {
+		private static final long serialVersionUID = 1636822853835207274L;
+		public boolean apply(DateValue date) {
           Weekday dow = Weekday.valueOf(date);
 
           int nDays;
@@ -111,7 +112,8 @@ class Filters {
    */
   static Predicate<DateValue> byMonthDayFilter(final int[] monthDays) {
     return new Predicate<DateValue>() {
-      public boolean apply(DateValue date) {
+	  private static final long serialVersionUID = -1618039447294490037L;
+	  public boolean apply(DateValue date) {
         int nDays = TimeUtils.monthLength(date.year(), date.month());
         for (int i = monthDays.length; --i >= 0;) {
           int day = monthDays[i];
@@ -133,7 +135,8 @@ class Filters {
   static Predicate<DateValue> weekIntervalFilter(
       final int interval, final Weekday wkst, final DateValue dtStart) {
     return new Predicate<DateValue>() {
-      DateValue wkStart;
+	  private static final long serialVersionUID = 7059994888520369846L;
+	  DateValue wkStart;
       {
         // the latest day with day of week wkst on or before dtStart
         DTBuilder wkStartB = new DTBuilder(dtStart);
@@ -169,7 +172,8 @@ class Filters {
     }
     final int bitField = hoursByBit;
     return new Predicate<DateValue>() {
-      public boolean apply(DateValue date) {
+	  private static final long serialVersionUID = -6284974028385246889L;
+	  public boolean apply(DateValue date) {
         if (!(date instanceof TimeValue)) { return false; }
         TimeValue tv = (TimeValue) date;
         return (bitField & (1 << tv.hour())) != 0;
@@ -189,7 +193,8 @@ class Filters {
     }
     final long bitField = minutesByBit;
     return new Predicate<DateValue>() {
-      public boolean apply(DateValue date) {
+	  private static final long serialVersionUID = 5028303473420393470L;
+	  public boolean apply(DateValue date) {
         if (!(date instanceof TimeValue)) { return false; }
         TimeValue tv = (TimeValue) date;
         return (bitField & (1L << tv.minute())) != 0;
@@ -210,7 +215,8 @@ class Filters {
     }
     final long bitField = secondsByBit;
     return new Predicate<DateValue>() {
-      public boolean apply(DateValue date) {
+	  private static final long serialVersionUID = 4109739845053177924L;
+	  public boolean apply(DateValue date) {
         if (!(date instanceof TimeValue)) { return false; }
         TimeValue tv = (TimeValue) date;
         return (bitField & (1L << tv.second())) != 0;
