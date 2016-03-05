@@ -225,7 +225,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			return property;
 		}
 
-		String splitValues[] = value.toUpperCase().split("\\s+");
+		String[] splitValues = value.toUpperCase().split("\\s+");
 
 		//parse the frequency and interval from the first token (e.g. "W2")
 		String frequencyStr;

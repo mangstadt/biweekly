@@ -76,7 +76,7 @@ public abstract class BinaryPropertyScribe<T extends BinaryProperty> extends ICa
 			return uri;
 		}
 
-		byte data[] = property.getData();
+		byte[] data = property.getData();
 		if (data != null) {
 			return Base64.encodeBase64String(data);
 		}
@@ -107,7 +107,7 @@ public abstract class BinaryPropertyScribe<T extends BinaryProperty> extends ICa
 			return;
 		}
 
-		byte data[] = property.getData();
+		byte[] data = property.getData();
 		if (data != null) {
 			element.append(ICalDataType.BINARY, Base64.encodeBase64String(data));
 			return;
@@ -139,7 +139,7 @@ public abstract class BinaryPropertyScribe<T extends BinaryProperty> extends ICa
 			return JCalValue.single(uri);
 		}
 
-		byte data[] = property.getData();
+		byte[] data = property.getData();
 		if (data != null) {
 			return JCalValue.single(Base64.encodeBase64String(data));
 		}

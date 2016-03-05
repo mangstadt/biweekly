@@ -63,7 +63,7 @@ public class AudioAlarmScribe extends VCalAlarmPropertyScribe<AudioAlarm> {
 			return Arrays.asList(uri);
 		}
 
-		byte data[] = property.getData();
+		byte[] data = property.getData();
 		if (data != null) {
 			String base64Str = Base64.encodeBase64String(data);
 			return Arrays.asList(base64Str);

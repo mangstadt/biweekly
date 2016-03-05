@@ -1641,7 +1641,7 @@ public class VTodo extends ICalComponent {
 
 		checkOptionalCardinality(warnings, Color.class);
 
-		Status validStatuses[];
+		Status[] validStatuses;
 		switch (version) {
 		case V1_0:
 			validStatuses = new Status[] { Status.needsAction(), Status.completed(), Status.accepted(), Status.declined(), Status.delegated(), Status.sent() };

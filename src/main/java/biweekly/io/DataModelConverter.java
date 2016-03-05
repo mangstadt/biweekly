@@ -333,7 +333,7 @@ public class DataModelConverter {
 	private static Attachment buildAttachment(AudioAlarm aalarm) {
 		String type = aalarm.getParameter("TYPE");
 		String contentType = (type == null) ? null : "audio/" + type.toLowerCase();
-		byte data[] = aalarm.getData();
+		byte[] data = aalarm.getData();
 		if (data != null) {
 			return new Attachment(contentType, data);
 		}
