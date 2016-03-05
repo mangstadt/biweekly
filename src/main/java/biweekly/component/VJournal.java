@@ -1193,10 +1193,8 @@ public class VJournal extends ICalComponent {
 		//BYHOUR, BYMINUTE, and BYSECOND cannot be specified in RRULE if DTSTART's data type is "date"
 		//RFC 5545 p. 167
 		Recurrence rrule = getValue(getRecurrenceRule());
-		if (dateStart != null && rrule != null) {
-			if (!dateStart.hasTime() && (!rrule.getByHour().isEmpty() || !rrule.getByMinute().isEmpty() || !rrule.getBySecond().isEmpty())) {
-				warnings.add(Warning.validate(5));
-			}
+		if (dateStart != null && rrule != null && !dateStart.hasTime() && (!rrule.getByHour().isEmpty() || !rrule.getByMinute().isEmpty() || !rrule.getBySecond().isEmpty())) {
+			warnings.add(Warning.validate(5));
 		}
 
 		//there *should* be only 1 instance of RRULE

@@ -107,12 +107,9 @@ final class CompoundIteratorImpl implements RecurrenceIterator {
   private void reattach(HeapElement el) {
     if (el.shift()) {
       queue.add(el);
-    } else if (el.inclusion) {
-      // if we have no live inclusions, then the rest are exclusions which we
+    } else if (el.inclusion && 0 == --nInclusionsRemaining) { // if we have no live inclusions, then the rest are exclusions which we
       // can safely discard.
-      if (0 == --nInclusionsRemaining) {
-        queue.clear();
-      }
+      queue.clear();
     }
   }
 
