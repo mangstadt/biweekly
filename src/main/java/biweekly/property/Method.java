@@ -1,5 +1,10 @@
 package biweekly.property;
 
+import java.util.Arrays;
+import java.util.Collection;
+
+import biweekly.ICalVersion;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -27,8 +32,15 @@ package biweekly.property;
 
 /**
  * <p>
- * Specifies the value of the "Content-Type" header's "method" parameter if the
- * iCalendar object is defined as a MIME message entity.
+ * Specifies the type of <a href="http://tools.ietf.org/html/rfc5546">iTIP</a>
+ * request that the iCalendar object represents. If the iCalendar object is just
+ * being used as a container to hold calendar information, then this property
+ * does not need to be defined.
+ * </p>
+ * <p>
+ * If the iCalendar object is defined as a MIME message entity, this property
+ * MUST be set to the value of the "Content-Type" header's "method" parameter,
+ * if present.
  * </p>
  * <p>
  * <b>Code sample:</b>
@@ -36,16 +48,26 @@ package biweekly.property;
  * <pre class="brush:java">
  * ICalendar ical = new ICalendar();
  * 
- * Method method = new Method(&quot;value&quot;);
+ * Method method = Method.request();
  * ical.setMethod(method);
  * </pre>
  * 
  * </p>
  * @author Michael Angstadt
+ * @see <a href="http://tools.ietf.org/html/rfc5546">RFC 5546</a>
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545 p.77-8</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-74">RFC 2445 p.74-5</a>
  */
-public class Method extends TextProperty {
+public class Method extends EnumProperty {
+	private static final String ADD = "ADD";
+	private static final String CANCEL = "CANCEL";
+	private static final String COUNTER = "COUNTER";
+	private static final String DECLINECOUNTER = "DECLINECOUNTER";
+	private static final String PUBLISH = "PUBLISH";
+	private static final String REFRESH = "REFRESH";
+	private static final String REPLY = "REPLY";
+	private static final String REQUEST = "REQUEST";
+
 	/**
 	 * Creates a new method property.
 	 * @param value the property value
@@ -60,6 +82,143 @@ public class Method extends TextProperty {
 	 */
 	public Method(Method original) {
 		super(original);
+	}
+
+	/**
+	 * Constructs a METHOD property whose value is "ADD".
+	 * @return the property
+	 */
+	public static Method add() {
+		return create(ADD);
+	}
+
+	/**
+	 * Determines if this property's value is "ADD".
+	 * @return true if the value is "ADD", false if not
+	 */
+	public boolean isAdd() {
+		return is(ADD);
+	}
+
+	/**
+	 * Constructs a METHOD property whose value is "CANCEL".
+	 * @return the property
+	 */
+	public static Method cancel() {
+		return create(CANCEL);
+	}
+
+	/**
+	 * Determines if this property's value is "CANCEL".
+	 * @return true if the value is "CANCEL", false if not
+	 */
+	public boolean isCancel() {
+		return is(CANCEL);
+	}
+
+	/**
+	 * Constructs a METHOD property whose value is "COUNTER".
+	 * @return the property
+	 */
+	public static Method counter() {
+		return create(COUNTER);
+	}
+
+	/**
+	 * Determines if this property's value is "COUNTER".
+	 * @return true if the value is "COUNTER", false if not
+	 */
+	public boolean isCounter() {
+		return is(COUNTER);
+	}
+
+	/**
+	 * Constructs a METHOD property whose value is "DECLINECOUNTER".
+	 * @return the property
+	 */
+	public static Method declineCounter() {
+		return create(DECLINECOUNTER);
+	}
+
+	/**
+	 * Determines if this property's value is "DECLINECOUNTER".
+	 * @return true if the value is "DECLINECOUNTER", false if not
+	 */
+	public boolean isDeclineCounter() {
+		return is(DECLINECOUNTER);
+	}
+
+	/**
+	 * Constructs a METHOD property whose value is "PUBLISH".
+	 * @return the property
+	 */
+	public static Method publish() {
+		return create(PUBLISH);
+	}
+
+	/**
+	 * Determines if this property's value is "PUBLISH".
+	 * @return true if the value is "PUBLISH", false if not
+	 */
+	public boolean isPublish() {
+		return is(PUBLISH);
+	}
+
+	/**
+	 * Constructs a METHOD property whose value is "REFRESH".
+	 * @return the property
+	 */
+	public static Method refresh() {
+		return create(REFRESH);
+	}
+
+	/**
+	 * Determines if this property's value is "REFRESH".
+	 * @return true if the value is "REFRESH", false if not
+	 */
+	public boolean isRefresh() {
+		return is(REFRESH);
+	}
+
+	/**
+	 * Constructs a METHOD property whose value is "REPLY".
+	 * @return the property
+	 */
+	public static Method reply() {
+		return create(REPLY);
+	}
+
+	/**
+	 * Determines if this property's value is "REPLY".
+	 * @return true if the value is "REPLY", false if not
+	 */
+	public boolean isReply() {
+		return is(REPLY);
+	}
+
+	/**
+	 * Constructs a METHOD property whose value is "REQUEST".
+	 * @return the property
+	 */
+	public static Method request() {
+		return create(REQUEST);
+	}
+
+	/**
+	 * Determines if this property's value is "REQUEST".
+	 * @return true if the value is "REQUEST", false if not
+	 */
+	public boolean isRequest() {
+		return is(REQUEST);
+	}
+
+	private static Method create(String value) {
+		return new Method(value);
+	}
+
+	@Override
+	protected Collection<String> getStandardValues(ICalVersion version) {
+		return Arrays.asList(ADD, CANCEL, COUNTER, DECLINECOUNTER, PUBLISH, REFRESH, REPLY, REQUEST);
 	}
 
 	@Override

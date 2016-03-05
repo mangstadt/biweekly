@@ -211,9 +211,12 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Gets the value of the Content-Type "method" parameter if the iCalendar
-	 * object is defined as a MIME message entity.
+	 * Gets the type of <a href="http://tools.ietf.org/html/rfc5546">iTIP</a>
+	 * request that this iCalendar object represents, or the value of the
+	 * "Content-Type" header's "method" parameter if the iCalendar object is
+	 * defined as a MIME message entity.
 	 * @return the property or null if not set
+	 * @see <a href="http://tools.ietf.org/html/rfc5546">RFC 5546</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545
 	 * p.77-8</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-74">RFC 2445
@@ -224,9 +227,12 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Sets the value of the Content-Type "method" parameter if the iCalendar
-	 * object is defined as a MIME message entity.
+	 * Sets the type of <a href="http://tools.ietf.org/html/rfc5546">iTIP</a>
+	 * request that this iCalendar object represents, or the value of the
+	 * "Content-Type" header's "method" parameter if the iCalendar object is
+	 * defined as a MIME message entity.
 	 * @param method the property or null to remove
+	 * @see <a href="http://tools.ietf.org/html/rfc5546">RFC 5546</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545
 	 * p.77-8</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-74">RFC 2445
@@ -237,10 +243,13 @@ public class ICalendar extends ICalComponent {
 	}
 
 	/**
-	 * Sets the value of the Content-Type "method" parameter if the iCalendar
-	 * object is defined as a MIME message entity.
+	 * Sets the type of <a href="http://tools.ietf.org/html/rfc5546">iTIP</a>
+	 * request that this iCalendar object represents, or the value of the
+	 * "Content-Type" header's "method" parameter if the iCalendar object is
+	 * defined as a MIME message entity.
 	 * @param method the method or null to remove
 	 * @return the property that was created
+	 * @see <a href="http://tools.ietf.org/html/rfc5546">RFC 5546</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545
 	 * p.77-8</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-74">RFC 2445
