@@ -1306,6 +1306,8 @@ public class VTodo extends ICalComponent {
 	/**
 	 * Gets the response to a scheduling request.
 	 * @return the response
+	 * @see <a href="http://tools.ietf.org/html/rfc5546#section-3.6">RFC 5546
+	 * Section 3.6</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-141">RFC 5545
 	 * p.141-3</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-134">RFC 2445
@@ -1318,6 +1320,8 @@ public class VTodo extends ICalComponent {
 	/**
 	 * Sets the response to a scheduling request.
 	 * @param requestStatus the response
+	 * @see <a href="http://tools.ietf.org/html/rfc5546#section-3.6">RFC 5546
+	 * Section 3.6</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-141">RFC 5545
 	 * p.141-3</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-134">RFC 2445

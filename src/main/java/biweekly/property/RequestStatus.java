@@ -38,15 +38,18 @@ import biweekly.component.ICalComponent;
  * Represents a response to a scheduling request.
  * </p>
  * <p>
- * This property must have a status code defined. The following status code
- * families are defined:
+ * This property must have a status code defined. The iCalendar specification
+ * defines the following status code families. However, these can have different
+ * meanings depending upon the type of scheduling request system being used
+ * (such as <a href="http://tools.ietf.org/html/rfc5546">iTIP</a>).
  * <ul>
  * <li><b>1.x</b> - The request has been received, but is still being processed.
  * </li>
  * <li><b>2.x</b> - The request was processed successfully.</li>
  * <li><b>3.x</b> - There is a client-side problem with the request (such as
  * some incorrect syntax).</li>
- * <li><b>4.x</b> - A server-side error occurred.</li>
+ * <li><b>4.x</b> - A scheduling error occurred on the server that prevented the
+ * request from being processed.</li>
  * </ul>
  * </p>
  * <p>
@@ -62,6 +65,8 @@ import biweekly.component.ICalComponent;
  * 
  * </p>
  * @author Michael Angstadt
+ * @see <a href="http://tools.ietf.org/html/rfc5546#section-3.6">RFC 5546
+ * Section 3.6</a>
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-141">RFC 5545
  * p.141-3</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-134">RFC 2445
