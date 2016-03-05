@@ -274,8 +274,8 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		builder.until(until);
 
 		//determine what frequency enum to use and how to treat each tokenized value
-		Frequency frequency = null;
-		Handler<String> handler = null;
+		Frequency frequency;
+		Handler<String> handler;
 		if ("YD".equals(frequencyStr)) {
 			frequency = Frequency.YEARLY;
 			handler = new Handler<String>() {

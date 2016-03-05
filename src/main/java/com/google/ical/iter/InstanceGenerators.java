@@ -215,7 +215,7 @@ class InstanceGenerators {
                 break;
               }
               DateValue d = builder.toDateTime();
-              boolean contained = false;
+              boolean contained;
               if (null == d0) {
                 d0 = d;
                 contained = true;
