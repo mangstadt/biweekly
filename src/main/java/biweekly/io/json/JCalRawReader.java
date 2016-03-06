@@ -270,7 +270,7 @@ public class JCalRawReader implements Closeable {
 	 * Handles the iCalendar data as it is read off the data stream.
 	 * @author Michael Angstadt
 	 */
-	public static interface JCalDataStreamListener {
+	public interface JCalDataStreamListener {
 		/**
 		 * Called when the parser begins to read a component.
 		 * @param parentHierarchy the component's parent components

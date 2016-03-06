@@ -34,9 +34,9 @@ import javax.xml.namespace.QName;
  * @author Michael Angstadt
  */
 public interface XCalQNames {
-	public static final QName ICALENDAR = new QName(XCAL_NS, "icalendar");
-	public static final QName VCALENDAR = new QName(XCAL_NS, "vcalendar");
-	public static final QName COMPONENTS = new QName(XCAL_NS, "components");
-	public static final QName PROPERTIES = new QName(XCAL_NS, "properties");
-	public static final QName PARAMETERS = new QName(XCAL_NS, "parameters");
+	QName ICALENDAR = new QName(XCAL_NS, "icalendar");
+	QName VCALENDAR = new QName(XCAL_NS, "vcalendar");
+	QName COMPONENTS = new QName(XCAL_NS, "components");
+	QName PROPERTIES = new QName(XCAL_NS, "properties");
+	QName PARAMETERS = new QName(XCAL_NS, "parameters");
 }

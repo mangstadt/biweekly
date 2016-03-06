@@ -233,17 +233,16 @@ public class ICalWriter extends StreamWriter implements Flushable {
 
 	@Override
 	protected void _write(ICalendar ical) throws IOException {
-		writeComponent(ical, null);
+		writeComponent(ical);
 	}
 
 	/**
 	 * Writes a component to the data stream.
 	 * @param component the component to write
-	 * @param parent the parent component
 	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void writeComponent(ICalComponent component, ICalComponent parent) throws IOException {
+	private void writeComponent(ICalComponent component) throws IOException {
 		switch (writer.getVersion()) {
 		case V1_0:
 			//VALARM component => vCal alarm property
@@ -294,7 +293,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 
 		for (Object subComponentObj : subComponents) {
 			ICalComponent subComponent = (ICalComponent) subComponentObj;
-			writeComponent(subComponent, component);
+			writeComponent(subComponent);
 		}
 
 		if (inVCalRoot) {
@@ -354,9 +353,8 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		/*
 		 * Set the property's data type.
 		 * 
-		 * Only add a VALUE parameter if the data type is:
-		 * (1) not "unknown"
-		 * (2) different from the property's default data type
+		 * Only add a VALUE parameter if the data type is: (1) not "unknown" (2)
+		 * different from the property's default data type
 		 */
 		ICalDataType dataType = scribe.dataType(property, writer.getVersion());
 		if (dataType != null && dataType != scribe.defaultDataType(writer.getVersion())) {

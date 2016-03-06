@@ -437,14 +437,12 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		//get the text content of the first child element with the xCard namespace
 		List<Element> children = XmlUtils.toElementList(rawElement.getChildNodes());
 		for (Element child : children) {
-			if (!XCAL_NS.equals(child.getNamespaceURI())) {
-				continue;
+			if (XCAL_NS.equals(child.getNamespaceURI())) {
+				String dataTypeStr = child.getLocalName();
+				dataType = "unknown".equals(dataTypeStr) ? null : ICalDataType.get(dataTypeStr);
+				value = child.getTextContent();
+				break;
 			}
-
-			String dataTypeStr = child.getLocalName();
-			dataType = "unknown".equals(dataTypeStr) ? null : ICalDataType.get(dataTypeStr);
-			value = child.getTextContent();
-			break;
 		}
 
 		if (dataType == null) {
@@ -818,7 +816,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * {@link ICalPropertyScribe#list(Collection, ListCallback) list} method
 	 * @param <T> the value class
 	 */
-	protected static interface ListCallback<T> {
+	protected interface ListCallback<T> {
 		/**
 		 * Converts a value to a string.
 		 * @param value the value (null values are not passed to this method, so

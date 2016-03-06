@@ -76,14 +76,12 @@ public class RawPropertyScribe extends ICalPropertyScribe<RawProperty> {
 		//get the text content of the first child element with the xCard namespace
 		List<Element> children = XmlUtils.toElementList(rawElement.getChildNodes());
 		for (Element child : children) {
-			if (!XCalNamespaceContext.XCAL_NS.equals(child.getNamespaceURI())) {
-				continue;
+			if (XCalNamespaceContext.XCAL_NS.equals(child.getNamespaceURI())) {
+				String dataTypeStr = child.getLocalName();
+				ICalDataType dataType = "unknown".equals(dataTypeStr) ? null : ICalDataType.get(dataTypeStr);
+				String value = child.getTextContent();
+				return new RawProperty(name, dataType, value);
 			}
-
-			String dataTypeStr = child.getLocalName();
-			ICalDataType dataType = "unknown".equals(dataTypeStr) ? null : ICalDataType.get(dataTypeStr);
-			String value = child.getTextContent();
-			return new RawProperty(name, dataType, value);
 		}
 
 		//get the text content of the property element

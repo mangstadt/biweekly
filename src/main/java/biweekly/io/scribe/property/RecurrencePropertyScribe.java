@@ -213,7 +213,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			parseByMonth(rules, builder, warnings);
 			parseBySetPos(rules, builder, warnings);
 			parseWkst(rules, builder, warnings);
-			parseXRules(rules, builder, warnings); //must be called last
+			parseXRules(rules, builder); //must be called last
 
 			T property = newInstance(builder.build());
 
@@ -513,7 +513,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		parseByMonth(rules, builder, warnings);
 		parseBySetPos(rules, builder, warnings);
 		parseWkst(rules, builder, warnings);
-		parseXRules(rules, builder, warnings); //must be called last
+		parseXRules(rules, builder); //must be called last
 
 		T property = newInstance(builder.build());
 
@@ -571,7 +571,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		parseByMonth(rules, builder, warnings);
 		parseBySetPos(rules, builder, warnings);
 		parseWkst(rules, builder, warnings);
-		parseXRules(rules, builder, warnings); //must be called last
+		parseXRules(rules, builder); //must be called last
 
 		T property = newInstance(builder.build());
 
@@ -744,7 +744,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		});
 	}
 
-	private void parseXRules(ListMultimap<String, String> rules, Recurrence.Builder builder, List<Warning> warnings) {
+	private void parseXRules(ListMultimap<String, String> rules, Recurrence.Builder builder) {
 		for (Map.Entry<String, List<String>> rule : rules) {
 			String name = rule.getKey();
 			for (String value : rule.getValue()) {
