@@ -647,19 +647,7 @@ public abstract class ICalComponent {
 			List<V> value = entry.getValue();
 			List<V> otherValue = map2.get(key);
 
-			/*
-			 * The properties are stored in a ListMultimap. This class never
-			 * returns null. It returns an empty list when the key is not found.
-			 * But keep the null check just incase.
-			 */
-			if (value == null) {
-				if (otherValue != null || !map2.containsKey(key)) {
-					return false;
-				}
-				continue;
-			}
-
-			if (otherValue == null || value.size() != otherValue.size()) {
+			if (value.size() != otherValue.size()) {
 				return false;
 			}
 
