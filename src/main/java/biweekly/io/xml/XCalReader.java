@@ -284,7 +284,7 @@ public class XCalReader extends StreamReader {
 			if (structure.isEmpty()) {
 				//<icalendar>
 				if (ICALENDAR.equals(qname)) {
-					structure.push(ElementType.icalendar);
+					structure.push(ElementType.ICALENDAR);
 				}
 				return;
 			}
@@ -294,7 +294,7 @@ public class XCalReader extends StreamReader {
 			if (parentType != null) {
 				switch (parentType) {
 
-				case icalendar:
+				case ICALENDAR:
 					//<vcalendar>
 					if (VCALENDAR.equals(qname)) {
 						ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(localName, ICalVersion.V2_0);
@@ -302,24 +302,24 @@ public class XCalReader extends StreamReader {
 
 						curComponent = component;
 						readICal = (ICalendar) component;
-						typeToPush = ElementType.component;
+						typeToPush = ElementType.COMPONENT;
 					}
 					break;
 
-				case component:
+				case COMPONENT:
 					if (PROPERTIES.equals(qname)) {
 						//<properties>
-						typeToPush = ElementType.properties;
+						typeToPush = ElementType.PROPERTIES;
 					} else if (COMPONENTS.equals(qname)) {
 						//<components>
 						componentStack.add(curComponent);
 						curComponent = null;
 
-						typeToPush = ElementType.components;
+						typeToPush = ElementType.COMPONENTS;
 					}
 					break;
 
-				case components:
+				case COMPONENTS:
 					//start component element
 					if (XCAL_NS.equals(namespace)) {
 						ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(localName, ICalVersion.V2_0);
@@ -328,47 +328,47 @@ public class XCalReader extends StreamReader {
 						ICalComponent parent = componentStack.getLast();
 						parent.addComponent(curComponent);
 
-						typeToPush = ElementType.component;
+						typeToPush = ElementType.COMPONENT;
 					}
 					break;
 
-				case properties:
+				case PROPERTIES:
 					//start property element
 					propertyElement = createElement(namespace, localName, attributes);
 					parameters = new ICalParameters();
 					parent = propertyElement;
-					typeToPush = ElementType.property;
+					typeToPush = ElementType.PROPERTY;
 					break;
 
-				case property:
+				case PROPERTY:
 					//<parameters>
 					if (PARAMETERS.equals(qname)) {
-						typeToPush = ElementType.parameters;
+						typeToPush = ElementType.PARAMETERS;
 					}
 					break;
 
-				case parameters:
+				case PARAMETERS:
 					//inside of <parameters>
 					if (XCAL_NS.equals(namespace)) {
 						paramName = qname;
-						typeToPush = ElementType.parameter;
+						typeToPush = ElementType.PARAMETER;
 					}
 					break;
 
-				case parameter:
+				case PARAMETER:
 					//inside of a parameter element
 					if (XCAL_NS.equals(namespace)) {
-						typeToPush = ElementType.parameterValue;
+						typeToPush = ElementType.PARAMETER_VALUE;
 					}
 					break;
-				case parameterValue:
+				case PARAMETER_VALUE:
 					//should never have child elements
 					break;
 				}
 			}
 
 			//append element to property element
-			if (propertyElement != null && typeToPush != ElementType.property && typeToPush != ElementType.parameters && !structure.isUnderParameters()) {
+			if (propertyElement != null && typeToPush != ElementType.PROPERTY && typeToPush != ElementType.PARAMETERS && !structure.isUnderParameters()) {
 				if (textContent.length() > 0) {
 					parent.appendChild(DOC.createTextNode(textContent));
 				}
@@ -398,19 +398,19 @@ public class XCalReader extends StreamReader {
 
 			if (type != null) {
 				switch (type) {
-				case parameterValue:
+				case PARAMETER_VALUE:
 					parameters.put(paramName.getLocalPart(), textContent);
 					break;
 
-				case parameter:
+				case PARAMETER:
 					//do nothing
 					break;
 
-				case parameters:
+				case PARAMETERS:
 					//do nothing
 					break;
 
-				case property:
+				case PROPERTY:
 					context.getWarnings().clear();
 
 					propertyElement.appendChild(DOC.createTextNode(textContent));
@@ -451,7 +451,7 @@ public class XCalReader extends StreamReader {
 					propertyElement = null;
 					break;
 
-				case component:
+				case COMPONENT:
 					curComponent = null;
 
 					//</vcalendar>
@@ -467,20 +467,20 @@ public class XCalReader extends StreamReader {
 					}
 					break;
 
-				case properties:
+				case PROPERTIES:
 					break;
 
-				case components:
+				case COMPONENTS:
 					curComponent = componentStack.removeLast();
 					break;
 
-				case icalendar:
+				case ICALENDAR:
 					break;
 				}
 			}
 
 			//append element to property element
-			if (propertyElement != null && type != ElementType.property && type != ElementType.parameters && !structure.isUnderParameters()) {
+			if (propertyElement != null && type != ElementType.PROPERTY && type != ElementType.PARAMETERS && !structure.isUnderParameters()) {
 				if (textContent.length() > 0) {
 					parent.appendChild(DOC.createTextNode(textContent));
 				}
@@ -517,7 +517,7 @@ public class XCalReader extends StreamReader {
 	private enum ElementType {
 		//a value is missing for "vcalendar" because it is treated as a "component"
 		//enum values are lower-case so they won't get confused with the "XCalQNames" variable names
-		icalendar, components, properties, component, property, parameters, parameter, parameterValue;
+		ICALENDAR, COMPONENTS, PROPERTIES, COMPONENT, PROPERTY, PARAMETERS, PARAMETER, PARAMETER_VALUE;
 	}
 
 	/**
@@ -578,9 +578,9 @@ public class XCalReader extends StreamReader {
 
 			//@formatter:off
 			return
-			nonNull == ElementType.parameters ||
-			nonNull == ElementType.parameter ||
-			nonNull == ElementType.parameterValue;
+			nonNull == ElementType.PARAMETERS ||
+			nonNull == ElementType.PARAMETER ||
+			nonNull == ElementType.PARAMETER_VALUE;
 			//@formatter:on
 		}
 
