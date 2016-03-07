@@ -32,6 +32,10 @@ import biweekly.util.org.apache.commons.codec.CharEncoding;
  * @since 1.4
  */
 public class StringUtils {
+    
+    private StringUtils() {
+        throw new AssertionError("Must not instantiate this class");
+    }
 
     /**
      * Encodes the given string into a sequence of bytes using the ISO-8859-1 charset, storing the result into a new

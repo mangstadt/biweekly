@@ -27,6 +27,10 @@ import biweekly.util.org.apache.commons.codec.DecoderException;
  * @since 1.4
  */
 class Utils {
+    
+    private Utils() {
+        throw new AssertionError("Must not instantiate this class");
+    }
 
     /**
      * Returns the numeric value of the character <code>b</code> in radix 16.
