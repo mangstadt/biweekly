@@ -114,7 +114,7 @@ import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalReader extends StreamReader {
-	private static final String icalComponentName = ScribeIndex.getICalendarScribe().getComponentName();
+	private static final String VCALENDAR_COMPONENT_NAME = ScribeIndex.getICalendarScribe().getComponentName(); //"VCALENDAR"
 
 	private final ICalRawReader reader;
 	private Charset defaultQuotedPrintableCharset;
@@ -235,7 +235,7 @@ public class ICalReader extends StreamReader {
 
 			if ("BEGIN".equalsIgnoreCase(propertyName)) {
 				String componentName = line.getValue();
-				if (ical == null && !icalComponentName.equalsIgnoreCase(componentName)) {
+				if (ical == null && !VCALENDAR_COMPONENT_NAME.equalsIgnoreCase(componentName)) {
 					//keep reading until a VCALENDAR component is found
 					continue;
 				}
@@ -264,7 +264,7 @@ public class ICalReader extends StreamReader {
 				String componentName = line.getValue();
 
 				//stop reading when "END:VCALENDAR" is reached
-				if (icalComponentName.equalsIgnoreCase(componentName)) {
+				if (VCALENDAR_COMPONENT_NAME.equalsIgnoreCase(componentName)) {
 					break;
 				}
 

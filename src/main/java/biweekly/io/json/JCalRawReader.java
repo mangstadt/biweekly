@@ -48,7 +48,7 @@ import com.fasterxml.jackson.core.JsonToken;
  * @see <a href="http://tools.ietf.org/html/rfc7265">RFC 7265</a>
  */
 public class JCalRawReader implements Closeable {
-	private static final String vcalendarComponentName = ScribeIndex.getICalendarScribe().getComponentName().toLowerCase(); //"vcalendar"
+	private static final String VCALENDAR_COMPONENT_NAME = ScribeIndex.getICalendarScribe().getComponentName().toLowerCase(); //"vcalendar"
 
 	private final Reader reader;
 	private JsonParser parser;
@@ -94,7 +94,7 @@ public class JCalRawReader implements Closeable {
 		JsonToken prev = null;
 		JsonToken cur;
 		while ((cur = parser.nextToken()) != null) {
-			if (prev == JsonToken.START_ARRAY && cur == JsonToken.VALUE_STRING && vcalendarComponentName.equals(parser.getValueAsString())) {
+			if (prev == JsonToken.START_ARRAY && cur == JsonToken.VALUE_STRING && VCALENDAR_COMPONENT_NAME.equals(parser.getValueAsString())) {
 				break;
 			}
 			prev = cur;
