@@ -515,8 +515,13 @@ public class XCalReader extends StreamReader {
 	}
 
 	private enum ElementType {
-		//a value is missing for "vcalendar" because it is treated as a "component"
-		//enum values are lower-case so they won't get confused with the "XCalQNames" variable names
+		/*
+		 * Note: A value is missing for "vcalendar" because it is treated as a
+		 * "component".
+		 * 
+		 * Note: These enum values are in lower-case to make them stand out from
+		 * the "XCalQNames" variable names, many of which are identically named.
+		 */
 		icalendar, components, properties, component, property, parameters, parameter, parameterValue;
 	}
 
