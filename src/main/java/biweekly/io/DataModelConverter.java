@@ -72,7 +72,7 @@ import com.google.ical.values.DateTimeValue;
  * vCalendar-iCalendar compatibility.
  * @author Michael Angstadt
  */
-public class DataModelConverter {
+public final class DataModelConverter {
 	/**
 	 * Converts vCalendar timezone information to am iCalendar {@link VTimezone}
 	 * component.
@@ -486,6 +486,9 @@ public class DataModelConverter {
 		public Timezone getTz() {
 			return tz;
 		}
+	}
 
+	private DataModelConverter() {
+		//hide
 	}
 }
