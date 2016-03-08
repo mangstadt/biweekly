@@ -53,6 +53,11 @@ package biweekly.util.org.apache.commons.codec;
  * @version $Id: CharEncoding.java 1170351 2011-09-13 21:09:09Z ggregory $
  */
 public class CharEncoding {
+    
+    private CharEncoding() {
+        throw new AssertionError("Must not instantiate this class");
+    } 
+    
     /**
      * CharEncodingISO Latin Alphabet No. 1, a.k.a. ISO-LATIN-1. </p>
      * <p>

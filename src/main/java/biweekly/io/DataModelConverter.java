@@ -73,6 +73,11 @@ import com.google.ical.values.DateTimeValue;
  * @author Michael Angstadt
  */
 public class DataModelConverter {
+    
+    private DataModelConverter() {
+        throw new AssertionError("Must not instantiate this class");
+    }
+    
 	/**
 	 * Converts vCalendar timezone information to am iCalendar {@link VTimezone}
 	 * component.
