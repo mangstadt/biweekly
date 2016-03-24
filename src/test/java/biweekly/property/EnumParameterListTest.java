@@ -37,7 +37,7 @@ import biweekly.parameter.Display;
 /**
  * @author Michael Angstadt
  */
-public class EnumParameterBackingListTest {
+public class EnumParameterListTest {
 	@Test
 	public void test() {
 		EnumParameterBackingListProperty property = new EnumParameterBackingListProperty();
@@ -61,9 +61,9 @@ public class EnumParameterBackingListTest {
 
 	private static class EnumParameterBackingListProperty extends ICalProperty {
 		public List<Display> getDisplay() {
-			return new EnumParameterBackingList<Display>("DISPLAY") {
+			return new EnumParameterList<Display>("DISPLAY") {
 				@Override
-				protected Display get(String parameterValue) {
+				protected Display _asObject(String parameterValue) {
 					return Display.get(parameterValue);
 				}
 			};

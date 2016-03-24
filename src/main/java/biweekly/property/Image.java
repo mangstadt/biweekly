@@ -69,9 +69,9 @@ import biweekly.parameter.ICalParameters;
  * p.10</a>
  */
 public class Image extends BinaryProperty {
-	private final List<Display> displays = new EnumParameterBackingList<Display>(ICalParameters.DISPLAY) {
+	private final List<Display> displays = new EnumParameterList<Display>(ICalParameters.DISPLAY) {
 		@Override
-		protected Display get(String parameterValue) {
+		protected Display _asObject(String parameterValue) {
 			return Display.get(parameterValue);
 		}
 	};

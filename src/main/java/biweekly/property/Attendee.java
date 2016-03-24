@@ -79,9 +79,9 @@ public class Attendee extends ICalProperty {
 	private ParticipationStatus status;
 	private Boolean rsvp;
 
-	private final List<String> members = new ParameterBackingList(ICalParameters.MEMBER);
-	private final List<String> delegatedFrom = new ParameterBackingList(ICalParameters.DELEGATED_FROM);
-	private final List<String> delegatedTo = new ParameterBackingList(ICalParameters.DELEGATED_TO);
+	private final List<String> members = new ICalStringParameterList(ICalParameters.MEMBER);
+	private final List<String> delegatedFrom = new ICalStringParameterList(ICalParameters.DELEGATED_FROM);
+	private final List<String> delegatedTo = new ICalStringParameterList(ICalParameters.DELEGATED_TO);
 
 	/**
 	 * Creates an attendee property.

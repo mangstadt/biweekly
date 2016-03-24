@@ -458,7 +458,7 @@ public abstract class ICalProperty {
 
 	/**
 	 * <p>
-	 * A list that automatically converts parameter value Strings from the
+	 * A list that automatically converts raw string parameter values from the
 	 * property's {@link ICalParameters} object to the appropriate
 	 * {@link EnumParameterValue} object that some parameters use.
 	 * </p>
@@ -469,15 +469,70 @@ public abstract class ICalProperty {
 	 * </p>
 	 * @param <T> the enum parameter class
 	 */
-	protected abstract class EnumParameterBackingList<T extends EnumParameterValue> extends AbstractList<T> {
-		private final String parameterName;
+	protected abstract class EnumParameterList<T extends EnumParameterValue> extends ICalParameterList<T> {
+		public EnumParameterList(String parameterName) {
+			super(parameterName);
+		}
 
-		public EnumParameterBackingList(String parameterName) {
+		@Override
+		protected String _asString(T value) {
+			return value.getValue();
+		}
+	}
+
+	/**
+	 * <p>
+	 * A list that holds the raw string values of a particular parameter.
+	 * </p>
+	 * <p>
+	 * This list is backed by the property's {@link ICalParameters} object. Any
+	 * changes made to the list will affect the property's
+	 * {@link ICalParameters} object and vice versa.
+	 * </p>
+	 */
+	protected class ICalStringParameterList extends ICalParameterList<String> {
+		/**
+		 * @param parameterName the name of the parameter (case insensitive)
+		 */
+		public ICalStringParameterList(String parameterName) {
+			super(parameterName);
+		}
+
+		@Override
+		protected String _asString(String value) {
+			return value;
+		}
+
+		@Override
+		protected String _asObject(String value) {
+			return value;
+		}
+	}
+
+	/**
+	 * <p>
+	 * A list that holds the values of a particular parameter.
+	 * </p>
+	 * <p>
+	 * This list is backed by the property's {@link ICalParameters} object. Any
+	 * changes made to the list will affect the property's
+	 * {@link ICalParameters} object and vice versa.
+	 * </p>
+	 */
+	protected abstract class ICalParameterList<T> extends AbstractList<T> {
+		protected final String parameterName;
+
+		/**
+		 * @param parameterName the name of the parameter (case insensitive)
+		 */
+		public ICalParameterList(String parameterName) {
 			this.parameterName = parameterName;
 		}
 
 		@Override
-		public void add(int index, T display) {
+		public void add(int index, T value) {
+			String valueStr = _asString(value);
+
 			/*
 			 * Note: If a property name does not exist, then the parameters
 			 * object will return an empty list. Any objects added to this empty
@@ -485,28 +540,29 @@ public abstract class ICalProperty {
 			 */
 			List<String> values = values();
 			if (values.isEmpty()) {
-				parameters.put(parameterName, display.getValue());
+				parameters.put(parameterName, valueStr);
 			} else {
-				values.add(index, display.getValue());
+				values.add(index, valueStr);
 			}
 		}
 
 		@Override
 		public T remove(int index) {
 			String removed = values().remove(index);
-			return get(removed);
+			return asObject(removed);
 		}
 
 		@Override
 		public T get(int index) {
 			String value = values().get(index);
-			return get(value);
+			return asObject(value);
 		}
 
 		@Override
-		public T set(int index, T display) {
-			String replaced = values().set(index, display.getValue());
-			return get(replaced);
+		public T set(int index, T value) {
+			String valueStr = _asString(value);
+			String replaced = values().set(index, valueStr);
+			return asObject(replaced);
 		}
 
 		@Override
@@ -514,59 +570,29 @@ public abstract class ICalProperty {
 			return values().size();
 		}
 
-		protected abstract T get(String parameterValue);
-
-		private List<String> values() {
-			return parameters.get(parameterName);
-		}
-	}
-
-	/**
-	 * A list that holds parameter values, which is backed by the property's
-	 * {@link ICalParameters} object. Any changes made to the list will affect
-	 * the property's {@link ICalParameters} object and vice versa.
-	 */
-	protected class ParameterBackingList extends AbstractList<String> {
-		private final String parameterName;
-
-		public ParameterBackingList(String parameterName) {
-			this.parameterName = parameterName;
-		}
-
-		@Override
-		public void add(int index, String value) {
-			/*
-			 * Note: If a property name does not exist, then the parameters
-			 * object will return an empty list. Any objects added to this empty
-			 * list will NOT be added to the parameters object.
-			 */
-			List<String> values = values();
-			if (values.isEmpty()) {
-				parameters.put(parameterName, value);
-			} else {
-				values.add(index, value);
+		private T asObject(String value) {
+			try {
+				return _asObject(value);
+			} catch (Exception e) {
+				throw new IllegalStateException(Messages.INSTANCE.getExceptionMessage(26, parameterName), e);
 			}
 		}
 
-		@Override
-		public String remove(int index) {
-			return values().remove(index);
-		}
+		/**
+		 * Converts the object to a String value for storing in the
+		 * {@link ICalParameters} object.
+		 * @param value the value
+		 * @return the string value
+		 */
+		protected abstract String _asString(T value);
 
-		@Override
-		public String get(int index) {
-			return values().get(index);
-		}
-
-		@Override
-		public String set(int index, String value) {
-			return values().set(index, value);
-		}
-
-		@Override
-		public int size() {
-			return values().size();
-		}
+		/**
+		 * Converts a String value to its object form.
+		 * @param value the string value
+		 * @return the object
+		 * @throws Exception if there is a problem parsing the string
+		 */
+		protected abstract T _asObject(String value) throws Exception;
 
 		private List<String> values() {
 			return parameters.get(parameterName);

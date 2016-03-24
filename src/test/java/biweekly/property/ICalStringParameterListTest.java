@@ -35,7 +35,7 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class ParameterBackingListTest {
+public class ICalStringParameterListTest {
 	@Test
 	public void test() {
 		ParameterBackingListProperty property = new ParameterBackingListProperty();
@@ -59,7 +59,7 @@ public class ParameterBackingListTest {
 
 	private static class ParameterBackingListProperty extends ICalProperty {
 		public List<String> getTags() {
-			return new ParameterBackingList("NAME");
+			return new ICalStringParameterList("NAME");
 		}
 	}
 }

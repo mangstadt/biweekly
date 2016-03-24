@@ -56,9 +56,9 @@ import biweekly.parameter.ICalParameters;
 public class Conference extends ICalProperty {
 	private String uri, text;
 
-	private final List<Feature> features = new EnumParameterBackingList<Feature>(ICalParameters.FEATURE) {
+	private final List<Feature> features = new EnumParameterList<Feature>(ICalParameters.FEATURE) {
 		@Override
-		protected Feature get(String parameterValue) {
+		protected Feature _asObject(String parameterValue) {
 			return Feature.get(parameterValue);
 		}
 	};
