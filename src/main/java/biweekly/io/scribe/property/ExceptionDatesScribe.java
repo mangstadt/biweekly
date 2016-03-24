@@ -141,13 +141,14 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICa
 		}
 
 		ExceptionDates property = new ExceptionDates();
+		List<ICalDate> values = property.getValues();
 		for (String value : dateTimeElements) {
 			ICalDate datetime = readValue(property, value, DATE_TIME, parameters, context);
-			property.addValue(datetime);
+			values.add(datetime);
 		}
 		for (String value : dateElements) {
 			ICalDate date = readValue(property, value, DATE, parameters, context);
-			property.addValue(date);
+			values.add(date);
 		}
 		return property;
 	}
@@ -180,9 +181,10 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICa
 		List<String> valueStrs = value.asMulti();
 
 		ExceptionDates property = new ExceptionDates();
+		List<ICalDate> values = property.getValues();
 		for (String valueStr : valueStrs) {
 			ICalDate date = readValue(property, valueStr, dataType, parameters, context);
-			property.addValue(date);
+			values.add(date);
 		}
 		return property;
 	}

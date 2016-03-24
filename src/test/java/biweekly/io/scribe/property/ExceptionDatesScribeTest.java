@@ -71,13 +71,13 @@ public class ExceptionDatesScribeTest extends ScribeTest<ExceptionDates> {
 
 	private final ExceptionDates withDateTimes = new ExceptionDates();
 	{
-		withDateTimes.addValue(datetime1);
-		withDateTimes.addValue(datetime2);
+		withDateTimes.getValues().add(datetime1);
+		withDateTimes.getValues().add(datetime2);
 	}
 	private final ExceptionDates withDates = new ExceptionDates();
 	{
-		withDates.addValue(date1);
-		withDates.addValue(date2);
+		withDates.getValues().add(date1);
+		withDates.getValues().add(date2);
 	}
 	private final ExceptionDates empty = new ExceptionDates();
 

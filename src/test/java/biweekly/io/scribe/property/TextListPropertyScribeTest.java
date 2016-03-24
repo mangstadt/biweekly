@@ -1,5 +1,8 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -7,7 +10,6 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import static biweekly.ICalVersion.*;
 import biweekly.io.ParseContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -45,13 +47,11 @@ import biweekly.property.ListProperty;
 public class TextListPropertyScribeTest extends ScribeTest<biweekly.io.scribe.property.TextListPropertyScribeTest.ListPropertyImpl> {
 	private final ListPropertyImpl withMultiple = new ListPropertyImpl();
 	{
-		withMultiple.addValue("one");
-		withMultiple.addValue("two");
-		withMultiple.addValue("three,four");
+		withMultiple.getValues().addAll(Arrays.asList("one", "two", "three,four"));
 	}
 	private final ListPropertyImpl withSingle = new ListPropertyImpl();
 	{
-		withSingle.addValue("one");
+		withSingle.getValues().add("one");
 	}
 	private final ListPropertyImpl empty = new ListPropertyImpl();
 

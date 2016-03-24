@@ -1,8 +1,9 @@
 package biweekly.property;
 
 import static biweekly.property.PropertySensei.assertCopy;
-import static biweekly.property.PropertySensei.assertEqualsMethod;
 import static biweekly.property.PropertySensei.assertNothingIsEqual;
+import static biweekly.util.TestUtils.assertEqualsAndHash;
+import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertValidate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -61,26 +62,12 @@ public class ListPropertyTest {
 	}
 
 	@Test
-	public void set_value() {
-		ListProperty<String> property = new ListProperty<String>();
-
-		property.addValue("one");
-		assertEquals(Arrays.asList("one"), property.getValues());
-
-		property.addValue("two");
-		assertEquals(Arrays.asList("one", "two"), property.getValues());
-
-		property.addValue(null);
-		assertEquals(Arrays.asList("one", "two", null), property.getValues());
-	}
-
-	@Test
 	public void validate() {
 		ListProperty<String> property = new ListProperty<String>();
 		assertValidate(property).run(26);
 
 		property = new ListProperty<String>();
-		property.addValue("value");
+		property.getValues().add("value");
 		assertValidate(property).run();
 	}
 
@@ -110,9 +97,16 @@ public class ListPropertyTest {
 			new ListProperty<String>("one", "two"),
 			new ListProperty<Integer>(1)
 		);
-
-		assertEqualsMethod(ListProperty.class)
-		.constructor().method("addValue", new Class<?>[]{Object.class}, "one").method("addValue", new Class<?>[]{Object.class}, "two").test();
 		//@formatter:on
+
+		ListProperty<String> one = new ListProperty<String>();
+		assertEqualsMethodEssentials(one);
+
+		ListProperty<String> two = new ListProperty<String>();
+		assertEqualsAndHash(one, two);
+
+		one.getValues().add("value");
+		two.getValues().add("value");
+		assertEqualsAndHash(one, two);
 	}
 }

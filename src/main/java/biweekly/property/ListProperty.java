@@ -1,6 +1,7 @@
 package biweekly.property;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,7 @@ import biweekly.component.ICalComponent;
  * @param <T> the value type
  */
 public class ListProperty<T> extends ICalProperty {
-	private final List<T> values;
+	protected final List<T> values;
 
 	/**
 	 * Creates a new list property.
@@ -55,10 +56,7 @@ public class ListProperty<T> extends ICalProperty {
 	 * @param values the values to initialize the property with
 	 */
 	public ListProperty(T... values) {
-		this.values = new ArrayList<T>(values.length);
-		for (T value : values) {
-			this.values.add(value);
-		}
+		this.values = new ArrayList<T>(Arrays.asList(values));
 	}
 
 	/**
@@ -82,16 +80,8 @@ public class ListProperty<T> extends ICalProperty {
 	}
 
 	/**
-	 * Adds a value to this property.
-	 * @param value the value to add
-	 */
-	public void addValue(T value) {
-		values.add(value);
-	}
-
-	/**
-	 * Gets the values of this property.
-	 * @return the values
+	 * Gets the list that holds the values of this property.
+	 * @return the values list
 	 */
 	public List<T> getValues() {
 		return values;

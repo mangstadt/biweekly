@@ -127,9 +127,10 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 	private T parse(List<String> valueStrs, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		T property = newInstance(dataType, parameters);
 
+		List<V> values = property.getValues();
 		for (String valueStr : valueStrs) {
 			V value = readValue(property, valueStr, dataType, parameters, context);
-			property.addValue(value);
+			values.add(value);
 		}
 
 		return property;

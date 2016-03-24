@@ -1,6 +1,5 @@
 package biweekly.property;
 
-import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalVersion;
@@ -47,13 +46,13 @@ import biweekly.util.ICalDate;
  * //dates with time components
  * ExceptionDates exdate = new ExceptionDates();
  * Date datetime = ...
- * exdate.addValue(new ICalDate(datetime, true));
+ * exdate.getValues().add(new ICalDate(datetime, true));
  * event.addExceptionDates(exdate);
  * 
  * //dates without time components
  * exdate = new ExceptionDates();
  * Date date = ...
- * exdate.addValue(new ICalDate(date, false));
+ * exdate.getValues().add(new ICalDate(date, false));
  * event.addExceptionDates(exdate);
  * </pre>
  * 
@@ -76,18 +75,10 @@ public class ExceptionDates extends ListProperty<ICalDate> {
 	 */
 	public ExceptionDates(ExceptionDates original) {
 		super(original);
-		getValues().clear();
+		values.clear();
 		for (ICalDate date : original.getValues()) {
-			addValue(new ICalDate(date));
+			values.add(new ICalDate(date));
 		}
-	}
-
-	/**
-	 * Adds a value to this property.
-	 * @param value the value to add
-	 */
-	public void addValue(Date value) {
-		addValue(new ICalDate(value));
 	}
 
 	@Override

@@ -41,12 +41,12 @@ public class ExceptionDatesTest {
 		assertValidate(property).run(26);
 
 		property = new ExceptionDates();
-		property.addValue(new ICalDate(true));
-		property.addValue(new ICalDate(false));
+		property.getValues().add(new ICalDate(true));
+		property.getValues().add(new ICalDate(false));
 		assertValidate(property).run(50);
 
 		property = new ExceptionDates();
-		property.addValue(new ICalDate());
+		property.getValues().add(new ICalDate());
 		assertValidate(property).run();
 	}
 }
