@@ -1,15 +1,12 @@
 package biweekly.property;
 
-import static biweekly.util.Google2445Utils.convert;
-
 import java.util.Date;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.TimeZone;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
+import biweekly.util.Google2445Utils;
 import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.Frequency;
@@ -17,9 +14,6 @@ import biweekly.util.Recurrence.Frequency;
 import com.google.ical.compat.javautil.DateIterator;
 import com.google.ical.compat.javautil.DateIteratorFactory;
 import com.google.ical.iter.RecurrenceIterator;
-import com.google.ical.iter.RecurrenceIteratorFactory;
-import com.google.ical.values.DateValue;
-import com.google.ical.values.RRule;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -68,10 +62,10 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 	}
 
 	/**
-	 * Gets the date values of this recurrence property.
-	 * @param startDate the date that the recurrence starts (typically, the
-	 * value of its accompanying {@link DateStart} property)
-	 * @return an iterator containing the dates
+	 * Creates an iterator that computes the dates defined by this property.
+	 * @param startDate the date that the recurrence starts (typically the value
+	 * of the accompanying {@link DateStart} property)
+	 * @return the iterator
 	 * @see <a
 	 * href="https://code.google.com/p/google-rfc-2445/">google-rfc-2445</a>
 	 */
@@ -80,28 +74,21 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 	}
 
 	/**
-	 * Gets the date values of this recurrence property.
-	 * @param startDate the date that the recurrence starts (typically, the
-	 * value of its accompanying {@link DateStart} property)
-	 * @return an iterator containing the dates
+	 * Creates an iterator that computes the dates defined by this property.
+	 * @param startDate the date that the recurrence starts (typically the value
+	 * of the accompanying {@link DateStart} property)
+	 * @return the iterator
 	 * @see <a
 	 * href="https://code.google.com/p/google-rfc-2445/">google-rfc-2445</a>
 	 */
 	public DateIterator getDateIterator(ICalDate startDate) {
 		Recurrence recur = getValue();
 		if (recur == null) {
-			return new EmptyDateIterator();
+			return new Google2445Utils.EmptyDateIterator();
 		}
 
-		RRule rruleValue = convert(recur);
-
-		//we need an ICalDate that *doesn't* have any raw date/time components to pass into "convert()"
-		//see: https://sourceforge.net/p/biweekly/discussion/help-and-support/thread/faa25306/
-		ICalDate startDateCopy = (startDate.getRawComponents() == null) ? startDate : new ICalDate(startDate, null, startDate.hasTime());
-		DateValue dtstartValue = convert(startDateCopy);
-
-		RecurrenceIterator it = RecurrenceIteratorFactory.createRecurrenceIterator(rruleValue, dtstartValue, TimeZone.getDefault());
-		return DateIteratorFactory.createDateIterator(it);
+		RecurrenceIterator iterator = Google2445Utils.createRecurrenceIterator(recur, startDate);
+		return DateIteratorFactory.createDateIterator(iterator);
 	}
 
 	@Override
@@ -142,24 +129,6 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 			}
 
 			break;
-		}
-	}
-
-	private static class EmptyDateIterator implements DateIterator {
-		public boolean hasNext() {
-			return false;
-		}
-
-		public Date next() {
-			throw new NoSuchElementException();
-		}
-
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-
-		public void advanceTo(Date newStartUtc) {
-			//empty
 		}
 	}
 }

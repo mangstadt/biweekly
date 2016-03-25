@@ -34,8 +34,12 @@ import biweekly.property.Status;
 import biweekly.property.Summary;
 import biweekly.property.Uid;
 import biweekly.property.Url;
+import biweekly.util.Google2445Utils;
 import biweekly.util.ICalDate;
+import biweekly.util.Period;
 import biweekly.util.Recurrence;
+
+import com.google.ical.compat.javautil.DateIterator;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -1174,6 +1178,28 @@ public class VJournal extends ICalComponent {
 	 */
 	public void addImage(Image image) {
 		addProperty(image);
+	}
+
+	/**
+	 * <p>
+	 * Creates an iterator that computes the dates defined by the
+	 * {@link RecurrenceRule} and {@link RecurrenceDates} properties (if
+	 * present), and excludes those dates which are defined by the
+	 * {@link ExceptionRule} and {@link ExceptionDates} properties (if present).
+	 * </p>
+	 * <p>
+	 * In order for {@link RecurrenceRule} and {@link ExceptionRule} properties
+	 * to be included in this iterator, a {@link DateStart} property must be
+	 * defined.
+	 * </p>
+	 * <p>
+	 * {@link Period} values in {@link RecurrenceDates} properties are not
+	 * supported and are ignored.
+	 * </p>
+	 * @return the iterator
+	 */
+	public DateIterator getDateIterator() {
+		return Google2445Utils.getDateIterator(this);
 	}
 
 	@SuppressWarnings("unchecked")
