@@ -27,7 +27,6 @@ import biweekly.property.ExceptionDates;
 import biweekly.property.ExceptionRule;
 import biweekly.property.RecurrenceDates;
 import biweekly.property.RecurrenceRule;
-import biweekly.property.TimezoneId;
 import biweekly.property.TimezoneName;
 import biweekly.property.UtcOffsetProperty;
 import biweekly.util.ICalDate;
@@ -80,9 +79,9 @@ public class ICalTimeZone extends TimeZone {
 	public ICalTimeZone(VTimezone component) {
 		this.component = component;
 
-		TimezoneId id = component.getTimezoneId();
+		String id = getValue(component.getTimezoneId());
 		if (id != null) {
-			setID(id.getValue());
+			setID(id);
 		}
 	}
 
@@ -124,9 +123,9 @@ public class ICalTimeZone extends TimeZone {
 		Observance observance = getObservance(year, month + 1, day, hour, minute, second);
 		if (observance == null) {
 			//find the first observance that has a DTSTART property and a TZOFFSETFROM property
-			for (Observance o : getSortedObservances()) {
-				if (hasDateStart(o) && hasTimezoneOffsetFrom(o)) {
-					return (int) o.getTimezoneOffsetFrom().getValue().getMillis();
+			for (Observance obs : getSortedObservances()) {
+				if (hasDateStart(obs) && hasTimezoneOffsetFrom(obs)) {
+					return (int) obs.getTimezoneOffsetFrom().getValue().getMillis();
 				}
 			}
 			return 0;
@@ -140,21 +139,15 @@ public class ICalTimeZone extends TimeZone {
 		Observance observance = getObservance(new Date());
 		if (observance == null) {
 			//return the offset of the first STANDARD component
-			for (Observance o : getSortedObservances()) {
-				if (o instanceof StandardTime && hasTimezoneOffsetTo(o)) {
-					return (int) o.getTimezoneOffsetTo().getValue().getMillis();
+			for (Observance obs : getSortedObservances()) {
+				if (obs instanceof StandardTime && hasTimezoneOffsetTo(obs)) {
+					return (int) obs.getTimezoneOffsetTo().getValue().getMillis();
 				}
 			}
 			return 0;
 		}
 
-		UtcOffsetProperty offset;
-		if (observance instanceof StandardTime) {
-			offset = observance.getTimezoneOffsetTo();
-		} else {
-			offset = observance.getTimezoneOffsetFrom();
-		}
-
+		UtcOffsetProperty offset = (observance instanceof StandardTime) ? observance.getTimezoneOffsetTo() : observance.getTimezoneOffsetFrom();
 		return (int) offset.getValue().getMillis();
 	}
 
@@ -169,8 +162,8 @@ public class ICalTimeZone extends TimeZone {
 	}
 
 	/**
-	 * @throws UnsupportedOperationException not supported by this
-	 * implementation
+	 * This method is not supported by this class.
+	 * @throws UnsupportedOperationException
 	 */
 	@Override
 	public void setRawOffset(int offset) {
@@ -188,7 +181,7 @@ public class ICalTimeZone extends TimeZone {
 	 * @return the timezone information
 	 */
 	public Boundary getObservanceBoundary(Date date) {
-		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		Calendar cal = Calendar.getInstance(utc());
 		cal.setTime(date);
 		int year = cal.get(Calendar.YEAR);
 		int month = cal.get(Calendar.MONTH) + 1;
@@ -258,10 +251,10 @@ public class ICalTimeZone extends TimeZone {
 			Observance observance = observances.get(i);
 
 			//skip observances that start after the given time
-			DateStart dtstart = observance.getDateStart();
+			ICalDate dtstart = getValue(observance.getDateStart());
 			if (dtstart != null) {
-				DateTimeValue dtstartValue = convert(dtstart);
-				if (dtstartValue != null && dtstartValue.compareTo(givenTime) > 0) {
+				DateValue dtstartValue = convert(dtstart);
+				if (dtstartValue.compareTo(givenTime) > 0) {
 					continue;
 				}
 			}
@@ -305,19 +298,16 @@ public class ICalTimeZone extends TimeZone {
 		return new Boundary(observanceInStart, observanceIn, observanceAfterStart, observanceAfter);
 	}
 
-	private boolean hasDateStart(Observance observance) {
-		DateStart dtstart = observance.getDateStart();
-		return dtstart != null && dtstart.getValue() != null;
+	private static boolean hasDateStart(Observance observance) {
+		return getValue(observance.getDateStart()) != null;
 	}
 
-	private boolean hasTimezoneOffsetFrom(Observance observance) {
-		UtcOffsetProperty offset = observance.getTimezoneOffsetFrom();
-		return offset != null && offset.getValue() != null;
+	private static boolean hasTimezoneOffsetFrom(Observance observance) {
+		return getValue(observance.getTimezoneOffsetFrom()) != null;
 	}
 
-	private boolean hasTimezoneOffsetTo(Observance observance) {
-		UtcOffsetProperty offset = observance.getTimezoneOffsetTo();
-		return offset != null && offset.getValue() != null;
+	private static boolean hasTimezoneOffsetTo(Observance observance) {
+		return getValue(observance.getTimezoneOffsetTo()) != null;
 	}
 
 	/**
@@ -360,31 +350,30 @@ public class ICalTimeZone extends TimeZone {
 		List<RecurrenceIterator> inclusions = new ArrayList<RecurrenceIterator>();
 		List<RecurrenceIterator> exclusions = new ArrayList<RecurrenceIterator>();
 
-		DateStart dtstart = observance.getDateStart();
+		ICalDate dtstart = getValue(observance.getDateStart());
 		if (dtstart != null) {
 			DateValue dtstartValue = convert(dtstart);
-			if (dtstartValue != null) {
-				//add DTSTART property
-				inclusions.add(new DateValueRecurrenceIterator(Arrays.asList(dtstartValue)));
 
-				TimeZone utc = TimeZone.getTimeZone("UTC");
+			//add DTSTART property
+			inclusions.add(new DateValueRecurrenceIterator(Arrays.asList(dtstartValue)));
 
-				//add RRULE properties
-				for (RecurrenceRule rrule : observance.getProperties(RecurrenceRule.class)) {
-					Recurrence recur = rrule.getValue();
-					if (recur != null) {
-						RRule rruleValue = convert(recur);
-						inclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(rruleValue, dtstartValue, utc));
-					}
+			TimeZone utc = utc();
+
+			//add RRULE properties
+			for (RecurrenceRule rrule : observance.getProperties(RecurrenceRule.class)) {
+				Recurrence recur = rrule.getValue();
+				if (recur != null) {
+					RRule rruleValue = convert(recur);
+					inclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(rruleValue, dtstartValue, utc));
 				}
+			}
 
-				//add EXRULE properties
-				for (ExceptionRule exrule : observance.getProperties(ExceptionRule.class)) {
-					Recurrence recur = exrule.getValue();
-					if (recur != null) {
-						RRule exruleValue = convert(recur);
-						exclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(exruleValue, dtstartValue, utc));
-					}
+			//add EXRULE properties
+			for (ExceptionRule exrule : observance.getProperties(ExceptionRule.class)) {
+				Recurrence recur = exrule.getValue();
+				if (recur != null) {
+					RRule exruleValue = convert(recur);
+					exclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(exruleValue, dtstartValue, utc));
 				}
 			}
 		}
@@ -412,6 +401,10 @@ public class ICalTimeZone extends TimeZone {
 
 		RecurrenceIterator excluded = join(exclusions);
 		return RecurrenceIteratorFactory.except(included, excluded);
+	}
+
+	private static TimeZone utc() {
+		return TimeZone.getTimeZone("UTC");
 	}
 
 	private RecurrenceIterator join(List<RecurrenceIterator> iterators) {
@@ -497,7 +490,8 @@ public class ICalTimeZone extends TimeZone {
 		}
 
 		public void remove() {
-			it.remove();
+			//RecurrenceIterator does not support this method
+			throw new UnsupportedOperationException();
 		}
 	}
 

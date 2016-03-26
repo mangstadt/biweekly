@@ -3,6 +3,7 @@ package biweekly.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -27,7 +28,6 @@ import com.google.ical.values.DateTimeValue;
 import com.google.ical.values.DateTimeValueImpl;
 import com.google.ical.values.DateValue;
 import com.google.ical.values.DateValueImpl;
-import com.google.ical.values.RDateList;
 import com.google.ical.values.RRule;
 import com.google.ical.values.Weekday;
 import com.google.ical.values.WeekdayNum;
@@ -64,35 +64,16 @@ import com.google.ical.values.WeekdayNum;
  */
 public final class Google2445Utils {
 	/**
-	 * Converts a biweekly {@link DateStart} object to a google-rfc-2445
-	 * {@link DateTimeValue} object.
-	 * @param dtstart the biweekly object
+	 * Converts a {@link Recurrence} object to a google-rfc-2445 {@link RRule}
+	 * object.
+	 * @param recurrence the recurrence object
 	 * @return the google-rfc-2445 object
 	 */
-	public static DateTimeValue convert(DateStart dtstart) {
-		ICalDate value = dtstart.getValue();
-		if (value == null) {
-			return null;
-		}
-
-		DateTimeComponents raw = value.getRawComponents();
-		if (raw == null) {
-			raw = new DateTimeComponents(value);
-		}
-		return new DateTimeValueImpl(raw.getYear(), raw.getMonth(), raw.getDate(), raw.getHour(), raw.getMinute(), raw.getSecond());
-	}
-
-	/**
-	 * Converts a biweekly {@link Recurrence} object to a google-rfc-2445
-	 * {@link RRule} object.
-	 * @param recur the biweekly recurrence object
-	 * @return the google-rfc-2445 object
-	 */
-	public static RRule convert(Recurrence recur) {
-		RRule googleRRule = new RRule();
+	public static RRule convert(Recurrence recurrence) {
+		RRule rrule = new RRule();
 
 		List<WeekdayNum> weekdayNums = new ArrayList<WeekdayNum>();
-		for (ByDay byDay : recur.getByDay()) {
+		for (ByDay byDay : recurrence.getByDay()) {
 			Integer prefix = byDay.getNum();
 			if (prefix == null) {
 				prefix = 0;
@@ -100,49 +81,49 @@ public final class Google2445Utils {
 
 			weekdayNums.add(new WeekdayNum(prefix, convert(byDay.getDay())));
 		}
-		googleRRule.setByDay(weekdayNums);
+		rrule.setByDay(weekdayNums);
 
-		googleRRule.setByYearDay(toArray(recur.getByYearDay()));
-		googleRRule.setByMonth(toArray(recur.getByMonth()));
-		googleRRule.setByWeekNo(toArray(recur.getByWeekNo()));
-		googleRRule.setByMonthDay(toArray(recur.getByMonthDay()));
-		googleRRule.setByHour(toArray(recur.getByHour()));
-		googleRRule.setByMinute(toArray(recur.getByMinute()));
-		googleRRule.setBySecond(toArray(recur.getBySecond()));
-		googleRRule.setBySetPos(toArray(recur.getBySetPos()));
+		rrule.setByYearDay(toArray(recurrence.getByYearDay()));
+		rrule.setByMonth(toArray(recurrence.getByMonth()));
+		rrule.setByWeekNo(toArray(recurrence.getByWeekNo()));
+		rrule.setByMonthDay(toArray(recurrence.getByMonthDay()));
+		rrule.setByHour(toArray(recurrence.getByHour()));
+		rrule.setByMinute(toArray(recurrence.getByMinute()));
+		rrule.setBySecond(toArray(recurrence.getBySecond()));
+		rrule.setBySetPos(toArray(recurrence.getBySetPos()));
 
-		Integer count = recur.getCount();
+		Integer count = recurrence.getCount();
 		if (count != null) {
-			googleRRule.setCount(count);
+			rrule.setCount(count);
 		}
 
-		Frequency freq = recur.getFrequency();
+		Frequency freq = recurrence.getFrequency();
 		if (freq != null) {
-			googleRRule.setFreq(convert(freq));
+			rrule.setFreq(convert(freq));
 		}
 
-		Integer interval = recur.getInterval();
+		Integer interval = recurrence.getInterval();
 		if (interval != null) {
-			googleRRule.setInterval(interval);
+			rrule.setInterval(interval);
 		}
 
-		ICalDate until = recur.getUntil();
+		ICalDate until = recurrence.getUntil();
 		if (until != null) {
-			googleRRule.setUntil(convert(until));
+			rrule.setUntil(convert(until));
 		}
 
-		DayOfWeek workweekStarts = recur.getWorkweekStarts();
+		DayOfWeek workweekStarts = recurrence.getWorkweekStarts();
 		if (workweekStarts != null) {
-			googleRRule.setWkSt(convert(workweekStarts));
+			rrule.setWkSt(convert(workweekStarts));
 		}
 
-		return googleRRule;
+		return rrule;
 	}
 
 	/**
-	 * Converts a biweekly {@link DayOfWeek} object to a google-rfc-2445
-	 * {@link Weekday} object.
-	 * @param day the biweekly object
+	 * Converts a {@link DayOfWeek} object to a google-rfc-2445 {@link Weekday}
+	 * object.
+	 * @param day the day of week object
 	 * @return the google-rfc-2445 object
 	 */
 	public static Weekday convert(DayOfWeek day) {
@@ -167,9 +148,9 @@ public final class Google2445Utils {
 	}
 
 	/**
-	 * Converts a biweekly {@link Frequency} object to a google-rfc-2445
+	 * Converts a {@link Frequency} object to a google-rfc-2445
 	 * {@link com.google.ical.values.Frequency Frequency} object.
-	 * @param freq the biweekly object
+	 * @param freq the frequency object
 	 * @return the google-rfc-2445 object
 	 */
 	public static com.google.ical.values.Frequency convert(Frequency freq) {
@@ -194,9 +175,17 @@ public final class Google2445Utils {
 	}
 
 	/**
+	 * <p>
 	 * Converts an {@link ICalDate} object to a google-rfc-2445
 	 * {@link DateValue} object.
-	 * @param date the Java date object
+	 * </p>
+	 * <p>
+	 * Uses the {@link DateTimeComponents raw date components} of the
+	 * {@link ICalDate}, if present. If not present, then the {@link DateValue}
+	 * object will be created from the {@link ICalDate}'s timestamp and
+	 * formatted according to the local timezone.
+	 * </p>
+	 * @param date the date object
 	 * @return the google-rfc-2445 object
 	 */
 	public static DateValue convert(ICalDate date) {
@@ -205,33 +194,60 @@ public final class Google2445Utils {
 			raw = new DateTimeComponents(date);
 		}
 
-		//@formatter:off
-		return new DateTimeValueImpl(
-			raw.getYear(),
-			raw.getMonth(),
-			raw.getDate(),
-			raw.getHour(),
-			raw.getMinute(),
-			raw.getSecond()
-		);
-		//@formatter:on
+		return convert(raw);
+	}
+
+	/**
+	 * Converts a {@link DateTimeComponents} object to a google-rfc-2445
+	 * {@link DateValue} object.
+	 * @param components the date time components object
+	 * @return the google-rfc-2445 object
+	 */
+	public static DateValue convert(DateTimeComponents components) {
+		if (components.hasTime()) {
+			return new DateTimeValueImpl(components.getYear(), components.getMonth(), components.getDate(), components.getHour(), components.getMinute(), components.getSecond());
+		}
+		return new DateValueImpl(components.getYear(), components.getMonth(), components.getDate());
+	}
+
+	/**
+	 * Converts a google-rfc-2445 {@link DateValue} object to a {@link ICalDate}
+	 * object.
+	 * @param utcDate the date value object (this method assumes it is in UTC)
+	 * @return the converted object
+	 */
+	public static ICalDate convert(DateValue utcDate) {
+		Calendar c = Calendar.getInstance(utc());
+		c.clear();
+		c.set(Calendar.YEAR, utcDate.year());
+		c.set(Calendar.MONTH, utcDate.month() - 1);
+		c.set(Calendar.DATE, utcDate.day());
+
+		boolean hasTime = (utcDate instanceof DateTimeValue);
+		if (hasTime) {
+			DateTimeValue utcDateTime = (DateTimeValue) utcDate;
+			c.set(Calendar.HOUR_OF_DAY, utcDateTime.hour());
+			c.set(Calendar.MINUTE, utcDateTime.minute());
+			c.set(Calendar.SECOND, utcDateTime.second());
+		}
+
+		return new ICalDate(c.getTime(), hasTime);
 	}
 
 	/**
 	 * Converts an {@link ICalDate} object to a google-rfc-2445
-	 * {@link DateValue} object. The {@link DateValue} object contains the date
-	 * value formatted in UTC.
+	 * {@link DateValue} object (formatted in UTC).
 	 * @param date the date object
 	 * @return the google-rfc-2445 object (in UTC)
 	 */
-	public static DateValue convertUtc(ICalDate date) {
+	public static DateValue utcDateValue(ICalDate date) {
 		Calendar c = Calendar.getInstance(utc());
 		c.setTime(date);
+
 		if (date.hasTime()) {
 			return new DateTimeValueImpl(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DATE), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), c.get(Calendar.SECOND));
-		} else {
-			return new DateValueImpl(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DATE));
 		}
+		return new DateValueImpl(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DATE));
 	}
 
 	/**
@@ -241,25 +257,9 @@ public final class Google2445Utils {
 	 * @return the recurrence iterator
 	 */
 	public static RecurrenceIterator createRecurrenceIterator(Recurrence recurrence, ICalDate start) {
-		DateValue startValue = convertUtc(start);
+		DateValue startValue = utcDateValue(start);
 		RRule googleRecurrence = convert(recurrence);
 		return RecurrenceIteratorFactory.createRecurrenceIterator(googleRecurrence, startValue, utc());
-	}
-
-	/**
-	 * Creates a recurrence iterator based on the given list of dates.
-	 * @param dates the dates
-	 * @return the recurrence iterator
-	 */
-	public static RecurrenceIterator createRecurrenceIterator(List<ICalDate> dates) {
-		RDateList list = new RDateList(utc());
-		List<DateValue> dateValues = new ArrayList<DateValue>(dates.size());
-		for (ICalDate date : dates) {
-			dateValues.add(convertUtc(date));
-		}
-		list.setDatesUtc(dateValues.toArray(new DateValue[0]));
-
-		return RecurrenceIteratorFactory.createRecurrenceIterator(list);
 	}
 
 	/**
@@ -302,14 +302,14 @@ public final class Google2445Utils {
 			allDates.addAll(rdate.getDates());
 		}
 		if (!allDates.isEmpty()) {
-			include.add(createRecurrenceIterator(allDates));
+			include.add(new ICalDateRecurrenceIterator(allDates));
 		}
 
 		if (include.isEmpty()) {
 			if (start == null) {
 				return new EmptyDateIterator();
 			}
-			include.add(createRecurrenceIterator(Arrays.asList(start)));
+			include.add(new ICalDateRecurrenceIterator(Arrays.asList(start)));
 		}
 
 		/////////////EXCLUDE/////////////
@@ -330,7 +330,7 @@ public final class Google2445Utils {
 			allDates.addAll(exdate.getValues());
 		}
 		if (!allDates.isEmpty()) {
-			exclude.add(createRecurrenceIterator(allDates));
+			exclude.add(new ICalDateRecurrenceIterator(allDates));
 		}
 
 		/////////////JOIN/////////////
@@ -362,8 +362,9 @@ public final class Google2445Utils {
 	}
 
 	/**
-	 * Converts an Integer list to an int array.
-	 * @param list the Integer list
+	 * Converts an {@link Integer} list to an int array. Null values are
+	 * converted to zero.
+	 * @param list the {@link Integer} list
 	 * @return the int array
 	 */
 	private static int[] toArray(List<Integer> list) {
@@ -375,6 +376,10 @@ public final class Google2445Utils {
 		return array;
 	}
 
+	/**
+	 * Returns a UTC timezone object.
+	 * @return the timezone object
+	 */
 	private static TimeZone utc() {
 		return TimeZone.getTimeZone("UTC");
 	}
@@ -397,6 +402,36 @@ public final class Google2445Utils {
 
 		public void advanceTo(Date newStartUtc) {
 			//empty
+		}
+	}
+
+	private static class ICalDateRecurrenceIterator implements RecurrenceIterator {
+		private final List<ICalDate> dates;
+		private int index = 0;
+
+		public ICalDateRecurrenceIterator(List<ICalDate> dates) {
+			this.dates = new ArrayList<ICalDate>(dates);
+			Collections.sort(this.dates);
+		}
+
+		public boolean hasNext() {
+			return index < dates.size();
+		}
+
+		public DateValue next() {
+			ICalDate next = dates.get(index++);
+			return utcDateValue(next);
+		}
+
+		public void advanceTo(DateValue newStartUtc) {
+			ICalDate newStart = convert(newStartUtc);
+			while (index < dates.size() && newStart.compareTo(dates.get(index)) > 0) {
+				index++;
+			}
+		}
+
+		public void remove() {
+			throw new UnsupportedOperationException();
 		}
 	}
 
