@@ -647,7 +647,7 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Sets the location that the calendar data can be refreshed from.
-	 * @param source the source or null to remove
+	 * @param url the source or null to remove
 	 * @return the property object that was created
 	 * @see <a
 	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-8">draft-ietf-calext-extensions-01

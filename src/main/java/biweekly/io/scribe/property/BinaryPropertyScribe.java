@@ -172,7 +172,7 @@ public abstract class BinaryPropertyScribe<T extends BinaryProperty> extends ICa
 	 * @param dataType the data type
 	 * @return the property object
 	 */
-	protected abstract T newInstance(String value, ICalDataType dataTye);
+	protected abstract T newInstance(String value, ICalDataType dataType);
 
 	private static String removeWhitespace(String base64) {
 		return base64.replaceAll("[ \\t]", "");

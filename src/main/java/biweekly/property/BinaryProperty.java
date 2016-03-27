@@ -49,7 +49,6 @@ public class BinaryProperty extends ICalProperty {
 
 	/**
 	 * Creates a new binary property.
-	 * @param formatType the content-type of the data (e.g. "image/png")
 	 * @param file a file containing the binary data
 	 * @throws IOException if there's a problem reading from the file
 	 */

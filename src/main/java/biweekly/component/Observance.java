@@ -74,7 +74,7 @@ public class Observance extends ICalComponent {
 	 * Gets the date that the timezone observance starts.
 	 * @return the start date or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545
-	 * p.97-8</a
+	 * p.97-8</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-93">RFC 2445
 	 * p.93-4</a>
 	 */
