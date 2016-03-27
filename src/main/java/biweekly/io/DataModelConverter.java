@@ -74,7 +74,7 @@ import com.google.ical.values.DateTimeValue;
  */
 public final class DataModelConverter {
 	/**
-	 * Converts vCalendar timezone information to am iCalendar {@link VTimezone}
+	 * Converts vCalendar timezone information to an iCalendar {@link VTimezone}
 	 * component.
 	 * @param daylights the DAYLIGHT properties
 	 * @param tz the TZ property
