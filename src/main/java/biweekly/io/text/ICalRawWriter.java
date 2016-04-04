@@ -327,9 +327,9 @@ public class ICalRawWriter implements Closeable, Flushable {
 		writer.append(propertyName);
 
 		//write the parameters
-		for (Map.Entry<String, List<String>> subType : parameters) {
-			String parameterName = subType.getKey();
-			List<String> parameterValues = subType.getValue();
+		for (Map.Entry<String, List<String>> parameter : parameters) {
+			String parameterName = parameter.getKey();
+			List<String> parameterValues = parameter.getValue();
 			if (parameterValues.isEmpty()) {
 				continue;
 			}
