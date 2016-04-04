@@ -23,6 +23,7 @@ import biweekly.property.Uid;
 import biweekly.property.Url;
 import biweekly.util.Duration;
 import biweekly.util.ICalDate;
+import biweekly.util.Period;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -547,8 +548,8 @@ public class VFreeBusy extends ICalComponent {
 	 * p.95-6</a>
 	 */
 	public FreeBusy addFreeBusy(FreeBusyType type, Date start, Date end) {
-		FreeBusy found = findByFbType(type);
-		found.addValue(start, end);
+		FreeBusy found = findByFreeBusyType(type);
+		found.getValues().add(new Period(start, end));
 		return found;
 	}
 
@@ -567,27 +568,22 @@ public class VFreeBusy extends ICalComponent {
 	 * p.95-6</a>
 	 */
 	public FreeBusy addFreeBusy(FreeBusyType type, Date start, Duration duration) {
-		FreeBusy found = findByFbType(type);
-		found.addValue(start, duration);
+		FreeBusy found = findByFreeBusyType(type);
+		found.getValues().add(new Period(start, duration));
 		return found;
 	}
 
-	private FreeBusy findByFbType(FreeBusyType type) {
-		FreeBusy found = null;
-
-		for (FreeBusy fb : getFreeBusy()) {
-			if (fb.getType() == type) {
-				found = fb;
-				break;
+	private FreeBusy findByFreeBusyType(FreeBusyType type) {
+		for (FreeBusy freeBusy : getFreeBusy()) {
+			if (freeBusy.getType() == type) {
+				return freeBusy;
 			}
 		}
 
-		if (found == null) {
-			found = new FreeBusy();
-			found.setType(type);
-			addFreeBusy(found);
-		}
-		return found;
+		FreeBusy freeBusy = new FreeBusy();
+		freeBusy.setType(type);
+		addFreeBusy(freeBusy);
+		return freeBusy;
 	}
 
 	/**

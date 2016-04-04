@@ -59,6 +59,7 @@ import biweekly.property.Trigger;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.IOUtils;
+import biweekly.util.Period;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
@@ -995,15 +996,15 @@ public class ICalWriterTest {
 			freebusy.setDateEnd(utc("1998-04-10 14:17:11"));
 
 			FreeBusy fb = new FreeBusy();
-			fb.addValue(utc("1998-03-14 23:30:00"), utc("1998-03-15 00:30:00"));
+			fb.getValues().add(new Period(utc("1998-03-14 23:30:00"), utc("1998-03-15 00:30:00")));
 			freebusy.addFreeBusy(fb);
 
 			fb = new FreeBusy();
-			fb.addValue(utc("1998-03-16 15:30:00"), utc("1998-03-16 16:30:00"));
+			fb.getValues().add(new Period(utc("1998-03-16 15:30:00"), utc("1998-03-16 16:30:00")));
 			freebusy.addFreeBusy(fb);
 
 			fb = new FreeBusy();
-			fb.addValue(utc("1998-03-18 03:00:00"), utc("1998-03-18 04:00:00"));
+			fb.getValues().add(new Period(utc("1998-03-18 03:00:00"), utc("1998-03-18 04:00:00")));
 			freebusy.addFreeBusy(fb);
 
 			freebusy.setUrl("http://www.example.com/calendar/busytime/jsmith.ifb");

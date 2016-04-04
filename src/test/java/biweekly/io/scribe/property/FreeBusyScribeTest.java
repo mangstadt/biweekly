@@ -64,12 +64,12 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 
 	private final FreeBusy withMultiple = new FreeBusy();
 	{
-		withMultiple.addValue(start, end);
-		withMultiple.addValue(start, duration);
+		withMultiple.getValues().add(new Period(start, end));
+		withMultiple.getValues().add(new Period(start, duration));
 	}
 	private final FreeBusy withSingle = new FreeBusy();
 	{
-		withSingle.addValue(start, end);
+		withSingle.getValues().add(new Period(start, end));
 	}
 	private final FreeBusy empty = new FreeBusy();
 

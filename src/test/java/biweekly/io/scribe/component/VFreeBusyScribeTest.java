@@ -12,6 +12,7 @@ import biweekly.component.VFreeBusy;
 import biweekly.property.Comment;
 import biweekly.property.FreeBusy;
 import biweekly.property.ICalProperty;
+import biweekly.util.Period;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -47,16 +48,16 @@ public class VFreeBusyScribeTest {
 		VFreeBusy freebusy = new VFreeBusy();
 
 		FreeBusy fb1 = new FreeBusy();
-		fb1.addValue(date("2013-06-05 00:00:00"), date("2013-06-05 01:00:00"));
+		fb1.getValues().add(new Period(date("2013-06-05 00:00:00"), date("2013-06-05 01:00:00")));
 		freebusy.addFreeBusy(fb1);
 
 		FreeBusy fb2 = new FreeBusy();
-		fb2.addValue(date("2013-06-10 00:00:00"), date("2013-06-10 01:00:00"));
-		fb2.addValue(date("2013-06-01 00:00:00"), date("2013-06-01 01:00:00"));
+		fb2.getValues().add(new Period(date("2013-06-10 00:00:00"), date("2013-06-10 01:00:00")));
+		fb2.getValues().add(new Period(date("2013-06-01 00:00:00"), date("2013-06-01 01:00:00")));
 		freebusy.addFreeBusy(fb2);
 
 		FreeBusy fb3 = new FreeBusy();
-		fb3.addValue(date("2013-07-01 00:00:00"), date("2013-07-01 01:00:00"));
+		fb3.getValues().add(new Period(date("2013-07-01 00:00:00"), date("2013-07-01 01:00:00")));
 		freebusy.addFreeBusy(fb3);
 
 		Comment comment = freebusy.addComment("comment");

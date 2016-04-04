@@ -1,8 +1,9 @@
 package biweekly.property;
 
 import static biweekly.property.PropertySensei.assertCopy;
-import static biweekly.property.PropertySensei.assertEqualsMethod;
 import static biweekly.property.PropertySensei.assertNothingIsEqual;
+import static biweekly.util.TestUtils.assertEqualsAndHash;
+import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertValidate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -58,83 +59,67 @@ public class FreeBusyTest {
 	public void set_value() {
 		FreeBusy property = new FreeBusy();
 		Date start = new Date();
-		Date end = new Date();
 		Duration duration = new Duration.Builder().hours(1).build();
 
 		Period period = new Period(start, duration);
-		property.addValue(period);
+		property.getValues().add(period);
 		assertEquals(Arrays.asList(period), property.getValues());
 		assertNull(property.getType());
 
-		property.addValue(start, duration);
-		assertEquals(Arrays.asList(period, period), property.getValues());
+		Period period2 = new Period(start, (Date) null);
+		property.getValues().add(period2);
+		assertEquals(Arrays.asList(period, period2), property.getValues());
 		assertNull(property.getType());
 
-		Period period2 = new Period(start, end);
-		property.addValue(start, end);
-		assertEquals(Arrays.asList(period, period, period2), property.getValues());
-		assertNull(property.getType());
-
-		Period period3 = new Period(start, (Date) null);
-		property.addValue(period3);
-		assertEquals(Arrays.asList(period, period, period2, period3), property.getValues());
-		assertNull(property.getType());
-
-		Period period4 = new Period(start, (Duration) null);
-		property.addValue(period4);
-		assertEquals(Arrays.asList(period, period, period2, period3, period4), property.getValues());
+		Period period3 = new Period(start, (Duration) null);
+		property.getValues().add(period3);
+		assertEquals(Arrays.asList(period, period2, period3), property.getValues());
 		assertNull(property.getType());
 
 		property.setType(FreeBusyType.BUSY);
-		assertEquals(Arrays.asList(period, period, period2, period3, period4), property.getValues());
+		assertEquals(Arrays.asList(period, period2, period3), property.getValues());
 		assertEquals(FreeBusyType.BUSY, property.getType());
 
 		property.setType(null);
-		assertEquals(Arrays.asList(period, period, period2, period3, period4), property.getValues());
+		assertEquals(Arrays.asList(period, period2, period3), property.getValues());
 		assertNull(property.getType());
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void addValue_null() {
-		FreeBusy property = new FreeBusy();
-		property.addValue(null);
 	}
 
 	@Test
 	public void validate() {
 		FreeBusy property = new FreeBusy();
-		assertValidate(property).run(38);
+		assertValidate(property).run(26);
 
 		property = new FreeBusy();
-		property.addValue(null, (Date) null);
+		property.getValues().add(new Period(null, (Date) null));
 		assertValidate(property).run(39, 40);
 
 		property = new FreeBusy();
-		property.addValue(new Date(), (Date) null);
+		property.getValues().add(new Period(new Date(), (Date) null));
 		assertValidate(property).run(40);
 
 		property = new FreeBusy();
-		property.addValue(null, new Date());
+		property.getValues().add(new Period(null, new Date()));
 		assertValidate(property).run(39);
 
 		property = new FreeBusy();
-		property.addValue(new Date(), new Date());
+		property.getValues().add(new Period(new Date(), new Date()));
 		assertValidate(property).run();
 
 		property = new FreeBusy();
-		property.addValue(null, (Duration) null);
+		property.getValues().add(new Period(null, (Duration) null));
 		assertValidate(property).run(39, 40);
 
 		property = new FreeBusy();
-		property.addValue(new Date(), (Duration) null);
+		property.getValues().add(new Period(new Date(), (Duration) null));
 		assertValidate(property).run(40);
 
 		property = new FreeBusy();
-		property.addValue(null, new Duration.Builder().build());
+		property.getValues().add(new Period(null, new Duration.Builder().build()));
 		assertValidate(property).run(39);
 
 		property = new FreeBusy();
-		property.addValue(new Date(), new Duration.Builder().build());
+		property.getValues().add(new Period(new Date(), new Duration.Builder().build()));
 		assertValidate(property).run();
 	}
 
@@ -150,10 +135,10 @@ public class FreeBusyTest {
 		assertCopy(original).notSameDeep("getValues");
 
 		original = new FreeBusy();
-		original.addValue(new Date(), new Date());
-		original.addValue(new Date(), (Date) null);
-		original.addValue(new Date(), new Duration.Builder().build());
-		original.addValue(new Date(), (Duration) null);
+		original.getValues().add(new Period(new Date(), new Date()));
+		original.getValues().add(new Period(new Date(), (Date) null));
+		original.getValues().add(new Period(new Date(), new Duration.Builder().build()));
+		original.getValues().add(new Period(new Date(), (Duration) null));
 		assertCopy(original).notSameDeep("getValues");
 	}
 
@@ -169,25 +154,28 @@ public class FreeBusyTest {
 		properties.add(property);
 
 		property = new FreeBusy();
-		property.addValue(start, end);
+		property.getValues().add(new Period(start, end));
 		properties.add(property);
 
 		property = new FreeBusy();
-		property.addValue(start, duration);
+		property.getValues().add(new Period(start, duration));
 		properties.add(property);
 
 		property = new FreeBusy();
-		property.addValue(start, end);
-		property.addValue(start, end);
+		property.getValues().add(new Period(start, end));
+		property.getValues().add(new Period(start, end));
 		properties.add(property);
 
 		assertNothingIsEqual(properties);
 
-		//@formatter:off
-		assertEqualsMethod(FreeBusy.class)
-		.constructor()
-			.test()
-			.method("addValue", new Period(start, duration)).test();
-		//@formatter:on
+		assertEqualsMethodEssentials(new FreeBusy());
+
+		FreeBusy one = new FreeBusy();
+		FreeBusy two = new FreeBusy();
+		assertEqualsAndHash(one, two);
+
+		one.getValues().add(new Period(new Date(), new Date()));
+		two.getValues().add(new Period(new Date(), new Date()));
+		assertEqualsAndHash(one, two);
 	}
 }

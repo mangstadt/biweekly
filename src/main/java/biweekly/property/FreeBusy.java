@@ -1,17 +1,11 @@
 package biweekly.property;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import biweekly.ICalVersion;
-import biweekly.Messages;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.parameter.FreeBusyType;
-import biweekly.util.Duration;
 import biweekly.util.Period;
 
 /*
@@ -57,11 +51,7 @@ import biweekly.util.Period;
  * 
  * Date onePM = ...
  * Date threePM = ...
- * freebusy.addValue(onePM, threePM);
- * 
- * Date fourPM = ...
- * Duration oneHour = Duration.builder().hours(1).build();
- * freeBusy.addValue(fourPM, oneHour);
+ * freebusy.getValues().add(new Period(onePM, threePM));
  * 
  * fb.addFreeBusy(freebusy);
  * </pre>
@@ -72,11 +62,9 @@ import biweekly.util.Period;
  * p.100-1</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-95">RFC 2445 p.95-6</a>
  */
-public class FreeBusy extends ICalProperty {
-	private final List<Period> values;
-
+public class FreeBusy extends ListProperty<Period> {
 	public FreeBusy() {
-		values = new ArrayList<Period>();
+		//empty
 	}
 
 	/**
@@ -85,47 +73,10 @@ public class FreeBusy extends ICalProperty {
 	 */
 	public FreeBusy(FreeBusy original) {
 		super(original);
-		values = new ArrayList<Period>(original.values.size());
+		values.clear();
 		for (Period period : original.values) {
 			values.add(new Period(period));
 		}
-	}
-
-	/**
-	 * Adds a time period.
-	 * @param start the start date
-	 * @param end the end date
-	 */
-	public void addValue(Date start, Date end) {
-		addValue(new Period(start, end));
-	}
-
-	/**
-	 * Adds a time period.
-	 * @param start the start date
-	 * @param duration the duration
-	 */
-	public void addValue(Date start, Duration duration) {
-		addValue(new Period(start, duration));
-	}
-
-	/**
-	 * Adds a time period.
-	 * @param period the time period to add (cannot be null)
-	 */
-	public void addValue(Period period) {
-		if (period == null) {
-			throw new NullPointerException(Messages.INSTANCE.getExceptionMessage(15));
-		}
-		values.add(period);
-	}
-
-	/**
-	 * Gets all time periods.
-	 * @return the time periods
-	 */
-	public List<Period> getValues() {
-		return values;
 	}
 
 	/**
@@ -154,8 +105,8 @@ public class FreeBusy extends ICalProperty {
 
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+		super.validate(components, version, warnings);
 		if (values.isEmpty()) {
-			warnings.add(Warning.validate(38));
 			return;
 		}
 
@@ -175,31 +126,7 @@ public class FreeBusy extends ICalProperty {
 	}
 
 	@Override
-	protected Map<String, Object> toStringValues() {
-		Map<String, Object> values = new LinkedHashMap<String, Object>();
-		values.put("values", this.values);
-		return values;
-	}
-
-	@Override
 	public FreeBusy copy() {
 		return new FreeBusy(this);
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + values.hashCode();
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!super.equals(obj)) return false;
-		FreeBusy other = (FreeBusy) obj;
-		if (!values.equals(other.values)) return false;
-		return true;
 	}
 }

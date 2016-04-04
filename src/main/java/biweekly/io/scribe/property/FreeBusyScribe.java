@@ -141,7 +141,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 			if (endStr != null) {
 				try {
 					ICalDate end = date(endStr).parse();
-					property.addValue(start, end);
+					property.getValues().add(new Period(start, end));
 					context.addDate(start, property, parameters);
 					context.addDate(end, property, parameters);
 				} catch (IllegalArgumentException e) {
@@ -154,7 +154,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 			if (durationStr != null) {
 				try {
 					Duration duration = Duration.parse(durationStr);
-					property.addValue(start, duration);
+					property.getValues().add(new Period(start, duration));
 					context.addDate(start, property, parameters);
 				} catch (IllegalArgumentException e) {
 					throw new CannotParseException(12, durationStr);
@@ -226,14 +226,14 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 			ICalDate end = null;
 			try {
 				end = date(endStr).parse();
-				property.addValue(start, end);
+				property.getValues().add(new Period(start, end));
 				context.addDate(start, property, parameters);
 				context.addDate(end, property, parameters);
 			} catch (IllegalArgumentException e) {
 				//must be a duration
 				try {
 					Duration duration = Duration.parse(endStr);
-					property.addValue(start, duration);
+					property.getValues().add(new Period(start, duration));
 					context.addDate(start, property, parameters);
 				} catch (IllegalArgumentException e2) {
 					throw new CannotParseException(14, endStr);
