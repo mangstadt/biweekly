@@ -9,7 +9,6 @@ import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.each;
 import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -751,57 +750,6 @@ public class ICalWriterTest {
 
 			String actual = sw.toString();
 			assertEquals(expected, actual);
-		}
-	}
-
-	@Test
-	public void vcal_do_not_write_DTSTAMP() throws Throwable {
-		ICalendar ical = new ICalendar();
-		ical.removeProperties(ProductId.class);
-		VEvent event = new VEvent();
-		ical.addEvent(event);
-
-		{
-			ICalVersion version = V1_0;
-			StringWriter sw = new StringWriter();
-			ICalWriter writer = new ICalWriter(sw, version);
-			writer.write(ical);
-			writer.close();
-
-			//@formatter:off
-			String expected = 
-			"BEGIN:VCALENDAR\r\n" +
-				"VERSION:1\\.0\r\n" +
-				"BEGIN:VEVENT\r\n" +
-					"UID:(.*?)\r\n" +
-				"END:VEVENT\r\n" +
-			"END:VCALENDAR\r\n";
-			//@formatter:on
-
-			String actual = sw.toString();
-			assertTrue(actual, actual.matches(expected));
-		}
-
-		{
-			ICalVersion version = V2_0;
-			StringWriter sw = new StringWriter();
-			ICalWriter writer = new ICalWriter(sw, version);
-			writer.write(ical);
-			writer.close();
-
-			//@formatter:off
-			String expected = 
-			"BEGIN:VCALENDAR\r\n" +
-				"VERSION:2.0\r\n" +
-				"BEGIN:VEVENT\r\n" +
-					"UID:(.*?)\r\n" +
-					"DTSTAMP:(.*?)\r\n" +
-				"END:VEVENT\r\n" +
-			"END:VCALENDAR\r\n";
-			//@formatter:on
-
-			String actual = sw.toString();
-			assertTrue(actual, actual.matches(expected));
 		}
 	}
 

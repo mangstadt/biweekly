@@ -1,12 +1,14 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.util.TestUtils.date;
+import static org.junit.Assert.fail;
+
 import java.util.Date;
-import java.util.EnumSet;
-import java.util.Set;
+
+import org.junit.Test;
 
 import biweekly.ICalVersion;
 import biweekly.io.SkipMeException;
-import biweekly.io.WriteContext;
 import biweekly.property.DateTimeStamp;
 
 /*
@@ -35,29 +37,27 @@ import biweekly.property.DateTimeStamp;
  */
 
 /**
- * Marshals {@link DateTimeStamp} properties.
  * @author Michael Angstadt
  */
-public class DateTimeStampScribe extends DateTimePropertyScribe<DateTimeStamp> {
-	public DateTimeStampScribe() {
-		super(DateTimeStamp.class, "DTSTAMP");
+public class DateTimeStampScribeTest extends ScribeTest<DateTimeStamp> {
+	private final Date datetime = date("2013-06-11 13:43:02");
+	private final String datetimeStr = "20130611T124302Z";
+
+	private final DateTimeStamp withDateTime = new DateTimeStamp(datetime);
+
+	public DateTimeStampScribeTest() {
+		super(new DateTimeStampScribe());
 	}
 
-	@Override
-	protected DateTimeStamp newInstance(Date date) {
-		return new DateTimeStamp(date);
-	}
-
-	@Override
-	public Set<ICalVersion> getSupportedVersions() {
-		return EnumSet.of(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
-	}
-	
-	@Override
-	protected String _writeText(DateTimeStamp property, WriteContext context) {
-		if (context.getVersion() == ICalVersion.V1_0){
-			throw new SkipMeException("This property is not used in vCal 1.0.");
+	@Test
+	public void writeText() {
+		try {
+			sensei.assertWriteText(withDateTime).version(ICalVersion.V1_0).run(datetimeStr);
+			fail();
+		} catch (SkipMeException e) {
+			//expected
 		}
-		return super._writeText(property, context);
+		sensei.assertWriteText(withDateTime).version(ICalVersion.V2_0_DEPRECATED).run(datetimeStr);
+		sensei.assertWriteText(withDateTime).version(ICalVersion.V2_0).run(datetimeStr);
 	}
 }
