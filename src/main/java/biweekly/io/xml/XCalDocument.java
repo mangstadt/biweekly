@@ -116,14 +116,14 @@ import biweekly.util.XmlUtils;
  *     
  * //parsing an existing xCal document
  * XCalDocument xcal = new XCalDocument(xml);
- * List&lt;ICalendar&gt; icals = xcal.parseAll();
+ * List&lt;ICalendar&gt; icals = xcal.getICalendars();
  * 
  * //creating an empty xCal document
  * XCalDocument xcal = new XCalDocument();
  * 
  * //ICalendar objects can be added at any time
  * ICalendar ical = new ICalendar();
- * xcal.add(ical);
+ * xcal.addICalendar(ical);
  * 
  * //retrieving the raw XML DOM
  * Document document = xcal.getDocument();
