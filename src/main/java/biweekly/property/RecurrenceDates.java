@@ -1,7 +1,6 @@
 package biweekly.property;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,44 +103,19 @@ public class RecurrenceDates extends ICalProperty {
 	}
 
 	/**
-	 * Gets the recurrence dates.
-	 * @return the dates
+	 * Gets the list that stores this property's recurrence dates.
+	 * @return the dates (this list is mutable)
 	 */
 	public List<ICalDate> getDates() {
 		return dates;
 	}
 
 	/**
-	 * Adds a date.
-	 * @param date the date to add
-	 */
-	public void addDate(ICalDate date) {
-		dates.add(date);
-	}
-
-	/**
-	 * Adds a date
-	 * @param date the date to add
-	 */
-	public void addDate(Date date) {
-		ICalDate icalDate = (date instanceof ICalDate) ? (ICalDate) date : new ICalDate(date, true);
-		addDate(icalDate);
-	}
-
-	/**
-	 * Gets the time periods.
-	 * @return the time periods
+	 * Gets the list that stores this property's time periods.
+	 * @return the time periods (this list is mutable)
 	 */
 	public List<Period> getPeriods() {
 		return periods;
-	}
-
-	/**
-	 * Adds a period
-	 * @param period the period to add
-	 */
-	public void addPeriod(Period period) {
-		periods.add(period);
 	}
 
 	@Override

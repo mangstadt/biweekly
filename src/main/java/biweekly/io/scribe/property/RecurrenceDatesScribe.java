@@ -215,7 +215,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 			if (endStr != null) {
 				try {
 					ICalDate end = date(endStr).parse();
-					property.addPeriod(new Period(start, end));
+					property.getPeriods().add(new Period(start, end));
 					context.addDate(start, property, parameters);
 					context.addDate(end, property, parameters);
 				} catch (IllegalArgumentException e) {
@@ -228,7 +228,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 			if (durationStr != null) {
 				try {
 					Duration duration = Duration.parse(durationStr);
-					property.addPeriod(new Period(start, duration));
+					property.getPeriods().add(new Period(start, duration));
 					context.addDate(start, property, parameters);
 				} catch (IllegalArgumentException e) {
 					throw new CannotParseException(12, durationStr);
@@ -243,7 +243,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		for (String dateTimeStr : dateTimeElements) {
 			try {
 				ICalDate date = date(dateTimeStr).hasTime(true).parse();
-				property.addDate(date);
+				property.getDates().add(date);
 				context.addDate(date, property, parameters);
 			} catch (IllegalArgumentException e) {
 				throw new CannotParseException(15, dateTimeStr);
@@ -254,7 +254,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		for (String dateStr : dateElements) {
 			try {
 				ICalDate date = date(dateStr).hasTime(false).parse();
-				property.addDate(date);
+				property.getDates().add(date);
 			} catch (IllegalArgumentException e) {
 				throw new CannotParseException(15, dateStr);
 			}
@@ -338,14 +338,14 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 				ICalDate end = null;
 				try {
 					end = date(endStr).parse();
-					property.addPeriod(new Period(start, end));
+					property.getPeriods().add(new Period(start, end));
 					context.addDate(start, property, parameters);
 					context.addDate(end, property, parameters);
 				} catch (IllegalArgumentException e) {
 					//must be a duration
 					try {
 						Duration duration = Duration.parse(endStr);
-						property.addPeriod(new Period(start, duration));
+						property.getPeriods().add(new Period(start, duration));
 						context.addDate(start, property, parameters);
 					} catch (IllegalArgumentException e2) {
 						throw new CannotParseException(14, endStr);
@@ -364,7 +364,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 			} catch (IllegalArgumentException e) {
 				throw new CannotParseException(15, valueStr);
 			}
-			property.addDate(date);
+			property.getDates().add(date);
 			context.addDate(date, property, parameters);
 		}
 		return property;

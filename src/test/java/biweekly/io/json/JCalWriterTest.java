@@ -548,7 +548,7 @@ public class JCalWriterTest {
 			event.setRecurrenceRule(rrule);
 
 			RecurrenceDates rdate = new RecurrenceDates();
-			rdate.addPeriod(new Period(date("2006-01-02 15:00:00", eastern), Duration.builder().hours(2).build()));
+			rdate.getPeriods().add(new Period(date("2006-01-02 15:00:00", eastern), Duration.builder().hours(2).build()));
 			event.addRecurrenceDates(rdate);
 
 			event.setSummary("Event#2");

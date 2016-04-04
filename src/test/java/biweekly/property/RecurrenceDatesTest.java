@@ -4,10 +4,12 @@ import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.property.PropertySensei.assertCopy;
-import static biweekly.property.PropertySensei.assertEqualsMethod;
 import static biweekly.property.PropertySensei.assertNothingIsEqual;
+import static biweekly.util.TestUtils.assertEqualsAndHash;
+import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
+import static biweekly.util.TestUtils.icalDate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -61,24 +63,14 @@ public class RecurrenceDatesTest {
 	public void set_value() {
 		RecurrenceDates property = new RecurrenceDates();
 
-		Date date = new Date();
-		property.addDate(date);
-		assertEquals(Arrays.asList(new ICalDate(date, true)), property.getDates());
-		assertEquals(Arrays.asList(), property.getPeriods());
-
 		ICalDate icalDate = new ICalDate();
-		property.addDate(icalDate);
-		assertEquals(Arrays.asList(new ICalDate(date, true), icalDate), property.getDates());
-		assertEquals(Arrays.asList(), property.getPeriods());
-
-		Date icalDateDisguised = new ICalDate();
-		property.addDate(icalDateDisguised);
-		assertEquals(Arrays.asList(new ICalDate(date, true), icalDate, icalDateDisguised), property.getDates());
+		property.getDates().add(icalDate);
+		assertEquals(Arrays.asList(icalDate), property.getDates());
 		assertEquals(Arrays.asList(), property.getPeriods());
 
 		Period period = new Period(new Date(), new Date());
-		property.addPeriod(period);
-		assertEquals(Arrays.asList(new ICalDate(date, true), icalDate, icalDateDisguised), property.getDates());
+		property.getPeriods().add(period);
+		assertEquals(Arrays.asList(icalDate), property.getDates());
 		assertEquals(Arrays.asList(period), property.getPeriods());
 	}
 
@@ -88,24 +80,24 @@ public class RecurrenceDatesTest {
 		assertValidate(property).run(26);
 
 		property = new RecurrenceDates();
-		property.addDate(new Date());
-		property.addPeriod(new Period(new Date(), new Date()));
+		property.getDates().add(new ICalDate());
+		property.getPeriods().add(new Period(new Date(), new Date()));
 		assertValidate(property).versions(V1_0).run(49, 51);
 		assertValidate(property).versions(V2_0_DEPRECATED, V2_0).run(49);
 
 		property = new RecurrenceDates();
-		property.addDate(new ICalDate(new Date(), true));
-		property.addDate(new ICalDate(new Date(), false));
+		property.getDates().add(new ICalDate(new Date(), true));
+		property.getDates().add(new ICalDate(new Date(), false));
 		assertValidate(property).run(50);
 
 		property = new RecurrenceDates();
-		property.addDate(new Date());
-		property.addDate(new Date());
+		property.getDates().add(new ICalDate());
+		property.getDates().add(new ICalDate());
 		assertValidate(property).run();
 
 		property = new RecurrenceDates();
-		property.addPeriod(new Period(new Date(), new Date()));
-		property.addPeriod(new Period(new Date(), new Date()));
+		property.getPeriods().add(new Period(new Date(), new Date()));
+		property.getPeriods().add(new Period(new Date(), new Date()));
 		assertValidate(property).versions(V1_0).run(51);
 		assertValidate(property).versions(V2_0_DEPRECATED, V2_0).run();
 	}
@@ -122,9 +114,8 @@ public class RecurrenceDatesTest {
 		assertCopy(original).notSameDeep("getDates").notSameDeep("getPeriods");
 
 		original = new RecurrenceDates();
-		original.addDate(new Date());
-		original.addDate(new ICalDate());
-		original.addPeriod(new Period(new Date(), new Date()));
+		original.getDates().add(new ICalDate());
+		original.getPeriods().add(new Period(new Date(), new Date()));
 		assertCopy(original).notSameDeep("getDates").notSameDeep("getPeriods");
 	}
 
@@ -136,39 +127,51 @@ public class RecurrenceDatesTest {
 		properties.add(property);
 
 		property = new RecurrenceDates();
-		property.addDate(date("2016-01-21"));
+		property.getDates().add(icalDate("2016-01-21"));
 		properties.add(property);
 
 		property = new RecurrenceDates();
-		property.addDate(date("2016-01-22"));
+		property.getDates().add(icalDate("2016-01-22"));
 		properties.add(property);
 
 		property = new RecurrenceDates();
-		property.addDate(date("2016-01-21"));
-		property.addDate(date("2016-01-22"));
+		property.getDates().add(icalDate("2016-01-21"));
+		property.getDates().add(icalDate("2016-01-22"));
 		properties.add(property);
 
 		property = new RecurrenceDates();
-		property.addPeriod(new Period(date("2016-01-21"), new Date()));
+		property.getPeriods().add(new Period(date("2016-01-21"), new Date()));
 		properties.add(property);
 
 		property = new RecurrenceDates();
-		property.addPeriod(new Period(date("2016-01-22"), new Date()));
+		property.getPeriods().add(new Period(date("2016-01-22"), new Date()));
 		properties.add(property);
 
 		property = new RecurrenceDates();
-		property.addPeriod(new Period(date("2016-01-21"), new Date()));
-		property.addPeriod(new Period(date("2016-01-22"), new Date()));
+		property.getPeriods().add(new Period(date("2016-01-21"), new Date()));
+		property.getPeriods().add(new Period(date("2016-01-22"), new Date()));
 		properties.add(property);
 
 		assertNothingIsEqual(properties);
 
-		//@formatter:off
-		assertEqualsMethod(RecurrenceDates.class)
-		.constructor()
-			.test()
-			.method("addDate", new Date()).test()
-			.method("addPeriod", new Period(new Date(), new Date())).test();
-		//@formatter:on
+		assertEqualsMethodEssentials(new RecurrenceDates());
+
+		RecurrenceDates one = new RecurrenceDates();
+		RecurrenceDates two = new RecurrenceDates();
+		assertEqualsAndHash(one, two);
+
+		one.getDates().add(new ICalDate());
+		two.getDates().add(new ICalDate());
+		assertEqualsAndHash(one, two);
+
+		one.getPeriods().add(new Period(new Date(), new Date()));
+		two.getPeriods().add(new Period(new Date(), new Date()));
+		assertEqualsAndHash(one, two);
+
+		one = new RecurrenceDates();
+		two = new RecurrenceDates();
+		one.getPeriods().add(new Period(new Date(), new Date()));
+		two.getPeriods().add(new Period(new Date(), new Date()));
+		assertEqualsAndHash(one, two);
 	}
 }

@@ -77,8 +77,8 @@ public class Google2445UtilsTest {
 		event.setRecurrenceRule(new Recurrence.Builder(Frequency.DAILY).count(10).build());
 
 		RecurrenceDates rdate = new RecurrenceDates();
-		rdate.addDate(date("2016-03-26 20:00:00"));
-		rdate.addDate(date("2016-03-27 20:00:00"));
+		rdate.getDates().add(new ICalDate(date("2016-03-26 20:00:00")));
+		rdate.getDates().add(new ICalDate(date("2016-03-27 20:00:00")));
 		event.addRecurrenceDates(rdate);
 
 		ExceptionDates exdate = new ExceptionDates();

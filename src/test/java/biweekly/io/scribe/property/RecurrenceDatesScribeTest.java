@@ -92,31 +92,31 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 
 	private final RecurrenceDates withMultiplePeriods = new RecurrenceDates();
 	{
-		withMultiplePeriods.addPeriod(period1);
-		withMultiplePeriods.addPeriod(period2);
+		withMultiplePeriods.getPeriods().add(period1);
+		withMultiplePeriods.getPeriods().add(period2);
 	}
 	private final RecurrenceDates withMultipleDates = new RecurrenceDates();
 	{
-		withMultipleDates.addDate(new ICalDate(startDate, false));
-		withMultipleDates.addDate(new ICalDate(endDate, false));
+		withMultipleDates.getDates().add(new ICalDate(startDate, false));
+		withMultipleDates.getDates().add(new ICalDate(endDate, false));
 	}
 	private final RecurrenceDates withMultipleDateTimes = new RecurrenceDates();
 	{
-		withMultipleDateTimes.addDate(new ICalDate(startDateTime, true));
-		withMultipleDateTimes.addDate(new ICalDate(endDateTime, true));
+		withMultipleDateTimes.getDates().add(new ICalDate(startDateTime, true));
+		withMultipleDateTimes.getDates().add(new ICalDate(endDateTime, true));
 	}
 
 	private final RecurrenceDates withSinglePeriod = new RecurrenceDates();
 	{
-		withSinglePeriod.addPeriod(period1);
+		withSinglePeriod.getPeriods().add(period1);
 	}
 	private final RecurrenceDates withSingleDate = new RecurrenceDates();
 	{
-		withSingleDate.addDate(new ICalDate(startDate, false));
+		withSingleDate.getDates().add(new ICalDate(startDate, false));
 	}
 	private final RecurrenceDates withSingleDateTime = new RecurrenceDates();
 	{
-		withSingleDateTime.addDate(new ICalDate(startDateTime, true));
+		withSingleDateTime.getDates().add(new ICalDate(startDateTime, true));
 	}
 
 	private final TimezoneInfo tzinfo;
