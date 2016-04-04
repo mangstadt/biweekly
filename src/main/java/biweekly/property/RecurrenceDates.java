@@ -51,19 +51,19 @@ import biweekly.util.Period;
  * //date-time values
  * Date datetime = ...
  * RecurrenceDates rdate = new RecurrenceDates();
- * rdate.addDate(new ICalDate(datetime, true));
+ * rdate.getDates().add(new ICalDate(datetime, true));
  * event.addRecurrenceDates(rdate);
  * 
  * //date values
  * Date date = ...
  * RecurrenceDates rdate = new RecurrenceDates();
- * rdate.addDate(new ICalDate(date, false));
+ * rdate.getDates().add(new ICalDate(date, false));
  * event.addRecurrenceDates(rdate);
  * 
  * //periods
  * Period period = ...
  * rdate = new RecurrenceDates();
- * rdate.addPeriod(period);
+ * rdate.getPeriods().add(period);
  * event.addRecurrenceDates(rdate);
  * </pre>
  * 
