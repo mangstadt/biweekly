@@ -35,6 +35,7 @@ import biweekly.property.Timezone;
 import biweekly.property.Trigger;
 import biweekly.property.UtcOffsetProperty;
 import biweekly.property.VCalAlarmProperty;
+import biweekly.property.ValuedProperty;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.ICalDate;
@@ -81,7 +82,7 @@ public final class DataModelConverter {
 	 * @return the VTIMEZONE component
 	 */
 	public static VTimezone convert(List<Daylight> daylights, Timezone tz) {
-		UtcOffset tzOffset = (tz == null) ? null : tz.getValue();
+		UtcOffset tzOffset = ValuedProperty.getValue(tz);
 		if (daylights.isEmpty() && tzOffset == null) {
 			return null;
 		}
