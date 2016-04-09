@@ -84,9 +84,9 @@ public class ValuedProperty<T> extends ICalProperty {
 
 	/**
 	 * Utility method that gets the value of a {@link ValuedProperty} object.
-	 * @param property the property (may be null)
-	 * @return the property value, null if the property value is null, or null
-	 * if the property itself is null
+	 * @param property the property object (may be null)
+	 * @return the property value (may be null), or null if the property object
+	 * itself is null
 	 */
 	public static <T> T getValue(ValuedProperty<T> property) {
 		return (property == null) ? null : property.getValue();
