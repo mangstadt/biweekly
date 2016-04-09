@@ -277,10 +277,13 @@ public class ICalTimeZoneTest {
 		VTimezone component;
 		{
 			ICalReader reader = new ICalReader(getClass().getResourceAsStream("New_York.ics"));
-			reader.readNext();
+			try {
+				reader.readNext();
+			} finally {
+				reader.close();
+			}
 			TimezoneInfo tzinfo = reader.getTimezoneInfo();
 			component = tzinfo.getComponents().iterator().next();
-			reader.close();
 		}
 
 		ICalTimeZone tz = new ICalTimeZone(component);
@@ -343,14 +346,17 @@ public class ICalTimeZoneTest {
 		VTimezone component;
 		{
 			ICalReader reader = new ICalReader(getClass().getResourceAsStream("New_York.ics"));
-			reader.readNext();
+			try {
+				reader.readNext();
+			} finally {
+				reader.close();
+			}
 			TimezoneInfo tzinfo = reader.getTimezoneInfo();
 			component = tzinfo.getComponents().iterator().next();
-			reader.close();
 		}
 
 		ICalTimeZone tz = new ICalTimeZone(component);
-		Iterator<Observance> observances = tz.getSortedObservances().iterator();
+		Iterator<Observance> observances = tz.sortedObservances.iterator();
 
 		//@formatter:off
 		assertIterator(tz, observances.next(),
@@ -577,7 +583,7 @@ public class ICalTimeZoneTest {
 		assertFalse(observances.hasNext());
 	}
 
-	private void assertIterator(ICalTimeZone tz, Observance observance, DateValue... values) {
+	private static void assertIterator(ICalTimeZone tz, Observance observance, DateValue... values) {
 		RecurrenceIterator it = tz.createIterator(observance);
 		for (DateValue value : values) {
 			if (value == null) {
@@ -589,11 +595,11 @@ public class ICalTimeZoneTest {
 		assertFalse(it.hasNext());
 	}
 
-	private void assertOffset(int expectedHours, int expectedMinutes, boolean expectedInDaylight, ICalTimeZone tz, int year, int month, int date) {
+	private static void assertOffset(int expectedHours, int expectedMinutes, boolean expectedInDaylight, ICalTimeZone tz, int year, int month, int date) {
 		assertOffset(expectedHours, expectedMinutes, expectedInDaylight, tz, year, month, date, 0, 0, 0);
 	}
 
-	private void assertOffset(int expectedHours, int expectedMinutes, boolean expectedInDaylight, ICalTimeZone tz, int year, int month, int date, int hour, int minute, int second) {
+	private static void assertOffset(int expectedHours, int expectedMinutes, boolean expectedInDaylight, ICalTimeZone tz, int year, int month, int date, int hour, int minute, int second) {
 		month -= 1;
 
 		UtcOffset expected = new UtcOffset(expectedHours >= 0, expectedHours, expectedMinutes);
