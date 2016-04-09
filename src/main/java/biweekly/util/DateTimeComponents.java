@@ -328,7 +328,14 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents>,
 	 * @return the date object
 	 */
 	public Date toDate(TimeZone timezone) {
-		Calendar c = Calendar.getInstance(timezone);
+		return toDate(Calendar.getInstance(timezone));
+	}
+
+	/**
+	 * Converts the date-time components to a {@link Date} object.
+	 * @return the date object
+	 */
+	public Date toDate(Calendar c) {
 		c.clear();
 		c.set(Calendar.YEAR, year);
 		c.set(Calendar.MONTH, month - 1);

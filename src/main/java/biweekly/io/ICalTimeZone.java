@@ -10,10 +10,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.TimeZone;
 
@@ -22,15 +24,14 @@ import biweekly.component.DaylightSavingsTime;
 import biweekly.component.Observance;
 import biweekly.component.StandardTime;
 import biweekly.component.VTimezone;
-import biweekly.property.DateStart;
 import biweekly.property.ExceptionDates;
 import biweekly.property.ExceptionRule;
 import biweekly.property.RecurrenceDates;
 import biweekly.property.RecurrenceRule;
 import biweekly.property.TimezoneName;
-import biweekly.property.UtcOffsetProperty;
 import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
+import biweekly.util.UtcOffset;
 
 import com.google.ical.iter.RecurrenceIterator;
 import com.google.ical.iter.RecurrenceIteratorFactory;
@@ -65,12 +66,18 @@ import com.google.ical.values.RRule;
  */
 
 /**
- * A timezone that is based on an iCalendar {@link VTimezone} component.
+ * A timezone that is based on an iCalendar {@link VTimezone} component. This
+ * class is not thread safe.
  * @author Michael Angstadt
  */
 @SuppressWarnings("serial")
 public class ICalTimeZone extends TimeZone {
 	private final VTimezone component;
+	private final Map<Observance, List<DateValue>> observanceDateCache;
+	final List<Observance> sortedObservances;
+	private final int rawOffset;
+	private final TimeZone utc = TimeZone.getTimeZone("UTC");
+	private final Calendar utcCalendar = Calendar.getInstance(utc);
 
 	/**
 	 * Creates a new timezone based on an iCalendar VTIMEZONE component.
@@ -79,32 +86,78 @@ public class ICalTimeZone extends TimeZone {
 	public ICalTimeZone(VTimezone component) {
 		this.component = component;
 
+		int numObservances = component.getStandardTimes().size() + component.getDaylightSavingsTime().size();
+		observanceDateCache = new IdentityHashMap<Observance, List<DateValue>>(numObservances);
+
+		sortedObservances = calculateSortedObservances();
+
+		rawOffset = calculateRawOffset();
+
 		String id = getValue(component.getTimezoneId());
 		if (id != null) {
 			setID(id);
 		}
 	}
 
+	/**
+	 * Builds a list of all the observances in the VTIMEZONE component, sorted
+	 * by DTSTART.
+	 * @return the sorted observances
+	 */
+	private List<Observance> calculateSortedObservances() {
+		List<DaylightSavingsTime> daylights = component.getDaylightSavingsTime();
+		List<StandardTime> standards = component.getStandardTimes();
+
+		int numObservances = standards.size() + daylights.size();
+		List<Observance> sortedObservances = new ArrayList<Observance>(numObservances);
+
+		sortedObservances.addAll(standards);
+		sortedObservances.addAll(daylights);
+
+		Collections.sort(sortedObservances, new Comparator<Observance>() {
+			public int compare(Observance left, Observance right) {
+				ICalDate startLeft = getValue(left.getDateStart());
+				ICalDate startRight = getValue(right.getDateStart());
+				if (startLeft == null && startRight == null) {
+					return 0;
+				}
+				if (startLeft == null) {
+					return -1;
+				}
+				if (startRight == null) {
+					return 1;
+				}
+
+				return startLeft.getRawComponents().compareTo(startRight.getRawComponents());
+			}
+		});
+
+		return Collections.unmodifiableList(sortedObservances);
+	}
+
 	@Override
 	public String getDisplayName(boolean daylight, int style, Locale locale) {
-		List<Observance> observances = getSortedObservances();
-		ListIterator<Observance> it = observances.listIterator(observances.size());
+		ListIterator<Observance> it = sortedObservances.listIterator(sortedObservances.size());
 		while (it.hasPrevious()) {
 			Observance observance = it.previous();
 
 			if (daylight && observance instanceof DaylightSavingsTime) {
 				List<TimezoneName> names = observance.getTimezoneNames();
 				if (!names.isEmpty()) {
-					TimezoneName name = names.get(0);
-					return name.getValue();
+					String name = names.get(0).getValue();
+					if (name != null) {
+						return name;
+					}
 				}
 			}
 
 			if (!daylight && observance instanceof StandardTime) {
 				List<TimezoneName> names = observance.getTimezoneNames();
 				if (!names.isEmpty()) {
-					TimezoneName name = names.get(0);
-					return name.getValue();
+					String name = names.get(0).getValue();
+					if (name != null) {
+						return name;
+					}
 				}
 			}
 		}
@@ -122,33 +175,56 @@ public class ICalTimeZone extends TimeZone {
 
 		Observance observance = getObservance(year, month + 1, day, hour, minute, second);
 		if (observance == null) {
-			//find the first observance that has a DTSTART property and a TZOFFSETFROM property
-			for (Observance obs : getSortedObservances()) {
-				if (hasDateStart(obs) && hasTimezoneOffsetFrom(obs)) {
-					return (int) obs.getTimezoneOffsetFrom().getValue().getMillis();
+			/*
+			 * Find the first observance that has a DTSTART property and a
+			 * TZOFFSETFROM property.
+			 */
+			for (Observance obs : sortedObservances) {
+				ICalDate dateStart = getValue(obs.getDateStart());
+				if (dateStart == null) {
+					continue;
 				}
+
+				UtcOffset offsetFrom = getValue(obs.getTimezoneOffsetFrom());
+				if (offsetFrom == null) {
+					continue;
+				}
+
+				return (int) offsetFrom.getMillis();
 			}
 			return 0;
 		}
 
-		return hasTimezoneOffsetTo(observance) ? (int) observance.getTimezoneOffsetTo().getValue().getMillis() : 0;
+		UtcOffset offsetTo = getValue(observance.getTimezoneOffsetTo());
+		return (offsetTo == null) ? 0 : (int) offsetTo.getMillis();
 	}
 
 	@Override
 	public int getRawOffset() {
+		return rawOffset;
+	}
+
+	private int calculateRawOffset() {
 		Observance observance = getObservance(new Date());
 		if (observance == null) {
 			//return the offset of the first STANDARD component
-			for (Observance obs : getSortedObservances()) {
-				if (obs instanceof StandardTime && hasTimezoneOffsetTo(obs)) {
-					return (int) obs.getTimezoneOffsetTo().getValue().getMillis();
+			for (Observance obs : sortedObservances) {
+				if (!(obs instanceof StandardTime)) {
+					continue;
 				}
+
+				UtcOffset offsetTo = getValue(obs.getTimezoneOffsetTo());
+				if (offsetTo == null) {
+					continue;
+				}
+
+				return (int) offsetTo.getMillis();
 			}
 			return 0;
 		}
 
-		UtcOffsetProperty offset = (observance instanceof StandardTime) ? observance.getTimezoneOffsetTo() : observance.getTimezoneOffsetFrom();
-		return (int) offset.getValue().getMillis();
+		UtcOffset offset = getValue((observance instanceof StandardTime) ? observance.getTimezoneOffsetTo() : observance.getTimezoneOffsetFrom());
+		return (offset == null) ? 0 : (int) offset.getMillis();
 	}
 
 	@Override
@@ -172,7 +248,12 @@ public class ICalTimeZone extends TimeZone {
 
 	@Override
 	public boolean useDaylightTime() {
-		return !component.getDaylightSavingsTime().isEmpty();
+		for (Observance observance : sortedObservances) {
+			if (observance instanceof DaylightSavingsTime) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -181,14 +262,13 @@ public class ICalTimeZone extends TimeZone {
 	 * @return the timezone information
 	 */
 	public Boundary getObservanceBoundary(Date date) {
-		Calendar cal = Calendar.getInstance(utc());
-		cal.setTime(date);
-		int year = cal.get(Calendar.YEAR);
-		int month = cal.get(Calendar.MONTH) + 1;
-		int day = cal.get(Calendar.DATE);
-		int hour = cal.get(Calendar.HOUR);
-		int minute = cal.get(Calendar.MINUTE);
-		int second = cal.get(Calendar.SECOND);
+		utcCalendar.setTime(date);
+		int year = utcCalendar.get(Calendar.YEAR);
+		int month = utcCalendar.get(Calendar.MONTH) + 1;
+		int day = utcCalendar.get(Calendar.DATE);
+		int hour = utcCalendar.get(Calendar.HOUR);
+		int minute = utcCalendar.get(Calendar.MINUTE);
+		int second = utcCalendar.get(Calendar.SECOND);
 
 		return getObservanceBoundary(year, month, day, hour, minute, second);
 	}
@@ -204,8 +284,14 @@ public class ICalTimeZone extends TimeZone {
 	}
 
 	/**
-	 * Gets the VTIMEZONE component that is being wrapped. Modifications made to
-	 * the component will effect this timezone object.
+	 * <p>
+	 * Gets the VTIMEZONE component that is being wrapped.
+	 * </p>
+	 * <p>
+	 * Note that the ICalTimeZone class makes heavy use of caching. Any
+	 * modifications made to the VTIMEZONE component that is returned by this
+	 * method may effect the accuracy of this ICalTimeZone instance.
+	 * </p>
 	 * @return the VTIMEZONE component
 	 */
 	public VTimezone getComponent() {
@@ -238,17 +324,16 @@ public class ICalTimeZone extends TimeZone {
 	 * @return the observance information or null if none was found
 	 */
 	private Boundary getObservanceBoundary(int year, int month, int day, int hour, int minute, int second) {
-		List<Observance> observances = getSortedObservances();
-		if (observances.isEmpty()) {
+		if (sortedObservances.isEmpty()) {
 			return null;
 		}
 
 		DateValue givenTime = new DateTimeValueImpl(year, month, day, hour, minute, second);
 		int closestIndex = -1;
 		Observance closest = null;
-		DateTimeValue closestValue = null;
-		for (int i = 0; i < observances.size(); i++) {
-			Observance observance = observances.get(i);
+		DateValue closestValue = null;
+		for (int i = 0; i < sortedObservances.size(); i++) {
+			Observance observance = sortedObservances.get(i);
 
 			//skip observances that start after the given time
 			ICalDate dtstart = getValue(observance.getDateStart());
@@ -259,85 +344,137 @@ public class ICalTimeZone extends TimeZone {
 				}
 			}
 
-			RecurrenceIterator it = createIterator(observance);
-			DateTimeValue prev = null;
-			while (it.hasNext()) {
-				DateTimeValue cur = (DateTimeValue) it.next();
-				if (givenTime.compareTo(cur) < 0) {
-					//break if we have passed the given time
-					break;
-				}
-
-				prev = cur;
-			}
-
-			if (prev != null && (closestValue == null || closestValue.compareTo(prev) < 0)) {
-				closestValue = prev;
+			DateValue dateValue = getObservanceDateClosestToTheGivenDate(observance, givenTime, false);
+			if (dateValue != null && (closestValue == null || closestValue.compareTo(dateValue) < 0)) {
+				closestValue = dateValue;
 				closest = observance;
 				closestIndex = i;
 			}
 		}
 
 		Observance observanceIn = closest;
-		DateTimeValue observanceInStart = closestValue;
+		DateValue observanceInStart = closestValue;
 		Observance observanceAfter = null;
-		DateTimeValue observanceAfterStart = null;
-		if (closestIndex < observances.size() - 1) {
-			observanceAfter = observances.get(closestIndex + 1);
-
-			RecurrenceIterator it = createIterator(observanceAfter);
-			while (it.hasNext()) {
-				DateTimeValue cur = (DateTimeValue) it.next();
-				if (givenTime.compareTo(cur) < 0) {
-					observanceAfterStart = cur;
-					break;
-				}
-			}
+		DateValue observanceAfterStart = null;
+		if (closestIndex < sortedObservances.size() - 1) {
+			observanceAfter = sortedObservances.get(closestIndex + 1);
+			observanceAfterStart = getObservanceDateClosestToTheGivenDate(observanceAfter, givenTime, true);
 		}
 
-		return new Boundary(observanceInStart, observanceIn, observanceAfterStart, observanceAfter);
-	}
-
-	private static boolean hasDateStart(Observance observance) {
-		return getValue(observance.getDateStart()) != null;
-	}
-
-	private static boolean hasTimezoneOffsetFrom(Observance observance) {
-		return getValue(observance.getTimezoneOffsetFrom()) != null;
-	}
-
-	private static boolean hasTimezoneOffsetTo(Observance observance) {
-		return getValue(observance.getTimezoneOffsetTo()) != null;
+		return new Boundary((DateTimeValue) observanceInStart, observanceIn, (DateTimeValue) observanceAfterStart, observanceAfter);
 	}
 
 	/**
-	 * Gets all observances sorted by {@link DateStart}.
-	 * @return the sorted observances
+	 * Iterates through each of the timezone boundary dates defined by the given
+	 * observance and finds the date that comes closest to the given date.
+	 * @param observance the observance
+	 * @param givenDate the given date
+	 * @param after true to return the closest date <b>greater than</b> the
+	 * given date, false to return the closest date <b>less than or equal to</b>
+	 * the given date.
+	 * @return the closest date
 	 */
-	List<Observance> getSortedObservances() {
-		List<Observance> observances = new ArrayList<Observance>();
-		observances.addAll(component.getStandardTimes());
-		observances.addAll(component.getDaylightSavingsTime());
+	private DateValue getObservanceDateClosestToTheGivenDate(Observance observance, DateValue givenDate, boolean after) {
+		List<DateValue> dateCache = observanceDateCache.get(observance);
+		if (dateCache == null) {
+			dateCache = new ArrayList<DateValue>();
+			observanceDateCache.put(observance, dateCache);
+		}
 
-		Collections.sort(observances, new Comparator<Observance>() {
-			public int compare(Observance left, Observance right) {
-				ICalDate startLeft = getValue(left.getDateStart());
-				ICalDate startRight = getValue(right.getDateStart());
-				if (startLeft == null && startRight == null) {
-					return 0;
-				}
-				if (startLeft == null) {
-					return -1;
-				}
-				if (startRight == null) {
-					return 1;
+		if (dateCache.isEmpty()) {
+			DateValue prev = null, cur = null;
+			boolean stopped = false;
+			RecurrenceIterator it = createIterator(observance);
+			while (it.hasNext()) {
+				cur = it.next();
+				dateCache.add(cur);
+
+				if (givenDate.compareTo(cur) < 0) {
+					//stop if we have passed the givenTime
+					stopped = true;
+					break;
 				}
 
-				return startLeft.getRawComponents().compareTo(startRight.getRawComponents());
+				prev = cur;
 			}
-		});
+			return after ? (stopped ? cur : null) : prev;
+		}
 
-		return observances;
+		DateValue last = dateCache.get(dateCache.size() - 1);
+		int comparison = last.compareTo(givenDate);
+		if ((after && comparison <= 0) || comparison < 0) {
+			RecurrenceIterator it = createIterator(observance);
+
+			/*
+			 * The "advanceTo()" method skips all dates that are less than the
+			 * given date. I would have thought that we would have to call
+			 * "next()" once because we want it to skip the date that is equal
+			 * to the "last" date. But this causes all the unit tests to fail,
+			 * so I guess not.
+			 */
+			it.advanceTo(last);
+			//it.next();
+
+			DateValue prev = null, cur = null;
+			boolean stopped = false;
+			while (it.hasNext()) {
+				cur = it.next();
+				dateCache.add(cur);
+
+				if (givenDate.compareTo(cur) < 0) {
+					//stop if we have passed the givenTime
+					stopped = true;
+					break;
+				}
+
+				prev = cur;
+			}
+			return after ? (stopped ? cur : null) : prev;
+		}
+
+		/*
+		 * The date is somewhere in the cached list, so find it.
+		 * 
+		 * Note: Read the "binarySearch" method Javadoc carefully for an
+		 * explanation of its return value.
+		 */
+		int index = Collections.binarySearch(dateCache, givenDate);
+
+		if (index < 0) {
+			/*
+			 * The index where the date would be if it was inside the list.
+			 */
+			index = (index * -1) - 1;
+
+			if (after) {
+				/*
+				 * This is where the date would be if it was inside the list, so
+				 * we want to return the date value that's currently at that
+				 * position.
+				 */
+				int afterIndex = index;
+
+				return (afterIndex < dateCache.size()) ? dateCache.get(afterIndex) : null;
+			}
+
+			int beforeIndex = index - 1;
+			if (beforeIndex < 0) {
+				return null;
+			}
+			if (beforeIndex >= dateCache.size()) {
+				return dateCache.get(dateCache.size() - 1);
+			}
+			return dateCache.get(beforeIndex);
+		}
+
+		/*
+		 * An exact match was found.
+		 */
+		if (after) {
+			int afterIndex = index + 1; //remember: the date must be >
+			return (afterIndex < dateCache.size()) ? dateCache.get(afterIndex) : null;
+		}
+		return dateCache.get(index); //remember: the date must be <=
 	}
 
 	/**
@@ -356,8 +493,6 @@ public class ICalTimeZone extends TimeZone {
 
 			//add DTSTART property
 			inclusions.add(new DateValueRecurrenceIterator(Arrays.asList(dtstartValue)));
-
-			TimeZone utc = utc();
 
 			//add RRULE properties
 			for (RecurrenceRule rrule : observance.getProperties(RecurrenceRule.class)) {
@@ -403,11 +538,7 @@ public class ICalTimeZone extends TimeZone {
 		return RecurrenceIteratorFactory.except(included, excluded);
 	}
 
-	private static TimeZone utc() {
-		return TimeZone.getTimeZone("UTC");
-	}
-
-	private RecurrenceIterator join(List<RecurrenceIterator> iterators) {
+	private static RecurrenceIterator join(List<RecurrenceIterator> iterators) {
 		if (iterators.isEmpty()) {
 			return new EmptyRecurrenceIterator();
 		}
@@ -438,7 +569,8 @@ public class ICalTimeZone extends TimeZone {
 		}
 
 		public void remove() {
-			//empty
+			//RecurrenceIterator does not support this method
+			throw new UnsupportedOperationException();
 		}
 	}
 
@@ -451,8 +583,9 @@ public class ICalTimeZone extends TimeZone {
 			super(dates.iterator());
 		}
 
-		public DateValue next() {
-			return it.next();
+		@Override
+		protected DateValue toDateValue(DateValue value) {
+			return value;
 		}
 	}
 
@@ -465,8 +598,8 @@ public class ICalTimeZone extends TimeZone {
 			super(dates.iterator());
 		}
 
-		public DateValue next() {
-			ICalDate value = it.next();
+		@Override
+		protected DateValue toDateValue(ICalDate value) {
 			return convert(value);
 		}
 	}
@@ -476,23 +609,45 @@ public class ICalTimeZone extends TimeZone {
 	 */
 	private static abstract class IteratorWrapper<T> implements RecurrenceIterator {
 		protected final Iterator<T> it;
+		private DateValue next;
 
 		public IteratorWrapper(Iterator<T> it) {
 			this.it = it;
 		}
 
+		public DateValue next() {
+			if (next != null) {
+				DateValue value = next;
+				next = null;
+				return value;
+			}
+			return toDateValue(it.next());
+		}
+
 		public boolean hasNext() {
-			return it.hasNext();
+			return next != null || it.hasNext();
 		}
 
 		public void advanceTo(DateValue newStartUtc) {
-			throw new UnsupportedOperationException();
+			if (this.next != null && this.next.compareTo(newStartUtc) >= 0) {
+				return;
+			}
+
+			while (it.hasNext()) {
+				DateValue next = toDateValue(it.next());
+				if (next.compareTo(newStartUtc) >= 0) {
+					this.next = next;
+					break;
+				}
+			}
 		}
 
 		public void remove() {
 			//RecurrenceIterator does not support this method
 			throw new UnsupportedOperationException();
 		}
+
+		protected abstract DateValue toDateValue(T next);
 	}
 
 	/**

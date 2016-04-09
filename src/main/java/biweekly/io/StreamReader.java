@@ -5,6 +5,7 @@ import static biweekly.io.DataModelConverter.convert;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.property.Timezone;
-import biweekly.property.TimezoneId;
+import biweekly.property.ValuedProperty;
 import biweekly.util.ICalDate;
 import biweekly.util.ICalDateFormat;
 
@@ -165,28 +166,14 @@ public abstract class StreamReader implements Closeable {
 
 	private void handleTimezones(ICalendar ical) {
 		//convert vCalendar DAYLIGHT and TZ properties to a VTIMEZONE component
-		VTimezone vcalComponent;
-		{
-			List<Daylight> daylights = ical.getProperties(Daylight.class);
-			Timezone tz = ical.getProperty(Timezone.class);
-
-			vcalComponent = convert(daylights, tz);
-			if (vcalComponent != null) {
-				TimeZone timezone = new ICalTimeZone(vcalComponent);
-				tzinfo.assign(vcalComponent, timezone);
-				tzinfo.setDefaultTimeZone(timezone);
-			}
-
-			ical.removeProperties(Daylight.class);
-			ical.removeProperties(Timezone.class);
-		}
+		VTimezone vcalComponent = extractVCalTimezone(ical);
 
 		//assign a TimeZone object to each VTIMEZONE component.
 		List<ICalComponent> toKeep = new ArrayList<ICalComponent>(0);
 		for (VTimezone component : ical.getComponents(VTimezone.class)) {
 			//make sure the component has an ID
-			TimezoneId id = component.getTimezoneId();
-			if (id == null || id.getValue() == null) {
+			String id = ValuedProperty.getValue(component.getTimezoneId());
+			if (id == null) {
 				warnings.add(null, null, 39);
 				toKeep.add(component);
 				continue;
@@ -252,6 +239,7 @@ public abstract class StreamReader implements Closeable {
 				}
 			}
 
+			Calendar cal = Calendar.getInstance(timezone);
 			List<TimezonedDate> timezonedDates = entry.getValue();
 			for (TimezonedDate timezonedDate : timezonedDates) {
 				//assign the property to the timezone
@@ -261,7 +249,7 @@ public abstract class StreamReader implements Closeable {
 				ICalDate date = timezonedDate.getDate();
 
 				//parse its raw date components under its real timezone
-				Date realDate = date.getRawComponents().toDate(timezone);
+				Date realDate = date.getRawComponents().toDate(cal);
 
 				//update the Date object with the new timestamp
 				date.setTime(realDate.getTime());
@@ -270,5 +258,22 @@ public abstract class StreamReader implements Closeable {
 				property.getParameters().setTimezoneId(null);
 			}
 		}
+	}
+
+	private VTimezone extractVCalTimezone(ICalendar ical) {
+		List<Daylight> daylights = ical.removeProperties(Daylight.class);
+		List<Timezone> timezones = ical.removeProperties(Timezone.class);
+
+		Timezone timezone = timezones.isEmpty() ? null : timezones.get(0);
+		VTimezone vcalComponent = convert(daylights, timezone);
+		if (vcalComponent == null) {
+			return null;
+		}
+
+		TimeZone icalTimezone = new ICalTimeZone(vcalComponent);
+		tzinfo.assign(vcalComponent, icalTimezone);
+		tzinfo.setDefaultTimeZone(icalTimezone);
+
+		return vcalComponent;
 	}
 }
