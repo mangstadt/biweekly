@@ -79,7 +79,7 @@ public class Attendee extends ICalProperty {
 	private ParticipationStatus status;
 	private Boolean rsvp;
 
-	private final List<String> members = new ICalStringParameterList(ICalParameters.MEMBER);
+	private final List<String> memberOf = new ICalStringParameterList(ICalParameters.MEMBER);
 	private final List<String> delegatedFrom = new ICalStringParameterList(ICalParameters.DELEGATED_FROM);
 	private final List<String> delegatedTo = new ICalStringParameterList(ICalParameters.DELEGATED_TO);
 
@@ -185,18 +185,18 @@ public class Attendee extends ICalProperty {
 
 	/**
 	 * <p>
-	 * Gets the groups that the attendee is a member of.
+	 * Gets the list that holds the groups that the attendee is a member of.
 	 * </p>
 	 * <p>
 	 * <b>Supported versions:</b> {@code 2.0}
 	 * </p>
-	 * @return the group URIs (typically, these are email address URIs, e.g.
-	 * "mailto:mailinglist@example.com")
+	 * @return the groups (this list is mutable). Typically, these are email
+	 * address URIs (e.g. "mailto:mailinglist@example.com")
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
 	 * p.21-2</a>
 	 */
-	public List<String> getMembers() {
-		return members;
+	public List<String> getMemberOf() {
+		return memberOf;
 	}
 
 	/**
