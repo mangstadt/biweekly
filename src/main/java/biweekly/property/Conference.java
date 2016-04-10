@@ -116,8 +116,9 @@ public class Conference extends ICalProperty {
 	}
 
 	/**
-	 * Gets the features that this conference supports.
-	 * @return the features
+	 * Gets the list that holds the features that this conference supports (for
+	 * example, audio and video).
+	 * @return the features (this list is mutable)
 	 */
 	public List<Feature> getFeatures() {
 		return features;

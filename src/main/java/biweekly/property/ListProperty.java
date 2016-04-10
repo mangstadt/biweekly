@@ -81,7 +81,7 @@ public class ListProperty<T> extends ICalProperty {
 
 	/**
 	 * Gets the list that holds the values of this property.
-	 * @return the values list
+	 * @return the values list (this list is mutable)
 	 */
 	public List<T> getValues() {
 		return values;

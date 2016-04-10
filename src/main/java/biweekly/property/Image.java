@@ -133,8 +133,9 @@ public class Image extends BinaryProperty {
 	}
 
 	/**
-	 * Gets the ways in which the client should display this image.
-	 * @return the display methods
+	 * Gets the list that holds the ways in which the client should display this
+	 * image (for example, as a thumbnail-sized image).
+	 * @return the display methods (this list is mutable)
 	 */
 	public List<Display> getDisplays() {
 		return displays;
