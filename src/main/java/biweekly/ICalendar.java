@@ -6,8 +6,10 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.transform.TransformerException;
@@ -1115,6 +1117,13 @@ public class ICalendar extends ICalComponent {
 	 */
 	public void writeJson(Writer writer) throws IOException {
 		Biweekly.writeJson(this).go(writer);
+	}
+
+	@Override
+	protected Map<String, Object> toStringValues() {
+		Map<String, Object> fields = new HashMap<String, Object>();
+		fields.put("version", version);
+		return fields;
 	}
 
 	@Override

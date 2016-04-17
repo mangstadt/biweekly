@@ -539,9 +539,33 @@ public abstract class ICalComponent {
 		return sb.toString();
 	}
 
+	/**
+	 * <p>
+	 * Gets string representations of any additional fields the component has
+	 * (other than sub-components and properties) for the {@link #toString}
+	 * method.
+	 * </p>
+	 * <p>
+	 * Meant to be overridden by child classes. The default implementation
+	 * returns an empty map.
+	 * </p>
+	 * @return the values of the component's fields (key = field name, value =
+	 * field value)
+	 */
+	protected Map<String, Object> toStringValues() {
+		return Collections.emptyMap();
+	}
+
 	private void toString(int depth, StringBuilder sb) {
 		StringUtils.repeat(' ', depth * 2, sb);
-		sb.append(getClass().getName()).append(StringUtils.NEWLINE);
+		sb.append(getClass().getName());
+
+		Map<String, Object> fields = toStringValues();
+		if (!fields.isEmpty()) {
+			sb.append(' ').append(fields.toString());
+		}
+
+		sb.append(StringUtils.NEWLINE);
 
 		depth++;
 		for (ICalProperty property : properties.values()) {
