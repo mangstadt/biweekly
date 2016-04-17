@@ -54,12 +54,27 @@ public class JCalRawReader implements Closeable {
 	private JsonParser parser;
 	private boolean eof = false;
 	private JCalDataStreamListener listener;
+	private boolean strict = false;
 
 	/**
 	 * @param reader the reader to wrap
 	 */
 	public JCalRawReader(Reader reader) {
 		this.reader = reader;
+	}
+
+	/**
+	 * @param parser the parser to read from
+	 * @param strict true if the parser's current token is expected to be
+	 * positioned at the start of a jCard, false if not. If this is true, and
+	 * the parser is not positioned at the beginning of a jCard, a
+	 * {@link JCalParseException} will be thrown. If this if false, the parser
+	 * will consume input until it reaches the beginning of a jCard.
+	 */
+	public JCalRawReader(JsonParser parser, boolean strict) {
+		reader = null;
+		this.parser = parser;
+		this.strict = strict;
 	}
 
 	/**
@@ -91,14 +106,30 @@ public class JCalRawReader implements Closeable {
 		this.listener = listener;
 
 		//find the next iCalendar object
-		JsonToken prev = null;
+		JsonToken prev = parser.getCurrentToken();
 		JsonToken cur;
 		while ((cur = parser.nextToken()) != null) {
 			if (prev == JsonToken.START_ARRAY && cur == JsonToken.VALUE_STRING && VCALENDAR_COMPONENT_NAME.equals(parser.getValueAsString())) {
+				//found
 				break;
 			}
+
+			if (strict) {
+				//the parser was expecting the jCal to be there 
+				if (prev != JsonToken.START_ARRAY) {
+					throw new JCalParseException(JsonToken.START_ARRAY, prev);
+				}
+
+				if (cur != JsonToken.VALUE_STRING) {
+					throw new JCalParseException(JsonToken.VALUE_STRING, cur);
+				}
+
+				throw new JCalParseException("Invalid value for first token: expected \"vcalendar\" , was \"" + parser.getValueAsString() + "\"", JsonToken.VALUE_STRING, cur);
+			}
+
 			prev = cur;
 		}
+
 		if (cur == null) {
 			//EOF
 			eof = true;
@@ -294,6 +325,11 @@ public class JCalRawReader implements Closeable {
 	 * Closes the underlying {@link Reader} object.
 	 */
 	public void close() throws IOException {
-		reader.close();
+		if (parser != null) {
+			parser.close();
+		}
+		if (reader != null) {
+			reader.close();
+		}
 	}
 }

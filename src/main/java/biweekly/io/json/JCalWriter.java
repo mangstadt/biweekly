@@ -23,6 +23,8 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.Version;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -146,6 +148,13 @@ public class JCalWriter extends StreamWriter implements Flushable {
 	 */
 	public JCalWriter(Writer writer, boolean wrapInArray) {
 		this.writer = new JCalRawWriter(writer, wrapInArray);
+	}
+
+	/**
+	 * @param generator the generator to write to
+	 */
+	public JCalWriter(JsonGenerator generator) {
+		this.writer = new JCalRawWriter(generator);
 	}
 
 	/**

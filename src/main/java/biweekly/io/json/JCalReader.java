@@ -35,6 +35,7 @@ import biweekly.property.RawProperty;
 import biweekly.property.Version;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -136,6 +137,13 @@ public class JCalReader extends StreamReader {
 	 */
 	public JCalReader(Reader reader) {
 		this.reader = new JCalRawReader(reader);
+	}
+
+	/**
+	 * @param parser the parser to read from
+	 */
+	public JCalReader(JsonParser parser) {
+		this.reader = new JCalRawReader(parser, true);
 	}
 
 	/**

@@ -2,7 +2,15 @@ package biweekly.io.json;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonToken;
+import biweekly.ICalendar;
+import biweekly.io.scribe.ScribeIndex;
+import biweekly.io.scribe.property.ICalPropertyScribe;
+import biweekly.property.ICalProperty;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -30,51 +38,47 @@ import com.fasterxml.jackson.core.JsonToken;
  */
 
 /**
- * Thrown during the parsing of a JSON-encoded iCalendar object (jCal) when the
- * jCal object is not formatted in the correct way (the JSON syntax is valid,
- * but it's not in the correct jCal format).
+ * Deserializes jCals within the jackson-databind framework.
+ * @author Buddy Gorven
  * @author Michael Angstadt
  */
-public class JCalParseException extends IOException {
-	private static final long serialVersionUID = -2447563507966434472L;
-	private final JsonToken expected, actual;
+public class JCalDeserializer extends JsonDeserializer<ICalendar> {
+	private ScribeIndex index = new ScribeIndex();
 
-	/**
-	 * Creates a jCal parse exception.
-	 * @param expected the JSON token that the parser was expecting
-	 * @param actual the actual JSON token
-	 */
-	public JCalParseException(JsonToken expected, JsonToken actual) {
-		super("Expected " + expected + " but was " + actual + ".");
-		this.expected = expected;
-		this.actual = actual;
+	@Override
+	public ICalendar deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
+		@SuppressWarnings("resource")
+		JCalReader reader = new JCalReader(parser);
+		reader.setScribeIndex(index);
+		return reader.readNext();
 	}
 
 	/**
-	 * Creates a jCal parse exception.
-	 * @param message the detail message
-	 * @param expected the JSON token that the parser was expecting
-	 * @param actual the actual JSON token
+	 * <p>
+	 * Registers a property scribe. This is the same as calling:
+	 * </p>
+	 * <p>
+	 * {@code getScribeIndex().register(scribe)}
+	 * </p>
+	 * @param scribe the scribe to register
 	 */
-	public JCalParseException(String message, JsonToken expected, JsonToken actual) {
-		super(message);
-		this.expected = expected;
-		this.actual = actual;
+	public void registerScribe(ICalPropertyScribe<? extends ICalProperty> scribe) {
+		index.register(scribe);
 	}
 
 	/**
-	 * Gets the JSON token that the parser was expected.
-	 * @return the expected token
+	 * Gets the scribe index.
+	 * @return the scribe index
 	 */
-	public JsonToken getExpectedToken() {
-		return expected;
+	public ScribeIndex getScribeIndex() {
+		return index;
 	}
 
 	/**
-	 * Gets the JSON token that was read.
-	 * @return the actual token
+	 * Sets the scribe index.
+	 * @param index the scribe index
 	 */
-	public JsonToken getActualToken() {
-		return actual;
+	public void setScribeIndex(ScribeIndex index) {
+		this.index = index;
 	}
 }

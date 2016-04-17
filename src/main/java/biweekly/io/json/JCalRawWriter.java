@@ -55,6 +55,7 @@ public class JCalRawWriter implements Closeable, Flushable {
 	private JsonGenerator generator;
 	private boolean indent = false;
 	private boolean componentEnded = false;
+	private boolean closeGenerator = true;
 
 	/**
 	 * @param writer the writer to wrap
@@ -64,6 +65,16 @@ public class JCalRawWriter implements Closeable, Flushable {
 	public JCalRawWriter(Writer writer, boolean wrapInArray) {
 		this.writer = writer;
 		this.wrapInArray = wrapInArray;
+	}
+
+	/**
+	 * @param generator the generator to write to
+	 */
+	public JCalRawWriter(JsonGenerator generator) {
+		this.writer = null;
+		this.generator = generator;
+		this.closeGenerator = false;
+		this.wrapInArray = false;
 	}
 
 	/**
@@ -309,7 +320,9 @@ public class JCalRawWriter implements Closeable, Flushable {
 			generator.writeEndArray();
 		}
 
-		generator.close();
+		if (closeGenerator) {
+			generator.close();
+		}
 	}
 
 	/**
@@ -323,7 +336,10 @@ public class JCalRawWriter implements Closeable, Flushable {
 		}
 
 		closeJsonStream();
-		writer.close();
+
+		if (writer != null) {
+			writer.close();
+		}
 	}
 
 	private void init() throws IOException {
