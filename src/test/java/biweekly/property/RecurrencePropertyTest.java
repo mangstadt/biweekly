@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.Test;
 
@@ -54,7 +55,7 @@ public class RecurrencePropertyTest {
 	public void getDateIterator_empty() {
 		RecurrenceProperty property = new RecurrenceProperty((Recurrence) null);
 		Date start = date("2014-11-22 10:00:00");
-		DateIterator it = property.getDateIterator(start);
+		DateIterator it = property.getDateIterator(start, TimeZone.getTimeZone("UTC"));
 		assertFalse(it.hasNext());
 	}
 
@@ -75,7 +76,31 @@ public class RecurrencePropertyTest {
 		//@formatter:on
 
 		List<Date> actual = new ArrayList<Date>();
-		DateIterator it = property.getDateIterator(start);
+		DateIterator it = property.getDateIterator(start, TimeZone.getTimeZone("UTC"));
+		while (it.hasNext()) {
+			actual.add(it.next());
+		}
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void getDateIterator_gap_hour() {
+		TimeZone pacificTimeZone = TimeZone.getTimeZone("America/Los_Angeles");
+		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).interval(1).count(3).build();
+		Date start = date("2016-03-06 02:30:00", pacificTimeZone);
+		RecurrenceProperty property = new RecurrenceProperty(recur);
+
+		//@formatter:off
+		List<Date> expected = Arrays.asList(
+			date("2016-03-06 02:30:00", pacificTimeZone),
+			date("2016-03-13 01:30:00", pacificTimeZone), //TODO is this correct? https://github.com/mangstadt/biweekly/issues/38
+			date("2016-03-20 02:30:00", pacificTimeZone)
+		);
+		//@formatter:on
+
+		List<Date> actual = new ArrayList<Date>();
+		DateIterator it = property.getDateIterator(start, pacificTimeZone);
 		while (it.hasNext()) {
 			actual.add(it.next());
 		}

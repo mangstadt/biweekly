@@ -2,6 +2,7 @@ package biweekly.io;
 
 import static biweekly.property.ValuedProperty.getValue;
 import static biweekly.util.Google2445Utils.convert;
+import static biweekly.util.Google2445Utils.convertFromRawComponents;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -338,7 +339,7 @@ public class ICalTimeZone extends TimeZone {
 			//skip observances that start after the given time
 			ICalDate dtstart = getValue(observance.getDateStart());
 			if (dtstart != null) {
-				DateValue dtstartValue = convert(dtstart);
+				DateValue dtstartValue = convertFromRawComponents(dtstart);
 				if (dtstartValue.compareTo(givenTime) > 0) {
 					continue;
 				}
@@ -489,7 +490,7 @@ public class ICalTimeZone extends TimeZone {
 
 		ICalDate dtstart = getValue(observance.getDateStart());
 		if (dtstart != null) {
-			DateValue dtstartValue = convert(dtstart);
+			DateValue dtstartValue = convertFromRawComponents(dtstart);
 
 			//add DTSTART property
 			inclusions.add(new DateValueRecurrenceIterator(Arrays.asList(dtstartValue)));
@@ -498,7 +499,7 @@ public class ICalTimeZone extends TimeZone {
 			for (RecurrenceRule rrule : observance.getProperties(RecurrenceRule.class)) {
 				Recurrence recur = rrule.getValue();
 				if (recur != null) {
-					RRule rruleValue = convert(recur);
+					RRule rruleValue = convert(recur, utc);
 					inclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(rruleValue, dtstartValue, utc));
 				}
 			}
@@ -507,7 +508,7 @@ public class ICalTimeZone extends TimeZone {
 			for (ExceptionRule exrule : observance.getProperties(ExceptionRule.class)) {
 				Recurrence recur = exrule.getValue();
 				if (recur != null) {
-					RRule exruleValue = convert(recur);
+					RRule exruleValue = convert(recur, utc);
 					exclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(exruleValue, dtstartValue, utc));
 				}
 			}
@@ -600,7 +601,7 @@ public class ICalTimeZone extends TimeZone {
 
 		@Override
 		protected DateValue toDateValue(ICalDate value) {
-			return convert(value);
+			return convertFromRawComponents(value);
 		}
 	}
 

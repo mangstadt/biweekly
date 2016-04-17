@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.Test;
 
@@ -51,7 +52,7 @@ public class Google2445UtilsTest {
 		VEvent event = new VEvent();
 
 		List<Date> expectedList = Arrays.asList();
-		assertIteratorEquals(expectedList, event.getDateIterator());
+		assertIteratorEquals(expectedList, Google2445Utils.getDateIterator(event, TimeZone.getTimeZone("UTC")));
 	}
 
 	@Test
@@ -65,7 +66,7 @@ public class Google2445UtilsTest {
 		);
 		//@formatter:on
 
-		assertIteratorEquals(expectedList, event.getDateIterator());
+		assertIteratorEquals(expectedList, Google2445Utils.getDateIterator(event, TimeZone.getTimeZone("UTC")));
 	}
 
 	@Test
@@ -102,7 +103,7 @@ public class Google2445UtilsTest {
 		);
 		//@formatter:on
 
-		assertIteratorEquals(expectedList, event.getDateIterator());
+		assertIteratorEquals(expectedList, Google2445Utils.getDateIterator(event, TimeZone.getTimeZone("UTC")));
 	}
 
 	private static <T> void assertIteratorEquals(List<T> expectedList, Iterator<T> actualIt) {

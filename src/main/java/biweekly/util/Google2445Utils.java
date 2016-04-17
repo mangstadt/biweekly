@@ -67,13 +67,15 @@ public final class Google2445Utils {
 	 * Converts a {@link Recurrence} object to a google-rfc-2445 {@link RRule}
 	 * object.
 	 * @param recurrence the recurrence object
+	 * @param timezone the timezone that the UNTIL component should be in
 	 * @return the google-rfc-2445 object
 	 */
-	public static RRule convert(Recurrence recurrence) {
+	public static RRule convert(Recurrence recurrence, TimeZone timezone) {
 		RRule rrule = new RRule();
 
-		List<WeekdayNum> weekdayNums = new ArrayList<WeekdayNum>();
-		for (ByDay byDay : recurrence.getByDay()) {
+		List<ByDay> byDays = recurrence.getByDay();
+		List<WeekdayNum> weekdayNums = new ArrayList<WeekdayNum>(byDays.size());
+		for (ByDay byDay : byDays) {
 			Integer prefix = byDay.getNum();
 			if (prefix == null) {
 				prefix = 0;
@@ -109,7 +111,7 @@ public final class Google2445Utils {
 
 		ICalDate until = recurrence.getUntil();
 		if (until != null) {
-			rrule.setUntil(convert(until));
+			rrule.setUntil(convert(until, timezone));
 		}
 
 		DayOfWeek workweekStarts = recurrence.getWorkweekStarts();
@@ -177,18 +179,18 @@ public final class Google2445Utils {
 	/**
 	 * <p>
 	 * Converts an {@link ICalDate} object to a google-rfc-2445
-	 * {@link DateValue} object.
+	 * {@link DateValue} object using the {@link DateTimeComponents raw date
+	 * components} of the {@link ICalDate}.
 	 * </p>
 	 * <p>
-	 * Uses the {@link DateTimeComponents raw date components} of the
-	 * {@link ICalDate}, if present. If not present, then the {@link DateValue}
-	 * object will be created from the {@link ICalDate}'s timestamp and
-	 * formatted according to the local timezone.
+	 * If the {@link ICalDate} object does not have raw date components, then
+	 * the returned {@link DateValue} object will represent the {@link ICalDate}
+	 * in the local timezone.
 	 * </p>
 	 * @param date the date object
 	 * @return the google-rfc-2445 object
 	 */
-	public static DateValue convert(ICalDate date) {
+	public static DateValue convertFromRawComponents(ICalDate date) {
 		DateTimeComponents raw = date.getRawComponents();
 		if (raw == null) {
 			raw = new DateTimeComponents(date);
@@ -205,61 +207,117 @@ public final class Google2445Utils {
 	 */
 	public static DateValue convert(DateTimeComponents components) {
 		if (components.hasTime()) {
-			return new DateTimeValueImpl(components.getYear(), components.getMonth(), components.getDate(), components.getHour(), components.getMinute(), components.getSecond());
+			//@formatter:off
+			return new DateTimeValueImpl(
+				components.getYear(),
+				components.getMonth(),
+				components.getDate(),
+				components.getHour(),
+				components.getMinute(),
+				components.getSecond()
+			);
+			//@formatter:on
 		}
-		return new DateValueImpl(components.getYear(), components.getMonth(), components.getDate());
+
+		//@formatter:off
+		return new DateValueImpl(
+			components.getYear(),
+			components.getMonth(),
+			components.getDate()
+		);
+		//@formatter:on
+	}
+
+	/**
+	 * Converts an {@link ICalDate} object to a google-rfc-2445
+	 * {@link DateValue} object.
+	 * @param date the date object
+	 * @param timezone the timezone the returned object will be in
+	 * @return the google-rfc-2445 object
+	 */
+	public static DateValue convert(ICalDate date, TimeZone timezone) {
+		Calendar c = Calendar.getInstance(timezone);
+		c.setTime(date);
+
+		if (date.hasTime()) {
+			//@formatter:off
+			return new DateTimeValueImpl(
+				c.get(Calendar.YEAR),
+				c.get(Calendar.MONTH)+1,
+				c.get(Calendar.DATE),
+				c.get(Calendar.HOUR_OF_DAY),
+				c.get(Calendar.MINUTE),
+				c.get(Calendar.SECOND)
+			);
+			//@formatter:on
+		}
+
+		//@formatter:off
+		return new DateValueImpl(
+			c.get(Calendar.YEAR),
+			c.get(Calendar.MONTH)+1,
+			c.get(Calendar.DATE)
+		);
+		//@formatter:on
+	}
+
+	/**
+	 * Converts an {@link ICalDate} object to a google-rfc-2445
+	 * {@link DateValue} object. The returned object will be in UTC.
+	 * @param date the date object
+	 * @return the google-rfc-2445 object (in UTC)
+	 */
+	public static DateValue convertUtc(ICalDate date) {
+		return convert(date, utc());
 	}
 
 	/**
 	 * Converts a google-rfc-2445 {@link DateValue} object to a {@link ICalDate}
 	 * object.
-	 * @param utcDate the date value object (this method assumes it is in UTC)
+	 * @param date the date value object
+	 * @param timezone the timezone the date value is in
 	 * @return the converted object
 	 */
-	public static ICalDate convert(DateValue utcDate) {
-		Calendar c = Calendar.getInstance(utc());
+	public static ICalDate convert(DateValue date, TimeZone timezone) {
+		Calendar c = Calendar.getInstance(timezone);
 		c.clear();
-		c.set(Calendar.YEAR, utcDate.year());
-		c.set(Calendar.MONTH, utcDate.month() - 1);
-		c.set(Calendar.DATE, utcDate.day());
+		c.set(Calendar.YEAR, date.year());
+		c.set(Calendar.MONTH, date.month() - 1);
+		c.set(Calendar.DATE, date.day());
 
-		boolean hasTime = (utcDate instanceof DateTimeValue);
+		boolean hasTime = (date instanceof DateTimeValue);
 		if (hasTime) {
-			DateTimeValue utcDateTime = (DateTimeValue) utcDate;
-			c.set(Calendar.HOUR_OF_DAY, utcDateTime.hour());
-			c.set(Calendar.MINUTE, utcDateTime.minute());
-			c.set(Calendar.SECOND, utcDateTime.second());
+			DateTimeValue dateTime = (DateTimeValue) date;
+			c.set(Calendar.HOUR_OF_DAY, dateTime.hour());
+			c.set(Calendar.MINUTE, dateTime.minute());
+			c.set(Calendar.SECOND, dateTime.second());
 		}
 
 		return new ICalDate(c.getTime(), hasTime);
 	}
 
 	/**
-	 * Converts an {@link ICalDate} object to a google-rfc-2445
-	 * {@link DateValue} object (formatted in UTC).
-	 * @param date the date object
-	 * @return the google-rfc-2445 object (in UTC)
+	 * Converts a google-rfc-2445 {@link DateValue} object to a {@link ICalDate}
+	 * object. It is assumed that the given {@link DateValue} object is in UTC.
+	 * @param date the date value object (in UTC)
+	 * @return the converted object
 	 */
-	public static DateValue utcDateValue(ICalDate date) {
-		Calendar c = Calendar.getInstance(utc());
-		c.setTime(date);
-
-		if (date.hasTime()) {
-			return new DateTimeValueImpl(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DATE), c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), c.get(Calendar.SECOND));
-		}
-		return new DateValueImpl(c.get(Calendar.YEAR), c.get(Calendar.MONTH) + 1, c.get(Calendar.DATE));
+	public static ICalDate convertUtc(DateValue date) {
+		return convert(date, utc());
 	}
 
 	/**
 	 * Creates a recurrence iterator based on the given recurrence rule.
 	 * @param recurrence the recurrence rule
 	 * @param start the start date
+	 * @param timezone the timezone to iterate in. This is needed in order to
+	 * account for when the iterator passes over a daylight savings boundary.
 	 * @return the recurrence iterator
 	 */
-	public static RecurrenceIterator createRecurrenceIterator(Recurrence recurrence, ICalDate start) {
-		DateValue startValue = utcDateValue(start);
-		RRule googleRecurrence = convert(recurrence);
-		return RecurrenceIteratorFactory.createRecurrenceIterator(googleRecurrence, startValue, utc());
+	public static RecurrenceIterator createRecurrenceIterator(Recurrence recurrence, ICalDate start, TimeZone timezone) {
+		DateValue startValue = convert(start, timezone);
+		RRule googleRecurrence = convert(recurrence, timezone);
+		return RecurrenceIteratorFactory.createRecurrenceIterator(googleRecurrence, startValue, timezone);
 	}
 
 	/**
@@ -278,9 +336,12 @@ public final class Google2445Utils {
 	 * {@link Period} values in {@link RecurrenceDates} properties are not
 	 * supported and are ignored.
 	 * </p>
+	 * @param component the component
+	 * @param timezone the timezone to iterate in. This is needed in order to
+	 * adjust for when the iterator passes over a daylight savings boundary.
 	 * @return the iterator
 	 */
-	public static DateIterator getDateIterator(ICalComponent component) {
+	public static DateIterator getDateIterator(ICalComponent component, TimeZone timezone) {
 		DateStart dtstart = component.getProperty(DateStart.class);
 		ICalDate start = ValuedProperty.getValue(dtstart);
 
@@ -292,7 +353,7 @@ public final class Google2445Utils {
 			for (RecurrenceRule rrule : component.getProperties(RecurrenceRule.class)) {
 				Recurrence recurrence = ValuedProperty.getValue(rrule);
 				if (recurrence != null) {
-					include.add(createRecurrenceIterator(recurrence, start));
+					include.add(createRecurrenceIterator(recurrence, start, timezone));
 				}
 			}
 		}
@@ -320,7 +381,7 @@ public final class Google2445Utils {
 			for (ExceptionRule exrule : component.getProperties(ExceptionRule.class)) {
 				Recurrence recurrence = ValuedProperty.getValue(exrule);
 				if (recurrence != null) {
-					exclude.add(createRecurrenceIterator(recurrence, start));
+					exclude.add(createRecurrenceIterator(recurrence, start, timezone));
 				}
 			}
 		}
@@ -409,6 +470,11 @@ public final class Google2445Utils {
 		private final List<ICalDate> dates;
 		private int index = 0;
 
+		/*
+		 * Note: I don't think a timezone needs to be passed in here, because it
+		 * appears that the DateValue objects are expected to be in UTC (judging
+		 * by the parameter name in the "advanceTo" method).
+		 */
 		public ICalDateRecurrenceIterator(List<ICalDate> dates) {
 			this.dates = new ArrayList<ICalDate>(dates);
 			Collections.sort(this.dates);
@@ -420,11 +486,11 @@ public final class Google2445Utils {
 
 		public DateValue next() {
 			ICalDate next = dates.get(index++);
-			return utcDateValue(next);
+			return convertUtc(next);
 		}
 
 		public void advanceTo(DateValue newStartUtc) {
-			ICalDate newStart = convert(newStartUtc);
+			ICalDate newStart = convertUtc(newStartUtc);
 			while (index < dates.size() && newStart.compareTo(dates.get(index)) > 0) {
 				index++;
 			}

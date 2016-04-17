@@ -4,6 +4,7 @@ import static biweekly.property.ValuedProperty.getValue;
 
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
@@ -1621,10 +1622,12 @@ public class VEvent extends ICalComponent {
 	 * {@link Period} values in {@link RecurrenceDates} properties are not
 	 * supported and are ignored.
 	 * </p>
+	 * @param timezone the timezone to iterate in. This is needed in order to
+	 * adjust for when the iterator passes over a daylight savings boundary.
 	 * @return the iterator
 	 */
-	public DateIterator getDateIterator() {
-		return Google2445Utils.getDateIterator(this);
+	public DateIterator getDateIterator(TimeZone timezone) {
+		return Google2445Utils.getDateIterator(this, timezone);
 	}
 
 	@SuppressWarnings("unchecked")

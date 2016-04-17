@@ -2,6 +2,7 @@ package biweekly.property;
 
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import biweekly.ICalVersion;
 import biweekly.Warning;
@@ -63,31 +64,35 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 
 	/**
 	 * Creates an iterator that computes the dates defined by this property.
-	 * @param startDate the date that the recurrence starts (typically the value
-	 * of the accompanying {@link DateStart} property)
+	 * @param startDate the date that the recurrence starts (typically, the
+	 * value of the accompanying {@link DateStart} property)
+	 * @param timezone the timezone to iterate in. This is needed in order to
+	 * adjust for when the iterator passes over a daylight savings boundary.
 	 * @return the iterator
 	 * @see <a
 	 * href="https://code.google.com/p/google-rfc-2445/">google-rfc-2445</a>
 	 */
-	public DateIterator getDateIterator(Date startDate) {
-		return getDateIterator(new ICalDate(startDate));
+	public DateIterator getDateIterator(Date startDate, TimeZone timezone) {
+		return getDateIterator(new ICalDate(startDate), timezone);
 	}
 
 	/**
 	 * Creates an iterator that computes the dates defined by this property.
-	 * @param startDate the date that the recurrence starts (typically the value
-	 * of the accompanying {@link DateStart} property)
+	 * @param startDate the date that the recurrence starts (typically, the
+	 * value of the accompanying {@link DateStart} property)
+	 * @param timezone the timezone to iterate in. This is needed in order to
+	 * adjust for when the iterator passes over a daylight savings boundary.
 	 * @return the iterator
 	 * @see <a
 	 * href="https://code.google.com/p/google-rfc-2445/">google-rfc-2445</a>
 	 */
-	public DateIterator getDateIterator(ICalDate startDate) {
+	public DateIterator getDateIterator(ICalDate startDate, TimeZone timezone) {
 		Recurrence recur = getValue();
 		if (recur == null) {
 			return new Google2445Utils.EmptyDateIterator();
 		}
 
-		RecurrenceIterator iterator = Google2445Utils.createRecurrenceIterator(recur, startDate);
+		RecurrenceIterator iterator = Google2445Utils.createRecurrenceIterator(recur, startDate, timezone);
 		return DateIteratorFactory.createDateIterator(iterator);
 	}
 
