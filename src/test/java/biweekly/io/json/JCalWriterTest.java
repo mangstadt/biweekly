@@ -454,7 +454,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void indent() throws Throwable {
+	public void prettyPrint() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
 
@@ -465,7 +465,7 @@ public class JCalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		JCalWriter writer = new JCalWriter(sw);
-		writer.setIndent(true);
+		writer.setPrettyPrint(true);
 		writer.write(ical);
 		writer.close();
 

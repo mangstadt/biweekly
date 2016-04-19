@@ -75,13 +75,13 @@ public class JCalSerializerTest {
 	}
 
 	@Test
-	public void serialize_indent() throws Exception {
+	public void serialize_prettyPrint() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setProductId("value1");
 
 		JCalModule module = new JCalModule();
-		module.setIndent(true);
+		module.setPrettyPrint(true);
 		mapper.registerModule(module);
 		String actual = mapper.writeValueAsString(ical);
 
@@ -217,7 +217,7 @@ public class JCalSerializerTest {
 			this.events = events;
 		}
 
-		@JCalFormat(indent = true)
+		@JCalFormat(prettyPrint = true)
 		@JsonSerialize(using = JCalSerializer.class)
 		public ICalendar getEvents() {
 			return events;

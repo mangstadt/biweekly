@@ -162,16 +162,17 @@ public class JCalWriter extends StreamWriter implements Flushable {
 	 * @return true if it will be pretty-printed, false if not (defaults to
 	 * false)
 	 */
-	public boolean isIndent() {
-		return writer.isIndent();
+	public boolean isPrettyPrint() {
+		return writer.isPrettyPrint();
 	}
 
 	/**
 	 * Sets whether or not to pretty-print the JSON.
-	 * @param indent true to pretty-print it, false not to (defaults to false)
+	 * @param prettyPrint true to pretty-print it, false not to (defaults to
+	 * false)
 	 */
-	public void setIndent(boolean indent) {
-		writer.setIndent(indent);
+	public void setPrettyPrint(boolean prettyPrint) {
+		writer.setPrettyPrint(prettyPrint);
 	}
 
 	@Override

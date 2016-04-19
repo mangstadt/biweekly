@@ -49,7 +49,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * 	private ICalendar events;
  * 
  * 	&#064;JsonSerialize(using = JCalSerializer.class)
- * 	&#064;JCalOptions(indent = true)
+ * 	&#064;JCalFormat(prettyPrint = true)
  * 	public ICalendar getEvents() {
  * 		return events;
  * 	}
@@ -69,5 +69,5 @@ public @interface JCalFormat {
 	/**
 	 * Sets whether or not to pretty-print the JSON (defaults to false).
 	 */
-	public boolean indent() default false;
+	public boolean prettyPrint() default false;
 }

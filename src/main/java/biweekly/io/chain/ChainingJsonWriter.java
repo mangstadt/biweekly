@@ -49,7 +49,7 @@ import biweekly.property.ICalProperty;
  * @author Michael Angstadt
  */
 public class ChainingJsonWriter extends ChainingWriter<ChainingJsonWriter> {
-	private boolean indent = false;
+	private boolean prettyPrint = false;
 
 	/**
 	 * @param icals the iCalendar objects to write
@@ -60,11 +60,12 @@ public class ChainingJsonWriter extends ChainingWriter<ChainingJsonWriter> {
 
 	/**
 	 * Sets whether or not to pretty-print the JSON.
-	 * @param indent true to pretty-print it, false not to (defaults to false)
+	 * @param prettyPrint true to pretty-print it, false not to (defaults to
+	 * false)
 	 * @return this
 	 */
-	public ChainingJsonWriter indent(boolean indent) {
-		this.indent = indent;
+	public ChainingJsonWriter prettyPrint(boolean prettyPrint) {
+		this.prettyPrint = prettyPrint;
 		return this;
 	}
 
@@ -136,7 +137,7 @@ public class ChainingJsonWriter extends ChainingWriter<ChainingJsonWriter> {
 			tzinfo.setDefaultTimeZone(defaultTimeZone);
 			writer.setTimezoneInfo(tzinfo);
 		}
-		writer.setIndent(indent);
+		writer.setPrettyPrint(prettyPrint);
 		if (index != null) {
 			writer.setScribeIndex(index);
 		}

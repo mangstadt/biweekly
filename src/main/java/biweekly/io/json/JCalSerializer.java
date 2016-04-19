@@ -52,7 +52,7 @@ public class JCalSerializer extends StdSerializer<ICalendar> implements Contextu
 	private static final long serialVersionUID = 613493984874763625L;
 	private ScribeIndex index = new ScribeIndex();
 	private TimezoneInfo tzinfo = new TimezoneInfo();
-	private boolean indent = false;
+	private boolean prettyPrint = false;
 
 	public JCalSerializer() {
 		super(ICalendar.class);
@@ -62,7 +62,7 @@ public class JCalSerializer extends StdSerializer<ICalendar> implements Contextu
 	public void serialize(ICalendar value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
 		@SuppressWarnings("resource")
 		JCalWriter writer = new JCalWriter(gen);
-		writer.setIndent(isIndent());
+		writer.setPrettyPrint(isPrettyPrint());
 		writer.setScribeIndex(getScribeIndex());
 		writer.setTimezoneInfo(getTimezoneInfo());
 		writer.write(value);
@@ -79,7 +79,7 @@ public class JCalSerializer extends StdSerializer<ICalendar> implements Contextu
 		}
 
 		JCalSerializer result = new JCalSerializer();
-		result.setIndent(annotation.indent());
+		result.setPrettyPrint(annotation.prettyPrint());
 		result.setScribeIndex(getScribeIndex());
 		result.setTimezoneInfo(getTimezoneInfo());
 		return result;
@@ -90,16 +90,17 @@ public class JCalSerializer extends StdSerializer<ICalendar> implements Contextu
 	 * @return true if it will be pretty-printed, false if not (defaults to
 	 * false)
 	 */
-	public boolean isIndent() {
-		return indent;
+	public boolean isPrettyPrint() {
+		return prettyPrint;
 	}
 
 	/**
 	 * Sets whether or not to pretty-print the JSON.
-	 * @param indent true to pretty-print it, false not to (defaults to false)
+	 * @param prettyPrint true to pretty-print it, false not to (defaults to
+	 * false)
 	 */
-	public void setIndent(boolean indent) {
-		this.indent = indent;
+	public void setPrettyPrint(boolean prettyPrint) {
+		this.prettyPrint = prettyPrint;
 	}
 
 	/**

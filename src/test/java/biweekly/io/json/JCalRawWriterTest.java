@@ -337,10 +337,10 @@ public class JCalRawWriterTest {
 	}
 
 	@Test
-	public void indent() throws Throwable {
+	public void prettyPrint() throws Throwable {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, true);
-		writer.setIndent(true);
+		writer.setPrettyPrint(true);
 
 		//@formatter:off
 		writer.writeStartComponent("empty");

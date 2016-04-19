@@ -143,15 +143,16 @@ public class JCalModule extends SimpleModule {
 	 * @return true if it will be pretty-printed, false if not (defaults to
 	 * false)
 	 */
-	public boolean isIndent() {
-		return serializer.isIndent();
+	public boolean isPrettyPrint() {
+		return serializer.isPrettyPrint();
 	}
 
 	/**
 	 * Sets whether or not to pretty-print the JSON when written.
-	 * @param indent true to pretty-print it, false not to (defaults to false)
+	 * @param prettyPrint true to pretty-print it, false not to (defaults to
+	 * false)
 	 */
-	public void setIndent(boolean indent) {
-		serializer.setIndent(indent);
+	public void setPrettyPrint(boolean prettyPrint) {
+		serializer.setPrettyPrint(prettyPrint);
 	}
 }

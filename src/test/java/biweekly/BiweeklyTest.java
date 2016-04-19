@@ -577,7 +577,7 @@ public class BiweeklyTest {
 		"  \"version\",{},\"text\",\"2.0\"]],[]]";
 		//@formatter:on
 
-		String actual = Biweekly.writeJson(ical).indent(true).go();
+		String actual = Biweekly.writeJson(ical).prettyPrint(true).go();
 
 		assertEquals(expected, actual);
 	}
