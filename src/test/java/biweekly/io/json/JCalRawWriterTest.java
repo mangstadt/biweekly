@@ -366,19 +366,48 @@ public class JCalRawWriterTest {
 		String actual = sw.toString();
 		//@formatter:off
 		String expected =
+
 		"[" + NEWLINE +
-		"[" + NEWLINE +
-		"\"empty\",[],[]],[" + NEWLINE +
-		"\"comp1\",[[" + NEWLINE +
-		"  \"prop1\",{},\"text\",\"value1\"],[" + NEWLINE +
-		"  \"prop2\",{},\"text\",\"value2\"]],[[" + NEWLINE +
-		"  \"comp2\",[],[[" + NEWLINE +
-		"    \"comp3\",[],[]],[" + NEWLINE +
-		"    \"comp4\",[[" + NEWLINE +
-		"      \"prop3\",{},\"text\",\"value3\"]],[]]]]]],[" + NEWLINE +
-		"\"comp4\",[[" + NEWLINE +
-		"  \"prop1\",{},\"text\",\"value1\"],[" + NEWLINE +
-		"  \"prop2\",{},\"text\",\"value2\"]],[]]" + NEWLINE +
+		"  [" + NEWLINE +
+		"    \"empty\"," + NEWLINE +
+		"    [ ]," + NEWLINE +
+		"    [ ]" + NEWLINE +
+		"  ]," + NEWLINE +
+		"  [" + NEWLINE +
+		"    \"comp1\"," + NEWLINE +
+		"    [" + NEWLINE +
+		"      [ \"prop1\", { }, \"text\", \"value1\" ]," + NEWLINE +
+		"      [ \"prop2\", { }, \"text\", \"value2\" ]" + NEWLINE +
+		"    ]," + NEWLINE +
+		"    [" + NEWLINE +
+		"      [" + NEWLINE +
+		"        \"comp2\"," + NEWLINE +
+		"        [ ]," + NEWLINE +
+		"        [" + NEWLINE +
+		"          [" + NEWLINE +
+		"            \"comp3\"," + NEWLINE +
+		"            [ ]," + NEWLINE +
+		"            [ ]" + NEWLINE +
+		"          ]," + NEWLINE +
+		"          [" + NEWLINE +
+		"            \"comp4\"," + NEWLINE +
+		"            [" + NEWLINE +
+		"              [ \"prop3\", { }, \"text\", \"value3\" ]" + NEWLINE +
+		"            ]," + NEWLINE +
+		"            [ ]" + NEWLINE +
+		"          ]" + NEWLINE +
+		"        ]" + NEWLINE +
+		"      ]" + NEWLINE +
+		"    ]" + NEWLINE +
+		"  ]," + NEWLINE +
+		"  [" + NEWLINE +
+		"    \"comp4\"," + NEWLINE +
+		"    [" + NEWLINE +
+		"      [ \"prop1\", { }, \"text\", \"value1\" ]," + NEWLINE +
+		"      [ \"prop2\", { }, \"text\", \"value2\" ]" + NEWLINE +
+		"    ]," + NEWLINE +
+		"    [ ]" + NEWLINE +
+		"  ]" + NEWLINE +
 		"]";
 		//@formatter:on
 		assertEquals(expected, actual);

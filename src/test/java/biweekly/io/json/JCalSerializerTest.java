@@ -12,6 +12,7 @@ import org.junit.Test;
 import biweekly.ICalendar;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /*
@@ -81,16 +82,21 @@ public class JCalSerializerTest {
 		ical.setProductId("value1");
 
 		JCalModule module = new JCalModule();
-		module.setPrettyPrint(true);
 		mapper.registerModule(module);
+		mapper.setDefaultPrettyPrinter(new JCalPrettyPrinter());
+		mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 		String actual = mapper.writeValueAsString(ical);
 
 		//@formatter:off
 		String expected =
 		"[" + NEWLINE +
-		"\"vcalendar\",[[" + NEWLINE +
-		"  \"version\",{},\"text\",\"2.0\"],[" + NEWLINE +
-		"  \"prodid\",{},\"text\",\"value1\"]],[]]";
+		"  \"vcalendar\"," + NEWLINE +
+		"  [" + NEWLINE +
+		"    [ \"version\", { }, \"text\", \"2.0\" ]," + NEWLINE +
+		"    [ \"prodid\", { }, \"text\", \"value1\" ]" + NEWLINE +
+		"  ]," + NEWLINE +
+		"  [ ]" + NEWLINE +
+		"]";
 		//@formatter:on
 		assertEquals(expected, actual);
 	}
@@ -160,27 +166,6 @@ public class JCalSerializerTest {
 	}
 
 	@Test
-	public void container_annotation() throws Exception {
-		ICalendar ical = new ICalendar();
-		ical.getProperties().clear();
-		ical.setProductId("value1");
-		ContainerAnnotation container = new ContainerAnnotation(ical);
-
-		StringWriter result = new StringWriter();
-		mapper.writeValue(result, container);
-		String actual = result.toString();
-
-		//@formatter:off
-		String expected =
-		"{\"events\":[" + NEWLINE +
-		"\"vcalendar\",[[" + NEWLINE +
-		"  \"version\",{},\"text\",\"2.0\"],[" + NEWLINE +
-		"  \"prodid\",{},\"text\",\"value1\"]],[]]}";
-		//@formatter:on
-		assertEquals(expected, actual);
-	}
-
-	@Test
 	public void container_null() throws Exception {
 		Container container = new Container(null);
 
@@ -204,20 +189,6 @@ public class JCalSerializerTest {
 			this.events = events;
 		}
 
-		@JsonSerialize(using = JCalSerializer.class)
-		public ICalendar getEvents() {
-			return events;
-		}
-	}
-
-	private static class ContainerAnnotation {
-		private final ICalendar events;
-
-		public ContainerAnnotation(ICalendar events) {
-			this.events = events;
-		}
-
-		@JCalFormat(prettyPrint = true)
 		@JsonSerialize(using = JCalSerializer.class)
 		public ICalendar getEvents() {
 			return events;

@@ -573,8 +573,12 @@ public class BiweeklyTest {
 		//@formatter:off
 		String expected =
 		"[" + NEWLINE +
-		"\"vcalendar\",[[" + NEWLINE +
-		"  \"version\",{},\"text\",\"2.0\"]],[]]";
+		"  \"vcalendar\"," + NEWLINE +
+		"  [" + NEWLINE +
+		"    [ \"version\", { }, \"text\", \"2.0\" ]" + NEWLINE +
+		"  ]," + NEWLINE +
+		"  [ ]" + NEWLINE +
+		"]";
 		//@formatter:on
 
 		String actual = Biweekly.writeJson(ical).prettyPrint(true).go();

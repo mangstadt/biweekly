@@ -137,22 +137,4 @@ public class JCalModule extends SimpleModule {
 	public void setTimezoneInfo(TimezoneInfo tzinfo) {
 		serializer.setTimezoneInfo(tzinfo);
 	}
-
-	/**
-	 * Gets whether or not the JSON will be pretty-printed when written.
-	 * @return true if it will be pretty-printed, false if not (defaults to
-	 * false)
-	 */
-	public boolean isPrettyPrint() {
-		return serializer.isPrettyPrint();
-	}
-
-	/**
-	 * Sets whether or not to pretty-print the JSON when written.
-	 * @param prettyPrint true to pretty-print it, false not to (defaults to
-	 * false)
-	 */
-	public void setPrettyPrint(boolean prettyPrint) {
-		serializer.setPrettyPrint(prettyPrint);
-	}
 }

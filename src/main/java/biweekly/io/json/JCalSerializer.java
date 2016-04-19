@@ -11,10 +11,7 @@ import biweekly.property.ICalProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.BeanProperty;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 /*
@@ -48,11 +45,10 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
  * @author Michael Angstadt
  */
 @JsonFormat
-public class JCalSerializer extends StdSerializer<ICalendar> implements ContextualSerializer {
-	private static final long serialVersionUID = 613493984874763625L;
+public class JCalSerializer extends StdSerializer<ICalendar> {
+	private static final long serialVersionUID = -8879354015298785358L;
 	private ScribeIndex index = new ScribeIndex();
 	private TimezoneInfo tzinfo = new TimezoneInfo();
-	private boolean prettyPrint = false;
 
 	public JCalSerializer() {
 		super(ICalendar.class);
@@ -62,45 +58,9 @@ public class JCalSerializer extends StdSerializer<ICalendar> implements Contextu
 	public void serialize(ICalendar value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
 		@SuppressWarnings("resource")
 		JCalWriter writer = new JCalWriter(gen);
-		writer.setPrettyPrint(isPrettyPrint());
 		writer.setScribeIndex(getScribeIndex());
 		writer.setTimezoneInfo(getTimezoneInfo());
 		writer.write(value);
-	}
-
-	public JCalSerializer createContextual(SerializerProvider prov, BeanProperty property) throws JsonMappingException {
-		if (property == null) {
-			return this;
-		}
-
-		JCalFormat annotation = property.getAnnotation(JCalFormat.class);
-		if (annotation == null) {
-			return this;
-		}
-
-		JCalSerializer result = new JCalSerializer();
-		result.setPrettyPrint(annotation.prettyPrint());
-		result.setScribeIndex(getScribeIndex());
-		result.setTimezoneInfo(getTimezoneInfo());
-		return result;
-	}
-
-	/**
-	 * Gets whether or not the JSON will be pretty-printed.
-	 * @return true if it will be pretty-printed, false if not (defaults to
-	 * false)
-	 */
-	public boolean isPrettyPrint() {
-		return prettyPrint;
-	}
-
-	/**
-	 * Sets whether or not to pretty-print the JSON.
-	 * @param prettyPrint true to pretty-print it, false not to (defaults to
-	 * false)
-	 */
-	public void setPrettyPrint(boolean prettyPrint) {
-		this.prettyPrint = prettyPrint;
 	}
 
 	/**

@@ -1,7 +1,5 @@
 package biweekly.io.json;
 
-import static biweekly.util.StringUtils.NEWLINE;
-
 import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
@@ -17,6 +15,7 @@ import biweekly.parameter.ICalParameters;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
+import com.fasterxml.jackson.core.PrettyPrinter;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -56,6 +55,7 @@ public class JCalRawWriter implements Closeable, Flushable {
 	private boolean prettyPrint = false;
 	private boolean componentEnded = false;
 	private boolean closeGenerator = true;
+	private PrettyPrinter prettyPrinter;
 
 	/**
 	 * @param writer the writer to wrap
@@ -96,6 +96,19 @@ public class JCalRawWriter implements Closeable, Flushable {
 	}
 
 	/**
+	 * Sets the pretty printer to pretty-print the JSON with. Note that this
+	 * method implicitly enables indenting, so {@code setPrettyPrint(true)} does
+	 * not also need to be called.
+	 * @param prettyPrinter the custom pretty printer (defaults to an instance
+	 * of {@link JCalPrettyPrinter}, if {@code setPrettyPrint(true)} has been
+	 * called)
+	 */
+	public void setPrettyPrinter(PrettyPrinter prettyPrinter) {
+		prettyPrint = true;
+		this.prettyPrinter = prettyPrinter;
+	}
+
+	/**
 	 * Writes the beginning of a new component array.
 	 * @param componentName the component name (e.g. "vevent")
 	 * @throws IOException if there's an I/O problem
@@ -120,7 +133,6 @@ public class JCalRawWriter implements Closeable, Flushable {
 		}
 
 		generator.writeStartArray();
-		indent(stack.size() * 2);
 		generator.writeString(componentName);
 		generator.writeStartArray(); //start properties array
 
@@ -185,8 +197,9 @@ public class JCalRawWriter implements Closeable, Flushable {
 			throw new IllegalStateException(Messages.INSTANCE.getExceptionMessage(3));
 		}
 
+		generator.setCurrentValue(JCalPrettyPrinter.PROPERTY_VALUE);
+
 		generator.writeStartArray();
-		indent(stack.size() * 2);
 
 		//write the property name
 		generator.writeString(propertyName);
@@ -221,6 +234,8 @@ public class JCalRawWriter implements Closeable, Flushable {
 		}
 
 		generator.writeEndArray();
+
+		generator.setCurrentValue(null);
 	}
 
 	private void writeValue(JsonValue jsonValue) throws IOException {
@@ -274,23 +289,6 @@ public class JCalRawWriter implements Closeable, Flushable {
 	}
 
 	/**
-	 * Checks to see if pretty-printing is enabled, and adds indentation
-	 * whitespace if it is.
-	 * @param spaces the number of spaces to indent with
-	 * @throws IOException
-	 */
-	private void indent(int spaces) throws IOException {
-		if (!prettyPrint) {
-			return;
-		}
-
-		generator.writeRaw(NEWLINE);
-		for (int i = 0; i < spaces; i++) {
-			generator.writeRaw(' ');
-		}
-	}
-
-	/**
 	 * Flushes the JSON stream.
 	 * @throws IOException if there's a problem flushing the stream
 	 */
@@ -317,7 +315,6 @@ public class JCalRawWriter implements Closeable, Flushable {
 		}
 
 		if (wrapInArray) {
-			indent(0);
 			generator.writeEndArray();
 		}
 
@@ -348,9 +345,15 @@ public class JCalRawWriter implements Closeable, Flushable {
 		factory.configure(Feature.AUTO_CLOSE_TARGET, false);
 		generator = factory.createGenerator(writer);
 
+		if (prettyPrint) {
+			if (prettyPrinter == null) {
+				prettyPrinter = new JCalPrettyPrinter();
+			}
+			generator.setPrettyPrinter(prettyPrinter);
+		}
+
 		if (wrapInArray) {
 			generator.writeStartArray();
-			indent(0);
 		}
 	}
 

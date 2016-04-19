@@ -472,11 +472,21 @@ public class JCalWriterTest {
 		//@formatter:off
 		String expected =
 		"[" + NEWLINE +
-		"\"vcalendar\",[[" + NEWLINE +
-		"  \"version\",{},\"text\",\"2.0\"],[" + NEWLINE +
-		"  \"prodid\",{},\"text\",\"prodid\"]],[[" + NEWLINE +
-		"  \"vevent\",[[" + NEWLINE +
-		"    \"summary\",{},\"text\",\"summary\"]],[]]]]";
+		"  \"vcalendar\"," + NEWLINE +
+		"  [" + NEWLINE +
+		"    [ \"version\", { }, \"text\", \"2.0\" ]," + NEWLINE +
+		"    [ \"prodid\", { }, \"text\", \"prodid\" ]" + NEWLINE +
+		"  ]," + NEWLINE +
+		"  [" + NEWLINE +
+		"    [" + NEWLINE +
+		"      \"vevent\"," + NEWLINE +
+		"      [" + NEWLINE +
+		"        [ \"summary\", { }, \"text\", \"summary\" ]" + NEWLINE +
+		"      ]," + NEWLINE +
+		"      [ ]" + NEWLINE +
+		"    ]" + NEWLINE +
+		"  ]" + NEWLINE +
+		"]";
 		//@formatter:on
 		String actual = sw.toString();
 		assertEquals(expected, actual);
