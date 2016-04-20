@@ -94,8 +94,33 @@ public class RecurrencePropertyTest {
 		//@formatter:off
 		List<Date> expected = Arrays.asList(
 			date("2016-03-06 02:30:00", pacificTimeZone),
-			date("2016-03-13 01:30:00", pacificTimeZone), //TODO is this correct? https://github.com/mangstadt/biweekly/issues/38
+			date("2016-03-13 03:30:00", pacificTimeZone),
 			date("2016-03-20 02:30:00", pacificTimeZone)
+		);
+		//@formatter:on
+
+		List<Date> actual = new ArrayList<Date>();
+		DateIterator it = property.getDateIterator(start, pacificTimeZone);
+		while (it.hasNext()) {
+			actual.add(it.next());
+		}
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void getDateIterator_overlap_hour() {
+		TimeZone pacificTimeZone = TimeZone.getTimeZone("America/Los_Angeles");
+		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).interval(1).count(3).build();
+		Date start = date("2016-10-30 01:30:00", pacificTimeZone);
+		RecurrenceProperty property = new RecurrenceProperty(recur);
+
+		//@formatter:off
+		// First date will be in PDT while the second and third are PST.
+		List<Date> expected = Arrays.asList(
+				date("2016-10-30 01:30:00", pacificTimeZone),
+				date("2016-11-06 01:30:00", pacificTimeZone),
+				date("2016-11-13 01:30:00", pacificTimeZone)
 		);
 		//@formatter:on
 

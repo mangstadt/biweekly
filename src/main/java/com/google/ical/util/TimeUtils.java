@@ -83,7 +83,9 @@ public class TimeUtils {
     int millisecondOffset = zone.getOffset(timetMillis);
     int millisecondRound = millisecondOffset < 0 ? -500 : 500;
     int secondOffset = (millisecondOffset + millisecondRound) / 1000;
-    return addSeconds(time, sense * secondOffset);
+
+    DateTimeValue dtv = toDateTimeValue(timetMillis, zone);
+    return addSeconds(dtv, sense * secondOffset);
   }
 
   public static DateValue fromUtc(DateValue date, TimeZone zone) {
@@ -312,6 +314,19 @@ public class TimeUtils {
       return null;
     }
     return tz;
+  }
+
+  public static DateTimeValue toDateTimeValue(long millisFromEpoch, TimeZone zone) {
+    GregorianCalendar c = new GregorianCalendar(zone);
+    c.clear();
+    c.setTimeInMillis(millisFromEpoch);
+    return new DateTimeValueImpl (
+            c.get(Calendar.YEAR),
+            c.get(Calendar.MONTH) + 1,
+            c.get(Calendar.DAY_OF_MONTH),
+            c.get(Calendar.HOUR_OF_DAY),
+            c.get(Calendar.MINUTE),
+            c.get(Calendar.SECOND));
   }
 
   private TimeUtils() {
