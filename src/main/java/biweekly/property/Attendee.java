@@ -290,12 +290,12 @@ public class Attendee extends ICalProperty {
 	 * <p>
 	 * Gets the list containing the people who have delegated their
 	 * responsibility to the attendee.
-	 * @return the delegators (this list is mutable). Typically, these are email
-	 * URIs (e.g. "mailto:janedoe@example.com").
 	 * </p>
 	 * <p>
 	 * <b>Supported versions:</b> {@code 2.0}
 	 * </p>
+	 * @return the delegators (this list is mutable). Typically, these are email
+	 * URIs (e.g. "mailto:janedoe@example.com").
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
 	 * p.17</a>
 	 */
