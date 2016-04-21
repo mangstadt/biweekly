@@ -59,7 +59,7 @@ public class OrganizerScribe extends ICalPropertyScribe<Organizer> {
 
 	@Override
 	protected Organizer _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		String name = parameters.first(ICalParameters.CN);
+		String name = parameters.getCommonName();
 		if (name != null) {
 			parameters.remove(ICalParameters.CN, name);
 		}

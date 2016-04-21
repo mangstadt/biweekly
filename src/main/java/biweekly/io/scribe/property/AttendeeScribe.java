@@ -1,5 +1,7 @@
 package biweekly.io.scribe.property;
 
+import java.util.Iterator;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
@@ -64,6 +66,12 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 
 	@Override
 	protected ICalParameters _prepareParameters(Attendee property, WriteContext context) {
+		/*
+		 * Note: Parameter values are assigned using "put()" instead of the
+		 * appropriate "setter" methods so that any existing parameter values
+		 * are not overwritten.
+		 */
+
 		ICalParameters copy = new ICalParameters(property.getParameters());
 
 		//RSVP parameter
@@ -96,7 +104,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 				copy.put(ICalParameters.ROLE, role.getValue());
 			}
 			if (level != null) {
-				copy.put("EXPECT", level.getValue(context.getVersion()));
+				copy.put(ICalParameters.EXPECT, level.getValue(context.getVersion()));
 			}
 			break;
 
@@ -126,7 +134,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 
 			switch (context.getVersion()) {
 			case V1_0:
-				paramName = "STATUS";
+				paramName = ICalParameters.STATUS;
 				paramValue = (partStat == ParticipationStatus.NEEDS_ACTION) ? "NEEDS ACTION" : partStat.getValue();
 				break;
 
@@ -158,40 +166,46 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 	@Override
 	protected Attendee _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		String uri = null, name = null, email = null;
-
 		Boolean rsvp = null;
-		String rsvpStr = parameters.first(ICalParameters.RSVP);
-
 		Role role = null;
-		String roleStr = parameters.first(ICalParameters.ROLE);
-
-		ParticipationLevel level = null;
-		ParticipationStatus status = null;
+		ParticipationLevel participationLevel = null;
+		ParticipationStatus participationStatus = null;
 
 		switch (context.getVersion()) {
 		case V1_0:
-			if (rsvpStr != null) {
+			Iterator<String> it = parameters.get(ICalParameters.RSVP).iterator();
+			while (it.hasNext()) {
+				String rsvpStr = it.next();
+
 				if ("YES".equalsIgnoreCase(rsvpStr)) {
 					rsvp = Boolean.TRUE;
-				} else if ("NO".equalsIgnoreCase(rsvpStr)) {
+					it.remove();
+					break;
+				}
+
+				if ("NO".equalsIgnoreCase(rsvpStr)) {
 					rsvp = Boolean.FALSE;
+					it.remove();
+					break;
 				}
 			}
 
+			String roleStr = parameters.first(ICalParameters.ROLE);
 			if (roleStr != null) {
 				role = Role.get(roleStr);
+				parameters.remove(ICalParameters.ROLE, roleStr);
 			}
 
-			String expect = parameters.first("EXPECT");
-			if (expect != null) {
-				parameters.remove("EXPECT", expect);
-				level = ParticipationLevel.get(expect);
+			String expectStr = parameters.getExpect();
+			if (expectStr != null) {
+				participationLevel = ParticipationLevel.get(expectStr);
+				parameters.remove(ICalParameters.EXPECT, expectStr);
 			}
 
-			String statusStr = parameters.first("STATUS");
+			String statusStr = parameters.getStatus();
 			if (statusStr != null) {
-				parameters.remove("STATUS", statusStr);
-				status = ParticipationStatus.get(statusStr);
+				participationStatus = ParticipationStatus.get(statusStr);
+				parameters.remove(ICalParameters.STATUS, statusStr);
 			}
 
 			int bracketStart = value.lastIndexOf('<');
@@ -208,14 +222,24 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			break;
 
 		default:
-			if (rsvpStr != null) {
+			it = parameters.get(ICalParameters.RSVP).iterator();
+			while (it.hasNext()) {
+				String rsvpStr = it.next();
+
 				if ("TRUE".equalsIgnoreCase(rsvpStr)) {
 					rsvp = Boolean.TRUE;
-				} else if ("FALSE".equalsIgnoreCase(rsvpStr)) {
+					it.remove();
+					break;
+				}
+
+				if ("FALSE".equalsIgnoreCase(rsvpStr)) {
 					rsvp = Boolean.FALSE;
+					it.remove();
+					break;
 				}
 			}
 
+			roleStr = parameters.first(ICalParameters.ROLE);
 			if (roleStr != null) {
 				if (roleStr.equalsIgnoreCase(Role.CHAIR.getValue())) {
 					role = Role.CHAIR;
@@ -224,23 +248,24 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 					if (l == null) {
 						role = Role.get(roleStr);
 					} else {
-						level = l;
+						participationLevel = l;
 					}
 				}
+				parameters.remove(ICalParameters.ROLE, roleStr);
 			}
 
-			String partStat = parameters.first(ICalParameters.PARTSTAT);
-			if (partStat != null) {
-				parameters.remove(ICalParameters.PARTSTAT, partStat);
-				status = ParticipationStatus.get(partStat);
+			String participationStatusStr = parameters.getParticipationStatus();
+			if (participationStatusStr != null) {
+				participationStatus = ParticipationStatus.get(participationStatusStr);
+				parameters.remove(ICalParameters.PARTSTAT, participationStatusStr);
 			}
 
-			name = parameters.first(ICalParameters.CN);
+			name = parameters.getCommonName();
 			if (name != null) {
 				parameters.remove(ICalParameters.CN, name);
 			}
 
-			email = parameters.first(ICalParameters.EMAIL);
+			email = parameters.getEmail();
 			if (email == null) {
 				int colon = value.indexOf(':');
 				if (colon == 6) {
@@ -254,23 +279,16 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 					uri = value;
 				}
 			} else {
-				parameters.remove(ICalParameters.EMAIL, email);
 				uri = value;
+				parameters.remove(ICalParameters.EMAIL, email);
 			}
 
 			break;
 		}
 
-		if (rsvp != null) {
-			parameters.removeAll(ICalParameters.RSVP);
-		}
-		if (roleStr != null) {
-			parameters.remove(ICalParameters.ROLE, roleStr);
-		}
-
 		Attendee attendee = new Attendee(name, email, uri);
-		attendee.setParticipationStatus(status);
-		attendee.setParticipationLevel(level);
+		attendee.setParticipationStatus(participationStatus);
+		attendee.setParticipationLevel(participationLevel);
 		attendee.setRole(role);
 		attendee.setRsvp(rsvp);
 

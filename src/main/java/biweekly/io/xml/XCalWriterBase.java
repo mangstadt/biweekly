@@ -46,8 +46,9 @@ abstract class XCalWriterBase extends StreamWriter {
 	 */
 	protected final Map<String, ICalDataType> parameterDataTypes = new HashMap<String, ICalDataType>();
 	{
-		registerParameterDataType(ICalParameters.CN, ICalDataType.TEXT);
 		registerParameterDataType(ICalParameters.ALTREP, ICalDataType.URI);
+		//registerParameterDataType(ICalParameters.CHARSET, ICalDataType.TEXT); //not used by 2.0
+		registerParameterDataType(ICalParameters.CN, ICalDataType.TEXT);
 		registerParameterDataType(ICalParameters.CUTYPE, ICalDataType.TEXT);
 		registerParameterDataType(ICalParameters.DELEGATED_FROM, ICalDataType.CAL_ADDRESS);
 		registerParameterDataType(ICalParameters.DELEGATED_TO, ICalDataType.CAL_ADDRESS);
@@ -55,6 +56,7 @@ abstract class XCalWriterBase extends StreamWriter {
 		registerParameterDataType(ICalParameters.DISPLAY, ICalDataType.TEXT);
 		registerParameterDataType(ICalParameters.EMAIL, ICalDataType.TEXT);
 		registerParameterDataType(ICalParameters.ENCODING, ICalDataType.TEXT);
+		//registerParameterDataType(ICalParameters.EXPECT, ICalDataType.TEXT); //not used by 2.0
 		registerParameterDataType(ICalParameters.FEATURE, ICalDataType.TEXT);
 		registerParameterDataType(ICalParameters.FMTTYPE, ICalDataType.TEXT);
 		registerParameterDataType(ICalParameters.FBTYPE, ICalDataType.TEXT);
@@ -68,7 +70,10 @@ abstract class XCalWriterBase extends StreamWriter {
 		registerParameterDataType(ICalParameters.ROLE, ICalDataType.TEXT);
 		registerParameterDataType(ICalParameters.RSVP, ICalDataType.BOOLEAN);
 		registerParameterDataType(ICalParameters.SENT_BY, ICalDataType.CAL_ADDRESS);
+		//registerParameterDataType(ICalParameters.STATUS, ICalDataType.TEXT); //not used by 2.0
+		//registerParameterDataType(ICalParameters.TYPE, ICalDataType.TEXT); //not used by 2.0
 		registerParameterDataType(ICalParameters.TZID, ICalDataType.TEXT);
+		//registerParameterDataType(ICalParameters.VALUE, ICalDataType.TEXT); //not used in xCal
 	}
 
 	@Override

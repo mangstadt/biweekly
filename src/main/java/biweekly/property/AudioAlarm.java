@@ -86,6 +86,14 @@ public class AudioAlarm extends VCalAlarmProperty {
 		this.contentId = null;
 	}
 
+	public String getType() {
+		return parameters.getType();
+	}
+
+	public void setType(String type) {
+		parameters.setType(type);
+	}
+
 	@Override
 	protected Map<String, Object> toStringValues() {
 		Map<String, Object> values = super.toStringValues();

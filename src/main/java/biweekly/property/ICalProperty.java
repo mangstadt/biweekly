@@ -228,8 +228,8 @@ public abstract class ICalProperty {
 
 	/**
 	 * <p>
-	 * Gets a person that is acting on behalf of the person defined in the
-	 * property.
+	 * Gets a URI which represents a person who is acting on behalf of the
+	 * person that is defined in this property.
 	 * </p>
 	 * <p>
 	 * <b>Supported versions:</b> {@code 2.0}
@@ -245,8 +245,8 @@ public abstract class ICalProperty {
 
 	/**
 	 * <p>
-	 * Sets a person that is acting on behalf of the person defined in the
-	 * property.
+	 * Sets a URI which represents a person who is acting on behalf of the
+	 * person that is defined in this property.
 	 * </p>
 	 * <p>
 	 * <b>Supported versions:</b> {@code 2.0}
@@ -262,7 +262,8 @@ public abstract class ICalProperty {
 
 	/**
 	 * <p>
-	 * Gets the display name of the person.
+	 * Gets the human-readable, display name of the entity represented by this
+	 * property.
 	 * </p>
 	 * <p>
 	 * <b>Supported versions:</b> {@code 2.0}
@@ -277,7 +278,8 @@ public abstract class ICalProperty {
 
 	/**
 	 * <p>
-	 * Sets the display name of the person.
+	 * Sets the human-readable, display name of the entity represented by this
+	 * property.
 	 * </p>
 	 * <p>
 	 * <b>Supported versions:</b> {@code 2.0}
