@@ -9,7 +9,6 @@ import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.VAlarm;
 import biweekly.parameter.CalendarUserType;
-import biweekly.parameter.ICalParameters;
 import biweekly.parameter.ParticipationLevel;
 import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
@@ -78,10 +77,6 @@ public class Attendee extends ICalProperty {
 	private ParticipationLevel participationLevel;
 	private ParticipationStatus status;
 	private Boolean rsvp;
-
-	private final List<String> memberOf = new ICalStringParameterList(ICalParameters.MEMBER);
-	private final List<String> delegatedFrom = new ICalStringParameterList(ICalParameters.DELEGATED_FROM);
-	private final List<String> delegatedTo = new ICalStringParameterList(ICalParameters.DELEGATED_TO);
 
 	/**
 	 * Creates an attendee property.
@@ -196,7 +191,7 @@ public class Attendee extends ICalProperty {
 	 * p.21-2</a>
 	 */
 	public List<String> getMemberOf() {
-		return memberOf;
+		return parameters.getMembers();
 	}
 
 	/**
@@ -300,7 +295,7 @@ public class Attendee extends ICalProperty {
 	 * p.17</a>
 	 */
 	public List<String> getDelegatedFrom() {
-		return delegatedFrom;
+		return parameters.getDelegatedFrom();
 	}
 
 	/**
@@ -317,7 +312,7 @@ public class Attendee extends ICalProperty {
 	 * p.17-8</a>
 	 */
 	public List<String> getDelegatedTo() {
-		return delegatedTo;
+		return parameters.getDelegatedTo();
 	}
 
 	@Override

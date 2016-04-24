@@ -241,7 +241,8 @@ public class Observance extends ICalComponent {
 
 	/**
 	 * Gets the comments attached to the timezone observance.
-	 * @return the comments (this list is immutable)
+	 * @return the comments (any changes made this list will affect the parent
+	 * component object and vice versa)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
 	 * p.83-4</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-80">RFC 2445
@@ -281,7 +282,8 @@ public class Observance extends ICalComponent {
 	/**
 	 * Gets the list of dates/periods that help define the recurrence rule of
 	 * this timezone observance (if one is defined).
-	 * @return the recurrence dates (this list is immutable)
+	 * @return the recurrence dates (any changes made this list will affect the
+	 * parent component object and vice versa)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-120">RFC 5545
 	 * p.120-2</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-115">RFC 2445
@@ -306,7 +308,8 @@ public class Observance extends ICalComponent {
 
 	/**
 	 * Gets the traditional, non-standard names for the timezone observance.
-	 * @return the timezone observance names (this list is immutable)
+	 * @return the timezone observance names (any changes made this list will
+	 * affect the parent component object and vice versa)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-103">RFC 5545
 	 * p.103-4</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-98">RFC 2445
@@ -345,7 +348,8 @@ public class Observance extends ICalComponent {
 
 	/**
 	 * Gets the list of exceptions to the timezone observance.
-	 * @return the list of exceptions (this list is immutable)
+	 * @return the list of exceptions (any changes made this list will affect
+	 * the parent component object and vice versa)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-118">RFC 5545
 	 * p.118-20</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-112">RFC 2445

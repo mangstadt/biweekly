@@ -81,16 +81,33 @@ public class ICalComponentTest {
 	@Test
 	public void getProperties() {
 		ICalComponentImpl component = new ICalComponentImpl();
-		Summary property = new Summary("value");
-		Summary property2 = new Summary("value2");
+		List<Summary> list = component.getProperties(Summary.class);
 
+		assertEquals(asList(), list);
 		assertEquals(asList(), component.getProperties(Summary.class));
 
-		component.addProperty(property);
-		assertEquals(asList(property), component.getProperties(Summary.class));
+		Summary property1 = new Summary("value1");
+		list.add(property1);
+		assertEquals(asList(property1), list);
+		assertEquals(asList(property1), component.getProperties(Summary.class));
 
+		Summary property2 = new Summary("value2");
 		component.addProperty(property2);
-		assertEquals(asList(property, property2), component.getProperties(Summary.class));
+		assertEquals(asList(property1, property2), list);
+		assertEquals(asList(property1, property2), component.getProperties(Summary.class));
+
+		list.remove(0);
+		assertEquals(asList(property2), list);
+		assertEquals(asList(property2), component.getProperties(Summary.class));
+
+		Summary property3 = new Summary("value3");
+		list.set(0, property3);
+		assertEquals(asList(property3), list);
+		assertEquals(asList(property3), component.getProperties(Summary.class));
+
+		component.removeProperty(property3);
+		assertEquals(asList(), list);
+		assertEquals(asList(), component.getProperties(Summary.class));
 	}
 
 	@Test
@@ -255,16 +272,33 @@ public class ICalComponentTest {
 	@Test
 	public void getComponents() {
 		ICalComponentImpl component = new ICalComponentImpl();
-		VEvent subComponent = new VEvent();
-		VEvent subComponent2 = new VEvent();
+		List<VEvent> list = component.getComponents(VEvent.class);
 
+		assertEquals(asList(), list);
 		assertEquals(asList(), component.getComponents(VEvent.class));
 
-		component.addComponent(subComponent);
-		assertEquals(asList(subComponent), component.getComponents(VEvent.class));
+		VEvent subComponent1 = new VEvent();
+		list.add(subComponent1);
+		assertEquals(asList(subComponent1), list);
+		assertEquals(asList(subComponent1), component.getComponents(VEvent.class));
 
+		VEvent subComponent2 = new VEvent();
 		component.addComponent(subComponent2);
-		assertEquals(asList(subComponent, subComponent2), component.getComponents(VEvent.class));
+		assertEquals(asList(subComponent1, subComponent2), list);
+		assertEquals(asList(subComponent1, subComponent2), component.getComponents(VEvent.class));
+
+		list.remove(0);
+		assertEquals(asList(subComponent2), list);
+		assertEquals(asList(subComponent2), component.getComponents(VEvent.class));
+
+		VEvent subComponent3 = new VEvent();
+		list.set(0, subComponent3);
+		assertEquals(asList(subComponent3), list);
+		assertEquals(asList(subComponent3), component.getComponents(VEvent.class));
+
+		component.removeComponent(subComponent3);
+		assertEquals(asList(), list);
+		assertEquals(asList(), component.getComponents(VEvent.class));
 	}
 
 	@Test

@@ -102,9 +102,9 @@ public class ICalendar extends ICalComponent {
 	 * Creates a new iCalendar object.
 	 * </p>
 	 * <p>
-	 * The following properties are auto-generated on object creation.
+	 * The following properties are added to the component when it is created:
 	 * <ul>
-	 * <li>{@link ProductId} - Set to a value that represents this library.</li>
+	 * <li>{@link ProductId}: Set to a value that represents this library.</li>
 	 * </ul>
 	 * </p>
 	 */
@@ -273,7 +273,8 @@ public class ICalendar extends ICalComponent {
 	 * In this case, each property instance must be assigned a LANGUAGE
 	 * parameter.
 	 * </p>
-	 * @return the names (this list is immutable)
+	 * @return the names (any changes made this list will affect the parent
+	 * component object and vice versa)
 	 * @see <a
 	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-5">draft-ietf-calext-extensions-01
 	 * p.5</a>
@@ -358,7 +359,8 @@ public class ICalendar extends ICalComponent {
 	 * description in multiple languages. In this case, each property instance
 	 * must be assigned a LANGUAGE parameter.
 	 * </p>
-	 * @return the descriptions (this list is immutable)
+	 * @return the descriptions (any changes made this list will affect the
+	 * parent component object and vice versa)
 	 * @see <a
 	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
 	 * p.6</a>
@@ -552,7 +554,8 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Gets the keywords that describe the calendar.
-	 * @return the categories (this list is immutable)
+	 * @return the categories (any changes made this list will affect the parent
+	 * component object and vice versa)
 	 * @see <a
 	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
 	 * p.7</a>
@@ -706,7 +709,8 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Gets the images that are associated with the calendar.
-	 * @return the images (this list is immutable)
+	 * @return the images (any changes made this list will affect the parent
+	 * component object and vice versa)
 	 * @see <a
 	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-10">draft-ietf-calext-extensions-01
 	 * p.10</a>
@@ -728,7 +732,8 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Gets the calendar's events.
-	 * @return the events (this list is immutable)
+	 * @return the events (any changes made this list will affect the parent
+	 * component object and vice versa)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-52">RFC 5545
 	 * p.52-5</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-52">RFC 2445
@@ -754,7 +759,8 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Gets the calendar's to-do tasks.
-	 * @return the to-do tasks (this list is immutable)
+	 * @return the to-do tasks (any changes made this list will affect the
+	 * parent component object and vice versa)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545
 	 * p.55-7</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-55">RFC 2445
@@ -780,7 +786,8 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Gets the calendar's journal entries.
-	 * @return the journal entries (this list is immutable)
+	 * @return the journal entries (any changes made this list will affect the
+	 * parent component object and vice versa)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545
 	 * p.57-9</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-56">RFC 2445
@@ -804,7 +811,8 @@ public class ICalendar extends ICalComponent {
 
 	/**
 	 * Gets the calendar's free/busy entries.
-	 * @return the free/busy entries (this list is immutable)
+	 * @return the free/busy entries (any changes made this list will affect the
+	 * parent component object and vice versa)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-59">RFC 5545
 	 * p.59-62</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-58">RFC 2445

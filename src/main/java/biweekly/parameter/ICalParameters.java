@@ -1,5 +1,6 @@
 package biweekly.parameter;
 
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
+import biweekly.Messages;
 import biweekly.Warning;
 import biweekly.property.Attendee;
 import biweekly.property.Conference;
@@ -471,65 +473,16 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * values must be URIs. They are typically email URIs (for example,
 	 * "mailto:janedoe@example.com").
 	 * </p>
+	 * <p>
+	 * Changes to the returned list will update the {@link ICalParameters}
+	 * object, and vice versa.
+	 * </p>
 	 * @return the URIs or an empty list if none are set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
 	 * p.17</a>
 	 */
 	public List<String> getDelegatedFrom() {
 		return get(DELEGATED_FROM);
-	}
-
-	/**
-	 * <p>
-	 * Adds a DELEGATED-FROM parameter value.
-	 * </p>
-	 * <p>
-	 * This parameter is used by the {@link Attendee} property. It stores a list
-	 * of people who have delegated their responsibility to the attendee. The
-	 * values must be URIs. They are typically email URIs (for example,
-	 * "mailto:janedoe@example.com").
-	 * </p>
-	 * @param uri the URI to add
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
-	 * p.17</a>
-	 */
-	public void addDelegatedFrom(String uri) {
-		put(DELEGATED_FROM, uri);
-	}
-
-	/**
-	 * <p>
-	 * Removes a DELEGATED-FROM parameter value.
-	 * </p>
-	 * <p>
-	 * This parameter is used by the {@link Attendee} property. It stores a list
-	 * of people who have delegated their responsibility to the attendee. The
-	 * values must be URIs. They are typically email URIs (for example,
-	 * "mailto:janedoe@example.com").
-	 * </p>
-	 * @param uri the URI to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
-	 * p.17</a>
-	 */
-	public void removeDelegatedFrom(String uri) {
-		remove(DELEGATED_FROM, uri);
-	}
-
-	/**
-	 * <p>
-	 * Removes all DELEGATED-FROM parameter values.
-	 * </p>
-	 * <p>
-	 * This parameter is used by the {@link Attendee} property. It stores a list
-	 * of people who have delegated their responsibility to the attendee. The
-	 * values must be URIs. They are typically email URIs (for example,
-	 * "mailto:janedoe@example.com").
-	 * </p>
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
-	 * p.17</a>
-	 */
-	public void removeAllDelegatedFrom() {
-		removeAll(DELEGATED_FROM);
 	}
 
 	/**
@@ -542,65 +495,16 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * The values must be URIs. They are typically email URIs (for example,
 	 * "mailto:janedoe@example.com").
 	 * </p>
+	 * <p>
+	 * Changes to the returned list will update the {@link ICalParameters}
+	 * object, and vice versa.
+	 * </p>
 	 * @return the URIs or an empty list if none are set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
 	 * p.17-8</a>
 	 */
 	public List<String> getDelegatedTo() {
 		return get(DELEGATED_TO);
-	}
-
-	/**
-	 * <p>
-	 * Adds a DELEGATED-TO parameter value.
-	 * </p>
-	 * <p>
-	 * This parameter is used by the {@link Attendee} property. It stores a list
-	 * of people to which the attendee has delegated his or her responsibility.
-	 * The values must be URIs. They are typically email URIs (for example,
-	 * "mailto:janedoe@example.com").
-	 * </p>
-	 * @param uri the URI to add
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
-	 * p.17-8</a>
-	 */
-	public void addDelegatedTo(String uri) {
-		put(DELEGATED_TO, uri);
-	}
-
-	/**
-	 * <p>
-	 * Removes a DELEGATED-TO parameter value.
-	 * </p>
-	 * <p>
-	 * This parameter is used by the {@link Attendee} property. It stores a list
-	 * of people to which the attendee has delegated his or her responsibility.
-	 * The values must be URIs. They are typically email URIs (for example,
-	 * "mailto:janedoe@example.com").
-	 * </p>
-	 * @param uri the URI to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
-	 * p.17-8</a>
-	 */
-	public void removeDelegatedTo(String uri) {
-		remove(DELEGATED_TO, uri);
-	}
-
-	/**
-	 * <p>
-	 * Removes all DELEGATED-TO parameter values.
-	 * </p>
-	 * <p>
-	 * This parameter is used by the {@link Attendee} property. It stores a list
-	 * of people to which the attendee has delegated his or her responsibility.
-	 * The values must be URIs. They are typically email URIs (for example,
-	 * "mailto:janedoe@example.com").
-	 * </p>
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
-	 * p.17-8</a>
-	 */
-	public void removeAllDelegatedTo(String value) {
-		removeAll(DELEGATED_TO);
 	}
 
 	/**
@@ -646,71 +550,22 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * in which the client application should display the image (for example, as
 	 * a thumbnail-sized image).
 	 * </p>
+	 * <p>
+	 * Changes to the returned list will update the {@link ICalParameters}
+	 * object, and vice versa.
+	 * </p>
 	 * @return the display suggestions or empty list if none are defined
 	 * @see <a href=
 	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-13"
 	 * >draft-ietf-calext-extensions p.13</a>
 	 */
 	public List<Display> getDisplays() {
-		List<String> values = get(DISPLAY);
-		List<Display> list = new ArrayList<Display>(values.size());
-		for (String value : values) {
-			list.add(Display.get(value));
-		}
-		return list;
-	}
-
-	/**
-	 * <p>
-	 * Adds a DISPLAY parameter value.
-	 * </p>
-	 * <p>
-	 * This parameter is used by the {@link Image} property. It defines the ways
-	 * in which the client application should display the image (for example, as
-	 * a thumbnail-sized image).
-	 * </p>
-	 * @param display the display suggestion to add
-	 * @see <a href=
-	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-13"
-	 * >draft-ietf-calext-extensions p.13</a>
-	 */
-	public void addDisplay(Display display) {
-		put(DISPLAY, display.getValue());
-	}
-
-	/**
-	 * <p>
-	 * Removes a DISPLAY parameter value.
-	 * </p>
-	 * <p>
-	 * This parameter is used by the {@link Image} property. It defines the ways
-	 * in which the client application should display the image (for example, as
-	 * a thumbnail-sized image).
-	 * </p>
-	 * @param display the display suggestion to remove
-	 * @see <a href=
-	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-13"
-	 * >draft-ietf-calext-extensions p.13</a>
-	 */
-	public void removeDisplay(Display display) {
-		remove(DISPLAY, display.getValue());
-	}
-
-	/**
-	 * <p>
-	 * Removes all DISPLAY parameter values.
-	 * </p>
-	 * <p>
-	 * This parameter is used by the {@link Image} property. It defines the ways
-	 * in which the client application should display the image (for example, as
-	 * a thumbnail-sized image).
-	 * </p>
-	 * @see <a href=
-	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-13"
-	 * >draft-ietf-calext-extensions p.13</a>
-	 */
-	public void removeAllDisplays() {
-		removeAll(DISPLAY);
+		return new EnumParameterList<Display>(DISPLAY) {
+			@Override
+			protected Display _asObject(String value) {
+				return Display.get(value);
+			}
+		};
 	}
 
 	/**
@@ -824,68 +679,22 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * This parameter is used by the {@link Conference} property. It defines the
 	 * features that the conference supports (for example, audio and video).
 	 * </p>
+	 * <p>
+	 * Changes to the returned list will update the {@link ICalParameters}
+	 * object, and vice versa.
+	 * </p>
 	 * @return the features or empty list if none are set
 	 * @see <a href=
 	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-15"
 	 * >draft-ietf-calext-extensions p.15</a>
 	 */
 	public List<Feature> getFeatures() {
-		List<String> values = get(FEATURE);
-		List<Feature> list = new ArrayList<Feature>(values.size());
-		for (String value : values) {
-			list.add(Feature.get(value));
-		}
-		return list;
-	}
-
-	/**
-	 * <p>
-	 * Adds a FEATURE parameter value.
-	 * </p>
-	 * <p>
-	 * This parameter is used by the {@link Conference} property. It defines the
-	 * features that the conference supports (for example, audio and video).
-	 * </p>
-	 * @param feature the feature to add
-	 * @see <a href=
-	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-15"
-	 * >draft-ietf-calext-extensions p.15</a>
-	 */
-	public void addFeature(Feature feature) {
-		put(FEATURE, feature.getValue());
-	}
-
-	/**
-	 * <p>
-	 * Removes a FEATURE parameter value.
-	 * </p>
-	 * <p>
-	 * This parameter is used by the {@link Conference} property. It defines the
-	 * features that the conference supports (for example, audio and video).
-	 * </p>
-	 * @param feature the feature to remove
-	 * @see <a href=
-	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-15"
-	 * >draft-ietf-calext-extensions p.15</a>
-	 */
-	public void removeFeature(Feature feature) {
-		remove(FEATURE, feature.getValue());
-	}
-
-	/**
-	 * <p>
-	 * Removes all FEATURE parameter values.
-	 * </p>
-	 * <p>
-	 * This parameter is used by the {@link Conference} property. It defines the
-	 * features that the conference supports (for example, audio and video).
-	 * </p>
-	 * @see <a href=
-	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-15"
-	 * >draft-ietf-calext-extensions p.15</a>
-	 */
-	public void removeAllFeatures() {
-		removeAll(FEATURE);
+		return new EnumParameterList<Feature>(FEATURE) {
+			@Override
+			protected Feature _asObject(String value) {
+				return Feature.get(value);
+			}
+		};
 	}
 
 	/**
@@ -1030,62 +839,16 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * groups that the attendee is a member of in the form of URIs. Typically,
 	 * these are email URIs (for example, "mailto:mailinglist@example.com").
 	 * </p>
+	 * <p>
+	 * Changes to the returned list will update the {@link ICalParameters}
+	 * object, and vice versa.
+	 * </p>
 	 * @return the groups or empty list if none are set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
 	 * p.21-2</a>
 	 */
 	public List<String> getMembers() {
 		return get(MEMBER);
-	}
-
-	/**
-	 * <p>
-	 * Adds a MEMBER property value.
-	 * </p>
-	 * <p>
-	 * This parameter is used by the {@link Attendee} property. It defines the
-	 * groups that the attendee is a member of in the form of URIs. Typically,
-	 * these are email URIs (for example, "mailto:mailinglist@example.com").
-	 * </p>
-	 * @param uri the URI to add
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
-	 * p.21-2</a>
-	 */
-	public void addMember(String uri) {
-		put(MEMBER, uri);
-	}
-
-	/**
-	 * <p>
-	 * Removes a MEMBER property value.
-	 * </p>
-	 * <p>
-	 * This parameter is used by the {@link Attendee} property. It defines the
-	 * groups that the attendee is a member of in the form of URIs. Typically,
-	 * these are email URIs (for example, "mailto:mailinglist@example.com").
-	 * </p>
-	 * @param uri the URI to remove
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
-	 * p.21-2</a>
-	 */
-	public void removeMember(String uri) {
-		remove(MEMBER, uri);
-	}
-
-	/**
-	 * <p>
-	 * Removes all MEMBER property values.
-	 * </p>
-	 * <p>
-	 * This parameter is used by the {@link Attendee} property. It defines the
-	 * groups that the attendee is a member of in the form of URIs. Typically,
-	 * these are email URIs (for example, "mailto:mailinglist@example.com").
-	 * </p>
-	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
-	 * p.21-2</a>
-	 */
-	public void removeAllMembers() {
-		removeAll(MEMBER);
 	}
 
 	/**
@@ -1695,5 +1458,110 @@ public class ICalParameters extends ListMultimap<String, String> {
 		}
 
 		return true;
+	}
+
+	/**
+	 * <p>
+	 * A list that converts the raw string values of a parameter to the
+	 * appropriate {@link EnumParameterValue} object that some parameters use.
+	 * </p>
+	 * <p>
+	 * This list is backed by the {@link ICalParameters} object. Any changes
+	 * made to the list will affect the {@link ICalParameters} object and vice
+	 * versa.
+	 * </p>
+	 * @param <T> the enum parameter class
+	 */
+	public abstract class EnumParameterList<T extends EnumParameterValue> extends ICalParameterList<T> {
+		public EnumParameterList(String parameterName) {
+			super(parameterName);
+		}
+
+		@Override
+		protected String _asString(T value) {
+			return value.getValue();
+		}
+	}
+
+	/**
+	 * <p>
+	 * A list that converts the raw string values of a parameter to another kind
+	 * of value (for example, Integers).
+	 * </p>
+	 * <p>
+	 * This list is backed by the {@link ICalParameters} object. Any changes
+	 * made to the list will affect the {@link ICalParameters} object and vice
+	 * versa.
+	 * </p>
+	 * <p>
+	 * If a String value cannot be converted to the appropriate data type, an
+	 * {@link IllegalStateException} is thrown.
+	 * </p>
+	 */
+	public abstract class ICalParameterList<T> extends AbstractList<T> {
+		protected final String parameterName;
+		protected final List<String> parameterValues;
+
+		/**
+		 * @param parameterName the name of the parameter (case insensitive)
+		 */
+		public ICalParameterList(String parameterName) {
+			this.parameterName = parameterName;
+			parameterValues = ICalParameters.this.get(parameterName);
+		}
+
+		@Override
+		public void add(int index, T value) {
+			String valueStr = _asString(value);
+			parameterValues.add(index, valueStr);
+		}
+
+		@Override
+		public T remove(int index) {
+			String removed = parameterValues.remove(index);
+			return asObject(removed);
+		}
+
+		@Override
+		public T get(int index) {
+			String value = parameterValues.get(index);
+			return asObject(value);
+		}
+
+		@Override
+		public T set(int index, T value) {
+			String valueStr = _asString(value);
+			String replaced = parameterValues.set(index, valueStr);
+			return asObject(replaced);
+		}
+
+		@Override
+		public int size() {
+			return parameterValues.size();
+		}
+
+		private T asObject(String value) {
+			try {
+				return _asObject(value);
+			} catch (Exception e) {
+				throw new IllegalStateException(Messages.INSTANCE.getExceptionMessage(26, parameterName), e);
+			}
+		}
+
+		/**
+		 * Converts the object to a String value for storing in the
+		 * {@link ICalParameters} object.
+		 * @param value the value
+		 * @return the string value
+		 */
+		protected abstract String _asString(T value);
+
+		/**
+		 * Converts a String value to its object form.
+		 * @param value the string value
+		 * @return the object
+		 * @throws Exception if there is a problem parsing the string
+		 */
+		protected abstract T _asObject(String value) throws Exception;
 	}
 }

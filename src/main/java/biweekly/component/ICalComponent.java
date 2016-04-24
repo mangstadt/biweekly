@@ -1,6 +1,7 @@
 package biweekly.component;
 
 import java.lang.reflect.Constructor;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -62,12 +63,10 @@ public abstract class ICalComponent {
 	 * @param original the component to make a copy of
 	 */
 	protected ICalComponent(ICalComponent original) {
-		properties = new ListMultimap<Class<? extends ICalProperty>, ICalProperty>(original.properties.size());
+		this();
 		for (ICalProperty property : original.properties.values()) {
 			addProperty(property.copy());
 		}
-
-		components = new ListMultimap<Class<? extends ICalComponent>, ICalComponent>(original.components.size());
 		for (ICalComponent component : original.components.values()) {
 			addComponent(component.copy());
 		}
@@ -83,13 +82,13 @@ public abstract class ICalComponent {
 	}
 
 	/**
-	 * Gets all properties of a given class.
+	 * Gets all properties of a given class. Changes to the returned list will
+	 * update the {@link ICalComponent} object, and vice versa.
 	 * @param clazz the property class
-	 * @return the properties (this list is immutable)
+	 * @return the properties
 	 */
 	public <T extends ICalProperty> List<T> getProperties(Class<T> clazz) {
-		List<ICalProperty> properties = this.properties.get(clazz);
-		return castList(properties, clazz);
+		return new ICalPropertyList<T>(clazz);
 	}
 
 	/**
@@ -112,7 +111,7 @@ public abstract class ICalComponent {
 	 * Replaces all existing properties of the given property instance's class
 	 * with the given property instance.
 	 * @param property the property
-	 * @return the properties that were replaced
+	 * @return the replaced properties (this list is immutable)
 	 */
 	public List<ICalProperty> setProperty(ICalProperty property) {
 		return properties.replace(property.getClass(), property);
@@ -125,7 +124,7 @@ public abstract class ICalComponent {
 	 * @param clazz the property class (e.g. "DateStart.class")
 	 * @param property the property or null to remove all properties of the
 	 * given class
-	 * @return the properties that were replaced (this list is immutable)
+	 * @return the replaced properties (this list is immutable)
 	 */
 	public <T extends ICalProperty> List<T> setProperty(Class<T> clazz, T property) {
 		List<ICalProperty> replaced = properties.replace(clazz, property);
@@ -191,18 +190,25 @@ public abstract class ICalComponent {
 	 * @return the experimental properties (this list is immutable)
 	 */
 	public List<RawProperty> getExperimentalProperties(String name) {
-		List<RawProperty> properties = new ArrayList<RawProperty>();
+		/*
+		 * Note: The returned list is not backed by the parent component because
+		 * this would allow RawProperty objects without the specified name to be
+		 * added to the list.
+		 */
+		List<RawProperty> toReturn = new ArrayList<RawProperty>();
 		for (RawProperty property : getExperimentalProperties()) {
 			if (property.getName().equalsIgnoreCase(name)) {
-				properties.add(property);
+				toReturn.add(property);
 			}
 		}
-		return properties;
+		return Collections.unmodifiableList(toReturn);
 	}
 
 	/**
-	 * Gets all experimental properties associated with this component.
-	 * @return the experimental properties (this list is immutable)
+	 * Gets all experimental properties associated with this component. Changes
+	 * to the returned list will update the {@link ICalComponent} object, and
+	 * vice versa.
+	 * @return the experimental properties
 	 */
 	public List<RawProperty> getExperimentalProperties() {
 		return getProperties(RawProperty.class);
@@ -258,14 +264,19 @@ public abstract class ICalComponent {
 	/**
 	 * Removes all experimental properties that have the given name.
 	 * @param name the component name (e.g. "X-ALT-DESC")
-	 * @return the removed properties
+	 * @return the removed properties (this list is immutable)
 	 */
 	public List<RawProperty> removeExperimentalProperties(String name) {
-		List<RawProperty> toRemove = getExperimentalProperties(name);
-		for (RawProperty property : toRemove) {
-			removeProperty(property);
+		List<RawProperty> all = getExperimentalProperties();
+		List<RawProperty> toRemove = new ArrayList<RawProperty>();
+		for (RawProperty property : all) {
+			if (property.getName().equalsIgnoreCase(name)) {
+				toRemove.add(property);
+			}
 		}
-		return toRemove;
+
+		all.removeAll(toRemove);
+		return Collections.unmodifiableList(toRemove);
 	}
 
 	/**
@@ -278,13 +289,13 @@ public abstract class ICalComponent {
 	}
 
 	/**
-	 * Gets all sub-components of a given class.
+	 * Gets all sub-components of a given class. Changes to the returned list
+	 * will update the parent component object, and vice versa.
 	 * @param clazz the component class
-	 * @return the sub-components (this list is immutable)
+	 * @return the sub-components
 	 */
 	public <T extends ICalComponent> List<T> getComponents(Class<T> clazz) {
-		List<ICalComponent> comp = components.get(clazz);
-		return castList(comp, clazz);
+		return new ICalComponentList<T>(clazz);
 	}
 
 	/**
@@ -306,7 +317,7 @@ public abstract class ICalComponent {
 	/**
 	 * Replaces all sub-components of a given class with the given component.
 	 * @param component the component
-	 * @return the replaced sub-components
+	 * @return the replaced sub-components (this list is immutable)
 	 */
 	public List<ICalComponent> setComponent(ICalComponent component) {
 		return components.replace(component.getClass(), component);
@@ -346,18 +357,25 @@ public abstract class ICalComponent {
 	 * @return the experimental components (this list is immutable)
 	 */
 	public List<RawComponent> getExperimentalComponents(String name) {
-		List<RawComponent> components = new ArrayList<RawComponent>();
+		/*
+		 * Note: The returned list is not backed by the parent component because
+		 * this would allow RawComponent objects without the specified name to
+		 * be added to the list.
+		 */
+		List<RawComponent> toReturn = new ArrayList<RawComponent>();
 		for (RawComponent component : getExperimentalComponents()) {
 			if (component.getName().equalsIgnoreCase(name)) {
-				components.add(component);
+				toReturn.add(component);
 			}
 		}
-		return components;
+		return Collections.unmodifiableList(toReturn);
 	}
 
 	/**
 	 * Gets all experimental sub-components associated with this component.
-	 * @return the experimental components (this list is immutable)
+	 * Changes to the returned list will update the parent {@link ICalComponent}
+	 * object, and vice versa.
+	 * @return the experimental components
 	 */
 	public List<RawComponent> getExperimentalComponents() {
 		return getComponents(RawComponent.class);
@@ -388,14 +406,19 @@ public abstract class ICalComponent {
 	/**
 	 * Removes all experimental sub-components that have the given name.
 	 * @param name the component name (e.g. "X-PARTY")
-	 * @return the removed sub-components
+	 * @return the removed sub-components (this list is immutable)
 	 */
 	public List<RawComponent> removeExperimentalComponents(String name) {
-		List<RawComponent> toRemove = getExperimentalComponents(name);
-		for (RawComponent component : toRemove) {
-			removeComponent(component);
+		List<RawComponent> all = getExperimentalComponents();
+		List<RawComponent> toRemove = new ArrayList<RawComponent>();
+		for (RawComponent property : all) {
+			if (property.getName().equalsIgnoreCase(name)) {
+				toRemove.add(property);
+			}
 		}
-		return toRemove;
+
+		all.removeAll(toRemove);
+		return Collections.unmodifiableList(toRemove);
 	}
 
 	/**
@@ -683,5 +706,115 @@ public abstract class ICalComponent {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * <p>
+	 * A list that automatically casts {@link ICalComponent} instances stored in
+	 * this component to a given component class.
+	 * </p>
+	 * <p>
+	 * This list is backed by the {@link ICalComponent} object. Any changes made
+	 * to the list will affect the {@link ICalComponent} object and vice versa.
+	 * </p>
+	 */
+	private class ICalComponentList<T extends ICalComponent> extends AbstractList<T> {
+		protected final Class<T> componentClass;
+		protected final List<ICalComponent> components;
+
+		/**
+		 * @param componentClass the component class
+		 */
+		public ICalComponentList(Class<T> componentClass) {
+			this.componentClass = componentClass;
+			components = ICalComponent.this.components.get(componentClass);
+		}
+
+		@Override
+		public void add(int index, T value) {
+			components.add(index, value);
+		}
+
+		@Override
+		public T remove(int index) {
+			ICalComponent removed = components.remove(index);
+			return cast(removed);
+		}
+
+		@Override
+		public T get(int index) {
+			ICalComponent property = components.get(index);
+			return cast(property);
+		}
+
+		@Override
+		public T set(int index, T value) {
+			ICalComponent replaced = components.set(index, value);
+			return cast(replaced);
+		}
+
+		@Override
+		public int size() {
+			return components.size();
+		}
+
+		protected T cast(ICalComponent value) {
+			return componentClass.cast(value);
+		}
+	}
+
+	/**
+	 * <p>
+	 * A list that automatically casts {@link ICalProperty} instances stored in
+	 * this component to a given property class.
+	 * </p>
+	 * <p>
+	 * This list is backed by the {@link ICalComponent} object. Any changes made
+	 * to the list will affect the {@link ICalComponent} object and vice versa.
+	 * </p>
+	 */
+	private class ICalPropertyList<T extends ICalProperty> extends AbstractList<T> {
+		protected final Class<T> propertyClass;
+		protected final List<ICalProperty> properties;
+
+		/**
+		 * @param propertyClass the property class
+		 */
+		public ICalPropertyList(Class<T> propertyClass) {
+			this.propertyClass = propertyClass;
+			properties = ICalComponent.this.properties.get(propertyClass);
+		}
+
+		@Override
+		public void add(int index, T value) {
+			properties.add(index, value);
+		}
+
+		@Override
+		public T remove(int index) {
+			ICalProperty removed = properties.remove(index);
+			return cast(removed);
+		}
+
+		@Override
+		public T get(int index) {
+			ICalProperty property = properties.get(index);
+			return cast(property);
+		}
+
+		@Override
+		public T set(int index, T value) {
+			ICalProperty replaced = properties.set(index, value);
+			return cast(replaced);
+		}
+
+		@Override
+		public int size() {
+			return properties.size();
+		}
+
+		protected T cast(ICalProperty value) {
+			return propertyClass.cast(value);
+		}
 	}
 }

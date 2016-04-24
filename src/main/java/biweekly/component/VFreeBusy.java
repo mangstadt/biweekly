@@ -88,10 +88,10 @@ public class VFreeBusy extends ICalComponent {
 	 * Creates a new free/busy component.
 	 * </p>
 	 * <p>
-	 * The following properties are auto-generated on object creation.
+	 * The following properties are added to the component when it is created:
 	 * <ul>
-	 * <li>{@link Uid} - Set to a UUID.</li>
-	 * <li>{@link DateTimeStamp} - Set to the current date-time.</li>
+	 * <li>{@link Uid}: Set to a UUID.</li>
+	 * <li>{@link DateTimeStamp}: Set to the current time.</li>
 	 * </ul>
 	 * </p>
 	 */
@@ -444,7 +444,8 @@ public class VFreeBusy extends ICalComponent {
 
 	/**
 	 * Gets the people who are involved in the free/busy entry.
-	 * @return the attendees (this list is immutable)
+	 * @return the attendees (any changes made this list will affect the parent
+	 * component object and vice versa)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-102">RFC 2445
@@ -468,7 +469,8 @@ public class VFreeBusy extends ICalComponent {
 
 	/**
 	 * Gets the comments attached to the free/busy entry.
-	 * @return the comments (this list is immutable)
+	 * @return the comments (any changes made this list will affect the parent
+	 * component object and vice versa)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545
 	 * p.83-4</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-80">RFC 2445
@@ -508,7 +510,8 @@ public class VFreeBusy extends ICalComponent {
 	/**
 	 * Gets the person's availabilities over certain time periods (for example,
 	 * "free" between 1pm-3pm, but "busy" between 3pm-4pm).
-	 * @return the availabilities (this list is immutable)
+	 * @return the availabilities (any changes made this list will affect the
+	 * parent component object and vice versa)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-100">RFC 5545
 	 * p.100-1</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-95">RFC 2445

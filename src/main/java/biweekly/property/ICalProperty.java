@@ -1,7 +1,6 @@
 package biweekly.property;
 
 import java.lang.reflect.Constructor;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,7 +12,6 @@ import biweekly.ICalendar;
 import biweekly.Messages;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
-import biweekly.parameter.EnumParameterValue;
 import biweekly.parameter.ICalParameters;
 
 /*
@@ -456,148 +454,5 @@ public abstract class ICalProperty {
 		ICalProperty other = (ICalProperty) obj;
 		if (!parameters.equals(other.parameters)) return false;
 		return true;
-	}
-
-	/**
-	 * <p>
-	 * A list that automatically converts raw string parameter values from the
-	 * property's {@link ICalParameters} object to the appropriate
-	 * {@link EnumParameterValue} object that some parameters use.
-	 * </p>
-	 * <p>
-	 * The list is backed by the property's {@link ICalParameters} object, so
-	 * any changes made to the list will affect the property's
-	 * {@link ICalParameters} object and vice versa.
-	 * </p>
-	 * @param <T> the enum parameter class
-	 */
-	protected abstract class EnumParameterList<T extends EnumParameterValue> extends ICalParameterList<T> {
-		public EnumParameterList(String parameterName) {
-			super(parameterName);
-		}
-
-		@Override
-		protected String _asString(T value) {
-			return value.getValue();
-		}
-	}
-
-	/**
-	 * <p>
-	 * A list that holds the raw string values of a particular parameter.
-	 * </p>
-	 * <p>
-	 * This list is backed by the property's {@link ICalParameters} object. Any
-	 * changes made to the list will affect the property's
-	 * {@link ICalParameters} object and vice versa.
-	 * </p>
-	 */
-	protected class ICalStringParameterList extends ICalParameterList<String> {
-		/**
-		 * @param parameterName the name of the parameter (case insensitive)
-		 */
-		public ICalStringParameterList(String parameterName) {
-			super(parameterName);
-		}
-
-		@Override
-		protected String _asString(String value) {
-			return value;
-		}
-
-		@Override
-		protected String _asObject(String value) {
-			return value;
-		}
-	}
-
-	/**
-	 * <p>
-	 * A list that holds the values of a particular parameter.
-	 * </p>
-	 * <p>
-	 * This list is backed by the property's {@link ICalParameters} object. Any
-	 * changes made to the list will affect the property's
-	 * {@link ICalParameters} object and vice versa.
-	 * </p>
-	 */
-	protected abstract class ICalParameterList<T> extends AbstractList<T> {
-		protected final String parameterName;
-
-		/**
-		 * @param parameterName the name of the parameter (case insensitive)
-		 */
-		public ICalParameterList(String parameterName) {
-			this.parameterName = parameterName;
-		}
-
-		@Override
-		public void add(int index, T value) {
-			String valueStr = _asString(value);
-
-			/*
-			 * Note: If a property name does not exist, then the parameters
-			 * object will return an empty list. Any objects added to this empty
-			 * list will NOT be added to the parameters object.
-			 */
-			List<String> values = values();
-			if (values.isEmpty()) {
-				parameters.put(parameterName, valueStr);
-			} else {
-				values.add(index, valueStr);
-			}
-		}
-
-		@Override
-		public T remove(int index) {
-			String removed = values().remove(index);
-			return asObject(removed);
-		}
-
-		@Override
-		public T get(int index) {
-			String value = values().get(index);
-			return asObject(value);
-		}
-
-		@Override
-		public T set(int index, T value) {
-			String valueStr = _asString(value);
-			String replaced = values().set(index, valueStr);
-			return asObject(replaced);
-		}
-
-		@Override
-		public int size() {
-			return values().size();
-		}
-
-		private T asObject(String value) {
-			try {
-				return _asObject(value);
-			} catch (Exception e) {
-				throw new IllegalStateException(Messages.INSTANCE.getExceptionMessage(26, parameterName), e);
-			}
-		}
-
-		/**
-		 * Converts the object to a String value for storing in the
-		 * {@link ICalParameters} object.
-		 * @param value the value
-		 * @return the string value
-		 */
-		protected abstract String _asString(T value);
-
-		/**
-		 * Converts a String value to its object form.
-		 * @param value the string value
-		 * @return the object
-		 * @throws Exception if there is a problem parsing the string
-		 */
-		protected abstract T _asObject(String value) throws Exception;
-
-		private List<String> values() {
-			return parameters.get(parameterName);
-		}
 	}
 }

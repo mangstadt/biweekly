@@ -8,7 +8,6 @@ import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.parameter.Display;
-import biweekly.parameter.ICalParameters;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -69,13 +68,6 @@ import biweekly.parameter.ICalParameters;
  * p.10</a>
  */
 public class Image extends BinaryProperty {
-	private final List<Display> displays = new EnumParameterList<Display>(ICalParameters.DISPLAY) {
-		@Override
-		protected Display _asObject(String parameterValue) {
-			return Display.get(parameterValue);
-		}
-	};
-
 	/**
 	 * Creates a new attachment.
 	 * @param formatType the content-type of the data (e.g. "image/png")
@@ -138,7 +130,7 @@ public class Image extends BinaryProperty {
 	 * @return the display methods (this list is mutable)
 	 */
 	public List<Display> getDisplays() {
-		return displays;
+		return parameters.getDisplays();
 	}
 
 	@Override

@@ -212,7 +212,8 @@ public class VTimezone extends ICalComponent {
 
 	/**
 	 * Gets the timezone's "standard" observance time ranges.
-	 * @return the "standard" observance time ranges (this list is immutable)
+	 * @return the "standard" observance time ranges (any changes made this list
+	 * will affect the parent component object and vice versa)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
 	 * p.62-71</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-60">RFC 2445
@@ -236,8 +237,8 @@ public class VTimezone extends ICalComponent {
 
 	/**
 	 * Gets the timezone's "daylight savings" observance time ranges.
-	 * @return the "daylight savings" observance time ranges (this list is
-	 * immutable)
+	 * @return the "daylight savings" observance time ranges (any changes made
+	 * this list will affect the parent component object and vice versa)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
 	 * p.62-71</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-60">RFC 2445

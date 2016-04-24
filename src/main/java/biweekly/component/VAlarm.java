@@ -181,7 +181,8 @@ public class VAlarm extends ICalComponent {
 
 	/**
 	 * Gets any attachments that are associated with the alarm.
-	 * @return the attachments (this list is immutable)
+	 * @return the attachments (any changes made this list will affect the
+	 * parent component object and vice versa)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-80">RFC 5545
 	 * p.80-1</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-77">RFC 2445
@@ -345,7 +346,8 @@ public class VAlarm extends ICalComponent {
 	/**
 	 * Gets the people who will be emailed when the alarm fires (only applicable
 	 * for EMAIL alarms).
-	 * @return the email recipients (this list is immutable)
+	 * @return the email recipients (any changes made this list will affect the
+	 * parent component object and vice versa)
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
 	 * p.107-9</a>
 	 * @see <a href="http://tools.ietf.org/html/rfc2445#page-102">RFC 2445
