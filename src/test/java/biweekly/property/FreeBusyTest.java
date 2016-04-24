@@ -174,8 +174,8 @@ public class FreeBusyTest {
 		FreeBusy two = new FreeBusy();
 		assertEqualsAndHash(one, two);
 
-		one.getValues().add(new Period(new Date(), new Date()));
-		two.getValues().add(new Period(new Date(), new Date()));
+		one.getValues().add(new Period(start, end));
+		two.getValues().add(new Period(start, end));
 		assertEqualsAndHash(one, two);
 	}
 }

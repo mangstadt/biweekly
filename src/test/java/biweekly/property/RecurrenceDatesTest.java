@@ -160,18 +160,20 @@ public class RecurrenceDatesTest {
 		RecurrenceDates two = new RecurrenceDates();
 		assertEqualsAndHash(one, two);
 
-		one.getDates().add(new ICalDate());
-		two.getDates().add(new ICalDate());
+		ICalDate icalDate = new ICalDate();
+		one.getDates().add(icalDate);
+		two.getDates().add(icalDate);
 		assertEqualsAndHash(one, two);
 
-		one.getPeriods().add(new Period(new Date(), new Date()));
-		two.getPeriods().add(new Period(new Date(), new Date()));
+		Date date = new Date();
+		one.getPeriods().add(new Period(date, date));
+		two.getPeriods().add(new Period(date, date));
 		assertEqualsAndHash(one, two);
 
 		one = new RecurrenceDates();
 		two = new RecurrenceDates();
-		one.getPeriods().add(new Period(new Date(), new Date()));
-		two.getPeriods().add(new Period(new Date(), new Date()));
+		one.getPeriods().add(new Period(date, date));
+		two.getPeriods().add(new Period(date, date));
 		assertEqualsAndHash(one, two);
 	}
 }
