@@ -464,7 +464,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 
 				ListMultimap<String, String> expected = new ListMultimap<String, String>();
 				expected.put("NO EQUALS", "");
-				assertEquals(expected.getMap(), recur.getXRules());
+				assertEquals(expected.asMap(), recur.getXRules());
 			}
 		});
 	}

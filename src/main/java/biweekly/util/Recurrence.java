@@ -87,15 +87,7 @@ public final class Recurrence {
 		bySetPos = Collections.unmodifiableList(builder.bySetPos);
 		byDay = Collections.unmodifiableList(builder.byDay);
 		workweekStarts = builder.workweekStarts;
-
-		Map<String, List<String>> map = builder.xrules.getMap();
-		for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-			String key = entry.getKey();
-			List<String> value = entry.getValue();
-
-			map.put(key, Collections.unmodifiableList(value));
-		}
-		xrules = Collections.unmodifiableMap(map);
+		xrules = builder.xrules.asMap();
 	}
 
 	/**

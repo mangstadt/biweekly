@@ -1,5 +1,6 @@
 package biweekly.io.scribe.component;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -108,7 +109,7 @@ public abstract class ICalComponentScribe<T extends ICalComponent> {
 	 * @return the sub-components to marshal
 	 */
 	public List<ICalComponent> getComponents(T component) {
-		return component.getComponents().values();
+		return new ArrayList<ICalComponent>(component.getComponents().values());
 	}
 
 	/**
@@ -118,6 +119,6 @@ public abstract class ICalComponentScribe<T extends ICalComponent> {
 	 * @return the properties to marshal
 	 */
 	public List<ICalProperty> getProperties(T component) {
-		return component.getProperties().values();
+		return new ArrayList<ICalProperty>(component.getProperties().values());
 	}
 }

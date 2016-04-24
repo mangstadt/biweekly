@@ -405,7 +405,7 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 		input.put("d", "six=seven");
 
 		String expected = "A=one;B=two,three\\,four\\;five;C=;D=six=seven";
-		String actual = ICalPropertyScribe.object(input.getMap());
+		String actual = ICalPropertyScribe.object(input.asMap());
 		assertEquals(expected, actual);
 	}
 

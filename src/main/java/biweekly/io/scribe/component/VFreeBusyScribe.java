@@ -97,6 +97,7 @@ public class VFreeBusyScribe extends ICalComponentScribe<VFreeBusy> {
 		}
 
 		//remove and re-add the FREEBUSY instances in sorted order
+		properties = new ArrayList<ICalProperty>(properties);
 		for (FreeBusy f : fb) {
 			properties.remove(f);
 			properties.add(index++, f);

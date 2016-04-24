@@ -1,5 +1,6 @@
 package biweekly.io.scribe.component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import biweekly.ICalendar;
@@ -47,7 +48,7 @@ public class ICalendarScribe extends ICalComponentScribe<ICalendar> {
 
 	@Override
 	public List<ICalProperty> getProperties(ICalendar component) {
-		List<ICalProperty> properties = component.getProperties().values();
+		List<ICalProperty> properties = new ArrayList<ICalProperty>(component.getProperties().values());
 
 		/*
 		 * Move VERSION properties to the front (if any are present), followed

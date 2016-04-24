@@ -97,7 +97,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		//iCal 2.0
 		if (context.getVersion() != ICalVersion.V1_0) {
 			ListMultimap<String, Object> components = buildComponents(property, context, false);
-			return object(components.getMap());
+			return object(components.asMap());
 		}
 
 		//vCal 1.0

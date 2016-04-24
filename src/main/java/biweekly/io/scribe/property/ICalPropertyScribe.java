@@ -544,7 +544,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		if (value.getValues().get(0).getObject() != null) {
 			ListMultimap<String, String> object = value.asObject();
 			if (!object.isEmpty()) {
-				return object(object.getMap());
+				return object(object.asMap());
 			}
 		}
 
