@@ -1,0 +1,9 @@
+comment:
+  layout: header, changes, diff
+coverage:
+  ignore:
+  - src/main/java/biweekly/util/org/.*
+  - src/main/java/com/.*
+  status:
+    patch: false
+  precision: 0
