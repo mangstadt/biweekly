@@ -22,10 +22,9 @@ import biweekly.util.DateTimeComponents;
 import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.ICalDate;
 import biweekly.util.UtcOffset;
-
-import com.google.ical.iter.RecurrenceIterator;
-import com.google.ical.values.DateTimeValueImpl;
-import com.google.ical.values.DateValue;
+import biweekly.util.com.google.ical.iter.RecurrenceIterator;
+import biweekly.util.com.google.ical.values.DateTimeValueImpl;
+import biweekly.util.com.google.ical.values.DateValue;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt

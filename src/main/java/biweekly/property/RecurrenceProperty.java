@@ -11,10 +11,9 @@ import biweekly.util.Google2445Utils;
 import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.Frequency;
-
-import com.google.ical.compat.javautil.DateIterator;
-import com.google.ical.compat.javautil.DateIteratorFactory;
-import com.google.ical.iter.RecurrenceIterator;
+import biweekly.util.com.google.ical.compat.javautil.DateIterator;
+import biweekly.util.com.google.ical.compat.javautil.DateIteratorFactory;
+import biweekly.util.com.google.ical.iter.RecurrenceIterator;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt

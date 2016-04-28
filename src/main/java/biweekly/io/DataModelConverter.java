@@ -40,8 +40,7 @@ import biweekly.util.DateTimeComponents;
 import biweekly.util.Duration;
 import biweekly.util.ICalDate;
 import biweekly.util.UtcOffset;
-
-import com.google.ical.values.DateTimeValue;
+import biweekly.util.com.google.ical.values.DateTimeValue;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt

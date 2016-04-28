@@ -19,8 +19,7 @@ import org.junit.Test;
 import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.Frequency;
-
-import com.google.ical.compat.javautil.DateIterator;
+import biweekly.util.com.google.ical.compat.javautil.DateIterator;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt

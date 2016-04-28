@@ -19,18 +19,17 @@ import biweekly.property.ValuedProperty;
 import biweekly.util.Recurrence.ByDay;
 import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
-
-import com.google.ical.compat.javautil.DateIterator;
-import com.google.ical.compat.javautil.DateIteratorFactory;
-import com.google.ical.iter.RecurrenceIterator;
-import com.google.ical.iter.RecurrenceIteratorFactory;
-import com.google.ical.values.DateTimeValue;
-import com.google.ical.values.DateTimeValueImpl;
-import com.google.ical.values.DateValue;
-import com.google.ical.values.DateValueImpl;
-import com.google.ical.values.RRule;
-import com.google.ical.values.Weekday;
-import com.google.ical.values.WeekdayNum;
+import biweekly.util.com.google.ical.compat.javautil.DateIterator;
+import biweekly.util.com.google.ical.compat.javautil.DateIteratorFactory;
+import biweekly.util.com.google.ical.iter.RecurrenceIterator;
+import biweekly.util.com.google.ical.iter.RecurrenceIteratorFactory;
+import biweekly.util.com.google.ical.values.DateTimeValue;
+import biweekly.util.com.google.ical.values.DateTimeValueImpl;
+import biweekly.util.com.google.ical.values.DateValue;
+import biweekly.util.com.google.ical.values.DateValueImpl;
+import biweekly.util.com.google.ical.values.RRule;
+import biweekly.util.com.google.ical.values.Weekday;
+import biweekly.util.com.google.ical.values.WeekdayNum;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -151,26 +150,26 @@ public final class Google2445Utils {
 
 	/**
 	 * Converts a {@link Frequency} object to a google-rfc-2445
-	 * {@link com.google.ical.values.Frequency Frequency} object.
+	 * {@link biweekly.util.com.google.ical.values.Frequency Frequency} object.
 	 * @param freq the frequency object
 	 * @return the google-rfc-2445 object
 	 */
-	public static com.google.ical.values.Frequency convert(Frequency freq) {
+	public static biweekly.util.com.google.ical.values.Frequency convert(Frequency freq) {
 		switch (freq) {
 		case YEARLY:
-			return com.google.ical.values.Frequency.YEARLY;
+			return biweekly.util.com.google.ical.values.Frequency.YEARLY;
 		case MONTHLY:
-			return com.google.ical.values.Frequency.MONTHLY;
+			return biweekly.util.com.google.ical.values.Frequency.MONTHLY;
 		case WEEKLY:
-			return com.google.ical.values.Frequency.WEEKLY;
+			return biweekly.util.com.google.ical.values.Frequency.WEEKLY;
 		case DAILY:
-			return com.google.ical.values.Frequency.DAILY;
+			return biweekly.util.com.google.ical.values.Frequency.DAILY;
 		case HOURLY:
-			return com.google.ical.values.Frequency.HOURLY;
+			return biweekly.util.com.google.ical.values.Frequency.HOURLY;
 		case MINUTELY:
-			return com.google.ical.values.Frequency.MINUTELY;
+			return biweekly.util.com.google.ical.values.Frequency.MINUTELY;
 		case SECONDLY:
-			return com.google.ical.values.Frequency.SECONDLY;
+			return biweekly.util.com.google.ical.values.Frequency.SECONDLY;
 		default:
 			return null;
 		}

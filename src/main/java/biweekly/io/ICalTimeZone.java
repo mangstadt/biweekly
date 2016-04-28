@@ -33,13 +33,12 @@ import biweekly.property.TimezoneName;
 import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 import biweekly.util.UtcOffset;
-
-import com.google.ical.iter.RecurrenceIterator;
-import com.google.ical.iter.RecurrenceIteratorFactory;
-import com.google.ical.values.DateTimeValue;
-import com.google.ical.values.DateTimeValueImpl;
-import com.google.ical.values.DateValue;
-import com.google.ical.values.RRule;
+import biweekly.util.com.google.ical.iter.RecurrenceIterator;
+import biweekly.util.com.google.ical.iter.RecurrenceIteratorFactory;
+import biweekly.util.com.google.ical.values.DateTimeValue;
+import biweekly.util.com.google.ical.values.DateTimeValueImpl;
+import biweekly.util.com.google.ical.values.DateValue;
+import biweekly.util.com.google.ical.values.RRule;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
