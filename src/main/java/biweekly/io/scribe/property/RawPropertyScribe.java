@@ -1,18 +1,13 @@
 package biweekly.io.scribe.property;
 
-import java.util.List;
-
-import org.w3c.dom.Element;
-
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.xml.XCalElement;
-import biweekly.io.xml.XCalNamespaceContext;
+import biweekly.io.xml.XCalElement.XCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RawProperty;
-import biweekly.util.XmlUtils;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -40,8 +35,19 @@ import biweekly.util.XmlUtils;
  */
 
 /**
- * Marshals properties that do not have a scribe associated with them.
+ * Marshals {@link RawProperty} properties.
  * @author Michael Angstadt
+ */
+/*
+ * Note concerning escaping and unescaping special characters:
+ * 
+ * Values are not escaped and unescaped for the following reason: If the
+ * experimental property's value is a list or structured list, then the escaping
+ * must be preserved or else escaped special characters will be lost.
+ * 
+ * This is an inconvenience, considering the fact that most experimental
+ * properties contain simple text values. But it is necessary in order to
+ * prevent data loss.
  */
 public class RawPropertyScribe extends ICalPropertyScribe<RawProperty> {
 	public RawPropertyScribe(String propertyName) {
@@ -56,11 +62,7 @@ public class RawPropertyScribe extends ICalPropertyScribe<RawProperty> {
 	@Override
 	protected String _writeText(RawProperty property, WriteContext context) {
 		String value = property.getValue();
-		if (value != null) {
-			return value;
-		}
-
-		return "";
+		return (value == null) ? "" : value;
 	}
 
 	@Override
@@ -70,22 +72,12 @@ public class RawPropertyScribe extends ICalPropertyScribe<RawProperty> {
 
 	@Override
 	protected RawProperty _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
-		Element rawElement = element.getElement();
-		String name = rawElement.getLocalName();
+		XCalValue firstValue = element.firstValue();
+		ICalDataType dataType = firstValue.getDataType();
+		String value = firstValue.getValue();
 
-		//get the text content of the first child element with the xCard namespace
-		List<Element> children = XmlUtils.toElementList(rawElement.getChildNodes());
-		for (Element child : children) {
-			if (XCalNamespaceContext.XCAL_NS.equals(child.getNamespaceURI())) {
-				String dataTypeStr = child.getLocalName();
-				ICalDataType dataType = "unknown".equals(dataTypeStr) ? null : ICalDataType.get(dataTypeStr);
-				String value = child.getTextContent();
-				return new RawProperty(name, dataType, value);
-			}
-		}
-
-		//get the text content of the property element
-		String value = rawElement.getTextContent();
-		return new RawProperty(name, null, value);
+		RawProperty property = new RawProperty(propertyName, value);
+		property.setDataType(dataType);
+		return property;
 	}
 }

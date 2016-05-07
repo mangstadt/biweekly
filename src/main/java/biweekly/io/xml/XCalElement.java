@@ -217,7 +217,77 @@ public class XCalElement {
 		return null;
 	}
 
+	/**
+	 * Finds the first child element that has the xCard namespace and returns
+	 * its data type and value. If no such element is found, the parent
+	 * {@link XCalElement}'s text content, along with a null data type, is
+	 * returned.
+	 * @param element the parent element
+	 * @return the value and data type
+	 */
+	public XCalValue firstValue() {
+		for (Element child : children()) {
+			String childNamespace = child.getNamespaceURI();
+			if (XCAL_NS.equals(childNamespace)) {
+				ICalDataType dataType = toDataType(child.getLocalName());
+				String value = child.getTextContent();
+				return new XCalValue(dataType, value);
+			}
+		}
+
+		return new XCalValue(null, element.getTextContent());
+	}
+
+	/**
+	 * Gets the appropriate XML local name of a {@link ICalDataType} object.
+	 * @param dataType the data type or null for "unknown"
+	 * @return the local name (e.g. "text")
+	 */
 	private String toLocalName(ICalDataType dataType) {
 		return (dataType == null) ? "unknown" : dataType.getName().toLowerCase();
+	}
+
+	/**
+	 * Converts an XML local name to the appropriate {@link ICalDataType}
+	 * object.
+	 * @param localName the local name (e.g. "text")
+	 * @return the data type or null for "unknown"
+	 */
+	private static ICalDataType toDataType(String localName) {
+		return "unknown".equals(localName) ? null : ICalDataType.get(localName);
+	}
+
+	/**
+	 * Represents the data type and value of a child element under an
+	 * {@link XCalElement}.
+	 */
+	public static class XCalValue {
+		private final ICalDataType dataType;
+		private final String value;
+
+		/**
+		 * @param dataType the data type or null if "unknown"
+		 * @param value the value
+		 */
+		public XCalValue(ICalDataType dataType, String value) {
+			this.dataType = dataType;
+			this.value = value;
+		}
+
+		/**
+		 * Gets the data type
+		 * @return the data type or null if "unknown"
+		 */
+		public ICalDataType getDataType() {
+			return dataType;
+		}
+
+		/**
+		 * Get the value.
+		 * @return the value
+		 */
+		public String getValue() {
+			return value;
+		}
 	}
 }

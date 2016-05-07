@@ -30,8 +30,10 @@ import biweekly.io.SkipMeException;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
+import biweekly.io.json.JsonValue;
 import biweekly.io.text.ICalRawWriter;
 import biweekly.io.xml.XCalElement;
+import biweekly.io.xml.XCalElement.XCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.util.DateTimeComponents;
@@ -41,7 +43,6 @@ import biweekly.util.ListMultimap;
 import biweekly.util.StringUtils;
 import biweekly.util.StringUtils.JoinCallback;
 import biweekly.util.StringUtils.JoinMapCallback;
-import biweekly.util.XmlUtils;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -430,27 +431,9 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * {@link ICalendar} object
 	 */
 	protected T _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
-		String value = null;
-		ICalDataType dataType = null;
-		Element rawElement = element.getElement();
-
-		//get the text content of the first child element with the xCard namespace
-		List<Element> children = XmlUtils.toElementList(rawElement.getChildNodes());
-		for (Element child : children) {
-			if (XCAL_NS.equals(child.getNamespaceURI())) {
-				String dataTypeStr = child.getLocalName();
-				dataType = "unknown".equals(dataTypeStr) ? null : ICalDataType.get(dataTypeStr);
-				value = child.getTextContent();
-				break;
-			}
-		}
-
-		if (dataType == null) {
-			//get the text content of the property element
-			value = rawElement.getTextContent();
-		}
-
-		value = escape(value);
+		XCalValue firstValue = element.firstValue();
+		ICalDataType dataType = firstValue.getDataType();
+		String value = escape(firstValue.getValue());
 		return _parseText(value, dataType, parameters, context);
 	}
 
@@ -523,25 +506,33 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * {@link ICalendar} object
 	 */
 	protected T _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		return _parseText(jcalValueToString(value), dataType, parameters, context);
+		String valueStr = jcalValueToString(value);
+		return _parseText(valueStr, dataType, parameters, context);
 	}
 
-	private String jcalValueToString(JCalValue value) {
-		if (value.getValues().size() > 1) {
+	/**
+	 * Converts a jCal value to its plain-text format representation.
+	 * @param value the jCal value
+	 * @return the plain-text format representation (for example, "1,2,3" for a
+	 * list of values)
+	 */
+	private static String jcalValueToString(JCalValue value) {
+		List<JsonValue> values = value.getValues();
+		if (values.size() > 1) {
 			List<String> multi = value.asMulti();
 			if (!multi.isEmpty()) {
 				return list(multi);
 			}
 		}
 
-		if (!value.getValues().isEmpty() && value.getValues().get(0).getArray() != null) {
+		if (!values.isEmpty() && values.get(0).getArray() != null) {
 			List<List<String>> structured = value.asStructured();
 			if (!structured.isEmpty()) {
 				return structured(structured.toArray());
 			}
 		}
 
-		if (value.getValues().get(0).getObject() != null) {
+		if (values.get(0).getObject() != null) {
 			ListMultimap<String, String> object = value.asObject();
 			if (!object.isEmpty()) {
 				return object(object.asMap());

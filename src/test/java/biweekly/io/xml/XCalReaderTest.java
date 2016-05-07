@@ -826,7 +826,7 @@ public class XCalReaderTest {
 
 			RawProperty property = ical.getExperimentalProperty("X-FOO");
 			assertNull(property.getDataType());
-			assertEquals("x-foo", property.getName());
+			assertEquals("X-FOO", property.getName());
 			assertEquals("bar", property.getValue());
 			assertWarnings(1, reader);
 		}
@@ -858,7 +858,7 @@ public class XCalReaderTest {
 
 			RawProperty property = ical.getExperimentalProperty("x-foo");
 			assertEquals(null, property.getDataType());
-			assertEquals("x-foo", property.getName());
+			assertEquals("X-FOO", property.getName());
 			assertEquals("bar", property.getValue());
 
 			Xml prop = ical.getProperty(Xml.class);

@@ -16,6 +16,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalDataType;
+import biweekly.io.xml.XCalElement.XCalValue;
 import biweekly.util.XmlUtils;
 
 /*
@@ -265,6 +266,38 @@ public class XCalElementTest {
 		Iterator<XCalElement> it = xcalElement.children(ICalDataType.TEXT).iterator();
 
 		assertFalse(it.hasNext());
+	}
+
+	@Test
+	public void firstValue() {
+		XCalElement XCalElement = build("<prop><text>one</text></prop>");
+		XCalValue child = XCalElement.firstValue();
+		assertEquals(ICalDataType.TEXT, child.getDataType());
+		assertEquals("one", child.getValue());
+	}
+
+	@Test
+	public void firstValue_unknown() {
+		XCalElement XCalElement = build("<prop><unknown>one</unknown></prop>");
+		XCalValue child = XCalElement.firstValue();
+		assertNull(child.getDataType());
+		assertEquals("one", child.getValue());
+	}
+
+	@Test
+	public void firstValue_namespace() {
+		XCalElement XCalElement = build("<prop><n:foo xmlns:n=\"http://example.com\">one</n:foo><text>two</text></prop>");
+		XCalValue child = XCalElement.firstValue();
+		assertEquals(ICalDataType.TEXT, child.getDataType());
+		assertEquals("two", child.getValue());
+	}
+
+	@Test
+	public void firstValue_no_xcard_children() {
+		XCalElement XCalElement = build("<prop><n:foo xmlns:n=\"http://example.com\">one</n:foo><n:bar xmlns:n=\"http://example.com\">two</n:bar></prop>");
+		XCalValue child = XCalElement.firstValue();
+		assertNull(child.getDataType());
+		assertEquals("onetwo", child.getValue());
 	}
 
 	@Test

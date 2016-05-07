@@ -39,6 +39,7 @@ import biweekly.property.RawProperty;
  */
 public class RawPropertyScribeTest extends ScribeTest<RawProperty> {
 	private final RawProperty withValue = new RawProperty("RAW", "value");
+	private final RawProperty withEscapedChar = new RawProperty("RAW", "one\\,two");
 	private final RawProperty empty = new RawProperty("RAW", null);
 
 	public RawPropertyScribeTest() {
@@ -48,6 +49,7 @@ public class RawPropertyScribeTest extends ScribeTest<RawProperty> {
 	@Test
 	public void writeText() {
 		sensei.assertWriteText(withValue).run("value");
+		sensei.assertWriteText(withEscapedChar).run("one\\,two");
 		sensei.assertWriteText(empty).run("");
 	}
 
@@ -55,14 +57,15 @@ public class RawPropertyScribeTest extends ScribeTest<RawProperty> {
 	public void parseText() {
 		sensei.assertParseText("value").run(has("RAW", "value", null));
 		sensei.assertParseText("value").dataType(ICalDataType.TEXT).run(has("RAW", "value", ICalDataType.TEXT));
+		sensei.assertParseText("one\\,two").run(has("RAW", "one\\,two", null));
+		sensei.assertParseText("one\\,two").dataType(ICalDataType.TEXT).run(has("RAW", "one\\,two", ICalDataType.TEXT));
 		sensei.assertParseText("").run(has("RAW", "", null));
 		sensei.assertParseText("").dataType(ICalDataType.TEXT).run(has("RAW", "", ICalDataType.TEXT));
 	}
 
 	@Test
 	public void parseXml() {
-		sensei.assertParseXml("<integer>value</integer>").run(has("raw", "value", ICalDataType.INTEGER));
-		sensei.assertParseXml("<foo>value</foo>").run(has("raw", "value", ICalDataType.get("foo")));
+		sensei.assertParseXml("<text>one\\,two</text>").run(has("RAW", "one\\,two", ICalDataType.TEXT));
 	}
 
 	private Check<RawProperty> has(final String name, final String value, final ICalDataType dataType) {

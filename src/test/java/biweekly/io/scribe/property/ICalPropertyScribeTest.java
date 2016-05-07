@@ -460,6 +460,8 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 		//unknown data type
 		sensei.assertParseXml("<unknown>value</unknown>"
 		).warnings(1).run(has(null, "value"));
+		sensei.assertParseXml("<unknown />"
+		).warnings(1).run(has(null, ""));
 		//@formatter:on
 	}
 
