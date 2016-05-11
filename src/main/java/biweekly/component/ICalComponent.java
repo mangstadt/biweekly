@@ -1,5 +1,6 @@
 package biweekly.component;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ import biweekly.util.StringUtils;
  * Base class for all iCalendar component classes.
  * @author Michael Angstadt
  */
-public abstract class ICalComponent {
+public abstract class ICalComponent implements Serializable {
 	protected final ListMultimap<Class<? extends ICalComponent>, ICalComponent> components;
 	protected final ListMultimap<Class<? extends ICalProperty>, ICalProperty> properties;
 

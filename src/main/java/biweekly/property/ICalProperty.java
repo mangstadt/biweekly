@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,7 +44,10 @@ import biweekly.parameter.ICalParameters;
  * Base class for all iCalendar property classes.
  * @author Michael Angstadt
  */
-public abstract class ICalProperty {
+public abstract class ICalProperty implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
 	/**
 	 * The property parameters.
 	 */

@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -55,7 +56,10 @@ import java.util.Map;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-38">RFC 5545
  * p.38-45</a>
  */
-public final class Recurrence {
+public final class Recurrence implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
 	private final Frequency frequency;
 	private final Integer interval;
 	private final Integer count;
@@ -333,7 +337,10 @@ public final class Recurrence {
 		}
 	}
 
-	public static class ByDay {
+	public static class ByDay implements Serializable {
+		
+		private static final long serialVersionUID = 1L;
+		
 		private final Integer num;
 		private final DayOfWeek day;
 
