@@ -214,6 +214,7 @@
 					]]></footer>
 					<docfilessubdirs>true</docfilessubdirs>
 					<stylesheetfile>src/main/javadoc/syntaxhighlighter.css</stylesheetfile>
+					<additionalparam>-Xdoclint:none</additionalparam>
 				</configuration>
 				<executions>
 					<execution>
