@@ -1,6 +1,5 @@
 package biweekly.component;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -73,6 +72,9 @@ import biweekly.property.TimezoneUrl;
  * component.
  */
 public class VTimezone extends ICalComponent {
+	
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new timezone component.
 	 * @param identifier a unique identifier for this timezone (allows it to be

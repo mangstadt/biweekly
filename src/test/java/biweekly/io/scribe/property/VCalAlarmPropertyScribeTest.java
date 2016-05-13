@@ -85,6 +85,9 @@ public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImp
 	}
 
 	public static class VCalAlarmPropertyImpl extends VCalAlarmProperty {
+		
+		private static final long serialVersionUID = 1L;
+		
 		private final List<String> dataValues;
 
 		public VCalAlarmPropertyImpl(String... dataValues) {

@@ -52,6 +52,9 @@ import java.util.Date;
  * p.7</a>
  */
 public class LastModified extends DateTimeProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a last modified property.
 	 * @param date the date

@@ -277,6 +277,7 @@ public class VEventTest {
 	}
 
 	private static class TestComponent extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 }

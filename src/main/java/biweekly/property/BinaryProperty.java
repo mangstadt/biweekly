@@ -44,6 +44,9 @@ import biweekly.util.IOUtils;
  * @author Michael Angstadt
  */
 public class BinaryProperty extends ICalProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	protected byte[] data;
 	protected String uri;
 

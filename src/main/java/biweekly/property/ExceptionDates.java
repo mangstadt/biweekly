@@ -65,6 +65,9 @@ import biweekly.util.ICalDate;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
  */
 public class ExceptionDates extends ListProperty<ICalDate> {
+
+	private static final long serialVersionUID = 1L;
+
 	public ExceptionDates() {
 		//empty
 	}

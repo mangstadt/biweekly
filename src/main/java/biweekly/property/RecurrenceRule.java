@@ -51,6 +51,9 @@ import biweekly.util.Recurrence;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34</a>
  */
 public class RecurrenceRule extends RecurrenceProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new recurrence rule property.
 	 * @param recur the recurrence rule

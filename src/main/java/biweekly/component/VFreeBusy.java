@@ -83,6 +83,9 @@ import biweekly.util.Period;
  * component.
  */
 public class VFreeBusy extends ICalComponent {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * <p>
 	 * Creates a new free/busy component.

@@ -32,5 +32,6 @@ import biweekly.io.scribe.property.CannotParseScribe;
  * @author Michael Angstadt
  */
 public class CannotParseProperty extends ICalProperty {
+	private static final long serialVersionUID = 1L;
 	//empty
 }

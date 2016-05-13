@@ -78,18 +78,22 @@ public class WarningsGroupTest {
 	}
 
 	private class TestProperty extends ICalProperty {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 
 	private class TestComponent extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 
 	private class Parent extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 
 	private class Grandparent extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 }

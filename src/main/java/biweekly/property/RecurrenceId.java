@@ -61,6 +61,9 @@ import biweekly.util.ICalDate;
  * p.107-9</a>
  */
 public class RecurrenceId extends DateOrDateTimeProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a recurrence ID property.
 	 * @param originalStartDate the original start date

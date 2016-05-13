@@ -37,6 +37,9 @@ import biweekly.component.VAlarm;
  * @see VAlarm#display
  */
 public class DisplayAlarm extends VCalAlarmProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private String text;
 
 	public DisplayAlarm(String text) {

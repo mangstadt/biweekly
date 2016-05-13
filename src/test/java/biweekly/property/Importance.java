@@ -36,6 +36,9 @@ import biweekly.component.ICalComponent;
  * @author Michael Angstadt
  */
 public class Importance extends ICalProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private Integer number;
 	private String text;
 

@@ -119,6 +119,7 @@ public class TextListPropertyScribeTest extends ScribeTest<biweekly.io.scribe.pr
 	}
 
 	public static class ListPropertyImpl extends ListProperty<String> {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 

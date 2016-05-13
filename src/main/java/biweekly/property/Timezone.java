@@ -42,6 +42,9 @@ import biweekly.util.UtcOffset;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
  */
 public class Timezone extends UtcOffsetProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a timezone property.
 	 * @param offset the UTC offset

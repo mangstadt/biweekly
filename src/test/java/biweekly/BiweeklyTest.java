@@ -617,6 +617,9 @@ public class BiweeklyTest {
 	}
 
 	private class TestProperty extends ICalProperty {
+
+		private static final long serialVersionUID = 1L;
+		
 		private Integer number;
 
 		public TestProperty(Integer number) {
@@ -670,6 +673,7 @@ public class BiweeklyTest {
 	}
 
 	private class Party extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 }

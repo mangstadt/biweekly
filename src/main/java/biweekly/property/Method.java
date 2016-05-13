@@ -59,6 +59,9 @@ import biweekly.ICalVersion;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-74">RFC 2445 p.74-5</a>
  */
 public class Method extends EnumProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private static final String ADD = "ADD";
 	private static final String CANCEL = "CANCEL";
 	private static final String COUNTER = "COUNTER";

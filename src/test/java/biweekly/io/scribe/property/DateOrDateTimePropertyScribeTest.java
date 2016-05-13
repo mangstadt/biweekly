@@ -229,6 +229,9 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 	}
 
 	public static class DateOrDateTimePropertyImpl extends DateOrDateTimeProperty {
+
+		private static final long serialVersionUID = 1L;
+
 		public DateOrDateTimePropertyImpl(Date value, boolean hasTime) {
 			super(value, hasTime);
 		}

@@ -60,6 +60,9 @@ import java.util.Date;
  * p.130-1</a>
  */
 public class DateTimeStamp extends DateTimeProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a date time stamp property.
 	 * @param date the date

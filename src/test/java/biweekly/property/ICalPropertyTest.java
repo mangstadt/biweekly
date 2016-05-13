@@ -191,6 +191,9 @@ public class ICalPropertyTest {
 	}
 
 	private static class CopyConstructorTest extends ICalProperty {
+
+		private static final long serialVersionUID = 1L;
+		
 		private String value;
 
 		public CopyConstructorTest(String value) {
@@ -212,6 +215,9 @@ public class ICalPropertyTest {
 	}
 
 	private static class CopyConstructorThrowsExceptionTest extends ICalProperty {
+
+		private static final long serialVersionUID = 1L;
+		
 		private final RuntimeException e;
 
 		public CopyConstructorThrowsExceptionTest(RuntimeException e) {
@@ -225,6 +231,7 @@ public class ICalPropertyTest {
 	}
 
 	private static class ICalPropertyImpl extends ICalProperty {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 }

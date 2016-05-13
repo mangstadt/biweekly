@@ -237,6 +237,9 @@ public class StreamReaderTest {
 	}
 
 	private class TestProperty extends ICalProperty {
+		
+		private static final long serialVersionUID = 1L;
+
 		private final ICalDate date;
 
 		public TestProperty(ICalDate date) {

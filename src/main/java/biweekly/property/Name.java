@@ -70,6 +70,9 @@ import biweekly.ICalendar;
  * p.5</a>
  */
 public class Name extends TextProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a name property.
 	 * @param name the name of the calendar

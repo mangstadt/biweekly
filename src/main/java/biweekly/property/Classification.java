@@ -71,6 +71,9 @@ import biweekly.ICalVersion;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.28-9</a>
  */
 public class Classification extends EnumProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private static final String PUBLIC = "PUBLIC";
 	private static final String PRIVATE = "PRIVATE";
 	private static final String CONFIDENTIAL = "CONFIDENTIAL";

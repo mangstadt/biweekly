@@ -54,6 +54,9 @@ package biweekly.property;
  * p.9</a>
  */
 public class Color extends TextProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a color property.
 	 * @param color the color name (case insensitive). Acceptable values are

@@ -30,6 +30,9 @@ package biweekly.property;
  * @author Michael Angstadt
  */
 public class IntegerProperty extends ValuedProperty<Integer> {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new integer property.
 	 * @param value the property's value

@@ -48,6 +48,9 @@ import biweekly.Biweekly;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
  */
 public class ProductId extends TextProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new product identifier property.
 	 * @param value a unique string representing the application (e.g.

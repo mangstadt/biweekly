@@ -49,6 +49,9 @@ package biweekly.property;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.36</a>
  */
 public class Summary extends TextProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new summary property.
 	 * @param summary the summary

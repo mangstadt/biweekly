@@ -58,6 +58,9 @@ import biweekly.ICalendar;
  * p.6</a>
  */
 public class Url extends TextProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a URL property.
 	 * @param url the URL (e.g. "http://example.com/resource.ics")

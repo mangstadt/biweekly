@@ -68,6 +68,9 @@ import biweekly.parameter.Display;
  * p.10</a>
  */
 public class Image extends BinaryProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new attachment.
 	 * @param formatType the content-type of the data (e.g. "image/png")

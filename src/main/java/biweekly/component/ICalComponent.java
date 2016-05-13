@@ -50,6 +50,9 @@ import biweekly.util.StringUtils;
  * @author Michael Angstadt
  */
 public abstract class ICalComponent implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
 	protected final ListMultimap<Class<? extends ICalComponent>, ICalComponent> components;
 	protected final ListMultimap<Class<? extends ICalProperty>, ICalProperty> properties;
 

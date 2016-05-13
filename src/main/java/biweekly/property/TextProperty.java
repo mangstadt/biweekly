@@ -31,6 +31,9 @@ package biweekly.property;
  * @author Michael Angstadt
  */
 public class TextProperty extends ValuedProperty<String> {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new text property.
 	 * @param value the property's value

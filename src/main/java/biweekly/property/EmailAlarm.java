@@ -37,6 +37,9 @@ import biweekly.component.VAlarm;
  * @see VAlarm#email
  */
 public class EmailAlarm extends VCalAlarmProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private String email, note;
 
 	public EmailAlarm(String email) {

@@ -52,6 +52,9 @@ import biweekly.util.ListMultimap;
  * @author Michael Angstadt
  */
 public class ICalParameters extends ListMultimap<String, String> {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Contains a URI that points to additional information about the entity
 	 * represented by the property.

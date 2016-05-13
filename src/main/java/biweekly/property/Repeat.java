@@ -47,6 +47,9 @@ package biweekly.property;
  * p.126-7</a>
  */
 public class Repeat extends IntegerProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a repeat property.
 	 * @param count the number of times to repeat the alarm (e.g. "2" to repeat

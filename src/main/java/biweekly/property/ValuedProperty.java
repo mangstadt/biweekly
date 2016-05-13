@@ -40,6 +40,9 @@ import biweekly.component.ICalComponent;
  * @param <T> the value type (e.g. String)
  */
 public class ValuedProperty<T> extends ICalProperty {
+	
+	private static final long serialVersionUID = 1L;
+	
 	protected T value;
 
 	/**

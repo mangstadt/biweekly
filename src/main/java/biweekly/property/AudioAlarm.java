@@ -38,6 +38,9 @@ import biweekly.component.VAlarm;
  * @see VAlarm#audio
  */
 public class AudioAlarm extends VCalAlarmProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private String contentId, uri;
 	private byte[] data;
 

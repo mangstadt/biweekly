@@ -49,6 +49,9 @@ package biweekly.component;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-60">RFC 2445 p.60-7</a>
  */
 public class StandardTime extends Observance {
+
+	private static final long serialVersionUID = 1L;
+
 	public StandardTime() {
 		//empty
 	}

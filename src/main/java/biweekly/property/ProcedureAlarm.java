@@ -37,6 +37,9 @@ import biweekly.component.VAlarm;
  * @see VAlarm#procedure
  */
 public class ProcedureAlarm extends VCalAlarmProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private String path;
 
 	/**

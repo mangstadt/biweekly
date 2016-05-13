@@ -51,6 +51,9 @@ import java.util.List;
  * p.7</a>
  */
 public class Categories extends ListProperty<String> {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new categories property.
 	 */

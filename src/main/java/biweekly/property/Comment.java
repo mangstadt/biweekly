@@ -45,6 +45,9 @@ package biweekly.property;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-80">RFC 2445 p.80-1</a>
  */
 public class Comment extends TextProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a comment property.
 	 * @param comment the comment

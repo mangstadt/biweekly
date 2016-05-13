@@ -61,6 +61,9 @@ import biweekly.ICalendar;
  * p.6</a>
  */
 public class Description extends TextProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a description property.
 	 * @param description the description

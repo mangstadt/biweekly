@@ -47,6 +47,9 @@ package biweekly.property;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.33</a>
  */
 public class Priority extends IntegerProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a priority property.
 	 * @param priority the priority ("0" is undefined, "1" is the highest, "9"

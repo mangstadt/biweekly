@@ -54,6 +54,9 @@ import biweekly.component.ICalComponent;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.23</a>
  */
 public class Geo extends ICalProperty {
+	
+	private static final long serialVersionUID = 1L;
+	
 	private Double latitude;
 	private Double longitude;
 

@@ -158,6 +158,7 @@ public class ListPropertyScribeTest extends ScribeTest<ListPropertyImpl> {
 	}
 
 	public static class ListPropertyImpl extends ListProperty<String> {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 

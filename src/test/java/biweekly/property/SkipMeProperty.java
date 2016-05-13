@@ -32,5 +32,6 @@ import biweekly.io.scribe.property.SkipMeScribe;
  * @author Michael Angstadt
  */
 public class SkipMeProperty extends ICalProperty {
+	private static final long serialVersionUID = 1L;
 	//empty
 }

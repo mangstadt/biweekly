@@ -34,6 +34,9 @@ import biweekly.util.ICalDate;
  * @author Michael Angstadt
  */
 public class DateOrDateTimeProperty extends ValuedProperty<ICalDate> {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new property.
 	 * @param value the date-time value

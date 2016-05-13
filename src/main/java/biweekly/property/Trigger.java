@@ -58,6 +58,9 @@ import biweekly.util.Duration;
  * p.127-9</a>
  */
 public class Trigger extends ICalProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private Duration duration;
 	private Date date;
 

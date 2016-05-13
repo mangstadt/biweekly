@@ -33,6 +33,9 @@ import java.util.Date;
  * @author Michael Angstadt
  */
 public class DateTimeProperty extends ValuedProperty<Date> {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new property.
 	 * @param value the date-time value

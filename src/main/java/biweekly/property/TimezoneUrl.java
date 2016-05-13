@@ -44,6 +44,9 @@ package biweekly.property;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-101">RFC 2445 p.101</a>
  */
 public class TimezoneUrl extends TextProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a timezone URL property.
 	 * @param url the timezone URL (e.g.

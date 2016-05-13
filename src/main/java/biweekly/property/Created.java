@@ -50,6 +50,9 @@ import java.util.Date;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.29</a>
  */
 public class Created extends DateTimeProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a created property.
 	 * @param date the creation date

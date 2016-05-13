@@ -46,6 +46,9 @@ package biweekly.property;
  * p.8</a>
  */
 public class Source extends TextProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a source property.
 	 * @param uri the URI (e.g. "http://example.com/holidays.ics")

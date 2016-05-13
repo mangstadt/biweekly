@@ -51,6 +51,9 @@ import biweekly.util.Duration;
  * p.7</a>
  */
 public class RefreshInterval extends ValuedProperty<Duration> {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a refresh interval property.
 	 * @param duration the duration value (e.g. "2 hours and 30 minutes")

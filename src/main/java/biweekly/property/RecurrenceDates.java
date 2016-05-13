@@ -76,6 +76,9 @@ import biweekly.util.Period;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34</a>
  */
 public class RecurrenceDates extends ICalProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private final List<ICalDate> dates;
 	private final List<Period> periods;
 

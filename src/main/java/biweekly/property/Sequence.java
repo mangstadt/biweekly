@@ -48,6 +48,9 @@ package biweekly.property;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35</a>
  */
 public class Sequence extends IntegerProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a sequence property.
 	 * @param sequence the sequence number (e.g. "0" for the initial version,
