@@ -1,9 +1,13 @@
 package biweekly.io.scribe.property;
 
+import java.util.List;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
+import biweekly.io.json.JCalValue;
+import biweekly.io.json.JsonValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalElement.XCalValue;
 import biweekly.parameter.ICalParameters;
@@ -76,8 +80,36 @@ public class RawPropertyScribe extends ICalPropertyScribe<RawProperty> {
 		ICalDataType dataType = firstValue.getDataType();
 		String value = firstValue.getValue();
 
-		RawProperty property = new RawProperty(propertyName, value);
-		property.setDataType(dataType);
-		return property;
+		return new RawProperty(propertyName, dataType, value);
+	}
+
+	@Override
+	protected RawProperty _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
+		String valueStr = jcardValueToString(value);
+
+		return new RawProperty(propertyName, dataType, valueStr);
+	}
+
+	private static String jcardValueToString(JCalValue value) {
+		/*
+		 * ICalPropertyScribe.jcardValueToString() cannot be used because it
+		 * escapes single values.
+		 */
+		List<JsonValue> values = value.getValues();
+		if (values.size() > 1) {
+			List<String> multi = value.asMulti();
+			if (!multi.isEmpty()) {
+				return list(multi);
+			}
+		}
+
+		if (!values.isEmpty() && values.get(0).getArray() != null) {
+			List<List<String>> structured = value.asStructured();
+			if (!structured.isEmpty()) {
+				return structured(structured.toArray());
+			}
+		}
+
+		return value.asSingle();
 	}
 }

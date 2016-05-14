@@ -2,10 +2,13 @@ package biweekly.io.scribe.property;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.io.ParseContext;
+import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.RawProperty;
 
@@ -66,6 +69,18 @@ public class RawPropertyScribeTest extends ScribeTest<RawProperty> {
 	@Test
 	public void parseXml() {
 		sensei.assertParseXml("<text>one\\,two</text>").run(has("RAW", "one\\,two", ICalDataType.TEXT));
+	}
+
+	@Test
+	public void parseJson() {
+		JCalValue value = JCalValue.single("one\\,two");
+		sensei.assertParseJson(value).dataType(ICalDataType.TEXT).run(has("RAW", "one\\,two", ICalDataType.TEXT));
+
+		value = JCalValue.multi("one", "two,three");
+		sensei.assertParseJson(value).dataType(ICalDataType.TEXT).run(has("RAW", "one,two\\,three", ICalDataType.TEXT));
+
+		value = JCalValue.structured(Arrays.asList("one", "two"), Arrays.asList("three,four"));
+		sensei.assertParseJson(value).dataType(ICalDataType.TEXT).run(has("RAW", "one,two;three\\,four", ICalDataType.TEXT));
 	}
 
 	private Check<RawProperty> has(final String name, final String value, final ICalDataType dataType) {
