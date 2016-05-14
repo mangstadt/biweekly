@@ -239,7 +239,7 @@ public class ICalTimeZone extends TimeZone {
 
 	/**
 	 * This method is not supported by this class.
-	 * @throws UnsupportedOperationException
+	 * @throws UnsupportedOperationException thrown when this method is called
 	 */
 	@Override
 	public void setRawOffset(int offset) {

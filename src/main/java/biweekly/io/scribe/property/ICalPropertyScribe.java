@@ -185,6 +185,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * Marshals a property's value to a string.
 	 * @param property the property
 	 * @param context the context
+	 * @return the marshalled property value
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
 	 */
@@ -1261,6 +1262,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * that the parser expected to find are missing from the property's XML
 	 * element.
 	 * @param dataTypes the expected data types (null for "unknown")
+	 * @return the exception
 	 */
 	protected static CannotParseException missingXmlElements(ICalDataType... dataTypes) {
 		String[] elements = new String[dataTypes.length];
@@ -1274,7 +1276,8 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	/**
 	 * Creates a {@link CannotParseException}, indicating that the XML elements
 	 * that the parser expected to find are missing from property's XML element.
-	 * @param elements the names of the expected XML elements.
+	 * @param elements the names of the expected XML elements
+	 * @return the exception
 	 */
 	protected static CannotParseException missingXmlElements(String... elements) {
 		return new CannotParseException(23, Arrays.toString(elements));

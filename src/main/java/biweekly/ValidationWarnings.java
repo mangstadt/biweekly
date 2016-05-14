@@ -153,8 +153,8 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 	 * 
 	 * <pre>
 	 * [ICalendar]: ProductId is not set (it is a required property).
-	 * [ICalendar > VEvent > DateStart]: DateStart must come before DateEnd.
-	 * [ICalendar > VEvent > VAlarm]: The trigger must specify which date field its duration is relative to.
+	 * [ICalendar &gt; VEvent &gt; DateStart]: DateStart must come before DateEnd.
+	 * [ICalendar &gt; VEvent &gt; VAlarm]: The trigger must specify which date field its duration is relative to.
 	 * </pre>
 	 */
 	@Override
@@ -253,8 +253,8 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 		 * </p>
 		 * 
 		 * <pre>
-		 * [ICalendar > VEvent > VAlarm]: Email alarms must have at least one attendee.
-		 * [ICalendar > VEvent > VAlarm]: The trigger must specify which date field its duration is relative to.
+		 * [ICalendar &gt; VEvent &gt; VAlarm]: Email alarms must have at least one attendee.
+		 * [ICalendar &gt; VEvent &gt; VAlarm]: The trigger must specify which date field its duration is relative to.
 		 * </pre>
 		 */
 		@Override

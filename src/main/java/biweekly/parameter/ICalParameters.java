@@ -15,6 +15,7 @@ import biweekly.Warning;
 import biweekly.property.Attendee;
 import biweekly.property.Conference;
 import biweekly.property.FreeBusy;
+import biweekly.property.Image;
 import biweekly.property.Organizer;
 import biweekly.property.RecurrenceId;
 import biweekly.property.RelatedTo;

@@ -325,6 +325,8 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents>,
 
 	/**
 	 * Converts the date-time components to a {@link Date} object.
+	 * @param timezone the timezone that the date-time components are assumed to
+	 * be in
 	 * @return the date object
 	 */
 	public Date toDate(TimeZone timezone) {
@@ -333,6 +335,7 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents>,
 
 	/**
 	 * Converts the date-time components to a {@link Date} object.
+	 * @param c the calendar object to use
 	 * @return the date object
 	 */
 	public Date toDate(Calendar c) {

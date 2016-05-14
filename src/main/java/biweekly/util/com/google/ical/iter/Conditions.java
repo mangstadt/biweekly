@@ -29,7 +29,7 @@ final class Conditions {
     return new Predicate<DateValue>() {
 	  private static final long serialVersionUID = -3770774958208833665L;
 	  int count_ = count;
-      public boolean apply(DateValue _) {
+      public boolean apply(DateValue value) {
         return --count_ >= 0;
       }
       @Override

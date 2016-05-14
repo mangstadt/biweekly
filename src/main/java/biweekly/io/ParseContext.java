@@ -114,6 +114,7 @@ public class ParseContext {
 	 * (floating time), so it can be added to the {@link TimezoneInfo} object
 	 * after the iCalendar object is parsed.
 	 * @param property the property
+	 * @param date the property's date value
 	 */
 	public void addFloatingDate(ICalProperty property, ICalDate date) {
 		floatingDates.add(new TimezonedDate(date, property));

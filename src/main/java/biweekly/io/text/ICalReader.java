@@ -100,7 +100,7 @@ import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
  * 
  * //get the VTIMEZONE components that were parsed
  * //the VTIMEZONE components will NOT be in the ICalendar object
- * Collection&ltVTimezone&gt; vtimezones = tzinfo.getComponents();
+ * Collection&lt;VTimezone&gt; vtimezones = tzinfo.getComponents();
  * 
  * //get the timezone that a property was originally formatted in
  * DateStart dtstart = ical.getEvents().get(0).getDateStart();
