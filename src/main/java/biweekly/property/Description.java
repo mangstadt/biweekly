@@ -42,6 +42,7 @@ import biweekly.ICalendar;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -49,9 +50,6 @@ import biweekly.ICalendar;
  * Description description = new Description(&quot;During this meeting, we will discuss...&quot;);
  * event.setDescription(description);
  * </pre>
- * 
- * </p>
- * 
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545 p.84-5</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-81">RFC 2445 p.81-2</a>

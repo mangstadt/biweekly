@@ -356,6 +356,7 @@ public class ICalRawReader implements Closeable {
 	 * </p>
 	 * 
 	 * <table border="1">
+	 * <caption>Characters encoded by circumflex accent encoding</caption>
 	 * <tr>
 	 * <th>Raw Character</th>
 	 * <th>Encoded Character</th>
@@ -399,6 +400,7 @@ public class ICalRawReader implements Closeable {
 	 * </p>
 	 * 
 	 * <table border="1">
+	 * <caption>Characters encoded by circumflex accent encoding</caption>
 	 * <tr>
 	 * <th>Raw Character</th>
 	 * <th>Encoded Character</th>

@@ -37,15 +37,16 @@ import biweekly.component.VTodo;
  * <p>
  * This property has different meanings depending on the component it belongs
  * to:
+ * </p>
  * <ul>
  * <li>{@link VEvent} - The organizer of the event.</li>
  * <li>{@link VTodo} - The creator of the to-do task.</li>
  * <li>{@link VJournal} - The owner of the journal entry.</li>
  * <li>{@link VFreeBusy} - The person requesting the free/busy time.</li>
  * </ul>
- * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -54,8 +55,6 @@ import biweekly.component.VTodo;
  * organizer.setCommonName(&quot;John Doe&quot;);
  * event.setOrganizer(organizer);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-111">RFC 5545
  * p.111-2</a>

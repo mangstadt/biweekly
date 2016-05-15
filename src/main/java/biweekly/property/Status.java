@@ -42,6 +42,7 @@ import biweekly.component.VTodo;
  * 
  * <p>
  * <b>Code sample (creating):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VTodo todo = new VTodo();
@@ -50,10 +51,9 @@ import biweekly.component.VTodo;
  * todo.setStatus(status);
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Code sample (retrieving):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical = ...
@@ -67,8 +67,6 @@ import biweekly.component.VTodo;
  *   //etc.
  * }
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-92">RFC 5545 p.92-3</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-88">RFC 2445 p.88-9</a>

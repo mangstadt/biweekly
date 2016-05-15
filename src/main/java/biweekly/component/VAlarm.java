@@ -49,9 +49,9 @@ import biweekly.util.Duration;
  * Defines a reminder for an event or to-do task. This class contains static
  * factory methods to aid in the construction of valid alarms.
  * </p>
- * 
  * <p>
  * <b>Examples:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * //audio alarm
@@ -71,8 +71,6 @@ import biweekly.util.Duration;
  * List&lt;String&gt; to = Arrays.asList(&quot;janedoe@example.com&quot;, &quot;bobsmith@example.com&quot;);
  * VAlarm email = VAlarm.email(trigger, subject, body, to);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-71">RFC 5545 p.71-6</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-67">RFC 2445
@@ -212,12 +210,12 @@ public class VAlarm extends ICalComponent {
 	 * </p>
 	 * <p>
 	 * This property has different meanings, depending on the alarm action:
+	 * </p>
 	 * <ul>
 	 * <li>DISPLAY - the display text</li>
 	 * <li>EMAIL - the body of the email message</li>
 	 * <li>all others - a general description of the alarm</li>
 	 * </ul>
-	 * </p>
 	 * @return the description or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545
 	 * p.84-5</a>
@@ -235,12 +233,12 @@ public class VAlarm extends ICalComponent {
 	 * </p>
 	 * <p>
 	 * This property has different meanings, depending on the alarm action:
+	 * </p>
 	 * <ul>
 	 * <li>DISPLAY - the display text</li>
 	 * <li>EMAIL - the body of the email message</li>
 	 * <li>all others - a general description of the alarm</li>
 	 * </ul>
-	 * </p>
 	 * @param description the description or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545
 	 * p.84-5</a>
@@ -258,12 +256,12 @@ public class VAlarm extends ICalComponent {
 	 * </p>
 	 * <p>
 	 * This property has different meanings, depending on the alarm action:
+	 * </p>
 	 * <ul>
 	 * <li>DISPLAY - the display text</li>
 	 * <li>EMAIL - the body of the email message</li>
 	 * <li>all others - a general description of the alarm</li>
 	 * </ul>
-	 * </p>
 	 * @param description the description or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-84">RFC 5545
@@ -283,11 +281,11 @@ public class VAlarm extends ICalComponent {
 	 * </p>
 	 * <p>
 	 * This property has different meanings, depending on the alarm action:
+	 * </p>
 	 * <ul>
 	 * <li>EMAIL - the subject line of the email</li>
 	 * <li>all others - a one-line summary of the alarm</li>
 	 * </ul>
-	 * </p>
 	 * @return the summary or null if not set
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545
 	 * p.93-4</a>
@@ -304,11 +302,11 @@ public class VAlarm extends ICalComponent {
 	 * </p>
 	 * <p>
 	 * This property has different meanings, depending on the alarm action:
+	 * </p>
 	 * <ul>
 	 * <li>EMAIL - the subject line of the email</li>
 	 * <li>all others - a one-line summary of the alarm</li>
 	 * </ul>
-	 * </p>
 	 * @param summary the summary or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545
 	 * p.93-4</a>
@@ -325,11 +323,11 @@ public class VAlarm extends ICalComponent {
 	 * </p>
 	 * <p>
 	 * This property has different meanings, depending on the alarm action:
+	 * </p>
 	 * <ul>
 	 * <li>EMAIL - the subject line of the email</li>
 	 * <li>all others - a one-line summary of the alarm</li>
 	 * </ul>
-	 * </p>
 	 * @param summary the summary or null to remove
 	 * @return the property that was created
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545

@@ -59,6 +59,7 @@ import biweekly.util.IOUtils;
  * 
  * <p>
  * <b>Writing an iCalendar object</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical = new ICalendar();
@@ -81,10 +82,9 @@ import biweekly.util.IOUtils;
  * writer.close();
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Writing multiple iCalendar objects</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical1 = new ICalendar();
@@ -93,10 +93,9 @@ import biweekly.util.IOUtils;
  * String icalString = Biweekly.write(ical1, ical2).go();
  * </pre>
  * 
- * </p>
- * 
  * <p>
- * <b>Writing an XML-encoded iCalendar object (xCal)</b><br>
+ * <b>Writing an XML-encoded iCalendar object (xCal)</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * //Call writeXml() instead of write()
@@ -104,10 +103,9 @@ import biweekly.util.IOUtils;
  * String xml = Biweekly.writeXml(ical).indent(2).go();
  * </pre>
  * 
- * </p>
- * 
  * <p>
- * <b>Writing a JSON-encoded iCalendar object (jCal)</b><br>
+ * <b>Writing a JSON-encoded iCalendar object (jCal)</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * //Call writeJson() instead of write()
@@ -115,10 +113,9 @@ import biweekly.util.IOUtils;
  * String json = Biweekly.writeJson(ical).go();
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Reading an iCalendar object</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical;
@@ -142,20 +139,18 @@ import biweekly.util.IOUtils;
  * reader.close();
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Reading multiple iCalendar objects</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * String icalStr = ...
  * List&lt;ICalendar&gt; icals = Biweekly.parse(icalStr).all();
  * </pre>
  * 
- * </p>
- * 
  * <p>
- * <b>Reading an XML-encoded iCalendar object (xCal)</b><br>
+ * <b>Reading an XML-encoded iCalendar object (xCal)</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * //Call parseXml() instead of parse()
@@ -163,10 +158,9 @@ import biweekly.util.IOUtils;
  * ICalendar ical = Biweekly.parseXml(xml).first();
  * </pre>
  * 
- * </p>
- * 
  * <p>
- * <b>Reading a JSON-encoded iCalendar object (Cal)</b><br>
+ * <b>Reading a JSON-encoded iCalendar object (Cal)</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * //Call parseJson() instead of parse()
@@ -174,10 +168,9 @@ import biweekly.util.IOUtils;
  * ICalendar ical = Biweekly.parseJson(json).first();
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Retrieving parser warnings</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * String icalStr = ...
@@ -192,15 +185,13 @@ import biweekly.util.IOUtils;
  * }
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * The methods in this class make use of the following classes. These classes
  * can be used if greater control over the read/write operation is required:
  * </p>
  * 
- * <style> table.t td, table.t th {border:1px solid #000;} </style>
- * <table class="t" cellpadding="5" style="border-collapse:collapse;">
+ * <table class="simpleTable">
+ * <caption>Classes used by this class</caption>
  * <tr>
  * <th></th>
  * <th>Classes</th>

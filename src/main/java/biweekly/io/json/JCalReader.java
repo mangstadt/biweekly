@@ -68,6 +68,7 @@ import com.fasterxml.jackson.core.JsonParser;
  * </p>
  * <p>
  * <b>Example:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * File file = new File("icals.json");
@@ -83,10 +84,9 @@ import com.fasterxml.jackson.core.JsonParser;
  * }
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Getting timezone information:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * JCalReader reader = ...
@@ -101,8 +101,6 @@ import com.fasterxml.jackson.core.JsonParser;
  * DateStart dtstart = ical.getEvents().get(0).getDateStart();
  * TimeZone tz = tzinfo.getTimeZone(dtstart);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc7265">RFC 7265</a>
  */

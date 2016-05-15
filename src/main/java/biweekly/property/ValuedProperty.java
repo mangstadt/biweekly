@@ -37,7 +37,7 @@ import biweekly.component.ICalComponent;
  * Represents a property whose data model consists of a single Java object (such
  * as a String).
  * @author Michael Angstadt
- * @param <T> the value type (e.g. String)
+ * @param <T> the value class (e.g. String)
  */
 public class ValuedProperty<T> extends ICalProperty {
 	protected T value;
@@ -85,6 +85,7 @@ public class ValuedProperty<T> extends ICalProperty {
 	/**
 	 * Utility method that gets the value of a {@link ValuedProperty} object.
 	 * @param property the property object (may be null)
+	 * @param <T> the value class
 	 * @return the property value (may be null), or null if the property object
 	 * itself is null
 	 */

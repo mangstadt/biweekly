@@ -33,6 +33,7 @@ package biweekly.property;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -40,8 +41,6 @@ package biweekly.property;
  * Summary summary = new Summary(&quot;Team Meeting&quot;);
  * event.setSummary(summary);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-93">RFC 5545 p.93-4</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-89">RFC 2445

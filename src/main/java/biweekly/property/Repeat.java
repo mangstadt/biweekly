@@ -33,14 +33,13 @@ package biweekly.property;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * //repeat 5 more times after the first time
  * VAlarm alarm = ...;
  * alarm.setRepeat(5);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-133">RFC 5545 p.133</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-126">RFC 2445

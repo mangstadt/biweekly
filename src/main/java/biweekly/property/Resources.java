@@ -34,6 +34,7 @@ import java.util.List;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -41,8 +42,6 @@ import java.util.List;
  * Resources resources = new Resources(&quot;projector&quot;, &quot;DVD player&quot;);
  * event.addResources(resources);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-91">RFC 5545 p.91</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-87">RFC 2445 p.87-8</a>

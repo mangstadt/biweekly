@@ -83,6 +83,7 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * </p>
  * <p>
  * <b>Examples:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VTodo todo = new VTodo();
@@ -91,8 +92,6 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * todo.setDateDue(due);
  * todo.setStatus(Status.confirmed());
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-55">RFC 5545 p.55-7</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-55">RFC 2445 p.55-6</a>
@@ -105,11 +104,11 @@ public class VTodo extends ICalComponent {
 	 * </p>
 	 * <p>
 	 * The following properties are added to the component when it is created:
+	 * </p>
 	 * <ul>
 	 * <li>{@link Uid}: Set to a UUID.</li>
 	 * <li>{@link DateTimeStamp}: Set to the current time.</li>
 	 * </ul>
-	 * </p>
 	 */
 	public VTodo() {
 		setUid(Uid.random());
@@ -818,16 +817,18 @@ public class VTodo extends ICalComponent {
 	}
 
 	/**
+	 * <p>
 	 * Sets the status of the to-do task.
+	 * </p>
 	 * <p>
 	 * Valid status codes are:
+	 * </p>
 	 * <ul>
 	 * <li>NEEDS-ACTION</li>
 	 * <li>COMPLETED</li>
 	 * <li>IN-PROGRESS</li>
 	 * <li>CANCELLED</li>
 	 * </ul>
-	 * </p>
 	 * @param status the status or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-92">RFC 5545
 	 * p.92-3</a>

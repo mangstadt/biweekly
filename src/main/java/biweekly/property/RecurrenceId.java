@@ -38,6 +38,7 @@ import biweekly.util.ICalDate;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -52,8 +53,6 @@ import biweekly.util.ICalDate;
  * RecurrenceId recurrenceId = new RecurrenceId(date, false);
  * event.setRecurrenceId(recurrenceId);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-112">RFC 5545
  * p.112-4</a>

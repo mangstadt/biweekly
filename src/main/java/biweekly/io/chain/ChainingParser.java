@@ -115,10 +115,9 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 	 * Provides a list object that any parser warnings will be put into.
 	 * @param warnings the list object that will be populated with the warnings
 	 * of each parsed iCalendar object. Each element in the list is a list of
-	 * warnings for one parsed object. Therefore, the size of this
-	 * list will be equal to the number of parsed iCalendar objects. If an
-	 * iCalendar object does not have any warnings, then its warning list will
-	 * be empty.
+	 * warnings for one parsed object. Therefore, the size of this list will be
+	 * equal to the number of parsed iCalendar objects. If an iCalendar object
+	 * does not have any warnings, then its warning list will be empty.
 	 * @return this
 	 */
 	public T warnings(List<List<String>> warnings) {
@@ -130,7 +129,6 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 	 * Reads the first iCalendar object from the stream.
 	 * @return the iCalendar object or null if there are none
 	 * @throws IOException if there's an I/O problem
-	 * @throws Exception allows implementations to throw other exceptions
 	 */
 	public ICalendar first() throws IOException {
 		StreamReader reader = constructReader();
@@ -155,7 +153,6 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 	 * Reads all iCalendar objects from the stream.
 	 * @return the parsed iCalendar objects
 	 * @throws IOException if there's an I/O problem
-	 * @throws Exception allows implementations to throw other exceptions
 	 */
 	public List<ICalendar> all() throws IOException {
 		StreamReader reader = constructReader();

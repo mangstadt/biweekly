@@ -75,6 +75,7 @@ public abstract class ICalComponent {
 	/**
 	 * Gets the first property of a given class.
 	 * @param clazz the property class
+	 * @param <T> the property class
 	 * @return the property or null if not found
 	 */
 	public <T extends ICalProperty> T getProperty(Class<T> clazz) {
@@ -85,6 +86,7 @@ public abstract class ICalComponent {
 	 * Gets all properties of a given class. Changes to the returned list will
 	 * update the {@link ICalComponent} object, and vice versa.
 	 * @param clazz the property class
+	 * @param <T> the property class
 	 * @return the properties
 	 */
 	public <T extends ICalProperty> List<T> getProperties(Class<T> clazz) {
@@ -124,6 +126,7 @@ public abstract class ICalComponent {
 	 * @param clazz the property class (e.g. "DateStart.class")
 	 * @param property the property or null to remove all properties of the
 	 * given class
+	 * @param <T> the property class
 	 * @return the replaced properties (this list is immutable)
 	 */
 	public <T extends ICalProperty> List<T> setProperty(Class<T> clazz, T property) {
@@ -134,6 +137,7 @@ public abstract class ICalComponent {
 	/**
 	 * Removes a specific property instance from this component.
 	 * @param property the property to remove
+	 * @param <T> the property class
 	 * @return true if it was removed, false if it wasn't found
 	 */
 	public <T extends ICalProperty> boolean removeProperty(T property) {
@@ -144,6 +148,7 @@ public abstract class ICalComponent {
 	 * Removes all properties of a given class from this component.
 	 * @param clazz the class of the properties to remove (e.g.
 	 * "DateStart.class")
+	 * @param <T> the property class
 	 * @return the removed properties (this list is immutable)
 	 */
 	public <T extends ICalProperty> List<T> removeProperties(Class<T> clazz) {
@@ -154,6 +159,7 @@ public abstract class ICalComponent {
 	/**
 	 * Removes a specific sub-component instance from this component.
 	 * @param component the component to remove
+	 * @param <T> the component class
 	 * @return true if it was removed, false if it wasn't found
 	 */
 	public <T extends ICalComponent> boolean removeComponent(T component) {
@@ -163,6 +169,7 @@ public abstract class ICalComponent {
 	/**
 	 * Removes all sub-components of the given class from this component.
 	 * @param clazz the class of the components to remove (e.g. "VEvent.class")
+	 * @param <T> the component class
 	 * @return the removed components (this list is immutable)
 	 */
 	public <T extends ICalComponent> List<T> removeComponents(Class<T> clazz) {
@@ -282,6 +289,7 @@ public abstract class ICalComponent {
 	/**
 	 * Gets the first sub-component of a given class.
 	 * @param clazz the component class
+	 * @param <T> the component class
 	 * @return the sub-component or null if not found
 	 */
 	public <T extends ICalComponent> T getComponent(Class<T> clazz) {
@@ -292,6 +300,7 @@ public abstract class ICalComponent {
 	 * Gets all sub-components of a given class. Changes to the returned list
 	 * will update the parent component object, and vice versa.
 	 * @param clazz the component class
+	 * @param <T> the component class
 	 * @return the sub-components
 	 */
 	public <T extends ICalComponent> List<T> getComponents(Class<T> clazz) {
@@ -330,6 +339,7 @@ public abstract class ICalComponent {
 	 * @param clazz the component's class
 	 * @param component the component or null to remove all components of the
 	 * given class
+	 * @param <T> the component class
 	 * @return the replaced sub-components (this list is immutable)
 	 */
 	public <T extends ICalComponent> List<T> setComponent(Class<T> clazz, T component) {
@@ -642,6 +652,7 @@ public abstract class ICalComponent {
 	 * objects to a new list.
 	 * @param list the list to cast
 	 * @param castTo the class to cast to
+	 * @param <T> the class to cast to
 	 * @return the new list (immutable)
 	 */
 	private static <T> List<T> castList(List<?> list, Class<T> castTo) {
@@ -717,6 +728,7 @@ public abstract class ICalComponent {
 	 * This list is backed by the {@link ICalComponent} object. Any changes made
 	 * to the list will affect the {@link ICalComponent} object and vice versa.
 	 * </p>
+	 * @param <T> the component class
 	 */
 	private class ICalComponentList<T extends ICalComponent> extends AbstractList<T> {
 		protected final Class<T> componentClass;
@@ -772,6 +784,7 @@ public abstract class ICalComponent {
 	 * This list is backed by the {@link ICalComponent} object. Any changes made
 	 * to the list will affect the {@link ICalComponent} object and vice versa.
 	 * </p>
+	 * @param <T> the property class
 	 */
 	private class ICalPropertyList<T extends ICalProperty> extends AbstractList<T> {
 		protected final Class<T> propertyClass;

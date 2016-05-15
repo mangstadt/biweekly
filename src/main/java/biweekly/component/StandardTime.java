@@ -31,6 +31,7 @@ package biweekly.component;
  * </p>
  * <p>
  * <b>Examples:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VTimezone timezone = new VTimezone(&quot;Eastern Standard Time&quot;);
@@ -41,8 +42,6 @@ package biweekly.component;
  * standard.setTimezoneOffsetTo(-5, 0);
  * timezone.addStandardTime(standard);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-62">RFC 5545
  * p.62-71</a>

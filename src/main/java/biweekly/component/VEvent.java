@@ -81,6 +81,7 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * </p>
  * <p>
  * <b>Examples:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -93,8 +94,6 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * event.setCreated(new Date());
  * event.setRecurrenceRule(new Recurrence.Builder(Frequency.WEEKLY).build());
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-52">RFC 5545 p.52-5</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-52">RFC 2445 p.52-4</a>
@@ -107,11 +106,11 @@ public class VEvent extends ICalComponent {
 	 * </p>
 	 * <p>
 	 * The following properties are added to the component when it is created:
+	 * </p>
 	 * <ul>
 	 * <li>{@link Uid}: Set to a UUID.</li>
 	 * <li>{@link DateTimeStamp}: Set to the current time.</li>
 	 * </ul>
-	 * </p>
 	 */
 	public VEvent() {
 		setUid(Uid.random());
@@ -504,15 +503,17 @@ public class VEvent extends ICalComponent {
 	}
 
 	/**
+	 * <p>
 	 * Sets the status of the event.
+	 * </p>
 	 * <p>
 	 * Valid event status codes are:
+	 * </p>
 	 * <ul>
 	 * <li>TENTATIVE</li>
 	 * <li>CONFIRMED</li>
 	 * <li>CANCELLED</li>
 	 * </ul>
-	 * </p>
 	 * @param status the status or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-92">RFC 5545
 	 * p.92-3</a>

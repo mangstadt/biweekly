@@ -33,9 +33,9 @@ import biweekly.util.ICalDate;
  * <p>
  * Defines the end date of an event or free/busy component.
  * </p>
- * 
  * <p>
  * <b>Code sample (creating):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -51,9 +51,9 @@ import biweekly.util.ICalDate;
  * event.setDateEnd(dtend);
  * </pre>
  * 
- * </p>
- * 
+ * <p>
  * <b>Code sample (reading):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical = ...
@@ -75,10 +75,9 @@ import biweekly.util.ICalDate;
  * }
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Code sample (using timezones):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * DateEnd dtend = new DateEnd(...);
@@ -101,8 +100,6 @@ import biweekly.util.ICalDate;
  * //finally, write the iCalendar object
  * writer.write(ical);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-95">RFC 5545 p.95-6</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-91">RFC 2445 p.91-2</a>

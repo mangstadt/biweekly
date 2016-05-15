@@ -57,6 +57,7 @@ import biweekly.util.Period;
  * </p>
  * <p>
  * <b>Examples:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VFreeBusy freebusy = new VFreeBusy();
@@ -69,8 +70,6 @@ import biweekly.util.Period;
  * Duration duration = Duration.builder().hours(2).build();
  * freebusy.addFreeBusy(FreeBusyType.BUSY, start, duration);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-59">RFC 5545
  * p.59-62</a>
@@ -89,11 +88,11 @@ public class VFreeBusy extends ICalComponent {
 	 * </p>
 	 * <p>
 	 * The following properties are added to the component when it is created:
+	 * </p>
 	 * <ul>
 	 * <li>{@link Uid}: Set to a UUID.</li>
 	 * <li>{@link DateTimeStamp}: Set to the current time.</li>
 	 * </ul>
-	 * </p>
 	 */
 	public VFreeBusy() {
 		setUid(Uid.random());

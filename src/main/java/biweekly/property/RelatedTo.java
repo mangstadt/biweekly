@@ -34,6 +34,7 @@ import biweekly.parameter.RelationshipType;
  * </p>
  * <p>
  * <b>Code samples:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -41,8 +42,6 @@ import biweekly.parameter.RelationshipType;
  * RelatedTo relatedTo = new RelatedTo(&quot;uid-value&quot;);
  * event.addRelatedTo(relatedTo);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-115">RFC 5545
  * p.115-6</a>

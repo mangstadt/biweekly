@@ -37,6 +37,7 @@ import biweekly.component.ICalComponent;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VTodo todo = new VTodo();
@@ -44,8 +45,6 @@ import biweekly.component.ICalComponent;
  * PercentComplete percentComplete = new PercentComplete(50); //50%
  * todo.setPercentComplete(percentComplete);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-88">RFC 5545 p.88-9</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-85">RFC 2445 p.85</a>

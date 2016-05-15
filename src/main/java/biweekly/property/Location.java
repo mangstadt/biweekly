@@ -31,6 +31,7 @@ package biweekly.property;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -38,8 +39,6 @@ package biweekly.property;
  * Location location = new Location(&quot;Room 32B&quot;);
  * event.setLocation(location);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-87">RFC 5545 p.87-8</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-84">RFC 2445 p.84</a>

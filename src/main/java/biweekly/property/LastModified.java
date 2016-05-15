@@ -33,6 +33,7 @@ import java.util.Date;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -41,8 +42,6 @@ import java.util.Date;
  * LastModified lastModified = new LastModified(datetime);
  * event.setLastModified(lastModified);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545 p.138</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-131">RFC 2445 p.131</a>

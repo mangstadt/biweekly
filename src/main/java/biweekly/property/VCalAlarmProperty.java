@@ -36,7 +36,7 @@ import biweekly.util.Duration;
  * <p>
  * Defines an alarm property that is part of the vCalendar (1.0) standard (such
  * as {@link AudioAlarm}).
- * <p>
+ * </p>
  * <p>
  * Classes that extend this class are used internally by this library for
  * parsing purposes. If you are creating a new iCalendar object and need to

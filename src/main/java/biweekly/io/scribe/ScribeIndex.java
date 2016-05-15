@@ -122,6 +122,7 @@ import biweekly.property.Xml;
  * </p>
  * <p>
  * <b>Example:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * //init the index
@@ -146,8 +147,6 @@ import biweekly.property.Xml;
  *   writer.write(ical);
  * }
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  */
 public class ScribeIndex {

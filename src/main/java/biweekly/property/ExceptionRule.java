@@ -43,6 +43,7 @@ import biweekly.util.Recurrence;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -52,8 +53,6 @@ import biweekly.util.Recurrence;
  * ExceptionRule exrule = new ExceptionRule(recur);
  * event.addExceptionRule(exrule);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-114">RFC 2445
  * p.114-15</a>

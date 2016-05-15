@@ -34,9 +34,9 @@ import biweekly.util.ICalDate;
  * Defines the start date of an event, free/busy component, or timezone
  * component.
  * </p>
- * 
  * <p>
  * <b>Code sample (creating):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -52,9 +52,9 @@ import biweekly.util.ICalDate;
  * event.setDateStart(dtstart);
  * </pre>
  * 
- * </p>
- * 
+ * <p>
  * <b>Code sample (reading):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical = ...
@@ -76,10 +76,9 @@ import biweekly.util.ICalDate;
  * }
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Code sample (using timezones):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * DateStart dtstart = new DateStart(...);
@@ -102,8 +101,6 @@ import biweekly.util.ICalDate;
  * //finally, write the iCalendar object
  * writer.write(ical);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-97">RFC 5545 p.97-8</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-93">RFC 2445 p.93-4</a>

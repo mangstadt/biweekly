@@ -42,6 +42,7 @@ import biweekly.util.Duration;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * //15 minutes before the start time
@@ -49,8 +50,6 @@ import biweekly.util.Duration;
  * Trigger trigger = new Trigger(duration, Related.START);
  * VAlarm alarm = VAlarm.display(trigger, &quot;Meeting in 15 minutes&quot;);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-133">RFC 5545
  * p.133-6</a>

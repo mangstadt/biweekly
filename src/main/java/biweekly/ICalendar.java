@@ -73,6 +73,7 @@ import biweekly.util.Duration;
  * 
  * <p>
  * <b>Examples:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical = new ICalendar();
@@ -85,8 +86,6 @@ import biweekly.util.Duration;
  * event.setDateEnd(end);
  * ical.addEvent(event);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445">RFC 2445</a>
@@ -103,10 +102,10 @@ public class ICalendar extends ICalComponent {
 	 * </p>
 	 * <p>
 	 * The following properties are added to the component when it is created:
+	 * </p>
 	 * <ul>
 	 * <li>{@link ProductId}: Set to a value that represents this library.</li>
 	 * </ul>
-	 * </p>
 	 */
 	public ICalendar() {
 		setProductId(ProductId.biweekly());

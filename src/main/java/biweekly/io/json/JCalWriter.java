@@ -56,6 +56,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * </p>
  * <p>
  * <b>Example:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical1 = ...
@@ -71,10 +72,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * }
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Changing the timezone settings:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * JCalWriter writer = new JCalWriter(...);
@@ -91,8 +91,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * //generate Outlook-friendly VTIMEZONE components:
  * writer.getTimezoneInfo().setGenerator(new TzUrlDotOrgGenerator(true));
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc7265">RFC 7265</a>
  */

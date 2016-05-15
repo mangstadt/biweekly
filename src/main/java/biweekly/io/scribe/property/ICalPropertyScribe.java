@@ -342,7 +342,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	/**
 	 * <p>
 	 * Marshals a property's value to an XML element (xCal).
-	 * <p>
+	 * </p>
 	 * <p>
 	 * This method should be overridden by child classes that wish to support
 	 * xCal. The default implementation of this method will append one child
@@ -773,6 +773,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	/**
 	 * Writes a comma-separated list of values.
 	 * @param values the values to write
+	 * @param <T> the value class
 	 * @return the list
 	 */
 	protected static <T> String list(Collection<T> values) {
@@ -788,6 +789,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param values the values to write
 	 * @param callback callback function used for converting each value to a
 	 * string
+	 * @param <T> the value class
 	 * @return the list
 	 */
 	protected static <T> String list(Collection<T> values, final ListCallback<T> callback) {
@@ -994,6 +996,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	/**
 	 * Writes an object property value to a string.
 	 * @param value the value
+	 * @param <T> the value class
 	 * @return the string
 	 */
 	protected static <T> String object(Map<String, List<T>> value) {

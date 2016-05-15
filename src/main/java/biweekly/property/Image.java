@@ -41,9 +41,9 @@ import biweekly.parameter.Display;
  * to the component to define different images for the client to display in
  * different circumstances.
  * </p>
- * 
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -60,8 +60,6 @@ import biweekly.parameter.Display;
  * image.setOnClickUri("http://example.com");
  * event.addImage(image);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a
  * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-10">draft-ietf-calext-extensions-01

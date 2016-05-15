@@ -39,6 +39,7 @@ import biweekly.component.ICalComponent;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -46,8 +47,6 @@ import biweekly.component.ICalComponent;
  * Geo geo = new Geo(40.714623, -74.006605);
  * event.setGeo(geo);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-85">RFC 5545 p.85-7</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-82">RFC 2445 p.82-3</a>

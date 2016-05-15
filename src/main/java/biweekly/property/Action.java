@@ -38,15 +38,15 @@ import biweekly.ICalVersion;
  * 
  * <p>
  * <b>Code sample (creating):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * Action action = Action.audio();
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Code sample (retrieving):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical = ...
@@ -61,8 +61,6 @@ import biweekly.ICalVersion;
  *   }
  * }
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-132">RFC 5545
  * p.132-3</a>

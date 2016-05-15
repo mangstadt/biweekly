@@ -41,14 +41,13 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  * </p>
  * <p>
  * <b>Example:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ObjectMapper mapper = new ObjectMapper();
  * mapper.registerModule(new JCalModule());
  * ICalendar result = mapper.readValue(..., ICalendar.class);
  * </pre>
- * 
- * </p>
  * @author Buddy Gorven
  * @author Michael Angstadt
  */

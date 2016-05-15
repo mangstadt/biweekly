@@ -41,6 +41,7 @@ import biweekly.util.StringUtils.JoinCallback;
  * </p>
  * <p>
  * <b>Examples:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * //validate an iCalendar object
@@ -73,8 +74,6 @@ import biweekly.util.StringUtils.JoinCallback;
  * List&lt;WarningsGroup&gt; dtstartWarnings = warnings.getByProperty(DateStart.class);
  * List&lt;WarningsGroup&gt; veventWarnings = warnings.getByComponent(VEvent.class);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see ICalendar#validate(ICalVersion)
  */

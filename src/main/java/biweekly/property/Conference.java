@@ -35,6 +35,7 @@ import biweekly.parameter.Feature;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -45,8 +46,6 @@ import biweekly.parameter.Feature;
  * conference.getFeatures().add(Feature.PHONE);
  * event.addConference(conference);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a
  * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-11">draft-ietf-calext-extensions-01

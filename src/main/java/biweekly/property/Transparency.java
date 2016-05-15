@@ -36,9 +36,9 @@ import biweekly.ICalVersion;
  * event does not have this property, the event should be considered opaque
  * (visible) to searches.
  * </p>
- * 
  * <p>
  * <b>Code sample (creating):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -50,10 +50,9 @@ import biweekly.ICalVersion;
  * event.setTransparency(false); //visible to searches
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Code sample (retrieving):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical = ...
@@ -66,8 +65,6 @@ import biweekly.ICalVersion;
  *   }
  * }
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-101">RFC 5545
  * p.101-2</a>

@@ -42,6 +42,7 @@ import biweekly.component.ICalComponent;
  * 
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -60,8 +61,6 @@ import biweekly.component.ICalComponent;
  * attach = new Attachment(&quot;image/png&quot;, &quot;http://example.com/image.png&quot;);
  * event.addAttachment(attach);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-80">RFC 5545 p.80-1</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-77">RFC 2445 p.77-8</a>

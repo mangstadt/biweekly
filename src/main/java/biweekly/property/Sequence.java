@@ -33,13 +33,12 @@ package biweekly.property;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = ...
  * event.setSequence(2);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-138">RFC 5545
  * p.138-9</a>

@@ -42,6 +42,7 @@ import biweekly.Messages;
  * </p>
  * <p>
  * <b>Examples:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * //July 22, 2013 at 17:25
@@ -59,8 +60,6 @@ import biweekly.Messages;
  * Date date = components.toDate();
  * 
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  */
 public final class DateTimeComponents implements Comparable<DateTimeComponents>, Serializable {

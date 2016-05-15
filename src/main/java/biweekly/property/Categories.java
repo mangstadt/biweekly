@@ -33,6 +33,7 @@ import java.util.List;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -40,8 +41,6 @@ import java.util.List;
  * Categories categories = new Categories(&quot;conference&quot;, &quot;meeting&quot;);
  * event.addCategories(categories);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-81">RFC 5545 p.81-2</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-78">RFC 2445 p.78-9</a>

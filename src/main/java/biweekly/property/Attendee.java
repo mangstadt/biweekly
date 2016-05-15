@@ -42,15 +42,16 @@ import biweekly.parameter.Role;
  * <p>
  * Defines an attendee (such as a person attending an event). This property has
  * different meanings depending on the component that it belongs to:
+ * </p>
  * <ul>
  * <li>{@link VAlarm} (with "EMAIL" action) - An email address that is to
  * receive the alarm.</li>
  * <li>All others - An attendee of the calendar entity.</li>
  * </ul>
- * </p>
  * 
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -62,8 +63,6 @@ import biweekly.parameter.Role;
  * attendee.setParticipationStatus(ParticipationStatus.ACCEPTED);
  * event.addAttendee(attendee);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-107">RFC 5545
  * p.107-9</a>

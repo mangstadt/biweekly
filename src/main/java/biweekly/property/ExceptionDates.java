@@ -39,6 +39,7 @@ import biweekly.util.ICalDate;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -55,8 +56,6 @@ import biweekly.util.ICalDate;
  * exdate.getValues().add(new ICalDate(date, false));
  * event.addExceptionDates(exdate);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-118">RFC 5545
  * p.118-20</a>

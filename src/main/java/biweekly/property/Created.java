@@ -33,6 +33,7 @@ import java.util.Date;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -41,8 +42,6 @@ import java.util.Date;
  * Created created = new Created(datetime);
  * event.setCreated(created);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-136">RFC 5545 p.136</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-129">RFC 2445

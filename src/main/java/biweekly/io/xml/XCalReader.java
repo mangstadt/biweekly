@@ -92,6 +92,7 @@ import biweekly.util.XmlUtils;
  * </p>
  * <p>
  * <b>Example:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * File file = new File("icals.xml");
@@ -107,10 +108,9 @@ import biweekly.util.XmlUtils;
  * }
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Getting timezone information:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * XCalReader reader = ...
@@ -125,8 +125,6 @@ import biweekly.util.XmlUtils;
  * DateStart dtstart = ical.getEvents().get(0).getDateStart();
  * TimeZone tz = tzinfo.getTimeZone(dtstart);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc6321">RFC 6321</a>
  */

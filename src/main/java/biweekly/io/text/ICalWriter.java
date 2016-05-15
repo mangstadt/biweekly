@@ -65,6 +65,7 @@ import biweekly.property.Version;
  * </p>
  * <p>
  * <b>Example:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical1 = ...
@@ -80,10 +81,9 @@ import biweekly.property.Version;
  * }
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Changing the timezone settings:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalWriter writer = new ICalWriter(...);
@@ -101,10 +101,9 @@ import biweekly.property.Version;
  * writer.getTimezoneInfo().setGenerator(new TzUrlDotOrgGenerator(true));
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Changing the line folding settings:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalWriter writer = new ICalWriter(...);
@@ -121,8 +120,6 @@ import biweekly.property.Version;
  * //change newline character (defaults to CRLF)
  * writer.getRawWriter().getFoldedLineWriter().setNewline("**");
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://www.imc.org/pdi/pdiproddev.html">1.0 specs</a>
  * @see <a href="https://tools.ietf.org/html/rfc2445">RFC 2445</a>

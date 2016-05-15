@@ -92,6 +92,7 @@ import biweekly.util.XmlUtils;
  * </p>
  * <p>
  * <b>Examples:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * String xml =
@@ -132,8 +133,6 @@ import biweekly.util.XmlUtils;
  * File file = new File("meeting.xml");
  * xcal.write(file);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc6321">RFC 6321</a>
  */

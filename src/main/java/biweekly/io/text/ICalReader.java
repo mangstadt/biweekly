@@ -73,6 +73,7 @@ import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
  * </p>
  * <p>
  * <b>Example:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * File file = new File("icals.ics");
@@ -88,10 +89,9 @@ import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
  * }
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Getting timezone information:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalReader reader = ...
@@ -106,8 +106,6 @@ import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
  * DateStart dtstart = ical.getEvents().get(0).getDateStart();
  * TimeZone tz = tzinfo.getTimeZone(dtstart);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://www.imc.org/pdi/pdiproddev.html">1.0 specs</a>
  * @see <a href="https://tools.ietf.org/html/rfc2445">RFC 2445</a>

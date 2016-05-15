@@ -32,6 +32,7 @@ package biweekly.property;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -39,8 +40,6 @@ package biweekly.property;
  * Contact contact = new Contact(&quot;Acme Co: (212) 555-1234&quot;);
  * event.addContact(contact);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-109">RFC 5545
  * p.109-11</a>

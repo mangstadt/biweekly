@@ -38,6 +38,7 @@ import biweekly.ICalendar;
  * </p>
  * <p>
  * <b>Single language:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical = new ICalendar();
@@ -46,10 +47,9 @@ import biweekly.ICalendar;
  * ical.addName(name);
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Multiple languages:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical = new ICalendar();
@@ -62,8 +62,6 @@ import biweekly.ICalendar;
  * frenchName.setLanguage(&quot;fr&quot;);
  * ical.addName(frenchName);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a
  * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-5">draft-ietf-calext-extensions-01

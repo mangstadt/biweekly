@@ -42,6 +42,7 @@ import biweekly.component.ICalComponent;
  * defines the following status code families. However, these can have different
  * meanings depending upon the type of scheduling request system being used
  * (such as <a href="http://tools.ietf.org/html/rfc5546">iTIP</a>).
+ * </p>
  * <ul>
  * <li><b>1.x</b> - The request has been received, but is still being processed.
  * </li>
@@ -51,9 +52,9 @@ import biweekly.component.ICalComponent;
  * <li><b>4.x</b> - A scheduling error occurred on the server that prevented the
  * request from being processed.</li>
  * </ul>
- * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -62,8 +63,6 @@ import biweekly.component.ICalComponent;
  * requestStatus.setDescription(&quot;Success&quot;);
  * event.setRequestStatus(requestStatus);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5546#section-3.6">RFC 5546
  * Section 3.6</a>

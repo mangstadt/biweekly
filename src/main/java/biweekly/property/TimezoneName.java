@@ -33,6 +33,7 @@ package biweekly.property;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VTimezone timezone = new VTimezone("East Coast");
@@ -42,8 +43,6 @@ package biweekly.property;
  * ...
  * timezone.addStandardTime(standard);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-103">RFC 5545
  * p.103-4</a>

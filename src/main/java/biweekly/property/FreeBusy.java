@@ -42,6 +42,7 @@ import biweekly.util.Period;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VFreeBusy fb = new VFreeBusy();
@@ -55,8 +56,6 @@ import biweekly.util.Period;
  * 
  * fb.addFreeBusy(freebusy);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-100">RFC 5545
  * p.100-1</a>

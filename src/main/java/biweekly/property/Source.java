@@ -31,6 +31,7 @@ package biweekly.property;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical = new ICalendar();
@@ -38,8 +39,6 @@ package biweekly.property;
  * Source source = new Source(&quot;http://example.com/holidays.ics&quot;);
  * ical.setSource(source);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a
  * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-8">draft-ietf-calext-extensions-01

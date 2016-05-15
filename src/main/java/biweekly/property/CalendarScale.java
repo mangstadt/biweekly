@@ -40,6 +40,7 @@ import biweekly.ICalVersion;
  * 
  * <p>
  * <b>Code sample (creating):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical = new ICalendar();
@@ -49,10 +50,9 @@ import biweekly.ICalVersion;
  * ical.setCalendarScale(new CalendarScale(&quot;another-calendar-system&quot;));
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Code sample (retrieving):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical = ...
@@ -65,22 +65,6 @@ import biweekly.ICalVersion;
  *   ...
  * }
  * </pre>
- * 
- * </p>
- * 
- * <p>
- * <b>Examples:</b>
- * 
- * <pre class="brush:java">
- * //creating a new property
- * CalendarScale calscale = CalendarScale.gregorian();
- * 
- * if (calscale.isGregorian()) {
- * 	//its value is &quot;GREGORIAN&quot;
- * }
- * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-76">RFC 5545 p.76-7</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-73">RFC 2445 p.73-4</a>

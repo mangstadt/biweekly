@@ -33,9 +33,9 @@ import biweekly.util.ICalDate;
  * <p>
  * Defines the due date of a to-do task.
  * </p>
- * 
  * <p>
  * <b>Code sample (creating):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VTodo todo = new VTodo();
@@ -51,9 +51,9 @@ import biweekly.util.ICalDate;
  * todo.setDateDue(due);
  * </pre>
  * 
- * </p>
- * 
+ * <p>
  * <b>Code sample (reading):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalReader reader = ...
@@ -78,10 +78,9 @@ import biweekly.util.ICalDate;
  * }
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Code sample (using timezones):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * DateDue due = new DateDue(...);
@@ -105,8 +104,6 @@ import biweekly.util.ICalDate;
  * //finally, write the iCalendar object
  * writer.write(ical);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-96">RFC 5545 p.96-7</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-92">RFC 2445 p.92-3</a>

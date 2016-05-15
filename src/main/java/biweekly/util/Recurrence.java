@@ -44,13 +44,12 @@ import java.util.Map;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY).interval(2).build();
  * Recurrence copy = new Recurrence.Builder(rrule).interval(3).build();
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-38">RFC 5545
  * p.38-45</a>

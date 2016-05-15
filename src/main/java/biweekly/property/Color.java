@@ -39,6 +39,7 @@ package biweekly.property;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -46,8 +47,6 @@ package biweekly.property;
  * Color color = new Color(&quot;mistyrose&quot;);
  * event.setColor(color);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a
  * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-9">draft-ietf-calext-extensions-01

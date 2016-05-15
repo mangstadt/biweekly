@@ -72,6 +72,7 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * </p>
  * <p>
  * <b>Examples:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VJournal journal = new VJournal();
@@ -80,8 +81,6 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * byte[] slides = ...
  * journal.addAttachment(new Attachment("application/vnd.ms-powerpoint", slides));
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-57">RFC 5545 p.57-9</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-56">RFC 2445 p.56-7</a>
@@ -98,11 +97,11 @@ public class VJournal extends ICalComponent {
 	 * </p>
 	 * <p>
 	 * The following properties are added to the component when it is created:
+	 * </p>
 	 * <ul>
 	 * <li>{@link Uid}: Set to a UUID.</li>
 	 * <li>{@link DateTimeStamp}: Set to the current time.</li>
 	 * </ul>
-	 * </p>
 	 */
 	public VJournal() {
 		setUid(Uid.random());
@@ -553,15 +552,17 @@ public class VJournal extends ICalComponent {
 	}
 
 	/**
+	 * <p>
 	 * Sets the status of the journal entry.
+	 * </p>
 	 * <p>
 	 * Valid journal status codes are:
+	 * </p>
 	 * <ul>
 	 * <li>DRAFT</li>
 	 * <li>FINAL</li>
 	 * <li>CANCELLED</li>
 	 * </ul>
-	 * </p>
 	 * @param status the status or null to remove
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-92">RFC 5545
 	 * p.92-3</a>

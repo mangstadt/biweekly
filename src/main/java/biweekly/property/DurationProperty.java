@@ -34,6 +34,7 @@ import biweekly.util.Duration;
  * <p>
  * Defines a duration of time (for example, "2 hours and 30 minutes"). This
  * property has different meanings depending on the component it belongs to:
+ * </p>
  * <ul>
  * <li>{@link VEvent} - The duration of the event (used in place of a
  * {@link DateEnd} property).</li>
@@ -41,10 +42,9 @@ import biweekly.util.Duration;
  * {@link DateEnd} property).</li>
  * <li>{@link VAlarm} - The pause between alarm repetitions.</li>
  * </ul>
- * </p>
- * 
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -53,8 +53,6 @@ import biweekly.util.Duration;
  * DurationProperty prop = new DurationProperty(duration);
  * event.setDuration(prop);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-99">RFC 5545 p.99</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-94">RFC 2445 p.94-5</a>

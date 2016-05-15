@@ -31,6 +31,7 @@ package biweekly.property;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -38,8 +39,6 @@ package biweekly.property;
  * event.setPriority(1); //highest
  * event.setPriority(9); //lowest
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-89">RFC 5545
  * p.89-90</a>

@@ -34,6 +34,7 @@ import biweekly.util.UtcOffset;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VTimezone timezone = ...
@@ -42,8 +43,6 @@ import biweekly.util.UtcOffset;
  * ...
  * timezone.addStandardTime(standard);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-104">RFC 5545
  * p.104-5</a>

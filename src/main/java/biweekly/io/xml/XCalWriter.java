@@ -85,6 +85,7 @@ import biweekly.util.XmlUtils;
  * </p>
  * <p>
  * <b>Example:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical1 = ...
@@ -100,10 +101,9 @@ import biweekly.util.XmlUtils;
  * }
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Changing the timezone settings:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * XCalWriter writer = new XCalWriter(...);
@@ -120,9 +120,6 @@ import biweekly.util.XmlUtils;
  * //generate Outlook-friendly VTIMEZONE components:
  * writer.getTimezoneInfo().setGenerator(new TzUrlDotOrgGenerator(true));
  * </pre>
- * 
- * </p>
- * 
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc6351">RFC 6351</a>
  */

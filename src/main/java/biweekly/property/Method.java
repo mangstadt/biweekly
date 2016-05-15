@@ -44,6 +44,7 @@ import biweekly.ICalVersion;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical = new ICalendar();
@@ -51,8 +52,6 @@ import biweekly.ICalVersion;
  * Method method = Method.request();
  * ical.setMethod(method);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5546">RFC 5546</a>
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545 p.77-8</a>

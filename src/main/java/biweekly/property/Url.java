@@ -38,6 +38,7 @@ import biweekly.ICalendar;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -45,8 +46,6 @@ import biweekly.ICalendar;
  * Url url = new Url(&quot;http://example.com&quot;);
  * event.setUrl(url);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-116">RFC 5545
  * p.116-7</a>

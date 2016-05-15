@@ -31,6 +31,7 @@ import java.util.Date;
  * <p>
  * The meaning of this property varies depending on whether the iCalendar object
  * has a {@link Method} property.
+ * </p>
  * <ul>
  * <li><b>Has a {@link Method} property:</b> Defines the creation date of the
  * iCalendar object itself (<u>not</u> the creation date of the actual calendar
@@ -40,9 +41,9 @@ import java.util.Date;
  * calendar data was last updated (the {@link LastModified} property also holds
  * this information).</li>
  * </ul>
- * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
@@ -51,8 +52,6 @@ import java.util.Date;
  * DateTimeStamp dtstamp = new DateTimeStamp(datetime);
  * event.setDateTimeStamp(dtstamp);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-137">RFC 5545
  * p.137-8</a>

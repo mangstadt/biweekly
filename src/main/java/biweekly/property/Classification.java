@@ -35,19 +35,18 @@ import biweekly.ICalVersion;
  * Defines the level of sensitivity of the iCalendar data. If not specified, the
  * data should be considered "public".
  * </p>
- * 
  * <p>
  * <b>Code sample (creating):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * event.setClassification(Classification.public_());
  * </pre>
  * 
- * </p>
- * 
  * <p>
  * <b>Code sample (retrieving):</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical = ...
@@ -62,8 +61,6 @@ import biweekly.ICalVersion;
  *   ...
  * }
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-82">RFC 5545 p.82-3</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-79">RFC 2445

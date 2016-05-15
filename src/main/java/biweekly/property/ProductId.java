@@ -33,6 +33,7 @@ import biweekly.Biweekly;
  * </p>
  * <p>
  * <b>Code sample:</b>
+ * </p>
  * 
  * <pre class="brush:java">
  * ICalendar ical = new ICalendar();
@@ -40,8 +41,6 @@ import biweekly.Biweekly;
  * ProductId prodid = new ProductId(&quot;-//Company//Application Name//EN&quot;);
  * ical.setProductId(prodid);
  * </pre>
- * 
- * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-78">RFC 5545 p.78-9</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-75">RFC 2445 p.75-6</a>
