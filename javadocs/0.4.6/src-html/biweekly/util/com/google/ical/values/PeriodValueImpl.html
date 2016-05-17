@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../syntaxhighlighter.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>// Copyright (C) 2006 Google Inc.<a name="line.1"></a>
+<span class="sourceLineNo">002</span>//<a name="line.2"></a>
+<span class="sourceLineNo">003</span>// Licensed under the Apache License, Version 2.0 (the "License");<a name="line.3"></a>
+<span class="sourceLineNo">004</span>// you may not use this file except in compliance with the License.<a name="line.4"></a>
+<span class="sourceLineNo">005</span>// You may obtain a copy of the License at<a name="line.5"></a>
+<span class="sourceLineNo">006</span>//<a name="line.6"></a>
+<span class="sourceLineNo">007</span>//      http://www.apache.org/licenses/LICENSE-2.0<a name="line.7"></a>
+<span class="sourceLineNo">008</span>//<a name="line.8"></a>
+<span class="sourceLineNo">009</span>// Unless required by applicable law or agreed to in writing, software<a name="line.9"></a>
+<span class="sourceLineNo">010</span>// distributed under the License is distributed on an "AS IS" BASIS,<a name="line.10"></a>
+<span class="sourceLineNo">011</span>// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.11"></a>
+<span class="sourceLineNo">012</span>// See the License for the specific language governing permissions and<a name="line.12"></a>
+<span class="sourceLineNo">013</span>// limitations under the License.<a name="line.13"></a>
+<span class="sourceLineNo">014</span><a name="line.14"></a>
+<span class="sourceLineNo">015</span>package biweekly.util.com.google.ical.values;<a name="line.15"></a>
+<span class="sourceLineNo">016</span><a name="line.16"></a>
+<span class="sourceLineNo">017</span>import biweekly.util.com.google.ical.util.TimeUtils;<a name="line.17"></a>
+<span class="sourceLineNo">018</span><a name="line.18"></a>
+<span class="sourceLineNo">019</span>/**<a name="line.19"></a>
+<span class="sourceLineNo">020</span> * a half-open range of {@link DateValue}s.<a name="line.20"></a>
+<span class="sourceLineNo">021</span> *<a name="line.21"></a>
+<span class="sourceLineNo">022</span> * @author mikesamuel+svn@gmail.com (Mike Samuel)<a name="line.22"></a>
+<span class="sourceLineNo">023</span> */<a name="line.23"></a>
+<span class="sourceLineNo">024</span>public class PeriodValueImpl implements PeriodValue {<a name="line.24"></a>
+<span class="sourceLineNo">025</span><a name="line.25"></a>
+<span class="sourceLineNo">026</span>  private DateValue start, end;<a name="line.26"></a>
+<span class="sourceLineNo">027</span><a name="line.27"></a>
+<span class="sourceLineNo">028</span>  /**<a name="line.28"></a>
+<span class="sourceLineNo">029</span>   * returns a period with the given start and end dates.<a name="line.29"></a>
+<span class="sourceLineNo">030</span>   * @param start non null.<a name="line.30"></a>
+<span class="sourceLineNo">031</span>   * @param end on or after start.  May/must have a time if the start has a<a name="line.31"></a>
+<span class="sourceLineNo">032</span>   *   time.<a name="line.32"></a>
+<span class="sourceLineNo">033</span>   */<a name="line.33"></a>
+<span class="sourceLineNo">034</span>  public static PeriodValue create(DateValue start, DateValue end) {<a name="line.34"></a>
+<span class="sourceLineNo">035</span>    return new PeriodValueImpl(start, end);<a name="line.35"></a>
+<span class="sourceLineNo">036</span>  }<a name="line.36"></a>
+<span class="sourceLineNo">037</span><a name="line.37"></a>
+<span class="sourceLineNo">038</span>  /**<a name="line.38"></a>
+<span class="sourceLineNo">039</span>   * returns a period with the given start date and duration.<a name="line.39"></a>
+<span class="sourceLineNo">040</span>   * @param start non null.<a name="line.40"></a>
+<span class="sourceLineNo">041</span>   * @param dur a positive duration represented as a DateValue.<a name="line.41"></a>
+<span class="sourceLineNo">042</span>   */<a name="line.42"></a>
+<span class="sourceLineNo">043</span>  public static PeriodValue createFromDuration(DateValue start, DateValue dur) {<a name="line.43"></a>
+<span class="sourceLineNo">044</span>    DateValue end = TimeUtils.add(start, dur);<a name="line.44"></a>
+<span class="sourceLineNo">045</span>    if (end instanceof TimeValue &amp;&amp; !(start instanceof TimeValue)) {<a name="line.45"></a>
+<span class="sourceLineNo">046</span>      start = TimeUtils.dayStart(start);<a name="line.46"></a>
+<span class="sourceLineNo">047</span>    }<a name="line.47"></a>
+<span class="sourceLineNo">048</span>    return new PeriodValueImpl(start, end);<a name="line.48"></a>
+<span class="sourceLineNo">049</span>  }<a name="line.49"></a>
+<span class="sourceLineNo">050</span><a name="line.50"></a>
+<span class="sourceLineNo">051</span>  protected PeriodValueImpl(DateValue start, DateValue end) {<a name="line.51"></a>
+<span class="sourceLineNo">052</span>    if (start.compareTo(end) &gt; 0) {<a name="line.52"></a>
+<span class="sourceLineNo">053</span>      throw new IllegalArgumentException<a name="line.53"></a>
+<span class="sourceLineNo">054</span>          ("Start (" + start + ") must precede end (" + end + ")");<a name="line.54"></a>
+<span class="sourceLineNo">055</span>    }<a name="line.55"></a>
+<span class="sourceLineNo">056</span>    if ((start instanceof TimeValue) ^ (end instanceof TimeValue)) {<a name="line.56"></a>
+<span class="sourceLineNo">057</span>      throw new IllegalArgumentException<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        ("Start (" + start + ") and end (" + end +<a name="line.58"></a>
+<span class="sourceLineNo">059</span>         ") must both have times or neither have times.");<a name="line.59"></a>
+<span class="sourceLineNo">060</span>    }<a name="line.60"></a>
+<span class="sourceLineNo">061</span>    this.start = start;<a name="line.61"></a>
+<span class="sourceLineNo">062</span>    this.end = end;<a name="line.62"></a>
+<span class="sourceLineNo">063</span>  }<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>  public DateValue start() { return start; }<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>  public DateValue end() { return end; }<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>  /** true iff this period overlaps the given period. */<a name="line.69"></a>
+<span class="sourceLineNo">070</span>  public boolean intersects(PeriodValue pv) {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>    DateValue sa = this.start,<a name="line.71"></a>
+<span class="sourceLineNo">072</span>              ea = this.end,<a name="line.72"></a>
+<span class="sourceLineNo">073</span>              sb = pv.start(),<a name="line.73"></a>
+<span class="sourceLineNo">074</span>              eb = pv.end();<a name="line.74"></a>
+<span class="sourceLineNo">075</span><a name="line.75"></a>
+<span class="sourceLineNo">076</span>    return sa.compareTo(eb) &lt; 0 &amp;&amp; sb.compareTo(ea) &lt; 0;<a name="line.76"></a>
+<span class="sourceLineNo">077</span>  }<a name="line.77"></a>
+<span class="sourceLineNo">078</span><a name="line.78"></a>
+<span class="sourceLineNo">079</span>  /** true iff this period completely contains the given period. */<a name="line.79"></a>
+<span class="sourceLineNo">080</span>  public boolean contains(PeriodValue pv) {<a name="line.80"></a>
+<span class="sourceLineNo">081</span>    DateValue sa = this.start,<a name="line.81"></a>
+<span class="sourceLineNo">082</span>              ea = this.end,<a name="line.82"></a>
+<span class="sourceLineNo">083</span>              sb = pv.start(),<a name="line.83"></a>
+<span class="sourceLineNo">084</span>              eb = pv.end();<a name="line.84"></a>
+<span class="sourceLineNo">085</span><a name="line.85"></a>
+<span class="sourceLineNo">086</span>    return !(sb.compareTo(sa) &lt; 0 || ea.compareTo(eb) &lt; 0);<a name="line.86"></a>
+<span class="sourceLineNo">087</span>  }<a name="line.87"></a>
+<span class="sourceLineNo">088</span><a name="line.88"></a>
+<span class="sourceLineNo">089</span>  @Override public boolean equals(Object o) {<a name="line.89"></a>
+<span class="sourceLineNo">090</span>    if (!(o instanceof PeriodValue)) { return false; }<a name="line.90"></a>
+<span class="sourceLineNo">091</span>    PeriodValue that = (PeriodValue) o;<a name="line.91"></a>
+<span class="sourceLineNo">092</span>    return this.start().equals(that.start())<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        &amp;&amp; this.end().equals(that.end());<a name="line.93"></a>
+<span class="sourceLineNo">094</span>  }<a name="line.94"></a>
+<span class="sourceLineNo">095</span><a name="line.95"></a>
+<span class="sourceLineNo">096</span>  @Override public int hashCode() {<a name="line.96"></a>
+<span class="sourceLineNo">097</span>    return start.hashCode() ^ (31 * end.hashCode());<a name="line.97"></a>
+<span class="sourceLineNo">098</span>  }<a name="line.98"></a>
+<span class="sourceLineNo">099</span><a name="line.99"></a>
+<span class="sourceLineNo">100</span>  @Override public String toString() {<a name="line.100"></a>
+<span class="sourceLineNo">101</span>    return start().toString() + "/" + end().toString();<a name="line.101"></a>
+<span class="sourceLineNo">102</span>  }<a name="line.102"></a>
+<span class="sourceLineNo">103</span><a name="line.103"></a>
+<span class="sourceLineNo">104</span>}  // PeriodValueImpl<a name="line.104"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>

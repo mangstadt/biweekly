@@ -43,15 +43,15 @@
 <span class="sourceLineNo">035</span>import biweekly.property.Trigger;<a name="line.35"></a>
 <span class="sourceLineNo">036</span>import biweekly.property.UtcOffsetProperty;<a name="line.36"></a>
 <span class="sourceLineNo">037</span>import biweekly.property.VCalAlarmProperty;<a name="line.37"></a>
-<span class="sourceLineNo">038</span>import biweekly.util.DateTimeComponents;<a name="line.38"></a>
-<span class="sourceLineNo">039</span>import biweekly.util.Duration;<a name="line.39"></a>
-<span class="sourceLineNo">040</span>import biweekly.util.ICalDate;<a name="line.40"></a>
-<span class="sourceLineNo">041</span>import biweekly.util.UtcOffset;<a name="line.41"></a>
-<span class="sourceLineNo">042</span><a name="line.42"></a>
-<span class="sourceLineNo">043</span>import com.google.ical.values.DateTimeValue;<a name="line.43"></a>
+<span class="sourceLineNo">038</span>import biweekly.property.ValuedProperty;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import biweekly.util.DateTimeComponents;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import biweekly.util.Duration;<a name="line.40"></a>
+<span class="sourceLineNo">041</span>import biweekly.util.ICalDate;<a name="line.41"></a>
+<span class="sourceLineNo">042</span>import biweekly.util.UtcOffset;<a name="line.42"></a>
+<span class="sourceLineNo">043</span>import biweekly.util.com.google.ical.values.DateTimeValue;<a name="line.43"></a>
 <span class="sourceLineNo">044</span><a name="line.44"></a>
 <span class="sourceLineNo">045</span>/*<a name="line.45"></a>
-<span class="sourceLineNo">046</span> Copyright (c) 2013-2015, Michael Angstadt<a name="line.46"></a>
+<span class="sourceLineNo">046</span> Copyright (c) 2013-2016, Michael Angstadt<a name="line.46"></a>
 <span class="sourceLineNo">047</span> All rights reserved.<a name="line.47"></a>
 <span class="sourceLineNo">048</span><a name="line.48"></a>
 <span class="sourceLineNo">049</span> Redistribution and use in source and binary forms, with or without<a name="line.49"></a>
@@ -80,16 +80,16 @@
 <span class="sourceLineNo">072</span> * vCalendar-iCalendar compatibility.<a name="line.72"></a>
 <span class="sourceLineNo">073</span> * @author Michael Angstadt<a name="line.73"></a>
 <span class="sourceLineNo">074</span> */<a name="line.74"></a>
-<span class="sourceLineNo">075</span>public class DataModelConverter {<a name="line.75"></a>
+<span class="sourceLineNo">075</span>public final class DataModelConverter {<a name="line.75"></a>
 <span class="sourceLineNo">076</span>        /**<a name="line.76"></a>
-<span class="sourceLineNo">077</span>         * Converts vCalendar timezone information to am iCalendar {@link VTimezone}<a name="line.77"></a>
+<span class="sourceLineNo">077</span>         * Converts vCalendar timezone information to an iCalendar {@link VTimezone}<a name="line.77"></a>
 <span class="sourceLineNo">078</span>         * component.<a name="line.78"></a>
 <span class="sourceLineNo">079</span>         * @param daylights the DAYLIGHT properties<a name="line.79"></a>
 <span class="sourceLineNo">080</span>         * @param tz the TZ property<a name="line.80"></a>
 <span class="sourceLineNo">081</span>         * @return the VTIMEZONE component<a name="line.81"></a>
 <span class="sourceLineNo">082</span>         */<a name="line.82"></a>
 <span class="sourceLineNo">083</span>        public static VTimezone convert(List&lt;Daylight&gt; daylights, Timezone tz) {<a name="line.83"></a>
-<span class="sourceLineNo">084</span>                UtcOffset tzOffset = (tz == null) ? null : tz.getValue();<a name="line.84"></a>
+<span class="sourceLineNo">084</span>                UtcOffset tzOffset = ValuedProperty.getValue(tz);<a name="line.84"></a>
 <span class="sourceLineNo">085</span>                if (daylights.isEmpty() &amp;&amp; tzOffset == null) {<a name="line.85"></a>
 <span class="sourceLineNo">086</span>                        return null;<a name="line.86"></a>
 <span class="sourceLineNo">087</span>                }<a name="line.87"></a>
@@ -339,9 +339,9 @@
 <span class="sourceLineNo">331</span>        }<a name="line.331"></a>
 <span class="sourceLineNo">332</span><a name="line.332"></a>
 <span class="sourceLineNo">333</span>        private static Attachment buildAttachment(AudioAlarm aalarm) {<a name="line.333"></a>
-<span class="sourceLineNo">334</span>                String type = aalarm.getParameter("TYPE");<a name="line.334"></a>
+<span class="sourceLineNo">334</span>                String type = aalarm.getType();<a name="line.334"></a>
 <span class="sourceLineNo">335</span>                String contentType = (type == null) ? null : "audio/" + type.toLowerCase();<a name="line.335"></a>
-<span class="sourceLineNo">336</span>                byte data[] = aalarm.getData();<a name="line.336"></a>
+<span class="sourceLineNo">336</span>                byte[] data = aalarm.getData();<a name="line.336"></a>
 <span class="sourceLineNo">337</span>                if (data != null) {<a name="line.337"></a>
 <span class="sourceLineNo">338</span>                        return new Attachment(contentType, data);<a name="line.338"></a>
 <span class="sourceLineNo">339</span>                }<a name="line.339"></a>
@@ -494,9 +494,12 @@
 <span class="sourceLineNo">486</span>                public Timezone getTz() {<a name="line.486"></a>
 <span class="sourceLineNo">487</span>                        return tz;<a name="line.487"></a>
 <span class="sourceLineNo">488</span>                }<a name="line.488"></a>
-<span class="sourceLineNo">489</span><a name="line.489"></a>
-<span class="sourceLineNo">490</span>        }<a name="line.490"></a>
-<span class="sourceLineNo">491</span>}<a name="line.491"></a>
+<span class="sourceLineNo">489</span>        }<a name="line.489"></a>
+<span class="sourceLineNo">490</span><a name="line.490"></a>
+<span class="sourceLineNo">491</span>        private DataModelConverter() {<a name="line.491"></a>
+<span class="sourceLineNo">492</span>                //hide<a name="line.492"></a>
+<span class="sourceLineNo">493</span>        }<a name="line.493"></a>
+<span class="sourceLineNo">494</span>}<a name="line.494"></a>
 
 
 
