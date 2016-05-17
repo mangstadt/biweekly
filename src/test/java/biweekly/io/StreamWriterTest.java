@@ -123,10 +123,12 @@ public class StreamWriterTest {
 	}
 
 	private class TestProperty extends ICalProperty {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 
 	private class TestComponent extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 }

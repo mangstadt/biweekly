@@ -685,10 +685,14 @@ public class ICalComponentTest {
 	}
 
 	private static class ICalComponentImpl extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 
 	private static class TestComponentWithCopyConstructor extends ICalComponent {
+
+		private static final long serialVersionUID = 1L;
+
 		public TestComponentWithCopyConstructor() {
 			//empty
 		}
@@ -700,6 +704,9 @@ public class ICalComponentTest {
 	}
 
 	private static class TestComponentCopyConstructorThrowsException extends ICalComponent {
+		
+		private static final long serialVersionUID = 1L;
+
 		private final RuntimeException exception;
 
 		public TestComponentCopyConstructorThrowsException(RuntimeException exception) {

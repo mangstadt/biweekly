@@ -94,6 +94,9 @@ import biweekly.util.Duration;
  * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01">draft-ietf-calext-extensions-01</a>
  */
 public class ICalendar extends ICalComponent {
+
+	private static final long serialVersionUID = 1L;
+	
 	private ICalVersion version;
 
 	/**

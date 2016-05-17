@@ -48,6 +48,9 @@ import java.util.Date;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.29</a>
  */
 public class Completed extends DateTimeProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a completed property.
 	 * @param completed the completion date

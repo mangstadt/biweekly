@@ -81,6 +81,9 @@ import biweekly.util.Duration;
  * getter/setter method Javadocs because vCal does not use the VALARM component.
  */
 public class VAlarm extends ICalComponent {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new alarm. Consider using one of the static factory methods
 	 * instead.

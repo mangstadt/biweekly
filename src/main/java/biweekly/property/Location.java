@@ -45,6 +45,9 @@ package biweekly.property;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.32</a>
  */
 public class Location extends TextProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a location property.
 	 * @param location the location (e.g. "Room 101")

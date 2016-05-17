@@ -30,6 +30,9 @@ package biweekly.component;
  * @author Michael Angstadt
  */
 public class RawComponent extends ICalComponent {
+
+	private static final long serialVersionUID = 1L;
+	
 	private final String name;
 
 	public RawComponent(String name) {

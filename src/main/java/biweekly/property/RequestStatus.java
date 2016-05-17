@@ -72,6 +72,9 @@ import biweekly.component.ICalComponent;
  * p.134-6</a>
  */
 public class RequestStatus extends ICalProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private String statusCode, description, exceptionText;
 
 	/**

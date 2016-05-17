@@ -110,6 +110,9 @@ import biweekly.util.ICalDate;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.30</a>
  */
 public class DateDue extends DateOrDateTimeProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a due date property.
 	 * @param dueDate the due date

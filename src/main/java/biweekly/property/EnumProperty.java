@@ -40,6 +40,9 @@ import biweekly.component.ICalComponent;
  * @author Michael Angstadt
  */
 public abstract class EnumProperty extends TextProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates an enum property.
 	 * @param value the property value

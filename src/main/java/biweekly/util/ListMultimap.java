@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,7 +62,10 @@ import java.util.Set;
  * @param <K> the key
  * @param <V> the value
  */
-public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
+public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>>, Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
 	private final Map<K, List<V>> map;
 
 	/**

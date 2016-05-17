@@ -62,6 +62,9 @@ import biweekly.util.Period;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-95">RFC 2445 p.95-6</a>
  */
 public class FreeBusy extends ListProperty<Period> {
+
+	private static final long serialVersionUID = 1L;
+
 	public FreeBusy() {
 		//empty
 	}

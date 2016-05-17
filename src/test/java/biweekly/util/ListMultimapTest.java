@@ -307,6 +307,7 @@ public class ListMultimapTest {
 	@Test
 	public void sanitizeKey() {
 		ListMultimap<String, String> map = new ListMultimap<String, String>() {
+			private static final long serialVersionUID = 1L;
 			@Override
 			protected String sanitizeKey(String key) {
 				return key.toLowerCase();

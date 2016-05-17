@@ -49,6 +49,9 @@ import biweekly.util.UtcOffset;
  * p.100-1</a>
  */
 public class TimezoneOffsetTo extends UtcOffsetProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new timezone offset to property.
 	 * @param offset the UTC offset

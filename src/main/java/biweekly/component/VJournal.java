@@ -91,6 +91,9 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * component.
  */
 public class VJournal extends ICalComponent {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * <p>
 	 * Creates a new journal entry.

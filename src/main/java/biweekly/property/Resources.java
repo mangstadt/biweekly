@@ -48,6 +48,9 @@ import java.util.List;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34-5</a>
  */
 public class Resources extends ListProperty<String> {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new resources property.
 	 */

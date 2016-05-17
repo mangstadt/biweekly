@@ -821,6 +821,9 @@ public class XCalWriterTest {
 	}
 
 	private class Company extends ICalProperty {
+		
+		private static final long serialVersionUID = 1L;
+
 		private String boss;
 
 		public Company(String boss) {
@@ -844,6 +847,7 @@ public class XCalWriterTest {
 	}
 
 	private class Party extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 }

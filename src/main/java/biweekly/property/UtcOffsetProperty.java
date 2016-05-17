@@ -32,6 +32,9 @@ import biweekly.util.UtcOffset;
  * @author Michael Angstadt
  */
 public class UtcOffsetProperty extends ValuedProperty<UtcOffset> {
+
+	private static final long serialVersionUID = 1L;
+
 	public UtcOffsetProperty(UtcOffset offset) {
 		super(offset);
 	}

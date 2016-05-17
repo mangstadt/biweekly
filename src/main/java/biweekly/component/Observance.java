@@ -58,6 +58,9 @@ import biweekly.util.UtcOffset;
  * component.
  */
 public class Observance extends ICalComponent {
+
+	private static final long serialVersionUID = 1L;
+
 	public Observance() {
 		//empty
 	}

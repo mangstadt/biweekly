@@ -67,6 +67,9 @@ import biweekly.ICalVersion;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-126">RFC 2445 p.126</a>
  */
 public class Action extends EnumProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private static final String AUDIO = "AUDIO";
 	private static final String DISPLAY = "DISPLAY";
 	private static final String EMAIL = "EMAIL";

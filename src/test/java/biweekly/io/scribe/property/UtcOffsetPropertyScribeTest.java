@@ -96,6 +96,9 @@ public class UtcOffsetPropertyScribeTest extends ScribeTest<UtcOffsetPropertyImp
 	}
 
 	public static class UtcOffsetPropertyImpl extends UtcOffsetProperty {
+
+		private static final long serialVersionUID = 1L;
+
 		public UtcOffsetPropertyImpl(UtcOffset offset) {
 			super(offset);
 		}

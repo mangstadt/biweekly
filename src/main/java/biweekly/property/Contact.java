@@ -47,6 +47,9 @@ package biweekly.property;
  * p.104-6</a>
  */
 public class Contact extends TextProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a contact property.
 	 * @param contact the contact information (e.g. "Acme Co: (212) 555-1234")

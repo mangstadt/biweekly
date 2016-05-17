@@ -36,6 +36,9 @@ import biweekly.component.VTimezone;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-97">RFC 2445 p.97-8</a>
  */
 public class TimezoneId extends TextProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a timezone identifier property.
 	 * @param timezone the timezone identifier

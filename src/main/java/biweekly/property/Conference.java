@@ -52,6 +52,9 @@ import biweekly.parameter.Feature;
  * p.11</a>
  */
 public class Conference extends ICalProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private String uri, text;
 
 	/**

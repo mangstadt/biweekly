@@ -119,26 +119,32 @@ public class ValidationWarningsTest {
 	}
 
 	private class TestProperty1 extends ICalProperty {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 
 	private class TestProperty2 extends ICalProperty {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 
 	private class TestComponent1 extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 
 	private class TestComponent2 extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 
 	private class Parent extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 
 	private class Grandparent extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 }

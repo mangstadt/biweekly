@@ -5,10 +5,20 @@ import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertValidate;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Date;
+import java.util.TimeZone;
 
+import org.junit.Assert;
 import org.junit.Test;
 
+import biweekly.io.TzUrlDotOrgGenerator;
 import biweekly.property.DateStart;
 import biweekly.property.LastModified;
 import biweekly.property.TimezoneUrl;
@@ -98,4 +108,23 @@ public class VTimezoneTest {
 		assertValidate(component).versions(V1_0).run(48, 21);
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(21);
 	}
+	
+	@Test
+	public void serializable() throws FileNotFoundException, IOException, ClassNotFoundException {
+		TzUrlDotOrgGenerator g = new TzUrlDotOrgGenerator(true);
+		VTimezone tz = g.generate(TimeZone.getTimeZone("America/Sao_Paulo"));
+		
+		File tempFile = File.createTempFile("tztest", ".bin");
+		
+		ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream(tempFile));
+		os.writeObject(tz);
+		os.close();
+		
+		ObjectInputStream is = new ObjectInputStream(new FileInputStream(tempFile));
+		VTimezone ctz = (VTimezone) is.readObject();
+		is.close();
+		
+		Assert.assertEquals(tz, ctz);
+	}
+	
 }

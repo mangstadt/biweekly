@@ -59,6 +59,9 @@ import biweekly.util.Recurrence;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
  */
 public class ExceptionRule extends RecurrenceProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new exception rule property.
 	 * @param recur the recurrence rule

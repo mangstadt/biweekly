@@ -47,6 +47,9 @@ import biweekly.util.Duration;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0</a>
  */
 public class VCalAlarmProperty extends ICalProperty {
+	
+	private static final long serialVersionUID = 1L;
+	
 	protected Date start;
 	protected Duration snooze;
 	protected Integer repeat;

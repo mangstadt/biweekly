@@ -203,6 +203,9 @@ public class ICalendarTest {
 	}
 
 	private class TestComponent extends ICalComponent {
+
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 			warnings.add(Warning.parse(1));
@@ -210,6 +213,9 @@ public class ICalendarTest {
 	}
 
 	private class TestProperty extends ICalProperty {
+
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
 			warnings.add(Warning.parse(2));

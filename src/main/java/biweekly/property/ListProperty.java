@@ -42,6 +42,9 @@ import biweekly.component.ICalComponent;
  * @param <T> the value type
  */
 public class ListProperty<T> extends ICalProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	protected final List<T> values;
 
 	/**

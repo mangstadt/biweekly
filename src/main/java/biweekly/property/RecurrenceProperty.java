@@ -45,6 +45,9 @@ import biweekly.util.com.google.ical.iter.RecurrenceIterator;
  * @author Michael Angstadt
  */
 public class RecurrenceProperty extends ValuedProperty<Recurrence> {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new recurrence property.
 	 * @param recur the recurrence value

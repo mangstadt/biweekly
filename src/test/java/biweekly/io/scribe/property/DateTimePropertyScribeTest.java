@@ -103,6 +103,9 @@ public class DateTimePropertyScribeTest extends ScribeTest<DateTimePropertyImpl>
 	}
 
 	public static class DateTimePropertyImpl extends DateTimeProperty {
+
+		private static final long serialVersionUID = 1L;
+
 		public DateTimePropertyImpl(Date value) {
 			super(value);
 		}

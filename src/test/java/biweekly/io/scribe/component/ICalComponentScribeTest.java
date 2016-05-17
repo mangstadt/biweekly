@@ -86,6 +86,7 @@ public class ICalComponentScribeTest {
 	}
 
 	private class Party extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 }

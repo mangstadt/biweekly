@@ -67,6 +67,9 @@ import biweekly.component.ICalComponent;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25</a>
  */
 public class Attachment extends BinaryProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private String contentId;
 
 	/**

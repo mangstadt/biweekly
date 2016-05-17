@@ -1736,6 +1736,9 @@ public class ICalReaderTest {
 	}
 
 	private class TestProperty extends ICalProperty {
+		
+		private static final long serialVersionUID = 1L;
+		
 		private Integer number;
 		private ICalDataType parsedDataType;
 	}
@@ -1752,6 +1755,7 @@ public class ICalReaderTest {
 	}
 
 	private class Party extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 
@@ -1772,6 +1776,7 @@ public class ICalReaderTest {
 	}
 
 	private class MyVEvent extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 

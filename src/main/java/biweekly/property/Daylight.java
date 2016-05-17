@@ -41,6 +41,9 @@ import biweekly.util.UtcOffset;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.23</a>
  */
 public class Daylight extends ICalProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private boolean daylight;
 	private UtcOffset offset;
 	private ICalDate start, end;

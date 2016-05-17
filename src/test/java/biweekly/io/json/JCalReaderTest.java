@@ -691,6 +691,9 @@ public class JCalReaderTest {
 	}
 
 	private class Company extends ICalProperty {
+
+		private static final long serialVersionUID = 1L;
+
 		private String boss;
 
 		public Company(String boss) {
@@ -714,6 +717,7 @@ public class JCalReaderTest {
 	}
 
 	private class Party extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 }

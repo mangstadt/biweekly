@@ -70,6 +70,9 @@ import biweekly.ICalVersion;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-73">RFC 2445 p.73-4</a>
  */
 public class CalendarScale extends EnumProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private static final String GREGORIAN = "GREGORIAN";
 
 	/**

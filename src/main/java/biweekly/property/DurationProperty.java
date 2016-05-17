@@ -58,6 +58,9 @@ import biweekly.util.Duration;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-94">RFC 2445 p.94-5</a>
  */
 public class DurationProperty extends ValuedProperty<Duration> {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a duration property.
 	 * @param duration the duration value (e.g. "2 hours and 30 minutes")

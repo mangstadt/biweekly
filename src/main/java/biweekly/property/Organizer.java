@@ -62,6 +62,9 @@ import biweekly.component.VTodo;
  * p.106-7</a>
  */
 public class Organizer extends ICalProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private String uri, email, name;
 
 	/**

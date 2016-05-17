@@ -40,6 +40,9 @@ import biweekly.util.CharacterBitSet;
  * @author Michael Angstadt
  */
 public class RawProperty extends ICalProperty {
+
+	private static final long serialVersionUID = 1L;
+	
 	private String name;
 	private ICalDataType dataType;
 	private String value;

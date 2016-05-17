@@ -1122,6 +1122,9 @@ public class ICalWriterTest {
 	}
 
 	private class TestProperty extends ICalProperty {
+
+		private static final long serialVersionUID = 1L;
+		
 		private String value;
 
 		public TestProperty(String value) {
@@ -1193,6 +1196,7 @@ public class ICalWriterTest {
 	}
 
 	private class Party extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 

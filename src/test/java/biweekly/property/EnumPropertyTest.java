@@ -145,6 +145,9 @@ public class EnumPropertyTest {
 	}
 
 	public static class EnumPropertyImpl extends EnumProperty {
+
+		private static final long serialVersionUID = 1L;
+
 		public EnumPropertyImpl() {
 			super((String) null);
 		}
@@ -185,6 +188,9 @@ public class EnumPropertyTest {
 	}
 
 	public static class EnumPropertyDefaultImpl extends EnumProperty {
+
+		private static final long serialVersionUID = 1L;
+
 		public EnumPropertyDefaultImpl() {
 			super((String) null);
 		}

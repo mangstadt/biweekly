@@ -53,6 +53,9 @@ import java.util.UUID;
  * p.6</a>
  */
 public class Uid extends TextProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a UID property.
 	 * @param uid the UID (can be anything)

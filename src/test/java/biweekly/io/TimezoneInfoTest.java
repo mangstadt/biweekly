@@ -178,6 +178,7 @@ public class TimezoneInfoTest {
 	}
 
 	private class ICalPropertyImpl extends ICalProperty {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 }

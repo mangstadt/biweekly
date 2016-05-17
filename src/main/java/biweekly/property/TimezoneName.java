@@ -49,6 +49,9 @@ package biweekly.property;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-98">RFC 2445 p.98-9</a>
  */
 public class TimezoneName extends TextProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a timezone name property.
 	 * @param name the timezone name (e.g. "EST")

@@ -72,6 +72,9 @@ import biweekly.ICalVersion;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.36-7</a>
  */
 public class Transparency extends EnumProperty {
+	
+	private static final long serialVersionUID = 1L;
+
 	private static final String OPAQUE = "OPAQUE";
 	private static final String TRANSPARENT = "TRANSPARENT";
 

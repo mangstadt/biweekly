@@ -118,6 +118,9 @@ public class TextPropertyScribeTest extends ScribeTest<TextPropertyImpl> {
 	}
 
 	public static class TextPropertyImpl extends TextProperty {
+
+		private static final long serialVersionUID = 1L;
+
 		public TextPropertyImpl(String value) {
 			super(value);
 		}

@@ -60,6 +60,9 @@ import biweekly.util.VersionNumber;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
  */
 public class Version extends ICalProperty {
+	
+	private static final long serialVersionUID = 1L;
+	
 	public static final VersionNumber VCAL = new VersionNumber(ICalVersion.V1_0.getVersion());
 	public static final VersionNumber ICAL = new VersionNumber(ICalVersion.V2_0.getVersion());
 

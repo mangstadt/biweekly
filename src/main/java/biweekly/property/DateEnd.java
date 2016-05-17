@@ -106,6 +106,9 @@ import biweekly.util.ICalDate;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
  */
 public class DateEnd extends DateOrDateTimeProperty {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates an end date property.
 	 * @param endDate the end date

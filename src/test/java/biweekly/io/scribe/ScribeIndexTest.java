@@ -219,6 +219,7 @@ public class ScribeIndexTest {
 	}
 
 	private class ICalComponentImpl extends ICalComponent {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 
@@ -234,6 +235,7 @@ public class ScribeIndexTest {
 	}
 
 	private class ICalPropertyImpl extends ICalProperty {
+		private static final long serialVersionUID = 1L;
 		//empty
 	}
 

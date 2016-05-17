@@ -100,6 +100,9 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.13</a>
  */
 public class VEvent extends ICalComponent {
+
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * <p>
 	 * Creates a new event.

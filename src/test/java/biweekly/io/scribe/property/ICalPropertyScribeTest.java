@@ -584,6 +584,9 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	}
 
 	public static class TestProperty extends ICalProperty {
+
+		private static final long serialVersionUID = 1L;
+		
 		public String value;
 		public ICalDataType parsedDataType;
 
