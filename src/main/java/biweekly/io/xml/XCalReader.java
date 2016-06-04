@@ -125,6 +125,7 @@ import biweekly.util.XmlUtils;
  * DateStart dtstart = ical.getEvents().get(0).getDateStart();
  * TimeZone tz = tzinfo.getTimeZone(dtstart);
  * </pre>
+ * 
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc6321">RFC 6321</a>
  */
@@ -225,7 +226,10 @@ public class XCalReader extends StreamReader {
 
 			//create the transformer
 			try {
-				transformer = TransformerFactory.newInstance().newTransformer();
+				TransformerFactory factory = TransformerFactory.newInstance();
+				XmlUtils.applyXXEProtection(factory);
+
+				transformer = factory.newTransformer();
 			} catch (TransformerConfigurationException e) {
 				//shouldn't be thrown because it's a simple configuration
 				throw new RuntimeException(e);
