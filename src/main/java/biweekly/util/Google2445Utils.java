@@ -238,24 +238,22 @@ public final class Google2445Utils {
 		Calendar c = Calendar.getInstance(timezone);
 		c.setTime(date);
 
-		if (date.hasTime()) {
-			//@formatter:off
-			return new DateTimeValueImpl(
-				c.get(Calendar.YEAR),
-				c.get(Calendar.MONTH)+1,
-				c.get(Calendar.DATE),
-				c.get(Calendar.HOUR_OF_DAY),
-				c.get(Calendar.MINUTE),
-				c.get(Calendar.SECOND)
-			);
-			//@formatter:on
-		}
+		/*
+		 * Do not create a "DateValueImpl" object if "date.hasTime() == false".
+		 * This interferes with any recurrence iterators the object is passed
+		 * into.
+		 * 
+		 * See: https://github.com/mangstadt/biweekly/issues/47
+		 */
 
 		//@formatter:off
-		return new DateValueImpl(
+		return new DateTimeValueImpl(
 			c.get(Calendar.YEAR),
 			c.get(Calendar.MONTH)+1,
-			c.get(Calendar.DATE)
+			c.get(Calendar.DATE),
+			c.get(Calendar.HOUR_OF_DAY),
+			c.get(Calendar.MINUTE),
+			c.get(Calendar.SECOND)
 		);
 		//@formatter:on
 	}
