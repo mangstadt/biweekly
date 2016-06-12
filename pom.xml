@@ -5,7 +5,7 @@
 	<packaging>bundle</packaging> <!-- "bundle" used for OSGi support -->
 	<version>0.4.7-SNAPSHOT</version>
 	<name>biweekly</name>
-	<url>http://sourceforge.net/p/biweekly</url>
+	<url>http://github.com/mangstadt/biweekly</url>
 	<inceptionYear>2013</inceptionYear>
 	<organization>
 		<name>Michael Angstadt</name>
