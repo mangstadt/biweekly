@@ -70,6 +70,24 @@ public class Google2445UtilsTest {
 	}
 
 	@Test
+	public void getDateIterator_start_date_has_no_time() {
+		VEvent event = new VEvent();
+
+		event.setDateStart(date("2016-03-25"), false);
+		event.setRecurrenceRule(new Recurrence.Builder(Frequency.DAILY).count(3).build());
+
+		//@formatter:off
+		List<Date> expectedList = Arrays.asList(
+			date("2016-03-25 00:00:00"),
+			date("2016-03-26 00:00:00"),
+			date("2016-03-27 00:00:00")
+		);
+		//@formatter:on
+
+		assertIteratorEquals(expectedList, Google2445Utils.getDateIterator(event, null));
+	}
+
+	@Test
 	public void getDateIterator() {
 		VEvent event = new VEvent();
 

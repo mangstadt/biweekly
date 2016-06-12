@@ -1637,6 +1637,8 @@ public class VEvent extends ICalComponent {
 	 * </p>
 	 * @param timezone the timezone to iterate in. This is needed in order to
 	 * adjust for when the iterator passes over a daylight savings boundary.
+	 * This parameter is ignored if the start date does not have a time
+	 * component.
 	 * @return the iterator
 	 */
 	public DateIterator getDateIterator(TimeZone timezone) {

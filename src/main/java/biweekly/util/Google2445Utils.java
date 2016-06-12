@@ -336,11 +336,22 @@ public final class Google2445Utils {
 	 * @param component the component
 	 * @param timezone the timezone to iterate in. This is needed in order to
 	 * adjust for when the iterator passes over a daylight savings boundary.
+	 * This parameter is ignored if the start date of the given component does
+	 * not have a time component.
 	 * @return the iterator
 	 */
 	public static DateIterator getDateIterator(ICalComponent component, TimeZone timezone) {
 		DateStart dtstart = component.getProperty(DateStart.class);
 		ICalDate start = ValuedProperty.getValue(dtstart);
+
+		/*
+		 * If the start date is just a date and does not have a time component,
+		 * then the default timezone must be used, because this is the timezone
+		 * biweekly used to parse the date.
+		 */
+		if (start != null && !start.hasTime()) {
+			timezone = TimeZone.getDefault();
+		}
 
 		/////////////INCLUDE/////////////
 
