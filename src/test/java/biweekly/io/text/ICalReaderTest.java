@@ -215,15 +215,12 @@ public class ICalReaderTest {
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
-		reader.setCaretDecodingEnabled(true);
-		reader.registerScribe(new TestPropertyMarshaller());
 
 		ICalendar icalendar = reader.readNext();
 		assertSize(icalendar, 0, 1);
 
-		assertEquals("2.0", icalendar.getProperty(Version.class).getMinVersion().toString());
-		assertEquals("3.0", icalendar.getProperty(Version.class).getMaxVersion().toString());
-		assertNull(icalendar.getVersion());
+		assertEquals(new Version("2.0", "3.0"), icalendar.getProperty(Version.class));
+		assertEquals(V2_0, icalendar.getVersion()); //default version
 
 		assertWarnings(0, reader);
 		assertNull(reader.readNext());
@@ -239,17 +236,66 @@ public class ICalReaderTest {
 		//@formatter:on
 
 		ICalReader reader = new ICalReader(ical);
-		reader.setCaretDecodingEnabled(true);
-		reader.registerScribe(new TestPropertyMarshaller());
 
 		ICalendar icalendar = reader.readNext();
 		assertSize(icalendar, 0, 1);
 
 		assertEquals("invalid", icalendar.getExperimentalProperty("VERSION").getValue());
-		assertNull(icalendar.getVersion());
+		assertEquals(V2_0, icalendar.getVersion()); //default version
 
 		assertWarnings(1, reader);
 		assertNull(reader.readNext());
+	}
+
+	@Test
+	public void setDefaultVersion() throws Throwable {
+		//@formatter:off
+		String ical =
+		"BEGIN:VCALENDAR\r\n" +
+			"PRODID:value\r\n" +
+		"END:VCALENDAR\r\n" +
+		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:1.0\r\n" +
+			"PRODID:value\r\n" +
+		"END:VCALENDAR\r\n" +
+		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:2.0\r\n" +
+			"PRODID:value\r\n" +
+		"END:VCALENDAR\r\n" +
+		"BEGIN:VCALENDAR\r\n" +
+			"PRODID:value\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		{
+			ICalReader reader = new ICalReader(ical);
+			//default version defaults to 2.0
+
+			ICalendar icalendar = reader.readNext();
+			assertVersion(V2_0, icalendar);
+			icalendar = reader.readNext();
+			assertVersion(V1_0, icalendar);
+			icalendar = reader.readNext();
+			assertVersion(V2_0, icalendar);
+			icalendar = reader.readNext();
+			assertVersion(V2_0, icalendar);
+			assertNull(reader.readNext());
+		}
+
+		{
+			ICalReader reader = new ICalReader(ical);
+			reader.setDefaultVersion(V1_0);
+
+			ICalendar icalendar = reader.readNext();
+			assertVersion(V1_0, icalendar);
+			icalendar = reader.readNext();
+			assertVersion(V1_0, icalendar);
+			icalendar = reader.readNext();
+			assertVersion(V2_0, icalendar);
+			icalendar = reader.readNext();
+			assertVersion(V1_0, icalendar);
+			assertNull(reader.readNext());
+		}
 	}
 
 	@Test

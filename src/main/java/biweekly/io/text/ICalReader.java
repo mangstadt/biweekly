@@ -116,6 +116,7 @@ public class ICalReader extends StreamReader {
 
 	private final ICalRawReader reader;
 	private Charset defaultQuotedPrintableCharset;
+	private ICalVersion defaultVersion = ICalVersion.V2_0;
 
 	/**
 	 * @param str the string to read from
@@ -207,11 +208,30 @@ public class ICalReader extends StreamReader {
 		defaultQuotedPrintableCharset = charset;
 	}
 
+	/**
+	 * Gets the iCalendar version that this reader will assume each iCalendar
+	 * object is formatted in up until a VERSION property is encountered.
+	 * @return the version (defaults to "2.0")
+	 */
+	public ICalVersion getDefaultVersion() {
+		return defaultVersion;
+	}
+
+	/**
+	 * Sets the iCalendar version that this reader will assume each iCalendar
+	 * object is formatted in up until a VERSION property is encountered.
+	 * @param version the version (defaults to "2.0")
+	 */
+	public void setDefaultVersion(ICalVersion version) {
+		defaultVersion = version;
+	}
+
 	@Override
 	protected ICalendar _readNext() throws IOException {
 		ICalendar ical = null;
 		List<String> values = new ArrayList<String>();
 		ComponentStack stack = new ComponentStack();
+		reader.setVersion(defaultVersion);
 
 		while (true) {
 			//read next line
@@ -228,9 +248,14 @@ public class ICalReader extends StreamReader {
 				break;
 			}
 
+			/*
+			 * Reassign the context object's version, because it's technically
+			 * possible that the version could change in the middle of the
+			 * iCalendar object (at least, for version 1.0).
+			 */
 			context.setVersion(reader.getVersion());
-			String propertyName = line.getName();
 
+			String propertyName = line.getName();
 			if ("BEGIN".equalsIgnoreCase(propertyName)) {
 				String componentName = line.getValue();
 				if (ical == null && !VCALENDAR_COMPONENT_NAME.equalsIgnoreCase(componentName)) {
@@ -346,7 +371,7 @@ public class ICalReader extends StreamReader {
 
 			//add the properties to the iCalendar object
 			ICalComponent parentComponent = stack.peek();
-			boolean isVCal = reader.getVersion() == null || reader.getVersion() == ICalVersion.V1_0;
+			boolean isVCal = reader.getVersion() == ICalVersion.V1_0;
 			for (ICalProperty property : propertiesToAdd) {
 				for (Warning warning : context.getWarnings()) {
 					warnings.add(reader.getLineNumber(), propertyName, warning);
