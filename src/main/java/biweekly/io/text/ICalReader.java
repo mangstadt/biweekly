@@ -209,8 +209,17 @@ public class ICalReader extends StreamReader {
 	}
 
 	/**
+	 * <p>
 	 * Gets the iCalendar version that this reader will assume each iCalendar
 	 * object is formatted in up until a VERSION property is encountered.
+	 * </p>
+	 * <p>
+	 * All standards-compliant iCalendar objects contain a VERSION property at
+	 * the very beginning of the object, so for the vast majority of iCalendar
+	 * objects, this setting does nothing. This setting is needed for when the
+	 * iCalendar object does not have a VERSION property or for when the VERSION
+	 * property is not located at the beginning of the object.
+	 * </p>
 	 * @return the version (defaults to "2.0")
 	 */
 	public ICalVersion getDefaultVersion() {
@@ -218,8 +227,17 @@ public class ICalReader extends StreamReader {
 	}
 
 	/**
+	 * <p>
 	 * Sets the iCalendar version that this reader will assume each iCalendar
 	 * object is formatted in up until a VERSION property is encountered.
+	 * </p>
+	 * <p>
+	 * All standards-compliant iCalendar objects contain a VERSION property at
+	 * the very beginning of the object, so for the vast majority of iCalendar
+	 * objects, this setting does nothing. This setting is needed for when the
+	 * iCalendar object does not have a VERSION property or for when the VERSION
+	 * property is not located at the beginning of the object.
+	 * </p>
 	 * @param version the version (defaults to "2.0")
 	 */
 	public void setDefaultVersion(ICalVersion version) {
