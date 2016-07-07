@@ -1060,7 +1060,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 
 		/**
 		 * Forces the value to be parsed as a date-time or date value.
-		 * @param hasTime true to parsed as a date-timme value, false to parse
+		 * @param hasTime true to parsed as a date-time value, false to parse
 		 * as a date value, null to parse as whatever value it is (defaults to
 		 * null)
 		 * @return this

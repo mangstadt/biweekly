@@ -62,6 +62,8 @@ public class TimezoneInfo {
 	 * {@link TimeZone} equivalent.
 	 * @param component the timezone component
 	 * @param timezone the timezone object
+	 * @throws IllegalArgumentException if the given {@link VTimezone} component
+	 * does not have a {@link TimezoneId} property.
 	 */
 	public void assign(VTimezone component, TimeZone timezone) {
 		checkForId(component);
