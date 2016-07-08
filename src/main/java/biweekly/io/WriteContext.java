@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import biweekly.ICalVersion;
+import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
 import biweekly.util.ICalDate;
 
@@ -41,12 +42,14 @@ import biweekly.util.ICalDate;
 public class WriteContext {
 	private final ICalVersion version;
 	private final TimezoneInfo timezoneOptions;
+	private final TimeZone globalTimeZone;
 	private final List<Date> dates = new ArrayList<Date>();
 	private ICalComponent parent;
 
-	public WriteContext(ICalVersion version, TimezoneInfo timezoneOptions) {
+	public WriteContext(ICalVersion version, TimezoneInfo timezoneOptions, TimeZone globalTimeZone) {
 		this.version = version;
 		this.timezoneOptions = timezoneOptions;
+		this.globalTimeZone = globalTimeZone;
 	}
 
 	/**
@@ -63,6 +66,15 @@ public class WriteContext {
 	 */
 	public TimezoneInfo getTimezoneInfo() {
 		return timezoneOptions;
+	}
+
+	/**
+	 * Gets the global timezone to format all date/time values in, regardless of
+	 * each individual {@link ICalendar}'s timezone settings.
+	 * @return the global timezone or null if not set
+	 */
+	public TimeZone getGlobalTimeZone() {
+		return globalTimeZone;
 	}
 
 	/**

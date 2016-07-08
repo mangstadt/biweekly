@@ -68,11 +68,11 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 		floatingGlobal.setGlobalFloatingTime(true);
 	}
 
-	private final TimezoneInfo timezoneGlobal = new TimezoneInfo();
+	private final TimezoneInfo timezoneDefault = new TimezoneInfo();
 	{
 		TimeZone tz = buildTimezone(-2, 0);
-		timezoneGlobal.assign(new VTimezone("id"), tz);
-		timezoneGlobal.setDefaultTimeZone(tz);
+		timezoneDefault.assign(new VTimezone("id"), tz);
+		timezoneDefault.setDefaultTimeZone(tz);
 	}
 
 	public DateOrDateTimePropertyScribeTest() {
@@ -163,7 +163,7 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 		//date values are uneffected by timezone options
 		test.run(expected);
 		test.tz(floatingGlobal).run(expected);
-		test.tz(timezoneGlobal).run(expected);
+		test.tz(timezoneDefault).run(expected);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -185,8 +185,8 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 		tzinfo.setFloating(test.property, true);
 		test.tz(tzinfo).run(floating);
 
-		//global timezone
-		test.tz(timezoneGlobal).run(minusTwo);
+		//default timezone
+		test.tz(timezoneDefault).run(minusTwo);
 
 		//property-assigned timezone
 		tzinfo = new TimezoneInfo();
@@ -215,6 +215,9 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 		tzinfo.setGlobalFloatingTime(true);
 		tzinfo.setTimeZone(test.property, tz1);
 		test.tz(tzinfo).run(minusOne);
+
+		//global timezone should override everything
+		test.tz(tzinfo).globalTz(tz2).run(minusTwo);
 	}
 
 	public static class DateOrDateTimePropertyMarshallerImpl extends DateOrDateTimePropertyScribe<DateOrDateTimePropertyImpl> {

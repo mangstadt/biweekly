@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 
@@ -227,7 +228,7 @@ public class Sensei<T extends ICalProperty> {
 		 */
 		public void run() {
 			for (ICalVersion version : versions) {
-				WriteContext context = new WriteContext(version, tzinfo);
+				WriteContext context = new WriteContext(version, tzinfo, null);
 				context.setParent(parent);
 				ICalParameters actual = scribe.prepareParameters(property, context);
 				assertEquals("Actual: " + actual, expected.size(), actual.size());
@@ -249,6 +250,7 @@ public class Sensei<T extends ICalProperty> {
 	public abstract class WriteTest<U> {
 		protected final T property;
 		protected TimezoneInfo tzinfo = new TimezoneInfo();
+		protected TimeZone globalTimeZone;
 		protected ICalComponent parent;
 
 		@SuppressWarnings("unchecked")
@@ -260,6 +262,11 @@ public class Sensei<T extends ICalProperty> {
 
 		public U tz(TimezoneInfo tzinfo) {
 			this.tzinfo = tzinfo;
+			return this_;
+		}
+
+		public U globalTz(TimeZone globalTimeZone) {
+			this.globalTimeZone = globalTimeZone;
 			return this_;
 		}
 
@@ -292,7 +299,7 @@ public class Sensei<T extends ICalProperty> {
 		 * @return the marshalled value
 		 */
 		public String run() {
-			WriteContext context = new WriteContext(version, tzinfo);
+			WriteContext context = new WriteContext(version, tzinfo, globalTimeZone);
 			context.setParent(parent);
 			return scribe.writeText(property, context);
 		}
@@ -325,7 +332,7 @@ public class Sensei<T extends ICalProperty> {
 		@Override
 		public void run(String expectedInnerXml) {
 			Document actual = createXCalElement();
-			WriteContext context = new WriteContext(V2_0, tzinfo);
+			WriteContext context = new WriteContext(V2_0, tzinfo, globalTimeZone);
 			context.setParent(parent);
 			scribe.writeXml(property, actual.getDocumentElement(), context);
 
@@ -349,7 +356,7 @@ public class Sensei<T extends ICalProperty> {
 		 * @return the marshalled value
 		 */
 		public JCalValue run() {
-			WriteContext context = new WriteContext(V2_0, tzinfo);
+			WriteContext context = new WriteContext(V2_0, tzinfo, globalTimeZone);
 			context.setParent(parent);
 			return scribe.writeJson(property, context);
 		}

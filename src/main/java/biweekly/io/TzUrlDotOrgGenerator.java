@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.TimeZone;
 
+import biweekly.ICalendar;
 import biweekly.component.VTimezone;
 import biweekly.io.text.ICalReader;
 import biweekly.property.TimezoneId;
@@ -74,9 +75,9 @@ public class TzUrlDotOrgGenerator implements VTimezoneGenerator {
 		ICalReader reader = null;
 		try {
 			reader = new ICalReader(uri.toURL().openStream());
-			reader.readNext();
+			ICalendar ical = reader.readNext();
 
-			TimezoneInfo tzinfo = reader.getTimezoneInfo();
+			TimezoneInfo tzinfo = ical.getTimezoneInfo();
 			component = tzinfo.getComponents().iterator().next();
 
 			TimezoneId componentId = component.getTimezoneId();

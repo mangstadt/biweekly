@@ -82,26 +82,6 @@ import biweekly.property.Version;
  * </pre>
  * 
  * <p>
- * <b>Changing the timezone settings:</b>
- * </p>
- * 
- * <pre class="brush:java">
- * ICalWriter writer = new ICalWriter(...);
- * 
- * //format all date/time values in a specific timezone instead of UTC
- * //note: this makes an HTTP call to "http://tzurl.org"
- * writer.getTimezoneInfo().setDefaultTimeZone(TimeZone.getDefault());
- * 
- * //format the value of a single date/time property in a specific timezone instead of UTC
- * //note: this makes an HTTP call to "http://tzurl.org"
- * DateStart dtstart = ...
- * writer.getTimezoneInfo().setTimeZone(dtstart, TimeZone.getDefault());
- * 
- * //generate Outlook-friendly VTIMEZONE components:
- * writer.getTimezoneInfo().setGenerator(new TzUrlDotOrgGenerator(true));
- * </pre>
- * 
- * <p>
  * <b>Changing the line folding settings:</b>
  * </p>
  * 
@@ -279,7 +259,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		List subComponents = componentScribe.getComponents(component);
 		if (inICalRoot) {
 			//add the VTIMEZONE components
-			Collection<VTimezone> timezones = tzinfo.getComponents();
+			Collection<VTimezone> timezones = getTimezoneComponents();
 			for (VTimezone timezone : timezones) {
 				if (!subComponents.contains(timezone)) {
 					subComponents.add(0, timezone);
@@ -293,7 +273,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		}
 
 		if (inVCalRoot) {
-			Collection<VTimezone> timezones = tzinfo.getComponents();
+			Collection<VTimezone> timezones = getTimezoneComponents();
 			if (!timezones.isEmpty()) {
 				VTimezone timezone = timezones.iterator().next();
 				VCalTimezoneProperties props = convert(timezone, context.getDates());

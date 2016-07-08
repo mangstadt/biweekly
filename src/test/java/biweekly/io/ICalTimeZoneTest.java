@@ -1,5 +1,6 @@
 package biweekly.io;
 
+import static biweekly.util.TestUtils.vtimezoneNewYork;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -15,7 +16,6 @@ import biweekly.component.DaylightSavingsTime;
 import biweekly.component.Observance;
 import biweekly.component.StandardTime;
 import biweekly.component.VTimezone;
-import biweekly.io.text.ICalReader;
 import biweekly.property.TimezoneOffsetFrom;
 import biweekly.property.TimezoneOffsetTo;
 import biweekly.util.DateTimeComponents;
@@ -272,19 +272,8 @@ public class ICalTimeZoneTest {
 	}
 
 	@Test
-	public void getOffset() throws Exception {
-		VTimezone component;
-		{
-			ICalReader reader = new ICalReader(getClass().getResourceAsStream("New_York.ics"));
-			try {
-				reader.readNext();
-			} finally {
-				reader.close();
-			}
-			TimezoneInfo tzinfo = reader.getTimezoneInfo();
-			component = tzinfo.getComponents().iterator().next();
-		}
-
+	public void getOffset() {
+		VTimezone component = vtimezoneNewYork();
 		ICalTimeZone tz = new ICalTimeZone(component);
 		assertEquals(component.getTimezoneId().getValue(), tz.getID());
 		assertTrue(tz.useDaylightTime());
@@ -341,19 +330,8 @@ public class ICalTimeZoneTest {
 	}
 
 	@Test
-	public void createIterator() throws Exception {
-		VTimezone component;
-		{
-			ICalReader reader = new ICalReader(getClass().getResourceAsStream("New_York.ics"));
-			try {
-				reader.readNext();
-			} finally {
-				reader.close();
-			}
-			TimezoneInfo tzinfo = reader.getTimezoneInfo();
-			component = tzinfo.getComponents().iterator().next();
-		}
-
+	public void createIterator() {
+		VTimezone component = vtimezoneNewYork();
 		ICalTimeZone tz = new ICalTimeZone(component);
 		Iterator<Observance> observances = tz.sortedObservances.iterator();
 

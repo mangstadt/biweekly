@@ -116,14 +116,6 @@ public abstract class StreamReader implements Closeable {
 	}
 
 	/**
-	 * Gets the timezone info of the last iCalendar object that was read.
-	 * @return the timezone info
-	 */
-	public TimezoneInfo getTimezoneInfo() {
-		return tzinfo;
-	}
-
-	/**
 	 * Reads all iCalendar objects from the data stream.
 	 * @return the iCalendar objects
 	 * @throws IOException if there's a problem reading from the stream
@@ -258,6 +250,8 @@ public abstract class StreamReader implements Closeable {
 				property.getParameters().setTimezoneId(null);
 			}
 		}
+
+		ical.setTimezoneInfo(tzinfo);
 	}
 
 	private VTimezone extractVCalTimezone(ICalendar ical) {

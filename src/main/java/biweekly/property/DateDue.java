@@ -56,9 +56,8 @@ import biweekly.util.ICalDate;
  * </p>
  * 
  * <pre class="brush:java">
- * ICalReader reader = ...
- * ICalendar ical = reader.readNext();
- * TimezoneInfo tzinfo = reader.getTimezoneInfo();
+ * ICalendar ical = ...
+ * TimezoneInfo tzinfo = ical.getTimezoneInfo();
  * 
  * for (VTodo todo : ical.getTodos()){
  *   DateDue due = todo.getDateDue();
@@ -83,25 +82,24 @@ import biweekly.util.ICalDate;
  * </p>
  * 
  * <pre class="brush:java">
- * DateDue due = new DateDue(...);
- * 
  * ICalendar ical = new ICalendar();
  * VTodo todo = new VTodo();
  * Date datetime = ...
+ * DateDue due = new DateDue(datetime);
  * todo.setDateDue(due);
  * ical.addTodo(todo);
  * 
  * java.util.TimeZone tz = ...
- * ICalWriter writer = new ICalWriter(...);
  * 
  * //set the timezone of all date-time property values
  * //date-time property values are written in UTC by default
- * writer.getTimezoneInfo().setDefaultTimeZone(tz);
+ * ical.getTimezoneInfo().setDefaultTimeZone(tz);
  * 
- * //set the timezone just for this property
- * writer.getTimezoneInfo().setTimeZone(due, tz);
+ * //or set the timezone just for this property
+ * ical.getTimezoneInfo().setTimeZone(due, tz);
  * 
  * //finally, write the iCalendar object
+ * ICalWriter writer = ...
  * writer.write(ical);
  * </pre>
  * @author Michael Angstadt

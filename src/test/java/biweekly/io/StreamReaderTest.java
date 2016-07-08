@@ -127,7 +127,7 @@ public class StreamReaderTest {
 		};
 
 		ICalendar ical = reader.readNext();
-		TimezoneInfo tzinfo = reader.getTimezoneInfo();
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
 
 		Collection<VTimezone> components = tzinfo.getComponents();
 		assertEquals(1, components.size());
@@ -224,7 +224,7 @@ public class StreamReaderTest {
 		};
 
 		ICalendar ical = reader.readNext();
-		TimezoneInfo tzinfo = reader.getTimezoneInfo();
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
 		assertEquals(0, tzinfo.getComponents().size());
 		assertEquals(1, ical.getComponents(VTimezone.class).size());
 		assertWarnings(1, reader);

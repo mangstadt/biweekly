@@ -11,7 +11,6 @@ import java.util.TimeZone;
 import biweekly.Biweekly;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
-import biweekly.io.TimezoneInfo;
 import biweekly.io.json.JCalWriter;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -133,9 +132,7 @@ public class ChainingJsonWriter extends ChainingWriter<ChainingJsonWriter> {
 
 	private void go(JCalWriter writer) throws IOException {
 		if (defaultTimeZone != null) {
-			TimezoneInfo tzinfo = new TimezoneInfo();
-			tzinfo.setDefaultTimeZone(defaultTimeZone);
-			writer.setTimezoneInfo(tzinfo);
+			writer.setGlobalTimeZone(defaultTimeZone, false);
 		}
 		writer.setPrettyPrint(prettyPrint);
 		if (index != null) {

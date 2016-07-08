@@ -1,15 +1,22 @@
 package biweekly.io.json;
 
 import static biweekly.util.StringUtils.NEWLINE;
+import static biweekly.util.TestUtils.vtimezoneNewYork;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.TimeZone;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import biweekly.ICalendar;
+import biweekly.component.VTimezone;
+import biweekly.io.ICalTimeZone;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -180,6 +187,66 @@ public class JCalSerializerTest {
 		"}";
 		//@formatter:on
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void setGlobalTimezone() {
+		TimeZone timezone = TimeZone.getTimeZone("America/New_York");
+		VTimezone component = new VTimezone(timezone.getID());
+
+		JCalSerializer serializer = new JCalSerializer();
+		serializer.setGlobalTimeZone(timezone, component);
+		assertSame(timezone, serializer.getGlobalTimeZone());
+		assertSame(component, serializer.getGlobalTimeZoneComponent());
+
+		serializer.setGlobalTimeZone(null, null);
+		assertNull(serializer.getGlobalTimeZone());
+		assertNull(serializer.getGlobalTimeZoneComponent());
+
+		serializer.setGlobalTimeZone(timezone, component);
+		serializer.setGlobalTimeZone(null, component);
+		assertNull(serializer.getGlobalTimeZone());
+		assertNull(serializer.getGlobalTimeZoneComponent());
+
+		serializer.setGlobalTimeZone(timezone, component);
+		serializer.setGlobalTimeZone(timezone, null);
+		assertNull(serializer.getGlobalTimeZone());
+		assertNull(serializer.getGlobalTimeZoneComponent());
+
+		component.getTimezoneId().setValue("foobar");
+		try {
+			serializer.setGlobalTimeZone(timezone, component);
+			fail();
+		} catch (IllegalArgumentException e) {
+			//expected
+		}
+
+		component.getTimezoneId().setValue(null);
+		try {
+			serializer.setGlobalTimeZone(timezone, component);
+			fail();
+		} catch (IllegalArgumentException e) {
+			//expected
+		}
+
+		component.setTimezoneId((String) null);
+		try {
+			serializer.setGlobalTimeZone(timezone, component);
+			fail();
+		} catch (IllegalArgumentException e) {
+			//expected
+		}
+
+		component = vtimezoneNewYork();
+		timezone = new ICalTimeZone(component);
+
+		serializer.setGlobalTimeZone(timezone, false);
+		assertSame(timezone, serializer.getGlobalTimeZone());
+		assertSame(component, serializer.getGlobalTimeZoneComponent());
+
+		serializer.setGlobalTimeZone(null, false);
+		assertNull(serializer.getGlobalTimeZone());
+		assertNull(serializer.getGlobalTimeZoneComponent());
 	}
 
 	private static class Container {

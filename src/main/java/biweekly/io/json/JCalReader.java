@@ -83,24 +83,6 @@ import com.fasterxml.jackson.core.JsonParser;
  *   if (reader != null) reader.close();
  * }
  * </pre>
- * 
- * <p>
- * <b>Getting timezone information:</b>
- * </p>
- * 
- * <pre class="brush:java">
- * JCalReader reader = ...
- * ICalendar ical = reader.readNext();
- * TimezoneInfo tzinfo = reader.getTimezoneInfo();
- * 
- * //get the VTIMEZONE components that were parsed
- * //the VTIMEZONE components will NOT be in the ICalendar object
- * Collection&lt;VTimezone&gt; vtimezones = tzinfo.getComponents();
- * 
- * //get the timezone that a property was originally formatted in
- * DateStart dtstart = ical.getEvents().get(0).getDateStart();
- * TimeZone tz = tzinfo.getTimeZone(dtstart);
- * </pre>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc7265">RFC 7265</a>
  */

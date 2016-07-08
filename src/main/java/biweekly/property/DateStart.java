@@ -81,24 +81,24 @@ import biweekly.util.ICalDate;
  * </p>
  * 
  * <pre class="brush:java">
- * DateStart dtstart = new DateStart(...);
- * 
  * ICalendar ical = new ICalendar();
  * VEvent event = new VEvent();
+ * Date datetime = ...
+ * DateStart dtstart = new DateStart(datetime);
  * event.setDateStart(dtstart);
  * ical.addEvent(event);
  * 
  * java.util.TimeZone tz = ...
- * ICalWriter writer = new ICalWriter(...);
  * 
  * //set the timezone of all date-time property values
  * //date-time property values are written in UTC by default
- * writer.getTimezoneInfo().setDefaultTimeZone(tz);
+ * ical.getTimezoneInfo().setDefaultTimeZone(tz);
  * 
- * //set the timezone just for this property
- * writer.getTimezoneInfo().setTimeZone(dtstart, tz);
+ * //or set the timezone just for this property
+ * ical.getTimezoneInfo().setTimeZone(dtstart, tz);
  * 
  * //finally, write the iCalendar object
+ * ICalWriter writer = ...
  * writer.write(ical);
  * </pre>
  * @author Michael Angstadt

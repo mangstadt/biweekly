@@ -676,6 +676,79 @@ public class XCalWriterTest {
 	}
 
 	@Test
+	public void setGlobalTimezone() throws Throwable {
+		VEvent event = new VEvent();
+		event.getProperties().clear();
+		event.setDateStart(utc("1996-07-04 12:00:00"));
+		ical.addEvent(event);
+
+		TimeZone nyTimezone = TimeZone.getTimeZone("America/New_York");
+		VTimezone nyComponent = new VTimezone(nyTimezone.getID());
+		ical.getTimezoneInfo().assign(nyComponent, nyTimezone);
+		ical.getTimezoneInfo().setDefaultTimeZone(nyTimezone);
+
+		TimeZone laTimezone = TimeZone.getTimeZone("America/Los_Angeles");
+		VTimezone laComponent = new VTimezone(laTimezone.getID());
+
+		writer.write(ical);
+		writer.setGlobalTimeZone(laTimezone, laComponent);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
+			"<vcalendar>" +
+				"<properties>" +
+					"<version><text>2.0</text></version>" +
+				"</properties>" +
+				"<components>" +
+					"<vtimezone>" +
+						"<properties>" +
+							"<tzid><text>America/New_York</text></tzid>" +
+						"</properties>" +
+					"</vtimezone>" +
+					"<vevent>" +
+						"<properties>" +
+							"<dtstart>" +
+								"<parameters>" +
+									"<tzid><text>America/New_York</text></tzid>" +
+								"</parameters>" +
+								"<date-time>1996-07-04T08:00:00</date-time>" +
+							"</dtstart>" +
+						"</properties>" +
+					"</vevent>" +
+				"</components>" +
+			"</vcalendar>" +
+			"<vcalendar>" +
+				"<properties>" +
+					"<version><text>2.0</text></version>" +
+				"</properties>" +
+				"<components>" +
+					"<vtimezone>" +
+						"<properties>" +
+							"<tzid><text>America/Los_Angeles</text></tzid>" +
+						"</properties>" +
+					"</vtimezone>" +
+					"<vevent>" +
+						"<properties>" +
+							"<dtstart>" +
+								"<parameters>" +
+									"<tzid><text>America/Los_Angeles</text></tzid>" +
+								"</parameters>" +
+								"<date-time>1996-07-04T05:00:00</date-time>" +
+							"</dtstart>" +
+						"</properties>" +
+					"</vevent>" +
+				"</components>" +
+			"</vcalendar>" +
+		"</icalendar>";
+		//@formatter:on
+
+		assertOutput(expected);
+	}
+
+	@Test
 	public void write_example1() throws Throwable {
 		ical.setCalendarScale(CalendarScale.gregorian());
 		ical.setProductId("-//Example Inc.//Example Calendar//EN");
@@ -690,7 +763,7 @@ public class XCalWriterTest {
 		}
 
 		assertValidate(ical).versions(V2_0).run();
-		assertExample(ical, "rfc6321-example1.xml", new TimezoneInfo());
+		assertExample(ical, "rfc6321-example1.xml");
 	}
 
 	@Test
@@ -761,10 +834,10 @@ public class XCalWriterTest {
 			usEasternTz.addStandardTime(standard);
 		}
 
-		TimezoneInfo tzinfo = new TimezoneInfo();
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
 		tzinfo.assign(usEasternTz, eastern);
 		tzinfo.setDefaultTimeZone(eastern);
-		assertExample(ical, "rfc6321-example2.xml", tzinfo);
+		assertExample(ical, "rfc6321-example2.xml");
 	}
 
 	private void assertOutput(String expected) throws SAXException, IOException {
@@ -773,8 +846,7 @@ public class XCalWriterTest {
 		assertXMLEqual(prettyPrinted, expected, actual);
 	}
 
-	private void assertExample(ICalendar ical, String exampleFileName, TimezoneInfo tzinfo) throws SAXException, IOException {
-		writer.setTimezoneInfo(tzinfo);
+	private void assertExample(ICalendar ical, String exampleFileName) throws SAXException, IOException {
 		writer.write(ical);
 		writer.close();
 

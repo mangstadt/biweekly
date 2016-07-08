@@ -519,6 +519,77 @@ public class JCalWriterTest {
 	}
 
 	@Test
+	public void setGlobalTimezone() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+
+		VEvent event = new VEvent();
+		event.getProperties().clear();
+		event.setDateStart(utc("1996-07-04 12:00:00"));
+		ical.addEvent(event);
+
+		TimeZone nyTimezone = TimeZone.getTimeZone("America/New_York");
+		VTimezone nyComponent = new VTimezone(nyTimezone.getID());
+		ical.getTimezoneInfo().assign(nyComponent, nyTimezone);
+		ical.getTimezoneInfo().setDefaultTimeZone(nyTimezone);
+
+		TimeZone laTimezone = TimeZone.getTimeZone("America/Los_Angeles");
+		VTimezone laComponent = new VTimezone(laTimezone.getID());
+
+		StringWriter sw = new StringWriter();
+		JCalWriter writer = new JCalWriter(sw, true);
+		writer.write(ical);
+		writer.setGlobalTimeZone(laTimezone, laComponent);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"[[\"vcalendar\"," +
+			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]" +
+			"]," +
+			"[" +
+				"[\"vtimezone\"," +
+					"[" +
+						"[\"tzid\",{},\"text\",\"America/New_York\"]" +
+					"]," +
+					"[]" +
+				"]," +
+				"[\"vevent\"," +
+					"[" +
+						"[\"dtstart\",{\"tzid\":\"America/New_York\"},\"date-time\",\"1996-07-04T08:00:00\"]" +
+					"]," +
+					"[]" +
+				"]" +
+			"]" +
+		"]," +
+		"[\"vcalendar\"," +
+			"[" +
+				"[\"version\",{},\"text\",\"2.0\"]" +
+			"]," +
+			"[" +
+				"[\"vtimezone\"," +
+					"[" +
+						"[\"tzid\",{},\"text\",\"America/Los_Angeles\"]" +
+					"]," +
+					"[]" +
+				"]," +
+				"[\"vevent\"," +
+					"[" +
+						"[\"dtstart\",{\"tzid\":\"America/Los_Angeles\"},\"date-time\",\"1996-07-04T05:00:00\"]" +
+					"]," +
+					"[]" +
+				"]" +
+			"]" +
+		"]]";
+		//@formatter:on
+
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void jcal_draft_example1() throws Throwable {
 		//Note: all whitespace is removed from the expected JSON string it easier to compare it with the actual result
 		ICalendar ical = new ICalendar();
@@ -536,7 +607,7 @@ public class JCalWriterTest {
 		}
 
 		assertValidate(ical).versions(V2_0).run();
-		assertExample(ical, "rfc7265-example1.json", new TimezoneInfo());
+		assertExample(ical, "rfc7265-example1.json");
 	}
 
 	@Test
@@ -581,7 +652,7 @@ public class JCalWriterTest {
 
 		assertValidate(ical).versions(V2_0).run();
 
-		TimezoneInfo tzinfo = new TimezoneInfo();
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
 		{
 			usEasternTz = new VTimezone("US/Eastern");
 			usEasternTz.setLastModified(utc("2004-01-10 03:28:45"));
@@ -614,13 +685,12 @@ public class JCalWriterTest {
 		}
 		tzinfo.assign(usEasternTz, eastern);
 		tzinfo.setDefaultTimeZone(eastern);
-		assertExample(ical, "rfc7265-example2.json", tzinfo);
+		assertExample(ical, "rfc7265-example2.json");
 	}
 
-	private void assertExample(ICalendar ical, String exampleFileName, TimezoneInfo tzinfo) throws IOException {
+	private void assertExample(ICalendar ical, String exampleFileName) throws IOException {
 		StringWriter sw = new StringWriter();
 		JCalWriter writer = new JCalWriter(sw);
-		writer.setTimezoneInfo(tzinfo);
 		writer.write(ical);
 		writer.close();
 

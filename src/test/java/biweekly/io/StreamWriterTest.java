@@ -1,12 +1,16 @@
 package biweekly.io;
 
 import static biweekly.ICalVersion.V2_0;
+import static biweekly.util.TestUtils.vtimezoneNewYork;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
+import java.util.TimeZone;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +19,7 @@ import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
 import biweekly.component.VEvent;
+import biweekly.component.VTimezone;
 import biweekly.property.ICalProperty;
 
 /*
@@ -104,6 +109,65 @@ public class StreamWriterTest {
 		writer.write(ical);
 
 		verify(writer)._write(ical);
+	}
+
+	@Test
+	public void setGlobalTimezone() {
+		TimeZone timezone = TimeZone.getTimeZone("America/New_York");
+		VTimezone component = new VTimezone(timezone.getID());
+
+		writer.setGlobalTimeZone(timezone, component);
+		assertSame(timezone, writer.getGlobalTimeZone());
+		assertSame(component, writer.getGlobalTimeZoneComponent());
+
+		writer.setGlobalTimeZone(null, null);
+		assertNull(writer.getGlobalTimeZone());
+		assertNull(writer.getGlobalTimeZoneComponent());
+
+		writer.setGlobalTimeZone(timezone, component);
+		writer.setGlobalTimeZone(null, component);
+		assertNull(writer.getGlobalTimeZone());
+		assertNull(writer.getGlobalTimeZoneComponent());
+
+		writer.setGlobalTimeZone(timezone, component);
+		writer.setGlobalTimeZone(timezone, null);
+		assertNull(writer.getGlobalTimeZone());
+		assertNull(writer.getGlobalTimeZoneComponent());
+
+		component.getTimezoneId().setValue("foobar");
+		try {
+			writer.setGlobalTimeZone(timezone, component);
+			fail();
+		} catch (IllegalArgumentException e) {
+			//expected
+		}
+
+		component.getTimezoneId().setValue(null);
+		try {
+			writer.setGlobalTimeZone(timezone, component);
+			fail();
+		} catch (IllegalArgumentException e) {
+			//expected
+		}
+
+		component.setTimezoneId((String) null);
+		try {
+			writer.setGlobalTimeZone(timezone, component);
+			fail();
+		} catch (IllegalArgumentException e) {
+			//expected
+		}
+
+		component = vtimezoneNewYork();
+		timezone = new ICalTimeZone(component);
+
+		writer.setGlobalTimeZone(timezone, false);
+		assertSame(timezone, writer.getGlobalTimeZone());
+		assertSame(component, writer.getGlobalTimeZoneComponent());
+
+		writer.setGlobalTimeZone(null, false);
+		assertNull(writer.getGlobalTimeZone());
+		assertNull(writer.getGlobalTimeZoneComponent());
 	}
 
 	private class StreamWriterImpl extends StreamWriter {

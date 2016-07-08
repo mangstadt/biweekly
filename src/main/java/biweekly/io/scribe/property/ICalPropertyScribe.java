@@ -1060,8 +1060,8 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 
 		/**
 		 * Forces the value to be parsed as a date-time or date value.
-		 * @param hasTime true to parsed as a date-time value, false to parse
-		 * as a date value, null to parse as whatever value it is (defaults to
+		 * @param hasTime true to parsed as a date-time value, false to parse as
+		 * a date value, null to parse as whatever value it is (defaults to
 		 * null)
 		 * @return this
 		 */
@@ -1107,11 +1107,19 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	}
 
 	protected static DateWriter date(ICalDate date, ICalProperty property, WriteContext context) {
-		TimezoneInfo tzinfo = context.getTimezoneInfo();
-		boolean floating = tzinfo.isFloating(property);
-		TimeZone tz = tzinfo.getTimeZoneToWriteIn(property);
-		context.addDate(date, floating, tz);
+		boolean floating;
+		TimeZone tz;
+		TimeZone globalTz = context.getGlobalTimeZone();
+		if (globalTz == null) {
+			TimezoneInfo tzinfo = context.getTimezoneInfo();
+			floating = tzinfo.isFloating(property);
+			tz = tzinfo.getTimeZoneToWriteIn(property);
+		} else {
+			floating = false;
+			tz = globalTz;
+		}
 
+		context.addDate(date, floating, tz);
 		return date(date).tz(floating, tz);
 	}
 
@@ -1248,13 +1256,22 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 			return parameters;
 		}
 
-		//property is being formatted in UTC
-		TimeZone timezone = tzinfo.getTimeZoneToWriteIn(property);
-		if (timezone == null) {
-			return parameters;
+		TimeZone timezone;
+		TimeZone globalTz = context.getGlobalTimeZone();
+		if (globalTz == null) {
+			timezone = tzinfo.getTimeZoneToWriteIn(property);
+			if (timezone == null) {
+				return parameters;
+			}
+		} else {
+			timezone = globalTz;
 		}
 
-		String id = (tzinfo.hasSolidusTimezone(property) ? "/" : "") + timezone.getID();
+		String id = timezone.getID();
+		if (tzinfo.hasSolidusTimezone(property)) {
+			id = '/' + id;
+		}
+
 		parameters = new ICalParameters(parameters);
 		parameters.setTimezoneId(id);
 		return parameters;

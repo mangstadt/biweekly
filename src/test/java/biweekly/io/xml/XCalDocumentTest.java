@@ -1093,7 +1093,7 @@ public class XCalDocumentTest {
 		}
 
 		assertValidate(ical).versions(V2_0).run();
-		assertExample(ical, "rfc6321-example1.xml", new TimezoneInfo());
+		assertExample(ical, "rfc6321-example1.xml");
 	}
 
 	@Test
@@ -1145,7 +1145,7 @@ public class XCalDocumentTest {
 		}
 
 		//assert the timezone info
-		TimezoneInfo tzinfo = reader.getTimezoneInfo();
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
 		{
 			Iterator<VTimezone> it = tzinfo.getComponents().iterator();
 
@@ -1287,20 +1287,19 @@ public class XCalDocumentTest {
 			usEasternTz.addStandardTime(standard);
 		}
 
-		TimezoneInfo tzinfo = new TimezoneInfo();
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
 		tzinfo.assign(usEasternTz, eastern);
 		tzinfo.setDefaultTimeZone(eastern);
-		assertExample(ical, "rfc6321-example2.xml", tzinfo);
+		assertExample(ical, "rfc6321-example2.xml");
 	}
 
 	private XCalDocument read(String file) throws SAXException, IOException {
 		return new XCalDocument(getClass().getResourceAsStream(file));
 	}
 
-	private void assertExample(ICalendar ical, String exampleFileName, TimezoneInfo tzinfo) {
+	private void assertExample(ICalendar ical, String exampleFileName) {
 		XCalDocument xcal = new XCalDocument();
 		XCalDocumentStreamWriter writer = xcal.writer();
-		writer.setTimezoneInfo(tzinfo);
 		writer.write(ical);
 
 		try {

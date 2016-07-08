@@ -1137,7 +1137,7 @@ public class ICalReaderTest {
 		assertEquals(utc("2014-09-28 16:00:00"), dtstart.next().getValue());
 		assertEquals(utc("2014-11-03 17:00:00"), dtstart.next().getValue());
 
-		TimezoneInfo tzinfo = reader.getTimezoneInfo();
+		TimezoneInfo tzinfo = icalendar.getTimezoneInfo();
 		assertEquals(1, tzinfo.getComponents().size());
 		VTimezone timezone = tzinfo.getComponents().iterator().next();
 		{
@@ -1194,7 +1194,7 @@ public class ICalReaderTest {
 		assertEquals(date("2014-09-28 12:00:00"), dtstart.next().getValue());
 		assertEquals(date("2014-11-03 12:00:00"), dtstart.next().getValue());
 
-		TimezoneInfo tzinfo = reader.getTimezoneInfo();
+		TimezoneInfo tzinfo = icalendar.getTimezoneInfo();
 		assertEquals(0, tzinfo.getComponents().size());
 
 		assertWarnings(0, reader);
@@ -1226,7 +1226,7 @@ public class ICalReaderTest {
 		assertEquals(utc("2014-09-28 17:00:00"), dtstart.next().getValue());
 		assertEquals(utc("2014-11-03 17:00:00"), dtstart.next().getValue());
 
-		TimezoneInfo tzinfo = reader.getTimezoneInfo();
+		TimezoneInfo tzinfo = icalendar.getTimezoneInfo();
 		assertEquals(1, tzinfo.getComponents().size());
 		VTimezone timezone = tzinfo.getComponents().iterator().next();
 		{
@@ -1431,7 +1431,7 @@ public class ICalReaderTest {
 			assertEquals("0", event.getExperimentalProperty("X-MS-OLK-CONFTYPE").getValue());
 		}
 
-		TimezoneInfo tzinfo = reader.getTimezoneInfo();
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
 		{
 			Iterator<VTimezone> it = tzinfo.getComponents().iterator();
 
@@ -1554,7 +1554,7 @@ public class ICalReaderTest {
 			assertEquals("1CP Conference Room 4350", event.getLocation().getValue());
 		}
 
-		TimezoneInfo tzinfo = reader.getTimezoneInfo();
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
 		{
 			Iterator<VTimezone> it = tzinfo.getComponents().iterator();
 

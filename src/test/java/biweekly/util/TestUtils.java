@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,10 +34,12 @@ import biweekly.ICalendar;
 import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
+import biweekly.component.VTimezone;
 import biweekly.io.StreamReader;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.property.ICalPropertyScribe;
+import biweekly.io.text.ICalReader;
 import biweekly.property.ICalProperty;
 
 /*
@@ -213,7 +216,7 @@ public class TestUtils {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void assertWriteXml(String expectedInnerXml, ICalProperty propertyToWrite, ICalPropertyScribe marshaller) {
 		Document actual = xcalProperty(marshaller);
-		marshaller.writeXml(propertyToWrite, actual.getDocumentElement(), new WriteContext(V2_0, new TimezoneInfo()));
+		marshaller.writeXml(propertyToWrite, actual.getDocumentElement(), new WriteContext(V2_0, new TimezoneInfo(), null));
 
 		Document expected = xcalProperty(marshaller, expectedInnerXml);
 		assertXMLEqual(expected, actual);
@@ -547,6 +550,29 @@ public class TestUtils {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Gets a VTIMEZONE component for the "America/New_York" timezone. Timezone
+	 * definition downloaded from tzurl.org.
+	 * @return the component
+	 */
+	public static VTimezone vtimezoneNewYork() {
+		ICalReader reader = new ICalReader(TestUtils.class.getResourceAsStream("New_York.ics"));
+		ICalendar ical;
+		try {
+			ical = reader.readNext();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			try {
+				reader.close();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		return ical.getTimezoneInfo().getComponents().iterator().next();
 	}
 
 	private TestUtils() {

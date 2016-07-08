@@ -12,7 +12,6 @@ import biweekly.Biweekly;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
-import biweekly.io.TimezoneInfo;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.text.ICalWriter;
@@ -171,9 +170,7 @@ public class ChainingTextWriter extends ChainingWriter<ChainingTextWriter> {
 	private void go(ICalWriter writer) throws IOException {
 		writer.setCaretEncodingEnabled(caretEncoding);
 		if (defaultTimeZone != null) {
-			TimezoneInfo tzinfo = new TimezoneInfo();
-			tzinfo.setDefaultTimeZone(defaultTimeZone);
-			writer.setTimezoneInfo(tzinfo);
+			writer.setGlobalTimeZone(defaultTimeZone, false);
 		}
 		if (index != null) {
 			writer.setScribeIndex(index);

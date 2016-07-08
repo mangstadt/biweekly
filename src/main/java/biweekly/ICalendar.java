@@ -20,6 +20,7 @@ import biweekly.component.VEvent;
 import biweekly.component.VFreeBusy;
 import biweekly.component.VJournal;
 import biweekly.component.VTodo;
+import biweekly.io.TimezoneInfo;
 import biweekly.io.json.JCalWriter;
 import biweekly.io.text.ICalWriter;
 import biweekly.io.xml.XCalDocument;
@@ -86,6 +87,64 @@ import biweekly.util.Duration;
  * event.setDateEnd(end);
  * ical.addEvent(event);
  * </pre>
+ * 
+ * <p>
+ * <b>Getting timezone information from parsed iCalendar objects:</b>
+ * </p>
+ * 
+ * <pre class="brush:java">
+ * //The timezone information associated with an ICalendar object is stored in its TimezoneInfo object.
+ * ICalReader reader = ...
+ * ICalendar ical = reader.readNext();
+ * TimezoneInfo tzinfo = ical.getTimezoneInfo();
+ * 
+ * //You can use this object to get the VTIMEZONE components that were parsed from the input stream.
+ * //Note that the VTIMEZONE components will NOT be in the ICalendar object itself
+ * Collection&lt;VTimezone&gt; vtimezones = tzinfo.getComponents();
+ * 
+ * //You can also get the timezone that a specific property was originally formatted in.
+ * DateStart dtstart = ical.getEvents().get(0).getDateStart();
+ * TimeZone tz = tzinfo.getTimeZone(dtstart);
+ * 
+ * //This is useful for calculating recurrence rule dates.
+ * RecurrenceRule rrule = ical.getEvents(0).getRecurrenceRule();
+ * DateIterator it = rrule.getDateIterator(dtstart.getValue(), tz);
+ * </pre>
+ * 
+ * <p>
+ * <b>Setting timezone information when writing iCalendar objects:</b>
+ * </p>
+ * 
+ * <pre class="brush:java">
+ * //The TimezoneInfo field is used to determine what timezone to format each date value in when the ICalendar object is written.
+ * //Appropriate VTIMEZONE components are automatically added to the written iCalendar object.
+ * ICalendar ical = ...
+ * TimezoneInfo tzinfo = ical.getTimezoneInfo();
+ * 
+ * //If you want the generated VTIMEZONE components to be tailored for Microsoft Outlook email clients, you can do that.
+ * //This method must be called *before* any timezone settings are passed into the TimezoneInfo object.
+ * //Note that this method downloads the VTIMEZONE component from tzurl.org, so an internet connection is required.
+ * tzinfo.setGenerator(new TzUrlDotOrgGenerator(true));
+ * 
+ * //You can specify what timezone you'd like to format all date values in.
+ * tzinfo.setDefaultTimeZone(TimeZone.getDefault());
+ * 
+ * //You can also specify what timezone to use for individual properties if you want.
+ * DateStart dtstart = ical.getEvents(0).getDateStart();
+ * tzinfo.setTimeZone(dtstart, TimeZone.getTimeZone("America/Los_Angeles"));
+ * 
+ * //The writer object will use this information to determine what timezone to format each date value in.
+ * //Date values are formatted in UTC by default.
+ * ICalWriter writer = ...
+ * writer.write(ical);
+ * </pre>
+ * 
+ * <p>
+ * For more information on working with timezones, see this page:<br />
+ * <a
+ * href="https://github.com/mangstadt/biweekly/wiki/Timezones">https://github.
+ * com/mangstadt/biweekly/wiki/Timezones</a>
+ * </p>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445">RFC 2445</a>
@@ -95,6 +154,7 @@ import biweekly.util.Duration;
  */
 public class ICalendar extends ICalComponent {
 	private ICalVersion version;
+	private TimezoneInfo tzinfo = new TimezoneInfo();
 
 	/**
 	 * <p>
@@ -134,6 +194,56 @@ public class ICalendar extends ICalComponent {
 	 */
 	public void setVersion(ICalVersion version) {
 		this.version = version;
+	}
+
+	/**
+	 * <p>
+	 * Gets the timezone information associated with this iCalendar object.
+	 * </p>
+	 * <p>
+	 * When an iCalendar object is parsed from an input stream, the
+	 * {@link TimezoneInfo} object remembers the original timezone definitions
+	 * that each property was associated with. One use for this is when you want
+	 * to calculate the dates in a recurrence rule. The recurrence rule needs to
+	 * know what timezone its associated date values were originally formatted
+	 * in in order to work correctly.
+	 * </p>
+	 * <p>
+	 * When an {@link ICalendar} object is written to an output stream, its
+	 * {@link TimezoneInfo} object tells the writer what timezone to format each
+	 * property in.
+	 * </p>
+	 * @return the timezone info
+	 */
+	public TimezoneInfo getTimezoneInfo() {
+		return tzinfo;
+	}
+
+	/**
+	 * <p>
+	 * Sets the timezone information associated with this iCalendar object.
+	 * </p>
+	 * <p>
+	 * When an iCalendar object is parsed from an input stream, the
+	 * {@link TimezoneInfo} object remembers the original timezone definitions
+	 * that each property was associated with. One use for this is when you want
+	 * to calculate the dates in a recurrence rule. The recurrence rule needs to
+	 * know what timezone its associated date values were originally formatted
+	 * in in order to work correctly.
+	 * </p>
+	 * <p>
+	 * When an {@link ICalendar} object is written to an output stream, its
+	 * {@link TimezoneInfo} object tells the writer what timezone to format each
+	 * property in.
+	 * </p>
+	 * @param tzinfo the timezone info (cannot be null)
+	 * @throws NullPointerException if the timezone info object is null
+	 */
+	public void setTimezoneInfo(TimezoneInfo tzinfo) {
+		if (tzinfo == null) {
+			throw new NullPointerException();
+		}
+		this.tzinfo = tzinfo;
 	}
 
 	/**

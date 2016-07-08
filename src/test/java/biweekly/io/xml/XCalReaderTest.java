@@ -1022,7 +1022,7 @@ public class XCalReaderTest {
 				assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
 			}
 
-			TimezoneInfo tzinfo = reader.getTimezoneInfo();
+			TimezoneInfo tzinfo = ical.getTimezoneInfo();
 			{
 				Iterator<VTimezone> it = tzinfo.getComponents().iterator();
 				VTimezone timezone = it.next();

@@ -449,7 +449,7 @@ public class ICalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V1_0);
-		writer.setTimezoneInfo(americaNewYork());
+		ical.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
 
@@ -472,7 +472,7 @@ public class ICalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V1_0);
-		writer.setTimezoneInfo(americaNewYork());
+		ical.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
 
@@ -499,7 +499,7 @@ public class ICalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V1_0);
-		writer.setTimezoneInfo(americaNewYork());
+		ical.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
 
@@ -526,7 +526,7 @@ public class ICalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V1_0);
-		writer.setTimezoneInfo(americaNewYork());
+		ical.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
 
@@ -553,7 +553,7 @@ public class ICalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V1_0);
-		writer.setTimezoneInfo(americaNewYork());
+		ical.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
 
@@ -581,7 +581,7 @@ public class ICalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V1_0);
-		writer.setTimezoneInfo(americaNewYork());
+		ical.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
 
@@ -610,7 +610,7 @@ public class ICalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V1_0);
-		writer.setTimezoneInfo(americaNewYork());
+		ical.setTimezoneInfo(americaNewYork());
 		writer.write(ical);
 		writer.close();
 
@@ -641,7 +641,7 @@ public class ICalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V1_0);
-		writer.setTimezoneInfo(americaNewYorkWithoutDaylight());
+		ical.setTimezoneInfo(americaNewYorkWithoutDaylight());
 		writer.write(ical);
 		writer.close();
 
@@ -754,6 +754,57 @@ public class ICalWriterTest {
 	}
 
 	@Test
+	public void setGlobalTimezone() throws Throwable {
+		ICalendar ical = new ICalendar();
+		ical.getProperties().clear();
+
+		VEvent event = new VEvent();
+		event.getProperties().clear();
+		event.setDateStart(utc("1996-07-04 12:00:00"));
+		ical.addEvent(event);
+
+		TimeZone nyTimezone = TimeZone.getTimeZone("America/New_York");
+		VTimezone nyComponent = new VTimezone(nyTimezone.getID());
+		ical.getTimezoneInfo().assign(nyComponent, nyTimezone);
+		ical.getTimezoneInfo().setDefaultTimeZone(nyTimezone);
+
+		TimeZone laTimezone = TimeZone.getTimeZone("America/Los_Angeles");
+		VTimezone laComponent = new VTimezone(laTimezone.getID());
+
+		StringWriter sw = new StringWriter();
+		ICalWriter writer = new ICalWriter(sw, V2_0);
+		writer.write(ical);
+		writer.setGlobalTimeZone(laTimezone, laComponent);
+		writer.write(ical);
+		writer.close();
+
+		//@formatter:off
+		String expected =
+		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:2.0\r\n" +
+			"BEGIN:VTIMEZONE\r\n" +
+				"TZID:America/New_York\r\n" +
+			"END:VTIMEZONE\r\n" +
+			"BEGIN:VEVENT\r\n" +
+				"DTSTART;TZID=America/New_York:19960704T080000\r\n" +
+			"END:VEVENT\r\n" +
+		"END:VCALENDAR\r\n" +
+		"BEGIN:VCALENDAR\r\n" +
+			"VERSION:2.0\r\n" +
+			"BEGIN:VTIMEZONE\r\n" +
+				"TZID:America/Los_Angeles\r\n" +
+			"END:VTIMEZONE\r\n" +
+			"BEGIN:VEVENT\r\n" +
+				"DTSTART;TZID=America/Los_Angeles:19960704T050000\r\n" +
+			"END:VEVENT\r\n" +
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+
+		String actual = sw.toString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void example1() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
@@ -774,7 +825,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run();
-		assertExample(ical, "rfc5545-example1.ics", new TimezoneInfo(), V2_0);
+		assertExample(ical, "rfc5545-example1.ics", V2_0);
 	}
 
 	@Test
@@ -808,7 +859,7 @@ public class ICalWriterTest {
 
 		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run();
 
-		TimezoneInfo tzinfo = new TimezoneInfo();
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
 		VTimezone usEasternTz;
 		{
 			usEasternTz = new VTimezone("America/New_York");
@@ -832,7 +883,7 @@ public class ICalWriterTest {
 
 		tzinfo.assign(usEasternTz, eastern);
 		tzinfo.setDefaultTimeZone(eastern);
-		assertExample(ical, "rfc5545-example2.ics", tzinfo, V2_0);
+		assertExample(ical, "rfc5545-example2.ics", V2_0);
 	}
 
 	@Test
@@ -868,7 +919,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run();
-		assertExample(ical, "rfc5545-example3.ics", new TimezoneInfo(), V2_0);
+		assertExample(ical, "rfc5545-example3.ics", V2_0);
 	}
 
 	@Test
@@ -904,9 +955,9 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run();
-		TimezoneInfo tzinfo = new TimezoneInfo();
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
 		tzinfo.setFloating(ical.getTodos().get(0).getDateDue(), true);
-		assertExample(ical, "rfc5545-example4.ics", tzinfo, V2_0);
+		assertExample(ical, "rfc5545-example4.ics", V2_0);
 	}
 
 	@Test
@@ -928,7 +979,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run();
-		assertExample(ical, "rfc5545-example5.ics", new TimezoneInfo(), V2_0);
+		assertExample(ical, "rfc5545-example5.ics", V2_0);
 	}
 
 	@Test
@@ -960,7 +1011,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).warn(freebusy, 2, 2).run(); //UID and DTSTAMP missing
-		assertExample(ical, "rfc5545-example6.ics", new TimezoneInfo(), V2_0);
+		assertExample(ical, "rfc5545-example6.ics", V2_0);
 	}
 
 	@Test
@@ -982,7 +1033,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(V1_0).run();
-		assertExample(ical, "vcal-example1.vcs", new TimezoneInfo(), V1_0);
+		assertExample(ical, "vcal-example1.vcs", V1_0);
 	}
 
 	@Test
@@ -1000,7 +1051,7 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(V1_0).run();
-		assertExample(ical, "vcal-example2.vcs", new TimezoneInfo(), V1_0);
+		assertExample(ical, "vcal-example2.vcs", V1_0);
 	}
 
 	@Test
@@ -1034,14 +1085,13 @@ public class ICalWriterTest {
 		}
 
 		assertValidate(ical).versions(V1_0).run();
-		assertExample(ical, "vcal-example3.vcs", new TimezoneInfo(), V1_0);
+		assertExample(ical, "vcal-example3.vcs", V1_0);
 	}
 
-	private void assertExample(ICalendar ical, String exampleFileName, TimezoneInfo tzinfo, ICalVersion version) throws IOException {
+	private void assertExample(ICalendar ical, String exampleFileName, ICalVersion version) throws IOException {
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, version);
 		writer.getRawWriter().getFoldedLineWriter().setLineLength(null);
-		writer.setTimezoneInfo(tzinfo);
 		writer.write(ical);
 		writer.close();
 

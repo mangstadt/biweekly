@@ -18,7 +18,6 @@ import biweekly.Biweekly;
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
-import biweekly.io.TimezoneInfo;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.xml.XCalDocument;
@@ -194,9 +193,7 @@ public class ChainingXmlWriter extends ChainingWriter<ChainingXmlWriter> {
 
 		XCalDocumentStreamWriter writer = document.writer();
 		if (defaultTimeZone != null) {
-			TimezoneInfo tzinfo = new TimezoneInfo();
-			tzinfo.setDefaultTimeZone(defaultTimeZone);
-			writer.setTimezoneInfo(tzinfo);
+			writer.setGlobalTimeZone(defaultTimeZone, false);
 		}
 		for (Map.Entry<String, ICalDataType> entry : parameterDataTypes.entrySet()) {
 			String parameterName = entry.getKey();
