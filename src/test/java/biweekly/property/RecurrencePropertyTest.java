@@ -179,4 +179,90 @@ public class RecurrencePropertyTest {
 		property = new RecurrenceProperty(new Recurrence.Builder(Frequency.SECONDLY).build());
 		assertValidate(property).versions(V2_0_DEPRECATED, V2_0).run();
 	}
+
+	@Test
+	public void advanceDateIterator_UTC() {
+		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).count(5).build();
+		Date start = date("2014-11-22 10:00:00");
+		RecurrenceProperty property = new RecurrenceProperty(recur);
+
+		//@formatter:off
+		List<Date> expected = Arrays.asList(
+				date("2014-11-24 10:00:00"),
+				date("2014-11-25 10:00:00"),
+				date("2014-11-26 10:00:00")
+		);
+		//@formatter:on
+
+		List<Date> actual = new ArrayList<Date>();
+		DateIterator it = property.getDateIterator(start, TimeZone.getTimeZone("UTC"));
+		it.advanceTo(date("2014-11-24 10:00:00"));
+		while (it.hasNext()) {
+			actual.add(it.next());
+		}
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void advanceDateIterator_negativeTimeZoneOffset() {
+
+		// Use time zone with negative offset
+		TimeZone pacificTimeZone = TimeZone.getTimeZone("America/Los_Angeles");
+		Date startTime = date("2016-07-01 00:01:00", pacificTimeZone);
+		Date advanceTo = date("2016-07-01 06:59:00", pacificTimeZone); // advance iterator to time 1-minute less than the time zone offset.
+
+		// Note: date-time used for advancement must first be converted to UTC.
+		Recurrence recur = new Recurrence.Builder(Recurrence.Frequency.DAILY).count(4).build();
+		RecurrenceProperty recurrenceProperty = new RecurrenceProperty(recur);
+		DateIterator it = recurrenceProperty.getDateIterator(startTime, pacificTimeZone);
+		it.advanceTo(new Date(advanceTo.getTime())); //
+
+		//@formatter:off
+		// First occurrence is skipped. The last three occurrences should be returned.
+		List<Date> expected = Arrays.asList(
+				date("2016-07-02 00:01:00", pacificTimeZone),
+				date("2016-07-03 00:01:00", pacificTimeZone),
+				date("2016-07-04 00:01:00", pacificTimeZone)
+		);
+		//@formatter:on
+
+		List<Date> actual = new ArrayList<Date>();
+		while (it.hasNext()) {
+			actual.add(it.next());
+		}
+
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void advanceDateIterator_positiveTimeZoneOffset() {
+
+		// Use time zone with negative offset
+		TimeZone singapore = TimeZone.getTimeZone("Asia/Singapore");
+		Date startTime = date("2016-07-01 00:01:00", singapore);
+		Date advanceTo = date("2016-07-01 00:05:00", singapore); // advance iterator 5-minutes from start time
+
+		// Note: date-time used for advancement must first be converted to UTC.
+		Recurrence recur = new Recurrence.Builder(Recurrence.Frequency.DAILY).count(4).build();
+		RecurrenceProperty recurrenceProperty = new RecurrenceProperty(recur);
+		DateIterator it = recurrenceProperty.getDateIterator(startTime, singapore);
+		it.advanceTo(new Date(advanceTo.getTime())); //
+
+		//@formatter:off
+		// First occurrence is skipped. The last three should be returned
+		List<Date> expected = Arrays.asList(
+				date("2016-07-02 00:01:00", singapore),
+				date("2016-07-03 00:01:00", singapore),
+				date("2016-07-04 00:01:00", singapore)
+		);
+		//@formatter:on
+
+		List<Date> actual = new ArrayList<Date>();
+		while (it.hasNext()) {
+			actual.add(it.next());
+		}
+
+		assertEquals(expected, actual);
+	}
 }

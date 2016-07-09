@@ -71,22 +71,19 @@ public class TimeUtils {
     }
 
     long timetMillis;
+    DateTimeValue dtv;
 
     if (sense > 0) {
-      // time is in UTC
+      // time is in UTC; Convert to time in zone provided.
       timetMillis = timetMillisFromEpochSecs(secsSinceEpoch(time), ZULU);
+      dtv = toDateTimeValue(timetMillis, zone);
     } else {
-      // time is in local time; since zone.getOffset() expects millis
-      // in UTC, need to convert before we can get the offset (ironic)
+      // time is in local time; convert to UTC
       timetMillis = timetMillisFromEpochSecs(secsSinceEpoch(time), zone);
+      dtv = toDateTimeValue(timetMillis, ZULU);
     }
 
-    int millisecondOffset = zone.getOffset(timetMillis);
-    int millisecondRound = millisecondOffset < 0 ? -500 : 500;
-    int secondOffset = (millisecondOffset + millisecondRound) / 1000;
-
-    DateTimeValue dtv = toDateTimeValue(timetMillis, zone);
-    return addSeconds(dtv, sense * secondOffset);
+    return dtv;
   }
 
   public static DateValue fromUtc(DateValue date, TimeZone zone) {
