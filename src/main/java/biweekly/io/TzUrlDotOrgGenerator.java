@@ -2,6 +2,7 @@ package biweekly.io;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
@@ -44,7 +45,7 @@ import biweekly.util.IOUtils;
 
 /**
  * Downloads {@link VTimezone} components from <a
- * href="http://www.tzurl.org">tzurl.org</a>.
+ * href="http://www.tzurl.org">tzurl.org</a>. This class is thread-safe.
  * @author Michael Angstadt
  */
 public class TzUrlDotOrgGenerator implements VTimezoneGenerator {
@@ -52,9 +53,10 @@ public class TzUrlDotOrgGenerator implements VTimezoneGenerator {
 	private final String baseUrl;
 
 	/**
-	 * Creates a new tzurl.org translator.
-	 * @param outlook true to generate Outlook-compatible {@link VTimezone}
-	 * components, false to use standards-based ones
+	 * Creates a new tzurl.org generator.
+	 * @param outlook true to download {@link VTimezone} components that are
+	 * tailored for Microsoft Outlook email clients, false to download
+	 * standards-based ones
 	 */
 	public TzUrlDotOrgGenerator(boolean outlook) {
 		baseUrl = "http://www.tzurl.org/zoneinfo" + (outlook ? "-outlook" : "") + "/";
@@ -70,13 +72,13 @@ public class TzUrlDotOrgGenerator implements VTimezoneGenerator {
 
 		VTimezone component = cache.get(uri);
 		if (component != null) {
-			return component;
+			return component.copy();
 		}
 
 		ICalendar ical;
 		ICalReader reader = null;
 		try {
-			reader = new ICalReader(uri.toURL().openStream());
+			reader = new ICalReader(getInputStream(uri));
 			ical = reader.readNext();
 		} catch (FileNotFoundException e) {
 			throw notFound(e);
@@ -101,7 +103,10 @@ public class TzUrlDotOrgGenerator implements VTimezoneGenerator {
 		TimezoneInfo tzinfo = ical.getTimezoneInfo();
 		Collection<VTimezone> components = tzinfo.getComponents();
 		if (components.isEmpty()) {
-			throw notFound(null);
+			components = ical.getComponents(VTimezone.class); //VTIMEZONE components without TZID properties are treated as ordinary components
+			if (components.isEmpty()) {
+				throw notFound(null);
+			}
 		}
 
 		component = components.iterator().next();
@@ -121,7 +126,19 @@ public class TzUrlDotOrgGenerator implements VTimezoneGenerator {
 		}
 
 		cache.put(uri, component);
-		return component;
+		return component.copy();
+	}
+
+	//for unit testing
+	InputStream getInputStream(URI uri) throws IOException {
+		return uri.toURL().openStream();
+	}
+
+	/**
+	 * Clears the internal cache of downloaded timezone definitions.
+	 */
+	public static void clearCache() {
+		cache.clear();
 	}
 
 	private static IllegalArgumentException notFound(Exception e) {
