@@ -17,6 +17,7 @@ import org.junit.Test;
 import biweekly.ICalendar;
 import biweekly.component.VTimezone;
 import biweekly.io.ICalTimeZone;
+import biweekly.property.TimezoneId;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -192,7 +193,7 @@ public class JCalSerializerTest {
 	@Test
 	public void setGlobalTimezone() {
 		TimeZone timezone = TimeZone.getTimeZone("America/New_York");
-		VTimezone component = new VTimezone(timezone.getID());
+		VTimezone component = new VTimezone("ID");
 
 		JCalSerializer serializer = new JCalSerializer();
 		serializer.setGlobalTimeZone(timezone, component);
@@ -213,7 +214,7 @@ public class JCalSerializerTest {
 		assertNull(serializer.getGlobalTimeZone());
 		assertNull(serializer.getGlobalTimeZoneComponent());
 
-		component.getTimezoneId().setValue("foobar");
+		component.setTimezoneId(" ");
 		try {
 			serializer.setGlobalTimeZone(timezone, component);
 			fail();
@@ -229,7 +230,7 @@ public class JCalSerializerTest {
 			//expected
 		}
 
-		component.setTimezoneId((String) null);
+		component.removeProperties(TimezoneId.class);
 		try {
 			serializer.setGlobalTimeZone(timezone, component);
 			fail();

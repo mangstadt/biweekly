@@ -21,6 +21,7 @@ import biweekly.component.ICalComponent;
 import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
 import biweekly.property.ICalProperty;
+import biweekly.property.TimezoneId;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -114,7 +115,7 @@ public class StreamWriterTest {
 	@Test
 	public void setGlobalTimezone() {
 		TimeZone timezone = TimeZone.getTimeZone("America/New_York");
-		VTimezone component = new VTimezone(timezone.getID());
+		VTimezone component = new VTimezone("ID");
 
 		writer.setGlobalTimeZone(timezone, component);
 		assertSame(timezone, writer.getGlobalTimeZone());
@@ -134,7 +135,7 @@ public class StreamWriterTest {
 		assertNull(writer.getGlobalTimeZone());
 		assertNull(writer.getGlobalTimeZoneComponent());
 
-		component.getTimezoneId().setValue("foobar");
+		component.setTimezoneId(" ");
 		try {
 			writer.setGlobalTimeZone(timezone, component);
 			fail();
@@ -150,7 +151,7 @@ public class StreamWriterTest {
 			//expected
 		}
 
-		component.setTimezoneId((String) null);
+		component.removeProperties(TimezoneId.class);
 		try {
 			writer.setGlobalTimeZone(timezone, component);
 			fail();

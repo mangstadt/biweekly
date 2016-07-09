@@ -20,6 +20,7 @@ import org.xml.sax.SAXException;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.component.ICalComponent;
+import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.TimezoneInfo;
@@ -228,7 +229,7 @@ public class Sensei<T extends ICalProperty> {
 		 */
 		public void run() {
 			for (ICalVersion version : versions) {
-				WriteContext context = new WriteContext(version, tzinfo, null);
+				WriteContext context = new WriteContext(version, tzinfo, null, null);
 				context.setParent(parent);
 				ICalParameters actual = scribe.prepareParameters(property, context);
 				assertEquals("Actual: " + actual, expected.size(), actual.size());
@@ -251,6 +252,7 @@ public class Sensei<T extends ICalProperty> {
 		protected final T property;
 		protected TimezoneInfo tzinfo = new TimezoneInfo();
 		protected TimeZone globalTimeZone;
+		protected VTimezone globalTimeZoneComponent;
 		protected ICalComponent parent;
 
 		@SuppressWarnings("unchecked")
@@ -265,8 +267,9 @@ public class Sensei<T extends ICalProperty> {
 			return this_;
 		}
 
-		public U globalTz(TimeZone globalTimeZone) {
+		public U globalTz(TimeZone globalTimeZone, VTimezone globalTimeZoneComponent) {
 			this.globalTimeZone = globalTimeZone;
+			this.globalTimeZoneComponent = globalTimeZoneComponent;
 			return this_;
 		}
 
@@ -299,7 +302,7 @@ public class Sensei<T extends ICalProperty> {
 		 * @return the marshalled value
 		 */
 		public String run() {
-			WriteContext context = new WriteContext(version, tzinfo, globalTimeZone);
+			WriteContext context = new WriteContext(version, tzinfo, globalTimeZone, globalTimeZoneComponent);
 			context.setParent(parent);
 			return scribe.writeText(property, context);
 		}
@@ -332,7 +335,7 @@ public class Sensei<T extends ICalProperty> {
 		@Override
 		public void run(String expectedInnerXml) {
 			Document actual = createXCalElement();
-			WriteContext context = new WriteContext(V2_0, tzinfo, globalTimeZone);
+			WriteContext context = new WriteContext(V2_0, tzinfo, globalTimeZone, globalTimeZoneComponent);
 			context.setParent(parent);
 			scribe.writeXml(property, actual.getDocumentElement(), context);
 
@@ -356,7 +359,7 @@ public class Sensei<T extends ICalProperty> {
 		 * @return the marshalled value
 		 */
 		public JCalValue run() {
-			WriteContext context = new WriteContext(V2_0, tzinfo, globalTimeZone);
+			WriteContext context = new WriteContext(V2_0, tzinfo, globalTimeZone, globalTimeZoneComponent);
 			context.setParent(parent);
 			return scribe.writeJson(property, context);
 		}

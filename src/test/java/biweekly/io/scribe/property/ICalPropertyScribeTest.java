@@ -495,17 +495,17 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	@Test
 	public void handleTzidParameter() {
 		ICalProperty property = new TestProperty("");
+		final TimeZone nyTimeZone = TimeZone.getTimeZone("America/New_York");
+		final VTimezone nyComponent = new VTimezone("America/New_York");
 
 		//1.0 doesn't use TZID parameter
 		ICalVersion version = V1_0;
 		{
 			boolean hasTime = true;
 			TimezoneInfo tzinfo = new TimezoneInfo();
-			VTimezone component = new VTimezone("America/New_York");
-			TimeZone timezone = TimeZone.getTimeZone("America/New_York");
-			tzinfo.assign(component, timezone);
-			tzinfo.setDefaultTimeZone(timezone);
-			ICalParameters parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null));
+			tzinfo.assign(nyComponent, nyTimeZone);
+			tzinfo.setDefaultTimeZone(nyTimeZone);
+			ICalParameters parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null, null));
 			assertNull(parameters.getTimezoneId());
 		}
 
@@ -514,68 +514,59 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 			//property has no time component
 			boolean hasTime = false;
 			TimezoneInfo tzinfo = new TimezoneInfo();
-			ICalParameters parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null));
+			ICalParameters parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null, null));
 			assertNull(parameters.getTimezoneId());
 
 			//no timezone assigned to property
 			hasTime = true;
 			tzinfo = new TimezoneInfo();
-			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null));
+			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null, null));
 			assertNull(parameters.getTimezoneId());
 
 			//floating
 			hasTime = true;
 			tzinfo = new TimezoneInfo();
 			tzinfo.setFloating(property, true);
-			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null));
+			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null, null));
 			assertNull(parameters.getTimezoneId());
 
 			//default timezone
 			hasTime = true;
 			tzinfo = new TimezoneInfo();
-			VTimezone component = new VTimezone("America/New_York");
-			TimeZone timezone = TimeZone.getTimeZone("America/New_York");
-			tzinfo.assign(component, timezone);
-			tzinfo.setDefaultTimeZone(timezone);
-			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null));
-			assertEquals(timezone.getID(), parameters.getTimezoneId());
+			tzinfo.assign(nyComponent, nyTimeZone);
+			tzinfo.setDefaultTimeZone(nyTimeZone);
+			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null, null));
+			assertEquals(nyTimeZone.getID(), parameters.getTimezoneId());
 
 			//property timezone
 			hasTime = true;
 			tzinfo = new TimezoneInfo();
-			component = new VTimezone("America/New_York");
-			timezone = TimeZone.getTimeZone("America/New_York");
-			tzinfo.assign(component, timezone);
-			tzinfo.setTimeZone(property, timezone);
-			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null));
-			assertEquals(timezone.getID(), parameters.getTimezoneId());
+			tzinfo.assign(nyComponent, nyTimeZone);
+			tzinfo.setTimeZone(property, nyTimeZone);
+			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null, null));
+			assertEquals(nyTimeZone.getID(), parameters.getTimezoneId());
 
 			//solidus timezone
 			hasTime = true;
 			tzinfo = new TimezoneInfo();
-			timezone = TimeZone.getTimeZone("America/New_York");
-			tzinfo.setTimeZone(property, timezone, false);
-			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null));
-			assertEquals("/" + timezone.getID(), parameters.getTimezoneId());
+			tzinfo.setTimeZone(property, nyTimeZone, false);
+			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null, null));
+			assertEquals("/" + nyTimeZone.getID(), parameters.getTimezoneId());
 
 			//global timezone
 			hasTime = true;
 			tzinfo = new TimezoneInfo();
-			component = new VTimezone("America/New_York");
-			timezone = TimeZone.getTimeZone("America/New_York");
-			tzinfo.assign(component, timezone);
-			tzinfo.setDefaultTimeZone(timezone);
-			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, new SimpleTimeZone(0, "TEST")));
-			assertEquals("TEST", parameters.getTimezoneId());
+			tzinfo.assign(nyComponent, nyTimeZone);
+			tzinfo.setDefaultTimeZone(nyTimeZone);
+			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, new SimpleTimeZone(0, "TEST"), new VTimezone("Foo/Bar")));
+			assertEquals("Foo/Bar", parameters.getTimezoneId());
 
 			//global timezone with solidus
 			hasTime = true;
 			tzinfo = new TimezoneInfo();
-			component = new VTimezone("America/New_York");
-			timezone = TimeZone.getTimeZone("America/New_York");
-			tzinfo.setTimeZone(property, timezone, false);
-			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, new SimpleTimeZone(0, "TEST")));
-			assertEquals("/TEST", parameters.getTimezoneId());
+			tzinfo.setTimeZone(property, nyTimeZone, false);
+			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, new SimpleTimeZone(0, "TEST"), new VTimezone("Foo/Bar")));
+			assertEquals("Foo/Bar", parameters.getTimezoneId());
 		}
 	}
 

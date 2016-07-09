@@ -4,16 +4,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.TimeZone;
 
 import biweekly.ICalendar;
 import biweekly.component.VTimezone;
 import biweekly.io.text.ICalReader;
 import biweekly.property.TimezoneId;
+import biweekly.property.ValuedProperty;
 import biweekly.util.IOUtils;
 
 /*
@@ -72,50 +73,55 @@ public class TzUrlDotOrgGenerator implements VTimezoneGenerator {
 			return component;
 		}
 
+		ICalendar ical;
 		ICalReader reader = null;
 		try {
 			reader = new ICalReader(uri.toURL().openStream());
-			ICalendar ical = reader.readNext();
-
-			TimezoneInfo tzinfo = ical.getTimezoneInfo();
-			component = tzinfo.getComponents().iterator().next();
-
-			TimezoneId componentId = component.getTimezoneId();
-			if (componentId == null) {
-				/*
-				 * There should always be a TZID property, but just in case
-				 * there there isn't one, create one.
-				 */
-				component.setTimezoneId(timezone.getID());
-			} else if (!timezone.getID().equals(componentId.getValue())) {
-				/*
-				 * Ensure that the value of the TZID property is identical to
-				 * the ID of the Java TimeZone object. This is to ensure that
-				 * the values of the TZID parameters throughout the iCal match
-				 * the value of the VTIMEZONE component's TZID property.
-				 * 
-				 * For example, if tzurl.org is queried for the "PRC" timezone,
-				 * then a VTIMEZONE component with a TZID of "Asia/Shanghai" is
-				 * *actually* returned. This is a problem because iCal
-				 * properties use the value of the Java TimeZone object to get
-				 * the value of the TZID parameter, so the values of the TZID
-				 * parameters and the VTIMEZONE component's TZID property will
-				 * not be the same.
-				 */
-				componentId.setValue(timezone.getID());
-			}
-
-			cache.put(uri, component);
-			return component;
+			ical = reader.readNext();
 		} catch (FileNotFoundException e) {
-			throw notFound(e);
-		} catch (NoSuchElementException e) {
 			throw notFound(e);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
 			IOUtils.closeQuietly(reader);
 		}
+
+		/*
+		 * There should always be exactly one iCalendar object in the file, but
+		 * check to be sure.
+		 */
+		if (ical == null) {
+			throw notFound(null);
+		}
+
+		/*
+		 * There should always be exactly one VTIMEZONE component, but check to
+		 * be sure.
+		 */
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
+		Collection<VTimezone> components = tzinfo.getComponents();
+		if (components.isEmpty()) {
+			throw notFound(null);
+		}
+
+		component = components.iterator().next();
+
+		/*
+		 * There should always be a TZID property, but just in case there there
+		 * isn't one, create one.
+		 */
+		TimezoneId id = component.getTimezoneId();
+		if (id == null) {
+			component.setTimezoneId(timezone.getID());
+		} else {
+			String value = ValuedProperty.getValue(id);
+			if (value == null || value.trim().length() == 0) {
+				id.setValue(timezone.getID());
+			}
+		}
+
+		cache.put(uri, component);
+		return component;
 	}
 
 	private static IllegalArgumentException notFound(Exception e) {

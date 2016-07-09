@@ -172,9 +172,8 @@ public class JCalSerializer extends StdSerializer<ICalendar> {
 	 * @param component the VTIMEZONE component that represents the given
 	 * timezone. If the given timezone is null, the value of this parameter is
 	 * ignored.
-	 * @throws IllegalArgumentException if the given {@link VTimezone} 
-	 * component's {@link TimezoneId} property is not identical to the given
-	 * {@link TimeZone} object's ID
+	 * @throws IllegalArgumentException if the given {@link VTimezone} component
+	 * doesn't have a {@link TimezoneId} property
 	 */
 	public void setGlobalTimeZone(TimeZone timezone, VTimezone component) {
 		if (timezone == null || component == null) {
@@ -183,10 +182,9 @@ public class JCalSerializer extends StdSerializer<ICalendar> {
 			return;
 		}
 
-		String timezoneId = timezone.getID();
-		String componentId = ValuedProperty.getValue(component.getTimezoneId());
-		if (!timezoneId.equals(componentId)) { //perform the comparison in this order because componentId is more likely to be null
-			throw Messages.INSTANCE.getIllegalArgumentException(27);
+		String id = ValuedProperty.getValue(component.getTimezoneId());
+		if (id == null || id.trim().length() == 0) {
+			throw Messages.INSTANCE.getIllegalArgumentException(14);
 		}
 
 		globalTimeZone = timezone;

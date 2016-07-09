@@ -24,6 +24,7 @@ import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.Observance;
+import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.SkipMeException;
@@ -36,6 +37,7 @@ import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalElement.XCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.property.ValuedProperty;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.ICalDate;
 import biweekly.util.ICalDateFormat;
@@ -1257,19 +1259,27 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		}
 
 		TimeZone timezone;
+		VTimezone component;
 		TimeZone globalTz = context.getGlobalTimeZone();
 		if (globalTz == null) {
 			timezone = tzinfo.getTimeZoneToWriteIn(property);
 			if (timezone == null) {
 				return parameters;
 			}
+			component = tzinfo.getComponent(timezone);
 		} else {
 			timezone = globalTz;
+			component = context.getGlobalTimeZoneComponent();
 		}
 
-		String id = timezone.getID();
-		if (tzinfo.hasSolidusTimezone(property)) {
-			id = '/' + id;
+		String id;
+		if (globalTz == null && tzinfo.hasSolidusTimezone(property)) {
+			id = '/' + timezone.getID();
+		} else {
+			id = (component == null) ? timezone.getID() : ValuedProperty.getValue(component.getTimezoneId());
+			if (id == null) {
+				id = timezone.getID();
+			}
 		}
 
 		parameters = new ICalParameters(parameters);

@@ -13,6 +13,7 @@ import biweekly.Messages;
 import biweekly.component.VTimezone;
 import biweekly.property.ICalProperty;
 import biweekly.property.TimezoneId;
+import biweekly.property.ValuedProperty;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -186,8 +187,10 @@ public class TimezoneInfo {
 	}
 
 	/**
-	 * Gets a timezone with a given ID.
-	 * @param id the ID
+	 * Gets the {@link TimeZone} object that is associated with the
+	 * {@link VTimezone} component with the given {@link TimezoneId} property
+	 * value.
+	 * @param id the {@link TimezoneId} property value
 	 * @return the timezone or null if not found
 	 */
 	public TimeZone getTimeZoneById(String id) {
@@ -215,6 +218,16 @@ public class TimezoneInfo {
 		}
 
 		TimeZone timezone = getTimeZone(property);
+		return getComponent(timezone);
+	}
+
+	/**
+	 * Gets the {@link VTimezone} component that is associated with the given
+	 * {@link TimeZone} object.
+	 * @param timezone the timezone object
+	 * @return the component or null if not found
+	 */
+	public VTimezone getComponent(TimeZone timezone) {
 		return assignmentsReverse.get(timezone);
 	}
 
@@ -287,8 +300,8 @@ public class TimezoneInfo {
 	 * {@link TimezoneId} property
 	 */
 	private void checkForId(VTimezone timezone) {
-		TimezoneId id = timezone.getTimezoneId();
-		if (id == null || id.getValue() == null || id.getValue().trim().length() == 0) {
+		String id = ValuedProperty.getValue(timezone.getTimezoneId());
+		if (id == null || id.trim().length() == 0) {
 			throw Messages.INSTANCE.getIllegalArgumentException(14);
 		}
 	}

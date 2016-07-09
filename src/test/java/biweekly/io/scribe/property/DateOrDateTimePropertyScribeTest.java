@@ -217,7 +217,7 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 		test.tz(tzinfo).run(minusOne);
 
 		//global timezone should override everything
-		test.tz(tzinfo).globalTz(tz2).run(minusTwo);
+		test.tz(tzinfo).globalTz(tz2, vtimezone).run(minusTwo);
 	}
 
 	public static class DateOrDateTimePropertyMarshallerImpl extends DateOrDateTimePropertyScribe<DateOrDateTimePropertyImpl> {
