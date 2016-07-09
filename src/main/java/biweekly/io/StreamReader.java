@@ -165,7 +165,7 @@ public abstract class StreamReader implements Closeable {
 		for (VTimezone component : ical.getComponents(VTimezone.class)) {
 			//make sure the component has an ID
 			String id = ValuedProperty.getValue(component.getTimezoneId());
-			if (id == null) {
+			if (id == null || id.trim().length() == 0) {
 				warnings.add(null, null, 39);
 				toKeep.add(component);
 				continue;
