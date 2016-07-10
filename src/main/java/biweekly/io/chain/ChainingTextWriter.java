@@ -94,8 +94,8 @@ public class ChainingTextWriter extends ChainingWriter<ChainingTextWriter> {
 	}
 
 	@Override
-	public ChainingTextWriter tz(TimeZone defaultTimeZone) {
-		return super.tz(defaultTimeZone);
+	public ChainingTextWriter tz(TimeZone defaultTimeZone, boolean outlookCompatible) {
+		return super.tz(defaultTimeZone, outlookCompatible);
 	}
 
 	@Override
@@ -170,7 +170,7 @@ public class ChainingTextWriter extends ChainingWriter<ChainingTextWriter> {
 	private void go(ICalWriter writer) throws IOException {
 		writer.setCaretEncodingEnabled(caretEncoding);
 		if (defaultTimeZone != null) {
-			writer.setGlobalTimeZone(defaultTimeZone, false);
+			writer.setGlobalTimezone(defaultTimeZone);
 		}
 		if (index != null) {
 			writer.setScribeIndex(index);

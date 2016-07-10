@@ -1,19 +1,12 @@
 package biweekly.io.json;
 
 import java.io.IOException;
-import java.util.TimeZone;
 
 import biweekly.ICalendar;
-import biweekly.Messages;
-import biweekly.component.VTimezone;
-import biweekly.io.ICalTimeZone;
-import biweekly.io.TzUrlDotOrgGenerator;
-import biweekly.io.VTimezoneGenerator;
+import biweekly.io.TimezoneAssignment;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.property.ICalProperty;
-import biweekly.property.TimezoneId;
-import biweekly.property.ValuedProperty;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -55,8 +48,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 public class JCalSerializer extends StdSerializer<ICalendar> {
 	private static final long serialVersionUID = -8879354015298785358L;
 	private ScribeIndex index = new ScribeIndex();
-	protected TimeZone globalTimeZone;
-	protected VTimezone globalTimeZoneComponent;
+	private TimezoneAssignment globalTimezone;
 
 	public JCalSerializer() {
 		super(ICalendar.class);
@@ -67,7 +59,7 @@ public class JCalSerializer extends StdSerializer<ICalendar> {
 		@SuppressWarnings("resource")
 		JCalWriter writer = new JCalWriter(gen);
 		writer.setScribeIndex(getScribeIndex());
-		writer.setGlobalTimeZone(globalTimeZone, globalTimeZoneComponent);
+		writer.setGlobalTimezone(globalTimezone);
 		writer.write(value);
 	}
 
@@ -106,59 +98,8 @@ public class JCalSerializer extends StdSerializer<ICalendar> {
 	 * associated with each {@link ICalendar} object.
 	 * @return the global timezone or null if not set (defaults to null)
 	 */
-	public TimeZone getGlobalTimeZone() {
-		return globalTimeZone;
-	}
-
-	/**
-	 * Gets the {@link VTimezone} component that is associated with the global
-	 * timezone.
-	 * @return the component or null if not set
-	 */
-	public VTimezone getGlobalTimeZoneComponent() {
-		return globalTimeZoneComponent;
-	}
-
-	/**
-	 * <p>
-	 * Sets the timezone that all date/time property values will be formatted
-	 * in. This is a convenience method that overrides the timezone information
-	 * associated with each {@link ICalendar} object that is passed into this
-	 * writer.
-	 * </p>
-	 * <p>
-	 * Note that this method generates a {@link VTimezone} component that will
-	 * be inserted into each written iCalendar object. It does this by
-	 * downloading a file from <a href="http://tzurl.org">tzurl.org</a>.
-	 * However, if the given {@link TimeZone} object is a {@link ICalTimeZone}
-	 * instance, then the {@link VTimezone} component associated with the
-	 * {@link ICalTimeZone} object will be used instead.
-	 * </p>
-	 * @param timezone the global timezone or null not to set a global timezone
-	 * (defaults to null)
-	 * @param outlookCompatible controls whether the downloaded component will
-	 * be specifically tailored for Microsoft Outlook email clients. If the
-	 * given timezone is null or if it is a {@link ICalTimeZone} instance, the
-	 * value of this parameter is ignored.
-	 * @throws IllegalArgumentException if an appropriate {@link VTimezone}
-	 * component cannot be found at <a href="http://tzurl.org">tzurl.org</a>
-	 */
-	public void setGlobalTimeZone(TimeZone timezone, boolean outlookCompatible) {
-		globalTimeZone = timezone;
-
-		if (timezone == null) {
-			globalTimeZoneComponent = null;
-			return;
-		}
-
-		if (timezone instanceof ICalTimeZone) {
-			ICalTimeZone icalTimezone = (ICalTimeZone) timezone;
-			globalTimeZoneComponent = icalTimezone.getComponent();
-			return;
-		}
-
-		VTimezoneGenerator generator = new TzUrlDotOrgGenerator(outlookCompatible);
-		globalTimeZoneComponent = generator.generate(timezone);
+	public TimezoneAssignment getGlobalTimezone() {
+		return globalTimezone;
 	}
 
 	/**
@@ -166,28 +107,10 @@ public class JCalSerializer extends StdSerializer<ICalendar> {
 	 * in. This is a convenience method that overrides the timezone information
 	 * associated with each {@link ICalendar} object that is passed into this
 	 * writer.
-	 * @param timezone the global timezone or null not to set a global timezone
-	 * (defaults to null). If the given component is null, the value of this
-	 * parameter is ignored.
-	 * @param component the VTIMEZONE component that represents the given
-	 * timezone. If the given timezone is null, the value of this parameter is
-	 * ignored.
-	 * @throws IllegalArgumentException if the given {@link VTimezone} component
-	 * doesn't have a {@link TimezoneId} property
+	 * @param globalTimezone the global timezone or null not to set a global
+	 * timezone (defaults to null)
 	 */
-	public void setGlobalTimeZone(TimeZone timezone, VTimezone component) {
-		if (timezone == null || component == null) {
-			globalTimeZone = null;
-			globalTimeZoneComponent = null;
-			return;
-		}
-
-		String id = ValuedProperty.getValue(component.getTimezoneId());
-		if (id == null || id.trim().length() == 0) {
-			throw Messages.INSTANCE.getIllegalArgumentException(14);
-		}
-
-		globalTimeZone = timezone;
-		globalTimeZoneComponent = component;
+	public void setGlobalTimezone(TimezoneAssignment globalTimezone) {
+		this.globalTimezone = globalTimezone;
 	}
 }

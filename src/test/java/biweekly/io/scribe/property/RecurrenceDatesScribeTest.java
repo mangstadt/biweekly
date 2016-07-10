@@ -24,6 +24,7 @@ import biweekly.component.Observance;
 import biweekly.component.VTimezone;
 import biweekly.io.ParseContext;
 import biweekly.io.ParseContext.TimezonedDate;
+import biweekly.io.TimezoneAssignment;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -125,8 +126,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 		VTimezone component = new VTimezone("id");
 		TimeZone timezone = buildTimezone(-5, 0);
 		timezone.setID("id");
-		tzinfo.assign(component, timezone);
-		tzinfo.setDefaultTimeZone(timezone);
+		tzinfo.setDefaultTimezone(new TimezoneAssignment(timezone, component));
 	}
 
 	private final RecurrenceDates empty = new RecurrenceDates();

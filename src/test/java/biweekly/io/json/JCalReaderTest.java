@@ -35,6 +35,7 @@ import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
 import biweekly.io.ICalTimeZone;
 import biweekly.io.ParseContext;
+import biweekly.io.TimezoneAssignment;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
@@ -592,9 +593,9 @@ public class JCalReaderTest {
 
 		TimezoneInfo tzinfo = ical.getTimezoneInfo();
 		{
-			Iterator<VTimezone> it = tzinfo.getComponents().iterator();
+			Iterator<TimezoneAssignment> it = tzinfo.getTimezones().iterator();
 
-			VTimezone timezone = it.next();
+			VTimezone timezone = it.next().getComponent();
 			assertSize(timezone, 2, 2);
 
 			assertEquals(utc("2004-01-10 03:28:45"), timezone.getLastModified().getValue());
@@ -636,28 +637,28 @@ public class JCalReaderTest {
 			assertFalse(it.hasNext());
 		}
 
-		VTimezone timezone = tzinfo.getComponents().iterator().next();
+		VTimezone timezone = tzinfo.getTimezones().iterator().next().getComponent();
 		VEvent event = ical.getEvents().get(0);
 
 		DateStart dtstart = event.getDateStart();
-		assertEquals(timezone, tzinfo.getComponent(dtstart));
-		TimeZone dtstartTz = tzinfo.getTimeZone(dtstart);
+		assertEquals(timezone, tzinfo.getTimezone(dtstart).getComponent());
+		TimeZone dtstartTz = tzinfo.getTimezone(dtstart).getTimeZone();
 		assertEquals("US/Eastern", dtstartTz.getID());
 		assertTrue(dtstartTz instanceof ICalTimeZone);
 
 		RecurrenceDates rdate = event.getRecurrenceDates().get(0);
-		assertEquals(timezone, tzinfo.getComponent(rdate));
-		assertEquals(dtstartTz, tzinfo.getTimeZone(rdate));
+		assertEquals(timezone, tzinfo.getTimezone(rdate).getComponent());
+		assertEquals(dtstartTz, tzinfo.getTimezone(rdate).getTimeZone());
 
 		VEvent event2 = ical.getEvents().get(1);
 
 		dtstart = event2.getDateStart();
-		assertEquals(timezone, tzinfo.getComponent(dtstart));
-		assertEquals(dtstartTz, tzinfo.getTimeZone(dtstart));
+		assertEquals(timezone, tzinfo.getTimezone(dtstart).getComponent());
+		assertEquals(dtstartTz, tzinfo.getTimezone(dtstart).getTimeZone());
 
 		RecurrenceId rid = event2.getRecurrenceId();
-		assertEquals(timezone, tzinfo.getComponent(rid));
-		assertEquals(dtstartTz, tzinfo.getTimeZone(rid));
+		assertEquals(timezone, tzinfo.getTimezone(rid).getComponent());
+		assertEquals(dtstartTz, tzinfo.getTimezone(rid).getTimeZone());
 
 		assertValidate(ical).versions(V2_0).run();
 

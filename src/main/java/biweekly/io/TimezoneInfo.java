@@ -2,14 +2,13 @@ package biweekly.io;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
-import biweekly.Messages;
 import biweekly.component.VTimezone;
 import biweekly.property.ICalProperty;
 import biweekly.property.TimezoneId;
@@ -45,114 +44,68 @@ import biweekly.property.ValuedProperty;
  * @author Michael Angstadt
  */
 public class TimezoneInfo {
-	private final Map<VTimezone, TimeZone> assignments = new IdentityHashMap<VTimezone, TimeZone>();
-	private final Map<TimeZone, VTimezone> assignmentsReverse = new HashMap<TimeZone, VTimezone>();
-	private final Map<String, TimeZone> timezonesById = new HashMap<String, TimeZone>();
-
-	private final Map<ICalProperty, TimeZone> propertyTimeZones = new IdentityHashMap<ICalProperty, TimeZone>();
-	private final List<ICalProperty> hasSolidusTimezone = new ArrayList<ICalProperty>();
+	private final Collection<TimezoneAssignment> assignments = new HashSet<TimezoneAssignment>();
+	private final Map<ICalProperty, TimezoneAssignment> propertyTimezones = new IdentityHashMap<ICalProperty, TimezoneAssignment>();
 	private final List<ICalProperty> floatingProperties = new ArrayList<ICalProperty>();
 
-	private VTimezoneGenerator generator = new TzUrlDotOrgGenerator(false);
-
-	private TimeZone defaultTimezone;
+	private TimezoneAssignment defaultTimezone;
 	private boolean globalFloatingTime = false;
 
 	/**
-	 * Assigns a user-defined {@link VTimezone} component to its Java
-	 * {@link TimeZone} equivalent.
-	 * @param component the timezone component
-	 * @param timezone the timezone object
-	 * @throws IllegalArgumentException if the given {@link VTimezone} component
-	 * does not have a {@link TimezoneId} property.
+	 * Gets all the timezones assigned to this object.
+	 * @return the timezones (collection is mutable)
 	 */
-	public void assign(VTimezone component, TimeZone timezone) {
-		checkForId(component);
-		assignments.put(component, timezone);
-		assignmentsReverse.put(timezone, component);
-		timezonesById.put(component.getTimezoneId().getValue(), timezone);
+	public Collection<TimezoneAssignment> getTimezones() {
+		return assignments;
 	}
 
 	/**
-	 * Sets the timezone to format all date/time values in. An attempt will be
-	 * made to generate a {@link VTimezone} component if one has not already
-	 * been assigned to the given timezone (see
-	 * {@link #assign(VTimezone, TimeZone) assign()}).
-	 * @param timezone the timezone object or null for UTC (default)
-	 * @throws IllegalArgumentException if a {@link VTimezone} component could
-	 * not be generated
+	 * <p>
+	 * Gets the timezone to format all date/time values in (by default, all
+	 * dates are formatted in UTC).
+	 * </p>
+	 * <p>
+	 * The default timezone is not used for properties that are configured to
+	 * use their own timezone (see {@link #setTimezone}).
+	 * </p>
+	 * @return the timezone or null if using UTC
 	 */
-	public void setDefaultTimeZone(TimeZone timezone) {
-		if (timezone == null) {
-			defaultTimezone = null;
-			return;
-		}
+	public TimezoneAssignment getDefaultTimezone() {
+		return defaultTimezone;
+	}
 
-		VTimezone component = assignmentsReverse.get(timezone);
-		if (component == null) {
-			component = generator.generate(timezone);
-			assign(component, timezone);
-		}
+	/**
+	 * <p>
+	 * Sets the timezone to format all date/time values in (by default, all
+	 * dates are formatted in UTC).
+	 * </p>
+	 * <p>
+	 * The default timezone is not used for properties that are configured to
+	 * use their own timezone (see {@link #setTimezone}).
+	 * </p>
+	 * @param timezone the timezone or null to use UTC
+	 */
+	public void setDefaultTimezone(TimezoneAssignment timezone) {
 		defaultTimezone = timezone;
+		if (timezone != null) {
+			assignments.add(timezone);
+		}
 	}
 
 	/**
-	 * Sets whether to format all date/time values as floating times. A floating
-	 * time value does not have a timezone associated with it, and is to be
-	 * interpreted as being in the local timezone of the parsing computer.
-	 * @param enable true to enable, false to disable (default)
-	 */
-	public void setGlobalFloatingTime(boolean enable) {
-		globalFloatingTime = enable;
-	}
-
-	/**
-	 * Instructs the writer to format an individual property's date/time value
-	 * in a specific timezone.
+	 * Assigns a timezone to a specific property.
 	 * @param property the property
 	 * @param timezone the timezone or null to format the property according to
-	 * the default timezone (default)
+	 * the default timezone (see {@link #setDefaultTimezone}).
 	 */
-	public void setTimeZone(ICalProperty property, TimeZone timezone) {
-		setTimeZone(property, timezone, true);
-	}
-
-	/**
-	 * Instructs the writer to format an individual property's date/time value
-	 * in a specific timezone.
-	 * @param property the property
-	 * @param timezone the timezone or null to format the property according to
-	 * the default timezone (default)
-	 * @param generateComponent true to associate the property with a
-	 * {@link VTimezone} component containing the timezone definition
-	 * (recommended), false not to. If the "timezone" parameter is null, then
-	 * this parameter has no effect
-	 */
-	public void setTimeZone(ICalProperty property, TimeZone timezone, boolean generateComponent) {
+	public void setTimezone(ICalProperty property, TimezoneAssignment timezone) {
 		if (timezone == null) {
-			propertyTimeZones.remove(property);
-			removeIdentity(hasSolidusTimezone, property);
+			propertyTimezones.remove(property);
 			return;
 		}
 
-		if (generateComponent) {
-			VTimezone component = assignmentsReverse.get(timezone);
-			if (component == null) {
-				component = generator.generate(timezone);
-				assign(component, timezone);
-			}
-		} else {
-			hasSolidusTimezone.add(property);
-		}
-
-		propertyTimeZones.put(property, timezone);
-	}
-
-	/* package */void setTimeZoneReader(ICalProperty property, TimeZone timezone, boolean solidus) {
-		if (solidus) {
-			hasSolidusTimezone.add(property);
-		}
-		propertyTimeZones.put(property, timezone);
+		assignments.add(timezone);
+		propertyTimezones.put(property, timezone);
 	}
 
 	/**
@@ -160,86 +113,122 @@ public class TimezoneInfo {
 	 * @param property the property
 	 * @return the timezone or null if no timezone is assigned to the property
 	 */
-	public TimeZone getTimeZone(ICalProperty property) {
-		return propertyTimeZones.get(property);
+	public TimezoneAssignment getTimezone(ICalProperty property) {
+		return propertyTimezones.get(property);
 	}
 
 	/**
-	 * Determines if the given property has a solidus timezone (a globally
-	 * unique timezone ID).
-	 * @param property the property
-	 * @return true if the property has a solidus timezone, false if not
-	 */
-	public boolean hasSolidusTimezone(ICalProperty property) {
-		return containsIdentity(hasSolidusTimezone, property);
-	}
-
-	/**
-	 * Gets the timezone that a property should be formatted in when written.
-	 * You should call {@link #isFloating} first, to check to see if the
+	 * <p>
+	 * Determines the timezone that a particular property should be formatted in
+	 * when written to an output stream.
+	 * </p>
+	 * <p>
+	 * Note: You should call {@link #isFloating} first, to determine if the
 	 * property's value is floating (without a timezone).
+	 * </p>
 	 * @param property the property
 	 * @return the timezone or null for UTC
 	 */
-	public TimeZone getTimeZoneToWriteIn(ICalProperty property) {
-		TimeZone timezone = getTimeZone(property);
-		return (timezone == null) ? defaultTimezone : timezone;
+	public TimezoneAssignment getTimezoneToWriteIn(ICalProperty property) {
+		TimezoneAssignment assignment = getTimezone(property);
+		return (assignment == null) ? defaultTimezone : assignment;
 	}
 
 	/**
-	 * Gets the {@link TimeZone} object that is associated with the
-	 * {@link VTimezone} component with the given {@link TimezoneId} property
-	 * value.
-	 * @param id the {@link TimezoneId} property value
+	 * Gets the timezone whose {@link VTimezone} component contains a
+	 * {@link TimezoneId} property with the given value.
+	 * @param tzid the value of the {@link TimezoneId} property
 	 * @return the timezone or null if not found
 	 */
-	public TimeZone getTimeZoneById(String id) {
-		return timezonesById.get(id);
+	public TimezoneAssignment getTimezoneById(String tzid) {
+		for (TimezoneAssignment assignment : assignments) {
+			VTimezone component = assignment.getComponent();
+			if (component == null) {
+				continue;
+			}
+
+			String componentId = ValuedProperty.getValue(component.getTimezoneId());
+			if (tzid.equals(componentId)) {
+				return assignment;
+			}
+		}
+		return null;
 	}
 
 	/**
-	 * Gets the {@link TimeZone} object that is assigned to a {@link VTimezone}
-	 * component.
-	 * @param component the component
-	 * @return the timezone object or null if none were found
+	 * <p>
+	 * Gets whether to format all date/time values as floating times (defaults
+	 * to false).
+	 * </p>
+	 * <p>
+	 * This setting does not apply to properties whose floating time settings
+	 * are configured individually (see: {@link #setFloating}) or that are
+	 * configured to use their own timezone (see {@link #setTimezone}).
+	 * </p>
+	 * <p>
+	 * A floating time value does not have a timezone associated with it, and is
+	 * to be interpreted as being in the local timezone of the computer that is
+	 * consuming the iCalendar object.
+	 * </p>
+	 * @return true if enabled, false if disabled
 	 */
-	public TimeZone getTimeZoneByComponent(VTimezone component) {
-		return assignments.get(component);
+	public boolean isGlobalFloatingTime() {
+		return globalFloatingTime;
 	}
 
 	/**
-	 * Gets the {@link VTimezone} component that a property is assigned to.
+	 * <p>
+	 * Sets whether to format all date/time values as floating times (defaults
+	 * to false).
+	 * </p>
+	 * <p>
+	 * This setting does not apply to properties whose floating time settings
+	 * are configured individually (see: {@link #setFloating}) or that are
+	 * configured to use their own timezone (see {@link #setTimezone}).
+	 * </p>
+	 * <p>
+	 * A floating time value does not have a timezone associated with it, and is
+	 * to be interpreted as being in the local timezone of the computer that is
+	 * consuming the iCalendar object.
+	 * </p>
+	 * @param enable true to enable, false to disable
+	 */
+	public void setGlobalFloatingTime(boolean enable) {
+		globalFloatingTime = enable;
+	}
+
+	/**
+	 * Determines if a property value should be formatted in floating time when
+	 * written to an output stream.
 	 * @param property the property
-	 * @return the component or null if it is not assigned to one
+	 * @return true to format in floating time, false not to
 	 */
-	public VTimezone getComponent(ICalProperty property) {
-		if (containsIdentity(hasSolidusTimezone, property)) {
-			return null;
+	public boolean isFloating(ICalProperty property) {
+		if (containsIdentity(floatingProperties, property)) {
+			return true;
 		}
 
-		TimeZone timezone = getTimeZone(property);
-		return getComponent(timezone);
+		if (propertyTimezones.containsKey(property)) {
+			return false;
+		}
+
+		return globalFloatingTime;
 	}
 
 	/**
-	 * Gets the {@link VTimezone} component that is associated with the given
-	 * {@link TimeZone} object.
-	 * @param timezone the timezone object
-	 * @return the component or null if not found
-	 */
-	public VTimezone getComponent(TimeZone timezone) {
-		return assignmentsReverse.get(timezone);
-	}
-
-	/**
-	 * Instructs the writer to format a particular property's date/time value in
-	 * floating time. A floating time value does not have a timezone associated
-	 * with it, and is to be interpreted as being in the local timezone of the
-	 * parsing computer.
-	 * @param property the property whose value should be formatted as a
-	 * floating time value
+	 * <p>
+	 * Sets whether a property value should be formatted in floating time when
+	 * written to an output stream (by default, floating time is disabled for
+	 * all properties).
+	 * </p>
+	 * <p>
+	 * A floating time value does not have a timezone associated with it, and is
+	 * to be interpreted as being in the local timezone of the computer that is
+	 * consuming the iCalendar object.
+	 * </p>
+	 * @param property the property
 	 * @param enable true to enable floating time for this property, false to
-	 * disable (default)
+	 * disable
 	 */
 	public void setFloating(ICalProperty property, boolean enable) {
 		if (enable) {
@@ -250,62 +239,26 @@ public class TimezoneInfo {
 	}
 
 	/**
-	 * Determines if a property value should be formatted in floating time or
-	 * not.
-	 * @param property the property
-	 * @return true to format in floating time, false not to
-	 */
-	public boolean isFloating(ICalProperty property) {
-		if (containsIdentity(floatingProperties, property)) {
-			return true;
-		}
-
-		if (propertyTimeZones.containsKey(property)) {
-			return false;
-		}
-
-		return globalFloatingTime;
-	}
-
-	/**
 	 * Gets all of the iCalendar {@link VTimezone} components that have been
-	 * registered or generated by this class.
-	 * @return the timezone components
+	 * registered with this object.
+	 * @return the components (this collection is immutable)
 	 */
 	public Collection<VTimezone> getComponents() {
-		return assignments.keySet();
-	}
-
-	/**
-	 * Gets the timezone generator.
-	 * @return the timezone generator
-	 */
-	public VTimezoneGenerator getGenerator() {
-		return generator;
-	}
-
-	/**
-	 * Sets the timezone generator.
-	 * @param generator the timezone generator
-	 */
-	public void setGenerator(VTimezoneGenerator generator) {
-		this.generator = generator;
-	}
-
-	/**
-	 * Checks a {@link VTimezone} component to see if it has a valid
-	 * {@link TimezoneId} property.
-	 * @param timezone the timezone component
-	 * @throws IllegalArgumentException if the component does not have a valid
-	 * {@link TimezoneId} property
-	 */
-	private void checkForId(VTimezone timezone) {
-		String id = ValuedProperty.getValue(timezone.getTimezoneId());
-		if (id == null || id.trim().length() == 0) {
-			throw Messages.INSTANCE.getIllegalArgumentException(14);
+		List<VTimezone> components = new ArrayList<VTimezone>(assignments.size());
+		for (TimezoneAssignment assignment : assignments) {
+			VTimezone component = assignment.getComponent();
+			if (component != null) {
+				components.add(component);
+			}
 		}
+		return Collections.unmodifiableList(components);
 	}
 
+	/**
+	 * Removes an object from a list using reference equality.
+	 * @param list the list
+	 * @param object the object to remove
+	 */
 	private static <T> void removeIdentity(List<T> list, T object) {
 		Iterator<T> it = list.iterator();
 		while (it.hasNext()) {
@@ -315,6 +268,12 @@ public class TimezoneInfo {
 		}
 	}
 
+	/**
+	 * Searches for an item in a list using reference equality.
+	 * @param list the list
+	 * @param object the object to search for
+	 * @return true if the object was found, false if not
+	 */
 	private static <T> boolean containsIdentity(List<T> list, T object) {
 		for (T item : list) {
 			if (item == object) {

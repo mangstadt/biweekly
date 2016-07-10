@@ -116,8 +116,8 @@ public class ChainingXmlWriter extends ChainingWriter<ChainingXmlWriter> {
 	}
 
 	@Override
-	public ChainingXmlWriter tz(TimeZone defaultTimeZone) {
-		return super.tz(defaultTimeZone);
+	public ChainingXmlWriter tz(TimeZone defaultTimeZone, boolean outlookCompatible) {
+		return super.tz(defaultTimeZone, outlookCompatible);
 	}
 
 	@Override
@@ -193,7 +193,7 @@ public class ChainingXmlWriter extends ChainingWriter<ChainingXmlWriter> {
 
 		XCalDocumentStreamWriter writer = document.writer();
 		if (defaultTimeZone != null) {
-			writer.setGlobalTimeZone(defaultTimeZone, false);
+			writer.setGlobalTimezone(defaultTimeZone);
 		}
 		for (Map.Entry<String, ICalDataType> entry : parameterDataTypes.entrySet()) {
 			String parameterName = entry.getKey();

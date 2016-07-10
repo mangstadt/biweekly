@@ -33,6 +33,7 @@ import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
 import biweekly.io.ICalTimeZone;
 import biweekly.io.ParseContext;
+import biweekly.io.TimezoneAssignment;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
@@ -765,8 +766,7 @@ public class ICalWriterTest {
 
 		TimeZone nyTimezone = TimeZone.getTimeZone("America/New_York");
 		VTimezone nyComponent = new VTimezone(nyTimezone.getID());
-		ical.getTimezoneInfo().assign(nyComponent, nyTimezone);
-		ical.getTimezoneInfo().setDefaultTimeZone(nyTimezone);
+		ical.getTimezoneInfo().setDefaultTimezone(new TimezoneAssignment(nyTimezone, nyComponent));
 
 		TimeZone laTimezone = TimeZone.getTimeZone("America/Los_Angeles");
 		VTimezone laComponent = new VTimezone(laTimezone.getID());
@@ -774,7 +774,7 @@ public class ICalWriterTest {
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.write(ical);
-		writer.setGlobalTimeZone(laTimezone, laComponent);
+		writer.setGlobalTimezone(new TimezoneAssignment(laTimezone, laComponent));
 		writer.write(ical);
 		writer.close();
 
@@ -881,8 +881,7 @@ public class ICalWriterTest {
 			}
 		}
 
-		tzinfo.assign(usEasternTz, eastern);
-		tzinfo.setDefaultTimeZone(eastern);
+		tzinfo.setDefaultTimezone(new TimezoneAssignment(eastern, usEasternTz));
 		assertExample(ical, "rfc5545-example2.ics", V2_0);
 	}
 
@@ -1126,8 +1125,7 @@ public class ICalWriterTest {
 		ICalTimeZone icalTz = new ICalTimeZone(timezone);
 
 		TimezoneInfo tzinfo = new TimezoneInfo();
-		tzinfo.assign(timezone, icalTz);
-		tzinfo.setDefaultTimeZone(icalTz);
+		tzinfo.setDefaultTimezone(new TimezoneAssignment(icalTz, timezone));
 		return tzinfo;
 	}
 
@@ -1166,8 +1164,7 @@ public class ICalWriterTest {
 		ICalTimeZone icalTz = new ICalTimeZone(timezone);
 
 		TimezoneInfo tzinfo = new TimezoneInfo();
-		tzinfo.assign(timezone, icalTz);
-		tzinfo.setDefaultTimeZone(icalTz);
+		tzinfo.setDefaultTimezone(new TimezoneAssignment(icalTz, timezone));
 		return tzinfo;
 	}
 

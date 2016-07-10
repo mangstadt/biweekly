@@ -12,7 +12,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.TimeZone;
 
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -82,6 +81,8 @@ public class StreamReaderTest {
 				}
 				ical.addComponent(timezone);
 
+				ical.addComponent(new VTimezone((String) null));
+
 				TestProperty floating = new TestProperty(icalDate("2014-09-21T10:22:00"));
 				context.addFloatingDate(floating, floating.date);
 				ical.addProperty(floating);
@@ -129,71 +130,75 @@ public class StreamReaderTest {
 		ICalendar ical = reader.readNext();
 		TimezoneInfo tzinfo = ical.getTimezoneInfo();
 
-		Collection<VTimezone> components = tzinfo.getComponents();
-		assertEquals(1, components.size());
-		assertEquals(0, ical.getComponents(VTimezone.class).size());
+		Collection<TimezoneAssignment> components = tzinfo.getTimezones();
+		assertEquals(3, components.size());
+		assertEquals(1, ical.getComponents(VTimezone.class).size());
 
-		VTimezone component = components.iterator().next();
 		Iterator<TestProperty> it = ical.getProperties(TestProperty.class).iterator();
 
 		//floating-time property
 		TestProperty property = it.next();
+		TimezoneAssignment assignment = tzinfo.getTimezone(property);
 		assertTrue(tzinfo.isFloating(property));
-		assertNull(tzinfo.getComponent(property));
-		assertNull(tzinfo.getTimeZone(property));
+		assertNull(assignment);
 		assertNull(property.getParameters().getTimezoneId());
 		assertEquals(date("2014-09-21 10:22:00"), property.date);
 
 		//timezoned property
 		property = it.next();
+		assignment = tzinfo.getTimezone(property);
 		assertFalse(tzinfo.isFloating(property));
-		assertEquals(component, tzinfo.getComponent(property));
-		assertTrue(tzinfo.getTimeZone(property) instanceof ICalTimeZone);
+		assertEquals("tz", assignment.getComponent().getTimezoneId().getValue());
+		assertTrue(assignment.getTimeZone() instanceof ICalTimeZone);
 		assertNull(property.getParameters().getTimezoneId());
 		assertEquals(utc("2014-10-01 04:07:00"), property.date);
 
 		//timezoned property
 		property = it.next();
+		assignment = tzinfo.getTimezone(property);
 		assertFalse(tzinfo.isFloating(property));
-		assertEquals(component, tzinfo.getComponent(property));
-		assertTrue(tzinfo.getTimeZone(property) instanceof ICalTimeZone);
+		assertEquals("tz", assignment.getComponent().getTimezoneId().getValue());
+		assertTrue(assignment.getTimeZone() instanceof ICalTimeZone);
 		assertNull(property.getParameters().getTimezoneId());
 		assertEquals(utc("2014-08-01 03:07:00"), property.date);
 
 		//timezoned property
 		property = it.next();
+		assignment = tzinfo.getTimezone(property);
 		assertFalse(tzinfo.isFloating(property));
-		assertEquals(component, tzinfo.getComponent(property));
-		assertTrue(tzinfo.getTimeZone(property) instanceof ICalTimeZone);
+		assertEquals("tz", assignment.getComponent().getTimezoneId().getValue());
+		assertTrue(assignment.getTimeZone() instanceof ICalTimeZone);
 		assertNull(property.getParameters().getTimezoneId());
 		assertEquals(utc("2013-12-01 04:07:00"), property.date);
 
 		//property with Olsen TZID
 		property = it.next();
+		assignment = tzinfo.getTimezone(property);
 		assertFalse(tzinfo.isFloating(property));
-		assertNull(tzinfo.getComponent(property));
-		assertEquals(TimeZone.getTimeZone("America/New_York"), tzinfo.getTimeZone(property));
+		assertNull(assignment.getComponent());
+		assertEquals("America/New_York", assignment.getTimeZone().getID());
 		assertNull(property.getParameters().getTimezoneId());
 		assertEquals(utc("2014-07-04 13:00:00"), property.date);
 
 		//property with Olsen TZID that doesn't point to a VTIMEZONE component
 		property = it.next();
+		assignment = tzinfo.getTimezone(property);
 		assertFalse(tzinfo.isFloating(property));
-		assertNull(tzinfo.getComponent(property));
-		assertEquals(TimeZone.getTimeZone("America/New_York"), tzinfo.getTimeZone(property));
+		assertNull(assignment.getComponent());
+		assertEquals("America/New_York", assignment.getTimeZone().getID());
 		assertNull(property.getParameters().getTimezoneId());
 		assertEquals(utc("2014-07-04 13:00:00"), property.date);
 
 		//property with TZID that doesn't point to a VTIMEZONE component
 		property = it.next();
+		assignment = tzinfo.getTimezone(property);
 		assertFalse(tzinfo.isFloating(property));
-		assertNull(tzinfo.getComponent(property));
-		assertNull(tzinfo.getTimeZone(property));
+		assertNull(assignment);
 		assertEquals("foobar", property.getParameters().getTimezoneId());
 		assertEquals(date("2014-06-11 14:00:00"), property.date);
 
 		assertFalse(it.hasNext());
-		assertWarnings(2, reader);
+		assertWarnings(3, reader);
 	}
 
 	@Test
@@ -225,7 +230,7 @@ public class StreamReaderTest {
 
 		ICalendar ical = reader.readNext();
 		TimezoneInfo tzinfo = ical.getTimezoneInfo();
-		assertEquals(0, tzinfo.getComponents().size());
+		assertEquals(0, tzinfo.getTimezones().size());
 		assertEquals(1, ical.getComponents(VTimezone.class).size());
 		assertWarnings(1, reader);
 	}

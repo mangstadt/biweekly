@@ -5,6 +5,7 @@ import java.util.TimeZone;
 
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
+import biweekly.io.TimezoneAssignment;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -46,7 +47,7 @@ class ChainingWriter<T extends ChainingWriter<?>> {
 	ScribeIndex index;
 	//	boolean prodId = true;
 	//	boolean versionStrict = true;
-	TimeZone defaultTimeZone = null;
+	TimezoneAssignment defaultTimeZone = null;
 
 	@SuppressWarnings("unchecked")
 	private final T this_ = (T) this;
@@ -59,12 +60,23 @@ class ChainingWriter<T extends ChainingWriter<?>> {
 	}
 
 	/**
+	 * <p>
 	 * Sets the timezone to use when outputting date values (defaults to UTC).
-	 * @param defaultTimeZone the default timezone
+	 * </p>
+	 * <p>
+	 * This method downloads an appropriate VTIMEZONE component from the <a
+	 * href="http://www.tzurl.org">tzurl.org</a> website.
+	 * </p>
+	 * @param defaultTimeZone the default timezone or null for UTC
+	 * @param outlookCompatible true to download a VTIMEZONE component that is
+	 * tailored for Microsoft Outlook email clients, false to download a
+	 * standards-based one
 	 * @return this
+	 * @throws IllegalArgumentException if an appropriate VTIMEZONE component
+	 * cannot be found on the website
 	 */
-	T tz(TimeZone defaultTimeZone) {
-		this.defaultTimeZone = defaultTimeZone;
+	T tz(TimeZone defaultTimeZone, boolean outlookCompatible) {
+		this.defaultTimeZone = (defaultTimeZone == null) ? null : TimezoneAssignment.downloadComponent(defaultTimeZone, outlookCompatible);
 		return this_;
 	}
 

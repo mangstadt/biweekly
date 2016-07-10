@@ -1477,13 +1477,13 @@ public class ICalReaderTest {
 		VEvent event = ical.getEvents().get(0);
 
 		DateStart dtstart = event.getDateStart();
-		assertEquals(timezone, tzinfo.getComponent(dtstart));
-		TimeZone dtstartTz = tzinfo.getTimeZone(dtstart);
+		assertEquals(timezone, tzinfo.getTimezone(dtstart).getComponent());
+		TimeZone dtstartTz = tzinfo.getTimezone(dtstart).getTimeZone();
 		assertTrue(dtstartTz instanceof ICalTimeZone);
 
 		DateEnd dtend = event.getDateEnd();
-		assertEquals(timezone, tzinfo.getComponent(dtend));
-		assertEquals(dtstartTz, tzinfo.getTimeZone(dtend));
+		assertEquals(timezone, tzinfo.getTimezone(dtend).getComponent());
+		assertEquals(dtstartTz, tzinfo.getTimezone(dtend).getTimeZone());
 
 		assertNull(reader.readNext());
 	}
@@ -1597,14 +1597,14 @@ public class ICalReaderTest {
 		VEvent event = ical.getEvents().get(0);
 
 		DateStart dtstart = event.getDateStart();
-		assertEquals(timezone, tzinfo.getComponent(dtstart));
-		TimeZone dtstartTz = tzinfo.getTimeZone(dtstart);
+		assertEquals(timezone, tzinfo.getTimezone(dtstart).getComponent());
+		TimeZone dtstartTz = tzinfo.getTimezone(dtstart).getTimeZone();
 		assertEquals("America/New_York", dtstartTz.getID());
 		assertTrue(dtstartTz instanceof ICalTimeZone);
 
 		DateEnd dtend = event.getDateEnd();
-		assertEquals(timezone, tzinfo.getComponent(dtend));
-		assertEquals(dtstartTz, tzinfo.getTimeZone(dtend));
+		assertEquals(timezone, tzinfo.getTimezone(dtend).getComponent());
+		assertEquals(dtstartTz, tzinfo.getTimezone(dtend).getTimeZone());
 
 		assertNull(reader.readNext());
 	}

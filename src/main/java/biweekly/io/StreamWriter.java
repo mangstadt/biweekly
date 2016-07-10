@@ -5,12 +5,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
@@ -23,8 +23,6 @@ import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
-import biweekly.property.TimezoneId;
-import biweekly.property.ValuedProperty;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -58,8 +56,7 @@ import biweekly.property.ValuedProperty;
 public abstract class StreamWriter implements Closeable {
 	protected ScribeIndex index = new ScribeIndex();
 	protected WriteContext context;
-	protected TimeZone globalTimeZone;
-	protected VTimezone globalTimeZoneComponent;
+	protected TimezoneAssignment globalTimezone;
 	private TimezoneInfo tzinfo;
 
 	/**
@@ -82,7 +79,7 @@ public abstract class StreamWriter implements Closeable {
 		}
 
 		tzinfo = ical.getTimezoneInfo();
-		context = new WriteContext(getTargetVersion(), tzinfo, globalTimeZone, globalTimeZoneComponent);
+		context = new WriteContext(getTargetVersion(), tzinfo, globalTimezone);
 		_write(ical);
 	}
 
@@ -92,7 +89,12 @@ public abstract class StreamWriter implements Closeable {
 	 * @return the components
 	 */
 	protected Collection<VTimezone> getTimezoneComponents() {
-		return (globalTimeZoneComponent == null) ? tzinfo.getComponents() : Arrays.asList(globalTimeZoneComponent);
+		if (globalTimezone != null) {
+			VTimezone component = globalTimezone.getComponent();
+			return (component == null) ? Collections.<VTimezone> emptyList() : Arrays.asList(component);
+		}
+
+		return tzinfo.getComponents();
 	}
 
 	/**
@@ -114,59 +116,8 @@ public abstract class StreamWriter implements Closeable {
 	 * associated with each {@link ICalendar} object.
 	 * @return the global timezone or null if not set (defaults to null)
 	 */
-	public TimeZone getGlobalTimeZone() {
-		return globalTimeZone;
-	}
-
-	/**
-	 * Gets the {@link VTimezone} component that is associated with the global
-	 * timezone.
-	 * @return the component or null if not set
-	 */
-	public VTimezone getGlobalTimeZoneComponent() {
-		return globalTimeZoneComponent;
-	}
-
-	/**
-	 * <p>
-	 * Sets the timezone that all date/time property values will be formatted
-	 * in. This is a convenience method that overrides the timezone information
-	 * associated with each {@link ICalendar} object that is passed into this
-	 * writer.
-	 * </p>
-	 * <p>
-	 * Note that this method generates a {@link VTimezone} component that will
-	 * be inserted into each written iCalendar object. It does this by
-	 * downloading a file from <a href="http://tzurl.org">tzurl.org</a>.
-	 * However, if the given {@link TimeZone} object is a {@link ICalTimeZone}
-	 * instance, then the {@link VTimezone} component associated with the
-	 * {@link ICalTimeZone} object will be used instead.
-	 * </p>
-	 * @param timezone the global timezone or null not to set a global timezone
-	 * (defaults to null)
-	 * @param outlookCompatible controls whether the downloaded component will
-	 * be specifically tailored for Microsoft Outlook email clients. If the
-	 * given timezone is null or if it is a {@link ICalTimeZone} instance, the
-	 * value of this parameter is ignored.
-	 * @throws IllegalArgumentException if an appropriate {@link VTimezone}
-	 * component cannot be found at <a href="http://tzurl.org">tzurl.org</a>
-	 */
-	public void setGlobalTimeZone(TimeZone timezone, boolean outlookCompatible) {
-		globalTimeZone = timezone;
-
-		if (timezone == null) {
-			globalTimeZoneComponent = null;
-			return;
-		}
-
-		if (timezone instanceof ICalTimeZone) {
-			ICalTimeZone icalTimezone = (ICalTimeZone) timezone;
-			globalTimeZoneComponent = icalTimezone.getComponent();
-			return;
-		}
-
-		VTimezoneGenerator generator = new TzUrlDotOrgGenerator(outlookCompatible);
-		globalTimeZoneComponent = generator.generate(timezone);
+	public TimezoneAssignment getGlobalTimezone() {
+		return globalTimezone;
 	}
 
 	/**
@@ -174,29 +125,11 @@ public abstract class StreamWriter implements Closeable {
 	 * in. This is a convenience method that overrides the timezone information
 	 * associated with each {@link ICalendar} object that is passed into this
 	 * writer.
-	 * @param timezone the global timezone or null not to set a global timezone
-	 * (defaults to null). If the given component is null, the value of this
-	 * parameter is ignored.
-	 * @param component the VTIMEZONE component that represents the given
-	 * timezone. If the given timezone is null, the value of this parameter is
-	 * ignored.
-	 * @throws IllegalArgumentException if the given {@link VTimezone} component
-	 * doesn't have a {@link TimezoneId} property
+	 * @param globalTimezone the global timezone or null not to set a global
+	 * timezone (defaults to null)
 	 */
-	public void setGlobalTimeZone(TimeZone timezone, VTimezone component) {
-		if (timezone == null || component == null) {
-			globalTimeZone = null;
-			globalTimeZoneComponent = null;
-			return;
-		}
-
-		String id = ValuedProperty.getValue(component.getTimezoneId());
-		if (id == null || id.trim().length() == 0) {
-			throw Messages.INSTANCE.getIllegalArgumentException(14);
-		}
-
-		globalTimeZone = timezone;
-		globalTimeZoneComponent = component;
+	public void setGlobalTimezone(TimezoneAssignment globalTimezone) {
+		this.globalTimezone = globalTimezone;
 	}
 
 	/**

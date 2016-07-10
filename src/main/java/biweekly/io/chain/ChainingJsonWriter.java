@@ -69,8 +69,8 @@ public class ChainingJsonWriter extends ChainingWriter<ChainingJsonWriter> {
 	}
 
 	@Override
-	public ChainingJsonWriter tz(TimeZone defaultTimeZone) {
-		return super.tz(defaultTimeZone);
+	public ChainingJsonWriter tz(TimeZone defaultTimeZone, boolean outlookCompatible) {
+		return super.tz(defaultTimeZone, outlookCompatible);
 	}
 
 	@Override
@@ -132,7 +132,7 @@ public class ChainingJsonWriter extends ChainingWriter<ChainingJsonWriter> {
 
 	private void go(JCalWriter writer) throws IOException {
 		if (defaultTimeZone != null) {
-			writer.setGlobalTimeZone(defaultTimeZone, false);
+			writer.setGlobalTimezone(defaultTimeZone);
 		}
 		writer.setPrettyPrint(prettyPrint);
 		if (index != null) {

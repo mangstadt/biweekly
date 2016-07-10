@@ -28,6 +28,7 @@ import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.SkipMeException;
+import biweekly.io.TimezoneAssignment;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
@@ -1111,14 +1112,15 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	protected static DateWriter date(ICalDate date, ICalProperty property, WriteContext context) {
 		boolean floating;
 		TimeZone tz;
-		TimeZone globalTz = context.getGlobalTimeZone();
+		TimezoneAssignment globalTz = context.getGlobalTimezone();
 		if (globalTz == null) {
 			TimezoneInfo tzinfo = context.getTimezoneInfo();
 			floating = tzinfo.isFloating(property);
-			tz = tzinfo.getTimeZoneToWriteIn(property);
+			TimezoneAssignment assignment = tzinfo.getTimezoneToWriteIn(property);
+			tz = (assignment == null) ? null : assignment.getTimeZone();
 		} else {
 			floating = false;
-			tz = globalTz;
+			tz = globalTz.getTimeZone();
 		}
 
 		context.addDate(date, floating, tz);
@@ -1258,32 +1260,34 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 			return parameters;
 		}
 
-		TimeZone timezone;
-		VTimezone component;
-		TimeZone globalTz = context.getGlobalTimeZone();
+		TimezoneAssignment tz;
+		TimezoneAssignment globalTz = context.getGlobalTimezone();
 		if (globalTz == null) {
-			timezone = tzinfo.getTimeZoneToWriteIn(property);
-			if (timezone == null) {
+			tz = tzinfo.getTimezoneToWriteIn(property);
+			if (tz == null) {
+				//write in UTC
 				return parameters;
 			}
-			component = tzinfo.getComponent(timezone);
 		} else {
-			timezone = globalTz;
-			component = context.getGlobalTimeZoneComponent();
+			tz = globalTz;
 		}
 
-		String id;
-		if (globalTz == null && tzinfo.hasSolidusTimezone(property)) {
-			id = '/' + timezone.getID();
-		} else {
-			id = (component == null) ? timezone.getID() : ValuedProperty.getValue(component.getTimezoneId());
-			if (id == null) {
-				id = timezone.getID();
-			}
+		String tzid = null;
+		VTimezone component = tz.getComponent();
+		String globalId = tz.getGlobalId();
+		if (component != null) {
+			tzid = ValuedProperty.getValue(component.getTimezoneId());
+		} else if (globalId != null) {
+			tzid = '/' + globalId;
+		}
+
+		if (tzid == null) {
+			//should never happen
+			tzid = tz.getTimeZone().getID();
 		}
 
 		parameters = new ICalParameters(parameters);
-		parameters.setTimezoneId(id);
+		parameters.setTimezoneId(tzid);
 		return parameters;
 	}
 

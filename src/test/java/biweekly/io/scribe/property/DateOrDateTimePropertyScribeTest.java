@@ -14,6 +14,7 @@ import org.junit.Test;
 import biweekly.ICalDataType;
 import biweekly.component.VTimezone;
 import biweekly.io.ParseContext;
+import biweekly.io.TimezoneAssignment;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.scribe.property.DateOrDateTimePropertyScribeTest.DateOrDateTimePropertyImpl;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -71,8 +72,7 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 	private final TimezoneInfo timezoneDefault = new TimezoneInfo();
 	{
 		TimeZone tz = buildTimezone(-2, 0);
-		timezoneDefault.assign(new VTimezone("id"), tz);
-		timezoneDefault.setDefaultTimeZone(tz);
+		timezoneDefault.setDefaultTimezone(new TimezoneAssignment(tz, new VTimezone("id")));
 	}
 
 	public DateOrDateTimePropertyScribeTest() {
@@ -168,9 +168,8 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 
 	@SuppressWarnings("rawtypes")
 	private void assertDateTime(Sensei<DateOrDateTimePropertyImpl>.WriteTest<? extends Sensei<DateOrDateTimePropertyImpl>.WriteTest<? extends WriteTest>> test, String utc, String floating, String minusOne, String minusTwo) {
-		VTimezone vtimezone = new VTimezone("id");
-		TimeZone tz1 = buildTimezone(-1, 0);
-		TimeZone tz2 = buildTimezone(-2, 0);
+		TimezoneAssignment tz1 = new TimezoneAssignment(buildTimezone(-1, 0), new VTimezone("id"));
+		TimezoneAssignment tz2 = new TimezoneAssignment(buildTimezone(-2, 0), new VTimezone("id"));
 		TimezoneInfo tzinfo;
 
 		//UTC time
@@ -190,34 +189,29 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 
 		//property-assigned timezone
 		tzinfo = new TimezoneInfo();
-		tzinfo.assign(vtimezone, tz1);
-		tzinfo.setTimeZone(test.property, tz1);
+		tzinfo.setTimezone(test.property, tz1);
 		test.tz(tzinfo).run(minusOne);
 
 		//property-assigned floating should override global timezone
 		tzinfo = new TimezoneInfo();
-		tzinfo.assign(vtimezone, tz1);
-		tzinfo.setDefaultTimeZone(tz1);
+		tzinfo.setDefaultTimezone(tz1);
 		tzinfo.setFloating(test.property, true);
 		test.tz(tzinfo).run(floating);
 
 		//property-assigned timezone should override global timezone
 		tzinfo = new TimezoneInfo();
-		tzinfo.assign(vtimezone, tz1);
-		tzinfo.assign(vtimezone, tz2);
-		tzinfo.setDefaultTimeZone(tz1);
-		tzinfo.setTimeZone(test.property, tz2);
+		tzinfo.setDefaultTimezone(tz1);
+		tzinfo.setTimezone(test.property, tz2);
 		test.tz(tzinfo).run(minusTwo);
 
 		//property-assigned timezone should override global floating
 		tzinfo = new TimezoneInfo();
-		tzinfo.assign(vtimezone, tz1);
 		tzinfo.setGlobalFloatingTime(true);
-		tzinfo.setTimeZone(test.property, tz1);
+		tzinfo.setTimezone(test.property, tz1);
 		test.tz(tzinfo).run(minusOne);
 
 		//global timezone should override everything
-		test.tz(tzinfo).globalTz(tz2, vtimezone).run(minusTwo);
+		test.tz(tzinfo).globalTz(tz2).run(minusTwo);
 	}
 
 	public static class DateOrDateTimePropertyMarshallerImpl extends DateOrDateTimePropertyScribe<DateOrDateTimePropertyImpl> {

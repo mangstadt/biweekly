@@ -216,7 +216,7 @@ public class TestUtils {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void assertWriteXml(String expectedInnerXml, ICalProperty propertyToWrite, ICalPropertyScribe marshaller) {
 		Document actual = xcalProperty(marshaller);
-		marshaller.writeXml(propertyToWrite, actual.getDocumentElement(), new WriteContext(V2_0, new TimezoneInfo(), null, null));
+		marshaller.writeXml(propertyToWrite, actual.getDocumentElement(), new WriteContext(V2_0, new TimezoneInfo(), null));
 
 		Document expected = xcalProperty(marshaller, expectedInnerXml);
 		assertXMLEqual(expected, actual);

@@ -38,6 +38,7 @@ import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.SkipMeException;
+import biweekly.io.TimezoneAssignment;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
@@ -684,14 +685,13 @@ public class XCalWriterTest {
 
 		TimeZone nyTimezone = TimeZone.getTimeZone("America/New_York");
 		VTimezone nyComponent = new VTimezone(nyTimezone.getID());
-		ical.getTimezoneInfo().assign(nyComponent, nyTimezone);
-		ical.getTimezoneInfo().setDefaultTimeZone(nyTimezone);
+		ical.getTimezoneInfo().setDefaultTimezone(new TimezoneAssignment(nyTimezone, nyComponent));
 
 		TimeZone laTimezone = TimeZone.getTimeZone("America/Los_Angeles");
 		VTimezone laComponent = new VTimezone(laTimezone.getID());
 
 		writer.write(ical);
-		writer.setGlobalTimeZone(laTimezone, laComponent);
+		writer.setGlobalTimezone(new TimezoneAssignment(laTimezone, laComponent));
 		writer.write(ical);
 		writer.close();
 
@@ -835,8 +835,7 @@ public class XCalWriterTest {
 		}
 
 		TimezoneInfo tzinfo = ical.getTimezoneInfo();
-		tzinfo.assign(usEasternTz, eastern);
-		tzinfo.setDefaultTimeZone(eastern);
+		tzinfo.setDefaultTimezone(new TimezoneAssignment(eastern, usEasternTz));
 		assertExample(ical, "rfc6321-example2.xml");
 	}
 

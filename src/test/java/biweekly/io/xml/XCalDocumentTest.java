@@ -52,6 +52,7 @@ import biweekly.io.ParseContext;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamReader;
 import biweekly.io.StreamWriter;
+import biweekly.io.TimezoneAssignment;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
@@ -1193,24 +1194,24 @@ public class XCalDocumentTest {
 		VEvent event = ical.getEvents().get(0);
 
 		DateStart dtstart = event.getDateStart();
-		assertEquals(timezone, tzinfo.getComponent(dtstart));
-		TimeZone dtstartTz = tzinfo.getTimeZone(dtstart);
+		assertEquals(timezone, tzinfo.getTimezone(dtstart).getComponent());
+		TimeZone dtstartTz = tzinfo.getTimezone(dtstart).getTimeZone();
 		assertEquals("US/Eastern", dtstartTz.getID());
 		assertTrue(dtstartTz instanceof ICalTimeZone);
 
 		RecurrenceDates rdate = event.getRecurrenceDates().get(0);
-		assertEquals(timezone, tzinfo.getComponent(rdate));
-		assertEquals(dtstartTz, tzinfo.getTimeZone(rdate));
+		assertEquals(timezone, tzinfo.getTimezone(rdate).getComponent());
+		assertEquals(dtstartTz, tzinfo.getTimezone(rdate).getTimeZone());
 
 		VEvent event2 = ical.getEvents().get(1);
 
 		dtstart = event2.getDateStart();
-		assertEquals(timezone, tzinfo.getComponent(dtstart));
-		assertEquals(dtstartTz, tzinfo.getTimeZone(dtstart));
+		assertEquals(timezone, tzinfo.getTimezone(dtstart).getComponent());
+		assertEquals(dtstartTz, tzinfo.getTimezone(dtstart).getTimeZone());
 
 		RecurrenceId rid = event2.getRecurrenceId();
-		assertEquals(timezone, tzinfo.getComponent(rid));
-		assertEquals(dtstartTz, tzinfo.getTimeZone(rid));
+		assertEquals(timezone, tzinfo.getTimezone(rid).getComponent());
+		assertEquals(dtstartTz, tzinfo.getTimezone(rid).getTimeZone());
 
 		assertValidate(ical).versions(V2_0).run();
 
@@ -1288,8 +1289,7 @@ public class XCalDocumentTest {
 		}
 
 		TimezoneInfo tzinfo = ical.getTimezoneInfo();
-		tzinfo.assign(usEasternTz, eastern);
-		tzinfo.setDefaultTimeZone(eastern);
+		tzinfo.setDefaultTimezone(new TimezoneAssignment(eastern, usEasternTz));
 		assertExample(ical, "rfc6321-example2.xml");
 	}
 

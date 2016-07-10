@@ -8,7 +8,6 @@ import java.util.TimeZone;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
-import biweekly.component.VTimezone;
 import biweekly.util.ICalDate;
 
 /*
@@ -43,16 +42,14 @@ import biweekly.util.ICalDate;
 public class WriteContext {
 	private final ICalVersion version;
 	private final TimezoneInfo timezoneOptions;
-	private final TimeZone globalTimeZone;
-	private final VTimezone globalTimeZoneComponent;
+	private final TimezoneAssignment globalTimezone;
 	private final List<Date> dates = new ArrayList<Date>();
 	private ICalComponent parent;
 
-	public WriteContext(ICalVersion version, TimezoneInfo timezoneOptions, TimeZone globalTimeZone, VTimezone globalTimeZoneComponent) {
+	public WriteContext(ICalVersion version, TimezoneInfo timezoneOptions, TimezoneAssignment globalTimezone) {
 		this.version = version;
 		this.timezoneOptions = timezoneOptions;
-		this.globalTimeZone = globalTimeZone;
-		this.globalTimeZoneComponent = globalTimeZoneComponent;
+		this.globalTimezone = globalTimezone;
 	}
 
 	/**
@@ -76,17 +73,8 @@ public class WriteContext {
 	 * each individual {@link ICalendar}'s timezone settings.
 	 * @return the global timezone or null if not set
 	 */
-	public TimeZone getGlobalTimeZone() {
-		return globalTimeZone;
-	}
-
-	/**
-	 * Gets the component that is associated with the {@link TimeZone} object
-	 * returned by {@link #getGlobalTimeZone}.
-	 * @return the component or null if not set
-	 */
-	public VTimezone getGlobalTimeZoneComponent() {
-		return globalTimeZoneComponent;
+	public TimezoneAssignment getGlobalTimezone() {
+		return globalTimezone;
 	}
 
 	/**

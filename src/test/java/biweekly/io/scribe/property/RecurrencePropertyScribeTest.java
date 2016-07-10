@@ -25,6 +25,7 @@ import biweekly.component.VEvent;
 import biweekly.component.VTimezone;
 import biweekly.io.ParseContext;
 import biweekly.io.ParseContext.TimezonedDate;
+import biweekly.io.TimezoneAssignment;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.json.JCalValue;
 import biweekly.io.json.JsonValue;
@@ -1042,8 +1043,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 		VTimezone component = new VTimezone(id);
 
 		TimezoneInfo tzinfo = new TimezoneInfo();
-		tzinfo.assign(component, timezone);
-		tzinfo.setDefaultTimeZone(timezone);
+		tzinfo.setDefaultTimezone(new TimezoneAssignment(timezone, component));
 		return tzinfo;
 	}
 }
