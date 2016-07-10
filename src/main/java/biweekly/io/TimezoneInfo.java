@@ -44,7 +44,19 @@ import biweekly.property.ValuedProperty;
  * @author Michael Angstadt
  */
 public class TimezoneInfo {
-	private final Collection<TimezoneAssignment> assignments = new HashSet<TimezoneAssignment>();
+	@SuppressWarnings("serial")
+	private final Collection<TimezoneAssignment> assignments = new HashSet<TimezoneAssignment>() {
+		@Override
+		public boolean remove(Object assignment) {
+			//remove all property assignments
+			Collection<TimezoneAssignment> values = propertyTimezones.values();
+			while (values.remove(assignment)) {
+				//empty
+			}
+
+			return super.remove(assignment);
+		}
+	};
 	private final Map<ICalProperty, TimezoneAssignment> propertyTimezones = new IdentityHashMap<ICalProperty, TimezoneAssignment>();
 	private final List<ICalProperty> floatingProperties = new ArrayList<ICalProperty>();
 

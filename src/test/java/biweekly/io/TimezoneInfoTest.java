@@ -141,6 +141,16 @@ public class TimezoneInfoTest {
 		assertEquals(null, tzinfo.getTimezone(property));
 		assertEquals(defaultTimezone, tzinfo.getTimezoneToWriteIn(property));
 		assertFalse(tzinfo.isFloating(property));
+
+		tzinfo.setTimezone(property, timezone1);
+		assertEquals(timezone1, tzinfo.getTimezone(property));
+		assertEquals(timezone1, tzinfo.getTimezoneToWriteIn(property));
+		assertFalse(tzinfo.isFloating(property));
+
+		tzinfo.getTimezones().remove(timezone1);
+		assertEquals(null, tzinfo.getTimezone(property));
+		assertEquals(defaultTimezone, tzinfo.getTimezoneToWriteIn(property));
+		assertFalse(tzinfo.isFloating(property));
 	}
 
 	private class ICalPropertyImpl extends ICalProperty {
