@@ -52,7 +52,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  * @author Michael Angstadt
  */
 public class JCalModule extends SimpleModule {
-	private static final long serialVersionUID = 4861448845613769559L;
+	private static final long serialVersionUID = 8022429868572303471L;
 	private static final String MODULE_NAME = "biweekly-jcal";
 	private static final Version MODULE_VERSION = moduleVersion();
 

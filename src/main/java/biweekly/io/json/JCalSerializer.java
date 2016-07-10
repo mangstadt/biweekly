@@ -46,7 +46,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
  */
 @JsonFormat
 public class JCalSerializer extends StdSerializer<ICalendar> {
-	private static final long serialVersionUID = -8879354015298785358L;
+	private static final long serialVersionUID = 8964681078186049817L;
 	private ScribeIndex index = new ScribeIndex();
 	private TimezoneAssignment globalTimezone;
 
