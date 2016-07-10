@@ -48,20 +48,27 @@ import biweekly.util.IOUtils;
  * href="http://www.tzurl.org">tzurl.org</a>. This class is thread-safe.
  * @author Michael Angstadt
  */
-public class TzUrlDotOrgGenerator implements VTimezoneGenerator {
+public class TzUrlDotOrgGenerator {
 	private static final Map<URI, VTimezone> cache = Collections.synchronizedMap(new HashMap<URI, VTimezone>());
 	private final String baseUrl;
 
 	/**
 	 * Creates a new tzurl.org generator.
-	 * @param outlook true to download {@link VTimezone} components that are
-	 * tailored for Microsoft Outlook email clients, false to download
+	 * @param outlookCompatible true to download {@link VTimezone} components
+	 * that are tailored for Microsoft Outlook email clients, false to download
 	 * standards-based ones
 	 */
-	public TzUrlDotOrgGenerator(boolean outlook) {
-		baseUrl = "http://www.tzurl.org/zoneinfo" + (outlook ? "-outlook" : "") + "/";
+	public TzUrlDotOrgGenerator(boolean outlookCompatible) {
+		baseUrl = "http://www.tzurl.org/zoneinfo" + (outlookCompatible ? "-outlook" : "") + "/";
 	}
 
+	/**
+	 * Generates an iCalendar {@link VTimezone} components from a Java
+	 * {@link TimeZone} object.
+	 * @param timezone the timezone object
+	 * @return the timezone component
+	 * @throws IllegalArgumentException if a timezone definition cannot be found
+	 */
 	public VTimezone generate(TimeZone timezone) throws IllegalArgumentException {
 		URI uri;
 		try {
