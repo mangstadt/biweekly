@@ -56,7 +56,6 @@ import biweekly.util.ICalDateFormat;
  */
 public abstract class StreamReader implements Closeable {
 	protected final ParseWarnings warnings = new ParseWarnings();
-	protected TimezoneInfo tzinfo;
 	protected ScribeIndex index = new ScribeIndex();
 	protected ParseContext context;
 
@@ -137,8 +136,6 @@ public abstract class StreamReader implements Closeable {
 	public ICalendar readNext() throws IOException {
 		warnings.clear();
 		context = new ParseContext();
-		tzinfo = new TimezoneInfo();
-
 		ICalendar ical = _readNext();
 		if (ical == null) {
 			return null;
@@ -157,6 +154,8 @@ public abstract class StreamReader implements Closeable {
 	protected abstract ICalendar _readNext() throws IOException;
 
 	private void handleTimezones(ICalendar ical) {
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
+
 		//convert vCalendar DAYLIGHT and TZ properties to a VTIMEZONE component
 		VTimezone vcalComponent = extractVCalTimezone(ical);
 
@@ -250,8 +249,6 @@ public abstract class StreamReader implements Closeable {
 				property.getParameters().setTimezoneId(null);
 			}
 		}
-
-		ical.setTimezoneInfo(tzinfo);
 	}
 
 	private VTimezone extractVCalTimezone(ICalendar ical) {
@@ -265,6 +262,7 @@ public abstract class StreamReader implements Closeable {
 		}
 
 		TimeZone icalTimezone = new ICalTimeZone(vcalComponent);
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
 		tzinfo.assign(vcalComponent, icalTimezone);
 		tzinfo.setDefaultTimeZone(icalTimezone);
 

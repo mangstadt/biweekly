@@ -48,7 +48,6 @@ import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamReader;
-import biweekly.io.TimezoneInfo;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
@@ -166,7 +165,6 @@ public class XCalReader extends StreamReader {
 		readICal = null;
 		warnings.clear();
 		context = new ParseContext();
-		tzinfo = new TimezoneInfo();
 		thrown = null;
 
 		if (!thread.started) {
