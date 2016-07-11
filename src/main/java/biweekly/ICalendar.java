@@ -104,7 +104,7 @@ import biweekly.util.Duration;
  * 
  * //You can also get the timezone that a specific property was originally formatted in.
  * DateStart dtstart = ical.getEvents().get(0).getDateStart();
- * TimeZone tz = tzinfo.getTimeZone(dtstart);
+ * TimeZone tz = tzinfo.getTimezone(dtstart).getTimeZone();
  * 
  * //This is useful for calculating recurrence rule dates.
  * RecurrenceRule rrule = ical.getEvents(0).getRecurrenceRule();
@@ -116,25 +116,28 @@ import biweekly.util.Duration;
  * </p>
  * 
  * <pre class="brush:java">
- * //The TimezoneInfo field is used to determine what timezone to format each date value in when the ICalendar object is written.
+ * //The TimezoneInfo field is used to determine what timezone to format each date-time value in when the ICalendar object is written.
  * //Appropriate VTIMEZONE components are automatically added to the written iCalendar object.
  * ICalendar ical = ...
  * TimezoneInfo tzinfo = ical.getTimezoneInfo();
  * 
- * //If you want the generated VTIMEZONE components to be tailored for Microsoft Outlook email clients, you can do that.
- * //This method must be called *before* any timezone settings are passed into the TimezoneInfo object.
- * //Note that this method downloads the VTIMEZONE component from tzurl.org, so an internet connection is required.
- * tzinfo.setGenerator(new TzUrlDotOrgGenerator(true));
+ * //biweekly uses the TimezoneAssignment class to define timezones.
+ * //This class groups together a Java TimeZone object, which is used to format/parse the date-time values, and its equivalent VTIMEZONE component definition.
  * 
- * //You can specify what timezone you'd like to format all date values in.
- * tzinfo.setDefaultTimeZone(TimeZone.getDefault());
+ * //biweekly can auto-generate the VTIMEZONE definitions by downloading them from tzurl.org.
+ * //If you want the generated VTIMEZONE components to be tailored for Microsoft Outlook email clients, pass "true" into this method.
+ * TimezoneAssignment timezone = TimezoneAssignment.downloadComponent(TimeZone.getTimeZone("America/New_York"), true);
+ * 
+ * //Using the TimezoneAssignment class, you can specify what timezone you'd like to format all date-time values in.
+ * tzinfo.setDefaultTimezone(timezone);
  * 
  * //You can also specify what timezone to use for individual properties if you want.
  * DateStart dtstart = ical.getEvents(0).getDateStart();
- * tzinfo.setTimeZone(dtstart, TimeZone.getTimeZone("America/Los_Angeles"));
+ * TimezoneAssignment losAngeles = TimezoneAssignment.downloadComponent(TimeZone.getTimeZone("America/Los_Angeles"), true);
+ * tzinfo.setTimezone(dtstart, losAngeles);
  * 
- * //The writer object will use this information to determine what timezone to format each date value in.
- * //Date values are formatted in UTC by default.
+ * //The writer object will use this information to determine what timezone to format each date-time value in.
+ * //Date-time values are formatted in UTC by default.
  * ICalWriter writer = ...
  * writer.write(ical);
  * </pre>
