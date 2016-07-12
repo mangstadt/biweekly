@@ -98,10 +98,15 @@ public class TimezoneInfo {
 	 * @param timezone the timezone or null to use UTC
 	 */
 	public void setDefaultTimezone(TimezoneAssignment timezone) {
-		defaultTimezone = timezone;
-		if (timezone != null) {
+		if (timezone == null) {
+			if (defaultTimezone != null && !propertyTimezones.values().contains(defaultTimezone)) {
+				assignments.remove(defaultTimezone);
+			}
+		} else {
 			assignments.add(timezone);
 		}
+
+		defaultTimezone = timezone;
 	}
 
 	/**
@@ -112,7 +117,10 @@ public class TimezoneInfo {
 	 */
 	public void setTimezone(ICalProperty property, TimezoneAssignment timezone) {
 		if (timezone == null) {
-			propertyTimezones.remove(property);
+			TimezoneAssignment existing = propertyTimezones.remove(property);
+			if (existing != null && existing != defaultTimezone && !propertyTimezones.values().contains(existing)) {
+				assignments.remove(existing);
+			}
 			return;
 		}
 

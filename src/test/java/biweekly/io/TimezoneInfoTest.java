@@ -3,8 +3,6 @@ package biweekly.io;
 import static biweekly.util.TestUtils.assertCollectionContains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.TimeZone;
@@ -53,18 +51,31 @@ public class TimezoneInfoTest {
 	}
 
 	@Test
-	public void defaultTimezone() {
+	public void assignments_collection() {
 		TimeZone timezone = TimeZone.getDefault();
 		VTimezone component = new VTimezone("tz");
 		TimezoneAssignment assignment = new TimezoneAssignment(timezone, component);
+		ICalProperty property = new ICalPropertyImpl();
+		ICalProperty property2 = new ICalPropertyImpl();
 
 		tzinfo.setDefaultTimezone(assignment);
-		assertSame(assignment, tzinfo.getDefaultTimezone());
 		assertCollectionContains(tzinfo.getTimezones(), assignment);
 
 		tzinfo.setDefaultTimezone(null);
-		assertNull(tzinfo.getDefaultTimezone());
+		assertCollectionContains(tzinfo.getTimezones());
+
+		tzinfo.setTimezone(property, assignment);
+		tzinfo.setTimezone(property2, assignment);
 		assertCollectionContains(tzinfo.getTimezones(), assignment);
+
+		tzinfo.setDefaultTimezone(null);
+		assertCollectionContains(tzinfo.getTimezones(), assignment);
+
+		tzinfo.setTimezone(property, null);
+		assertCollectionContains(tzinfo.getTimezones(), assignment);
+
+		tzinfo.setTimezone(property2, null);
+		assertCollectionContains(tzinfo.getTimezones());
 	}
 
 	@Test
