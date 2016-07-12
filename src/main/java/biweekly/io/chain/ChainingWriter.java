@@ -76,7 +76,7 @@ class ChainingWriter<T extends ChainingWriter<?>> {
 	 * cannot be found on the website
 	 */
 	T tz(TimeZone defaultTimeZone, boolean outlookCompatible) {
-		this.defaultTimeZone = (defaultTimeZone == null) ? null : TimezoneAssignment.downloadComponent(defaultTimeZone, outlookCompatible);
+		this.defaultTimeZone = (defaultTimeZone == null) ? null : TimezoneAssignment.download(defaultTimeZone, outlookCompatible);
 		return this_;
 	}
 

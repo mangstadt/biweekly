@@ -85,14 +85,8 @@ public class TimezoneAssignment {
 	}
 
 	/**
-	 * <p>
-	 * Creates a timezone that will be inserted into the iCalendar object as a
-	 * VTIMEZONE component. This what most iCalendar files use.
-	 * </p>
-	 * <p>
-	 * This method downloads an appropriate VTIMEZONE component from the <a
-	 * href="http://www.tzurl.org">tzurl.org</a> website.
-	 * </p>
+	 * Creates a timezone whose VTIMEZONE component is downloaded from <a
+	 * href="http://www.tzurl.org">tzurl.org</a>.
 	 * @param timezone the Java timezone object
 	 * @param outlookCompatible true to download a {@link VTimezone} component
 	 * that is tailored for Microsoft Outlook email clients, false to download a
@@ -101,7 +95,7 @@ public class TimezoneAssignment {
 	 * @throws IllegalArgumentException if an appropriate VTIMEZONE component
 	 * cannot be found on the website
 	 */
-	public static TimezoneAssignment downloadComponent(TimeZone timezone, boolean outlookCompatible) {
+	public static TimezoneAssignment download(TimeZone timezone, boolean outlookCompatible) {
 		TzUrlDotOrgGenerator generator = new TzUrlDotOrgGenerator(outlookCompatible);
 		VTimezone component = generator.generate(timezone);
 		return new TimezoneAssignment(timezone, component);

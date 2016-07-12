@@ -126,14 +126,14 @@ import biweekly.util.Duration;
  * 
  * //biweekly can auto-generate the VTIMEZONE definitions by downloading them from tzurl.org.
  * //If you want the generated VTIMEZONE components to be tailored for Microsoft Outlook email clients, pass "true" into this method.
- * TimezoneAssignment timezone = TimezoneAssignment.downloadComponent(TimeZone.getTimeZone("America/New_York"), true);
+ * TimezoneAssignment timezone = TimezoneAssignment.download(TimeZone.getTimeZone("America/New_York"), true);
  * 
  * //Using the TimezoneAssignment class, you can specify what timezone you'd like to format all date-time values in.
  * tzinfo.setDefaultTimezone(timezone);
  * 
  * //You can also specify what timezone to use for individual properties if you want.
  * DateStart dtstart = ical.getEvents(0).getDateStart();
- * TimezoneAssignment losAngeles = TimezoneAssignment.downloadComponent(TimeZone.getTimeZone("America/Los_Angeles"), true);
+ * TimezoneAssignment losAngeles = TimezoneAssignment.download(TimeZone.getTimeZone("America/Los_Angeles"), true);
  * tzinfo.setTimezone(dtstart, losAngeles);
  * 
  * //The writer object will use this information to determine what timezone to format each date-time value in.
