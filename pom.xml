@@ -195,7 +195,7 @@
 					</links>
 					<quiet>true</quiet>
 					
-					<!-- exclude commons-codec and google-rfc-2445 source -->
+					<!-- exclude commons-codec -->
 					<excludePackageNames>biweekly.util.org.*</excludePackageNames>
 					
 					<!-- Add Javascript syntax highlighter -->
