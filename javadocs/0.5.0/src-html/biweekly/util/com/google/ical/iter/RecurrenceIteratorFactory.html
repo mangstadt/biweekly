@@ -1,0 +1,663 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+<title>Source code</title>
+<link rel="stylesheet" type="text/css" href="../../../../../../../syntaxhighlighter.css" title="Style">
+</head>
+<body>
+<div class="sourceContainer">
+<pre><span class="sourceLineNo">001</span>// Copyright (C) 2006 Google Inc.<a name="line.1"></a>
+<span class="sourceLineNo">002</span>//<a name="line.2"></a>
+<span class="sourceLineNo">003</span>// Licensed under the Apache License, Version 2.0 (the "License");<a name="line.3"></a>
+<span class="sourceLineNo">004</span>// you may not use this file except in compliance with the License.<a name="line.4"></a>
+<span class="sourceLineNo">005</span>// You may obtain a copy of the License at<a name="line.5"></a>
+<span class="sourceLineNo">006</span>//<a name="line.6"></a>
+<span class="sourceLineNo">007</span>//      http://www.apache.org/licenses/LICENSE-2.0<a name="line.7"></a>
+<span class="sourceLineNo">008</span>//<a name="line.8"></a>
+<span class="sourceLineNo">009</span>// Unless required by applicable law or agreed to in writing, software<a name="line.9"></a>
+<span class="sourceLineNo">010</span>// distributed under the License is distributed on an "AS IS" BASIS,<a name="line.10"></a>
+<span class="sourceLineNo">011</span>// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.<a name="line.11"></a>
+<span class="sourceLineNo">012</span>// See the License for the specific language governing permissions and<a name="line.12"></a>
+<span class="sourceLineNo">013</span>// limitations under the License.<a name="line.13"></a>
+<span class="sourceLineNo">014</span><a name="line.14"></a>
+<span class="sourceLineNo">015</span>package biweekly.util.com.google.ical.iter;<a name="line.15"></a>
+<span class="sourceLineNo">016</span><a name="line.16"></a>
+<span class="sourceLineNo">017</span>import biweekly.util.com.google.ical.util.Predicate;<a name="line.17"></a>
+<span class="sourceLineNo">018</span>import biweekly.util.com.google.ical.util.Predicates;<a name="line.18"></a>
+<span class="sourceLineNo">019</span>import biweekly.util.com.google.ical.util.TimeUtils;<a name="line.19"></a>
+<span class="sourceLineNo">020</span>import biweekly.util.com.google.ical.values.DateTimeValue;<a name="line.20"></a>
+<span class="sourceLineNo">021</span>import biweekly.util.com.google.ical.values.DateTimeValueImpl;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import biweekly.util.com.google.ical.values.DateValue;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import biweekly.util.com.google.ical.values.DateValueImpl;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import biweekly.util.com.google.ical.values.Frequency;<a name="line.24"></a>
+<span class="sourceLineNo">025</span>import biweekly.util.com.google.ical.values.IcalObject;<a name="line.25"></a>
+<span class="sourceLineNo">026</span>import biweekly.util.com.google.ical.values.RDateList;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import biweekly.util.com.google.ical.values.RRule;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import biweekly.util.com.google.ical.values.TimeValue;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import biweekly.util.com.google.ical.values.Weekday;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import biweekly.util.com.google.ical.values.WeekdayNum;<a name="line.30"></a>
+<span class="sourceLineNo">031</span><a name="line.31"></a>
+<span class="sourceLineNo">032</span>import java.text.ParseException;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import java.util.ArrayList;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import java.util.Arrays;<a name="line.34"></a>
+<span class="sourceLineNo">035</span>import java.util.Collections;<a name="line.35"></a>
+<span class="sourceLineNo">036</span>import java.util.List;<a name="line.36"></a>
+<span class="sourceLineNo">037</span>import java.util.TimeZone;<a name="line.37"></a>
+<span class="sourceLineNo">038</span>import java.util.logging.Level;<a name="line.38"></a>
+<span class="sourceLineNo">039</span>import java.util.logging.Logger;<a name="line.39"></a>
+<span class="sourceLineNo">040</span>import java.util.regex.Pattern;<a name="line.40"></a>
+<span class="sourceLineNo">041</span><a name="line.41"></a>
+<span class="sourceLineNo">042</span>/**<a name="line.42"></a>
+<span class="sourceLineNo">043</span> * for calculating the occurrences of an individual RFC 2445 RRULE or groups of<a name="line.43"></a>
+<span class="sourceLineNo">044</span> * RRULES, RDATES, EXRULES, and EXDATES.<a name="line.44"></a>
+<span class="sourceLineNo">045</span> *<a name="line.45"></a>
+<span class="sourceLineNo">046</span> * &lt;h4&gt;Glossary&lt;/h4&gt;<a name="line.46"></a>
+<span class="sourceLineNo">047</span> * Period - year|month|day|...&lt;br&gt;<a name="line.47"></a>
+<span class="sourceLineNo">048</span> * Day of the week - an int in [0-6].  See RRULE_WDAY_* in rrule.js&lt;br&gt;<a name="line.48"></a>
+<span class="sourceLineNo">049</span> * Day of the year - zero indexed in [0,365]&lt;br&gt;<a name="line.49"></a>
+<span class="sourceLineNo">050</span> * Day of the month - 1 indexed in [1,31]&lt;br&gt;<a name="line.50"></a>
+<span class="sourceLineNo">051</span> * Month - 1 indexed integer in [1,12]<a name="line.51"></a>
+<span class="sourceLineNo">052</span> *<a name="line.52"></a>
+<span class="sourceLineNo">053</span> * &lt;h4&gt;Abstractions&lt;/h4&gt;<a name="line.53"></a>
+<span class="sourceLineNo">054</span> * Generator - a function corresponding to an RRULE part that takes a date and<a name="line.54"></a>
+<span class="sourceLineNo">055</span> *   returns a later (year or month or day depending on its period) within the<a name="line.55"></a>
+<span class="sourceLineNo">056</span> *   next larger period.<a name="line.56"></a>
+<span class="sourceLineNo">057</span> *   A generator ignores all periods in its input smaller than its period.<a name="line.57"></a>
+<span class="sourceLineNo">058</span> * &lt;p&gt;<a name="line.58"></a>
+<span class="sourceLineNo">059</span> * Filter - a function that returns true iff the given date matches the subrule.<a name="line.59"></a>
+<span class="sourceLineNo">060</span> * &lt;p&gt;<a name="line.60"></a>
+<span class="sourceLineNo">061</span> * Condition - returns true if the given date is past the end of the recurrence.<a name="line.61"></a>
+<span class="sourceLineNo">062</span> *<a name="line.62"></a>
+<span class="sourceLineNo">063</span> * &lt;p&gt;All the functions that represent rule parts are stateful.<a name="line.63"></a>
+<span class="sourceLineNo">064</span> *<a name="line.64"></a>
+<span class="sourceLineNo">065</span> * @author mikesamuel+svn@gmail.com (Mike Samuel)<a name="line.65"></a>
+<span class="sourceLineNo">066</span> */<a name="line.66"></a>
+<span class="sourceLineNo">067</span>public class RecurrenceIteratorFactory {<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>  private static final Logger LOGGER = Logger.getLogger(<a name="line.69"></a>
+<span class="sourceLineNo">070</span>      RecurrenceIteratorFactory.class.getName());<a name="line.70"></a>
+<span class="sourceLineNo">071</span><a name="line.71"></a>
+<span class="sourceLineNo">072</span>  /**<a name="line.72"></a>
+<span class="sourceLineNo">073</span>   * given a block of RRULE, EXRULE, RDATE, and EXDATE content lines, parse<a name="line.73"></a>
+<span class="sourceLineNo">074</span>   * them into a single recurrence iterator.<a name="line.74"></a>
+<span class="sourceLineNo">075</span>   * @param rdata ical text.<a name="line.75"></a>
+<span class="sourceLineNo">076</span>   * @param dtStart the date of the first occurrence in timezone tzid, which is<a name="line.76"></a>
+<span class="sourceLineNo">077</span>   *   used to fill in optional fields in the RRULE, such as the day of the<a name="line.77"></a>
+<span class="sourceLineNo">078</span>   *   month for a monthly repetition when no ther day specified.<a name="line.78"></a>
+<span class="sourceLineNo">079</span>   *   Note: this may not be the first date in the series since an EXRULE or<a name="line.79"></a>
+<span class="sourceLineNo">080</span>   *     EXDATE might force it to be skipped, but there will be no earlier date<a name="line.80"></a>
+<span class="sourceLineNo">081</span>   *     generated by this ruleset.<a name="line.81"></a>
+<span class="sourceLineNo">082</span>   * @param strict true if any failure to parse should result in a<a name="line.82"></a>
+<span class="sourceLineNo">083</span>   *   ParseException.  false causes bad content lines to be logged and ignored.<a name="line.83"></a>
+<span class="sourceLineNo">084</span>   */<a name="line.84"></a>
+<span class="sourceLineNo">085</span>  public static RecurrenceIterator createRecurrenceIterator(<a name="line.85"></a>
+<span class="sourceLineNo">086</span>      String rdata, DateValue dtStart, TimeZone tzid, boolean strict)<a name="line.86"></a>
+<span class="sourceLineNo">087</span>      throws ParseException {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>    return createRecurrenceIterable(rdata, dtStart, tzid, strict).iterator();<a name="line.88"></a>
+<span class="sourceLineNo">089</span>  }<a name="line.89"></a>
+<span class="sourceLineNo">090</span><a name="line.90"></a>
+<span class="sourceLineNo">091</span>  public static RecurrenceIterable createRecurrenceIterable(<a name="line.91"></a>
+<span class="sourceLineNo">092</span>      String rdata, final DateValue dtStart, final TimeZone tzid,<a name="line.92"></a>
+<span class="sourceLineNo">093</span>      final boolean strict)<a name="line.93"></a>
+<span class="sourceLineNo">094</span>      throws ParseException {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>    final IcalObject[] contentLines = parseContentLines(rdata, tzid, strict);<a name="line.95"></a>
+<span class="sourceLineNo">096</span><a name="line.96"></a>
+<span class="sourceLineNo">097</span>    return new RecurrenceIterable() {<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        public RecurrenceIterator iterator() {<a name="line.98"></a>
+<span class="sourceLineNo">099</span>          List&lt;RecurrenceIterator&gt; inclusions =<a name="line.99"></a>
+<span class="sourceLineNo">100</span>               new ArrayList&lt;RecurrenceIterator&gt;();<a name="line.100"></a>
+<span class="sourceLineNo">101</span>          List&lt;RecurrenceIterator&gt; exclusions =<a name="line.101"></a>
+<span class="sourceLineNo">102</span>               new ArrayList&lt;RecurrenceIterator&gt;();<a name="line.102"></a>
+<span class="sourceLineNo">103</span>          // always include DTStart<a name="line.103"></a>
+<span class="sourceLineNo">104</span>          inclusions.add(new RDateIteratorImpl(<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                             new DateValue[] {TimeUtils.toUtc(dtStart, tzid)}));<a name="line.105"></a>
+<span class="sourceLineNo">106</span>          for (IcalObject contentLine : contentLines) {<a name="line.106"></a>
+<span class="sourceLineNo">107</span>            try {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>              String name = contentLine.getName();<a name="line.108"></a>
+<span class="sourceLineNo">109</span>              if ("rrule".equalsIgnoreCase(name)) {<a name="line.109"></a>
+<span class="sourceLineNo">110</span>                inclusions.add(createRecurrenceIterator(<a name="line.110"></a>
+<span class="sourceLineNo">111</span>                                   (RRule) contentLine, dtStart, tzid));<a name="line.111"></a>
+<span class="sourceLineNo">112</span>              } else if ("rdate".equalsIgnoreCase(name)) {<a name="line.112"></a>
+<span class="sourceLineNo">113</span>                inclusions.add(<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                    createRecurrenceIterator((RDateList) contentLine));<a name="line.114"></a>
+<span class="sourceLineNo">115</span>              } else if ("exrule".equalsIgnoreCase(name)) {<a name="line.115"></a>
+<span class="sourceLineNo">116</span>                exclusions.add(createRecurrenceIterator(<a name="line.116"></a>
+<span class="sourceLineNo">117</span>                                   (RRule) contentLine, dtStart, tzid));<a name="line.117"></a>
+<span class="sourceLineNo">118</span>              } else if ("exdate".equalsIgnoreCase(name)) {<a name="line.118"></a>
+<span class="sourceLineNo">119</span>                exclusions.add(<a name="line.119"></a>
+<span class="sourceLineNo">120</span>                    createRecurrenceIterator((RDateList) contentLine));<a name="line.120"></a>
+<span class="sourceLineNo">121</span>              }<a name="line.121"></a>
+<span class="sourceLineNo">122</span>            } catch (IllegalArgumentException ex) {<a name="line.122"></a>
+<span class="sourceLineNo">123</span>              // bad frequency on rrule or exrule<a name="line.123"></a>
+<span class="sourceLineNo">124</span>              if (strict) { throw ex; }<a name="line.124"></a>
+<span class="sourceLineNo">125</span>              LOGGER.log(<a name="line.125"></a>
+<span class="sourceLineNo">126</span>                  Level.SEVERE,<a name="line.126"></a>
+<span class="sourceLineNo">127</span>                  "Dropping bad recurrence rule line: " + contentLine.toIcal(),<a name="line.127"></a>
+<span class="sourceLineNo">128</span>                  ex);<a name="line.128"></a>
+<span class="sourceLineNo">129</span>            }<a name="line.129"></a>
+<span class="sourceLineNo">130</span>          }<a name="line.130"></a>
+<span class="sourceLineNo">131</span>          return new CompoundIteratorImpl(inclusions, exclusions);<a name="line.131"></a>
+<span class="sourceLineNo">132</span>        }<a name="line.132"></a>
+<span class="sourceLineNo">133</span>      };<a name="line.133"></a>
+<span class="sourceLineNo">134</span>  }<a name="line.134"></a>
+<span class="sourceLineNo">135</span><a name="line.135"></a>
+<span class="sourceLineNo">136</span>  /**<a name="line.136"></a>
+<span class="sourceLineNo">137</span>   * like {@link #createRecurrenceIterator(String,DateValue,TimeZone,boolean)}<a name="line.137"></a>
+<span class="sourceLineNo">138</span>   * but defaults to strict parsing.<a name="line.138"></a>
+<span class="sourceLineNo">139</span>   */<a name="line.139"></a>
+<span class="sourceLineNo">140</span>  public static RecurrenceIterator createRecurrenceIterator(<a name="line.140"></a>
+<span class="sourceLineNo">141</span>      String rdata, DateValue dtStart, TimeZone tzid)<a name="line.141"></a>
+<span class="sourceLineNo">142</span>      throws ParseException {<a name="line.142"></a>
+<span class="sourceLineNo">143</span>    return createRecurrenceIterator(rdata, dtStart, tzid, true);<a name="line.143"></a>
+<span class="sourceLineNo">144</span>  }<a name="line.144"></a>
+<span class="sourceLineNo">145</span><a name="line.145"></a>
+<span class="sourceLineNo">146</span>  /**<a name="line.146"></a>
+<span class="sourceLineNo">147</span>   * create a recurrence iterator from an rdate or exdate list.<a name="line.147"></a>
+<span class="sourceLineNo">148</span>   */<a name="line.148"></a>
+<span class="sourceLineNo">149</span>  public static RecurrenceIterator createRecurrenceIterator(RDateList rdates) {<a name="line.149"></a>
+<span class="sourceLineNo">150</span>    DateValue[] dates = rdates.getDatesUtc();<a name="line.150"></a>
+<span class="sourceLineNo">151</span>    Arrays.sort(dates);<a name="line.151"></a>
+<span class="sourceLineNo">152</span>    int k = 0;<a name="line.152"></a>
+<span class="sourceLineNo">153</span>    for (int i = 1; i &lt; dates.length; ++i) {<a name="line.153"></a>
+<span class="sourceLineNo">154</span>      if (!dates[i].equals(dates[k])) { dates[++k] = dates[i]; }<a name="line.154"></a>
+<span class="sourceLineNo">155</span>    }<a name="line.155"></a>
+<span class="sourceLineNo">156</span>    if (++k &lt; dates.length) {<a name="line.156"></a>
+<span class="sourceLineNo">157</span>      DateValue[] uniqueDates = new DateValue[k ];<a name="line.157"></a>
+<span class="sourceLineNo">158</span>      System.arraycopy(dates, 0, uniqueDates, 0, k);<a name="line.158"></a>
+<span class="sourceLineNo">159</span>      dates = uniqueDates;<a name="line.159"></a>
+<span class="sourceLineNo">160</span>    }<a name="line.160"></a>
+<span class="sourceLineNo">161</span>    return new RDateIteratorImpl(dates);<a name="line.161"></a>
+<span class="sourceLineNo">162</span>  }<a name="line.162"></a>
+<span class="sourceLineNo">163</span><a name="line.163"></a>
+<span class="sourceLineNo">164</span>  /**<a name="line.164"></a>
+<span class="sourceLineNo">165</span>   * create a recurrence iterator from an rrule.<a name="line.165"></a>
+<span class="sourceLineNo">166</span>   * @param rrule the recurrence rule to iterate.<a name="line.166"></a>
+<span class="sourceLineNo">167</span>   * @param dtStart the start of the series, in tzid.<a name="line.167"></a>
+<span class="sourceLineNo">168</span>   * @param tzid the timezone to iterate in.<a name="line.168"></a>
+<span class="sourceLineNo">169</span>   */<a name="line.169"></a>
+<span class="sourceLineNo">170</span>  public static RecurrenceIterator createRecurrenceIterator(<a name="line.170"></a>
+<span class="sourceLineNo">171</span>      RRule rrule, DateValue dtStart, TimeZone tzid) {<a name="line.171"></a>
+<span class="sourceLineNo">172</span>    assert null != tzid;<a name="line.172"></a>
+<span class="sourceLineNo">173</span>    assert null != dtStart;<a name="line.173"></a>
+<span class="sourceLineNo">174</span><a name="line.174"></a>
+<span class="sourceLineNo">175</span>    Frequency freq = rrule.getFreq();<a name="line.175"></a>
+<span class="sourceLineNo">176</span>    Weekday wkst = rrule.getWkSt();<a name="line.176"></a>
+<span class="sourceLineNo">177</span>    DateValue untilUtc = rrule.getUntil();<a name="line.177"></a>
+<span class="sourceLineNo">178</span>    int count = rrule.getCount();<a name="line.178"></a>
+<span class="sourceLineNo">179</span>    int interval = rrule.getInterval();<a name="line.179"></a>
+<span class="sourceLineNo">180</span>    WeekdayNum[] byDay = rrule.getByDay().toArray(new WeekdayNum[0]);<a name="line.180"></a>
+<span class="sourceLineNo">181</span>    int[] byMonth = rrule.getByMonth();<a name="line.181"></a>
+<span class="sourceLineNo">182</span>    int[] byMonthDay = rrule.getByMonthDay();<a name="line.182"></a>
+<span class="sourceLineNo">183</span>    int[] byWeekNo = rrule.getByWeekNo();<a name="line.183"></a>
+<span class="sourceLineNo">184</span>    int[] byYearDay = rrule.getByYearDay();<a name="line.184"></a>
+<span class="sourceLineNo">185</span>    int[] bySetPos = rrule.getBySetPos();<a name="line.185"></a>
+<span class="sourceLineNo">186</span>    int[] byHour = rrule.getByHour();<a name="line.186"></a>
+<span class="sourceLineNo">187</span>    int[] byMinute = rrule.getByMinute();<a name="line.187"></a>
+<span class="sourceLineNo">188</span>    int[] bySecond = rrule.getBySecond();<a name="line.188"></a>
+<span class="sourceLineNo">189</span><a name="line.189"></a>
+<span class="sourceLineNo">190</span>    if (interval &lt;= 0) {  interval = 1; }<a name="line.190"></a>
+<span class="sourceLineNo">191</span><a name="line.191"></a>
+<span class="sourceLineNo">192</span>    if (null == wkst) {<a name="line.192"></a>
+<span class="sourceLineNo">193</span>      wkst = Weekday.MO;<a name="line.193"></a>
+<span class="sourceLineNo">194</span>    }<a name="line.194"></a>
+<span class="sourceLineNo">195</span><a name="line.195"></a>
+<span class="sourceLineNo">196</span>    // Optimize out BYSETPOS where possible.<a name="line.196"></a>
+<span class="sourceLineNo">197</span>    if (bySetPos.length != 0) {<a name="line.197"></a>
+<span class="sourceLineNo">198</span>      switch (freq) {<a name="line.198"></a>
+<span class="sourceLineNo">199</span>        case HOURLY:<a name="line.199"></a>
+<span class="sourceLineNo">200</span>          // ;BYHOUR=3,6,9;BYSETPOS=-1,1<a name="line.200"></a>
+<span class="sourceLineNo">201</span>          //     is equivalent to<a name="line.201"></a>
+<span class="sourceLineNo">202</span>          // ;BYHOUR=3,9<a name="line.202"></a>
+<span class="sourceLineNo">203</span>          if (byHour.length != 0 &amp;&amp; byMinute.length &lt;= 1<a name="line.203"></a>
+<span class="sourceLineNo">204</span>              &amp;&amp; bySecond.length &lt;= 1) {<a name="line.204"></a>
+<span class="sourceLineNo">205</span>            byHour = filterBySetPos(byHour, bySetPos);<a name="line.205"></a>
+<span class="sourceLineNo">206</span>          }<a name="line.206"></a>
+<span class="sourceLineNo">207</span>          // Handling bySetPos for rules that are more frequent than daily<a name="line.207"></a>
+<span class="sourceLineNo">208</span>          // tends to lead to large amounts of processor being used before other<a name="line.208"></a>
+<span class="sourceLineNo">209</span>          // work limiting features can kick in since there many seconds between<a name="line.209"></a>
+<span class="sourceLineNo">210</span>          // dtStart and where the year limit kicks in.<a name="line.210"></a>
+<span class="sourceLineNo">211</span>          // There are no known use cases for the use of bySetPos with hourly<a name="line.211"></a>
+<span class="sourceLineNo">212</span>          // minutely and secondly rules so we just ignore it.<a name="line.212"></a>
+<span class="sourceLineNo">213</span>          bySetPos = NO_INTS;<a name="line.213"></a>
+<span class="sourceLineNo">214</span>          break;<a name="line.214"></a>
+<span class="sourceLineNo">215</span>        case MINUTELY:<a name="line.215"></a>
+<span class="sourceLineNo">216</span>          // ;BYHOUR=3,6,9;BYSETPOS=-1,1<a name="line.216"></a>
+<span class="sourceLineNo">217</span>          //     is equivalent to<a name="line.217"></a>
+<span class="sourceLineNo">218</span>          // ;BYHOUR=3,9<a name="line.218"></a>
+<span class="sourceLineNo">219</span>          if (byMinute.length != 0 &amp;&amp; bySecond.length &lt;= 1) {<a name="line.219"></a>
+<span class="sourceLineNo">220</span>            byMinute = filterBySetPos(byMinute, bySetPos);<a name="line.220"></a>
+<span class="sourceLineNo">221</span>          }<a name="line.221"></a>
+<span class="sourceLineNo">222</span>          // See bySetPos handling comment above.<a name="line.222"></a>
+<span class="sourceLineNo">223</span>          bySetPos = NO_INTS;<a name="line.223"></a>
+<span class="sourceLineNo">224</span>          break;<a name="line.224"></a>
+<span class="sourceLineNo">225</span>        case SECONDLY:<a name="line.225"></a>
+<span class="sourceLineNo">226</span>          // ;BYHOUR=3,6,9;BYSETPOS=-1,1<a name="line.226"></a>
+<span class="sourceLineNo">227</span>          //     is equivalent to<a name="line.227"></a>
+<span class="sourceLineNo">228</span>          // ;BYHOUR=3,9<a name="line.228"></a>
+<span class="sourceLineNo">229</span>          if (bySecond.length != 0) {<a name="line.229"></a>
+<span class="sourceLineNo">230</span>            bySecond = filterBySetPos(bySecond, bySetPos);<a name="line.230"></a>
+<span class="sourceLineNo">231</span>          }<a name="line.231"></a>
+<span class="sourceLineNo">232</span>          // See bySetPos handling comment above.<a name="line.232"></a>
+<span class="sourceLineNo">233</span>          bySetPos = NO_INTS;<a name="line.233"></a>
+<span class="sourceLineNo">234</span>          break;<a name="line.234"></a>
+<span class="sourceLineNo">235</span>        default:<a name="line.235"></a>
+<span class="sourceLineNo">236</span>      }<a name="line.236"></a>
+<span class="sourceLineNo">237</span>    }<a name="line.237"></a>
+<span class="sourceLineNo">238</span><a name="line.238"></a>
+<span class="sourceLineNo">239</span>    DateValue start = dtStart;<a name="line.239"></a>
+<span class="sourceLineNo">240</span>    if (bySetPos.length != 0) {<a name="line.240"></a>
+<span class="sourceLineNo">241</span>      // Roll back till the beginning of the period to make sure that any<a name="line.241"></a>
+<span class="sourceLineNo">242</span>      // positive indices are indexed properly.<a name="line.242"></a>
+<span class="sourceLineNo">243</span>      // The actual iterator implementation is responsible for anything<a name="line.243"></a>
+<span class="sourceLineNo">244</span>      // &lt; dtStart.<a name="line.244"></a>
+<span class="sourceLineNo">245</span>      switch (freq) {<a name="line.245"></a>
+<span class="sourceLineNo">246</span>        case YEARLY:<a name="line.246"></a>
+<span class="sourceLineNo">247</span>          start = dtStart instanceof TimeValue<a name="line.247"></a>
+<span class="sourceLineNo">248</span>              ? new DateTimeValueImpl(start.year(), 1, 1, 0, 0, 0)<a name="line.248"></a>
+<span class="sourceLineNo">249</span>              : new DateValueImpl(start.year(), 1, 1);<a name="line.249"></a>
+<span class="sourceLineNo">250</span>          break;<a name="line.250"></a>
+<span class="sourceLineNo">251</span>        case MONTHLY:<a name="line.251"></a>
+<span class="sourceLineNo">252</span>          start = dtStart instanceof TimeValue<a name="line.252"></a>
+<span class="sourceLineNo">253</span>              ? new DateTimeValueImpl(start.year(), start.month(), 1, 0, 0, 0)<a name="line.253"></a>
+<span class="sourceLineNo">254</span>              : new DateValueImpl(start.year(), start.month(), 1);<a name="line.254"></a>
+<span class="sourceLineNo">255</span>          break;<a name="line.255"></a>
+<span class="sourceLineNo">256</span>        case WEEKLY:<a name="line.256"></a>
+<span class="sourceLineNo">257</span>          int d = (7 + wkst.ordinal() - Weekday.valueOf(dtStart).ordinal()) % 7;<a name="line.257"></a>
+<span class="sourceLineNo">258</span>          start = TimeUtils.add(dtStart, new DateValueImpl(0, 0, -d));<a name="line.258"></a>
+<span class="sourceLineNo">259</span>          break;<a name="line.259"></a>
+<span class="sourceLineNo">260</span>        default: break;<a name="line.260"></a>
+<span class="sourceLineNo">261</span>      }<a name="line.261"></a>
+<span class="sourceLineNo">262</span>    }<a name="line.262"></a>
+<span class="sourceLineNo">263</span><a name="line.263"></a>
+<span class="sourceLineNo">264</span>    // recurrences are implemented as a sequence of periodic generators.<a name="line.264"></a>
+<span class="sourceLineNo">265</span>    // First a year is generated, and then months, and within months, days<a name="line.265"></a>
+<span class="sourceLineNo">266</span>    ThrottledGenerator yearGenerator = Generators.serialYearGenerator(<a name="line.266"></a>
+<span class="sourceLineNo">267</span>        freq == Frequency.YEARLY ? interval : 1, dtStart);<a name="line.267"></a>
+<span class="sourceLineNo">268</span>    Generator monthGenerator = null;<a name="line.268"></a>
+<span class="sourceLineNo">269</span>    Generator dayGenerator = null;<a name="line.269"></a>
+<span class="sourceLineNo">270</span>    Generator secondGenerator = null;<a name="line.270"></a>
+<span class="sourceLineNo">271</span>    Generator minuteGenerator = null;<a name="line.271"></a>
+<span class="sourceLineNo">272</span>    Generator hourGenerator = null;<a name="line.272"></a>
+<span class="sourceLineNo">273</span><a name="line.273"></a>
+<span class="sourceLineNo">274</span>    // When multiple generators are specified for a period, they act as a union<a name="line.274"></a>
+<span class="sourceLineNo">275</span>    // operator.  We could have multiple generators (for day say) and then<a name="line.275"></a>
+<span class="sourceLineNo">276</span>    // run each and merge the results, but some generators are more efficient<a name="line.276"></a>
+<span class="sourceLineNo">277</span>    // than others, so to avoid generating 53 sundays and throwing away all but<a name="line.277"></a>
+<span class="sourceLineNo">278</span>    // 1 for RRULE:FREQ=YEARLY;BYDAY=TU;BYWEEKNO=1, we reimplement some of the<a name="line.278"></a>
+<span class="sourceLineNo">279</span>    // more prolific generators as filters.<a name="line.279"></a>
+<span class="sourceLineNo">280</span>    // TODO(msamuel): don't need a list here<a name="line.280"></a>
+<span class="sourceLineNo">281</span>    List&lt;Predicate&lt;? super DateValue&gt;&gt; filters =<a name="line.281"></a>
+<span class="sourceLineNo">282</span>      new ArrayList&lt;Predicate&lt;? super DateValue&gt;&gt;();<a name="line.282"></a>
+<span class="sourceLineNo">283</span><a name="line.283"></a>
+<span class="sourceLineNo">284</span>    switch (freq) {<a name="line.284"></a>
+<span class="sourceLineNo">285</span>      case SECONDLY:<a name="line.285"></a>
+<span class="sourceLineNo">286</span>        if (bySecond.length == 0 || interval != 1) {<a name="line.286"></a>
+<span class="sourceLineNo">287</span>          secondGenerator = Generators.serialSecondGenerator(interval, dtStart);<a name="line.287"></a>
+<span class="sourceLineNo">288</span>          if (bySecond.length != 0) {<a name="line.288"></a>
+<span class="sourceLineNo">289</span>            filters.add(Filters.bySecondFilter(bySecond));<a name="line.289"></a>
+<span class="sourceLineNo">290</span>          }<a name="line.290"></a>
+<span class="sourceLineNo">291</span>        }<a name="line.291"></a>
+<span class="sourceLineNo">292</span>        break;<a name="line.292"></a>
+<span class="sourceLineNo">293</span>      case MINUTELY:<a name="line.293"></a>
+<span class="sourceLineNo">294</span>        if (byMinute.length == 0 || interval != 1) {<a name="line.294"></a>
+<span class="sourceLineNo">295</span>          minuteGenerator = Generators.serialMinuteGenerator(interval, dtStart);<a name="line.295"></a>
+<span class="sourceLineNo">296</span>          if (byMinute.length != 0) {<a name="line.296"></a>
+<span class="sourceLineNo">297</span>            filters.add(Filters.byMinuteFilter(byMinute));<a name="line.297"></a>
+<span class="sourceLineNo">298</span>          }<a name="line.298"></a>
+<span class="sourceLineNo">299</span>        }<a name="line.299"></a>
+<span class="sourceLineNo">300</span>        break;<a name="line.300"></a>
+<span class="sourceLineNo">301</span>      case HOURLY:<a name="line.301"></a>
+<span class="sourceLineNo">302</span>        if (byHour.length == 0 || interval != 1) {<a name="line.302"></a>
+<span class="sourceLineNo">303</span>          hourGenerator = Generators.serialHourGenerator(interval, dtStart);<a name="line.303"></a>
+<span class="sourceLineNo">304</span>          if (byHour.length != 0) {<a name="line.304"></a>
+<span class="sourceLineNo">305</span>            filters.add(Filters.byHourFilter(bySecond));<a name="line.305"></a>
+<span class="sourceLineNo">306</span>          }<a name="line.306"></a>
+<span class="sourceLineNo">307</span>        }<a name="line.307"></a>
+<span class="sourceLineNo">308</span>        break;<a name="line.308"></a>
+<span class="sourceLineNo">309</span>      case DAILY:<a name="line.309"></a>
+<span class="sourceLineNo">310</span>        break;<a name="line.310"></a>
+<span class="sourceLineNo">311</span>      case WEEKLY:<a name="line.311"></a>
+<span class="sourceLineNo">312</span>        // week is not considered a period because a week may span multiple<a name="line.312"></a>
+<span class="sourceLineNo">313</span>        // months &amp;| years.  There are no week generators, but so a filter is<a name="line.313"></a>
+<span class="sourceLineNo">314</span>        // used to make sure that FREQ=WEEKLY;INTERVAL=2 only generates dates<a name="line.314"></a>
+<span class="sourceLineNo">315</span>        // within the proper week.<a name="line.315"></a>
+<span class="sourceLineNo">316</span>        if (0 != byDay.length) {<a name="line.316"></a>
+<span class="sourceLineNo">317</span>          dayGenerator = Generators.byDayGenerator(byDay, false, start);<a name="line.317"></a>
+<span class="sourceLineNo">318</span>          byDay = NO_DAYS;<a name="line.318"></a>
+<span class="sourceLineNo">319</span>          if (interval &gt; 1) {<a name="line.319"></a>
+<span class="sourceLineNo">320</span>            filters.add(Filters.weekIntervalFilter(interval, wkst, dtStart));<a name="line.320"></a>
+<span class="sourceLineNo">321</span>          }<a name="line.321"></a>
+<span class="sourceLineNo">322</span>        } else {<a name="line.322"></a>
+<span class="sourceLineNo">323</span>          dayGenerator = Generators.serialDayGenerator(interval * 7, dtStart);<a name="line.323"></a>
+<span class="sourceLineNo">324</span>        }<a name="line.324"></a>
+<span class="sourceLineNo">325</span>        break;<a name="line.325"></a>
+<span class="sourceLineNo">326</span>      case YEARLY:<a name="line.326"></a>
+<span class="sourceLineNo">327</span>        if (0 != byYearDay.length) {<a name="line.327"></a>
+<span class="sourceLineNo">328</span>          // The BYYEARDAY rule part specifies a COMMA separated list of days of<a name="line.328"></a>
+<span class="sourceLineNo">329</span>          // the year. Valid values are 1 to 366 or -366 to -1. For example, -1<a name="line.329"></a>
+<span class="sourceLineNo">330</span>          // represents the last day of the year (December 31st) and -306<a name="line.330"></a>
+<span class="sourceLineNo">331</span>          // represents the 306th to the last day of the year (March 1st).<a name="line.331"></a>
+<span class="sourceLineNo">332</span>          dayGenerator = Generators.byYearDayGenerator(byYearDay, start);<a name="line.332"></a>
+<span class="sourceLineNo">333</span>          break;<a name="line.333"></a>
+<span class="sourceLineNo">334</span>        }<a name="line.334"></a>
+<span class="sourceLineNo">335</span>        // $FALL-THROUGH$<a name="line.335"></a>
+<span class="sourceLineNo">336</span>      case MONTHLY:<a name="line.336"></a>
+<span class="sourceLineNo">337</span>        if (0 != byMonthDay.length) {<a name="line.337"></a>
+<span class="sourceLineNo">338</span>          // The BYMONTHDAY rule part specifies a COMMA separated list of days<a name="line.338"></a>
+<span class="sourceLineNo">339</span>          // of the month. Valid values are 1 to 31 or -31 to -1. For example,<a name="line.339"></a>
+<span class="sourceLineNo">340</span>          // -10 represents the tenth to the last day of the month.<a name="line.340"></a>
+<span class="sourceLineNo">341</span>          dayGenerator = Generators.byMonthDayGenerator(byMonthDay, start);<a name="line.341"></a>
+<span class="sourceLineNo">342</span>          byMonthDay = NO_INTS;<a name="line.342"></a>
+<span class="sourceLineNo">343</span>        } else if (0 != byWeekNo.length &amp;&amp; Frequency.YEARLY == freq) {<a name="line.343"></a>
+<span class="sourceLineNo">344</span>          // The BYWEEKNO rule part specifies a COMMA separated list of ordinals<a name="line.344"></a>
+<span class="sourceLineNo">345</span>          // specifying weeks of the year.  This rule part is only valid for<a name="line.345"></a>
+<span class="sourceLineNo">346</span>          // YEARLY rules.<a name="line.346"></a>
+<span class="sourceLineNo">347</span>          dayGenerator = Generators.byWeekNoGenerator(byWeekNo, wkst, start);<a name="line.347"></a>
+<span class="sourceLineNo">348</span>          byWeekNo = NO_INTS;<a name="line.348"></a>
+<span class="sourceLineNo">349</span>        } else if (0 != byDay.length) {<a name="line.349"></a>
+<span class="sourceLineNo">350</span>          // Each BYDAY value can also be preceded by a positive (n) or negative<a name="line.350"></a>
+<span class="sourceLineNo">351</span>          // (-n) integer. If present, this indicates the nth occurrence of the<a name="line.351"></a>
+<span class="sourceLineNo">352</span>          // specific day within the MONTHLY or YEARLY RRULE. For example,<a name="line.352"></a>
+<span class="sourceLineNo">353</span>          // within a MONTHLY rule, +1MO (or simply 1MO) represents the first<a name="line.353"></a>
+<span class="sourceLineNo">354</span>          // Monday within the month, whereas -1MO represents the last Monday of<a name="line.354"></a>
+<span class="sourceLineNo">355</span>          // the month. If an integer modifier is not present, it means all days<a name="line.355"></a>
+<span class="sourceLineNo">356</span>          // of this type within the specified frequency. For example, within a<a name="line.356"></a>
+<span class="sourceLineNo">357</span>          // MONTHLY rule, MO represents all Mondays within the month.<a name="line.357"></a>
+<span class="sourceLineNo">358</span>          dayGenerator = Generators.byDayGenerator(<a name="line.358"></a>
+<span class="sourceLineNo">359</span>              byDay, Frequency.YEARLY == freq &amp;&amp; 0 == byMonth.length, start);<a name="line.359"></a>
+<span class="sourceLineNo">360</span>          byDay = NO_DAYS;<a name="line.360"></a>
+<span class="sourceLineNo">361</span>        } else {<a name="line.361"></a>
+<span class="sourceLineNo">362</span>          if (Frequency.YEARLY == freq) {<a name="line.362"></a>
+<span class="sourceLineNo">363</span>            monthGenerator = Generators.byMonthGenerator(<a name="line.363"></a>
+<span class="sourceLineNo">364</span>                new int[] { dtStart.month() }, start);<a name="line.364"></a>
+<span class="sourceLineNo">365</span>          }<a name="line.365"></a>
+<span class="sourceLineNo">366</span>          dayGenerator = Generators.byMonthDayGenerator(<a name="line.366"></a>
+<span class="sourceLineNo">367</span>              new int[] { dtStart.day() }, start);<a name="line.367"></a>
+<span class="sourceLineNo">368</span>        }<a name="line.368"></a>
+<span class="sourceLineNo">369</span>        break;<a name="line.369"></a>
+<span class="sourceLineNo">370</span>    }<a name="line.370"></a>
+<span class="sourceLineNo">371</span><a name="line.371"></a>
+<span class="sourceLineNo">372</span>    if (secondGenerator == null) {<a name="line.372"></a>
+<span class="sourceLineNo">373</span>      secondGenerator = Generators.bySecondGenerator(bySecond, start);<a name="line.373"></a>
+<span class="sourceLineNo">374</span>    }<a name="line.374"></a>
+<span class="sourceLineNo">375</span>    if (minuteGenerator == null) {<a name="line.375"></a>
+<span class="sourceLineNo">376</span>      if (byMinute.length == 0 &amp;&amp; freq.compareTo(Frequency.MINUTELY) &lt; 0) {<a name="line.376"></a>
+<span class="sourceLineNo">377</span>        minuteGenerator = Generators.serialMinuteGenerator(1, dtStart);<a name="line.377"></a>
+<span class="sourceLineNo">378</span>      } else {<a name="line.378"></a>
+<span class="sourceLineNo">379</span>        minuteGenerator = Generators.byMinuteGenerator(byMinute, start);<a name="line.379"></a>
+<span class="sourceLineNo">380</span>      }<a name="line.380"></a>
+<span class="sourceLineNo">381</span>    }<a name="line.381"></a>
+<span class="sourceLineNo">382</span>    if (hourGenerator == null) {<a name="line.382"></a>
+<span class="sourceLineNo">383</span>      if (byHour.length == 0 &amp;&amp; freq.compareTo(Frequency.HOURLY) &lt; 0) {<a name="line.383"></a>
+<span class="sourceLineNo">384</span>        hourGenerator = Generators.serialHourGenerator(1, dtStart);<a name="line.384"></a>
+<span class="sourceLineNo">385</span>      } else {<a name="line.385"></a>
+<span class="sourceLineNo">386</span>        hourGenerator = Generators.byHourGenerator(byHour, start);<a name="line.386"></a>
+<span class="sourceLineNo">387</span>      }<a name="line.387"></a>
+<span class="sourceLineNo">388</span>    }<a name="line.388"></a>
+<span class="sourceLineNo">389</span><a name="line.389"></a>
+<span class="sourceLineNo">390</span>    if (dayGenerator == null) {<a name="line.390"></a>
+<span class="sourceLineNo">391</span>      boolean dailyOrMoreOften = freq.compareTo(Frequency.DAILY) &lt;= 0;<a name="line.391"></a>
+<span class="sourceLineNo">392</span>      if (byMonthDay.length != 0) {<a name="line.392"></a>
+<span class="sourceLineNo">393</span>        dayGenerator = Generators.byMonthDayGenerator(byMonthDay, start);<a name="line.393"></a>
+<span class="sourceLineNo">394</span>        byMonthDay = NO_INTS;<a name="line.394"></a>
+<span class="sourceLineNo">395</span>      } else if (byDay.length != 0) {<a name="line.395"></a>
+<span class="sourceLineNo">396</span>        dayGenerator = Generators.byDayGenerator(<a name="line.396"></a>
+<span class="sourceLineNo">397</span>            byDay, Frequency.YEARLY == freq, start);<a name="line.397"></a>
+<span class="sourceLineNo">398</span>        byDay = NO_DAYS;<a name="line.398"></a>
+<span class="sourceLineNo">399</span>      } else if (dailyOrMoreOften) {<a name="line.399"></a>
+<span class="sourceLineNo">400</span>        dayGenerator = Generators.serialDayGenerator(<a name="line.400"></a>
+<span class="sourceLineNo">401</span>            Frequency.DAILY == freq ? interval : 1, dtStart);<a name="line.401"></a>
+<span class="sourceLineNo">402</span>      } else {<a name="line.402"></a>
+<span class="sourceLineNo">403</span>        dayGenerator = Generators.byMonthDayGenerator(<a name="line.403"></a>
+<span class="sourceLineNo">404</span>            new int[] { dtStart.day() }, start);<a name="line.404"></a>
+<span class="sourceLineNo">405</span>      }<a name="line.405"></a>
+<span class="sourceLineNo">406</span>    }<a name="line.406"></a>
+<span class="sourceLineNo">407</span><a name="line.407"></a>
+<span class="sourceLineNo">408</span>    if (0 != byDay.length) {<a name="line.408"></a>
+<span class="sourceLineNo">409</span>      filters.add(Filters.byDayFilter(byDay, Frequency.YEARLY == freq, wkst));<a name="line.409"></a>
+<span class="sourceLineNo">410</span>      byDay = NO_DAYS;<a name="line.410"></a>
+<span class="sourceLineNo">411</span>    }<a name="line.411"></a>
+<span class="sourceLineNo">412</span><a name="line.412"></a>
+<span class="sourceLineNo">413</span>    if (0 != byMonthDay.length) {<a name="line.413"></a>
+<span class="sourceLineNo">414</span>      filters.add(Filters.byMonthDayFilter(byMonthDay));<a name="line.414"></a>
+<span class="sourceLineNo">415</span>    }<a name="line.415"></a>
+<span class="sourceLineNo">416</span><a name="line.416"></a>
+<span class="sourceLineNo">417</span>    // generator inference common to all periods<a name="line.417"></a>
+<span class="sourceLineNo">418</span>    if (0 != byMonth.length) {<a name="line.418"></a>
+<span class="sourceLineNo">419</span>      monthGenerator = Generators.byMonthGenerator(byMonth, start);<a name="line.419"></a>
+<span class="sourceLineNo">420</span>    } else if (null == monthGenerator) {<a name="line.420"></a>
+<span class="sourceLineNo">421</span>      monthGenerator = Generators.serialMonthGenerator(<a name="line.421"></a>
+<span class="sourceLineNo">422</span>          freq == Frequency.MONTHLY ? interval : 1, dtStart);<a name="line.422"></a>
+<span class="sourceLineNo">423</span>    }<a name="line.423"></a>
+<span class="sourceLineNo">424</span><a name="line.424"></a>
+<span class="sourceLineNo">425</span>    // the condition tells the iterator when to halt.<a name="line.425"></a>
+<span class="sourceLineNo">426</span>    // The condition is exclusive, so the date that triggers it will not be<a name="line.426"></a>
+<span class="sourceLineNo">427</span>    // included.<a name="line.427"></a>
+<span class="sourceLineNo">428</span>    Predicate&lt;DateValue&gt; condition;<a name="line.428"></a>
+<span class="sourceLineNo">429</span>    boolean canShortcutAdvance = true;<a name="line.429"></a>
+<span class="sourceLineNo">430</span>    if (0 != count) {<a name="line.430"></a>
+<span class="sourceLineNo">431</span>      condition = Conditions.countCondition(count);<a name="line.431"></a>
+<span class="sourceLineNo">432</span>      // We can't shortcut because the countCondition must see every generated<a name="line.432"></a>
+<span class="sourceLineNo">433</span>      // instance.<a name="line.433"></a>
+<span class="sourceLineNo">434</span>      // TODO(msamuel): if count is large, we might try predicting the end date<a name="line.434"></a>
+<span class="sourceLineNo">435</span>      // so that we can convert the COUNT condition to an UNTIL condition.<a name="line.435"></a>
+<span class="sourceLineNo">436</span>      canShortcutAdvance = false;<a name="line.436"></a>
+<span class="sourceLineNo">437</span>    } else if (null != untilUtc) {<a name="line.437"></a>
+<span class="sourceLineNo">438</span>      if ((untilUtc instanceof TimeValue) != (dtStart instanceof TimeValue)) {<a name="line.438"></a>
+<span class="sourceLineNo">439</span>        // TODO(msamuel): warn<a name="line.439"></a>
+<span class="sourceLineNo">440</span>        if (dtStart instanceof TimeValue) {<a name="line.440"></a>
+<span class="sourceLineNo">441</span>          untilUtc = TimeUtils.dayStart(untilUtc);<a name="line.441"></a>
+<span class="sourceLineNo">442</span>        } else {<a name="line.442"></a>
+<span class="sourceLineNo">443</span>          untilUtc = TimeUtils.toDateValue(untilUtc);<a name="line.443"></a>
+<span class="sourceLineNo">444</span>        }<a name="line.444"></a>
+<span class="sourceLineNo">445</span>      }<a name="line.445"></a>
+<span class="sourceLineNo">446</span>      condition = Conditions.untilCondition(untilUtc);<a name="line.446"></a>
+<span class="sourceLineNo">447</span>    } else {<a name="line.447"></a>
+<span class="sourceLineNo">448</span>      condition = Predicates.&lt;DateValue&gt;alwaysTrue();<a name="line.448"></a>
+<span class="sourceLineNo">449</span>    }<a name="line.449"></a>
+<span class="sourceLineNo">450</span><a name="line.450"></a>
+<span class="sourceLineNo">451</span>    // combine filters into a single function<a name="line.451"></a>
+<span class="sourceLineNo">452</span>    Predicate&lt;? super DateValue&gt; filter;<a name="line.452"></a>
+<span class="sourceLineNo">453</span>    switch (filters.size()) {<a name="line.453"></a>
+<span class="sourceLineNo">454</span>      case 0:<a name="line.454"></a>
+<span class="sourceLineNo">455</span>        filter = Predicates.&lt;DateValue&gt;alwaysTrue();<a name="line.455"></a>
+<span class="sourceLineNo">456</span>        break;<a name="line.456"></a>
+<span class="sourceLineNo">457</span>      case 1:<a name="line.457"></a>
+<span class="sourceLineNo">458</span>        filter = filters.get(0);<a name="line.458"></a>
+<span class="sourceLineNo">459</span>        break;<a name="line.459"></a>
+<span class="sourceLineNo">460</span>      default:<a name="line.460"></a>
+<span class="sourceLineNo">461</span>        filter = Predicates.and(filters);<a name="line.461"></a>
+<span class="sourceLineNo">462</span>        break;<a name="line.462"></a>
+<span class="sourceLineNo">463</span>    }<a name="line.463"></a>
+<span class="sourceLineNo">464</span><a name="line.464"></a>
+<span class="sourceLineNo">465</span>    Generator instanceGenerator;<a name="line.465"></a>
+<span class="sourceLineNo">466</span>    if (0 != bySetPos.length) {<a name="line.466"></a>
+<span class="sourceLineNo">467</span>      instanceGenerator = InstanceGenerators.bySetPosInstanceGenerator(<a name="line.467"></a>
+<span class="sourceLineNo">468</span>          bySetPos, freq, wkst, filter,<a name="line.468"></a>
+<span class="sourceLineNo">469</span>          yearGenerator, monthGenerator, dayGenerator, hourGenerator,<a name="line.469"></a>
+<span class="sourceLineNo">470</span>          minuteGenerator, secondGenerator);<a name="line.470"></a>
+<span class="sourceLineNo">471</span>    } else {<a name="line.471"></a>
+<span class="sourceLineNo">472</span>      instanceGenerator = InstanceGenerators.serialInstanceGenerator(<a name="line.472"></a>
+<span class="sourceLineNo">473</span>          filter, yearGenerator, monthGenerator, dayGenerator,<a name="line.473"></a>
+<span class="sourceLineNo">474</span>          hourGenerator, minuteGenerator, secondGenerator);<a name="line.474"></a>
+<span class="sourceLineNo">475</span>    }<a name="line.475"></a>
+<span class="sourceLineNo">476</span><a name="line.476"></a>
+<span class="sourceLineNo">477</span>    return new RRuleIteratorImpl(<a name="line.477"></a>
+<span class="sourceLineNo">478</span>        dtStart, tzid, condition, instanceGenerator,<a name="line.478"></a>
+<span class="sourceLineNo">479</span>        yearGenerator, monthGenerator, dayGenerator,<a name="line.479"></a>
+<span class="sourceLineNo">480</span>        hourGenerator, minuteGenerator, secondGenerator,<a name="line.480"></a>
+<span class="sourceLineNo">481</span>        canShortcutAdvance);<a name="line.481"></a>
+<span class="sourceLineNo">482</span>  }<a name="line.482"></a>
+<span class="sourceLineNo">483</span><a name="line.483"></a>
+<span class="sourceLineNo">484</span>  /**<a name="line.484"></a>
+<span class="sourceLineNo">485</span>   * a recurrence iterator that returns the union of the given recurrence<a name="line.485"></a>
+<span class="sourceLineNo">486</span>   * iterators.<a name="line.486"></a>
+<span class="sourceLineNo">487</span>   */<a name="line.487"></a>
+<span class="sourceLineNo">488</span>  public static RecurrenceIterator join(<a name="line.488"></a>
+<span class="sourceLineNo">489</span>      RecurrenceIterator a, RecurrenceIterator... b) {<a name="line.489"></a>
+<span class="sourceLineNo">490</span>    List&lt;RecurrenceIterator&gt; incl = new ArrayList&lt;RecurrenceIterator&gt;();<a name="line.490"></a>
+<span class="sourceLineNo">491</span>    incl.add(a);<a name="line.491"></a>
+<span class="sourceLineNo">492</span>    incl.addAll(Arrays.asList(b));<a name="line.492"></a>
+<span class="sourceLineNo">493</span>    return new CompoundIteratorImpl(<a name="line.493"></a>
+<span class="sourceLineNo">494</span>        incl, Collections.&lt;RecurrenceIterator&gt;emptyList());<a name="line.494"></a>
+<span class="sourceLineNo">495</span>  }<a name="line.495"></a>
+<span class="sourceLineNo">496</span><a name="line.496"></a>
+<span class="sourceLineNo">497</span>  /**<a name="line.497"></a>
+<span class="sourceLineNo">498</span>   * an iterator over all the dates included except those excluded, i.e.<a name="line.498"></a>
+<span class="sourceLineNo">499</span>   * &lt;code&gt;inclusions - exclusions&lt;/code&gt;.<a name="line.499"></a>
+<span class="sourceLineNo">500</span>   * Exclusions trump inclusions, and {@link DateValue dates} and<a name="line.500"></a>
+<span class="sourceLineNo">501</span>   * {@link DateTimeValue date-times} never match one another.<a name="line.501"></a>
+<span class="sourceLineNo">502</span>   * @param included non null.<a name="line.502"></a>
+<span class="sourceLineNo">503</span>   * @param excluded non null.<a name="line.503"></a>
+<span class="sourceLineNo">504</span>   * @return non null.<a name="line.504"></a>
+<span class="sourceLineNo">505</span>   */<a name="line.505"></a>
+<span class="sourceLineNo">506</span>  public static RecurrenceIterator except(<a name="line.506"></a>
+<span class="sourceLineNo">507</span>      RecurrenceIterator included, RecurrenceIterator excluded) {<a name="line.507"></a>
+<span class="sourceLineNo">508</span>    return new CompoundIteratorImpl(<a name="line.508"></a>
+<span class="sourceLineNo">509</span>        Collections.&lt;RecurrenceIterator&gt;singleton(included),<a name="line.509"></a>
+<span class="sourceLineNo">510</span>        Collections.&lt;RecurrenceIterator&gt;singleton(excluded));<a name="line.510"></a>
+<span class="sourceLineNo">511</span>  }<a name="line.511"></a>
+<span class="sourceLineNo">512</span><a name="line.512"></a>
+<span class="sourceLineNo">513</span>  private static final Pattern FOLD = Pattern.compile("(?:\\r\\n?|\\n)[ \t]");<a name="line.513"></a>
+<span class="sourceLineNo">514</span>  private static final Pattern NEWLINE = Pattern.compile("[\\r\\n]+");<a name="line.514"></a>
+<span class="sourceLineNo">515</span>  private static final Pattern RULE = Pattern.compile(<a name="line.515"></a>
+<span class="sourceLineNo">516</span>      "^(?:R|EX)RULE[:;]", Pattern.CASE_INSENSITIVE);<a name="line.516"></a>
+<span class="sourceLineNo">517</span>  private static final Pattern DATE = Pattern.compile(<a name="line.517"></a>
+<span class="sourceLineNo">518</span>      "^(?:R|EX)DATE[:;]", Pattern.CASE_INSENSITIVE);<a name="line.518"></a>
+<span class="sourceLineNo">519</span>  private static IcalObject[] parseContentLines(<a name="line.519"></a>
+<span class="sourceLineNo">520</span>      String rdata, TimeZone tzid, boolean strict)<a name="line.520"></a>
+<span class="sourceLineNo">521</span>      throws ParseException {<a name="line.521"></a>
+<span class="sourceLineNo">522</span>    String unfolded = FOLD.matcher(rdata).replaceAll("").trim();<a name="line.522"></a>
+<span class="sourceLineNo">523</span>    if ("".equals(unfolded)) { return new IcalObject[0]; }<a name="line.523"></a>
+<span class="sourceLineNo">524</span>    String[] lines = NEWLINE.split(unfolded);<a name="line.524"></a>
+<span class="sourceLineNo">525</span>    IcalObject[] out = new IcalObject[lines.length];<a name="line.525"></a>
+<span class="sourceLineNo">526</span>    int nbad = 0;<a name="line.526"></a>
+<span class="sourceLineNo">527</span>    for (int i = 0; i &lt; lines.length; ++i) {<a name="line.527"></a>
+<span class="sourceLineNo">528</span>      String line = lines[i].trim();<a name="line.528"></a>
+<span class="sourceLineNo">529</span>      try {<a name="line.529"></a>
+<span class="sourceLineNo">530</span>        if (RULE.matcher(line).find()) {<a name="line.530"></a>
+<span class="sourceLineNo">531</span>          out[i] = new RRule(line);<a name="line.531"></a>
+<span class="sourceLineNo">532</span>        } else if (DATE.matcher(line).find()) {<a name="line.532"></a>
+<span class="sourceLineNo">533</span>          out[i] = new RDateList(line, tzid);<a name="line.533"></a>
+<span class="sourceLineNo">534</span>        } else {<a name="line.534"></a>
+<span class="sourceLineNo">535</span>          throw new ParseException(lines[i], i);<a name="line.535"></a>
+<span class="sourceLineNo">536</span>        }<a name="line.536"></a>
+<span class="sourceLineNo">537</span>      } catch (ParseException ex) {<a name="line.537"></a>
+<span class="sourceLineNo">538</span>        if (strict) {<a name="line.538"></a>
+<span class="sourceLineNo">539</span>          throw ex;<a name="line.539"></a>
+<span class="sourceLineNo">540</span>        }<a name="line.540"></a>
+<span class="sourceLineNo">541</span>        LOGGER.log(Level.SEVERE,<a name="line.541"></a>
+<span class="sourceLineNo">542</span>                   "Dropping bad recurrence rule line: " + line, ex);<a name="line.542"></a>
+<span class="sourceLineNo">543</span>        ++nbad;<a name="line.543"></a>
+<span class="sourceLineNo">544</span>      } catch (IllegalArgumentException ex) {<a name="line.544"></a>
+<span class="sourceLineNo">545</span>        if (strict) {<a name="line.545"></a>
+<span class="sourceLineNo">546</span>          throw ex;<a name="line.546"></a>
+<span class="sourceLineNo">547</span>        }<a name="line.547"></a>
+<span class="sourceLineNo">548</span>        LOGGER.log(Level.SEVERE,<a name="line.548"></a>
+<span class="sourceLineNo">549</span>                   "Dropping bad recurrence rule line: " + line, ex);<a name="line.549"></a>
+<span class="sourceLineNo">550</span>        ++nbad;<a name="line.550"></a>
+<span class="sourceLineNo">551</span>      }<a name="line.551"></a>
+<span class="sourceLineNo">552</span>    }<a name="line.552"></a>
+<span class="sourceLineNo">553</span>    if (0 != nbad) {<a name="line.553"></a>
+<span class="sourceLineNo">554</span>      IcalObject[] trimmed = new IcalObject[out.length - nbad];<a name="line.554"></a>
+<span class="sourceLineNo">555</span>      for (int i = 0, k = 0; i &lt; trimmed.length; ++k) {<a name="line.555"></a>
+<span class="sourceLineNo">556</span>        if (null != out[k]) { trimmed[i++] = out[k]; }<a name="line.556"></a>
+<span class="sourceLineNo">557</span>      }<a name="line.557"></a>
+<span class="sourceLineNo">558</span>      out = trimmed;<a name="line.558"></a>
+<span class="sourceLineNo">559</span>    }<a name="line.559"></a>
+<span class="sourceLineNo">560</span>    return out;<a name="line.560"></a>
+<span class="sourceLineNo">561</span>  }<a name="line.561"></a>
+<span class="sourceLineNo">562</span><a name="line.562"></a>
+<span class="sourceLineNo">563</span>  /**<a name="line.563"></a>
+<span class="sourceLineNo">564</span>   * Given an array like BYMONTH=2,3,4,5 and a set pos like BYSETPOS=1,-1<a name="line.564"></a>
+<span class="sourceLineNo">565</span>   * reduce both clauses to a single one, BYMONTH=2,5 in the preceding.<a name="line.565"></a>
+<span class="sourceLineNo">566</span>   */<a name="line.566"></a>
+<span class="sourceLineNo">567</span>  private static int[] filterBySetPos(int[] members, int[] bySetPos) {<a name="line.567"></a>
+<span class="sourceLineNo">568</span>    members = Util.uniquify(members);<a name="line.568"></a>
+<span class="sourceLineNo">569</span>    IntSet iset = new IntSet();<a name="line.569"></a>
+<span class="sourceLineNo">570</span>    for (int pos : bySetPos) {<a name="line.570"></a>
+<span class="sourceLineNo">571</span>      if (pos == 0) { continue; }<a name="line.571"></a>
+<span class="sourceLineNo">572</span>      if (pos &lt; 0) {<a name="line.572"></a>
+<span class="sourceLineNo">573</span>        pos += members.length;<a name="line.573"></a>
+<span class="sourceLineNo">574</span>      } else {<a name="line.574"></a>
+<span class="sourceLineNo">575</span>        --pos;  // Zero-index.<a name="line.575"></a>
+<span class="sourceLineNo">576</span>      }<a name="line.576"></a>
+<span class="sourceLineNo">577</span>      if (pos &gt;= 0 &amp;&amp; pos &lt; members.length) {<a name="line.577"></a>
+<span class="sourceLineNo">578</span>        iset.add(members[pos]);<a name="line.578"></a>
+<span class="sourceLineNo">579</span>      }<a name="line.579"></a>
+<span class="sourceLineNo">580</span>    }<a name="line.580"></a>
+<span class="sourceLineNo">581</span>    return iset.toIntArray();<a name="line.581"></a>
+<span class="sourceLineNo">582</span>  }<a name="line.582"></a>
+<span class="sourceLineNo">583</span><a name="line.583"></a>
+<span class="sourceLineNo">584</span>  private static final int[] NO_INTS = new int[0];<a name="line.584"></a>
+<span class="sourceLineNo">585</span>  private static final WeekdayNum[] NO_DAYS = new WeekdayNum[0];<a name="line.585"></a>
+<span class="sourceLineNo">586</span><a name="line.586"></a>
+<span class="sourceLineNo">587</span>  private RecurrenceIteratorFactory() {<a name="line.587"></a>
+<span class="sourceLineNo">588</span>    // uninstantiable<a name="line.588"></a>
+<span class="sourceLineNo">589</span>  }<a name="line.589"></a>
+<span class="sourceLineNo">590</span><a name="line.590"></a>
+<span class="sourceLineNo">591</span>}<a name="line.591"></a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre>
+</div>
+</body>
+</html>
