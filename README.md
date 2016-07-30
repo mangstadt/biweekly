@@ -12,7 +12,7 @@ biweekly is an iCalendar library written in Java. The project aims to provide a 
 
 <p align="center"><strong><a href="https://github.com/mangstadt/biweekly/wiki/Downloads">Downloads</a> |
 <a href="http://mangstadt.github.io/biweekly/javadocs/latest/index.html">Javadocs</a> |
-<a href="#maven">Maven</a> | <a href="https://github.com/mangstadt/biweekly/wiki">Documentation</a></strong></p>
+<a href="#mavengradle">Maven/Gradle</a> | <a href="https://github.com/mangstadt/biweekly/wiki">Documentation</a></strong></p>
 
 # Code sample
 
@@ -71,7 +71,9 @@ String str = Biweekly.write(ical).go();
  * Low Java version requirement (1.5 or above, 1.6 for JSON support).
  * No dependencies (except when JSON support is required, see [Dependencies](https://github.com/mangstadt/biweekly/wiki/Dependencies)).
 
-# Maven
+# Maven/Gradle
+
+**Maven**
 
 ```xml
 <dependency>
@@ -79,6 +81,12 @@ String str = Biweekly.write(ical).go();
    <artifactId>biweekly</artifactId>
    <version>0.5.0</version>
 </dependency>
+```
+
+**Gradle**
+
+```
+compile 'net.sf.biweekly:biweekly:0.5.0'
 ```
 
 # Build Instructions
