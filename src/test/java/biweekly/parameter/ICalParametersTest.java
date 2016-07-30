@@ -224,12 +224,14 @@ public class ICalParametersTest {
 		one.put("super", "man");
 		one.put("super", "bad");
 		one.put("hello", "world");
+		one.put(null, "null");
 
 		ICalParameters two = new ICalParameters();
 		two.put("hello", "world");
 		two.put("super", "MAN");
 		two.put("foo", "bar");
 		two.put("super", "bad");
+		two.put(null, "null");
 
 		assertEqualsAndHash(one, two);
 	}
