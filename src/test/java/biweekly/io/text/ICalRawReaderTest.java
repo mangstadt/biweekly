@@ -1,5 +1,6 @@
 package biweekly.io.text;
 
+import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.util.StringUtils.NEWLINE;
 import static org.junit.Assert.assertEquals;
@@ -9,6 +10,8 @@ import static org.junit.Assert.fail;
 import java.io.StringReader;
 
 import org.junit.Test;
+
+import biweekly.ICalVersion;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -454,7 +457,7 @@ public class ICalRawReaderTest {
 	@Test
 	public void line_unfolding() throws Throwable {
 		//@formatter:off
-		String ical =
+		String vcard =
 
 		//unfolded line
 		"FN:Michael Angstadt\r\n" +
@@ -473,21 +476,47 @@ public class ICalRawReaderTest {
 		"\t \tfour\r\n";
 		//@formatter:on
 
-		ICalRawReader reader = create(ical);
+		//1.0 allows multiple whitespace folding characters
+		ICalVersion version = V1_0;
+		{
+			ICalRawReader reader = create(vcard);
+			reader.setVersion(version);
 
-		ICalRawLine expected = line("FN").value("Michael Angstadt").build();
-		ICalRawLine actual = reader.readLine();
-		assertEquals(expected, actual);
+			ICalRawLine expected = line("FN").value("Michael Angstadt").build();
+			ICalRawLine actual = reader.readLine();
+			assertEquals(expected, actual);
 
-		expected = line("NOTE").value("folded line").build();
-		actual = reader.readLine();
-		assertEquals(expected, actual);
+			expected = line("NOTE").value("folded line").build();
+			actual = reader.readLine();
+			assertEquals(expected, actual);
 
-		expected = line("NOTE").value("one two  three  \tfour").build();
-		actual = reader.readLine();
-		assertEquals(expected, actual);
+			expected = line("NOTE").value("one two three four").build();
+			actual = reader.readLine();
+			assertEquals(expected, actual);
 
-		assertNull(reader.readLine());
+			assertNull(reader.readLine());
+		}
+
+		//2.0 only allows a single whitespace character
+		version = V2_0;
+		{
+			ICalRawReader reader = create(vcard);
+			reader.setVersion(version);
+
+			ICalRawLine expected = line("FN").value("Michael Angstadt").build();
+			ICalRawLine actual = reader.readLine();
+			assertEquals(expected, actual);
+
+			expected = line("NOTE").value("folded line").build();
+			actual = reader.readLine();
+			assertEquals(expected, actual);
+
+			expected = line("NOTE").value("one two  three  \tfour").build();
+			actual = reader.readLine();
+			assertEquals(expected, actual);
+
+			assertNull(reader.readLine());
+		}
 	}
 
 	@Test

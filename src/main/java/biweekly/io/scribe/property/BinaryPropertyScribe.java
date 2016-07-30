@@ -89,9 +89,6 @@ public abstract class BinaryPropertyScribe<T extends BinaryProperty> extends ICa
 		value = unescape(value);
 
 		if (dataType == ICalDataType.BINARY || parameters.getEncoding() == Encoding.BASE64) {
-			//remove the folding whitespace left over from improperly-folded lines
-			value = removeWhitespace(value);
-
 			byte[] data = Base64.decodeBase64(value);
 			return newInstance(data);
 		}
@@ -173,8 +170,4 @@ public abstract class BinaryPropertyScribe<T extends BinaryProperty> extends ICa
 	 * @return the property object
 	 */
 	protected abstract T newInstance(String value, ICalDataType dataType);
-
-	private static String removeWhitespace(String base64) {
-		return base64.replaceAll("[ \\t]", "");
-	}
 }

@@ -148,7 +148,12 @@ public class ICalRawReader implements Closeable {
 		 * Does the line use quoted-printable encoding, and does it end all of
 		 * its folded lines with a "=" character?
 		 */
-		boolean quotedPrintableLine = false;
+		boolean foldedQuotedPrintableLine = false;
+
+		/*
+		 * Are we currently inside the whitespace that prepends a folded line?
+		 */
+		boolean inFoldedLineWhitespace = false;
 
 		/*
 		 * The current character.
@@ -180,8 +185,8 @@ public class ICalRawReader implements Closeable {
 			}
 
 			if (isNewline(ch)) {
-				quotedPrintableLine = (inValue && prevChar == '=' && isQuotedPrintable(parameters));
-				if (quotedPrintableLine) {
+				foldedQuotedPrintableLine = (inValue && prevChar == '=' && isQuotedPrintable(parameters));
+				if (foldedQuotedPrintableLine) {
 					/*
 					 * Remove the "=" character that some iCalendar objects put
 					 * at the end of quoted-printable lines that are followed by
@@ -203,15 +208,16 @@ public class ICalRawReader implements Closeable {
 					 * This line is a continuation of the previous line (the
 					 * line is folded).
 					 */
+					inFoldedLineWhitespace = true;
 					continue;
 				}
 
-				if (quotedPrintableLine) {
+				if (foldedQuotedPrintableLine) {
 					/*
 					 * The property's parameters indicate that the property
 					 * value is quoted-printable. And the previous line ended
 					 * with an equals sign. This means that folding whitespace
-					 * may not be prepended to folded lines like it should...
+					 * may not be prepended to folded lines like it should.
 					 */
 				} else {
 					/*
@@ -220,6 +226,17 @@ public class ICalRawReader implements Closeable {
 					this.prevChar = ch;
 					break;
 				}
+			}
+
+			if (inFoldedLineWhitespace) {
+				if (isWhitespace(ch) && version == ICalVersion.V1_0) {
+					/*
+					 * 1.0 allows multiple whitespace characters to be used for
+					 * folding (Section 2, Delimiters).
+					 */
+					continue;
+				}
+				inFoldedLineWhitespace = false;
 			}
 
 			unfoldedLine.append(ch);
