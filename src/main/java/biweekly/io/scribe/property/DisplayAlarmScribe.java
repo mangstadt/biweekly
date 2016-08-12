@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.component.VAlarm;
+import biweekly.property.Action;
 import biweekly.property.DisplayAlarm;
 
 /*
@@ -53,5 +55,15 @@ public class DisplayAlarmScribe extends VCalAlarmPropertyScribe<DisplayAlarm> {
 	@Override
 	protected DisplayAlarm create(ICalDataType dataType, SemiStructuredIterator it) {
 		return new DisplayAlarm(it.next());
+	}
+
+	@Override
+	protected void toVAlarm(VAlarm valarm, DisplayAlarm property) {
+		valarm.setDescription(property.getText());
+	}
+
+	@Override
+	protected Action action() {
+		return Action.display();
 	}
 }

@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import biweekly.ICalDataType;
+import biweekly.component.VAlarm;
+import biweekly.property.Action;
 import biweekly.property.ProcedureAlarm;
 
 /*
@@ -53,5 +55,15 @@ public class ProcedureAlarmScribe extends VCalAlarmPropertyScribe<ProcedureAlarm
 	@Override
 	protected ProcedureAlarm create(ICalDataType dataType, SemiStructuredIterator it) {
 		return new ProcedureAlarm(it.next());
+	}
+
+	@Override
+	protected void toVAlarm(VAlarm valarm, ProcedureAlarm property) {
+		valarm.setDescription(property.getPath());
+	}
+
+	@Override
+	protected Action action() {
+		return Action.procedure();
 	}
 }

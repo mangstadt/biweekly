@@ -2,14 +2,18 @@ package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import org.junit.Test;
 
-import biweekly.io.ParseContext;
-import biweekly.io.scribe.property.Sensei.Check;
+import biweekly.component.VAlarm;
+import biweekly.io.Version1ConversionException;
+import biweekly.property.Action;
 import biweekly.property.DisplayAlarm;
+import biweekly.property.Trigger;
 import biweekly.util.Duration;
 
 /*
@@ -73,19 +77,39 @@ public class DisplayAlarmScribeTest extends ScribeTest<DisplayAlarm> {
 
 	@Test
 	public void parseText() {
-		sensei.assertParseText("").run(is(empty));
-		sensei.assertParseText("20140101T010000Z;PT10M;5").run(is(noValue));
-		sensei.assertParseText("20140101T010000Z;PT10M;5;" + text).run(is(withValue));
-	}
+		try {
+			sensei.assertParseText("").run();
+			fail();
+		} catch (Version1ConversionException e) {
+			assertEquals(empty, e.getOriginalProperty());
+			VAlarm expected = new VAlarm(Action.display(), new Trigger((Date) null));
+			assertEquals(Arrays.asList(expected), e.getComponents());
+			assertEquals(Arrays.asList(), e.getProperties());
+		}
 
-	private Check<DisplayAlarm> is(final DisplayAlarm expected) {
-		return new Check<DisplayAlarm>() {
-			public void check(DisplayAlarm actual, ParseContext context) {
-				assertEquals(expected.getStart(), actual.getStart());
-				assertEquals(expected.getSnooze(), actual.getSnooze());
-				assertEquals(expected.getRepeat(), actual.getRepeat());
-				assertEquals(expected.getText(), actual.getText());
-			}
-		};
+		try {
+			sensei.assertParseText("20140101T010000Z;PT10M;5").run();
+			fail();
+		} catch (Version1ConversionException e) {
+			assertEquals(noValue, e.getOriginalProperty());
+			VAlarm expected = new VAlarm(Action.display(), new Trigger(noValue.getStart()));
+			expected.setDuration(noValue.getSnooze());
+			expected.setRepeat(noValue.getRepeat());
+			assertEquals(Arrays.asList(expected), e.getComponents());
+			assertEquals(Arrays.asList(), e.getProperties());
+		}
+
+		try {
+			sensei.assertParseText("20140101T010000Z;PT10M;5;" + text).run();
+			fail();
+		} catch (Version1ConversionException e) {
+			assertEquals(withValue, e.getOriginalProperty());
+			VAlarm expected = new VAlarm(Action.display(), new Trigger(withValue.getStart()));
+			expected.setDuration(withValue.getSnooze());
+			expected.setRepeat(withValue.getRepeat());
+			expected.setDescription(withValue.getText());
+			assertEquals(Arrays.asList(expected), e.getComponents());
+			assertEquals(Arrays.asList(), e.getProperties());
+		}
 	}
 }

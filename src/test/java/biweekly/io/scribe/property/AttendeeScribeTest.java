@@ -6,16 +6,21 @@ import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.io.ParseContext;
+import biweekly.io.Version1ConversionException;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.ParticipationLevel;
 import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
 import biweekly.property.Attendee;
+import biweekly.property.Organizer;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -203,6 +208,37 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		sensei.assertParseText("mallto:" + email).param("CN", name).versions(V2_0_DEPRECATED, V2_0).run(check(name, null, "mallto:" + email));
 		sensei.assertParseText("http:" + email).versions(V1_0).run(check(null, "http:" + email, null));
 		sensei.assertParseText("http:" + email).param("CN", name).param("EMAIL", email).versions(V2_0_DEPRECATED, V2_0).run(check(name, email, "http:" + email));
+
+		try {
+			sensei.assertParseText(name + " <" + email + ">").versions(V1_0).param("ROLE", "ORGANIZER").param("FOO", "bar").run();
+			fail();
+		} catch (Version1ConversionException e) {
+			Attendee expectedOriginal = new Attendee(name, email);
+			expectedOriginal.setRole(Role.ORGANIZER);
+			expectedOriginal.setParameter("FOO", "bar");
+			assertEquals(expectedOriginal, e.getOriginalProperty());
+
+			Organizer organizer = new Organizer(name, email);
+			organizer.setParameter("FOO", "bar");
+			assertEquals(Arrays.asList(organizer), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
+		}
+
+		try {
+			sensei.assertParseText(uri).versions(V1_0).param("ROLE", "ORGANIZER").param("FOO", "bar").dataType(ICalDataType.URL).run(check(null, null, uri));
+			fail();
+		} catch (Version1ConversionException e) {
+			Attendee expectedOriginal = new Attendee(null, null, uri);
+			expectedOriginal.setRole(Role.ORGANIZER);
+			expectedOriginal.setParameter("FOO", "bar");
+			assertEquals(e.getOriginalProperty(), expectedOriginal);
+
+			Organizer organizer = new Organizer(null, null);
+			organizer.setUri(uri);
+			organizer.setParameter("FOO", "bar");
+			assertEquals(Arrays.asList(organizer), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
+		}
 	}
 
 	private Check<Attendee> check(final String name, final String email, final String uri) {

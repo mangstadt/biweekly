@@ -2,14 +2,19 @@ package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import org.junit.Test;
 
-import biweekly.io.ParseContext;
-import biweekly.io.scribe.property.Sensei.Check;
+import biweekly.component.VAlarm;
+import biweekly.io.Version1ConversionException;
+import biweekly.property.Action;
+import biweekly.property.Attendee;
 import biweekly.property.EmailAlarm;
+import biweekly.property.Trigger;
 import biweekly.util.Duration;
 
 /*
@@ -75,20 +80,40 @@ public class EmailAlarmScribeTest extends ScribeTest<EmailAlarm> {
 
 	@Test
 	public void parseText() {
-		sensei.assertParseText("").run(is(empty));
-		sensei.assertParseText("20140101T010000Z;PT10M;5").run(is(noValue));
-		sensei.assertParseText("20140101T010000Z;PT10M;5;" + email + ";" + note).run(is(withValue));
-	}
+		try {
+			sensei.assertParseText("").run();
+			fail();
+		} catch (Version1ConversionException e) {
+			assertEquals(empty, e.getOriginalProperty());
+			VAlarm expected = new VAlarm(Action.email(), new Trigger((Date) null));
+			assertEquals(Arrays.asList(expected), e.getComponents());
+			assertEquals(Arrays.asList(), e.getProperties());
+		}
 
-	private Check<EmailAlarm> is(final EmailAlarm expected) {
-		return new Check<EmailAlarm>() {
-			public void check(EmailAlarm actual, ParseContext context) {
-				assertEquals(expected.getStart(), actual.getStart());
-				assertEquals(expected.getSnooze(), actual.getSnooze());
-				assertEquals(expected.getRepeat(), actual.getRepeat());
-				assertEquals(expected.getEmail(), actual.getEmail());
-				assertEquals(expected.getNote(), actual.getNote());
-			}
-		};
+		try {
+			sensei.assertParseText("20140101T010000Z;PT10M;5").run();
+			fail();
+		} catch (Version1ConversionException e) {
+			assertEquals(noValue, e.getOriginalProperty());
+			VAlarm expected = new VAlarm(Action.email(), new Trigger(noValue.getStart()));
+			expected.setDuration(noValue.getSnooze());
+			expected.setRepeat(noValue.getRepeat());
+			assertEquals(Arrays.asList(expected), e.getComponents());
+			assertEquals(Arrays.asList(), e.getProperties());
+		}
+
+		try {
+			sensei.assertParseText("20140101T010000Z;PT10M;5;" + email + ";" + note).run();
+			fail();
+		} catch (Version1ConversionException e) {
+			assertEquals(withValue, e.getOriginalProperty());
+			VAlarm expected = new VAlarm(Action.email(), new Trigger(withValue.getStart()));
+			expected.setDuration(withValue.getSnooze());
+			expected.setRepeat(withValue.getRepeat());
+			expected.addAttendee(new Attendee(null, email));
+			expected.setDescription(withValue.getNote());
+			assertEquals(Arrays.asList(expected), e.getComponents());
+			assertEquals(Arrays.asList(), e.getProperties());
+		}
 	}
 }

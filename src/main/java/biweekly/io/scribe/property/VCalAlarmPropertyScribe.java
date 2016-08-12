@@ -8,10 +8,14 @@ import java.util.Set;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
+import biweekly.component.VAlarm;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
+import biweekly.io.Version1ConversionException;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
+import biweekly.property.Action;
+import biweekly.property.Trigger;
 import biweekly.property.VCalAlarmProperty;
 import biweekly.util.Duration;
 
@@ -55,7 +59,7 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 
 	@Override
 	protected String _writeText(T property, WriteContext context) {
-		List<String> values = new ArrayList<String>(4);
+		List<String> values = new ArrayList<String>();
 
 		Date start = property.getStart();
 		String value = date(start, property, context).extended(false).write();
@@ -107,7 +111,12 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 		property.setStart(start);
 		property.setSnooze(snooze);
 		property.setRepeat(repeat);
-		return property;
+		property.setParameters(parameters);
+
+		Version1ConversionException conversionException = new Version1ConversionException(property);
+		VAlarm valarm = toVAlarm(property);
+		conversionException.getComponents().add(valarm);
+		throw conversionException;
 	}
 
 	private String next(SemiStructuredIterator it) {
@@ -120,9 +129,55 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 		return (next.length() == 0) ? null : next;
 	}
 
+	/**
+	 * Converts an instance of a vCal alarm property into a {@link VAlarm}
+	 * component.
+	 * @param property the property to convert
+	 * @return the component
+	 */
+	protected VAlarm toVAlarm(T property) {
+		Trigger trigger = new Trigger(property.getStart());
+		VAlarm valarm = new VAlarm(action(), trigger);
+		valarm.setDuration(property.getSnooze());
+		valarm.setRepeat(property.getRepeat());
+
+		toVAlarm(valarm, property);
+		return valarm;
+	}
+
+	/**
+	 * Generates the part of the property value that will be included after the
+	 * part of the value that is common to all vCal alarm properties.
+	 * @param property the property
+	 * @return the values
+	 */
 	protected abstract List<String> writeData(T property);
 
+	/**
+	 * Creates a new instance of the property and populates it with the portion
+	 * of data that is specific to this vCal alarm property.
+	 * @param dataType the data type
+	 * @param it an iterator to the property value that is positioned at the
+	 * "value" portion of the property value (after the values that are common
+	 * to all vCal alarm properties)
+	 * @return the new property
+	 */
 	protected abstract T create(ICalDataType dataType, SemiStructuredIterator it);
+
+	/**
+	 * Determines what kind of {@link Action} property this vCal alarm property
+	 * maps to, and returns a new instance of this property.
+	 * @return a new {@link Action} property
+	 */
+	protected abstract Action action();
+
+	/**
+	 * Populates a {@link VAlarm} component with data that is unique to this
+	 * specific kind of vCal alarm property.
+	 * @param valarm the component
+	 * @param property the property
+	 */
+	protected abstract void toVAlarm(VAlarm valarm, T property);
 
 	@Override
 	public Set<ICalVersion> getSupportedVersions() {

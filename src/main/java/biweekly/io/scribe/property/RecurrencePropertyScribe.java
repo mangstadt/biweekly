@@ -16,12 +16,15 @@ import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.TimezoneInfo;
+import biweekly.io.Version1ConversionException;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalNamespaceContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DateStart;
+import biweekly.property.ICalProperty;
+import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceProperty;
 import biweekly.util.ICalDate;
 import biweekly.util.ListMultimap;
@@ -195,35 +198,103 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			return newInstance(builder.build());
 		}
 
-		if (context.getVersion() != ICalVersion.V1_0) {
-			ListMultimap<String, String> rules = object(value);
-
-			List<Warning> warnings = context.getWarnings();
-			parseFreq(rules, builder, warnings);
-			parseUntil(rules, builder, warnings);
-			parseCount(rules, builder, warnings);
-			parseInterval(rules, builder, warnings);
-			parseBySecond(rules, builder, warnings);
-			parseByMinute(rules, builder, warnings);
-			parseByHour(rules, builder, warnings);
-			parseByDay(rules, builder, warnings);
-			parseByMonthDay(rules, builder, warnings);
-			parseByYearDay(rules, builder, warnings);
-			parseByWeekNo(rules, builder, warnings);
-			parseByMonth(rules, builder, warnings);
-			parseBySetPos(rules, builder, warnings);
-			parseWkst(rules, builder, warnings);
-			parseXRules(rules, builder); //must be called last
-
-			T property = newInstance(builder.build());
-
-			ICalDate until = property.getValue().getUntil();
-			if (until != null) {
-				context.addDate(until, property, parameters);
-			}
-
-			return property;
+		if (context.getVersion() == ICalVersion.V1_0) {
+			handleVersion1Multivalued(value, dataType, parameters, context);
+			return parseTextVersion1(value, dataType, parameters, context);
 		}
+
+		ListMultimap<String, String> rules = object(value);
+
+		List<Warning> warnings = context.getWarnings();
+		parseFreq(rules, builder, warnings);
+		parseUntil(rules, builder, warnings);
+		parseCount(rules, builder, warnings);
+		parseInterval(rules, builder, warnings);
+		parseBySecond(rules, builder, warnings);
+		parseByMinute(rules, builder, warnings);
+		parseByHour(rules, builder, warnings);
+		parseByDay(rules, builder, warnings);
+		parseByMonthDay(rules, builder, warnings);
+		parseByYearDay(rules, builder, warnings);
+		parseByWeekNo(rules, builder, warnings);
+		parseByMonth(rules, builder, warnings);
+		parseBySetPos(rules, builder, warnings);
+		parseWkst(rules, builder, warnings);
+		parseXRules(rules, builder); //must be called last
+
+		T property = newInstance(builder.build());
+
+		ICalDate until = property.getValue().getUntil();
+		if (until != null) {
+			context.addDate(until, property, parameters);
+		}
+
+		return property;
+	}
+
+	/**
+	 * Version 1.0 allows multiple RRULE values to be defined inside of the same
+	 * property. This method checks for this and, if multiple values are found,
+	 * parses them and throws a {@link Version1ConversionException}.
+	 * @param value the property value
+	 * @param dataType the property data type
+	 * @param parameters the property parameters
+	 * @param context the parse context
+	 * @throws Version1ConversionException if the property contains multiple
+	 * values
+	 */
+	private void handleVersion1Multivalued(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
+		List<String> values = splitValues(value);
+		if (values.size() == 1) {
+			return;
+		}
+
+		Version1ConversionException conversionException = new Version1ConversionException(null);
+		for (String v : values) {
+			ICalParameters parametersCopy = new ICalParameters(parameters);
+
+			ICalProperty property;
+			try {
+				property = parseTextVersion1(v, dataType, parametersCopy, context);
+			} catch (CannotParseException e) {
+				context.getWarnings().add(e.getWarning());
+				property = new RawProperty(getPropertyName(), dataType, v);
+				property.setParameters(parametersCopy);
+			}
+			conversionException.getProperties().add(property);
+		}
+
+		throw conversionException;
+	}
+
+	/**
+	 * Version 1.0 allows multiple RRULE values to be defined inside of the same
+	 * property. This method extracts each RRULE value from the property value.
+	 * @param value the property value
+	 * @return the RRULE values
+	 */
+	private List<String> splitValues(String value) {
+		List<String> values = new ArrayList<String>();
+		Pattern p = Pattern.compile("#\\d+|\\d{8}T\\d{6}Z?");
+		Matcher m = p.matcher(value);
+
+		int prevIndex = 0;
+		while (m.find()) {
+			int end = m.end();
+			String subValue = value.substring(prevIndex, end).trim();
+			values.add(subValue);
+			prevIndex = end;
+		}
+		String subValue = value.substring(prevIndex).trim();
+		if (subValue.length() > 0) {
+			values.add(subValue);
+		}
+
+		return values;
+	}
+
+	private T parseTextVersion1(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
+		final Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
 
 		String[] splitValues = value.toUpperCase().split("\\s+");
 
@@ -239,7 +310,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			}
 
 			frequencyStr = m.group(1);
-			interval = Integer.valueOf(m.group(2));
+			interval = integerValueOf(m.group(2));
 			splitValues = Arrays.copyOfRange(splitValues, 1, splitValues.length);
 		}
 		builder.interval(interval);
@@ -252,7 +323,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			String lastToken = splitValues[splitValues.length - 1];
 			if (lastToken.startsWith("#")) {
 				String countStr = lastToken.substring(1, lastToken.length());
-				count = Integer.valueOf(countStr);
+				count = integerValueOf(countStr);
 				if (count == 0) {
 					//infinite
 					count = null;
@@ -284,7 +355,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 						return;
 					}
 
-					Integer dayOfYear = Integer.valueOf(value);
+					Integer dayOfYear = integerValueOf(value);
 					builder.byYearDay(dayOfYear);
 				}
 			};
@@ -296,7 +367,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 						return;
 					}
 
-					Integer month = Integer.valueOf(value);
+					Integer month = integerValueOf(value);
 					builder.byMonth(month);
 				}
 			};
@@ -308,8 +379,12 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 						return;
 					}
 
-					Integer date = "LD".equals(value) ? -1 : parseVCalInt(value);
-					builder.byMonthDay(date);
+					try {
+						Integer date = "LD".equals(value) ? -1 : parseVCalInt(value);
+						builder.byMonthDay(date);
+					} catch (NumberFormatException e) {
+						throw new CannotParseException(40, value);
+					}
 				}
 			};
 		} else if ("MP".equals(frequencyStr)) {
@@ -333,10 +408,10 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 					if (value.matches("\\d{4}")) {
 						readNum = false;
 
-						Integer hour = Integer.valueOf(value.substring(0, 2));
+						Integer hour = integerValueOf(value.substring(0, 2));
 						builder.byHour(hour);
 
-						Integer minute = Integer.valueOf(value.substring(2, 4));
+						Integer minute = integerValueOf(value.substring(2, 4));
 						builder.byMinute(minute);
 						return;
 					}
@@ -386,10 +461,10 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 						return;
 					}
 
-					Integer hour = Integer.valueOf(value.substring(0, 2));
+					Integer hour = integerValueOf(value.substring(0, 2));
 					builder.byHour(hour);
 
-					Integer minute = Integer.valueOf(value.substring(2, 4));
+					Integer minute = integerValueOf(value.substring(2, 4));
 					builder.byMinute(minute);
 				}
 			};
@@ -426,6 +501,14 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		return property;
 	}
 
+	/**
+	 * Parses an integer string, where the sign is at the end of the string
+	 * instead of at the beginning (e.g. "5-").
+	 * @param value the string
+	 * @return the value
+	 * @throws NumberFormatException if the string cannot be parsed as an
+	 * integer
+	 */
 	private static int parseVCalInt(String value) {
 		int negate = 1;
 		if (value.endsWith("+")) {
@@ -436,6 +519,21 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		}
 
 		return Integer.parseInt(value) * negate;
+	}
+
+	/**
+	 * Same as {@link Integer#valueOf(String)}, but throws a
+	 * {@link CannotParseException} when it fails.
+	 * @param value the string to parse
+	 * @return the parse integer
+	 * @throws CannotParseException if the string cannot be parsed
+	 */
+	private static Integer integerValueOf(String value) {
+		try {
+			return Integer.valueOf(value);
+		} catch (NumberFormatException e) {
+			throw new CannotParseException(40, value);
+		}
 	}
 
 	private static String writeVCalInt(Integer value) {

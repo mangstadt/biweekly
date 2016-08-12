@@ -6,6 +6,9 @@ import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
+import biweekly.component.VAlarm;
+import biweekly.property.Action;
+import biweekly.property.Attendee;
 import biweekly.property.EmailAlarm;
 
 /*
@@ -69,5 +72,19 @@ public class EmailAlarmScribe extends VCalAlarmPropertyScribe<EmailAlarm> {
 		EmailAlarm property = new EmailAlarm(email);
 		property.setNote(note);
 		return property;
+	}
+
+	@Override
+	protected void toVAlarm(VAlarm valarm, EmailAlarm property) {
+		String email = property.getEmail();
+		if (email != null) {
+			valarm.addAttendee(new Attendee(null, email));
+		}
+		valarm.setDescription(property.getNote());
+	}
+
+	@Override
+	protected Action action() {
+		return Action.email();
 	}
 }

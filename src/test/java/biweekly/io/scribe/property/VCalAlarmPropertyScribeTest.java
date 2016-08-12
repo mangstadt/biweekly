@@ -2,6 +2,7 @@ package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,9 +12,11 @@ import java.util.List;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.ParseContext;
-import biweekly.io.scribe.property.Sensei.Check;
+import biweekly.component.VAlarm;
+import biweekly.io.Version1ConversionException;
 import biweekly.io.scribe.property.VCalAlarmPropertyScribeTest.VCalAlarmPropertyImpl;
+import biweekly.property.Action;
+import biweekly.property.Trigger;
 import biweekly.property.VCalAlarmProperty;
 import biweekly.util.Duration;
 
@@ -68,20 +71,44 @@ public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImp
 
 	@Test
 	public void parseText() {
-		sensei.assertParseText("").run(is(empty));
-		sensei.assertParseText("; ;  ").run(is(empty));
-		sensei.assertParseText("20140101T010000Z;PT10M;5;one;two").run(is(withValues));
-	}
+		try {
+			sensei.assertParseText("").run();
+			fail();
+		} catch (Version1ConversionException e) {
+			assertEquals(empty, e.getOriginalProperty());
 
-	private Check<VCalAlarmPropertyImpl> is(final VCalAlarmPropertyImpl expected) {
-		return new Check<VCalAlarmPropertyImpl>() {
-			public void check(VCalAlarmPropertyImpl actual, ParseContext context) {
-				assertEquals(expected.getStart(), actual.getStart());
-				assertEquals(expected.getSnooze(), actual.getSnooze());
-				assertEquals(expected.getRepeat(), actual.getRepeat());
-				assertEquals(expected.dataValues, actual.dataValues);
-			}
-		};
+			VAlarm expected = new VAlarm(new Action("TEST"), new Trigger((Date) null));
+			expected.setDescription("test");
+			assertEquals(Arrays.asList(expected), e.getComponents());
+		}
+
+		try {
+			sensei.assertParseText("; ;  ").run();
+			fail();
+		} catch (Version1ConversionException e) {
+			assertEquals(empty, e.getOriginalProperty());
+
+			VAlarm expected = new VAlarm(new Action("TEST"), new Trigger((Date) null));
+			expected.setDescription("test");
+			assertEquals(Arrays.asList(expected), e.getComponents());
+		}
+
+		try {
+			sensei.assertParseText("20140101T010000Z;PT10M;5;one;two").run();
+			fail();
+		} catch (Version1ConversionException e) {
+			assertEquals(withValues, e.getOriginalProperty());
+
+			VAlarm expected = new VAlarm(new Action("TEST"), new Trigger(withValues.getStart()));
+			expected.setDuration(withValues.getSnooze());
+			expected.setRepeat(withValues.getRepeat());
+			expected.setDescription("test");
+			assertEquals(Arrays.asList(expected), e.getComponents());
+		}
+
+		sensei.assertParseText("invalid;;").cannotParse();
+		sensei.assertParseText("20140101T010000Z;invalid;").cannotParse();
+		sensei.assertParseText("20140101T010000Z;PT10M;invalid").cannotParse();
 	}
 
 	public static class VCalAlarmPropertyImpl extends VCalAlarmProperty {
@@ -109,6 +136,16 @@ public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImp
 				dataValues.add(it.next());
 			}
 			return new VCalAlarmPropertyImpl(dataValues.toArray(new String[0]));
+		}
+
+		@Override
+		protected void toVAlarm(VAlarm valarm, VCalAlarmPropertyImpl property) {
+			valarm.setDescription("test");
+		}
+
+		@Override
+		protected Action action() {
+			return new Action("TEST");
 		}
 	}
 }

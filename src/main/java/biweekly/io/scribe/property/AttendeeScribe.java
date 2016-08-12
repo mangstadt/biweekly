@@ -5,12 +5,14 @@ import java.util.Iterator;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
+import biweekly.io.Version1ConversionException;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.ParticipationLevel;
 import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
 import biweekly.property.Attendee;
+import biweekly.property.Organizer;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -291,6 +293,17 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 		attendee.setParticipationLevel(participationLevel);
 		attendee.setRole(role);
 		attendee.setRsvp(rsvp);
+
+		if (context.getVersion() == ICalVersion.V1_0 && attendee.getRole() == Role.ORGANIZER) {
+			Organizer organizer = new Organizer(attendee.getCommonName(), attendee.getEmail());
+			organizer.setUri(attendee.getUri());
+			organizer.setParameters(parameters);
+			
+			attendee.setParameters(parameters);
+			Version1ConversionException conversionException = new Version1ConversionException(attendee);
+			conversionException.getProperties().add(organizer);
+			throw conversionException;
+		}
 
 		return attendee;
 	}

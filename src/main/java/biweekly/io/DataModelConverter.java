@@ -238,18 +238,6 @@ public final class DataModelConverter {
 	}
 
 	/**
-	 * Converts a {@link Attendee} property to a {@link Organizer} property.
-	 * @param attendee the ATTENDEE property
-	 * @return the ORGANIZER property
-	 */
-	public static Organizer convert(Attendee attendee) {
-		Organizer organizer = new Organizer(attendee.getCommonName(), attendee.getEmail());
-		organizer.setUri(attendee.getUri());
-		organizer.setParameters(attendee.getParameters());
-		return organizer;
-	}
-
-	/**
 	 * Converts a {@link Organizer} property to a {@link Attendee} property.
 	 * @param organizer the ORGANIZER property
 	 * @return the ATTENDEE property
@@ -260,87 +248,6 @@ public final class DataModelConverter {
 		attendee.setUri(organizer.getUri());
 		attendee.setParameters(organizer.getParameters());
 		return attendee;
-	}
-
-	/**
-	 * Converts a {@link AudioAlarm} property to a {@link VAlarm} component.
-	 * @param aalarm the AALARM property
-	 * @return the VALARM component
-	 */
-	public static VAlarm convert(AudioAlarm aalarm) {
-		Trigger trigger = new Trigger(aalarm.getStart());
-		VAlarm valarm = new VAlarm(Action.audio(), trigger);
-
-		valarm.addAttachment(buildAttachment(aalarm));
-		valarm.setDuration(aalarm.getSnooze());
-		valarm.setRepeat(aalarm.getRepeat());
-
-		return valarm;
-	}
-
-	/**
-	 * Converts a {@link DisplayAlarm} property to a {@link VAlarm} component.
-	 * @param dalarm the DALARM property
-	 * @return the VALARM component
-	 */
-	public static VAlarm convert(DisplayAlarm dalarm) {
-		Trigger trigger = new Trigger(dalarm.getStart());
-		VAlarm valarm = new VAlarm(Action.display(), trigger);
-
-		valarm.setDescription(dalarm.getText());
-		valarm.setDuration(dalarm.getSnooze());
-		valarm.setRepeat(dalarm.getRepeat());
-
-		return valarm;
-	}
-
-	/**
-	 * Converts a {@link EmailAlarm} property to a {@link VAlarm} component.
-	 * @param malarm the MALARM property
-	 * @return the VALARM component
-	 */
-	public static VAlarm convert(EmailAlarm malarm) {
-		Trigger trigger = new Trigger(malarm.getStart());
-		VAlarm valarm = new VAlarm(Action.email(), trigger);
-
-		String email = malarm.getEmail();
-		if (email != null) {
-			valarm.addAttendee(new Attendee(null, email));
-		}
-		valarm.setDescription(malarm.getNote());
-		valarm.setDuration(malarm.getSnooze());
-		valarm.setRepeat(malarm.getRepeat());
-
-		return valarm;
-	}
-
-	/**
-	 * Converts a {@link ProcedureAlarm} property to a {@link VAlarm} component.
-	 * @param dalarm the PALARM property
-	 * @return the VALARM component
-	 */
-	public static VAlarm convert(ProcedureAlarm dalarm) {
-		Trigger trigger = new Trigger(dalarm.getStart());
-		VAlarm valarm = new VAlarm(Action.procedure(), trigger);
-
-		valarm.setDescription(dalarm.getPath());
-		valarm.setDuration(dalarm.getSnooze());
-		valarm.setRepeat(dalarm.getRepeat());
-
-		return valarm;
-	}
-
-	private static Attachment buildAttachment(AudioAlarm aalarm) {
-		String type = aalarm.getType();
-		String contentType = (type == null) ? null : "audio/" + type.toLowerCase();
-		byte[] data = aalarm.getData();
-		if (data != null) {
-			return new Attachment(contentType, data);
-		}
-
-		String contentId = aalarm.getContentId();
-		String uri = (contentId == null) ? aalarm.getUri() : "CID:" + contentId;
-		return new Attachment(contentType, uri);
 	}
 
 	/**

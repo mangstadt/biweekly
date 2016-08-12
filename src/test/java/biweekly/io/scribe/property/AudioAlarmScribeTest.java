@@ -1,17 +1,21 @@
 package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.ParseContext;
-import biweekly.io.scribe.property.Sensei.Check;
+import biweekly.component.VAlarm;
+import biweekly.io.Version1ConversionException;
+import biweekly.property.Action;
+import biweekly.property.Attachment;
 import biweekly.property.AudioAlarm;
+import biweekly.property.Trigger;
 import biweekly.util.Duration;
 import biweekly.util.org.apache.commons.codec.binary.Base64;
 
@@ -107,25 +111,83 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 
 	@Test
 	public void parseText() {
-		sensei.assertParseText("").run(is(empty));
-		sensei.assertParseText("20140101T010000Z;PT10M;5").run(is(noValue));
-		sensei.assertParseText("20140101T010000Z;PT10M;5;" + contentId).dataType(ICalDataType.CONTENT_ID).run(is(withContentId));
-		sensei.assertParseText("20140101T010000Z;PT10M;5;" + uri).dataType(ICalDataType.URL).run(is(withUri));
-		sensei.assertParseText("20140101T010000Z;PT10M;5;" + dataBase64).dataType(ICalDataType.BINARY).run(is(withData));
-		sensei.assertParseText("20140101T010000Z;PT10M;5;" + uri).run(is(withUri));
-	}
+		try {
+			sensei.assertParseText("").run();
+			fail();
+		} catch (Version1ConversionException e) {
+			assertEquals(empty, e.getOriginalProperty());
+			VAlarm expected = new VAlarm(Action.audio(), new Trigger((Date) null));
+			assertEquals(Arrays.asList(expected), e.getComponents());
+			assertEquals(Arrays.asList(), e.getProperties());
+		}
 
-	private Check<AudioAlarm> is(final AudioAlarm expected) {
-		return new Check<AudioAlarm>() {
-			public void check(AudioAlarm actual, ParseContext context) {
-				assertEquals(expected.getStart(), actual.getStart());
-				assertEquals(expected.getSnooze(), actual.getSnooze());
-				assertEquals(expected.getRepeat(), actual.getRepeat());
+		try {
+			sensei.assertParseText("20140101T010000Z;PT10M;5").run();
+			fail();
+		} catch (Version1ConversionException e) {
+			assertEquals(noValue, e.getOriginalProperty());
+			VAlarm expected = new VAlarm(Action.audio(), new Trigger(noValue.getStart()));
+			expected.setDuration(noValue.getSnooze());
+			expected.setRepeat(noValue.getRepeat());
+			assertEquals(Arrays.asList(expected), e.getComponents());
+			assertEquals(Arrays.asList(), e.getProperties());
+		}
 
-				assertEquals(expected.getContentId(), actual.getContentId());
-				assertEquals(expected.getUri(), actual.getUri());
-				assertArrayEquals(expected.getData(), actual.getData());
-			}
-		};
+		try {
+			sensei.assertParseText("20140101T010000Z;PT10M;5;" + contentId).dataType(ICalDataType.CONTENT_ID).run();
+			fail();
+		} catch (Version1ConversionException e) {
+			assertEquals(withContentId, e.getOriginalProperty());
+			VAlarm expected = new VAlarm(Action.audio(), new Trigger(withContentId.getStart()));
+			Attachment attach = new Attachment(null, (String) null);
+			attach.setContentId("content-id");
+			expected.addAttachment(attach);
+			expected.setDuration(withContentId.getSnooze());
+			expected.setRepeat(withContentId.getRepeat());
+			assertEquals(Arrays.asList(expected), e.getComponents());
+			assertEquals(Arrays.asList(), e.getProperties());
+		}
+
+		try {
+			sensei.assertParseText("20140101T010000Z;PT10M;5;" + uri).dataType(ICalDataType.URL).run();
+			fail();
+		} catch (Version1ConversionException e) {
+			assertEquals(withUri, e.getOriginalProperty());
+			VAlarm expected = new VAlarm(Action.audio(), new Trigger(withUri.getStart()));
+			Attachment attach = new Attachment(null, uri);
+			expected.addAttachment(attach);
+			expected.setDuration(withUri.getSnooze());
+			expected.setRepeat(withUri.getRepeat());
+			assertEquals(Arrays.asList(expected), e.getComponents());
+			assertEquals(Arrays.asList(), e.getProperties());
+		}
+
+		try {
+			sensei.assertParseText("20140101T010000Z;PT10M;5;" + dataBase64).dataType(ICalDataType.BINARY).run();
+			fail();
+		} catch (Version1ConversionException e) {
+			assertEquals(withData, e.getOriginalProperty());
+			VAlarm expected = new VAlarm(Action.audio(), new Trigger(withData.getStart()));
+			Attachment attach = new Attachment(null, data);
+			expected.addAttachment(attach);
+			expected.setDuration(withData.getSnooze());
+			expected.setRepeat(withData.getRepeat());
+			assertEquals(Arrays.asList(expected), e.getComponents());
+			assertEquals(Arrays.asList(), e.getProperties());
+		}
+
+		try {
+			sensei.assertParseText("20140101T010000Z;PT10M;5;" + uri).run();
+			fail();
+		} catch (Version1ConversionException e) {
+			assertEquals(withUri, e.getOriginalProperty());
+			VAlarm expected = new VAlarm(Action.audio(), new Trigger(withUri.getStart()));
+			Attachment attach = new Attachment(null, uri);
+			expected.addAttachment(attach);
+			expected.setDuration(withUri.getSnooze());
+			expected.setRepeat(withUri.getRepeat());
+			assertEquals(Arrays.asList(expected), e.getComponents());
+			assertEquals(Arrays.asList(), e.getProperties());
+		}
 	}
 }

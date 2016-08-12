@@ -5,6 +5,9 @@ import java.util.List;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
+import biweekly.component.VAlarm;
+import biweekly.property.Action;
+import biweekly.property.Attachment;
 import biweekly.property.AudioAlarm;
 import biweekly.util.org.apache.commons.codec.binary.Base64;
 
@@ -97,5 +100,44 @@ public class AudioAlarmScribe extends VCalAlarmPropertyScribe<AudioAlarm> {
 		}
 
 		return aalarm;
+	}
+
+	@Override
+	protected void toVAlarm(VAlarm valarm, AudioAlarm property) {
+		Attachment attach = buildAttachment(property);
+		if (attach != null) {
+			valarm.addAttachment(attach);
+		}
+	}
+
+	private static Attachment buildAttachment(AudioAlarm aalarm) {
+		String type = aalarm.getType();
+		String contentType = (type == null) ? null : "audio/" + type.toLowerCase();
+		Attachment attach = new Attachment(contentType, (String) null);
+
+		byte[] data = aalarm.getData();
+		if (data != null) {
+			attach.setData(data);
+			return attach;
+		}
+
+		String contentId = aalarm.getContentId();
+		if (contentId != null) {
+			attach.setContentId(contentId);
+			return attach;
+		}
+
+		String uri = aalarm.getUri();
+		if (uri != null) {
+			attach.setUri(uri);
+			return attach;
+		}
+
+		return null;
+	}
+
+	@Override
+	protected Action action() {
+		return Action.audio();
 	}
 }

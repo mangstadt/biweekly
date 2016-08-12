@@ -1,6 +1,5 @@
 package biweekly.io.text;
 
-import static biweekly.io.DataModelConverter.convert;
 import static biweekly.util.IOUtils.utf8Reader;
 
 import java.io.BufferedReader;
@@ -13,8 +12,6 @@ import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -24,21 +21,14 @@ import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamReader;
+import biweekly.io.Version1ConversionException;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
-import biweekly.io.scribe.property.ICalPropertyScribe.Result;
 import biweekly.io.scribe.property.RawPropertyScribe;
-import biweekly.io.scribe.property.RecurrencePropertyScribe;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
-import biweekly.parameter.Role;
-import biweekly.property.Attendee;
-import biweekly.property.AudioAlarm;
-import biweekly.property.DisplayAlarm;
-import biweekly.property.EmailAlarm;
 import biweekly.property.ICalProperty;
-import biweekly.property.ProcedureAlarm;
 import biweekly.util.org.apache.commons.codec.DecoderException;
 import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
 
@@ -229,7 +219,6 @@ public class ICalReader extends StreamReader {
 	@Override
 	protected ICalendar _readNext() throws IOException {
 		ICalendar ical = null;
-		List<String> values = new ArrayList<String>();
 		ComponentStack stack = new ComponentStack();
 		reader.setVersion(defaultVersion);
 
@@ -329,75 +318,28 @@ public class ICalReader extends StreamReader {
 				parameters.setValue(null);
 			}
 
-			//determine how many properties should be parsed from this property value
-			values.clear();
-			if (reader.getVersion() == ICalVersion.V1_0 && scribe instanceof RecurrencePropertyScribe) {
-				//extract each RRULE from the value string (there can be multiple)
-				Pattern p = Pattern.compile("#\\d+|\\d{8}T\\d{6}Z?");
-				Matcher m = p.matcher(value);
-
-				int prevIndex = 0;
-				while (m.find()) {
-					int end = m.end() + 1;
-					String subValue = value.substring(prevIndex, end).trim();
-					values.add(subValue);
-					prevIndex = end;
-				}
-				String subValue = value.substring(prevIndex).trim();
-				if (subValue.length() > 0) {
-					values.add(subValue);
-				}
-			} else {
-				values.add(value);
-			}
-
-			context.getWarnings().clear();
-			List<ICalProperty> propertiesToAdd = new ArrayList<ICalProperty>();
-			List<Result<? extends ICalComponent>> componentsToAdd = new ArrayList<Result<? extends ICalComponent>>();
-			for (String v : values) {
-				try {
-					ICalProperty property = scribe.parseText(v, dataType, parameters, context);
-					propertiesToAdd.add(property);
-				} catch (SkipMeException e) {
-					warnings.add(reader.getLineNumber(), propertyName, 0, e.getMessage());
-					continue;
-				} catch (CannotParseException e) {
-					warnings.add(reader.getLineNumber(), propertyName, 1, v, e.getMessage());
-
-					ICalProperty property = new RawPropertyScribe(propertyName).parseText(v, dataType, parameters, context);
-					propertiesToAdd.add(property);
-				}
-			}
-
-			//add the properties to the iCalendar object
 			ICalComponent parentComponent = stack.peek();
-			boolean isVCal = reader.getVersion() == ICalVersion.V1_0;
-			for (ICalProperty property : propertiesToAdd) {
-				for (Warning warning : context.getWarnings()) {
-					warnings.add(reader.getLineNumber(), propertyName, warning);
-				}
-
-				if (isVCal) {
-					Object obj = convertVCalProperty(property);
-					if (obj instanceof ICalComponent) {
-						parentComponent.addComponent((ICalComponent) obj);
-						continue;
-					}
-					if (obj instanceof ICalProperty) {
-						property = (ICalProperty) obj;
-					}
-				}
-
+			context.getWarnings().clear();
+			try {
+				ICalProperty property = scribe.parseText(value, dataType, parameters, context);
 				parentComponent.addProperty(property);
+			} catch (SkipMeException e) {
+				warnings.add(reader.getLineNumber(), propertyName, 0, e.getMessage());
+			} catch (CannotParseException e) {
+				warnings.add(reader.getLineNumber(), propertyName, 1, value, e.getMessage());
+				ICalProperty property = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters, context);
+				parentComponent.addProperty(property);
+			} catch (Version1ConversionException e) {
+				for (ICalProperty property : e.getProperties()) {
+					parentComponent.addProperty(property);
+				}
+				for (ICalComponent component : e.getComponents()) {
+					parentComponent.addComponent(component);
+				}
 			}
 
-			//add the components to the iCalendar object
-			for (Result<? extends ICalComponent> result : componentsToAdd) {
-				for (Warning warning : result.getWarnings()) {
-					warnings.add(reader.getLineNumber(), propertyName, warning);
-				}
-
-				parentComponent.addComponent(result.getProperty());
+			for (Warning warning : context.getWarnings()) {
+				warnings.add(reader.getLineNumber(), propertyName, warning);
 			}
 		}
 
@@ -471,46 +413,6 @@ public class ICalReader extends StreamReader {
 
 		QuotedPrintableCodec codec = new QuotedPrintableCodec(charset.name());
 		return codec.decode(value);
-	}
-
-	/**
-	 * Converts a vCal property to the iCalendar data model.
-	 * @param property the vCal property
-	 * @return the converted iCalendar property/component, or the same property
-	 * that was passed in if no conversion was necessary
-	 */
-	private Object convertVCalProperty(ICalProperty property) {
-		//ATTENDEE with "organizer" role => ORGANIZER property
-		if (property instanceof Attendee) {
-			Attendee attendee = (Attendee) property;
-			return (attendee.getRole() == Role.ORGANIZER) ? convert(attendee) : property;
-		}
-
-		//AALARM property => VALARM component
-		if (property instanceof AudioAlarm) {
-			AudioAlarm aalarm = (AudioAlarm) property;
-			return convert(aalarm);
-		}
-
-		//DALARM property => VALARM component
-		if (property instanceof DisplayAlarm) {
-			DisplayAlarm dalarm = (DisplayAlarm) property;
-			return convert(dalarm);
-		}
-
-		//MALARM property => VALARM component
-		if (property instanceof EmailAlarm) {
-			EmailAlarm malarm = (EmailAlarm) property;
-			return convert(malarm);
-		}
-
-		//PALARM property => VALARM component
-		if (property instanceof ProcedureAlarm) {
-			ProcedureAlarm palarm = (ProcedureAlarm) property;
-			return convert(palarm);
-		}
-
-		return property;
 	}
 
 	/**
