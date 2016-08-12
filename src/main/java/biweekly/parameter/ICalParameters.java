@@ -331,6 +331,22 @@ public class ICalParameters extends ListMultimap<String, String> {
 
 	/**
 	 * <p>
+	 * Creates a parameter list that is backed by the given map. Any changes
+	 * made to the given map will effect the parameter list and vice versa.
+	 * </p>
+	 * <p>
+	 * To avoid problems, it is highly recommended that the given map NOT be
+	 * modified by anything other than this {@link ICalParameters} class after
+	 * being passed into this constructor.
+	 * </p>
+	 * @param map the map
+	 */
+	public ICalParameters(Map<String, List<String>> map) {
+		super(map);
+	}
+
+	/**
+	 * <p>
 	 * Gets the ALTREP (alternate representation) parameter value.
 	 * </p>
 	 * <p>
