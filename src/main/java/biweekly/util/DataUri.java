@@ -114,9 +114,9 @@ public final class DataUri {
 				if (contentType == null) {
 					contentType = token.toLowerCase();
 				} else {
-					if (token.toLowerCase().startsWith("charset=")) {
-						int equals = token.indexOf('=');
-						charset = token.substring(equals + 1);
+					String cs = StringUtils.afterPrefixIgnoreCase(token, "charset=");
+					if (cs != null) {
+						charset = cs;
 					} else if ("base64".equalsIgnoreCase(token)) {
 						base64 = true;
 					}
@@ -130,9 +130,9 @@ public final class DataUri {
 				if (contentType == null) {
 					contentType = token.toLowerCase();
 				} else {
-					if (token.toLowerCase().startsWith("charset=")) {
-						int equals = token.indexOf('=');
-						charset = token.substring(equals + 1);
+					String cs = StringUtils.afterPrefixIgnoreCase(token, "charset=");
+					if (cs != null) {
+						charset = cs;
 					} else if ("base64".equalsIgnoreCase(token)) {
 						base64 = true;
 					}

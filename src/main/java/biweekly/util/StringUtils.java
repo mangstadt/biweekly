@@ -73,6 +73,43 @@ public final class StringUtils {
 	}
 
 	/**
+	 * <p>
+	 * Returns a substring of the given string that comes after the given
+	 * prefix. Prefix matching is case-insensitive.
+	 * </p>
+	 * <p>
+	 * <b>Example:</b>
+	 * </p>
+	 * 
+	 * <pre class="brush:java">
+	 * String result = StringUtils.afterPrefixIgnoreCase("MAILTO:email@example.com", "mailto:");
+	 * assertEquals("email@example.com", result);
+	 * 
+	 * result = StringUtils.afterPrefixIgnoreCase("http://www.google.com", "mailto:");
+	 * assertNull(result);
+	 * </pre>
+	 * 
+	 * @param string the string
+	 * @param prefix the prefix
+	 * @return the string or null if the prefix was not found
+	 */
+	public static String afterPrefixIgnoreCase(String string, String prefix) {
+		if (string.length() < prefix.length()) {
+			return null;
+		}
+
+		for (int i = 0; i < prefix.length(); i++) {
+			char a = Character.toUpperCase(prefix.charAt(i));
+			char b = Character.toUpperCase(string.charAt(i));
+			if (a != b) {
+				return null;
+			}
+		}
+
+		return string.substring(prefix.length());
+	}
+
+	/**
 	 * Creates a string consisting of "count" occurrences of char "c".
 	 * @param c the character to repeat
 	 * @param count the number of times to repeat the character

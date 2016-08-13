@@ -118,6 +118,18 @@ public class StringUtilsTest {
 	}
 
 	@Test
+	public void afterPrefixIgnoreCase() {
+		String expected = StringUtils.afterPrefixIgnoreCase("MAILTO:email@example.com", "mailto:");
+		assertEquals("email@example.com", expected);
+
+		expected = StringUtils.afterPrefixIgnoreCase("http://www.google.com", "mailto:");
+		assertNull(expected);
+
+		expected = StringUtils.afterPrefixIgnoreCase("m", "mailto:");
+		assertNull(expected);
+	}
+
+	@Test
 	public void join_multiple() {
 		Collection<String> values = Arrays.asList("one", "two", "three");
 		assertEquals("ONE,TWO,THREE", StringUtils.join(values, ",", new JoinCallback<String>() {

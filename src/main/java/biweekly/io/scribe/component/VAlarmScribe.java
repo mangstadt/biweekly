@@ -26,6 +26,7 @@ import biweekly.property.Trigger;
 import biweekly.property.VCalAlarmProperty;
 import biweekly.property.ValuedProperty;
 import biweekly.util.Duration;
+import biweekly.util.StringUtils;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -143,12 +144,11 @@ public class VAlarmScribe extends ICalComponentScribe<VAlarm> {
 
 				String uri = attach.getUri();
 				if (uri != null) {
-					//TODO if (StringUtils.startsWithIgnoreCase(uri, "cid:")) {
-					if (uri.toUpperCase().startsWith("CID:")) {
-						String contentId = uri.substring(4);
-						aalarm.setContentId(contentId);
-					} else {
+					String contentId = StringUtils.afterPrefixIgnoreCase(uri, "cid:");
+					if (contentId == null) {
 						aalarm.setUri(uri);
+					} else {
+						aalarm.setContentId(contentId);
 					}
 				}
 			}
