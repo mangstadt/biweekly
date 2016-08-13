@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.component.VAlarm;
-import biweekly.io.Version1ConversionException;
+import biweekly.io.DataModelConversionException;
 import biweekly.io.scribe.property.VCalAlarmPropertyScribeTest.VCalAlarmPropertyImpl;
 import biweekly.property.Action;
 import biweekly.property.Trigger;
@@ -74,7 +74,7 @@ public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImp
 		try {
 			sensei.assertParseText("").run();
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertEquals(empty, e.getOriginalProperty());
 
 			VAlarm expected = new VAlarm(new Action("TEST"), new Trigger((Date) null));
@@ -85,7 +85,7 @@ public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImp
 		try {
 			sensei.assertParseText("; ;  ").run();
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertEquals(empty, e.getOriginalProperty());
 
 			VAlarm expected = new VAlarm(new Action("TEST"), new Trigger((Date) null));
@@ -96,7 +96,7 @@ public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImp
 		try {
 			sensei.assertParseText("20140101T010000Z;PT10M;5;one;two").run();
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertEquals(withValues, e.getOriginalProperty());
 
 			VAlarm expected = new VAlarm(new Action("TEST"), new Trigger(withValues.getStart()));

@@ -30,7 +30,7 @@ import biweekly.io.ParseContext;
 import biweekly.io.SkipMeException;
 import biweekly.io.TimezoneAssignment;
 import biweekly.io.TimezoneInfo;
-import biweekly.io.Version1ConversionException;
+import biweekly.io.DataModelConversionException;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.json.JsonValue;
@@ -192,7 +192,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @return the marshalled property value
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
-	 * @throws Version1ConversionException if the property needs to be converted
+	 * @throws DataModelConversionException if the property needs to be converted
 	 * to something different in order to adhere to the data model of the
 	 * iCalendar version being written (only applicable when writing 1.0 vCals)
 	 */
@@ -240,7 +240,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
-	 * @throws Version1ConversionException if the property should be converted
+	 * @throws DataModelConversionException if the property should be converted
 	 * to something different in order to adhere to the 2.0 data model (only
 	 * thrown when parsing 1.0 vCals)
 	 */
@@ -346,7 +346,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @return the marshalled value
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
-	 * @throws Version1ConversionException if the property needs to be converted
+	 * @throws DataModelConversionException if the property needs to be converted
 	 * to something different in order to adhere to the data model of the
 	 * iCalendar version being written (only applicable when writing 1.0 vCals)
 	 */
@@ -416,7 +416,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * value
 	 * @throws SkipMeException if the property should not be added to the final
 	 * {@link ICalendar} object
-	 * @throws Version1ConversionException if the property should be converted
+	 * @throws DataModelConversionException if the property should be converted
 	 * to something different in order to adhere to the 2.0 data model (only
 	 * thrown when parsing 1.0 vCals)
 	 */

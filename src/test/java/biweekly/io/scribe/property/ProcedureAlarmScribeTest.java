@@ -10,7 +10,7 @@ import java.util.Date;
 import org.junit.Test;
 
 import biweekly.component.VAlarm;
-import biweekly.io.Version1ConversionException;
+import biweekly.io.DataModelConversionException;
 import biweekly.property.Action;
 import biweekly.property.ProcedureAlarm;
 import biweekly.property.Trigger;
@@ -80,7 +80,7 @@ public class ProcedureAlarmScribeTest extends ScribeTest<ProcedureAlarm> {
 		try {
 			sensei.assertParseText("").run();
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertEquals(empty, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.procedure(), new Trigger((Date) null));
 			assertEquals(Arrays.asList(expected), e.getComponents());
@@ -90,7 +90,7 @@ public class ProcedureAlarmScribeTest extends ScribeTest<ProcedureAlarm> {
 		try {
 			sensei.assertParseText("20140101T010000Z;PT10M;5").run();
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertEquals(noValue, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.procedure(), new Trigger(noValue.getStart()));
 			expected.setDuration(noValue.getSnooze());
@@ -102,7 +102,7 @@ public class ProcedureAlarmScribeTest extends ScribeTest<ProcedureAlarm> {
 		try {
 			sensei.assertParseText("20140101T010000Z;PT10M;5;" + path).run();
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertEquals(withValue, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.procedure(), new Trigger(withValue.getStart()));
 			expected.setDuration(withValue.getSnooze());

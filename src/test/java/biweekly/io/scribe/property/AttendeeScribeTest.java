@@ -14,7 +14,7 @@ import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.io.ParseContext;
-import biweekly.io.Version1ConversionException;
+import biweekly.io.DataModelConversionException;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.ParticipationLevel;
 import biweekly.parameter.ParticipationStatus;
@@ -212,7 +212,7 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		try {
 			sensei.assertParseText(name + " <" + email + ">").versions(V1_0).param("ROLE", "ORGANIZER").param("FOO", "bar").run();
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			Attendee expectedOriginal = new Attendee(name, email);
 			expectedOriginal.setRole(Role.ORGANIZER);
 			expectedOriginal.setParameter("FOO", "bar");
@@ -227,7 +227,7 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		try {
 			sensei.assertParseText(uri).versions(V1_0).param("ROLE", "ORGANIZER").param("FOO", "bar").dataType(ICalDataType.URL).run(check(null, null, uri));
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			Attendee expectedOriginal = new Attendee(null, null, uri);
 			expectedOriginal.setRole(Role.ORGANIZER);
 			expectedOriginal.setParameter("FOO", "bar");

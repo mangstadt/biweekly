@@ -16,7 +16,7 @@ import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.TimezoneInfo;
-import biweekly.io.Version1ConversionException;
+import biweekly.io.DataModelConversionException;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -235,12 +235,12 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	/**
 	 * Version 1.0 allows multiple RRULE values to be defined inside of the same
 	 * property. This method checks for this and, if multiple values are found,
-	 * parses them and throws a {@link Version1ConversionException}.
+	 * parses them and throws a {@link DataModelConversionException}.
 	 * @param value the property value
 	 * @param dataType the property data type
 	 * @param parameters the property parameters
 	 * @param context the parse context
-	 * @throws Version1ConversionException if the property contains multiple
+	 * @throws DataModelConversionException if the property contains multiple
 	 * values
 	 */
 	private void handleVersion1Multivalued(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
@@ -249,7 +249,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			return;
 		}
 
-		Version1ConversionException conversionException = new Version1ConversionException(null);
+		DataModelConversionException conversionException = new DataModelConversionException(null);
 		for (String v : values) {
 			ICalParameters parametersCopy = new ICalParameters(parameters);
 

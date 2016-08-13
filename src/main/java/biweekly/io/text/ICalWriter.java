@@ -21,7 +21,7 @@ import biweekly.component.VTimezone;
 import biweekly.io.DataModelConverter.VCalTimezoneProperties;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamWriter;
-import biweekly.io.Version1ConversionException;
+import biweekly.io.DataModelConversionException;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
@@ -224,7 +224,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		ICalComponentScribe componentScribe = index.getComponentScribe(component);
 		try {
 			componentScribe.checkForDataModelConversions(component, parent, getTargetVersion());
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			for (ICalComponent c : e.getComponents()) {
 				writeComponent(c, parent);
 			}
@@ -292,7 +292,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 			value = scribe.writeText(property, context);
 		} catch (SkipMeException e) {
 			return;
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			for (ICalComponent c : e.getComponents()) {
 				writeComponent(c, context.getParent());
 			}

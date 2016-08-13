@@ -31,7 +31,7 @@ import biweekly.io.ParseContext;
 import biweekly.io.ParseContext.TimezonedDate;
 import biweekly.io.TimezoneAssignment;
 import biweekly.io.TimezoneInfo;
-import biweekly.io.Version1ConversionException;
+import biweekly.io.DataModelConversionException;
 import biweekly.io.json.JCalValue;
 import biweekly.io.json.JsonValue;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -406,7 +406,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 		try {
 			sensei.assertParseText("MD1 1 #1 D2  20000101T000000Z  M3").versions(V1_0).run();
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertNull(e.getOriginalProperty());
 
 			Iterator<ICalProperty> it = e.getProperties().iterator();
@@ -429,7 +429,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 		try {
 			sensei.assertParseText("MD1 a #1 D2  20000101T000000Z  M3").versions(V1_0).warnings(1).run();
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertNull(e.getOriginalProperty());
 
 			Iterator<ICalProperty> it = e.getProperties().iterator();

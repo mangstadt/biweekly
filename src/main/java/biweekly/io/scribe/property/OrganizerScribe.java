@@ -6,7 +6,7 @@ import java.util.Set;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
-import biweekly.io.Version1ConversionException;
+import biweekly.io.DataModelConversionException;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Role;
@@ -93,7 +93,7 @@ public class OrganizerScribe extends ICalPropertyScribe<Organizer> {
 			attendee.setUri(property.getUri());
 			attendee.setParameters(property.getParameters());
 
-			Version1ConversionException conversionException = new Version1ConversionException(property);
+			DataModelConversionException conversionException = new DataModelConversionException(property);
 			conversionException.getProperties().add(attendee);
 			throw conversionException;
 		}

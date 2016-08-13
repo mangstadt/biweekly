@@ -11,7 +11,7 @@ import biweekly.ICalVersion;
 import biweekly.component.VAlarm;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
-import biweekly.io.Version1ConversionException;
+import biweekly.io.DataModelConversionException;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Action;
@@ -113,7 +113,7 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 		property.setRepeat(repeat);
 		property.setParameters(parameters);
 
-		Version1ConversionException conversionException = new Version1ConversionException(property);
+		DataModelConversionException conversionException = new DataModelConversionException(property);
 		VAlarm valarm = toVAlarm(property);
 		conversionException.getComponents().add(valarm);
 		throw conversionException;

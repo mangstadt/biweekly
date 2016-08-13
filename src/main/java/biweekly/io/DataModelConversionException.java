@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import biweekly.component.ICalComponent;
+import biweekly.component.VAlarm;
+import biweekly.property.AudioAlarm;
 import biweekly.property.ICalProperty;
 
 /*
@@ -32,11 +34,13 @@ import biweekly.property.ICalProperty;
  */
 
 /**
- * Thrown when a version 1.0 property is being parsed, and the property converts
- * to a different property or component in the 2.0 data model.
+ * Thrown when a component or property needs to be converted to a different
+ * component or property when being read or written. For example, converting a
+ * vCal {@link AudioAlarm} property to a {@link VAlarm} component when parsing a
+ * vCal file.
  * @author Michael Angstadt
  */
-public class Version1ConversionException extends RuntimeException {
+public class DataModelConversionException extends RuntimeException {
 	private static final long serialVersionUID = -4789186852509057375L;
 	private final ICalProperty originalProperty;
 	private final List<ICalComponent> components = new ArrayList<ICalComponent>();
@@ -47,7 +51,7 @@ public class Version1ConversionException extends RuntimeException {
 	 * @param originalProperty the original property object that was parsed or
 	 * null if not applicable
 	 */
-	public Version1ConversionException(ICalProperty originalProperty) {
+	public DataModelConversionException(ICalProperty originalProperty) {
 		this.originalProperty = originalProperty;
 	}
 

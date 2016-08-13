@@ -21,7 +21,7 @@ import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamReader;
-import biweekly.io.Version1ConversionException;
+import biweekly.io.DataModelConversionException;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -329,7 +329,7 @@ public class ICalReader extends StreamReader {
 				warnings.add(reader.getLineNumber(), propertyName, 1, value, e.getMessage());
 				ICalProperty property = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters, context);
 				parentComponent.addProperty(property);
-			} catch (Version1ConversionException e) {
+			} catch (DataModelConversionException e) {
 				for (ICalProperty property : e.getProperties()) {
 					parentComponent.addProperty(property);
 				}

@@ -8,7 +8,7 @@ import java.util.Set;
 import biweekly.ICalVersion;
 import biweekly.component.ICalComponent;
 import biweekly.component.VAlarm;
-import biweekly.io.Version1ConversionException;
+import biweekly.io.DataModelConversionException;
 import biweekly.parameter.Related;
 import biweekly.property.Action;
 import biweekly.property.Attachment;
@@ -77,7 +77,7 @@ public class VAlarmScribe extends ICalComponentScribe<VAlarm> {
 			return;
 		}
 
-		Version1ConversionException e = new Version1ConversionException(null);
+		DataModelConversionException e = new DataModelConversionException(null);
 		e.getProperties().add(vcalAlarm);
 		throw e;
 	}

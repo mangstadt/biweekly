@@ -12,7 +12,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import biweekly.io.ParseContext;
-import biweekly.io.Version1ConversionException;
+import biweekly.io.DataModelConversionException;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.Role;
 import biweekly.property.Attendee;
@@ -74,7 +74,7 @@ public class OrganizerScribeTest extends ScribeTest<Organizer> {
 	public void writeText() {
 		try {
 			sensei.assertWriteText(withEmail).version(V1_0).run();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertSame(withEmail, e.getOriginalProperty());
 			Attendee expected = new Attendee(null, email);
 			expected.setRole(Role.ORGANIZER);
@@ -86,7 +86,7 @@ public class OrganizerScribeTest extends ScribeTest<Organizer> {
 
 		try {
 			sensei.assertWriteText(withNameEmail).version(V1_0).run();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertSame(withNameEmail, e.getOriginalProperty());
 			Attendee expected = new Attendee(name, email);
 			expected.setRole(Role.ORGANIZER);
@@ -98,7 +98,7 @@ public class OrganizerScribeTest extends ScribeTest<Organizer> {
 
 		try {
 			sensei.assertWriteText(withNameEmailUri).version(V1_0).run();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertSame(withNameEmailUri, e.getOriginalProperty());
 			Attendee expected = new Attendee(name, email);
 			expected.setRole(Role.ORGANIZER);
@@ -111,7 +111,7 @@ public class OrganizerScribeTest extends ScribeTest<Organizer> {
 
 		try {
 			sensei.assertWriteText(empty).version(V1_0).run();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertSame(empty, e.getOriginalProperty());
 			Attendee expected = new Attendee(null, null);
 			expected.setRole(Role.ORGANIZER);

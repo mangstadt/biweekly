@@ -5,7 +5,7 @@ import java.util.Iterator;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
-import biweekly.io.Version1ConversionException;
+import biweekly.io.DataModelConversionException;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.ParticipationLevel;
@@ -300,7 +300,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			organizer.setParameters(parameters);
 			
 			attendee.setParameters(parameters);
-			Version1ConversionException conversionException = new Version1ConversionException(attendee);
+			DataModelConversionException conversionException = new DataModelConversionException(attendee);
 			conversionException.getProperties().add(organizer);
 			throw conversionException;
 		}

@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.component.VAlarm;
-import biweekly.io.Version1ConversionException;
+import biweekly.io.DataModelConversionException;
 import biweekly.property.Action;
 import biweekly.property.Attachment;
 import biweekly.property.AudioAlarm;
@@ -114,7 +114,7 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 		try {
 			sensei.assertParseText("").run();
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertEquals(empty, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.audio(), new Trigger((Date) null));
 			assertEquals(Arrays.asList(expected), e.getComponents());
@@ -124,7 +124,7 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 		try {
 			sensei.assertParseText("20140101T010000Z;PT10M;5").run();
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertEquals(noValue, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.audio(), new Trigger(noValue.getStart()));
 			expected.setDuration(noValue.getSnooze());
@@ -136,7 +136,7 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 		try {
 			sensei.assertParseText("20140101T010000Z;PT10M;5;" + contentId).dataType(ICalDataType.CONTENT_ID).run();
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertEquals(withContentId, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.audio(), new Trigger(withContentId.getStart()));
 			Attachment attach = new Attachment(null, (String) null);
@@ -151,7 +151,7 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 		try {
 			sensei.assertParseText("20140101T010000Z;PT10M;5;" + uri).dataType(ICalDataType.URL).run();
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertEquals(withUri, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.audio(), new Trigger(withUri.getStart()));
 			Attachment attach = new Attachment(null, uri);
@@ -165,7 +165,7 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 		try {
 			sensei.assertParseText("20140101T010000Z;PT10M;5;" + dataBase64).dataType(ICalDataType.BINARY).run();
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertEquals(withData, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.audio(), new Trigger(withData.getStart()));
 			Attachment attach = new Attachment(null, data);
@@ -179,7 +179,7 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 		try {
 			sensei.assertParseText("20140101T010000Z;PT10M;5;" + uri).run();
 			fail();
-		} catch (Version1ConversionException e) {
+		} catch (DataModelConversionException e) {
 			assertEquals(withUri, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.audio(), new Trigger(withUri.getStart()));
 			Attachment attach = new Attachment(null, uri);

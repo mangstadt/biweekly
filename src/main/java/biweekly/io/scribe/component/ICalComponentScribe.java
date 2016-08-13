@@ -8,7 +8,7 @@ import java.util.Set;
 
 import biweekly.ICalVersion;
 import biweekly.component.ICalComponent;
-import biweekly.io.Version1ConversionException;
+import biweekly.io.DataModelConversionException;
 import biweekly.property.ICalProperty;
 
 /*
@@ -127,7 +127,7 @@ public abstract class ICalComponentScribe<T extends ICalComponent> {
 	 * <p>
 	 * Checks this component to see if it needs to be converted to a different
 	 * data model before writing it out, throwing a
-	 * {@link Version1ConversionException} if it does.
+	 * {@link DataModelConversionException} if it does.
 	 * </p>
 	 * <p>
 	 * Child classes should override this method if the component requires
@@ -137,7 +137,7 @@ public abstract class ICalComponentScribe<T extends ICalComponent> {
 	 * @param component the component being written
 	 * @param parent the component's parent or null if it has no parent
 	 * @param version the version iCalendar object being written
-	 * @throws Version1ConversionException if the component needs to be
+	 * @throws DataModelConversionException if the component needs to be
 	 * converted
 	 */
 	public void checkForDataModelConversions(T component, ICalComponent parent, ICalVersion version) {
