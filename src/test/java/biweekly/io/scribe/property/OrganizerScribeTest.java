@@ -1,12 +1,21 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
 import biweekly.io.ParseContext;
+import biweekly.io.Version1ConversionException;
 import biweekly.io.scribe.property.Sensei.Check;
+import biweekly.parameter.Role;
+import biweekly.property.Attendee;
 import biweekly.property.Organizer;
 
 /*
@@ -63,10 +72,54 @@ public class OrganizerScribeTest extends ScribeTest<Organizer> {
 
 	@Test
 	public void writeText() {
-		sensei.assertWriteText(withEmail).run("mailto:" + email);
-		sensei.assertWriteText(withNameEmail).run("mailto:" + email);
-		sensei.assertWriteText(withNameEmailUri).run(uri);
-		sensei.assertWriteText(empty).run("");
+		try {
+			sensei.assertWriteText(withEmail).version(V1_0).run();
+		} catch (Version1ConversionException e) {
+			assertSame(withEmail, e.getOriginalProperty());
+			Attendee expected = new Attendee(null, email);
+			expected.setRole(Role.ORGANIZER);
+			assertEquals(Arrays.asList(expected), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
+		}
+		sensei.assertWriteText(withEmail).version(V2_0_DEPRECATED).run("mailto:" + email);
+		sensei.assertWriteText(withEmail).version(V2_0).run("mailto:" + email);
+
+		try {
+			sensei.assertWriteText(withNameEmail).version(V1_0).run();
+		} catch (Version1ConversionException e) {
+			assertSame(withNameEmail, e.getOriginalProperty());
+			Attendee expected = new Attendee(name, email);
+			expected.setRole(Role.ORGANIZER);
+			assertEquals(Arrays.asList(expected), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
+		}
+		sensei.assertWriteText(withNameEmail).version(V2_0_DEPRECATED).run("mailto:" + email);
+		sensei.assertWriteText(withNameEmail).version(V2_0).run("mailto:" + email);
+
+		try {
+			sensei.assertWriteText(withNameEmailUri).version(V1_0).run();
+		} catch (Version1ConversionException e) {
+			assertSame(withNameEmailUri, e.getOriginalProperty());
+			Attendee expected = new Attendee(name, email);
+			expected.setRole(Role.ORGANIZER);
+			expected.setUri(uri);
+			assertEquals(Arrays.asList(expected), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
+		}
+		sensei.assertWriteText(withNameEmailUri).version(V2_0_DEPRECATED).run(uri);
+		sensei.assertWriteText(withNameEmailUri).version(V2_0).run(uri);
+
+		try {
+			sensei.assertWriteText(empty).version(V1_0).run();
+		} catch (Version1ConversionException e) {
+			assertSame(empty, e.getOriginalProperty());
+			Attendee expected = new Attendee(null, null);
+			expected.setRole(Role.ORGANIZER);
+			assertEquals(Arrays.asList(expected), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
+		}
+		sensei.assertWriteText(empty).version(V2_0_DEPRECATED).run("");
+		sensei.assertWriteText(empty).version(V2_0).run("");
 	}
 
 	@Test

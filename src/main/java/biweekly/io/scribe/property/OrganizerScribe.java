@@ -6,8 +6,11 @@ import java.util.Set;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
+import biweekly.io.Version1ConversionException;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
+import biweekly.parameter.Role;
+import biweekly.property.Attendee;
 import biweekly.property.Organizer;
 
 /*
@@ -84,6 +87,17 @@ public class OrganizerScribe extends ICalPropertyScribe<Organizer> {
 
 	@Override
 	protected String _writeText(Organizer property, WriteContext context) {
+		if (context.getVersion() == ICalVersion.V1_0) {
+			Attendee attendee = new Attendee(property.getCommonName(), property.getEmail());
+			attendee.setRole(Role.ORGANIZER);
+			attendee.setUri(property.getUri());
+			attendee.setParameters(property.getParameters());
+
+			Version1ConversionException conversionException = new Version1ConversionException(property);
+			conversionException.getProperties().add(attendee);
+			throw conversionException;
+		}
+
 		String uri = property.getUri();
 		if (uri != null) {
 			return uri;

@@ -9,35 +9,15 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import biweekly.component.DaylightSavingsTime;
-import biweekly.component.ICalComponent;
 import biweekly.component.Observance;
 import biweekly.component.StandardTime;
-import biweekly.component.VAlarm;
 import biweekly.component.VTimezone;
 import biweekly.io.ICalTimeZone.Boundary;
-import biweekly.parameter.Related;
-import biweekly.parameter.Role;
-import biweekly.property.Action;
-import biweekly.property.Attachment;
-import biweekly.property.Attendee;
-import biweekly.property.AudioAlarm;
-import biweekly.property.DateEnd;
-import biweekly.property.DateStart;
 import biweekly.property.Daylight;
-import biweekly.property.Description;
-import biweekly.property.DisplayAlarm;
-import biweekly.property.DurationProperty;
-import biweekly.property.EmailAlarm;
-import biweekly.property.Organizer;
-import biweekly.property.ProcedureAlarm;
-import biweekly.property.Repeat;
 import biweekly.property.Timezone;
-import biweekly.property.Trigger;
 import biweekly.property.UtcOffsetProperty;
-import biweekly.property.VCalAlarmProperty;
 import biweekly.property.ValuedProperty;
 import biweekly.util.DateTimeComponents;
-import biweekly.util.Duration;
 import biweekly.util.ICalDate;
 import biweekly.util.UtcOffset;
 import biweekly.util.com.google.ical.values.DateTimeValue;
@@ -235,146 +215,6 @@ public final class DataModelConverter {
 		//@formatter:on
 
 		return new ICalDate(components, true);
-	}
-
-	/**
-	 * Converts a {@link Organizer} property to a {@link Attendee} property.
-	 * @param organizer the ORGANIZER property
-	 * @return the ATTENDEE property
-	 */
-	public static Attendee convert(Organizer organizer) {
-		Attendee attendee = new Attendee(organizer.getCommonName(), organizer.getEmail());
-		attendee.setRole(Role.ORGANIZER);
-		attendee.setUri(organizer.getUri());
-		attendee.setParameters(organizer.getParameters());
-		return attendee;
-	}
-
-	/**
-	 * Converts a {@link VAlarm} component to a vCal alarm property.
-	 * @param valarm the VALARM component
-	 * @param parent the component that holds the VALARM component
-	 * @return the alarm property
-	 */
-	public static VCalAlarmProperty convert(VAlarm valarm, ICalComponent parent) {
-		Action action = valarm.getAction();
-		if (action == null) {
-			return null;
-		}
-
-		if (action.isAudio()) {
-			AudioAlarm aalarm = new AudioAlarm();
-			aalarm.setStart(determineStartDate(valarm, parent));
-
-			List<Attachment> attaches = valarm.getAttachments();
-			if (!attaches.isEmpty()) {
-				Attachment attach = attaches.get(0);
-
-				String formatType = attach.getFormatType();
-				aalarm.setParameter("TYPE", formatType);
-
-				byte[] data = attach.getData();
-				if (data != null) {
-					aalarm.setData(data);
-				}
-
-				String uri = attach.getUri();
-				if (uri != null) {
-					if (uri.toUpperCase().startsWith("CID:")) {
-						String contentId = uri.substring(4);
-						aalarm.setContentId(contentId);
-					} else {
-						aalarm.setUri(uri);
-					}
-				}
-			}
-
-			DurationProperty duration = valarm.getDuration();
-			if (duration != null) {
-				aalarm.setSnooze(duration.getValue());
-			}
-
-			Repeat repeat = valarm.getRepeat();
-			if (repeat != null) {
-				aalarm.setRepeat(repeat.getValue());
-			}
-
-			return aalarm;
-		}
-
-		if (action.isDisplay()) {
-			Description description = valarm.getDescription();
-			String text = (description == null) ? null : description.getValue();
-			return new DisplayAlarm(text);
-		}
-
-		if (action.isEmail()) {
-			List<Attendee> attendees = valarm.getAttendees();
-			String email = attendees.isEmpty() ? null : attendees.get(0).getEmail();
-			EmailAlarm malarm = new EmailAlarm(email);
-
-			Description description = valarm.getDescription();
-			String note = (description == null) ? null : description.getValue();
-			malarm.setNote(note);
-
-			return malarm;
-		}
-
-		if (action.isProcedure()) {
-			Description description = valarm.getDescription();
-			String path = (description == null) ? null : description.getValue();
-			return new ProcedureAlarm(path);
-		}
-
-		return null;
-	}
-
-	private static Date determineStartDate(VAlarm valarm, ICalComponent parent) {
-		Trigger trigger = valarm.getTrigger();
-		if (trigger == null) {
-			return null;
-		}
-
-		Date start = trigger.getDate();
-		if (start != null) {
-			return start;
-		}
-
-		Duration triggerDuration = trigger.getDuration();
-		if (triggerDuration == null) {
-			return null;
-		}
-
-		Related related = trigger.getRelated();
-		if (related == Related.START) {
-			DateStart parentDateStart = parent.getProperty(DateStart.class);
-			if (parentDateStart == null) {
-				return null;
-			}
-
-			Date date = parentDateStart.getValue();
-			return (date == null) ? null : triggerDuration.add(date);
-		}
-
-		if (related == Related.END) {
-			DateEnd parentDateEnd = parent.getProperty(DateEnd.class);
-			if (parentDateEnd != null) {
-				Date date = parentDateEnd.getValue();
-				return (date == null) ? null : triggerDuration.add(date);
-			}
-
-			DateStart parentDateStart = parent.getProperty(DateStart.class);
-			DurationProperty parentDuration = parent.getProperty(DurationProperty.class);
-			if (parentDuration == null || parentDateStart == null) {
-				return null;
-			}
-
-			Duration duration = parentDuration.getValue();
-			Date date = parentDateStart.getValue();
-			return (duration == null || date == null) ? null : duration.add(date);
-		}
-
-		return null;
 	}
 
 	public static class VCalTimezoneProperties {

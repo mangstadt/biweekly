@@ -192,6 +192,9 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @return the marshalled property value
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
+	 * @throws Version1ConversionException if the property needs to be converted
+	 * to something different in order to adhere to the data model of the
+	 * iCalendar version being written (only applicable when writing 1.0 vCals)
 	 */
 	public final String writeText(T property, WriteContext context) {
 		return _writeText(property, context);
@@ -343,6 +346,9 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @return the marshalled value
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
+	 * @throws Version1ConversionException if the property needs to be converted
+	 * to something different in order to adhere to the data model of the
+	 * iCalendar version being written (only applicable when writing 1.0 vCals)
 	 */
 	protected abstract String _writeText(T property, WriteContext context);
 

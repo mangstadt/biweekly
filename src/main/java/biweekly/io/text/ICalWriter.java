@@ -17,21 +17,18 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
-import biweekly.component.VAlarm;
 import biweekly.component.VTimezone;
 import biweekly.io.DataModelConverter.VCalTimezoneProperties;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamWriter;
+import biweekly.io.Version1ConversionException;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
-import biweekly.property.Attendee;
 import biweekly.property.Created;
 import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
-import biweekly.property.Organizer;
 import biweekly.property.Timezone;
-import biweekly.property.VCalAlarmProperty;
 import biweekly.property.Version;
 
 /*
@@ -209,40 +206,34 @@ public class ICalWriter extends StreamWriter implements Flushable {
 
 	@Override
 	protected void _write(ICalendar ical) throws IOException {
-		writeComponent(ical);
+		writeComponent(ical, null);
 	}
 
 	/**
 	 * Writes a component to the data stream.
 	 * @param component the component to write
+	 * @param parent the parent component
 	 * @throws IOException if there's a problem writing to the data stream
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void writeComponent(ICalComponent component) throws IOException {
-		switch (writer.getVersion()) {
-		case V1_0:
-			//VALARM component => vCal alarm property
-			if (component instanceof VAlarm) {
-				VAlarm valarm = (VAlarm) component;
-				VCalAlarmProperty vcalAlarm = convert(valarm, component);
-				if (vcalAlarm != null) {
-					writeProperty(vcalAlarm);
-					return;
-				}
-			}
-
-			break;
-
-		default:
-			//empty
-			break;
-		}
-
+	private void writeComponent(ICalComponent component, ICalComponent parent) throws IOException {
 		boolean inICalendar = component instanceof ICalendar;
 		boolean inVCalRoot = inICalendar && getTargetVersion() == ICalVersion.V1_0;
 		boolean inICalRoot = inICalendar && getTargetVersion() != ICalVersion.V1_0;
 
 		ICalComponentScribe componentScribe = index.getComponentScribe(component);
+		try {
+			componentScribe.checkForDataModelConversions(component, parent, getTargetVersion());
+		} catch (Version1ConversionException e) {
+			for (ICalComponent c : e.getComponents()) {
+				writeComponent(c, parent);
+			}
+			for (ICalProperty p : e.getProperties()) {
+				writeProperty(p);
+			}
+			return;
+		}
+
 		writer.writeBeginComponent(componentScribe.getComponentName());
 
 		List propertyObjs = componentScribe.getProperties(component);
@@ -269,7 +260,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 
 		for (Object subComponentObj : subComponents) {
 			ICalComponent subComponent = (ICalComponent) subComponentObj;
-			writeComponent(subComponent);
+			writeComponent(subComponent, component);
 		}
 
 		if (inVCalRoot) {
@@ -293,22 +284,6 @@ public class ICalWriter extends StreamWriter implements Flushable {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeProperty(ICalProperty property) throws IOException {
-		switch (writer.getVersion()) {
-		case V1_0:
-			//ORGANIZER property => ATTENDEE with role of "organizer" 
-			if (property instanceof Organizer) {
-				Organizer organizer = (Organizer) property;
-				Attendee attendee = convert(organizer);
-				writeProperty(attendee);
-				return;
-			}
-			break;
-
-		default:
-			//empty
-			break;
-		}
-
 		ICalPropertyScribe scribe = index.getPropertyScribe(property);
 
 		//marshal property
@@ -316,6 +291,14 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		try {
 			value = scribe.writeText(property, context);
 		} catch (SkipMeException e) {
+			return;
+		} catch (Version1ConversionException e) {
+			for (ICalComponent c : e.getComponents()) {
+				writeComponent(c, context.getParent());
+			}
+			for (ICalProperty p : e.getProperties()) {
+				writeProperty(p);
+			}
 			return;
 		}
 
