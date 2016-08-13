@@ -18,14 +18,13 @@ import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
+import biweekly.io.DataModelConversionException;
 import biweekly.io.DataModelConverter.VCalTimezoneProperties;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamWriter;
-import biweekly.io.DataModelConversionException;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
-import biweekly.property.Created;
 import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.property.Timezone;
@@ -318,13 +317,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		}
 
 		//get the property name
-		String propertyName;
-		if (writer.getVersion() == ICalVersion.V1_0 && property instanceof Created) {
-			//the vCal DCREATED property is the same as the iCal CREATED property
-			propertyName = "DCREATED";
-		} else {
-			propertyName = scribe.getPropertyName();
-		}
+		String propertyName = scribe.getPropertyName(getTargetVersion());
 
 		//write property to data stream
 		writer.writeProperty(propertyName, parameters, value);

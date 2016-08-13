@@ -199,7 +199,7 @@ public class JCalWriter extends StreamWriter implements Flushable {
 			}
 
 			//write property
-			String propertyName = propertyScribe.getPropertyName().toLowerCase();
+			String propertyName = propertyScribe.getPropertyName(targetVersion).toLowerCase();
 			ICalDataType dataType = propertyScribe.dataType(property, targetVersion);
 			writer.writeProperty(propertyName, parameters, dataType, value);
 		}

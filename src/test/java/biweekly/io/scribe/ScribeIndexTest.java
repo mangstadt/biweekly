@@ -123,8 +123,6 @@ public class ScribeIndexTest {
 			scribe = index.getPropertyScribe(name, version);
 			assertTrue(scribe instanceof UidScribe);
 		}
-		scribe = index.getPropertyScribe(name, null);
-		assertTrue(scribe instanceof UidScribe);
 
 		name = "DAYLIGHT";
 		scribe = index.getPropertyScribe(name, V1_0);
@@ -141,8 +139,6 @@ public class ScribeIndexTest {
 			scribe = index.getPropertyScribe(name, version);
 			assertTrue(scribe instanceof RawPropertyScribe);
 		}
-		scribe = index.getPropertyScribe(name, null);
-		assertTrue(scribe instanceof CreatedScribe);
 
 		name = "CREATED";
 		scribe = index.getPropertyScribe(name, V1_0);
@@ -151,8 +147,6 @@ public class ScribeIndexTest {
 			scribe = index.getPropertyScribe(name, version);
 			assertTrue(scribe instanceof CreatedScribe);
 		}
-		scribe = index.getPropertyScribe(name, null);
-		assertTrue(scribe instanceof CreatedScribe);
 	}
 
 	@Test

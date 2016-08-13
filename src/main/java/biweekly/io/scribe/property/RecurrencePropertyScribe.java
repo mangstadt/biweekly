@@ -14,9 +14,9 @@ import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
+import biweekly.io.DataModelConversionException;
 import biweekly.io.ParseContext;
 import biweekly.io.TimezoneInfo;
-import biweekly.io.DataModelConversionException;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
@@ -258,7 +258,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 				property = parseTextVersion1(v, dataType, parametersCopy, context);
 			} catch (CannotParseException e) {
 				context.getWarnings().add(e.getWarning());
-				property = new RawProperty(getPropertyName(), dataType, v);
+				property = new RawProperty(getPropertyName(context.getVersion()), dataType, v);
 				property.setParameters(parametersCopy);
 			}
 			conversionException.getProperties().add(property);

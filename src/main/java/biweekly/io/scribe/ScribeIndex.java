@@ -83,7 +83,6 @@ import biweekly.io.scribe.property.UrlScribe;
 import biweekly.io.scribe.property.VersionScribe;
 import biweekly.io.scribe.property.XmlScribe;
 import biweekly.io.xml.XCalNamespaceContext;
-import biweekly.property.Created;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.Xml;
@@ -133,7 +132,7 @@ import biweekly.property.Xml;
  * 
  * //inject into a reader class
  * ICalReader reader = new ICalReader(...);
- * textReader.setScribeIndex(index);
+ * reader.setScribeIndex(index);
  * List&lt;ICalendar&gt; icals = new ArrayList&lt;ICalendar&gt;();
  * ICalendar ical;
  * while ((ical = reader.readNext()) != null){
@@ -283,14 +282,10 @@ public class ScribeIndex {
 	public ICalPropertyScribe<? extends ICalProperty> getPropertyScribe(String propertyName, ICalVersion version) {
 		propertyName = propertyName.toUpperCase();
 
-		//the vCal 1.0 "DCREATED" property is the same as the iCal 2.0 "CREATED" property
-		if ((version == null || version == ICalVersion.V1_0) && "DCREATED".equals(propertyName)) {
-			return getPropertyScribe(Created.class);
-		}
-
-		ICalPropertyScribe<? extends ICalProperty> scribe = experimentalPropByName.get(propertyName);
+		String key = propertyNameKey(propertyName, version);
+		ICalPropertyScribe<? extends ICalProperty> scribe = experimentalPropByName.get(key);
 		if (scribe == null) {
-			scribe = standardPropByName.get(propertyName);
+			scribe = standardPropByName.get(key);
 		}
 
 		if (scribe == null) {
@@ -396,7 +391,9 @@ public class ScribeIndex {
 	 * @param scribe the scribe to register
 	 */
 	public void register(ICalPropertyScribe<? extends ICalProperty> scribe) {
-		experimentalPropByName.put(scribe.getPropertyName().toUpperCase(), scribe);
+		for (ICalVersion version : ICalVersion.values()) {
+			experimentalPropByName.put(propertyNameKey(scribe, version), scribe);
+		}
 		experimentalPropByClass.put(scribe.getPropertyClass(), scribe);
 		experimentalPropByQName.put(scribe.getQName(), scribe);
 	}
@@ -415,7 +412,9 @@ public class ScribeIndex {
 	 * @param scribe the scribe to unregister
 	 */
 	public void unregister(ICalPropertyScribe<? extends ICalProperty> scribe) {
-		experimentalPropByName.remove(scribe.getPropertyName().toUpperCase());
+		for (ICalVersion version : ICalVersion.values()) {
+			experimentalPropByName.remove(propertyNameKey(scribe, version));
+		}
 		experimentalPropByClass.remove(scribe.getPropertyClass());
 		experimentalPropByQName.remove(scribe.getQName());
 	}
@@ -435,8 +434,18 @@ public class ScribeIndex {
 	}
 
 	private static void registerStandard(ICalPropertyScribe<? extends ICalProperty> scribe) {
-		standardPropByName.put(scribe.getPropertyName().toUpperCase(), scribe);
+		for (ICalVersion version : ICalVersion.values()) {
+			standardPropByName.put(propertyNameKey(scribe, version), scribe);
+		}
 		standardPropByClass.put(scribe.getPropertyClass(), scribe);
 		standardPropByQName.put(scribe.getQName(), scribe);
+	}
+
+	private static String propertyNameKey(ICalPropertyScribe<? extends ICalProperty> scribe, ICalVersion version) {
+		return propertyNameKey(scribe.getPropertyName(version), version);
+	}
+
+	private static String propertyNameKey(String propertyName, ICalVersion version) {
+		return version.ordinal() + propertyName.toUpperCase();
 	}
 }

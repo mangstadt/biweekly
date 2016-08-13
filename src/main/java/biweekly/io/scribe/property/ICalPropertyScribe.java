@@ -26,11 +26,11 @@ import biweekly.Warning;
 import biweekly.component.Observance;
 import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
+import biweekly.io.DataModelConversionException;
 import biweekly.io.ParseContext;
 import biweekly.io.SkipMeException;
 import biweekly.io.TimezoneAssignment;
 import biweekly.io.TimezoneInfo;
-import biweekly.io.DataModelConversionException;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.json.JsonValue;
@@ -141,10 +141,11 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	}
 
 	/**
-	 * Gets the property name.
+	 * Gets the property name. Child classes should override this method if the
+	 * property's name differs between versions.
 	 * @return the property name (e.g. "DTSTART")
 	 */
-	public String getPropertyName() {
+	public String getPropertyName(ICalVersion version) {
 		return propertyName;
 	}
 
@@ -192,9 +193,10 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @return the marshalled property value
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
-	 * @throws DataModelConversionException if the property needs to be converted
-	 * to something different in order to adhere to the data model of the
-	 * iCalendar version being written (only applicable when writing 1.0 vCals)
+	 * @throws DataModelConversionException if the property needs to be
+	 * converted to something different in order to adhere to the data model of
+	 * the iCalendar version being written (only applicable when writing 1.0
+	 * vCals)
 	 */
 	public final String writeText(T property, WriteContext context) {
 		return _writeText(property, context);
@@ -346,9 +348,10 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @return the marshalled value
 	 * @throws SkipMeException if the property should not be written to the data
 	 * stream
-	 * @throws DataModelConversionException if the property needs to be converted
-	 * to something different in order to adhere to the data model of the
-	 * iCalendar version being written (only applicable when writing 1.0 vCals)
+	 * @throws DataModelConversionException if the property needs to be
+	 * converted to something different in order to adhere to the data model of
+	 * the iCalendar version being written (only applicable when writing 1.0
+	 * vCals)
 	 */
 	protected abstract String _writeText(T property, WriteContext context);
 
