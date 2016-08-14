@@ -19,9 +19,9 @@ import biweekly.ICalendar;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
+import biweekly.io.DataModelConversionException;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamReader;
-import biweekly.io.DataModelConversionException;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -310,12 +310,10 @@ public class ICalReader extends StreamReader {
 
 			//get the data type (VALUE parameter)
 			ICalDataType dataType = parameters.getValue();
+			parameters.setValue(null);
 			if (dataType == null) {
-				//use the default data type if there is no VALUE parameter
+				//use the property's default data type if there is no VALUE parameter
 				dataType = scribe.defaultDataType(reader.getVersion());
-			} else {
-				//remove VALUE parameter if it is set
-				parameters.setValue(null);
 			}
 
 			ICalComponent parentComponent = stack.peek();
@@ -422,6 +420,9 @@ public class ICalReader extends StreamReader {
 		reader.close();
 	}
 
+	/**
+	 * Keeps track of the hierarchy of nested components.
+	 */
 	private static class ComponentStack {
 		private final List<ICalComponent> components = new ArrayList<ICalComponent>();
 		private final List<String> names = new ArrayList<String>();
