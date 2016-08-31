@@ -10,6 +10,8 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.Version;
 import biweekly.util.VersionNumber;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -60,7 +62,7 @@ public class VersionScribe extends ICalPropertyScribe<Version> {
 
 	@Override
 	protected Version _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		SemiStructuredIterator it = semistructured(value, true);
+		SemiStructuredValueIterator it = new SemiStructuredValueIterator(value);
 		String one = it.next();
 		String two = it.next();
 

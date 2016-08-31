@@ -1,17 +1,12 @@
 package biweekly.io.scribe.property;
 
 import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
-import static biweekly.util.StringUtils.join;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -34,7 +29,6 @@ import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.json.JsonValue;
-import biweekly.io.text.ICalRawWriter;
 import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalElement.XCalValue;
 import biweekly.parameter.ICalParameters;
@@ -44,9 +38,8 @@ import biweekly.util.DateTimeComponents;
 import biweekly.util.ICalDate;
 import biweekly.util.ICalDateFormat;
 import biweekly.util.ListMultimap;
-import biweekly.util.StringUtils;
-import biweekly.util.StringUtils.JoinCallback;
-import biweekly.util.StringUtils.JoinMapCallback;
+
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -453,7 +446,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	protected T _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		XCalValue firstValue = element.firstValue();
 		ICalDataType dataType = firstValue.getDataType();
-		String value = escape(firstValue.getValue());
+		String value = VObjectPropertyValues.escape(firstValue.getValue());
 		return _parseText(value, dataType, parameters, context);
 	}
 
@@ -541,25 +534,25 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		if (values.size() > 1) {
 			List<String> multi = value.asMulti();
 			if (!multi.isEmpty()) {
-				return list(multi);
+				return VObjectPropertyValues.writeList(multi);
 			}
 		}
 
 		if (!values.isEmpty() && values.get(0).getArray() != null) {
 			List<List<String>> structured = value.asStructured();
 			if (!structured.isEmpty()) {
-				return structured(structured.toArray());
+				return VObjectPropertyValues.writeStructured(structured, true);
 			}
 		}
 
 		if (values.get(0).getObject() != null) {
 			ListMultimap<String, String> object = value.asObject();
 			if (!object.isEmpty()) {
-				return object(object.asMap());
+				return VObjectPropertyValues.writeMultimap(object.getMap());
 			}
 		}
 
-		return escape(value.asSingle());
+		return VObjectPropertyValues.escape(value.asSingle());
 	}
 
 	/**
@@ -569,488 +562,6 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 */
 	protected static boolean isInObservance(WriteContext context) {
 		return context.getParent() instanceof Observance;
-	}
-
-	/**
-	 * Unescapes all special characters that are escaped with a backslash, as
-	 * well as escaped newlines.
-	 * @param text the text to unescape
-	 * @return the unescaped text
-	 */
-	protected static String unescape(String text) {
-		if (text == null) {
-			return text;
-		}
-
-		StringBuilder sb = null;
-		boolean escaped = false;
-		for (int i = 0; i < text.length(); i++) {
-			char ch = text.charAt(i);
-
-			if (escaped) {
-				if (sb == null) {
-					sb = new StringBuilder(text.length());
-					sb.append(text.substring(0, i - 1));
-				}
-
-				escaped = false;
-
-				if (ch == 'n' || ch == 'N') {
-					//newlines appear as "\n" or "\N" (see RFC 5545 p.46)
-					sb.append(StringUtils.NEWLINE);
-					continue;
-				}
-
-				sb.append(ch);
-				continue;
-			}
-
-			if (ch == '\\') {
-				escaped = true;
-				continue;
-			}
-
-			if (sb != null) {
-				sb.append(ch);
-			}
-		}
-		return (sb == null) ? text : sb.toString();
-	}
-
-	/**
-	 * <p>
-	 * Escapes all special characters within a iCalendar value. These characters
-	 * are:
-	 * </p>
-	 * <ul>
-	 * <li>backslashes ({@code \})</li>
-	 * <li>commas ({@code ,})</li>
-	 * <li>semi-colons ({@code ;})</li>
-	 * </ul>
-	 * <p>
-	 * Newlines are not escaped by this method. They are escaped when the
-	 * iCalendar object is serialized (in the {@link ICalRawWriter} class).
-	 * </p>
-	 * @param text the text to escape
-	 * @return the escaped text
-	 */
-	protected static String escape(String text) {
-		if (text == null) {
-			return text;
-		}
-
-		String chars = "\\,;";
-		StringBuilder sb = null;
-		for (int i = 0; i < text.length(); i++) {
-			char ch = text.charAt(i);
-			if (chars.indexOf(ch) >= 0) {
-				if (sb == null) {
-					sb = new StringBuilder(text.length());
-					sb.append(text.substring(0, i));
-				}
-				sb.append('\\');
-			}
-
-			if (sb != null) {
-				sb.append(ch);
-			}
-		}
-		return (sb == null) ? text : sb.toString();
-	}
-
-	/**
-	 * Splits a string by a delimiter, taking escaped characters into account.
-	 * @param delimiter the delimiter (e.g. ',')
-	 * @return the factory object
-	 */
-	protected static Splitter splitter(char delimiter) {
-		return new Splitter(delimiter);
-	}
-
-	/**
-	 * A helper class for splitting strings.
-	 */
-	protected static class Splitter {
-		private char delimiter;
-		private boolean unescape = false;
-		private boolean nullEmpties = false;
-		private int limit = -1;
-
-		/**
-		 * Creates a new splitter object.
-		 * @param delimiter the delimiter character (e.g. ',')
-		 */
-		public Splitter(char delimiter) {
-			this.delimiter = delimiter;
-		}
-
-		/**
-		 * Sets whether to unescape each split string.
-		 * @param unescape true to unescape, false not to (default is false)
-		 * @return this
-		 */
-		public Splitter unescape(boolean unescape) {
-			this.unescape = unescape;
-			return this;
-		}
-
-		/**
-		 * Sets whether to treat empty elements as null elements.
-		 * @param nullEmpties true to treat them as null elements, false to
-		 * treat them as empty strings (default is false)
-		 * @return this
-		 */
-		public Splitter nullEmpties(boolean nullEmpties) {
-			this.nullEmpties = nullEmpties;
-			return this;
-		}
-
-		/**
-		 * Sets the max number of split strings it should parse.
-		 * @param limit the max number of split strings
-		 * @return this
-		 */
-		public Splitter limit(int limit) {
-			this.limit = limit;
-			return this;
-		}
-
-		/**
-		 * Performs the split operation.
-		 * @param string the string to split (e.g. "one,two,three")
-		 * @return the split string
-		 */
-		public List<String> split(String string) {
-			//doing it this way is 10x faster than a regex
-
-			List<String> list = new ArrayList<String>();
-			boolean escaped = false;
-			int start = 0;
-			for (int i = 0; i < string.length(); i++) {
-				char ch = string.charAt(i);
-
-				if (escaped) {
-					escaped = false;
-					continue;
-				}
-
-				if (ch == delimiter) {
-					add(string.substring(start, i), list);
-					start = i + 1;
-					if (limit > 0 && list.size() == limit - 1) {
-						break;
-					}
-
-					continue;
-				}
-
-				if (ch == '\\') {
-					escaped = true;
-					continue;
-				}
-			}
-
-			add(string.substring(start), list);
-
-			return list;
-		}
-
-		private void add(String str, List<String> list) {
-			str = str.trim();
-
-			if (nullEmpties && str.length() == 0) {
-				str = null;
-			} else if (unescape) {
-				str = ICalPropertyScribe.unescape(str);
-			}
-
-			list.add(str);
-		}
-	}
-
-	/**
-	 * Parses a comma-separated list of values.
-	 * @param value the string to parse (e.g. "one,two,th\,ree")
-	 * @return the parsed values
-	 */
-	protected static List<String> list(String value) {
-		if (value.length() == 0) {
-			return new ArrayList<String>(0);
-		}
-		return splitter(',').unescape(true).split(value);
-	}
-
-	/**
-	 * Writes a comma-separated list of values.
-	 * @param values the values to write
-	 * @return the list
-	 */
-	protected static String list(Object... values) {
-		return list(Arrays.asList(values));
-	}
-
-	/**
-	 * Writes a comma-separated list of values.
-	 * @param values the values to write
-	 * @param <T> the value class
-	 * @return the list
-	 */
-	protected static <T> String list(Collection<T> values) {
-		return list(values, new ListCallback<T>() {
-			public String asString(T value) {
-				return value.toString();
-			}
-		});
-	}
-
-	/**
-	 * Writes a comma-separated list of values.
-	 * @param values the values to write
-	 * @param callback callback function used for converting each value to a
-	 * string
-	 * @param <T> the value class
-	 * @return the list
-	 */
-	protected static <T> String list(Collection<T> values, final ListCallback<T> callback) {
-		return join(values, ",", new JoinCallback<T>() {
-			public void handle(StringBuilder sb, T value) {
-				if (value == null) {
-					return;
-				}
-
-				String valueStr = callback.asString(value);
-				sb.append(escape(valueStr));
-			}
-		});
-	}
-
-	/**
-	 * Callback function used in conjunction with the
-	 * {@link ICalPropertyScribe#list(Collection, ListCallback) list} method
-	 * @param <T> the value class
-	 */
-	protected interface ListCallback<T> {
-		/**
-		 * Converts a value to a string.
-		 * @param value the value (null values are not passed to this method, so
-		 * this parameter will never be null)
-		 * @return the string
-		 */
-		String asString(T value);
-	}
-
-	/**
-	 * Parses a list of values that are delimited by semicolons. Unlike
-	 * structured value components, semi-structured components cannot be
-	 * multi-valued.
-	 * @param value the string to parse (e.g. "one;two;three")
-	 * @return the parsed values
-	 */
-	protected static SemiStructuredIterator semistructured(String value) {
-		return semistructured(value, false);
-	}
-
-	/**
-	 * Parses a list of values that are delimited by semicolons. Unlike
-	 * structured value components, semi-structured components cannot be
-	 * multi-valued.
-	 * @param value the string to parse (e.g. "one;two;three")
-	 * @param nullEmpties true to treat empty elements as null, false to treat
-	 * them as empty strings
-	 * @return the parsed values
-	 */
-	protected static SemiStructuredIterator semistructured(String value, boolean nullEmpties) {
-		List<String> split = splitter(';').unescape(true).nullEmpties(nullEmpties).split(value);
-		return new SemiStructuredIterator(split.iterator());
-	}
-
-	/**
-	 * Parses a structured value.
-	 * @param value the string to parse (e.g. "one;two,three;four")
-	 * @return the parsed values
-	 */
-	protected static StructuredIterator structured(String value) {
-		List<String> split = splitter(';').split(value);
-		List<List<String>> components = new ArrayList<List<String>>(split.size());
-		for (String s : split) {
-			components.add(list(s));
-		}
-		return new StructuredIterator(components.iterator());
-	}
-
-	/**
-	 * Provides an iterator for a jCard structured value.
-	 * @param value the jCard value
-	 * @return the parsed values
-	 */
-	protected static StructuredIterator structured(JCalValue value) {
-		return new StructuredIterator(value.asStructured().iterator());
-	}
-
-	/**
-	 * <p>
-	 * Writes a structured value.
-	 * </p>
-	 * <p>
-	 * This method accepts a list of {@link Object} instances.
-	 * {@link Collection} objects will be treated as multi-valued components.
-	 * Null objects will be treated as empty components. All other objects will
-	 * have their {@code toString()} method invoked to generate the string
-	 * value.
-	 * </p>
-	 * @param values the values to write
-	 * @return the structured value string
-	 */
-	protected static String structured(Object... values) {
-		return join(Arrays.asList(values), ";", new JoinCallback<Object>() {
-			public void handle(StringBuilder sb, Object value) {
-				if (value == null) {
-					return;
-				}
-
-				if (value instanceof Collection) {
-					Collection<?> list = (Collection<?>) value;
-					sb.append(list(list));
-					return;
-				}
-
-				sb.append(escape(value.toString()));
-			}
-		});
-	}
-
-	/**
-	 * Iterates over the fields in a structured value.
-	 */
-	protected static class StructuredIterator {
-		private final Iterator<List<String>> it;
-
-		/**
-		 * Constructs a new structured iterator.
-		 * @param it the iterator to wrap
-		 */
-		public StructuredIterator(Iterator<List<String>> it) {
-			this.it = it;
-		}
-
-		/**
-		 * Gets the first value of the next component.
-		 * @return the first value, null if the value is an empty string, or
-		 * null if there are no more components
-		 */
-		public String nextString() {
-			if (!hasNext()) {
-				return null;
-			}
-
-			List<String> list = it.next();
-			if (list.isEmpty()) {
-				return null;
-			}
-
-			String value = list.get(0);
-			return (value.length() == 0) ? null : value;
-		}
-
-		/**
-		 * Gets the next component.
-		 * @return the next component, an empty list if the component is empty,
-		 * or an empty list of there are no more components
-		 */
-		public List<String> nextComponent() {
-			if (!hasNext()) {
-				return new ArrayList<String>(0); //the lists should be mutable so they can be directly assigned to the property object's fields
-			}
-
-			List<String> list = it.next();
-			if (list.size() == 1 && list.get(0).length() == 0) {
-				return new ArrayList<String>(0);
-			}
-
-			return list;
-		}
-
-		/**
-		 * Determines if there are any elements left in the value.
-		 * @return true if there are elements left, false if not
-		 */
-		public boolean hasNext() {
-			return it.hasNext();
-		}
-	}
-
-	/**
-	 * Iterates over the fields in a semi-structured value (a structured value
-	 * whose components cannot be multi-valued).
-	 */
-	protected static class SemiStructuredIterator {
-		private final Iterator<String> it;
-
-		/**
-		 * Constructs a new structured iterator.
-		 * @param it the iterator to wrap
-		 */
-		public SemiStructuredIterator(Iterator<String> it) {
-			this.it = it;
-		}
-
-		/**
-		 * Gets the next value.
-		 * @return the next value, null if the value is an empty string, or null
-		 * if there are no more values
-		 */
-		public String next() {
-			return hasNext() ? it.next() : null;
-		}
-
-		/**
-		 * Determines if there are any elements left in the value.
-		 * @return true if there are elements left, false if not
-		 */
-		public boolean hasNext() {
-			return it.hasNext();
-		}
-	}
-
-	/**
-	 * Writes an object property value to a string.
-	 * @param value the value
-	 * @param <T> the value class
-	 * @return the string
-	 */
-	protected static <T> String object(Map<String, List<T>> value) {
-		return join(value, ";", new JoinMapCallback<String, List<T>>() {
-			public void handle(StringBuilder sb, String key, List<T> value) {
-				sb.append(key.toUpperCase()).append('=').append(list(value));
-			}
-		});
-	}
-
-	/**
-	 * Parses an object property value.
-	 * @param value the value to parse
-	 * @return the parsed value
-	 */
-	protected static ListMultimap<String, String> object(String value) {
-		ListMultimap<String, String> map = new ListMultimap<String, String>();
-
-		for (String component : splitter(';').unescape(false).split(value)) {
-			if (component.length() == 0) {
-				continue;
-			}
-
-			int equals = component.indexOf('=');
-
-			String name = (equals < 0) ? component : component.substring(0, equals);
-			name = name.toUpperCase();
-			name = unescape(name);
-
-			List<String> values = (equals < 0) ? Arrays.asList("") : list(component.substring(equals + 1));
-
-			map.putAll(name, values);
-		}
-
-		return map;
 	}
 
 	/**

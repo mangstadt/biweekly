@@ -11,6 +11,8 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Importance;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -78,7 +80,7 @@ public class ImportanceScribe extends ICalPropertyScribe<Importance> {
 	//parses the property from a plain-text iCal
 	@Override
 	protected Importance _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		value = unescape(value);
+		value = VObjectPropertyValues.unescape(value);
 		return parse(value, dataType);
 	}
 

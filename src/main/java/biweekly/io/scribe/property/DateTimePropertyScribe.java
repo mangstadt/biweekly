@@ -12,6 +12,8 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.DateTimeProperty;
 import biweekly.util.ICalDate;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -56,7 +58,7 @@ public abstract class DateTimePropertyScribe<T extends DateTimeProperty> extends
 
 	@Override
 	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		value = unescape(value);
+		value = VObjectPropertyValues.unescape(value);
 		return parse(value, parameters, context);
 	}
 

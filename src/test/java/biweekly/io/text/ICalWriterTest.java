@@ -1090,7 +1090,7 @@ public class ICalWriterTest {
 	private void assertExample(ICalendar ical, String exampleFileName, ICalVersion version) throws IOException {
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, version);
-		writer.getRawWriter().getFoldedLineWriter().setLineLength(null);
+		writer.getVObjectWriter().getFoldedLineWriter().setLineLength(null);
 		writer.write(ical);
 		writer.close();
 

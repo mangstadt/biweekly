@@ -29,8 +29,12 @@ import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.util.org.apache.commons.codec.DecoderException;
-import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
+
+import com.github.mangstadt.vinnie.VObjectProperty;
+import com.github.mangstadt.vinnie.io.Context;
+import com.github.mangstadt.vinnie.io.SyntaxRules;
+import com.github.mangstadt.vinnie.io.VObjectDataListener;
+import com.github.mangstadt.vinnie.io.VObjectReader;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -86,41 +90,84 @@ import biweekly.util.org.apache.commons.codec.net.QuotedPrintableCodec;
 public class ICalReader extends StreamReader {
 	private static final String VCALENDAR_COMPONENT_NAME = ScribeIndex.getICalendarScribe().getComponentName(); //"VCALENDAR"
 
-	private final ICalRawReader reader;
-	private Charset defaultQuotedPrintableCharset;
-	private ICalVersion defaultVersion = ICalVersion.V2_0;
+	private final VObjectReader reader;
+	private final ICalVersion defaultVersion;
 
 	/**
+	 * Creates a new iCalendar reader.
 	 * @param str the string to read from
 	 */
 	public ICalReader(String str) {
-		this(new StringReader(str));
+		this(str, ICalVersion.V2_0);
 	}
 
 	/**
+	 * Creates a new iCalendar reader.
+	 * @param str the string to read from
+	 * @param defaultVersion the version to assume the iCalendar object is in
+	 * until a VERSION property is encountered (defaults to 2.0)
+	 */
+	public ICalReader(String str, ICalVersion defaultVersion) {
+		this(new StringReader(str), defaultVersion);
+	}
+
+	/**
+	 * Creates a new iCalendar reader.
 	 * @param in the input stream to read from
 	 */
 	public ICalReader(InputStream in) {
-		this(utf8Reader(in));
+		this(in, ICalVersion.V2_0);
 	}
 
 	/**
+	 * Creates a new iCalendar reader.
+	 * @param defaultVersion the version to assume the iCalendar object is in
+	 * until a VERSION property is encountered (defaults to 2.0)
+	 * @param in the input stream to read from
+	 */
+	public ICalReader(InputStream in, ICalVersion defaultVersion) {
+		this(utf8Reader(in), defaultVersion);
+	}
+
+	/**
+	 * Creates a new iCalendar reader.
 	 * @param file the file to read from
 	 * @throws FileNotFoundException if the file doesn't exist
 	 */
 	public ICalReader(File file) throws FileNotFoundException {
-		this(new BufferedReader(utf8Reader(file)));
+		this(file, ICalVersion.V2_0);
 	}
 
 	/**
+	 * Creates a new iCalendar reader.
+	 * @param file the file to read from
+	 * @param defaultVersion the version to assume the iCalendar object is in
+	 * until a VERSION property is encountered (defaults to 2.0)
+	 * @throws FileNotFoundException if the file doesn't exist
+	 */
+	public ICalReader(File file, ICalVersion defaultVersion) throws FileNotFoundException {
+		this(new BufferedReader(utf8Reader(file)), defaultVersion);
+	}
+
+	/**
+	 * Creates a new iCalendar reader.
 	 * @param reader the reader to read from
 	 */
 	public ICalReader(Reader reader) {
-		this.reader = new ICalRawReader(reader);
-		defaultQuotedPrintableCharset = this.reader.getEncoding();
-		if (defaultQuotedPrintableCharset == null) {
-			defaultQuotedPrintableCharset = Charset.defaultCharset();
-		}
+		this(reader, ICalVersion.V2_0);
+	}
+
+	/**
+	 * Creates a new iCalendar reader.
+	 * @param reader the reader to read from
+	 * @param defaultVersion the version to assume the iCalendar object is in
+	 * until a VERSION property is encountered (defaults to 2.0)
+	 */
+	public ICalReader(Reader reader, ICalVersion defaultVersion) {
+		SyntaxRules rules = SyntaxRules.iCalendar();
+		rules.setDefaultSyntaxStyle(defaultVersion.getSyntaxStyle());
+		this.reader = new VObjectReader(reader, rules);
+		this.defaultVersion = defaultVersion;
 	}
 
 	/**
@@ -160,7 +207,7 @@ public class ICalReader extends StreamReader {
 	 * @return the character set
 	 */
 	public Charset getDefaultQuotedPrintableCharset() {
-		return defaultQuotedPrintableCharset;
+		return reader.getDefaultQuotedPrintableCharset();
 	}
 
 	/**
@@ -177,7 +224,7 @@ public class ICalReader extends StreamReader {
 	 * @param charset the character set
 	 */
 	public void setDefaultQuotedPrintableCharset(Charset charset) {
-		defaultQuotedPrintableCharset = charset;
+		reader.setDefaultQuotedPrintableCharset(charset);
 	}
 
 	/**
@@ -192,128 +239,84 @@ public class ICalReader extends StreamReader {
 	 * iCalendar object does not have a VERSION property or for when the VERSION
 	 * property is not located at the beginning of the object.
 	 * </p>
-	 * @return the version (defaults to "2.0")
+	 * @return the default version (defaults to "2.0")
 	 */
 	public ICalVersion getDefaultVersion() {
 		return defaultVersion;
 	}
 
-	/**
-	 * <p>
-	 * Sets the iCalendar version that this reader will assume each iCalendar
-	 * object is formatted in up until a VERSION property is encountered.
-	 * </p>
-	 * <p>
-	 * All standards-compliant iCalendar objects contain a VERSION property at
-	 * the very beginning of the object, so for the vast majority of iCalendar
-	 * objects, this setting does nothing. This setting is needed for when the
-	 * iCalendar object does not have a VERSION property or for when the VERSION
-	 * property is not located at the beginning of the object.
-	 * </p>
-	 * @param version the version (defaults to "2.0")
-	 */
-	public void setDefaultVersion(ICalVersion version) {
-		defaultVersion = version;
-	}
-
 	@Override
 	protected ICalendar _readNext() throws IOException {
-		ICalendar ical = null;
-		ComponentStack stack = new ComponentStack();
-		reader.setVersion(defaultVersion);
+		VObjectDataListenerImpl listener = new VObjectDataListenerImpl();
+		reader.parse(listener);
+		return listener.ical;
+	}
 
-		while (true) {
-			//read next line
-			ICalRawLine line;
-			try {
-				line = reader.readLine();
-			} catch (ICalParseException e) {
-				warnings.add(e.getLineNumber(), null, 3, e.getMessage(), e.getLine());
-				continue;
+	private class VObjectDataListenerImpl implements VObjectDataListener {
+		private ICalendar ical = null;
+		private ICalVersion version = defaultVersion;
+		private ComponentStack stack = new ComponentStack();
+
+		public void onComponentBegin(String name, Context vobjectContext) {
+			//ignore everything until a VCALENDAR component is read
+			if (ical == null && !isVCalendarComponent(name)) {
+				return;
 			}
 
-			//EOF
-			if (line == null) {
-				break;
+			ICalComponent parentComponent = stack.peek();
+
+			ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(name, version);
+			ICalComponent component = scribe.emptyInstance();
+			stack.push(component);
+
+			if (parentComponent == null) {
+				ical = (ICalendar) component;
+				context.setVersion(version);
+			} else {
+				parentComponent.addComponent(component);
+			}
+		}
+
+		public void onComponentEnd(String name, Context vobjectContext) {
+			//VCALENDAR component not read yet, ignore
+			if (ical == null) {
+				return;
 			}
 
 			/*
-			 * Reassign the context object's version, because it's technically
-			 * possible that the version could change in the middle of the
-			 * iCalendar object (at least, for version 1.0).
+			 * VObjectDataListener guarantees correct ordering of component
+			 * begin/end callback invocations (see javadocs), so we can pop
+			 * blindly without checking if the component name matches.
 			 */
-			context.setVersion(reader.getVersion());
+			stack.pop();
 
-			String propertyName = line.getName();
-			if ("BEGIN".equalsIgnoreCase(propertyName)) {
-				String componentName = line.getValue();
-				if (ical == null && !VCALENDAR_COMPONENT_NAME.equalsIgnoreCase(componentName)) {
-					//keep reading until a VCALENDAR component is found
-					continue;
-				}
-
-				ICalComponent parentComponent = stack.peek();
-
-				ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(componentName, reader.getVersion());
-				ICalComponent component = scribe.emptyInstance();
-				stack.push(component, componentName);
-
-				if (parentComponent == null) {
-					ical = (ICalendar) component;
-				} else {
-					parentComponent.addComponent(component);
-				}
-
-				continue;
+			//stop reading when "END:VCALENDAR" is reached
+			if (stack.isEmpty()) {
+				vobjectContext.stop();
 			}
+		}
 
+		public void onProperty(VObjectProperty vobjectProperty, Context vobjectContext) {
+			//VCALENDAR component not read yet, ignore
 			if (ical == null) {
-				//VCALENDAR component hasn't been found yet
-				continue;
+				return;
 			}
 
-			if ("END".equalsIgnoreCase(propertyName)) {
-				String componentName = line.getValue();
+			String propertyName = vobjectProperty.getName();
+			ICalParameters parameters = new ICalParameters(vobjectProperty.getParameters().getMap());
+			String value = vobjectProperty.getValue();
 
-				//stop reading when "END:VCALENDAR" is reached
-				if (VCALENDAR_COMPONENT_NAME.equalsIgnoreCase(componentName)) {
-					break;
-				}
-
-				//find the component that this END property matches up with
-				boolean found = stack.popThrough(componentName);
-				if (!found) {
-					//END property does not match up with any BEGIN properties, so ignore
-					warnings.add(reader.getLineNumber(), "END", 2);
-				}
-
-				continue;
-			}
-
-			ICalParameters parameters = line.getParameters();
-			String value = line.getValue();
-
-			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyName, reader.getVersion());
+			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyName, version);
 
 			//process nameless parameters
-			processNamelessParameters(parameters, propertyName);
-
-			//decode property value from quoted-printable
-			if (parameters.getEncoding() == Encoding.QUOTED_PRINTABLE) {
-				try {
-					value = decodeQuotedPrintableValue(propertyName, parameters.getCharset(), value);
-				} catch (DecoderException e) {
-					warnings.add(reader.getLineNumber(), propertyName, 31, e.getMessage());
-				}
-				parameters.setEncoding(null);
-			}
+			processNamelessParameters(parameters, propertyName, version, vobjectContext.getLineNumber());
 
 			//get the data type (VALUE parameter)
 			ICalDataType dataType = parameters.getValue();
 			parameters.setValue(null);
 			if (dataType == null) {
 				//use the property's default data type if there is no VALUE parameter
-				dataType = scribe.defaultDataType(reader.getVersion());
+				dataType = scribe.defaultDataType(version);
 			}
 
 			ICalComponent parentComponent = stack.peek();
@@ -322,9 +325,9 @@ public class ICalReader extends StreamReader {
 				ICalProperty property = scribe.parseText(value, dataType, parameters, context);
 				parentComponent.addProperty(property);
 			} catch (SkipMeException e) {
-				warnings.add(reader.getLineNumber(), propertyName, 0, e.getMessage());
+				warnings.add(vobjectContext.getLineNumber(), propertyName, 0, e.getMessage());
 			} catch (CannotParseException e) {
-				warnings.add(reader.getLineNumber(), propertyName, 1, value, e.getMessage());
+				warnings.add(vobjectContext.getLineNumber(), propertyName, 1, value, e.getMessage());
 				ICalProperty property = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters, context);
 				parentComponent.addProperty(property);
 			} catch (DataModelConversionException e) {
@@ -337,87 +340,72 @@ public class ICalReader extends StreamReader {
 			}
 
 			for (Warning warning : context.getWarnings()) {
-				warnings.add(reader.getLineNumber(), propertyName, warning);
+				warnings.add(vobjectContext.getLineNumber(), propertyName, warning);
 			}
 		}
 
-		return ical;
-	}
+		public void onVersion(String value, Context vobjectContext) {
+			//ignore if we are not directly under the root VCALENDAR component
+			if (stack.size() != 1) {
+				return;
+			}
 
-	/**
-	 * Assigns names to all nameless parameters. v2.0 requires all parameters to
-	 * have names, but v1.0 does not.
-	 * @param parameters the parameters
-	 * @param propertyName the property name
-	 */
-	private void processNamelessParameters(ICalParameters parameters, String propertyName) {
-		List<String> namelessParamValues = parameters.removeAll(null);
-		if (namelessParamValues.isEmpty()) {
-			return;
+			version = ICalVersion.get(value);
+			context.setVersion(version);
 		}
 
-		if (reader.getVersion() != ICalVersion.V1_0) {
-			warnings.add(reader.getLineNumber(), propertyName, 4, namelessParamValues);
+		public void onWarning(com.github.mangstadt.vinnie.io.Warning warning, VObjectProperty property, Exception thrown, Context vobjectContext) {
+			//VCALENDAR component not read yet, ignore
+			if (ical == null) {
+				return;
+			}
+
+			warnings.add(vobjectContext.getLineNumber(), (property == null) ? null : property.getName(), new Warning(warning.getMessage()));
 		}
 
-		for (String paramValue : namelessParamValues) {
-			String paramName = guessParameterName(paramValue);
-			parameters.put(paramName, paramValue);
-		}
-	}
-
-	/**
-	 * Makes a guess as to what a parameter value's name should be.
-	 * @param value the parameter value
-	 * @return the guessed name
-	 */
-	private String guessParameterName(String value) {
-		if (ICalDataType.find(value) != null) {
-			return ICalParameters.VALUE;
+		private boolean isVCalendarComponent(String componentName) {
+			return VCALENDAR_COMPONENT_NAME.equals(componentName);
 		}
 
-		if (Encoding.find(value) != null) {
-			return ICalParameters.ENCODING;
-		}
+		/**
+		 * Assigns names to all nameless parameters. v2.0 requires all
+		 * parameters to have names, but v1.0 does not.
+		 * @param parameters the parameters
+		 * @param propertyName the property name
+		 */
+		private void processNamelessParameters(ICalParameters parameters, String propertyName, ICalVersion version, int lineNumber) {
+			List<String> namelessParamValues = parameters.removeAll(null);
+			if (namelessParamValues.isEmpty()) {
+				return;
+			}
 
-		//otherwise, assume it's a TYPE
-		return ICalParameters.TYPE;
-	}
+			if (version != ICalVersion.V1_0) {
+				warnings.add(lineNumber, propertyName, 4, namelessParamValues);
+			}
 
-	/**
-	 * Decodes the property value if it's encoded in quoted-printable encoding.
-	 * Quoted-printable encoding is only supported in v1.0.
-	 * @param propertyName the property name
-	 * @param charsetParam the value of the CHARSET parameter
-	 * @param value the property value
-	 * @return the decoded property value
-	 * @throws DecoderException if the value couldn't be decoded
-	 */
-	private String decodeQuotedPrintableValue(String propertyName, String charsetParam, String value) throws DecoderException {
-		//determine the character set
-		Charset charset;
-		if (charsetParam == null) {
-			charset = defaultQuotedPrintableCharset;
-		} else {
-			try {
-				charset = Charset.forName(charsetParam);
-			} catch (Throwable t) {
-				charset = defaultQuotedPrintableCharset;
-
-				//the given charset was invalid, so add a warning
-				warnings.add(reader.getLineNumber(), propertyName, 32, charsetParam, charset.name());
+			for (String paramValue : namelessParamValues) {
+				String paramName = guessParameterName(paramValue);
+				parameters.put(paramName, paramValue);
 			}
 		}
 
-		QuotedPrintableCodec codec = new QuotedPrintableCodec(charset.name());
-		return codec.decode(value);
-	}
+		/**
+		 * Makes a guess as to what a parameter value's name should be.
+		 * @param value the parameter value
+		 * @return the guessed name
+		 */
+		private String guessParameterName(String value) {
+			if (ICalDataType.find(value) != null) {
+				return ICalParameters.VALUE;
+			}
 
-	/**
-	 * Closes the underlying {@link Reader} object.
-	 */
-	public void close() throws IOException {
-		reader.close();
+			if (Encoding.find(value) != null) {
+				return ICalParameters.ENCODING;
+			}
+
+			//otherwise, assume it's a TYPE
+			return ICalParameters.TYPE;
+		}
 	}
 
 	/**
@@ -425,43 +413,53 @@ public class ICalReader extends StreamReader {
 	 */
 	private static class ComponentStack {
 		private final List<ICalComponent> components = new ArrayList<ICalComponent>();
-		private final List<String> names = new ArrayList<String>();
 
 		/**
-		 * Gets the component on the top of the stack.
+		 * Gets the top component from the stack.
 		 * @return the component or null if the stack is empty
 		 */
 		public ICalComponent peek() {
-			return components.isEmpty() ? null : components.get(components.size() - 1);
+			return isEmpty() ? null : components.get(components.size() - 1);
 		}
 
 		/**
 		 * Adds a component to the stack
 		 * @param component the component
-		 * @param name the component's name (e.g. "VEVENT")
 		 */
-		public void push(ICalComponent component, String name) {
+		public void push(ICalComponent component) {
 			components.add(component);
-			names.add(name);
 		}
 
 		/**
-		 * Removes all components that come after the given component, including
-		 * the given component itself.
-		 * @param name the component's name (e.g. "VEVENT")
-		 * @return true if the component was found, false if not
+		 * Removes the top component from the stack and returns it.
+		 * @return the top component or null if the stack is empty
 		 */
-		public boolean popThrough(String name) {
-			for (int i = components.size() - 1; i >= 0; i--) {
-				String curName = names.get(i);
-				if (curName.equalsIgnoreCase(name)) {
-					components.subList(i, components.size()).clear();
-					names.subList(i, names.size()).clear();
-					return true;
-				}
-			}
-
-			return false;
+		public ICalComponent pop() {
+			return isEmpty() ? null : components.remove(components.size() - 1);
 		}
+
+		/**
+		 * Determines if the stack is empty.
+		 * @return true if it's empty, false if not
+		 */
+		public boolean isEmpty() {
+			return components.isEmpty();
+		}
+
+		/**
+		 * Gets the size of the stack.
+		 * @return the size
+		 */
+		public int size() {
+			return components.size();
+		}
+	}
+
+	/**
+	 * Closes the input stream.
+	 * @throws IOException if there's a problem closing the input stream
+	 */
+	public void close() throws IOException {
+		reader.close();
 	}
 }

@@ -9,6 +9,8 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.IntegerProperty;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -56,7 +58,7 @@ public abstract class IntegerPropertyScribe<T extends IntegerProperty> extends I
 
 	@Override
 	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		value = unescape(value);
+		value = VObjectPropertyValues.unescape(value);
 		return parse(value);
 	}
 

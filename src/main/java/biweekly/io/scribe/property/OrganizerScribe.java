@@ -5,8 +5,8 @@ import java.util.Set;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.io.ParseContext;
 import biweekly.io.DataModelConversionException;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Role;

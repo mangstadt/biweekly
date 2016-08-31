@@ -59,7 +59,7 @@ public class ICalPropertyTest {
 	public void validate() {
 		ICalPropertyImpl property = spy(new ICalPropertyImpl());
 		property.addParameter("PARAM", "value,");
-		assertValidate(property).versions(ICalVersion.V1_0).run(53);
+		assertValidate(property).versions(ICalVersion.V1_0).run(58);
 		verify(property).validate(anyList(), eq(ICalVersion.V1_0), anyList());
 	}
 

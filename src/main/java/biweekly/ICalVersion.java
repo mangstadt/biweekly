@@ -1,5 +1,7 @@
 package biweekly;
 
+import com.github.mangstadt.vinnie.SyntaxStyle;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -34,28 +36,30 @@ public enum ICalVersion {
 	 * The original vCalendar specification.
 	 * @see <a href="http://www.imc.org/pdi/pdiproddev.html">1.0 specs</a>
 	 */
-	V1_0("1.0"),
+	V1_0("1.0", SyntaxStyle.OLD),
 
 	/**
-	 * An older, deprecated version of the iCalendar specification
-	 * (very similar to {@link #V2_0}).
+	 * An older, deprecated version of the iCalendar specification (very similar
+	 * to {@link #V2_0}).
 	 * @see <a href="https://tools.ietf.org/html/rfc2445">RFC 2445</a>
 	 */
-	V2_0_DEPRECATED("2.0"),
+	V2_0_DEPRECATED("2.0", SyntaxStyle.NEW),
 
 	/**
 	 * The latest iCalendar specification.
 	 * @see <a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a>
 	 */
-	V2_0("2.0");
+	V2_0("2.0", SyntaxStyle.NEW);
 
 	private final String version;
+	private final SyntaxStyle syntaxStyle;
 
 	/**
 	 * @param version the version number
 	 */
-	private ICalVersion(String version) {
+	private ICalVersion(String version, SyntaxStyle syntaxStyle) {
 		this.version = version;
+		this.syntaxStyle = syntaxStyle;
 	}
 
 	/**
@@ -64,6 +68,15 @@ public enum ICalVersion {
 	 */
 	public String getVersion() {
 		return version;
+	}
+
+	/**
+	 * Gets the syntax style used by this version when writing to a plain-text
+	 * data stream.
+	 * @return the syntax style
+	 */
+	public SyntaxStyle getSyntaxStyle() {
+		return syntaxStyle;
 	}
 
 	/**

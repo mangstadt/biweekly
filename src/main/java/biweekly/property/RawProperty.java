@@ -8,7 +8,10 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
-import biweekly.util.CharacterBitSet;
+
+import com.github.mangstadt.vinnie.SyntaxStyle;
+import com.github.mangstadt.vinnie.validate.AllowedCharacters;
+import com.github.mangstadt.vinnie.validate.VObjectValidator;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -126,9 +129,15 @@ public class RawProperty extends ICalProperty {
 
 	@Override
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
-		CharacterBitSet validCharacters = new CharacterBitSet("-a-zA-Z0-9");
-		if (!validCharacters.containsOnly(name)) {
-			warnings.add(Warning.validate(52, name));
+		SyntaxStyle syntax = version.getSyntaxStyle();
+		AllowedCharacters allowed = VObjectValidator.allowedCharactersParameterName(syntax, true);
+		if (!allowed.check(name)) {
+			if (syntax == SyntaxStyle.OLD) {
+				AllowedCharacters notAllowed = allowed.flip();
+				warnings.add(Warning.validate(59, name, notAllowed.toString(true)));
+			} else {
+				warnings.add(Warning.validate(52, name));
+			}
 		}
 	}
 

@@ -13,6 +13,8 @@ import biweekly.io.xml.XCalElement.XCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RawProperty;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -99,14 +101,14 @@ public class RawPropertyScribe extends ICalPropertyScribe<RawProperty> {
 		if (values.size() > 1) {
 			List<String> multi = value.asMulti();
 			if (!multi.isEmpty()) {
-				return list(multi);
+				return VObjectPropertyValues.writeList(multi);
 			}
 		}
 
 		if (!values.isEmpty() && values.get(0).getArray() != null) {
 			List<List<String>> structured = value.asStructured();
 			if (!structured.isEmpty()) {
-				return structured(structured.toArray());
+				return VObjectPropertyValues.writeStructured(structured, true);
 			}
 		}
 

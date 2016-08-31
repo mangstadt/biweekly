@@ -1,7 +1,6 @@
 package biweekly.util;
 
 import java.util.Collection;
-import java.util.Map;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -39,40 +38,6 @@ public final class StringUtils {
 	public static final String NEWLINE = System.getProperty("line.separator");
 
 	/**
-	 * Trims the whitespace off the left side of a string.
-	 * @param string the string to trim
-	 * @return the trimmed string
-	 */
-	public static String ltrim(String string) {
-		if (string == null) {
-			return null;
-		}
-
-		int i;
-		for (i = 0; i < string.length() && Character.isWhitespace(string.charAt(i)); i++) {
-			//do nothing
-		}
-		return (i == string.length()) ? "" : string.substring(i);
-	}
-
-	/**
-	 * Trims the whitespace off the right side of a string.
-	 * @param string the string to trim
-	 * @return the trimmed string
-	 */
-	public static String rtrim(String string) {
-		if (string == null) {
-			return null;
-		}
-
-		int i;
-		for (i = string.length() - 1; i >= 0 && Character.isWhitespace(string.charAt(i)); i--) {
-			//do nothing
-		}
-		return (i == 0) ? "" : string.substring(0, i + 1);
-	}
-
-	/**
 	 * <p>
 	 * Returns a substring of the given string that comes after the given
 	 * prefix. Prefix matching is case-insensitive.
@@ -82,10 +47,10 @@ public final class StringUtils {
 	 * </p>
 	 * 
 	 * <pre class="brush:java">
-	 * String result = StringUtils.afterPrefixIgnoreCase("MAILTO:email@example.com", "mailto:");
-	 * assertEquals("email@example.com", result);
+	 * String result = StringUtils.afterPrefixIgnoreCase(&quot;MAILTO:email@example.com&quot;, &quot;mailto:&quot;);
+	 * assertEquals(&quot;email@example.com&quot;, result);
 	 * 
-	 * result = StringUtils.afterPrefixIgnoreCase("http://www.google.com", "mailto:");
+	 * result = StringUtils.afterPrefixIgnoreCase(&quot;http://www.google.com&quot;, &quot;mailto:&quot;);
 	 * assertNull(result);
 	 * </pre>
 	 * 
@@ -113,46 +78,12 @@ public final class StringUtils {
 	 * Creates a string consisting of "count" occurrences of char "c".
 	 * @param c the character to repeat
 	 * @param count the number of times to repeat the character
-	 * @return the resulting string
-	 */
-	public static String repeat(char c, int count) {
-		if (count <= 0) {
-			return "";
-		}
-
-		StringBuilder sb = new StringBuilder(count);
-		repeat(c, count, sb);
-		return sb.toString();
-	}
-
-	/**
-	 * Creates a string consisting of "count" occurrences of char "c".
-	 * @param c the character to repeat
-	 * @param count the number of times to repeat the character
 	 * @param sb the character sequence to append the characters to
 	 */
 	public static void repeat(char c, int count, StringBuilder sb) {
 		for (int i = 0; i < count; i++) {
 			sb.append(c);
 		}
-	}
-
-	/**
-	 * Creates a string consisting of "count" occurrences of string "str".
-	 * @param str the string to repeat
-	 * @param count the number of times to repeat the string
-	 * @return the resulting string
-	 */
-	public static String repeat(String str, int count) {
-		if (count <= 0) {
-			return "";
-		}
-
-		StringBuilder sb = new StringBuilder(count * str.length());
-		for (int i = 0; i < count; i++) {
-			sb.append(str);
-		}
-		return sb.toString();
 	}
 
 	/**
@@ -208,30 +139,13 @@ public final class StringUtils {
 	public static <T> void join(Collection<T> collection, String delimiter, StringBuilder sb, JoinCallback<T> join) {
 		boolean first = true;
 		for (T element : collection) {
-			if (first) {
-				first = false;
-			} else {
+			if (!first) {
 				sb.append(delimiter);
 			}
-			join.handle(sb, element);
-		}
-	}
 
-	/**
-	 * Joins a map into a delimited list.
-	 * @param map the map
-	 * @param delimiter the delimiter (e.g. ",")
-	 * @param join callback function to call on every element in the collection
-	 * @param <K> the key class
-	 * @param <V> the value class
-	 * @return the final string
-	 */
-	public static <K, V> String join(Map<K, V> map, String delimiter, final JoinMapCallback<K, V> join) {
-		return join(map.entrySet(), delimiter, new JoinCallback<Map.Entry<K, V>>() {
-			public void handle(StringBuilder sb, Map.Entry<K, V> entry) {
-				join.handle(sb, entry.getKey(), entry.getValue());
-			}
-		});
+			join.handle(sb, element);
+			first = false;
+		}
 	}
 
 	/**
@@ -241,17 +155,6 @@ public final class StringUtils {
 	 */
 	public interface JoinCallback<T> {
 		void handle(StringBuilder sb, T value);
-	}
-
-	/**
-	 * Callback interface used with the
-	 * {@link #join(Map, String, JoinMapCallback)} method.
-	 * @author Michael Angstadt
-	 * @param <K> the key class
-	 * @param <V> the value class
-	 */
-	public interface JoinMapCallback<K, V> {
-		void handle(StringBuilder sb, K key, V value);
 	}
 
 	private StringUtils() {

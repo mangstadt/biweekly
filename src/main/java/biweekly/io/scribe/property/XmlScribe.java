@@ -23,6 +23,8 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.Xml;
 import biweekly.util.XmlUtils;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -63,7 +65,7 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 		Document value = property.getValue();
 		if (value != null) {
 			String xml = valueToString(value);
-			return escape(xml);
+			return VObjectPropertyValues.escape(xml);
 		}
 
 		return "";
@@ -71,7 +73,7 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 
 	@Override
 	protected Xml _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		value = unescape(value);
+		value = VObjectPropertyValues.unescape(value);
 		try {
 			return new Xml(value);
 		} catch (SAXException e) {

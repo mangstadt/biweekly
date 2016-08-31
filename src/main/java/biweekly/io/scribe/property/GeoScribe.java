@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import biweekly.ICalDataType;
@@ -12,6 +13,11 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Geo;
 import biweekly.util.ICalFloatFormatter;
+
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueBuilder;
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.StructuredValueIterator;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -70,9 +76,12 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 
 		switch (context.getVersion()) {
 		case V1_0:
-			return list(latitudeStr, longitudeStr);
+			return VObjectPropertyValues.writeList(Arrays.asList(latitudeStr, longitudeStr));
 		default:
-			return structured(latitudeStr, longitudeStr);
+			SemiStructuredValueBuilder builder = new SemiStructuredValueBuilder();
+			builder.append(latitudeStr);
+			builder.append(longitudeStr);
+			return builder.build(true);
 		}
 	}
 
@@ -81,15 +90,28 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 		String latitudeStr, longitudeStr;
 		switch (context.getVersion()) {
 		case V1_0:
-			Iterator<String> it1 = list(value).iterator();
-			latitudeStr = it1.hasNext() ? it1.next() : null;
-			longitudeStr = it1.hasNext() ? it1.next() : null;
-			break;
+			Iterator<String> listIt = VObjectPropertyValues.parseList(value).iterator();
 
+			latitudeStr = null;
+			if (listIt.hasNext()) {
+				latitudeStr = listIt.next();
+				if (latitudeStr.length() == 0) {
+					latitudeStr = null;
+				}
+			}
+
+			longitudeStr = null;
+			if (listIt.hasNext()) {
+				longitudeStr = listIt.next();
+				if (longitudeStr.length() == 0) {
+					longitudeStr = null;
+				}
+			}
+			break;
 		default:
-			SemiStructuredIterator it2 = semistructured(value, true);
-			latitudeStr = it2.next();
-			longitudeStr = it2.next();
+			SemiStructuredValueIterator semiStructuredIt = new SemiStructuredValueIterator(value);
+			latitudeStr = semiStructuredIt.next();
+			longitudeStr = semiStructuredIt.next();
 			break;
 		}
 
@@ -151,9 +173,9 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 
 	@Override
 	protected Geo _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		StructuredIterator it = structured(value);
-		String latitudeStr = it.nextString();
-		String longitudeStr = it.nextString();
+		StructuredValueIterator it = new StructuredValueIterator(value.asStructured());
+		String latitudeStr = it.nextValue();
+		String longitudeStr = it.nextValue();
 		return parse(latitudeStr, longitudeStr);
 	}
 

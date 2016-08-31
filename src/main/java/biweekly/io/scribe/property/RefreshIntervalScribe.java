@@ -10,6 +10,8 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.RefreshInterval;
 import biweekly.util.Duration;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -56,7 +58,7 @@ public class RefreshIntervalScribe extends ICalPropertyScribe<RefreshInterval> {
 
 	@Override
 	protected RefreshInterval _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		value = unescape(value);
+		value = VObjectPropertyValues.unescape(value);
 		return parse(value);
 	}
 

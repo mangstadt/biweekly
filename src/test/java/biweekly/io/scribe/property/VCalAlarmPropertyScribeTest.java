@@ -20,6 +20,8 @@ import biweekly.property.Trigger;
 import biweekly.property.VCalAlarmProperty;
 import biweekly.util.Duration;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -130,7 +132,7 @@ public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImp
 		}
 
 		@Override
-		protected VCalAlarmPropertyImpl create(ICalDataType dataType, SemiStructuredIterator it) {
+		protected VCalAlarmPropertyImpl create(ICalDataType dataType, SemiStructuredValueIterator it) {
 			List<String> dataValues = new ArrayList<String>();
 			while (it.hasNext()) {
 				dataValues.add(it.next());

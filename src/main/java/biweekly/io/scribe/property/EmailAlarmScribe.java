@@ -11,6 +11,8 @@ import biweekly.property.Action;
 import biweekly.property.Attendee;
 import biweekly.property.EmailAlarm;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -65,7 +67,7 @@ public class EmailAlarmScribe extends VCalAlarmPropertyScribe<EmailAlarm> {
 	}
 
 	@Override
-	protected EmailAlarm create(ICalDataType dataType, SemiStructuredIterator it) {
+	protected EmailAlarm create(ICalDataType dataType, SemiStructuredValueIterator it) {
 		String email = it.next();
 		String note = it.next();
 

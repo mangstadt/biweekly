@@ -10,6 +10,8 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.UtcOffsetProperty;
 import biweekly.util.UtcOffset;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -57,7 +59,7 @@ public abstract class UtcOffsetPropertyScribe<T extends UtcOffsetProperty> exten
 
 	@Override
 	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		value = unescape(value);
+		value = VObjectPropertyValues.unescape(value);
 		return parse(value);
 	}
 

@@ -19,6 +19,8 @@ import biweekly.util.Duration;
 import biweekly.util.ICalDate;
 import biweekly.util.Period;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -61,35 +63,35 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 	@Override
 	protected String _writeText(final FreeBusy property, final WriteContext context) {
 		List<Period> values = property.getValues();
+		List<String> strValues = new ArrayList<String>(values.size());
+		for (Period period : values) {
+			StringBuilder sb = new StringBuilder();
 
-		return list(values, new ListCallback<Period>() {
-			public String asString(Period period) {
-				StringBuilder sb = new StringBuilder();
-
-				Date start = period.getStartDate();
-				if (start != null) {
-					String dateStr = date(start, property, context).extended(false).write();
-					sb.append(dateStr);
-				}
-
-				sb.append('/');
-
-				Date end = period.getEndDate();
-				if (end != null) {
-					String dateStr = date(end, property, context).extended(false).write();
-					sb.append(dateStr);
-				} else if (period.getDuration() != null) {
-					sb.append(period.getDuration());
-				}
-
-				return sb.toString();
+			Date start = period.getStartDate();
+			if (start != null) {
+				String dateStr = date(start, property, context).extended(false).write();
+				sb.append(dateStr);
 			}
-		});
+
+			sb.append('/');
+
+			Date end = period.getEndDate();
+			if (end != null) {
+				String dateStr = date(end, property, context).extended(false).write();
+				sb.append(dateStr);
+			} else if (period.getDuration() != null) {
+				sb.append(period.getDuration());
+			}
+
+			strValues.add(sb.toString());
+		}
+
+		return VObjectPropertyValues.writeList(strValues);
 	}
 
 	@Override
 	protected FreeBusy _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		return parse(list(value), parameters, context);
+		return parse(VObjectPropertyValues.parseList(value), parameters, context);
 	}
 
 	@Override

@@ -4,8 +4,8 @@ import java.util.Iterator;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.io.ParseContext;
 import biweekly.io.DataModelConversionException;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.parameter.ParticipationLevel;
@@ -13,6 +13,8 @@ import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
 import biweekly.property.Attendee;
 import biweekly.property.Organizer;
+
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -298,7 +300,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			Organizer organizer = new Organizer(attendee.getCommonName(), attendee.getEmail());
 			organizer.setUri(attendee.getUri());
 			organizer.setParameters(parameters);
-			
+
 			attendee.setParameters(parameters);
 			DataModelConversionException conversionException = new DataModelConversionException(attendee);
 			conversionException.getProperties().add(organizer);
@@ -319,11 +321,9 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 		String email = property.getEmail();
 		switch (context.getVersion()) {
 		case V1_0:
-			if (name != null && email != null) {
-				return escape(name + " <" + email + ">");
-			}
 			if (email != null) {
-				return escape(email);
+				String value = (name == null) ? email : name + " <" + email + ">";
+				return VObjectPropertyValues.escape(value);
 			}
 
 			break;

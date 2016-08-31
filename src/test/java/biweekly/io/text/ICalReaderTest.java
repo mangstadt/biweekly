@@ -222,7 +222,7 @@ public class ICalReaderTest {
 		assertEquals(new Version("2.0", "3.0"), icalendar.getProperty(Version.class));
 		assertEquals(V2_0, icalendar.getVersion()); //default version
 
-		assertWarnings(0, reader);
+		assertWarnings(1, reader);
 		assertNull(reader.readNext());
 	}
 
@@ -243,12 +243,12 @@ public class ICalReaderTest {
 		assertEquals("invalid", icalendar.getExperimentalProperty("VERSION").getValue());
 		assertEquals(V2_0, icalendar.getVersion()); //default version
 
-		assertWarnings(1, reader);
+		assertWarnings(2, reader);
 		assertNull(reader.readNext());
 	}
 
 	@Test
-	public void setDefaultVersion() throws Throwable {
+	public void defaultVersion() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -283,8 +283,7 @@ public class ICalReaderTest {
 		}
 
 		{
-			ICalReader reader = new ICalReader(ical);
-			reader.setDefaultVersion(V1_0);
+			ICalReader reader = new ICalReader(ical, V1_0);
 
 			ICalendar icalendar = reader.readNext();
 			assertVersion(V1_0, icalendar);

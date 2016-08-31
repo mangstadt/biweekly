@@ -9,6 +9,8 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.Conference;
 import biweekly.util.DataUri;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -50,7 +52,7 @@ public class ConferenceScribe extends ICalPropertyScribe<Conference> {
 
 	@Override
 	protected Conference _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		value = unescape(value);
+		value = VObjectPropertyValues.unescape(value);
 		return parse(value);
 	}
 

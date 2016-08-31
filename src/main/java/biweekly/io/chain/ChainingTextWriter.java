@@ -129,7 +129,16 @@ public class ChainingTextWriter extends ChainingWriter<ChainingTextWriter> {
 	 * @throws IOException if there's a problem writing to the output stream
 	 */
 	public void go(OutputStream out) throws IOException {
-		go(new ICalWriter(out, version));
+		/*
+		 * The ICalWriter constructor does not allow a null version, so if the
+		 * user hasn't chosen a version, pass one in to avoid a NPE.
+		 * 
+		 * The version that is passed in doesn't matter because, when the
+		 * iCalendars are written, the writer's target version is set to the
+		 * version assigned to each iCalendar being written.
+		 */
+		ICalVersion v = (version == null) ? ICalVersion.V2_0 : version;
+		go(new ICalWriter(out, v));
 	}
 
 	/**
@@ -164,7 +173,16 @@ public class ChainingTextWriter extends ChainingWriter<ChainingTextWriter> {
 	 * @throws IOException if there's a problem writing to the writer
 	 */
 	public void go(Writer writer) throws IOException {
-		go(new ICalWriter(writer, version));
+		/*
+		 * The ICalWriter constructor does not allow a null version, so if the
+		 * user hasn't chosen a version, pass one in to avoid a NPE.
+		 * 
+		 * The version that is passed in doesn't matter because, when the
+		 * iCalendars are written, the writer's target version is set to the
+		 * version assigned to each iCalendar being written.
+		 */
+		ICalVersion v = (version == null) ? ICalVersion.V2_0 : version;
+		go(new ICalWriter(writer, v));
 	}
 
 	private void go(ICalWriter writer) throws IOException {

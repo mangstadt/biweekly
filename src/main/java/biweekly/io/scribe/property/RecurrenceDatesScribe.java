@@ -21,6 +21,8 @@ import biweekly.util.Duration;
 import biweekly.util.ICalDate;
 import biweekly.util.Period;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -91,44 +93,47 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	protected String _writeText(final RecurrenceDates property, final WriteContext context) {
 		List<ICalDate> dates = property.getDates();
 		if (!dates.isEmpty()) {
-			final boolean inObservance = isInObservance(context);
-			return list(dates, new ListCallback<ICalDate>() {
-				public String asString(ICalDate date) {
-					if (inObservance) {
-						return date(date).observance(true).extended(false).write();
-					}
-					return date(date, property, context).extended(false).write();
+			boolean inObservance = isInObservance(context);
+			List<String> values = new ArrayList<String>(dates.size());
+			for (ICalDate date : dates) {
+				String value;
+				if (inObservance) {
+					value = date(date).observance(true).extended(false).write();
+				} else {
+					value = date(date, property, context).extended(false).write();
 				}
-			});
+				values.add(value);
+			}
+			return VObjectPropertyValues.writeList(values);
 		}
 
 		//TODO vCal does not support periods
 		List<Period> periods = property.getPeriods();
 		if (!periods.isEmpty()) {
-			return list(periods, new ListCallback<Period>() {
-				public String asString(Period period) {
-					StringBuilder sb = new StringBuilder();
+			List<String> values = new ArrayList<String>(periods.size());
+			for (Period period : periods) {
+				StringBuilder sb = new StringBuilder();
 
-					Date start = period.getStartDate();
-					if (start != null) {
-						String date = date(start, property, context).extended(false).write();
-						sb.append(date);
-					}
-
-					sb.append('/');
-
-					Date end = period.getEndDate();
-					Duration duration = period.getDuration();
-					if (end != null) {
-						String date = date(end, property, context).extended(false).write();
-						sb.append(date);
-					} else if (duration != null) {
-						sb.append(duration);
-					}
-
-					return sb.toString();
+				Date start = period.getStartDate();
+				if (start != null) {
+					String date = date(start, property, context).extended(false).write();
+					sb.append(date);
 				}
-			});
+
+				sb.append('/');
+
+				Date end = period.getEndDate();
+				Duration duration = period.getDuration();
+				if (end != null) {
+					String date = date(end, property, context).extended(false).write();
+					sb.append(date);
+				} else if (duration != null) {
+					sb.append(duration);
+				}
+
+				values.add(sb.toString());
+			}
+			return VObjectPropertyValues.writeList(values);
 		}
 
 		return "";
@@ -136,7 +141,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 	@Override
 	protected RecurrenceDates _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		return parse(list(value), dataType, parameters, context);
+		return parse(VObjectPropertyValues.parseList(value), dataType, parameters, context);
 	}
 
 	@Override

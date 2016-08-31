@@ -8,6 +8,8 @@ import biweekly.component.VAlarm;
 import biweekly.property.Action;
 import biweekly.property.ProcedureAlarm;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -53,7 +55,7 @@ public class ProcedureAlarmScribe extends VCalAlarmPropertyScribe<ProcedureAlarm
 	}
 
 	@Override
-	protected ProcedureAlarm create(ICalDataType dataType, SemiStructuredIterator it) {
+	protected ProcedureAlarm create(ICalDataType dataType, SemiStructuredValueIterator it) {
 		return new ProcedureAlarm(it.next());
 	}
 

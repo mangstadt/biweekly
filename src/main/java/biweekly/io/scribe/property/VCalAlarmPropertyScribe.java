@@ -10,14 +10,17 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.component.VAlarm;
 import biweekly.io.CannotParseException;
-import biweekly.io.ParseContext;
 import biweekly.io.DataModelConversionException;
+import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Action;
 import biweekly.property.Trigger;
 import biweekly.property.VCalAlarmProperty;
 import biweekly.util.Duration;
+
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -76,12 +79,12 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 		List<String> dataValues = writeData(property);
 		values.addAll(dataValues);
 
-		return structured(values.toArray());
+		return VObjectPropertyValues.writeSemiStructured(values, true);
 	}
 
 	@Override
 	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		SemiStructuredIterator it = semistructured(value);
+		SemiStructuredValueIterator it = new SemiStructuredValueIterator(value);
 
 		String next = next(it);
 		Date start;
@@ -119,7 +122,7 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 		throw conversionException;
 	}
 
-	private String next(SemiStructuredIterator it) {
+	private String next(SemiStructuredValueIterator it) {
 		String next = it.next();
 		if (next == null) {
 			return null;
@@ -162,7 +165,7 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 	 * to all vCal alarm properties)
 	 * @return the new property
 	 */
-	protected abstract T create(ICalDataType dataType, SemiStructuredIterator it);
+	protected abstract T create(ICalDataType dataType, SemiStructuredValueIterator it);
 
 	/**
 	 * Determines what kind of {@link Action} property this vCal alarm property

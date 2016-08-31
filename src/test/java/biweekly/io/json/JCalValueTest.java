@@ -162,7 +162,7 @@ public class JCalValueTest {
 	@Test
 	public void asStructured() {
 		JCalValue value = new JCalValue(new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue(false), new JsonValue((Object) null))));
-		assertEquals(Arrays.asList(Arrays.asList("value1"), Arrays.asList("false"), Arrays.asList("")), value.asStructured());
+		assertEquals(Arrays.asList(Arrays.asList("value1"), Arrays.asList("false"), Arrays.asList()), value.asStructured());
 	}
 
 	@SuppressWarnings("unchecked")

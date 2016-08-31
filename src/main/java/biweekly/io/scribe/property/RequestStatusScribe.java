@@ -12,6 +12,10 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RequestStatus;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueBuilder;
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.StructuredValueIterator;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -48,12 +52,16 @@ public class RequestStatusScribe extends ICalPropertyScribe<RequestStatus> {
 
 	@Override
 	protected String _writeText(RequestStatus property, WriteContext context) {
-		return structured(property.getStatusCode(), property.getDescription(), property.getExceptionText());
+		SemiStructuredValueBuilder builder = new SemiStructuredValueBuilder();
+		builder.append(property.getStatusCode());
+		builder.append(property.getDescription());
+		builder.append(property.getExceptionText());
+		return builder.build(true);
 	}
 
 	@Override
 	protected RequestStatus _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		SemiStructuredIterator it = semistructured(value, true);
+		SemiStructuredValueIterator it = new SemiStructuredValueIterator(value);
 
 		RequestStatus requestStatus = new RequestStatus(it.next());
 		requestStatus.setDescription(it.next());
@@ -95,11 +103,11 @@ public class RequestStatusScribe extends ICalPropertyScribe<RequestStatus> {
 
 	@Override
 	protected RequestStatus _parseJson(JCalValue value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		StructuredIterator it = structured(value);
+		StructuredValueIterator it = new StructuredValueIterator(value.asStructured());
 
-		RequestStatus requestStatus = new RequestStatus(it.nextString());
-		requestStatus.setDescription(it.nextString());
-		requestStatus.setExceptionText(it.nextString());
+		RequestStatus requestStatus = new RequestStatus(it.nextValue());
+		requestStatus.setDescription(it.nextValue());
+		requestStatus.setExceptionText(it.nextValue());
 		return requestStatus;
 	}
 

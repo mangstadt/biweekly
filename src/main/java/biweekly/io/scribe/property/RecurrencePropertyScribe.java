@@ -34,6 +34,8 @@ import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
 import biweekly.util.XmlUtils;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -100,7 +102,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		//iCal 2.0
 		if (context.getVersion() != ICalVersion.V1_0) {
 			ListMultimap<String, Object> components = buildComponents(property, context, false);
-			return object(components.asMap());
+			return VObjectPropertyValues.writeMultimap(components.getMap());
 		}
 
 		//vCal 1.0
@@ -203,7 +205,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			return parseTextVersion1(value, dataType, parameters, context);
 		}
 
-		ListMultimap<String, String> rules = object(value);
+		ListMultimap<String, String> rules = new ListMultimap<String, String>(VObjectPropertyValues.parseMultimap(value));
 
 		List<Warning> warnings = context.getWarnings();
 		parseFreq(rules, builder, warnings);

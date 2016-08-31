@@ -15,6 +15,9 @@ import biweekly.property.Daylight;
 import biweekly.util.ICalDate;
 import biweekly.util.UtcOffset;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -73,18 +76,18 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 		String daylightName = property.getDaylightName();
 		values.add((daylightName == null) ? "" : daylightName);
 
-		return structured(values.toArray());
+		return VObjectPropertyValues.writeSemiStructured(values, true);
 	}
 
 	@Override
 	protected Daylight _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		StructuredIterator it = structured(value);
+		SemiStructuredValueIterator it = new SemiStructuredValueIterator(value);
 
-		String next = it.nextString();
+		String next = it.next();
 		boolean flag = (next == null) ? false : Boolean.parseBoolean(next);
 
 		UtcOffset offset = null;
-		next = it.nextString();
+		next = it.next();
 		if (next != null) {
 			try {
 				offset = UtcOffset.parse(next);
@@ -94,7 +97,7 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 		}
 
 		ICalDate start = null;
-		next = it.nextString();
+		next = it.next();
 		if (next != null) {
 			try {
 				start = date(next).parse();
@@ -104,7 +107,7 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 		}
 
 		ICalDate end = null;
-		next = it.nextString();
+		next = it.next();
 		if (next != null) {
 			try {
 				end = date(next).parse();
@@ -113,8 +116,8 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 			}
 		}
 
-		String standardName = it.nextString();
-		String daylightName = it.nextString();
+		String standardName = it.next();
+		String daylightName = it.next();
 
 		return new Daylight(flag, offset, start, end, standardName, daylightName);
 	}

@@ -30,6 +30,9 @@ import biweekly.property.ICalProperty;
 import biweekly.property.Timezone;
 import biweekly.property.Version;
 
+import com.github.mangstadt.vinnie.VObjectParameters;
+import com.github.mangstadt.vinnie.io.VObjectWriter;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -85,16 +88,14 @@ import biweekly.property.Version;
  * ICalWriter writer = new ICalWriter(...);
  * 
  * //disable line folding
- * writer.getRawWriter().getFoldedLineWriter().setLineLength(null);
+ * writer.getVObjectWriter().getFoldedLineWriter().setLineLength(null);
  * 
  * //set line length (defaults to 75)
- * writer.getRawWriter().getFoldedLineWriter().setLineLength(50);
+ * writer.getVObjectWriter().getFoldedLineWriter().setLineLength(50);
  * 
  * //change folded line indent string (defaults to one space character)
- * writer.getRawWriter().getFoldedLineWriter().setIndent("\t");
- * 
- * //change newline character (defaults to CRLF)
- * writer.getRawWriter().getFoldedLineWriter().setNewline("**");
+ * writer.getVObjectWriter().getFoldedLineWriter().setIndent("\t");
+ *
  * </pre>
  * @author Michael Angstadt
  * @see <a href="http://www.imc.org/pdi/pdiproddev.html">1.0 specs</a>
@@ -102,42 +103,48 @@ import biweekly.property.Version;
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalWriter extends StreamWriter implements Flushable {
-	private final ICalRawWriter writer;
+	private final VObjectWriter writer;
+	private ICalVersion targetVersion;
 
 	/**
+	 * Creates a new iCalendar writer.
 	 * @param out the output stream to write to
-	 * @param version the iCalendar version to adhere to
+	 * @param targetVersion the iCalendar version to adhere to
 	 */
-	public ICalWriter(OutputStream out, ICalVersion version) {
-		this((version == ICalVersion.V1_0) ? new OutputStreamWriter(out) : utf8Writer(out), version);
+	public ICalWriter(OutputStream out, ICalVersion targetVersion) {
+		this((targetVersion == ICalVersion.V1_0) ? new OutputStreamWriter(out) : utf8Writer(out), targetVersion);
 	}
 
 	/**
+	 * Creates a new iCalendar writer.
 	 * @param file the file to write to
-	 * @param version the iCalendar version to adhere to
+	 * @param targetVersion the iCalendar version to adhere to
 	 * @throws IOException if the file cannot be written to
 	 */
-	public ICalWriter(File file, ICalVersion version) throws IOException {
-		this(file, false, version);
+	public ICalWriter(File file, ICalVersion targetVersion) throws IOException {
+		this(file, false, targetVersion);
 	}
 
 	/**
+	 * Creates a new iCalendar writer.
 	 * @param file the file to write to
-	 * @param version the iCalendar version to adhere to
+	 * @param targetVersion the iCalendar version to adhere to
 	 * @param append true to append to the end of the file, false to overwrite
 	 * it
 	 * @throws IOException if the file cannot be written to
 	 */
-	public ICalWriter(File file, boolean append, ICalVersion version) throws IOException {
-		this((version == ICalVersion.V1_0) ? new FileWriter(file, append) : utf8Writer(file, append), version);
+	public ICalWriter(File file, boolean append, ICalVersion targetVersion) throws IOException {
+		this((targetVersion == ICalVersion.V1_0) ? new FileWriter(file, append) : utf8Writer(file, append), targetVersion);
 	}
 
 	/**
+	 * Creates a new iCalendar writer.
 	 * @param writer the writer to write to
-	 * @param version the iCalendar version to adhere to
+	 * @param targetVersion the iCalendar version to adhere to
 	 */
-	public ICalWriter(Writer writer, ICalVersion version) {
-		this.writer = new ICalRawWriter(writer, version);
+	public ICalWriter(Writer writer, ICalVersion targetVersion) {
+		this.writer = new VObjectWriter(writer, targetVersion.getSyntaxStyle());
+		this.targetVersion = targetVersion;
 	}
 
 	/**
@@ -145,7 +152,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	 * stream.
 	 * @return the raw writer
 	 */
-	public ICalRawWriter getRawWriter() {
+	public VObjectWriter getVObjectWriter() {
 		return writer;
 	}
 
@@ -155,7 +162,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	 */
 	@Override
 	public ICalVersion getTargetVersion() {
-		return writer.getVersion();
+		return targetVersion;
 	}
 
 	/**
@@ -163,22 +170,19 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	 * @param targetVersion the iCalendar version
 	 */
 	public void setTargetVersion(ICalVersion targetVersion) {
-		writer.setVersion(targetVersion);
+		this.targetVersion = targetVersion;
+		writer.setSyntaxStyle(targetVersion.getSyntaxStyle());
 	}
 
 	/**
 	 * <p>
 	 * Gets whether the writer will apply circumflex accent encoding on
 	 * parameter values (disabled by default). This escaping mechanism allows
-	 * for newlines and double quotes to be included in parameter values.
-	 * </p>
-	 * 
-	 * <p>
-	 * When disabled, the writer will replace newlines with spaces and double
-	 * quotes with single quotes.
+	 * for newlines and double quotes to be included in parameter values. It is
+	 * only supported by iCalendar version 2.0.
 	 * </p>
 	 * @return true if circumflex accent encoding is enabled, false if not
-	 * @see ICalRawWriter#isCaretEncodingEnabled()
+	 * @see VObjectWriter#isCaretEncodingEnabled()
 	 */
 	public boolean isCaretEncodingEnabled() {
 		return writer.isCaretEncodingEnabled();
@@ -188,16 +192,16 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	 * <p>
 	 * Sets whether the writer will apply circumflex accent encoding on
 	 * parameter values (disabled by default). This escaping mechanism allows
-	 * for newlines and double quotes to be included in parameter values. This
-	 * will only be done for version 2.0 iCalendar objects.
+	 * for newlines and double quotes to be included in parameter values. It is
+	 * only supported by iCalendar version 2.0.
 	 * </p>
-	 * 
 	 * <p>
-	 * When disabled, the writer will replace newlines with spaces and double
-	 * quotes with single quotes.
+	 * Note that this encoding mechanism is defined separately from the
+	 * iCalendar specification and may not be supported by the consumer of the
+	 * iCalendar object.
 	 * </p>
 	 * @param enable true to use circumflex accent encoding, false not to
-	 * @see ICalRawWriter#setCaretEncodingEnabled(boolean)
+	 * @see VObjectWriter#setCaretEncodingEnabled(boolean)
 	 */
 	public void setCaretEncodingEnabled(boolean enable) {
 		writer.setCaretEncodingEnabled(enable);
@@ -310,8 +314,8 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		 * Only add a VALUE parameter if the data type is: (1) not "unknown" (2)
 		 * different from the property's default data type
 		 */
-		ICalDataType dataType = scribe.dataType(property, writer.getVersion());
-		if (dataType != null && dataType != scribe.defaultDataType(writer.getVersion())) {
+		ICalDataType dataType = scribe.dataType(property, targetVersion);
+		if (dataType != null && dataType != scribe.defaultDataType(targetVersion)) {
 			parameters = new ICalParameters(parameters);
 			parameters.setValue(dataType);
 		}
@@ -320,19 +324,20 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		String propertyName = scribe.getPropertyName(getTargetVersion());
 
 		//write property to data stream
-		writer.writeProperty(propertyName, parameters, value);
+		writer.writeProperty(null, propertyName, new VObjectParameters(parameters.getMap()), value);
 	}
 
 	/**
-	 * Flushes the stream.
-	 * @throws IOException if there's a problem flushing the stream
+	 * Flushes the output stream.
+	 * @throws IOException if there's a problem flushing the output stream
 	 */
 	public void flush() throws IOException {
 		writer.flush();
 	}
 
 	/**
-	 * Closes the underlying {@link Writer} object.
+	 * Closes the output stream.
+	 * @throws IOException if there's a problem closing the output stream
 	 */
 	public void close() throws IOException {
 		writer.close();

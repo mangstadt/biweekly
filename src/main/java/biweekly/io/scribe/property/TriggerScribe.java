@@ -16,6 +16,8 @@ import biweekly.property.Trigger;
 import biweekly.util.Duration;
 import biweekly.util.ICalDate;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -68,7 +70,7 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 
 	@Override
 	protected Trigger _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		value = unescape(value);
+		value = VObjectPropertyValues.unescape(value);
 
 		try {
 			ICalDate date = date(value).parse();

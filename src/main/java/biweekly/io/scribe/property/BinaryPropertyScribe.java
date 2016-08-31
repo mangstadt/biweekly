@@ -11,6 +11,8 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.BinaryProperty;
 import biweekly.util.org.apache.commons.codec.binary.Base64;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -86,7 +88,7 @@ public abstract class BinaryPropertyScribe<T extends BinaryProperty> extends ICa
 
 	@Override
 	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		value = unescape(value);
+		value = VObjectPropertyValues.unescape(value);
 
 		if (dataType == ICalDataType.BINARY || parameters.getEncoding() == Encoding.BASE64) {
 			byte[] data = Base64.decodeBase64(value);

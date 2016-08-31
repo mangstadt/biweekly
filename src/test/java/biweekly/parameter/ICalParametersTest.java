@@ -121,9 +121,21 @@ public class ICalParametersTest {
 	@Test
 	public void validate_parameter_name() {
 		params.replace("YES/NO", "value");
-		for (ICalVersion version : ICalVersion.values()) {
-			assertWarnings(1, params.validate(version));
-		}
+		assertWarnings(0, params.validate(V1_0));
+		assertWarnings(1, params.validate(V2_0_DEPRECATED));
+		assertWarnings(1, params.validate(V2_0));
+
+		params.clear();
+		params.replace("NAME[]", "value");
+		assertWarnings(1, params.validate(V1_0));
+		assertWarnings(1, params.validate(V2_0_DEPRECATED));
+		assertWarnings(1, params.validate(V2_0));
+
+		params.clear();
+		params.replace("NAME", "value");
+		assertWarnings(0, params.validate(V1_0));
+		assertWarnings(0, params.validate(V2_0_DEPRECATED));
+		assertWarnings(0, params.validate(V2_0));
 	}
 
 	@Test

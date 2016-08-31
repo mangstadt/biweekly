@@ -11,6 +11,8 @@ import biweekly.property.Attachment;
 import biweekly.property.AudioAlarm;
 import biweekly.util.org.apache.commons.codec.binary.Base64;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -81,7 +83,7 @@ public class AudioAlarmScribe extends VCalAlarmPropertyScribe<AudioAlarm> {
 	}
 
 	@Override
-	protected AudioAlarm create(ICalDataType dataType, SemiStructuredIterator it) {
+	protected AudioAlarm create(ICalDataType dataType, SemiStructuredValueIterator it) {
 		AudioAlarm aalarm = new AudioAlarm();
 		String next = it.next();
 		if (next == null) {

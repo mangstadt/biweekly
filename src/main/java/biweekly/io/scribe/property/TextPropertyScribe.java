@@ -9,6 +9,8 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.TextProperty;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -52,7 +54,7 @@ public abstract class TextPropertyScribe<T extends TextProperty> extends ICalPro
 	protected String _writeText(T property, WriteContext context) {
 		String value = property.getValue();
 		if (value != null) {
-			return escape(value);
+			return VObjectPropertyValues.escape(value);
 		}
 
 		return "";
@@ -60,7 +62,7 @@ public abstract class TextPropertyScribe<T extends TextProperty> extends ICalPro
 
 	@Override
 	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		value = unescape(value);
+		value = VObjectPropertyValues.unescape(value);
 		return newInstance(value, context.getVersion());
 	}
 

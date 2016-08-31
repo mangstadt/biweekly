@@ -8,6 +8,8 @@ import biweekly.component.VAlarm;
 import biweekly.property.Action;
 import biweekly.property.DisplayAlarm;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -53,7 +55,7 @@ public class DisplayAlarmScribe extends VCalAlarmPropertyScribe<DisplayAlarm> {
 	}
 
 	@Override
-	protected DisplayAlarm create(ICalDataType dataType, SemiStructuredIterator it) {
+	protected DisplayAlarm create(ICalDataType dataType, SemiStructuredValueIterator it) {
 		return new DisplayAlarm(it.next());
 	}
 

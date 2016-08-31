@@ -3,10 +3,13 @@ package biweekly.parameter;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import com.github.mangstadt.vinnie.SyntaxStyle;
+import com.github.mangstadt.vinnie.validate.AllowedCharacters;
+import com.github.mangstadt.vinnie.validate.VObjectValidator;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -20,7 +23,6 @@ import biweekly.property.Organizer;
 import biweekly.property.RecurrenceId;
 import biweekly.property.RelatedTo;
 import biweekly.property.Trigger;
-import biweekly.util.CharacterBitSet;
 import biweekly.util.ListMultimap;
 
 /*
@@ -333,6 +335,10 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * <p>
 	 * Creates a parameter list that is backed by the given map. Any changes
 	 * made to the given map will effect the parameter list and vice versa.
+	 * </p>
+	 * <p>
+	 * Care must be taken to ensure that the given map's keys are all in
+	 * uppercase.
 	 * </p>
 	 * <p>
 	 * To avoid problems, it is highly recommended that the given map NOT be
@@ -1271,54 +1277,61 @@ public class ICalParameters extends ListMultimap<String, String> {
 	}
 
 	/**
+	 * <p>
 	 * Checks the parameters for data consistency problems or deviations from
-	 * the specification. These problems will not prevent the iCalendar object
-	 * from being written to a data stream, but may prevent it from being parsed
-	 * correctly by the consuming application.
+	 * the specification.
+	 * </p>
+	 * <p>
+	 * These problems will not prevent the iCalendar object from being written
+	 * to a data stream*, but may prevent it from being parsed correctly by the
+	 * consuming application.
+	 * </p>
+	 * <p>
+	 * *With a few exceptions: One thing this method does is check for illegal
+	 * characters. There are certain characters that will break the iCalendar
+	 * syntax if written (such as a newline character in a parameter name). If
+	 * one of these characters is present, it WILL prevent the iCalendar object
+	 * from being written.
+	 * </p>
 	 * @param version the version to validate against
 	 * @return a list of warnings or an empty list if no problems were found
 	 */
 	public List<Warning> validate(ICalVersion version) {
 		List<Warning> warnings = new ArrayList<Warning>(0);
 
+		SyntaxStyle syntax;
+		switch (version) {
+		case V1_0:
+			syntax = SyntaxStyle.OLD;
+			break;
+		default:
+			syntax = SyntaxStyle.NEW;
+			break;
+		}
+
 		/*
 		 * Check for invalid characters in names and values.
 		 */
-		{
-			BitSet invalidValueChars = new BitSet(128);
-			invalidValueChars.set(0, 31);
-			invalidValueChars.set(127);
-			invalidValueChars.set('\t', false); //allow
-			invalidValueChars.set('\n', false); //allow
-			invalidValueChars.set('\r', false); //allow
-			if (version == ICalVersion.V1_0) {
-				invalidValueChars.set(',');
-				invalidValueChars.set('.');
-				invalidValueChars.set(':');
-				invalidValueChars.set('=');
-				invalidValueChars.set('[');
-				invalidValueChars.set(']');
-			}
+		for (Map.Entry<String, List<String>> entry : this) {
+			String name = entry.getKey();
 
-			CharacterBitSet validNameChars = new CharacterBitSet("-a-zA-Z0-9");
-			for (Map.Entry<String, List<String>> entry : this) {
-				String name = entry.getKey();
-
-				//check the parameter name
-				if (!validNameChars.containsOnly(name)) {
+			//check the parameter name
+			if (!VObjectValidator.validateParameterName(name, syntax, true)) {
+				if (syntax == SyntaxStyle.OLD) {
+					AllowedCharacters notAllowed = VObjectValidator.allowedCharactersParameterName(syntax, true).flip();
+					warnings.add(Warning.validate(57, name, notAllowed.toString(true)));
+				} else {
 					warnings.add(Warning.validate(54, name));
 				}
+			}
 
-				//check the parameter value(s)
-				List<String> values = entry.getValue();
-				for (String value : values) {
-					for (int i = 0; i < value.length(); i++) {
-						char c = value.charAt(i);
-						if (invalidValueChars.get(c)) {
-							warnings.add(Warning.validate(53, name, value, (int) c, i));
-							break;
-						}
-					}
+			//check the parameter value(s)
+			List<String> values = entry.getValue();
+			for (String value : values) {
+				if (!VObjectValidator.validateParameterValue(value, syntax, false, true)) {
+					AllowedCharacters notAllowed = VObjectValidator.allowedCharactersParameterValue(syntax, false, true).flip();
+					int code = (syntax == SyntaxStyle.OLD) ? 58 : 53;
+					warnings.add(Warning.validate(code, name, value, notAllowed.toString(true)));
 				}
 			}
 		}

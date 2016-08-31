@@ -1,5 +1,8 @@
 package biweekly.property;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.property.PropertySensei.assertCopy;
 import static biweekly.property.PropertySensei.assertEqualsMethod;
 import static biweekly.property.PropertySensei.assertNothingIsEqual;
@@ -77,7 +80,8 @@ public class RawPropertyTest {
 	@Test
 	public void validate() {
 		RawProperty property = new RawProperty("foo:bar", "value");
-		assertValidate(property).run(52);
+		assertValidate(property).versions(V1_0).run(59);
+		assertValidate(property).versions(V2_0_DEPRECATED, V2_0).run(52);
 
 		property = new RawProperty("foobar", "value");
 		assertValidate(property).run();

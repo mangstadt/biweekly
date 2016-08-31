@@ -11,6 +11,8 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ListProperty;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -62,10 +64,9 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 
 		switch (context.getVersion()) {
 		case V1_0:
-			Object[] valuesArray = valuesStr.toArray(new String[0]);
-			return structured(valuesArray);
+			return VObjectPropertyValues.writeSemiStructured(valuesStr, true);
 		default:
-			return list(valuesStr);
+			return VObjectPropertyValues.writeList(valuesStr);
 		}
 	}
 
@@ -74,17 +75,11 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 		List<String> values;
 		switch (context.getVersion()) {
 		case V1_0:
-			values = new ArrayList<String>();
-			if (value.length() > 0) {
-				SemiStructuredIterator it = semistructured(value);
-				while (it.hasNext()) {
-					values.add(it.next());
-				}
-			}
+			values = VObjectPropertyValues.parseSemiStructured(value);
 			break;
-
 		default:
-			values = list(value);
+			values = VObjectPropertyValues.parseList(value);
+			break;
 		}
 
 		return parse(values, dataType, parameters, context);
