@@ -70,7 +70,7 @@ String str = Biweekly.write(ical).go();
  * Full timezone support (uses [tzurl.org](http://tzurl.org) for timezone definitions).
  * Extensive unit test coverage.
  * Low Java version requirement (1.5 or above, 1.6 for JSON support).
- * No dependencies (except when JSON support is required, see [Dependencies](https://github.com/mangstadt/biweekly/wiki/Dependencies)).
+ * Few dependencies on external libraries.  Dependencies can be selectively excluded based on the functionality that is needed (see [Dependencies](https://github.com/mangstadt/biweekly/wiki/Dependencies)).
 
 # Maven/Gradle
 
@@ -105,12 +105,10 @@ You have some options:
  * [Issue tracker](https://github.com/mangstadt/biweekly/issues)
  * [Gitter chat room](https://gitter.im/mangstadt/biweekly)
  * [codewake Q&A forum](https://www.codewake.com/p/biweekly)
- * [Post a question to StackOverflow](http://stackoverflow.com/questions/ask) (use the `ical` tag).
+ * [Post a question to StackOverflow](http://stackoverflow.com/questions/ask) with `ical` as a tag
  * Email me directly: [mike.angstadt@gmail.com](mailto:mike.angstadt@gmail.com)
 
 Please submit bug reports and feature requests to the [issue tracker](https://github.com/mangstadt/biweekly/issues).
-
-If you'd like to help improve the accuracy of biweekly's parsing engine, please submit samples of iCalendar files using [this form](https://docs.google.com/forms/d/1iujvayBC2BaljmNTcjyW5hBvt2VlWAFXM4BhxWUSJno/viewform?usp=send_form).  All contributions are greatly appreciated.
 
 [![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=8CEN7MPKRBKU6&lc=US&item_name=Michael%20Angstadt&item_number=biweekly&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
 
