@@ -14,39 +14,37 @@
 
 package biweekly.util.com.google.ical.iter;
 
-import biweekly.util.com.google.ical.values.DateValue;
-
 import java.util.Iterator;
 
+import biweekly.util.com.google.ical.values.DateValue;
+
 /**
- * an iterator over date values in order.  Does not support the
- * <code>remove</code> operation.
- *
+ * Iterates over a series of dates in a recurrence rule in ascending order.
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public interface RecurrenceIterator extends Iterator<DateValue> {
-
-  /** true iff there are more dates in the series. */
+  /**
+   * Determines if there are more dates in the series.
+   * @return true if there are more dates, false if not
+   */
   boolean hasNext();
 
   /**
-   * returns the next date in the series, in UTC.
-   * If <code>!hasNext()</code>, then behavior is undefined.
-   *
-   * @return a DateValue that is strictly later than any date previously
-   *   returned by this iterator.
+   * Returns the next date in the series. If {@link #hasNext()} returns
+   * {@code false}, then this method's behavior is undefined.
+   * @return the next date (in UTC; will be strictly later than any date
+   * previously returned by this iterator)
    */
   DateValue next();
 
   /**
-   * skips all dates in the series before the given date.
-   *
-   * @param newStartUtc non null.
+   * Skips all dates in the series that come before the given date.
+   * @param newStartUtc the date to advance to (in UTC)
    */
   void advanceTo(DateValue newStartUtc);
 
   /**
-   * unsupported.
+   * Implementors of this interface are not expected to implement this method.
    * @throws UnsupportedOperationException always
    */
   void remove();

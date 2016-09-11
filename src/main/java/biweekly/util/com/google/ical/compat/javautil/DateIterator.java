@@ -17,13 +17,14 @@ package biweekly.util.com.google.ical.compat.javautil;
 import java.util.Date;
 import java.util.Iterator;
 
+/**
+ * Iterates over a series of {@link Date} objects in ascending order.
+ * @author mikesamuel+svn@gmail.com (Mike Samuel)
+ */
 public interface DateIterator extends Iterator<Date> {
-
   /**
-   * skips all dates in the series before the given date.
-   *
-   * @param newStartUtc non null.
+   * Skips all dates in the series that come before the given date.
+   * @param newStartUtc the date to advance to (in UTC)
    */
   void advanceTo(Date newStartUtc);
-
 }

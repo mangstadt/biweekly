@@ -17,12 +17,9 @@ package biweekly.util.com.google.ical.compat.javautil;
 import java.util.Date;
 
 /**
- * an iterable over dates in order.
- *
+ * Iterates over a series of {@link Date} objects in ascending order.
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public interface DateIterable extends Iterable<Date> {
-
   DateIterator iterator();
-
 }
