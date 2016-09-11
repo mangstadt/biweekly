@@ -30,15 +30,12 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 /**
- * a factory for converting RRULEs and RDATEs into
+ * A factory for converting RRULEs and RDATEs into
  * <code>Iterator&lt;Date&gt;</code> and <code>Iterable&lt;Date&gt;</code>.
- *
  * @see RecurrenceIteratorFactory
- *
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public class DateIteratorFactory {
-
   /**
    * given a block of RRULE, EXRULE, RDATE, and EXDATE content lines, parse
    * them into a single date iterator.
@@ -78,8 +75,9 @@ public class DateIteratorFactory {
   }
 
   /**
-   * creates a date iterator given a recurrence iterator from
-   * {@link biweekly.util.com.google.ical.iter.RecurrenceIteratorFactory}.
+   * Creates a date iterator from a recurrence iterator.
+   * @param rit the recurrence iterator
+   * @return the date iterator
    */
   public static DateIterator createDateIterator(RecurrenceIterator rit) {
     return new RecurrenceIteratorWrapper(rit);
@@ -104,26 +102,44 @@ public class DateIteratorFactory {
     public Date next() { return dateValueToDate(it.next()); }
     public void remove() { throw new UnsupportedOperationException(); }
     public void advanceTo(Date d) {
-      // we need to treat midnight as a date value so that passing in
-      // dateValueToDate(<some-date-value>) will not advance past any
-      // occurrences of some-date-value in the iterator.
+      /*
+       * We need to treat midnight as a date value so that passing in
+       * dateValueToDate(<some-date-value>) will not advance past any
+       * occurrences of some-date-value in the iterator.
+       */
       it.advanceTo(dateToDateValue(d, true));
     }
   }
 
-  static Date dateValueToDate(DateValue dvUtc) {
+  /**
+   * Converts a {@link DateValue} object into a Java {@link Date} object.
+   * @param dateUtc the date value object (assumed to be in UTC time)
+   * @return the Java date object
+   */
+  static Date dateValueToDate(DateValue dateUtc) {
+    TimeValue tvUtc = TimeUtils.timeOf(dateUtc);
     GregorianCalendar c = new GregorianCalendar(TimeUtils.utcTimezone());
     c.clear();
-    TimeValue tvUtc = TimeUtils.timeOf(dvUtc);
-    c.set(dvUtc.year(),
-          dvUtc.month() - 1,  // java.util's dates are zero-indexed
-          dvUtc.day(),
-          tvUtc.hour(),
-          tvUtc.minute(),
-          tvUtc.second());
+    c.set(
+      dateUtc.year(),
+      dateUtc.month() - 1, //java.util's dates are zero-indexed
+      dateUtc.day(),
+      tvUtc.hour(),
+      tvUtc.minute(),
+      tvUtc.second()
+    );
     return c.getTime();
   }
 
+  /**
+   * Converts a Java {@link Date} object into a {@link DateValue} object. The
+   * {@link DateValue} object will be in UTC time.
+   * @param date the Java date object
+   * @param midnightAsDate true to return a date value without a time component
+   * if the Java date's time is set to midnight, or false to still return a
+   * date-time value
+   * @return the date value object (in UTC time)
+   */
   static DateValue dateToDateValue(Date date, boolean midnightAsDate) {
     GregorianCalendar c = new GregorianCalendar(TimeUtils.utcTimezone());
     c.setTime(date);

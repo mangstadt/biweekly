@@ -40,28 +40,36 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
- * for calculating the occurrences of an individual RFC 2445 RRULE or groups of
- * RRULES, RDATES, EXRULES, and EXDATES.
- *
- * <h4>Glossary</h4>
- * Period - year|month|day|...<br>
- * Day of the week - an int in [0-6].  See RRULE_WDAY_* in rrule.js<br>
- * Day of the year - zero indexed in [0,365]<br>
- * Day of the month - 1 indexed in [1,31]<br>
- * Month - 1 indexed integer in [1,12]
- *
- * <h4>Abstractions</h4>
- * Generator - a function corresponding to an RRULE part that takes a date and
- *   returns a later (year or month or day depending on its period) within the
- *   next larger period.
- *   A generator ignores all periods in its input smaller than its period.
  * <p>
- * Filter - a function that returns true iff the given date matches the subrule.
+ * Calculates the occurrences of an individual RRULE definition or groups of
+ * RRULEs, RDATEs, EXRULEs, and EXDATEs.
+ * </p>
  * <p>
- * Condition - returns true if the given date is past the end of the recurrence.
- *
- * <p>All the functions that represent rule parts are stateful.
- *
+ * <b>Glossary</b>
+ * </p>
+ * <ul>
+ * <li>Period - year|month|day|...</li>
+ * <li>Day of the week - an int in [0,6]</li>
+ * <li>Day of the year - zero indexed in [0,365]</li>
+ * <li>Day of the month - 1 indexed in [1,31]</li>
+ * <li>Month - 1 indexed integer in [1,12]</li>
+ * </ul>
+ * <p>
+ * <b>Abstractions</b>
+ * </p>
+ * <ul>
+ * <li>Generator - a function corresponding to an RRULE part that takes a date
+ * and returns a later (year or month or day depending on its period) within the
+ * next larger period. A generator ignores all periods in its input smaller than
+ * its period.</li>
+ * <li>Filter - a function that returns true iff the given date matches the
+ * subrule.</li>
+ * <li>Condition - returns true if the given date is past the end of the
+ * recurrence.</li>
+ * </ul>
+ * <p>
+ * All the functions that represent rule parts are stateful.
+ * </p>
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public class RecurrenceIteratorFactory {
@@ -144,7 +152,9 @@ public class RecurrenceIteratorFactory {
   }
 
   /**
-   * create a recurrence iterator from an rdate or exdate list.
+   * Creates a recurrence iterator from an RDATE or EXDATE list.
+   * @param rdates the list
+   * @return the iterator
    */
   public static RecurrenceIterator createRecurrenceIterator(RDateList rdates) {
     DateValue[] dates = rdates.getDatesUtc();
@@ -152,16 +162,14 @@ public class RecurrenceIteratorFactory {
   }
 
   /**
-   * create a recurrence iterator from an rrule.
-   * @param rrule the recurrence rule to iterate.
-   * @param dtStart the start of the series, in tzid.
-   * @param tzid the timezone to iterate in.
+   * Creates a recurrence iterator from an RRULE.
+   * @param rrule the recurrence rule
+   * @param dtStart the start date of the series
+   * @param tzid the timezone that the given start date is in
+   * @return the iterator
    */
   public static RecurrenceIterator createRecurrenceIterator(
       RRule rrule, DateValue dtStart, TimeZone tzid) {
-    assert null != tzid;
-    assert null != dtStart;
-
     Frequency freq = rrule.getFreq();
     Weekday wkst = rrule.getWkSt();
     DateValue untilUtc = rrule.getUntil();
@@ -179,47 +187,41 @@ public class RecurrenceIteratorFactory {
 
     if (interval <= 0) {  interval = 1; }
 
-    if (null == wkst) {
+    if (wkst == null) {
       wkst = Weekday.MO;
     }
 
-    // Optimize out BYSETPOS where possible.
+    //optimize out BYSETPOS where possible
     if (bySetPos.length > 0) {
       switch (freq) {
         case HOURLY:
-          // ;BYHOUR=3,6,9;BYSETPOS=-1,1
-          //     is equivalent to
-          // ;BYHOUR=3,9
           if (byHour.length > 0 && byMinute.length <= 1
               && bySecond.length <= 1) {
             byHour = filterBySetPos(byHour, bySetPos);
           }
-          // Handling bySetPos for rules that are more frequent than daily
-          // tends to lead to large amounts of processor being used before other
-          // work limiting features can kick in since there many seconds between
-          // dtStart and where the year limit kicks in.
-          // There are no known use cases for the use of bySetPos with hourly
-          // minutely and secondly rules so we just ignore it.
+          
+          /*
+           * Handling bySetPos for rules that are more frequent than daily tends
+           * to lead to large amounts of processor being used before other work
+           * limiting features can kick in since there many seconds between
+           * dtStart and where the year limit kicks in. There are no known use
+           * cases for the use of bySetPos with hourly minutely and secondly rules
+           * so we just ignore it.
+           */
           bySetPos = NO_INTS;
           break;
         case MINUTELY:
-          // ;BYHOUR=3,6,9;BYSETPOS=-1,1
-          //     is equivalent to
-          // ;BYHOUR=3,9
           if (byMinute.length > 0 && bySecond.length <= 1) {
             byMinute = filterBySetPos(byMinute, bySetPos);
           }
-          // See bySetPos handling comment above.
+          //see bySetPos handling comment above
           bySetPos = NO_INTS;
           break;
         case SECONDLY:
-          // ;BYHOUR=3,6,9;BYSETPOS=-1,1
-          //     is equivalent to
-          // ;BYHOUR=3,9
           if (bySecond.length > 0) {
             bySecond = filterBySetPos(bySecond, bySetPos);
           }
-          // See bySetPos handling comment above.
+          //see bySetPos handling comment above
           bySetPos = NO_INTS;
           break;
         default:
@@ -228,10 +230,11 @@ public class RecurrenceIteratorFactory {
 
     DateValue start = dtStart;
     if (bySetPos.length > 0) {
-      // Roll back till the beginning of the period to make sure that any
-      // positive indices are indexed properly.
-      // The actual iterator implementation is responsible for anything
-      // < dtStart.
+      /*
+       * Roll back until the beginning of the period to make sure that any
+       * positive indices are indexed properly. The actual iterator
+       * implementation is responsible for anything < dtStart.
+       */
       switch (freq) {
         case YEARLY:
           start = dtStart instanceof TimeValue
@@ -251,8 +254,10 @@ public class RecurrenceIteratorFactory {
       }
     }
 
-    // recurrences are implemented as a sequence of periodic generators.
-    // First a year is generated, and then months, and within months, days
+    /*
+     * Recurrences are implemented as a sequence of periodic generators. First a
+     * year is generated, and then months, and within months, days.
+     */
     ThrottledGenerator yearGenerator = Generators.serialYearGenerator(
         freq == Frequency.YEARLY ? interval : 1, dtStart);
     Generator monthGenerator = null;
@@ -261,12 +266,14 @@ public class RecurrenceIteratorFactory {
     Generator minuteGenerator = null;
     Generator hourGenerator = null;
 
-    // When multiple generators are specified for a period, they act as a union
-    // operator.  We could have multiple generators (for day say) and then
-    // run each and merge the results, but some generators are more efficient
-    // than others, so to avoid generating 53 sundays and throwing away all but
-    // 1 for RRULE:FREQ=YEARLY;BYDAY=TU;BYWEEKNO=1, we reimplement some of the
-    // more prolific generators as filters.
+    /*
+     * When multiple generators are specified for a period, they act as a union
+     * operator. We could have multiple generators (say, for day) and then run
+     * each and merge the results, but some generators are more efficient than
+     * others. So to avoid generating 53 Sundays and throwing away all but 1 for
+     * RRULE:FREQ=YEARLY;BYDAY=TU;BYWEEKNO=1, we reimplement some of the more
+     * prolific generators as filters.
+     */
     // TODO(msamuel): don't need a list here
     List<Predicate<? super DateValue>> filters =
       new ArrayList<Predicate<? super DateValue>>();
@@ -299,10 +306,12 @@ public class RecurrenceIteratorFactory {
       case DAILY:
         break;
       case WEEKLY:
-        // week is not considered a period because a week may span multiple
-        // months &| years.  There are no week generators, but so a filter is
-        // used to make sure that FREQ=WEEKLY;INTERVAL=2 only generates dates
-        // within the proper week.
+        /*
+         * Week is not considered a period because a week may span multiple months
+         * and/or years. There are no week generators, so a filter is used to make
+         * sure that FREQ=WEEKLY;INTERVAL=2 only generates dates within the proper
+         * week.
+         */
         if (byDay.length > 0) {
           dayGenerator = Generators.byDayGenerator(byDay, false, start);
           byDay = NO_DAYS;
@@ -315,36 +324,44 @@ public class RecurrenceIteratorFactory {
         break;
       case YEARLY:
         if (byYearDay.length > 0) {
-          // The BYYEARDAY rule part specifies a COMMA separated list of days of
-          // the year. Valid values are 1 to 366 or -366 to -1. For example, -1
-          // represents the last day of the year (December 31st) and -306
-          // represents the 306th to the last day of the year (March 1st).
+          /*
+           * The BYYEARDAY rule part specifies a COMMA separated list of days of
+           * the year. Valid values are 1 to 366 or -366 to -1. For example, -1
+           * represents the last day of the year (December 31st) and -306
+           * represents the 306th to the last day of the year (March 1st).
+           */
           dayGenerator = Generators.byYearDayGenerator(byYearDay, start);
           break;
         }
         // $FALL-THROUGH$
       case MONTHLY:
         if (byMonthDay.length > 0) {
-          // The BYMONTHDAY rule part specifies a COMMA separated list of days
-          // of the month. Valid values are 1 to 31 or -31 to -1. For example,
-          // -10 represents the tenth to the last day of the month.
+          /*
+           * The BYMONTHDAY rule part specifies a COMMA separated list of days of
+           * the month. Valid values are 1 to 31 or -31 to -1. For example, -10
+           * represents the tenth to the last day of the month.
+           */
           dayGenerator = Generators.byMonthDayGenerator(byMonthDay, start);
           byMonthDay = NO_INTS;
         } else if (byWeekNo.length > 0 && Frequency.YEARLY == freq) {
-          // The BYWEEKNO rule part specifies a COMMA separated list of ordinals
-          // specifying weeks of the year.  This rule part is only valid for
-          // YEARLY rules.
+          /*
+           * The BYWEEKNO rule part specifies a COMMA separated list of ordinals
+           * specifying weeks of the year. This rule part is only valid for YEARLY
+           * rules.
+           */
           dayGenerator = Generators.byWeekNoGenerator(byWeekNo, wkst, start);
           byWeekNo = NO_INTS;
         } else if (byDay.length > 0) {
-          // Each BYDAY value can also be preceded by a positive (n) or negative
-          // (-n) integer. If present, this indicates the nth occurrence of the
-          // specific day within the MONTHLY or YEARLY RRULE. For example,
-          // within a MONTHLY rule, +1MO (or simply 1MO) represents the first
-          // Monday within the month, whereas -1MO represents the last Monday of
-          // the month. If an integer modifier is not present, it means all days
-          // of this type within the specified frequency. For example, within a
-          // MONTHLY rule, MO represents all Mondays within the month.
+          /*
+           * Each BYDAY value can also be preceded by a positive (n) or negative
+           * (-n) integer. If present, this indicates the nth occurrence of the
+           * specific day within the MONTHLY or YEARLY RRULE. For example, within
+           * a MONTHLY rule, +1MO (or simply 1MO) represents the first Monday
+           * within the month, whereas -1MO represents the last Monday of the
+           * month. If an integer modifier is not present, it means all days of
+           * this type within the specified frequency. For example, within a
+           * MONTHLY rule, MO represents all Mondays within the month.
+           */
           dayGenerator = Generators.byDayGenerator(
               byDay, Frequency.YEARLY == freq && 0 == byMonth.length, start);
           byDay = NO_DAYS;
@@ -404,7 +421,7 @@ public class RecurrenceIteratorFactory {
       filters.add(Filters.byMonthDayFilter(byMonthDay));
     }
 
-    // generator inference common to all periods
+    //generator inference common to all periods
     if (byMonth.length > 0) {
       monthGenerator = Generators.byMonthGenerator(byMonth, start);
     } else if (null == monthGenerator) {
@@ -412,17 +429,22 @@ public class RecurrenceIteratorFactory {
           freq == Frequency.MONTHLY ? interval : 1, dtStart);
     }
 
-    // the condition tells the iterator when to halt.
-    // The condition is exclusive, so the date that triggers it will not be
-    // included.
+    /*
+     * The condition tells the iterator when to halt. The condition is
+     * exclusive, so the date that triggers it will not be included.
+     */
     Predicate<DateValue> condition;
     boolean canShortcutAdvance = true;
-    if (0 != count) {
+    if (count != 0) {
       condition = Conditions.countCondition(count);
-      // We can't shortcut because the countCondition must see every generated
-      // instance.
-      // TODO(msamuel): if count is large, we might try predicting the end date
-      // so that we can convert the COUNT condition to an UNTIL condition.
+      
+      /*
+       * We can't shortcut because the countCondition must see every generated
+       * instance.
+       * 
+       * TODO(msamuel): If count is large, we might try predicting the end date
+       * so that we can convert the COUNT condition to an UNTIL condition.
+       */
       canShortcutAdvance = false;
     } else if (null != untilUtc) {
       if ((untilUtc instanceof TimeValue) != (dtStart instanceof TimeValue)) {
@@ -438,7 +460,7 @@ public class RecurrenceIteratorFactory {
       condition = Predicates.<DateValue>alwaysTrue();
     }
 
-    // combine filters into a single function
+    //combine filters into a single function
     Predicate<? super DateValue> filter;
     switch (filters.size()) {
       case 0:
@@ -472,26 +494,34 @@ public class RecurrenceIteratorFactory {
   }
 
   /**
-   * a recurrence iterator that returns the union of the given recurrence
-   * iterators.
+   * Generates a recurrence iterator that iterates over the union of the given
+   * recurrence iterators.
+   * @param first the first recurrence iterator
+   * @param rest the other recurrence iterators
+   * @return the union iterator
    */
   public static RecurrenceIterator join(
-      RecurrenceIterator a, RecurrenceIterator... b) {
-    List<RecurrenceIterator> incl = new ArrayList<RecurrenceIterator>();
-    incl.add(a);
-    incl.addAll(Arrays.asList(b));
+      RecurrenceIterator first, RecurrenceIterator... rest) {
+    List<RecurrenceIterator> all = new ArrayList<RecurrenceIterator>();
+    all.add(first);
+    all.addAll(Arrays.asList(rest));
     return new CompoundIteratorImpl(
-        incl, Collections.<RecurrenceIterator>emptyList());
+        all, Collections.<RecurrenceIterator>emptyList());
   }
 
   /**
-   * an iterator over all the dates included except those excluded, i.e.
-   * <code>inclusions - exclusions</code>.
+   * <p>
+   * Generates a recurrence iterator that iterates over all the dates in a
+   * {@link RecurrenceIterator}, excluding those dates found in another
+   * {@link RecurrenceIterator} (i.e. inclusions - exclusions).
+   * </p>
+   * <p>
    * Exclusions trump inclusions, and {@link DateValue dates} and
    * {@link DateTimeValue date-times} never match one another.
-   * @param included non null.
-   * @param excluded non null.
-   * @return non null.
+   * </p>
+   * @param included the dates to include
+   * @param excluded the dates to exclude
+   * @return the resultant iterator
    */
   public static RecurrenceIterator except(
       RecurrenceIterator included, RecurrenceIterator excluded) {
@@ -551,8 +581,18 @@ public class RecurrenceIteratorFactory {
   }
 
   /**
-   * Given an array like BYMONTH=2,3,4,5 and a set pos like BYSETPOS=1,-1
-   * reduce both clauses to a single one, BYMONTH=2,5 in the preceding.
+   * <p>
+   * Creates an optimized version of an array based on the given BYSETPOS
+   * array.
+   * </p>
+   * <p>
+   * For example, given the array <code>BYMONTH=2,3,4,5</code> and a BYSETPOS
+   * of <code>BYSETPOS=1,-1</code>, this method will return
+   * <code>BYMONTH=2,5</code>.
+   * </p>
+   * @param members the array to optimize
+   * @param bySetPos the BYSETPOS array
+   * @return the optimized array
    */
   private static int[] filterBySetPos(int[] members, int[] bySetPos) {
     members = Util.uniquify(members);
