@@ -14,6 +14,8 @@
 
 package biweekly.util.com.google.ical.iter;
 
+import java.util.Arrays;
+
 import biweekly.util.com.google.ical.values.DateValue;
 
 /**
@@ -22,12 +24,13 @@ import biweekly.util.com.google.ical.values.DateValue;
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 final class RDateIteratorImpl implements RecurrenceIterator {
+  private final DateValue[] datesUtc;
   private int i;
-  private DateValue[] datesUtc;
 
   RDateIteratorImpl(DateValue[] datesUtc) {
-    this.datesUtc = datesUtc.clone();  // defensive copy
-    assert increasing(datesUtc);  // indirectly checks that not-null.
+    datesUtc = datesUtc.clone();
+    Arrays.sort(datesUtc);
+    this.datesUtc = removeDuplicates(datesUtc);
   }
 
   public boolean hasNext() { return i < datesUtc.length; }
@@ -43,13 +46,27 @@ final class RDateIteratorImpl implements RecurrenceIterator {
       ++i;
     }
   }
-
-  /** monotonically. */
-  private static <C extends Comparable<C>> boolean increasing(C[] els) {
-    for (int i = els.length; --i >= 1;) {
-      if (els[i - 1].compareTo(els[i]) > 0) { return false; }
+  
+  /**
+   * Removes duplicates from a list of date values.
+   * @param dates the date values (must be sorted in ascending order)
+   * @return a new array if any elements were removed or the original array
+   * if no elements were removed
+   */
+  private static DateValue[] removeDuplicates(DateValue[] dates) {
+    int k = 0;
+    for (int i = 1; i < dates.length; ++i) {
+      if (!dates[i].equals(dates[k])) {
+        dates[++k] = dates[i];
+      }
     }
-    return true;
+
+    if (++k < dates.length) {
+      DateValue[] uniqueDates = new DateValue[k];
+      System.arraycopy(dates, 0, uniqueDates, 0, k);
+      return uniqueDates;
+    }
+    return dates;
   }
 
 }

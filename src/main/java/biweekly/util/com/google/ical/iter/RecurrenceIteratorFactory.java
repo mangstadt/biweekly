@@ -147,7 +147,7 @@ public class RecurrenceIteratorFactory {
    * create a recurrence iterator from an rdate or exdate list.
    */
   public static RecurrenceIterator createRecurrenceIterator(RDateList rdates) {
-    DateValue[] dates = uniquify(rdates.getDatesUtc());
+    DateValue[] dates = rdates.getDatesUtc();
     return new RDateIteratorImpl(dates);
   }
 
@@ -569,29 +569,6 @@ public class RecurrenceIteratorFactory {
       }
     }
     return iset.toIntArray();
-  }
-  
-  /**
-   * Sorts and removes duplicates from a list of date values. If any
-   * elements are removed, a copy of the array will be returned.
-   * @param dates the date values
-   * @return the processed array
-   */
-  private static DateValue[] uniquify(DateValue[] dates) {
-    Arrays.sort(dates);
-    int k = 0;
-    for (int i = 1; i < dates.length; ++i) {
-      if (!dates[i].equals(dates[k])) {
-        dates[++k] = dates[i];
-      }
-    }
-
-    if (++k < dates.length) {
-      DateValue[] uniqueDates = new DateValue[k];
-      System.arraycopy(dates, 0, uniqueDates, 0, k);
-      return uniqueDates;
-    }
-    return dates;
   }
 
   private static final int[] NO_INTS = new int[0];
