@@ -137,7 +137,7 @@ final class RRuleIteratorImpl implements RecurrenceIterator {
 
     while (!this.done_) {
       this.pendingUtc_ = this.generateInstance();
-      if (null == this.pendingUtc_) {
+      if (this.pendingUtc_ == null) {
         this.done_ = true;
         break;
       } else if (this.pendingUtc_.compareTo(
@@ -159,13 +159,13 @@ final class RRuleIteratorImpl implements RecurrenceIterator {
 
   /** are there more dates in this recurrence? */
   public boolean hasNext() {
-    if (null == this.pendingUtc_) { this.fetchNext(); }
+    if (this.pendingUtc_ == null) { this.fetchNext(); }
     return null != this.pendingUtc_;
   }
 
   /** fetch and return the next date in this recurrence. */
   public DateValue next() {
-    if (null == this.pendingUtc_) {
+    if (this.pendingUtc_ == null) {
       this.fetchNext();
     }
     DateValue next = this.pendingUtc_;
@@ -226,7 +226,7 @@ final class RRuleIteratorImpl implements RecurrenceIterator {
       // consume any remaining instances
       while (!this.done_) {
         DateValue dUtc = this.generateInstance();
-        if (null == dUtc) {
+        if (dUtc == null) {
           this.done_ = true;
         } else {
           if (!this.condition_.apply(dUtc)) {
@@ -244,12 +244,12 @@ final class RRuleIteratorImpl implements RecurrenceIterator {
 
   /** calculates and stored the next date in this recurrence. */
   private void fetchNext() {
-    if (null != this.pendingUtc_ || this.done_) { return; }
+    if (this.pendingUtc_ != null || this.done_) { return; }
 
     DateValue dUtc = this.generateInstance();
 
     // check the exit condition
-    if (null != dUtc && this.condition_.apply(dUtc)) {
+    if (dUtc != null && this.condition_.apply(dUtc)) {
       this.pendingUtc_ = dUtc;
       this.yearGenerator_.workDone();
     } else {

@@ -68,12 +68,12 @@ final class CompoundIteratorImpl implements RecurrenceIterator {
 
   public boolean hasNext() {
     requirePending();
-    return null != pending;
+    return pending != null;
   }
 
   public DateValue next() {
     requirePending();
-    if (null == pending) { throw new NoSuchElementException(); }
+    if (pending == null) { throw new NoSuchElementException(); }
     DateValue head = pending.head();
     reattach(pending);
     pending = null;
@@ -84,7 +84,7 @@ final class CompoundIteratorImpl implements RecurrenceIterator {
 
   public void advanceTo(DateValue newStart) {
     long newStartCmp = DateValueComparison.comparable(newStart);
-    if (null != pending) {
+    if (pending != null) {
       if (pending.comparable() >= newStartCmp) { return; }
       pending.advanceTo(newStart);
       reattach(pending);
@@ -93,7 +93,7 @@ final class CompoundIteratorImpl implements RecurrenceIterator {
 
     // Pull each element off the stack in turn, and advance it.
     // Once we reach one we don't need to advance, we're done
-    while (0 != nInclusionsRemaining && !queue.isEmpty()
+    while (nInclusionsRemaining != 0 && !queue.isEmpty()
            && queue.peek().comparable() < newStartCmp) {
       HeapElement el = queue.poll();
       el.advanceTo(newStart);
@@ -111,7 +111,7 @@ final class CompoundIteratorImpl implements RecurrenceIterator {
     } else if (el.inclusion) {
       // if we have no live inclusions, then the rest are exclusions which we
       // can safely discard.
-      if (0 == --nInclusionsRemaining) {
+      if (--nInclusionsRemaining == 0) {
         queue.clear();
       }
     }
@@ -122,10 +122,10 @@ final class CompoundIteratorImpl implements RecurrenceIterator {
    * match any exclusion, and remove any dupes of it.
    */
   private void requirePending() {
-    if (null != pending) { return; }
+    if (pending != null) { return; }
 
     long exclusionComparable = Long.MIN_VALUE;
-    while (0 != nInclusionsRemaining && !queue.isEmpty()) {
+    while (nInclusionsRemaining != 0 && !queue.isEmpty()) {
       // find a candidate that is not excluded
       HeapElement inclusion = null;
       do {
@@ -139,7 +139,7 @@ final class CompoundIteratorImpl implements RecurrenceIterator {
           exclusionComparable = candidate.comparable();
         }
         reattach(candidate);
-        if (0 == nInclusionsRemaining) { return; }
+        if (nInclusionsRemaining == 0) { return; }
       } while (!queue.isEmpty());
       if (inclusion == null) { return; }
       long inclusionComparable = inclusion.comparable();
@@ -154,7 +154,7 @@ final class CompoundIteratorImpl implements RecurrenceIterator {
         HeapElement match = queue.poll();
         excluded |= !match.inclusion;
         reattach(match);
-        if (0 == nInclusionsRemaining) { return; }
+        if (nInclusionsRemaining == 0) { return; }
       }
       if (!excluded) {
         pending = inclusion;

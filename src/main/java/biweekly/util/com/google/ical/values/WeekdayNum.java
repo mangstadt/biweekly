@@ -41,14 +41,14 @@ public class WeekdayNum {
    * @param wday non null.
    */
   public WeekdayNum(int num, Weekday wday) {
-    if (!(-53 <= num && 53 >= num && null != wday)) {
+    if (!(num > -53 && num < 53 && wday != null)) {
       throw new IllegalArgumentException();
     }
     this.num = num;
     this.wday = wday;
   }
   public String toIcal() {
-    return (0 != this.num)
+    return (this.num != 0)
         ? String.valueOf(this.num) + this.wday
         : this.wday.toString();
   }

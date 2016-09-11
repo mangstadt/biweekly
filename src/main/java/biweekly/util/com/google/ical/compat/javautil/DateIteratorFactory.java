@@ -151,7 +151,7 @@ public class DateIteratorFactory {
     int minute = c.get(Calendar.MINUTE);
     int second = c.get(Calendar.SECOND);
 
-    if (midnightAsDate && 0 == (hour | minute | second)) {
+    if (midnightAsDate && (hour | minute | second) == 0) {
       return new DateValueImpl(year, month, day);
     }
     return new DateTimeValueImpl(year, month, day, hour, minute, second);

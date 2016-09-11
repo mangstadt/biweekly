@@ -264,13 +264,13 @@ final class VcalRewriter {
       }
     }
 
-    if (null != count) {
+    if (count != null) {
       if ("0".equals(count)) {
         // means forever
       } else {
         sb.append(";COUNT=").append(count);
       }
-    } else if (null != until) {
+    } else if (until != null) {
       until = until.toUpperCase();
       sb.append(";UNTIL=").append(until);
       // treat as UTC if not already
@@ -282,7 +282,7 @@ final class VcalRewriter {
   }
 
   private static void join(StringBuilder out, String delim, String[] parts) {
-    if (0 != parts.length) {
+    if (parts.length > 0) {
       out.append(parts[0]);
       for (int i = 1; i < parts.length; ++i) {
         out.append(delim).append(parts[i]);

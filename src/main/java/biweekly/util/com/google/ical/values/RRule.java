@@ -69,10 +69,10 @@ public class RRule extends AbstractIcalObject {
       }
     }
     buf.append(":FREQ=").append(freq);
-    if (null != wkst) {
+    if (wkst != null) {
       buf.append(";WKST=").append(wkst.toString());
     }
-    if (null != this.until) {
+    if (this.until != null) {
       buf.append(";UNTIL=").append(until);
       if (until instanceof TimeValue) {
         buf.append('Z');
@@ -84,19 +84,19 @@ public class RRule extends AbstractIcalObject {
     if (interval != 0) {
       buf.append(";INTERVAL=").append(interval);
     }
-    if (0 != byYearDay.length) {
+    if (byYearDay.length != 0) {
       buf.append(";BYYEARDAY=");
       writeIntList(byYearDay, buf);
     }
-    if (0 != byMonth.length) {
+    if (byMonth.length != 0) {
       buf.append(";BYMONTH=");
       writeIntList(byMonth, buf);
     }
-    if (0 != byMonthDay.length) {
+    if (byMonthDay.length != 0) {
       buf.append(";BYMONTHDAY=");
       writeIntList(byMonthDay, buf);
     }
-    if (0 != byWeekNo.length) {
+    if (byWeekNo.length != 0) {
       buf.append(";BYWEEKNO=");
       writeIntList(byWeekNo, buf);
     }
@@ -112,19 +112,19 @@ public class RRule extends AbstractIcalObject {
         buf.append(day);
       }
     }
-    if (0 != byHour.length) {
+    if (byHour.length != 0) {
       buf.append(";BYHOUR=");
       writeIntList(byHour, buf);
     }
-    if (0 != byMinute.length) {
+    if (byMinute.length != 0) {
       buf.append(";BYMINUTE=");
       writeIntList(byMinute, buf);
     }
-    if (0 != bySecond.length) {
+    if (bySecond.length != 0) {
       buf.append(";BYSECOND=");
       writeIntList(bySecond, buf);
     }
-    if (0 != bySetPos.length) {
+    if (bySetPos.length != 0) {
       buf.append(";BYSETPOS=");
       writeIntList(bySetPos, buf);
     }
@@ -168,7 +168,7 @@ public class RRule extends AbstractIcalObject {
         freqLengthDays = 365;
 
         int monthCount = 12;
-        if (0 != this.byMonth.length) {
+        if (this.byMonth.length != 0) {
           monthCount = this.byMonth.length;
         }
 
@@ -178,7 +178,7 @@ public class RRule extends AbstractIcalObject {
             // assume 4 of that weekday per month,
             // otherwise there is one of that week-in-month,weekday pair per
             // month
-            nPerPeriod += (0 != day.num ? 1 : 4) * monthCount;
+            nPerPeriod += (day.num != 0 ? 1 : 4) * monthCount;
           }
         } else if (this.byMonthDay.length > 0) {
           nPerPeriod += monthCount * this.byMonthDay.length;
@@ -188,7 +188,7 @@ public class RRule extends AbstractIcalObject {
         break;
       default: freqLengthDays = 0;
     }
-    if (0 == nPerPeriod) { nPerPeriod = 1; }
+    if (nPerPeriod == 0) { nPerPeriod = 1; }
 
     return ((freqLengthDays / nPerPeriod) * this.interval);
   }

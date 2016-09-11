@@ -143,7 +143,7 @@ class IcalSchema {
   }
 
   public void badPart(String part, String msg) throws ParseException {
-    if (null != msg) { msg = " : " + msg; } else { msg = ""; }
+    if (msg != null) { msg = " : " + msg; } else { msg = ""; }
     throw new ParseException("cannot parse [[" + part + "]] in " +
                              ruleStack + msg, 0);
   }

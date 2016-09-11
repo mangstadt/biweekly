@@ -147,7 +147,7 @@ class InstanceGenerators {
         @Override
         public boolean generate(DTBuilder builder)
             throws IteratorShortCircuitingException {
-          while (null == candidates || i >= candidates.size()) {
+          while (candidates == null || i >= candidates.size()) {
             if (done) { return false; }
 
             /*
@@ -155,7 +155,7 @@ class InstanceGenerators {
              * only generate instances in the next set.
              */
             DateValue d0 = null;
-            if (null != pushback) {
+            if (pushback != null) {
               d0 = pushback;
               builder.year = d0.year();
               builder.month = d0.month();
@@ -198,7 +198,7 @@ class InstanceGenerators {
              * other rule.
              */
             List<DateValue> dates = new ArrayList<DateValue>();
-            if (null != d0) { dates.add(d0); }
+            if (d0 != null) { dates.add(d0); }
 
             /*
              * Optimization: if min(bySetPos) > 0 then we already have absolute
@@ -231,7 +231,7 @@ class InstanceGenerators {
               }
               DateValue d = builder.toDateTime();
               boolean contained;
-              if (null == d0) {
+              if (d0 == null) {
                 d0 = d;
                 contained = true;
               } else {

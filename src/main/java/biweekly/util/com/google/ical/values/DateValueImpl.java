@@ -75,7 +75,7 @@ public class DateValueImpl implements DateValue {
   public boolean equals(Object o) {
     if (!(o instanceof DateValue)) { return false; }
 
-    return 0 == this.compareTo((DateValue) o);
+    return this.compareTo((DateValue) o) == 0;
   }
 
   @Override

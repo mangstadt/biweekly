@@ -363,7 +363,7 @@ public class RecurrenceIteratorFactory {
            * MONTHLY rule, MO represents all Mondays within the month.
            */
           dayGenerator = Generators.byDayGenerator(
-              byDay, Frequency.YEARLY == freq && 0 == byMonth.length, start);
+              byDay, Frequency.YEARLY == freq && byMonth.length == 0, start);
           byDay = NO_DAYS;
         } else {
           if (Frequency.YEARLY == freq) {
@@ -424,7 +424,7 @@ public class RecurrenceIteratorFactory {
     //generator inference common to all periods
     if (byMonth.length > 0) {
       monthGenerator = Generators.byMonthGenerator(byMonth, start);
-    } else if (null == monthGenerator) {
+    } else if (monthGenerator == null) {
       monthGenerator = Generators.serialMonthGenerator(
           freq == Frequency.MONTHLY ? interval : 1, dtStart);
     }
@@ -446,7 +446,7 @@ public class RecurrenceIteratorFactory {
        * so that we can convert the COUNT condition to an UNTIL condition.
        */
       canShortcutAdvance = false;
-    } else if (null != untilUtc) {
+    } else if (untilUtc != null) {
       if ((untilUtc instanceof TimeValue) != (dtStart instanceof TimeValue)) {
         // TODO(msamuel): warn
         if (dtStart instanceof TimeValue) {
@@ -573,7 +573,7 @@ public class RecurrenceIteratorFactory {
     if (nbad > 0) {
       IcalObject[] trimmed = new IcalObject[out.length - nbad];
       for (int i = 0, k = 0; i < trimmed.length; ++k) {
-        if (null != out[k]) { trimmed[i++] = out[k]; }
+        if (out[k] != null) { trimmed[i++] = out[k]; }
       }
       out = trimmed;
     }

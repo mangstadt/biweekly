@@ -59,7 +59,7 @@ abstract class AbstractIcalObject implements IcalObject {
 
       setName(m.group(1).toUpperCase());
       paramText = m.group(2);
-      if (null == paramText) { paramText = ""; }
+      if (paramText == null) { paramText = ""; }
       content = m.group(3);
     }
 
@@ -72,7 +72,7 @@ abstract class AbstractIcalObject implements IcalObject {
       rest = rest.substring(m.end(0));
       String k = m.group(1).toUpperCase();
       String v = m.group(2);
-      if (null == v) { v = m.group(3); }
+      if (v == null) { v = m.group(3); }
       if (params.containsKey(k)) {
         schema.dupePart(k);
       }
@@ -91,11 +91,11 @@ abstract class AbstractIcalObject implements IcalObject {
    * Maps the parameter name, X-FOO, to the parameter value, BAR.
    */
   public Map<String, String> getExtParams() {
-    if (null == extParams) { extParams = new LinkedHashMap<String, String>(); }
+    if (extParams == null) { extParams = new LinkedHashMap<String, String>(); }
     return extParams;
   }
   public boolean hasExtParams() {
-    return null != extParams && !extParams.isEmpty();
+    return extParams != null && !extParams.isEmpty();
   }
 
 }

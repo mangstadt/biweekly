@@ -49,15 +49,15 @@ public final class IcalParseUtil {
     int year = Integer.parseInt(m.group(1)),
       month = Integer.parseInt(m.group(2)),
       day = Integer.parseInt(m.group(3));
-    if (null != m.group(4)) {
+    if (m.group(4) != null) {
       int hour = Integer.parseInt(m.group(4)),
         minute = Integer.parseInt(m.group(5)),
         second = Integer.parseInt(m.group(6));
-      boolean utc = null != m.group(7);
+      boolean utc = m.group(7) != null;
 
       DateValue dv = new DTBuilder(
           year, month, day, hour, minute, second).toDateTime();
-      if (!utc && null != tzid) {
+      if (!utc && tzid != null) {
         dv = TimeUtils.toUtc(dv, tzid);
       }
       return dv;

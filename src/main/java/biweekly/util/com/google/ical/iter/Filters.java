@@ -90,7 +90,7 @@ class Filters {
 
             if (day.wday == dow) {
               int weekNo = day.num;
-              if (0 == weekNo) { return true; }
+              if (weekNo == 0) { return true; }
 
               if (weekNo < 0) {
                 weekNo = Util.invertWeekdayNum(day, dow0, nDays);

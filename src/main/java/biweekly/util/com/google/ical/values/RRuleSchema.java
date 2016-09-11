@@ -362,12 +362,12 @@ class RRuleSchema extends IcalSchema{
             Weekday wday = Weekday.valueOf(m.group(2).toUpperCase());
             int n;
             String numText = m.group(1);
-            if (null == numText || "".equals(numText)) {
+            if (numText == null || "".equals(numText)) {
               n = 0;
             } else {
               n = Integer.parseInt(numText);
               int absn = n < 0 ? -n : n;
-              if (!(1 <= absn && 53 >= absn)) { schema.badPart(p, null); }
+              if (!(absn >= 1 && absn <= 53)) { schema.badPart(p, null); }
             }
             weekdays.add(new WeekdayNum(n, wday));
           }
@@ -493,7 +493,7 @@ class RRuleSchema extends IcalSchema{
               // TODO(msamuel): proper timezone lookup, and warn on failure
               TimeZone tz = TimeUtils.timeZoneForName(
                   value.replaceAll(" ", "_"));
-              if (null == tz) { schema.badParam(name, value); }
+              if (tz == null) { schema.badParam(name, value); }
               ((RDateList) out).setTzid(tz);
             } else {
               schema.badParam(name, value);
