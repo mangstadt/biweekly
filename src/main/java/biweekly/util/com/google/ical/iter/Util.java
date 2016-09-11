@@ -54,14 +54,9 @@ class Util {
 
   /** returns a sorted unique copy of ints. */
   static int[] uniquify(int[] ints) {
-    return uniquify(ints, 0, ints.length);
-  }
-
-  /** returns a sorted unique copy of ints. */
-  static int[] uniquify(int[] ints, int start, int end) {
     IntSet iset = new IntSet();
-    for (int i = end; --i >= start;) {
-      iset.add(ints[i]);
+    for (int i : ints){
+      iset.add(i);
     }
     return iset.toIntArray();
   }
