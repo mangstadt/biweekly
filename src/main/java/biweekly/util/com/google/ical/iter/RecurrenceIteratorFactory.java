@@ -147,17 +147,7 @@ public class RecurrenceIteratorFactory {
    * create a recurrence iterator from an rdate or exdate list.
    */
   public static RecurrenceIterator createRecurrenceIterator(RDateList rdates) {
-    DateValue[] dates = rdates.getDatesUtc();
-    Arrays.sort(dates);
-    int k = 0;
-    for (int i = 1; i < dates.length; ++i) {
-      if (!dates[i].equals(dates[k])) { dates[++k] = dates[i]; }
-    }
-    if (++k < dates.length) {
-      DateValue[] uniqueDates = new DateValue[k ];
-      System.arraycopy(dates, 0, uniqueDates, 0, k);
-      dates = uniqueDates;
-    }
+    DateValue[] dates = uniquify(rdates.getDatesUtc());
     return new RDateIteratorImpl(dates);
   }
 
@@ -194,13 +184,13 @@ public class RecurrenceIteratorFactory {
     }
 
     // Optimize out BYSETPOS where possible.
-    if (bySetPos.length != 0) {
+    if (bySetPos.length > 0) {
       switch (freq) {
         case HOURLY:
           // ;BYHOUR=3,6,9;BYSETPOS=-1,1
           //     is equivalent to
           // ;BYHOUR=3,9
-          if (byHour.length != 0 && byMinute.length <= 1
+          if (byHour.length > 0 && byMinute.length <= 1
               && bySecond.length <= 1) {
             byHour = filterBySetPos(byHour, bySetPos);
           }
@@ -216,7 +206,7 @@ public class RecurrenceIteratorFactory {
           // ;BYHOUR=3,6,9;BYSETPOS=-1,1
           //     is equivalent to
           // ;BYHOUR=3,9
-          if (byMinute.length != 0 && bySecond.length <= 1) {
+          if (byMinute.length > 0 && bySecond.length <= 1) {
             byMinute = filterBySetPos(byMinute, bySetPos);
           }
           // See bySetPos handling comment above.
@@ -226,7 +216,7 @@ public class RecurrenceIteratorFactory {
           // ;BYHOUR=3,6,9;BYSETPOS=-1,1
           //     is equivalent to
           // ;BYHOUR=3,9
-          if (bySecond.length != 0) {
+          if (bySecond.length > 0) {
             bySecond = filterBySetPos(bySecond, bySetPos);
           }
           // See bySetPos handling comment above.
@@ -237,7 +227,7 @@ public class RecurrenceIteratorFactory {
     }
 
     DateValue start = dtStart;
-    if (bySetPos.length != 0) {
+    if (bySetPos.length > 0) {
       // Roll back till the beginning of the period to make sure that any
       // positive indices are indexed properly.
       // The actual iterator implementation is responsible for anything
@@ -285,7 +275,7 @@ public class RecurrenceIteratorFactory {
       case SECONDLY:
         if (bySecond.length == 0 || interval != 1) {
           secondGenerator = Generators.serialSecondGenerator(interval, dtStart);
-          if (bySecond.length != 0) {
+          if (bySecond.length > 0) {
             filters.add(Filters.bySecondFilter(bySecond));
           }
         }
@@ -293,7 +283,7 @@ public class RecurrenceIteratorFactory {
       case MINUTELY:
         if (byMinute.length == 0 || interval != 1) {
           minuteGenerator = Generators.serialMinuteGenerator(interval, dtStart);
-          if (byMinute.length != 0) {
+          if (byMinute.length > 0) {
             filters.add(Filters.byMinuteFilter(byMinute));
           }
         }
@@ -301,7 +291,7 @@ public class RecurrenceIteratorFactory {
       case HOURLY:
         if (byHour.length == 0 || interval != 1) {
           hourGenerator = Generators.serialHourGenerator(interval, dtStart);
-          if (byHour.length != 0) {
+          if (byHour.length > 0) {
             filters.add(Filters.byHourFilter(bySecond));
           }
         }
@@ -313,7 +303,7 @@ public class RecurrenceIteratorFactory {
         // months &| years.  There are no week generators, but so a filter is
         // used to make sure that FREQ=WEEKLY;INTERVAL=2 only generates dates
         // within the proper week.
-        if (0 != byDay.length) {
+        if (byDay.length > 0) {
           dayGenerator = Generators.byDayGenerator(byDay, false, start);
           byDay = NO_DAYS;
           if (interval > 1) {
@@ -324,7 +314,7 @@ public class RecurrenceIteratorFactory {
         }
         break;
       case YEARLY:
-        if (0 != byYearDay.length) {
+        if (byYearDay.length > 0) {
           // The BYYEARDAY rule part specifies a COMMA separated list of days of
           // the year. Valid values are 1 to 366 or -366 to -1. For example, -1
           // represents the last day of the year (December 31st) and -306
@@ -334,19 +324,19 @@ public class RecurrenceIteratorFactory {
         }
         // $FALL-THROUGH$
       case MONTHLY:
-        if (0 != byMonthDay.length) {
+        if (byMonthDay.length > 0) {
           // The BYMONTHDAY rule part specifies a COMMA separated list of days
           // of the month. Valid values are 1 to 31 or -31 to -1. For example,
           // -10 represents the tenth to the last day of the month.
           dayGenerator = Generators.byMonthDayGenerator(byMonthDay, start);
           byMonthDay = NO_INTS;
-        } else if (0 != byWeekNo.length && Frequency.YEARLY == freq) {
+        } else if (byWeekNo.length > 0 && Frequency.YEARLY == freq) {
           // The BYWEEKNO rule part specifies a COMMA separated list of ordinals
           // specifying weeks of the year.  This rule part is only valid for
           // YEARLY rules.
           dayGenerator = Generators.byWeekNoGenerator(byWeekNo, wkst, start);
           byWeekNo = NO_INTS;
-        } else if (0 != byDay.length) {
+        } else if (byDay.length > 0) {
           // Each BYDAY value can also be preceded by a positive (n) or negative
           // (-n) integer. If present, this indicates the nth occurrence of the
           // specific day within the MONTHLY or YEARLY RRULE. For example,
@@ -389,10 +379,10 @@ public class RecurrenceIteratorFactory {
 
     if (dayGenerator == null) {
       boolean dailyOrMoreOften = freq.compareTo(Frequency.DAILY) <= 0;
-      if (byMonthDay.length != 0) {
+      if (byMonthDay.length > 0) {
         dayGenerator = Generators.byMonthDayGenerator(byMonthDay, start);
         byMonthDay = NO_INTS;
-      } else if (byDay.length != 0) {
+      } else if (byDay.length > 0) {
         dayGenerator = Generators.byDayGenerator(
             byDay, Frequency.YEARLY == freq, start);
         byDay = NO_DAYS;
@@ -405,17 +395,17 @@ public class RecurrenceIteratorFactory {
       }
     }
 
-    if (0 != byDay.length) {
+    if (byDay.length > 0) {
       filters.add(Filters.byDayFilter(byDay, Frequency.YEARLY == freq, wkst));
       byDay = NO_DAYS;
     }
 
-    if (0 != byMonthDay.length) {
+    if (byMonthDay.length > 0) {
       filters.add(Filters.byMonthDayFilter(byMonthDay));
     }
 
     // generator inference common to all periods
-    if (0 != byMonth.length) {
+    if (byMonth.length > 0) {
       monthGenerator = Generators.byMonthGenerator(byMonth, start);
     } else if (null == monthGenerator) {
       monthGenerator = Generators.serialMonthGenerator(
@@ -463,7 +453,7 @@ public class RecurrenceIteratorFactory {
     }
 
     Generator instanceGenerator;
-    if (0 != bySetPos.length) {
+    if (bySetPos.length > 0) {
       instanceGenerator = InstanceGenerators.bySetPosInstanceGenerator(
           bySetPos, freq, wkst, filter,
           yearGenerator, monthGenerator, dayGenerator, hourGenerator,
@@ -550,7 +540,7 @@ public class RecurrenceIteratorFactory {
         ++nbad;
       }
     }
-    if (0 != nbad) {
+    if (nbad > 0) {
       IcalObject[] trimmed = new IcalObject[out.length - nbad];
       for (int i = 0, k = 0; i < trimmed.length; ++k) {
         if (null != out[k]) { trimmed[i++] = out[k]; }
@@ -579,6 +569,29 @@ public class RecurrenceIteratorFactory {
       }
     }
     return iset.toIntArray();
+  }
+  
+  /**
+   * Sorts and removes duplicates from a list of date values. If any
+   * elements are removed, a copy of the array will be returned.
+   * @param dates the date values
+   * @return the processed array
+   */
+  private static DateValue[] uniquify(DateValue[] dates) {
+    Arrays.sort(dates);
+    int k = 0;
+    for (int i = 1; i < dates.length; ++i) {
+      if (!dates[i].equals(dates[k])) {
+        dates[++k] = dates[i];
+      }
+    }
+
+    if (++k < dates.length) {
+      DateValue[] uniqueDates = new DateValue[k];
+      System.arraycopy(dates, 0, uniqueDates, 0, k);
+      return uniqueDates;
+    }
+    return dates;
   }
 
   private static final int[] NO_INTS = new int[0];

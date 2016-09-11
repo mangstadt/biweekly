@@ -74,9 +74,8 @@ final class DateValueComparison {
       // the same day, but not one at another time of day.
       return (((((comp << 5) + tv.hour()) << 6) + tv.minute()) << 6)
         +  tv.second() + 1;
-    } else {
-      return comp << 17;
     }
+    return comp << 17;
   }
 
   private DateValueComparison() {

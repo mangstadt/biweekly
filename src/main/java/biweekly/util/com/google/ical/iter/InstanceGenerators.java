@@ -117,11 +117,9 @@ class InstanceGenerators {
           filter, yearGenerator, monthGenerator, dayGenerator,
           hourGenerator, minuteGenerator, secondGenerator);
 
-    final boolean allPositive;
-    final int maxPos;
     // TODO(msamuel): does this work?
-    maxPos = uSetPos[uSetPos.length - 1];
-    allPositive = uSetPos[0] > 0;
+    final int maxPos = uSetPos[uSetPos.length - 1];
+    final boolean allPositive = uSetPos[0] > 0;
 
     return new Generator() {
         DateValue pushback = null;
@@ -260,8 +258,7 @@ class InstanceGenerators {
               absSetPos = uSetPos;
             } else {
               IntSet uAbsSetPos = new IntSet();
-              for (int j = 0; j < uSetPos.length; ++j) {
-                int p = uSetPos[j];
+              for (int p : uSetPos) {
                 if (p < 0) { p = dates.size() + p + 1; }
                 uAbsSetPos.add(p);
               }

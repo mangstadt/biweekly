@@ -49,7 +49,7 @@ public class RDateList extends AbstractIcalObject {
   }
 
   public DateValue[] getDatesUtc() {
-    return null != this.datesUtc ? this.datesUtc.clone() : null;
+    return (datesUtc == null) ? null : datesUtc.clone();
   }
   public void setDatesUtc(DateValue[] datesUtc) {
     this.datesUtc = datesUtc.clone();
@@ -90,7 +90,7 @@ public class RDateList extends AbstractIcalObject {
     }
     buf.append(':');
     for (int i = 0; i < datesUtc.length; ++i) {
-      if (0 != i) { buf.append(','); }
+      if (i > 0) { buf.append(','); }
       DateValue v = datesUtc[i];
       buf.append(v);
       if (v instanceof TimeValue) { buf.append('Z'); }

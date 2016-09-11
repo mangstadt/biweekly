@@ -159,9 +159,8 @@ final class CompoundIteratorImpl implements RecurrenceIterator {
       if (!excluded) {
         pending = inclusion;
         return;
-      } else {
-        reattach(inclusion);
       }
+      reattach(inclusion);
     }
   }
 

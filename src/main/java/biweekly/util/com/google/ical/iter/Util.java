@@ -90,8 +90,7 @@ class Util {
       lastDateOfGivenDow -= 7 * ((lastDateOfGivenDow - nDays + 6) / 7);
       date = lastDateOfGivenDow + 7 * (weekNum + 1) - d0;
     }
-    if (date <= 0 || date > nDaysInMonth) { return 0; }
-    return date;
+    return (date <= 0 || date > nDaysInMonth) ? 0 : date;
   }
 
   /**

@@ -138,10 +138,13 @@ final class Generators {
         int nDays;
 
         {
-          // step back one interval
-          DTBuilder dtStartMinus1B = new DTBuilder(dtStart);
-          dtStartMinus1B.day -= interval;
-          DateValue dtStartMinus1 = dtStartMinus1B.toDate();
+          //step back one interval
+          DateValue dtStartMinus1;
+          {
+            DTBuilder builder = new DTBuilder(dtStart);
+            builder.day -= interval;
+            dtStartMinus1 = builder.toDate();
+          }
           year = dtStartMinus1.year();
           month = dtStartMinus1.month();
           date = dtStartMinus1.day();
@@ -160,7 +163,7 @@ final class Generators {
             nDays = TimeUtils.monthLength(builder.year, builder.month);
             if (interval != 1) {
               // Calculate the number of days between the first of the new
-              // month andthe old date and extend it to make it an integer
+              // month and the old date and extend it to make it an integer
               // multiple of interval
               int daysBetween = TimeUtils.daysBetween(
                   new DateValueImpl(builder.year, builder.month, 1),
@@ -408,11 +411,7 @@ final class Generators {
    */
   static Generator byHourGenerator(int[] hours, final DateValue dtStart) {
     final TimeValue dtStartTime = TimeUtils.timeOf(dtStart);
-    hours = Util.uniquify(hours);
-    if (hours.length == 0) {
-      hours = new int[] { dtStartTime.hour() };
-    }
-    final int[] uhours = hours;
+    final int[] uhours = (hours.length == 0) ? new int[] { dtStartTime.hour() } : Util.uniquify(hours);
 
     if (uhours.length == 1) {
       final int hour = uhours[0];
@@ -483,11 +482,7 @@ final class Generators {
   static Generator byMinuteGenerator(
       int[] minutes, final DateValue dtStart) {
 	final TimeValue dtStartTime = TimeUtils.timeOf(dtStart);
-    minutes = Util.uniquify(minutes);
-    if (minutes.length == 0) {
-      minutes = new int[] { dtStartTime.minute() };
-    }
-    final int[] uminutes = minutes;
+    final int[] uminutes = (minutes.length == 0) ? new int[] { dtStartTime.minute() } : Util.uniquify(minutes);
 
     if (uminutes.length == 1) {
       final int minute = uminutes[0];
@@ -562,11 +557,7 @@ final class Generators {
   static Generator bySecondGenerator(
       int[] seconds, final DateValue dtStart) {
     final TimeValue dtStartTime = TimeUtils.timeOf(dtStart);
-    seconds = Util.uniquify(seconds);
-    if (seconds.length == 0) {
-      seconds = new int[] { dtStartTime.second() };
-    }
-    final int[] useconds = seconds;
+    final int[] useconds = (seconds.length == 0) ? new int[] { dtStartTime.second() } : Util.uniquify(seconds);
 
     if (useconds.length == 1) {
       final int second = useconds[0];

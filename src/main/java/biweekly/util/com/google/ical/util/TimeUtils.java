@@ -113,7 +113,8 @@ public class TimeUtils {
       db.minute += tdur.minute();
       db.second += tdur.second();
       return db.toDateTime();
-    } else if (d instanceof TimeValue) {
+    }
+    if (d instanceof TimeValue) {
       return db.toDateTime();
     }
     return db.toDate();
@@ -270,8 +271,7 @@ public class TimeUtils {
    * is not a TimeValue.
    */
   public static DateValue toDateValue(DateValue dv) {
-    return (!(dv instanceof TimeValue) ? dv
-            : new DateValueImpl(dv.year(), dv.month(), dv.day()));
+    return (dv instanceof TimeValue) ? new DateValueImpl(dv.year(), dv.month(), dv.day()) : dv;
   }
 
   private static final TimeZone BOGUS_TIMEZONE =

@@ -133,7 +133,7 @@ public class RRule extends AbstractIcalObject {
 
   private static void writeIntList(int[] nums, StringBuilder out) {
     for (int i = 0; i < nums.length; ++i) {
-      if (0 != i) { out.append(','); }
+      if (i > 0) { out.append(','); }
       out.append(nums[i]);
     }
   }
@@ -180,7 +180,7 @@ public class RRule extends AbstractIcalObject {
             // month
             nPerPeriod += (0 != day.num ? 1 : 4) * monthCount;
           }
-        } else if (0 != this.byMonthDay.length) {
+        } else if (this.byMonthDay.length > 0) {
           nPerPeriod += monthCount * this.byMonthDay.length;
         } else {
           nPerPeriod += this.byYearDay.length;

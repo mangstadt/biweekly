@@ -44,7 +44,7 @@ final class IntSet {
   int size() { return ints.cardinality(); }
 
   int[] toIntArray() {
-    int[] out = new int[ints.cardinality()];
+    int[] out = new int[size()];
     int a = 0, b = out.length;
     for (int i = -1; (i = ints.nextSetBit(i + 1)) >= 0;) {
       int n = decode(i);

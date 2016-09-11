@@ -71,11 +71,9 @@ class Filters {
 
           // which week of the year or month does this date fall on?
           // one-indexed
-          int dateWeekNo;
+          int dateWeekNo = instance / 7;
           if (wkst.javaDayNum <= dow.javaDayNum) {
-            dateWeekNo = 1 + (instance / 7);
-          } else {
-            dateWeekNo = (instance / 7);
+            dateWeekNo += 1;
           }
 
           // TODO(msamuel): according to section 4.3.10
