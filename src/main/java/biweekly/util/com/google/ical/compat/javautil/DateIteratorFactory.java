@@ -114,22 +114,13 @@ public class DateIteratorFactory {
   static Date dateValueToDate(DateValue dvUtc) {
     GregorianCalendar c = new GregorianCalendar(TimeUtils.utcTimezone());
     c.clear();
-    if (dvUtc instanceof TimeValue) {
-      TimeValue tvUtc = (TimeValue) dvUtc;
-      c.set(dvUtc.year(),
-            dvUtc.month() - 1,  // java.util's dates are zero-indexed
-            dvUtc.day(),
-            tvUtc.hour(),
-            tvUtc.minute(),
-            tvUtc.second());
-    } else {
-      c.set(dvUtc.year(),
-            dvUtc.month() - 1,  // java.util's dates are zero-indexed
-            dvUtc.day(),
-            0,
-            0,
-            0);
-    }
+    TimeValue tvUtc = TimeUtils.timeOf(dvUtc);
+    c.set(dvUtc.year(),
+          dvUtc.month() - 1,  // java.util's dates are zero-indexed
+          dvUtc.day(),
+          tvUtc.hour(),
+          tvUtc.minute(),
+          tvUtc.second());
     return c.getTime();
   }
 

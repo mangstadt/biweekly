@@ -197,10 +197,9 @@ final class Generators {
    */
   static Generator serialHourGenerator(
       final int interval, final DateValue dtStart) {
-
+    final TimeValue dtStartTime = TimeUtils.timeOf(dtStart);
     return new Generator() {
-      int hour = ((dtStart instanceof TimeValue)
-          ? ((TimeValue) dtStart).hour() : 0) - interval;
+      int hour = dtStartTime.hour() - interval;
       int day = dtStart.day();
       int month = dtStart.month();
       int year = dtStart.year();
@@ -246,12 +245,10 @@ final class Generators {
    */
   static Generator serialMinuteGenerator(
       final int interval, final DateValue dtStart) {
-
+    final TimeValue dtStartTime = TimeUtils.timeOf(dtStart);
     return new Generator() {
-      int minute = (dtStart instanceof TimeValue
-        ? ((TimeValue) dtStart).minute() : 0) - interval;
-      int hour = dtStart instanceof TimeValue
-        ? ((TimeValue) dtStart).hour() : 0;
+      int minute = dtStartTime.minute() - interval;
+      int hour = dtStartTime.hour();
       int day = dtStart.day();
       int month = dtStart.month();
       int year = dtStart.year();
@@ -302,14 +299,11 @@ final class Generators {
    */
   static Generator serialSecondGenerator(
       final int interval, final DateValue dtStart) {
-
+    final TimeValue dtStartTime = TimeUtils.timeOf(dtStart);
     return new Generator() {
-      int second = (dtStart instanceof TimeValue
-          ? ((TimeValue) dtStart).second() : 0) - interval;
-      int minute = dtStart instanceof TimeValue
-          ? ((TimeValue) dtStart).minute() : 0;
-      int hour = dtStart instanceof TimeValue
-          ? ((TimeValue) dtStart).hour() : 0;
+      int second = dtStartTime.second() - interval;
+      int minute = dtStartTime.minute();
+      int hour = dtStartTime.hour();
       int day = dtStart.day();
       int month = dtStart.month();
       int year = dtStart.year();
@@ -413,11 +407,10 @@ final class Generators {
    * @param dtStart non null
    */
   static Generator byHourGenerator(int[] hours, final DateValue dtStart) {
-    int startHour = dtStart instanceof TimeValue
-        ? ((TimeValue) dtStart).hour() : 0;
+    final TimeValue dtStartTime = TimeUtils.timeOf(dtStart);
     hours = Util.uniquify(hours);
     if (hours.length == 0) {
-      hours = new int[] { startHour };
+      hours = new int[] { dtStartTime.hour() };
     }
     final int[] uhours = hours;
 
@@ -456,8 +449,7 @@ final class Generators {
         int month = dtStart.month();
         int day = dtStart.day();
         {
-          int hour = dtStart instanceof TimeValue
-              ? ((TimeValue) dtStart).hour() : 0;
+          int hour = dtStartTime.hour();
           while (i < uhours.length && uhours[i] < hour) { ++i; }
         }
 
@@ -490,11 +482,10 @@ final class Generators {
    */
   static Generator byMinuteGenerator(
       int[] minutes, final DateValue dtStart) {
+	final TimeValue dtStartTime = TimeUtils.timeOf(dtStart);
     minutes = Util.uniquify(minutes);
     if (minutes.length == 0) {
-      minutes = new int[] {
-          dtStart instanceof TimeValue ? ((TimeValue) dtStart).minute() : 0
-      };
+      minutes = new int[] { dtStartTime.minute() };
     }
     final int[] uminutes = minutes;
 
@@ -534,11 +525,9 @@ final class Generators {
         int year = dtStart.year();
         int month = dtStart.month();
         int day = dtStart.day();
-        int hour = dtStart instanceof TimeValue
-            ? ((TimeValue) dtStart).hour() : 0;
+        int hour = dtStartTime.hour();
         {
-          int minute = dtStart instanceof TimeValue
-              ? ((TimeValue) dtStart).minute() : 0;
+          int minute = dtStartTime.minute();
           while (i < uminutes.length && uminutes[i] < minute) { ++i; }
         }
 
@@ -572,11 +561,10 @@ final class Generators {
    */
   static Generator bySecondGenerator(
       int[] seconds, final DateValue dtStart) {
+    final TimeValue dtStartTime = TimeUtils.timeOf(dtStart);
     seconds = Util.uniquify(seconds);
     if (seconds.length == 0) {
-      seconds = new int[] {
-          dtStart instanceof TimeValue ? ((TimeValue) dtStart).second() : 0
-      };
+      seconds = new int[] { dtStartTime.second() };
     }
     final int[] useconds = seconds;
 
@@ -619,13 +607,10 @@ final class Generators {
         int year = dtStart.year();
         int month = dtStart.month();
         int day = dtStart.day();
-        int hour = dtStart instanceof TimeValue
-            ? ((TimeValue) dtStart).hour() : 0;
-        int minute = dtStart instanceof TimeValue
-            ? ((TimeValue) dtStart).minute() : 0;
+        int hour = dtStartTime.hour();
+        int minute = dtStartTime.minute();
         {
-          int second = dtStart instanceof TimeValue
-            ? ((TimeValue) dtStart).second() : 0;
+          int second = dtStartTime.second();
           while (i < useconds.length && useconds[i] < second) { ++i; }
         }
 

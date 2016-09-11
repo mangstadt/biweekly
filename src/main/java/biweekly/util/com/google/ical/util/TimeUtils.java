@@ -319,6 +319,30 @@ public class TimeUtils {
             c.get(Calendar.MINUTE),
             c.get(Calendar.SECOND));
   }
+  
+	private static final TimeValue MIDNIGHT = new TimeValue() {
+		public int hour() {
+			return 0;
+		}
+
+		public int minute() {
+			return 0;
+		}
+
+		public int second() {
+			return 0;
+		}
+	};
+  
+	/**
+	 * Gets the time component of a date value.
+	 * @param date the date value
+	 * @return the date value's time component or a time value representing
+	 * midnight if the date value does not have a time component
+	 */
+	public static TimeValue timeOf(DateValue date) {
+		return (date instanceof TimeValue) ? (TimeValue) date : MIDNIGHT;
+	}
 
   private TimeUtils() {
     // uninstantiable
