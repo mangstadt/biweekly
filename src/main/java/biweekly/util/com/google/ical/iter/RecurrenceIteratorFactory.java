@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
+import biweekly.util.Frequency;
 import biweekly.util.com.google.ical.util.Predicate;
 import biweekly.util.com.google.ical.util.Predicates;
 import biweekly.util.com.google.ical.util.TimeUtils;
@@ -33,7 +34,6 @@ import biweekly.util.com.google.ical.values.DateTimeValue;
 import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
-import biweekly.util.com.google.ical.values.Frequency;
 import biweekly.util.com.google.ical.values.IcalObject;
 import biweekly.util.com.google.ical.values.RDateList;
 import biweekly.util.com.google.ical.values.RRule;

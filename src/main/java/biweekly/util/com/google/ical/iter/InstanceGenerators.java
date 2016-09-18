@@ -18,11 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import biweekly.util.DayOfWeek;
+import biweekly.util.Frequency;
 import biweekly.util.com.google.ical.util.DTBuilder;
 import biweekly.util.com.google.ical.util.Predicate;
 import biweekly.util.com.google.ical.util.TimeUtils;
 import biweekly.util.com.google.ical.values.DateValue;
-import biweekly.util.com.google.ical.values.Frequency;
 import biweekly.util.com.google.ical.values.TimeValue;
 
 /**

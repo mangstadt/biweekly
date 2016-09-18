@@ -21,6 +21,7 @@ import java.util.Map;
 
 import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
+import biweekly.util.Frequency;
 
 /**
  * Represents an RRULE or EXRULE property.

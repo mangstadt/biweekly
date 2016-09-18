@@ -17,6 +17,8 @@ package biweekly.util.com.google.ical.values;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import biweekly.util.Frequency;
+
 /**
  * converts vcal recurrence rules to ical.
  *

@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
+import biweekly.util.Frequency;
 import biweekly.util.com.google.ical.util.TimeUtils;
 
 /**

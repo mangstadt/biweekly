@@ -84,7 +84,7 @@ public final class Google2445Utils {
 
 		Frequency freq = recurrence.getFrequency();
 		if (freq != null) {
-			rrule.setFreq(convert(freq));
+			rrule.setFreq(freq);
 		}
 
 		Integer interval = recurrence.getInterval();
@@ -103,33 +103,6 @@ public final class Google2445Utils {
 		}
 
 		return rrule;
-	}
-
-	/**
-	 * Converts a {@link Frequency} object to a google-rfc-2445
-	 * {@link biweekly.util.com.google.ical.values.Frequency Frequency} object.
-	 * @param freq the frequency object
-	 * @return the google-rfc-2445 object
-	 */
-	public static biweekly.util.com.google.ical.values.Frequency convert(Frequency freq) {
-		switch (freq) {
-		case YEARLY:
-			return biweekly.util.com.google.ical.values.Frequency.YEARLY;
-		case MONTHLY:
-			return biweekly.util.com.google.ical.values.Frequency.MONTHLY;
-		case WEEKLY:
-			return biweekly.util.com.google.ical.values.Frequency.WEEKLY;
-		case DAILY:
-			return biweekly.util.com.google.ical.values.Frequency.DAILY;
-		case HOURLY:
-			return biweekly.util.com.google.ical.values.Frequency.HOURLY;
-		case MINUTELY:
-			return biweekly.util.com.google.ical.values.Frequency.MINUTELY;
-		case SECONDLY:
-			return biweekly.util.com.google.ical.values.Frequency.SECONDLY;
-		default:
-			return null;
-		}
 	}
 
 	/**
