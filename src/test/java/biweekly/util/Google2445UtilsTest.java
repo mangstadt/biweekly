@@ -89,19 +89,21 @@ public class Google2445UtilsTest {
 
 	@Test
 	public void getDateIterator() {
+		TimeZone tz = TimeZone.getTimeZone("America/Los_Angeles");
+
 		VEvent event = new VEvent();
 
-		event.setDateStart(date("2016-03-25 14:00:00"));
+		event.setDateStart(date("2016-03-25 14:00:00", tz));
 
 		event.setRecurrenceRule(new Recurrence.Builder(Frequency.DAILY).count(10).build());
 
 		RecurrenceDates rdate = new RecurrenceDates();
-		rdate.getDates().add(new ICalDate(date("2016-03-26 20:00:00")));
-		rdate.getDates().add(new ICalDate(date("2016-03-27 20:00:00")));
+		rdate.getDates().add(new ICalDate(date("2016-03-26 20:00:00", tz)));
+		rdate.getDates().add(new ICalDate(date("2016-03-27 20:00:00", tz)));
 		event.addRecurrenceDates(rdate);
 
 		ExceptionDates exdate = new ExceptionDates();
-		exdate.getValues().add(new ICalDate(date("2016-03-27 14:00:00")));
+		exdate.getValues().add(new ICalDate(date("2016-03-27 14:00:00", tz)));
 		event.addExceptionDates(exdate);
 
 		ExceptionRule exrule = new ExceptionRule(new Recurrence.Builder(Frequency.WEEKLY).count(2).build());
@@ -109,15 +111,15 @@ public class Google2445UtilsTest {
 
 		//@formatter:off
 		List<Date> expectedList = Arrays.asList(
-			date("2016-03-26 14:00:00"),
-			date("2016-03-26 20:00:00"),
-			date("2016-03-27 20:00:00"),
-			date("2016-03-28 14:00:00"),
-			date("2016-03-29 14:00:00"),
-			date("2016-03-30 14:00:00"),
-			date("2016-03-31 14:00:00"),
-			date("2016-04-02 14:00:00"),
-			date("2016-04-03 14:00:00")
+			date("2016-03-26 14:00:00", tz),
+			date("2016-03-26 20:00:00", tz),
+			date("2016-03-27 20:00:00", tz),
+			date("2016-03-28 14:00:00", tz),
+			date("2016-03-29 14:00:00", tz),
+			date("2016-03-30 14:00:00", tz),
+			date("2016-03-31 14:00:00", tz),
+			date("2016-04-02 14:00:00", tz),
+			date("2016-04-03 14:00:00", tz)
 		);
 		//@formatter:on
 
