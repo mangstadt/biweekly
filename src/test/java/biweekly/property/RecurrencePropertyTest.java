@@ -16,9 +16,9 @@ import java.util.TimeZone;
 
 import org.junit.Test;
 
+import biweekly.util.Frequency;
 import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
-import biweekly.util.Recurrence.Frequency;
 import biweekly.util.com.google.ical.compat.javautil.DateIterator;
 
 /*
@@ -213,7 +213,7 @@ public class RecurrencePropertyTest {
 		Date advanceTo = date("2016-07-01 06:59:00", pacificTimeZone); //advance iterator to time 1-minute less than the time zone offset
 
 		//Note: date-time used for advancement must first be converted to UTC
-		Recurrence recur = new Recurrence.Builder(Recurrence.Frequency.DAILY).count(4).build();
+		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).count(4).build();
 		RecurrenceProperty recurrenceProperty = new RecurrenceProperty(recur);
 		DateIterator it = recurrenceProperty.getDateIterator(start, pacificTimeZone);
 		it.advanceTo(advanceTo);
@@ -242,7 +242,7 @@ public class RecurrencePropertyTest {
 		Date advanceTo = date("2016-07-01 00:05:00", singapore); //advance iterator 5-minutes from start time
 
 		//Note: date-time used for advancement must first be converted to UTC
-		Recurrence recur = new Recurrence.Builder(Recurrence.Frequency.DAILY).count(4).build();
+		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).count(4).build();
 		RecurrenceProperty recurrenceProperty = new RecurrenceProperty(recur);
 		DateIterator it = recurrenceProperty.getDateIterator(start, singapore);
 		it.advanceTo(advanceTo);

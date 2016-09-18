@@ -16,7 +16,6 @@ import biweekly.component.VEvent;
 import biweekly.property.ExceptionDates;
 import biweekly.property.ExceptionRule;
 import biweekly.property.RecurrenceDates;
-import biweekly.util.Recurrence.Frequency;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt

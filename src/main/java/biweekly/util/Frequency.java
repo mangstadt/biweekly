@@ -1,13 +1,4 @@
-package biweekly.property;
-
-import static biweekly.util.TestUtils.assertValidate;
-
-import org.junit.Test;
-
-import static biweekly.ICalVersion.*;
-
-import biweekly.util.Frequency;
-import biweekly.util.Recurrence;
+package biweekly.util;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -32,18 +23,13 @@ import biweekly.util.Recurrence;
  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
 /**
+ * Represents the frequency at which a recurrence rule repeats itself.
  * @author Michael Angstadt
  */
-public class ExceptionRuleTest {
-	@Test
-	public void validate() {
-		ExceptionRule property = new ExceptionRule(new Recurrence.Builder(Frequency.DAILY).build());
-		assertValidate(property).versions(V1_0, V2_0_DEPRECATED).run();
-
-		property = new ExceptionRule(new Recurrence.Builder(Frequency.DAILY).build());
-		assertValidate(property).versions(V2_0).run(37);
-	}
+public enum Frequency {
+	//in order of increasing length
+	SECONDLY, MINUTELY, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY
 }

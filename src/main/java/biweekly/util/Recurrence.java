@@ -282,14 +282,6 @@ public final class Recurrence {
 	}
 
 	/**
-	 * Represents the frequency at which a recurrence rule repeats itself.
-	 * @author Michael Angstadt
-	 */
-	public static enum Frequency {
-		SECONDLY, MINUTELY, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY
-	}
-
-	/**
 	 * Constructs {@link Recurrence} objects.
 	 * @author Michael Angstadt
 	 */

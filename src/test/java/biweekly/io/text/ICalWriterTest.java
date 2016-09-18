@@ -59,10 +59,10 @@ import biweekly.property.Trigger;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DayOfWeek;
 import biweekly.util.Duration;
+import biweekly.util.Frequency;
 import biweekly.util.IOUtils;
 import biweekly.util.Period;
 import biweekly.util.Recurrence;
-import biweekly.util.Recurrence.Frequency;
 import biweekly.util.UtcOffset;
 
 /*

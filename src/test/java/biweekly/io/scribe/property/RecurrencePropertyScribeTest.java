@@ -41,10 +41,10 @@ import biweekly.property.RecurrenceProperty;
 import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
 import biweekly.util.DefaultTimezoneRule;
+import biweekly.util.Frequency;
 import biweekly.util.ICalDate;
 import biweekly.util.ListMultimap;
 import biweekly.util.Recurrence;
-import biweekly.util.Recurrence.Frequency;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt

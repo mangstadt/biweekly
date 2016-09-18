@@ -28,10 +28,10 @@ import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceProperty;
 import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
+import biweekly.util.Frequency;
 import biweekly.util.ICalDate;
 import biweekly.util.ListMultimap;
 import biweekly.util.Recurrence;
-import biweekly.util.Recurrence.Frequency;
 import biweekly.util.XmlUtils;
 
 import com.github.mangstadt.vinnie.io.VObjectPropertyValues;

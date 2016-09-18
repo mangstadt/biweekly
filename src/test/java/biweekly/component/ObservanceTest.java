@@ -11,8 +11,8 @@ import org.junit.Test;
 
 import biweekly.property.DateStart;
 import biweekly.property.RecurrenceRule;
+import biweekly.util.Frequency;
 import biweekly.util.Recurrence;
-import biweekly.util.Recurrence.Frequency;
 import biweekly.util.UtcOffset;
 
 /*

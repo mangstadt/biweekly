@@ -29,8 +29,8 @@ import biweekly.property.Summary;
 import biweekly.property.Transparency;
 import biweekly.property.Url;
 import biweekly.util.Duration;
+import biweekly.util.Frequency;
 import biweekly.util.Recurrence;
-import biweekly.util.Recurrence.Frequency;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
