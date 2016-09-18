@@ -289,50 +289,6 @@ public final class Recurrence {
 		SECONDLY, MINUTELY, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY
 	}
 
-	public static class ByDay {
-		private final Integer num;
-		private final DayOfWeek day;
-
-		public ByDay(DayOfWeek day) {
-			this(null, day);
-		}
-
-		public ByDay(Integer num, DayOfWeek day) {
-			this.num = num;
-			this.day = day;
-		}
-
-		public Integer getNum() {
-			return num;
-		}
-
-		public DayOfWeek getDay() {
-			return day;
-		}
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((day == null) ? 0 : day.hashCode());
-			result = prime * result + ((num == null) ? 0 : num.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) return true;
-			if (obj == null) return false;
-			if (getClass() != obj.getClass()) return false;
-			ByDay other = (ByDay) obj;
-			if (day != other.day) return false;
-			if (num == null) {
-				if (other.num != null) return false;
-			} else if (!num.equals(other.num)) return false;
-			return true;
-		}
-	}
-
 	/**
 	 * Constructs {@link Recurrence} objects.
 	 * @author Michael Angstadt

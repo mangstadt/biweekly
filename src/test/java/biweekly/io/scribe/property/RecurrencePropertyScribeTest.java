@@ -38,12 +38,12 @@ import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceProperty;
+import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
 import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.ICalDate;
 import biweekly.util.ListMultimap;
 import biweekly.util.Recurrence;
-import biweekly.util.Recurrence.ByDay;
 import biweekly.util.Recurrence.Frequency;
 
 /*
