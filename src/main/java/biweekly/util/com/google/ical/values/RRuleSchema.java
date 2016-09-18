@@ -14,8 +14,6 @@
 
 package biweekly.util.com.google.ical.values;
 
-import biweekly.util.com.google.ical.util.TimeUtils;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +23,9 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import biweekly.util.DayOfWeek;
+import biweekly.util.com.google.ical.util.TimeUtils;
 
 /**
  * ical schema for parsing RRULE and EXRULE content lines.
@@ -293,7 +294,7 @@ class RRuleSchema extends IcalSchema{
         public void apply(IcalSchema schema, String value, IcalObject target)
             throws ParseException {
           ((RRule) target).setWkSt(
-              (Weekday) schema.applyXformSchema("weekday", value));
+              (DayOfWeek) schema.applyXformSchema("weekday", value));
         }
       });
 
@@ -359,7 +360,7 @@ class RRuleSchema extends IcalSchema{
           for (String p : parts) {
             Matcher m = NUM_DAY.matcher(p);
             if (!m.matches()) { schema.badPart(p, null); }
-            Weekday wday = Weekday.valueOf(m.group(2).toUpperCase());
+            DayOfWeek wday = DayOfWeek.valueOfAbbr(m.group(2));
             int n;
             String numText = m.group(1);
             if (numText == null || "".equals(numText)) {
@@ -376,9 +377,9 @@ class RRuleSchema extends IcalSchema{
       });
 
     xformRules.put("weekday", new XformRule() {
-        public Weekday apply(IcalSchema schema, String value)
+        public DayOfWeek apply(IcalSchema schema, String value)
             throws ParseException {
-          return Weekday.valueOf(value.toUpperCase());
+          return DayOfWeek.valueOfAbbr(value);
         }
       });
 

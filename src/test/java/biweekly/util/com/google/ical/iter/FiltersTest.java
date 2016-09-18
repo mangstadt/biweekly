@@ -14,11 +14,11 @@
 
 package biweekly.util.com.google.ical.iter;
 
-import junit.framework.TestCase;
+import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.util.Predicate;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.IcalParseUtil;
-import biweekly.util.com.google.ical.values.Weekday;
+import junit.framework.TestCase;
 
 /**
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
@@ -39,7 +39,7 @@ public class FiltersTest extends TestCase {
     // *s match those that are in the weeks that should pass the filter
 
     Predicate<? super DateValue> f1 = Filters.weekIntervalFilter(
-        2, Weekday.MO, IcalParseUtil.parseDateValue("20050911"));
+        2, DayOfWeek.MONDAY, IcalParseUtil.parseDateValue("20050911"));
     // FOR f1
     //    September 2005
     //  Su  Mo  Tu  We  Th  Fr  Sa
@@ -68,7 +68,7 @@ public class FiltersTest extends TestCase {
     assertTrue(!f1.apply(IcalParseUtil.parseDateValue("20050926")));
 
     Predicate<? super DateValue> f2 = Filters.weekIntervalFilter(
-        2, Weekday.SU, IcalParseUtil.parseDateValue("20050911"));
+        2, DayOfWeek.SUNDAY, IcalParseUtil.parseDateValue("20050911"));
     // FOR f2
     //    September 2005
     //  Su  Mo  Tu  We  Th  Fr  Sa

@@ -265,7 +265,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 		assertTrue(actual, split.contains("BYWEEKNO=1,2"));
 		assertTrue(actual, split.contains("COUNT=5"));
 		assertTrue(actual, split.contains("INTERVAL=10"));
-		assertTrue(actual, split.contains("BYDAY=MO,TU,WE,TH,FR,SA,SU,5FR"));
+		assertTrue(actual, split.contains("BYDAY=SU,MO,TU,WE,TH,FR,SA,5FR"));
 		assertTrue(actual, split.contains("WKST=TU"));
 		assertTrue(actual, split.contains("X-NAME=one,two"));
 		assertTrue(actual, split.contains("X-RULE=three"));
@@ -547,13 +547,13 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 			"<byminute>4</byminute>" +
 			"<byhour>1</byhour>" +
 			"<byhour>2</byhour>" +
+			"<byday>SU</byday>" +
 			"<byday>MO</byday>" +
 			"<byday>TU</byday>" +
 			"<byday>WE</byday>" +
 			"<byday>TH</byday>" +
 			"<byday>FR</byday>" +
 			"<byday>SA</byday>" +
-			"<byday>SU</byday>" +
 			"<byday>5FR</byday>" +
 			"<bymonthday>1</bymonthday>" +
 			"<bymonthday>2</bymonthday>" +
@@ -771,7 +771,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 		expected.put("bysecond", new JsonValue(Arrays.asList(new JsonValue(58), new JsonValue(59))));
 		expected.put("byminute", new JsonValue(Arrays.asList(new JsonValue(3), new JsonValue(4))));
 		expected.put("byhour", new JsonValue(Arrays.asList(new JsonValue(1), new JsonValue(2))));
-		expected.put("byday", new JsonValue(Arrays.asList(new JsonValue("MO"), new JsonValue("TU"), new JsonValue("WE"), new JsonValue("TH"), new JsonValue("FR"), new JsonValue("SA"), new JsonValue("SU"), new JsonValue("5FR"))));
+		expected.put("byday", new JsonValue(Arrays.asList(new JsonValue("SU"), new JsonValue("MO"), new JsonValue("TU"), new JsonValue("WE"), new JsonValue("TH"), new JsonValue("FR"), new JsonValue("SA"), new JsonValue("5FR"))));
 		expected.put("bymonthday", new JsonValue(Arrays.asList(new JsonValue(1), new JsonValue(2))));
 		expected.put("byyearday", new JsonValue(Arrays.asList(new JsonValue(100), new JsonValue(101))));
 		expected.put("byweekno", new JsonValue(Arrays.asList(new JsonValue(1), new JsonValue(2))));

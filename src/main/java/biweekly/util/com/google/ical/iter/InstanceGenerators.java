@@ -14,16 +14,16 @@
 
 package biweekly.util.com.google.ical.iter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.util.DTBuilder;
 import biweekly.util.com.google.ical.util.Predicate;
 import biweekly.util.com.google.ical.util.TimeUtils;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.Frequency;
 import biweekly.util.com.google.ical.values.TimeValue;
-import biweekly.util.com.google.ical.values.Weekday;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Factory for generators that operate on groups of generators to generate full
@@ -104,7 +104,7 @@ class InstanceGenerators {
   }
 
   static Generator bySetPosInstanceGenerator(
-      int[] setPos, final Frequency freq, final Weekday wkst,
+      int[] setPos, final Frequency freq, final DayOfWeek wkst,
       final Predicate<? super DateValue> filter,
       final Generator yearGenerator, final Generator monthGenerator,
       final Generator dayGenerator, final Generator hourGenerator,
@@ -245,10 +245,10 @@ class InstanceGenerators {
                      */
                     contained =
                       nb < 7
-                      && ((7 + Weekday.valueOf(d).javaDayNum
-                           - wkst.javaDayNum) % 7)
-                      > ((7 + Weekday.valueOf(d0).javaDayNum
-                          - wkst.javaDayNum) % 7);
+                      && ((7 + TimeUtils.dayOfWeek(d).getCalendarConstant()
+                           - wkst.getCalendarConstant()) % 7)
+                      > ((7 + TimeUtils.dayOfWeek(d0).getCalendarConstant()
+                          - wkst.getCalendarConstant()) % 7);
                     break;
                   case MONTHLY:
                     contained =

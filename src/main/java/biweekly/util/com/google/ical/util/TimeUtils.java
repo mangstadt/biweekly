@@ -17,18 +17,19 @@
 
 package biweekly.util.com.google.ical.util;
 
-import biweekly.util.com.google.ical.values.DateTimeValue;
-import biweekly.util.com.google.ical.values.DateTimeValueImpl;
-import biweekly.util.com.google.ical.values.DateValue;
-import biweekly.util.com.google.ical.values.DateValueImpl;
-import biweekly.util.com.google.ical.values.TimeValue;
-
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import biweekly.util.DayOfWeek;
+import biweekly.util.com.google.ical.values.DateTimeValue;
+import biweekly.util.com.google.ical.values.DateTimeValueImpl;
+import biweekly.util.com.google.ical.values.DateValue;
+import biweekly.util.com.google.ical.values.DateValueImpl;
+import biweekly.util.com.google.ical.values.TimeValue;
 
 /**
  * Utility methods for working with times and dates.
@@ -275,6 +276,36 @@ public class TimeUtils {
   public static int dayOfYear(int year, int month, int date) {
     int leapAdjust = month > 2 && isLeapYear(year) ? 1 : 0;
     return MONTH_START_TO_DOY[month - 1] + leapAdjust + date - 1;
+  }
+  
+  private static final DayOfWeek[] DAYS_OF_WEEK;
+  static {
+    DayOfWeek[] values = DayOfWeek.values();
+    DAYS_OF_WEEK = new DayOfWeek[values.length];
+    System.arraycopy(values, 0, DAYS_OF_WEEK, 0, values.length);
+  }
+  
+  /**
+   * Gets the day of the week the given date falls on.
+   * @param date the date
+   * @return the day of the week
+   */
+  public static DayOfWeek dayOfWeek(DateValue date){
+    int dayIndex = fixedFromGregorian(date.year(), date.month(), date.day()) % 7;
+    if (dayIndex < 0) { dayIndex += 7; }
+    return DAYS_OF_WEEK[dayIndex];
+  }
+  
+  /**
+   * Gets the day of the week of the first day in the given month.
+   * @param year the year
+   * @param month the month (1-12)
+   * @return the day of the week
+   */
+  public static DayOfWeek firstDayOfWeekInMonth(int year, int month) {
+    int result = fixedFromGregorian(year, month, 1) % 7;
+    if (result < 0) { result += 7; }
+    return DAYS_OF_WEEK[result];
   }
 
   /**

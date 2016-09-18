@@ -14,15 +14,15 @@
 
 package biweekly.util.com.google.ical.iter;
 
+import java.util.Arrays;
+
+import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.util.DTBuilder;
 import biweekly.util.com.google.ical.util.TimeUtils;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
 import biweekly.util.com.google.ical.values.TimeValue;
-import biweekly.util.com.google.ical.values.Weekday;
 import biweekly.util.com.google.ical.values.WeekdayNum;
-
-import java.util.Arrays;
 
 /**
  * Factory for field generators.
@@ -741,18 +741,18 @@ final class Generators {
 
         void generateDates() {
           int nDays;
-          Weekday dow0;
+          DayOfWeek dow0;
           int nDaysInMonth = TimeUtils.monthLength(year, month);
           //index of the first day of the month in the month or year
           int d0;
 
           if (weeksInYear) {
             nDays = TimeUtils.yearLength(year);
-            dow0 = Weekday.firstDayOfWeekInMonth(year, 1);
+            dow0 = TimeUtils.firstDayOfWeekInMonth(year, 1);
             d0 = TimeUtils.dayOfYear(year, month, 1);
           } else {
             nDays = nDaysInMonth;
-            dow0 = Weekday.firstDayOfWeekInMonth(year, month);
+            dow0 = TimeUtils.firstDayOfWeekInMonth(year, month);
             d0 = 0;
           }
 
@@ -816,7 +816,7 @@ final class Generators {
    * @return the generator
    */
   static Generator byWeekNoGenerator(
-      int[] weekNumbers, final Weekday weekStart, final DateValue dtStart) {
+      int[] weekNumbers, final DayOfWeek weekStart, final DateValue dtStart) {
     final int[] uWeekNumbers = Util.uniquify(weekNumbers);
 
     return new Generator() {
@@ -844,9 +844,9 @@ final class Generators {
           //if the first day of January is weekStart, then there are 7
           //if the first day of January is weekStart + 1, then there are 6
           //if the first day of January is weekStart + 6, then there is 1
-          Weekday dowJan1 = Weekday.firstDayOfWeekInMonth(year, 1);
+          DayOfWeek dowJan1 = TimeUtils.firstDayOfWeekInMonth(year, 1);
           int nDaysInFirstWeek =
-            7 - ((7 + dowJan1.javaDayNum - weekStart.javaDayNum) % 7);
+            7 - ((7 + dowJan1.getCalendarConstant() - weekStart.getCalendarConstant()) % 7);
           
           //number of days not in any week
           int nOrphanedDays = 0;

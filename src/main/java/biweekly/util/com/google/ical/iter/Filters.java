@@ -14,13 +14,13 @@
 
 package biweekly.util.com.google.ical.iter;
 
+import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.util.DTBuilder;
 import biweekly.util.com.google.ical.util.Predicate;
 import biweekly.util.com.google.ical.util.Predicates;
 import biweekly.util.com.google.ical.util.TimeUtils;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.TimeValue;
-import biweekly.util.com.google.ical.values.Weekday;
 import biweekly.util.com.google.ical.values.WeekdayNum;
 
 /**
@@ -52,32 +52,32 @@ class Filters {
    * @return the filter
    */
   static Predicate<DateValue> byDayFilter(
-      final WeekdayNum[] days, final boolean weeksInYear, final Weekday weekStart) {
+      final WeekdayNum[] days, final boolean weeksInYear, final DayOfWeek weekStart) {
     return new Predicate<DateValue>() {
 		private static final long serialVersionUID = 1636822853835207274L;
 		public boolean apply(DateValue date) {
-          Weekday dow = Weekday.valueOf(date);
+          DayOfWeek dow = TimeUtils.dayOfWeek(date);
           int nDays;
-          Weekday firstDayOfWeek;
+          DayOfWeek firstDayOfWeek;
 
           //where does date appear in the year or month?
           //in [0, lengthOfMonthOrYear - 1]
           int instance;
           if (weeksInYear) {
             nDays = TimeUtils.yearLength(date.year());
-            firstDayOfWeek = Weekday.firstDayOfWeekInMonth(date.year(), 1);
+            firstDayOfWeek = TimeUtils.firstDayOfWeekInMonth(date.year(), 1);
             instance = TimeUtils.dayOfYear(
                 date.year(), date.month(), date.day());
           } else {
             nDays = TimeUtils.monthLength(date.year(), date.month());
-            firstDayOfWeek = Weekday.firstDayOfWeekInMonth(date.year(), date.month());
+            firstDayOfWeek = TimeUtils.firstDayOfWeekInMonth(date.year(), date.month());
             instance = date.day() - 1;
           }
 
           //which week of the year or month does this date fall on?
           //one-indexed
           int dateWeekNo = instance / 7;
-          if (weekStart.javaDayNum <= dow.javaDayNum) {
+          if (weekStart.getCalendarConstant() <= dow.getCalendarConstant()) {
             dateWeekNo += 1;
           }
           
@@ -142,7 +142,7 @@ class Filters {
    * @return the filter
    */
   static Predicate<DateValue> weekIntervalFilter(
-      final int interval, final Weekday weekStart, final DateValue dtStart) {
+      final int interval, final DayOfWeek weekStart, final DateValue dtStart) {
     return new Predicate<DateValue>() {
 	  private static final long serialVersionUID = 7059994888520369846L;
 	  //the latest day with day of week weekStart on or before dtStart
@@ -150,7 +150,7 @@ class Filters {
       {
         DTBuilder wkStartB = new DTBuilder(dtStart);
         wkStartB.day -=
-          (7 + Weekday.valueOf(dtStart).javaDayNum - weekStart.javaDayNum) % 7;
+          (7 + TimeUtils.dayOfWeek(dtStart).getCalendarConstant() - weekStart.getCalendarConstant()) % 7;
         wkStart = wkStartB.toDate();
       }
 

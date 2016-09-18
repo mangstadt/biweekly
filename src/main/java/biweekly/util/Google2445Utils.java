@@ -27,7 +27,6 @@ import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
 import biweekly.util.com.google.ical.values.RRule;
-import biweekly.util.com.google.ical.values.Weekday;
 import biweekly.util.com.google.ical.values.WeekdayNum;
 
 /*
@@ -79,7 +78,7 @@ public final class Google2445Utils {
 				prefix = 0;
 			}
 
-			weekdayNums.add(new WeekdayNum(prefix, convert(byDay.getDay())));
+			weekdayNums.add(new WeekdayNum(prefix, byDay.getDay()));
 		}
 		rrule.setByDay(weekdayNums);
 
@@ -114,37 +113,10 @@ public final class Google2445Utils {
 
 		DayOfWeek workweekStarts = recurrence.getWorkweekStarts();
 		if (workweekStarts != null) {
-			rrule.setWkSt(convert(workweekStarts));
+			rrule.setWkSt(workweekStarts);
 		}
 
 		return rrule;
-	}
-
-	/**
-	 * Converts a {@link DayOfWeek} object to a google-rfc-2445 {@link Weekday}
-	 * object.
-	 * @param day the day of week object
-	 * @return the google-rfc-2445 object
-	 */
-	public static Weekday convert(DayOfWeek day) {
-		switch (day) {
-		case SUNDAY:
-			return Weekday.SU;
-		case MONDAY:
-			return Weekday.MO;
-		case TUESDAY:
-			return Weekday.TU;
-		case WEDNESDAY:
-			return Weekday.WE;
-		case THURSDAY:
-			return Weekday.TH;
-		case FRIDAY:
-			return Weekday.FR;
-		case SATURDAY:
-			return Weekday.SA;
-		default:
-			return null;
-		}
 	}
 
 	/**

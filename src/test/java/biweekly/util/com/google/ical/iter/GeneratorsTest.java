@@ -16,14 +16,14 @@ package biweekly.util.com.google.ical.iter;
 
 import java.lang.reflect.Field;
 
-import junit.framework.TestCase;
+import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.util.DTBuilder;
 import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
 import biweekly.util.com.google.ical.values.IcalParseUtil;
-import biweekly.util.com.google.ical.values.Weekday;
 import biweekly.util.com.google.ical.values.WeekdayNum;
+import junit.framework.TestCase;
 
 /**
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
@@ -93,7 +93,7 @@ public class GeneratorsTest extends TestCase {
 
   public void testByWeekNoGenerator() throws Exception {
     Generator g = Generators.byWeekNoGenerator(
-        new int[] { 22 }, Weekday.SU, IcalParseUtil.parseDateValue("20060101"));
+        new int[] { 22 }, DayOfWeek.SUNDAY, IcalParseUtil.parseDateValue("20060101"));
     runGeneratorTests(g, new DTBuilder(2006, 1, 1), "day", "");
     runGeneratorTests(g, new DTBuilder(2006, 2, 1), "day", "");
     runGeneratorTests(g, new DTBuilder(2006, 3, 1), "day", "");
@@ -104,7 +104,7 @@ public class GeneratorsTest extends TestCase {
 
     // weekstart of monday shifts each week forward by one
     Generator g2 = Generators.byWeekNoGenerator(
-        new int[] { 22 }, Weekday.MO, IcalParseUtil.parseDateValue("20060101"));
+        new int[] { 22 }, DayOfWeek.MONDAY, IcalParseUtil.parseDateValue("20060101"));
     runGeneratorTests(g2, new DTBuilder(2006, 1, 1), "day", "");
     runGeneratorTests(g2, new DTBuilder(2006, 2, 1), "day", "");
     runGeneratorTests(g2, new DTBuilder(2006, 3, 1), "day", "");
@@ -116,7 +116,7 @@ public class GeneratorsTest extends TestCase {
     // 2004 with a week start of monday has no orphaned days.
     // 2004-01-01 falls on Thursday
     Generator g3 = Generators.byWeekNoGenerator(
-        new int[] { 14 }, Weekday.MO, IcalParseUtil.parseDateValue("20040101"));
+        new int[] { 14 }, DayOfWeek.MONDAY, IcalParseUtil.parseDateValue("20040101"));
     runGeneratorTests(g3, new DTBuilder(2004, 1, 1), "day", "");
     runGeneratorTests(g3, new DTBuilder(2004, 2, 1), "day", "");
     runGeneratorTests(g3, new DTBuilder(2004, 3, 1), "day", "29, 30, 31");
@@ -126,10 +126,10 @@ public class GeneratorsTest extends TestCase {
 
   public void testByDayGenerator() throws Exception {
     WeekdayNum[] days = new WeekdayNum[] {
-      new WeekdayNum(0, Weekday.SU), // every sunday
-      new WeekdayNum(1, Weekday.MO), // first monday
-      new WeekdayNum(5, Weekday.MO), // fifth monday
-      new WeekdayNum(-2, Weekday.TU) // second to last tuesday
+      new WeekdayNum(0, DayOfWeek.SUNDAY), // every sunday
+      new WeekdayNum(1, DayOfWeek.MONDAY), // first monday
+      new WeekdayNum(5, DayOfWeek.MONDAY), // fifth monday
+      new WeekdayNum(-2, DayOfWeek.TUESDAY) // second to last tuesday
     };
     Generator g = Generators.byDayGenerator(
         days, false, IcalParseUtil.parseDateValue("20060101"));

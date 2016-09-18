@@ -19,13 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import biweekly.util.DayOfWeek;
+
 /**
  * Represents an RRULE or EXRULE property.
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public class RRule extends AbstractIcalObject {
   private Frequency freq;
-  private Weekday wkst;
+  private DayOfWeek wkst;
   private DateValue until;
   private int count;
   private int interval;
@@ -197,8 +199,8 @@ public class RRule extends AbstractIcalObject {
     this.freq = freq;
   }
   /** day of the week the week starts on */
-  public Weekday getWkSt() { return this.wkst; }
-  public void setWkSt(Weekday wkst) {
+  public DayOfWeek getWkSt() { return this.wkst; }
+  public void setWkSt(DayOfWeek wkst) {
     this.wkst = wkst;
   }
   public DateValue getUntil() { return this.until; }

@@ -14,6 +14,8 @@
 
 package biweekly.util.com.google.ical.values;
 
+import biweekly.util.DayOfWeek;
+
 /**
  * <p>
  * Represents a day of the week in a month or year such as the third Monday of
@@ -31,7 +33,7 @@ package biweekly.util.com.google.ical.values;
  */
 public class WeekdayNum {
   public final int num;
-  public final Weekday wday;
+  public final DayOfWeek wday;
 
   /**
    * Creates a new weekday number.
@@ -40,7 +42,7 @@ public class WeekdayNum {
    * @throws IllegalArgumentException if the number is not the proper range, or
    * the day of the week is null
    */
-  public WeekdayNum(int num, Weekday wday) {
+  public WeekdayNum(int num, DayOfWeek wday) {
     if (!(num > -53 && num < 53 && wday != null)) {
       throw new IllegalArgumentException();
     }

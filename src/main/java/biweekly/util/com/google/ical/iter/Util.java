@@ -14,9 +14,10 @@
 
 package biweekly.util.com.google.ical.iter;
 
+import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.util.DTBuilder;
+import biweekly.util.com.google.ical.util.TimeUtils;
 import biweekly.util.com.google.ical.values.DateValue;
-import biweekly.util.com.google.ical.values.Weekday;
 import biweekly.util.com.google.ical.values.WeekdayNum;
 
 /**
@@ -39,10 +40,10 @@ class Util {
    * @param weekday the day of the week that the week starts on
    * @return the resultant date
    */
-  static DateValue nextWeekStart(DateValue date, Weekday weekday) {
+  static DateValue nextWeekStart(DateValue date, DayOfWeek weekday) {
     DTBuilder builder = new DTBuilder(date);
-    builder.day += (7 - ((7 + (Weekday.valueOf(date).javaDayNum
-                               - weekday.javaDayNum)) % 7))
+    builder.day += (7 - ((7 + (TimeUtils.dayOfWeek(date).getCalendarConstant()
+                               - weekday.getCalendarConstant())) % 7))
                    % 7;
     return builder.toDate();
   }
@@ -74,10 +75,10 @@ class Util {
    * @param nDaysInMonth the number of days in the current month
    * @return the day of the month, or 0 if no such day exists
    */
-  static int dayNumToDate(Weekday dow0, int nDays, int weekNum,
-                          Weekday dow, int d0, int nDaysInMonth) {
+  static int dayNumToDate(DayOfWeek dow0, int nDays, int weekNum,
+                          DayOfWeek dow, int d0, int nDaysInMonth) {
     //if dow is wednesday, then this is the date of the first wednesday
-    int firstDateOfGivenDow = 1 + ((7 + dow.javaDayNum - dow0.javaDayNum) % 7);
+    int firstDateOfGivenDow = 1 + ((7 + dow.getCalendarConstant() - dow0.getCalendarConstant()) % 7);
 
     int date;
     if (weekNum > 0) {
@@ -111,7 +112,7 @@ class Util {
    * @return the absolute week number
    */
   static int invertWeekdayNum(
-      WeekdayNum weekdayNum, Weekday dow0, int nDays) {
+      WeekdayNum weekdayNum, DayOfWeek dow0, int nDays) {
     //how many are there of that week?
     return countInPeriod(weekdayNum.wday, dow0, nDays) + weekdayNum.num + 1;
   }
@@ -122,14 +123,14 @@ class Util {
    * @param dow0 the weekday of the first day of the period
    * @param nDays the number of days in the period
    */
-  static int countInPeriod(Weekday dow, Weekday dow0, int nDays) {
+  static int countInPeriod(DayOfWeek dow, DayOfWeek dow0, int nDays) {
     //two cases:
     //   (1a) dow >= dow0: count === (nDays - (dow - dow0)) / 7
     //   (1b) dow < dow0:  count === (nDays - (7 - dow0 - dow)) / 7
-    if (dow.javaDayNum >= dow0.javaDayNum) {
-      return 1 + ((nDays - (dow.javaDayNum - dow0.javaDayNum) - 1) / 7);
+    if (dow.getCalendarConstant() >= dow0.getCalendarConstant()) {
+      return 1 + ((nDays - (dow.getCalendarConstant() - dow0.getCalendarConstant()) - 1) / 7);
     } else {
-      return 1 + ((nDays - (7 - (dow0.javaDayNum - dow.javaDayNum)) - 1) / 7);
+      return 1 + ((nDays - (7 - (dow0.getCalendarConstant() - dow.getCalendarConstant())) - 1) / 7);
     }
   }
 

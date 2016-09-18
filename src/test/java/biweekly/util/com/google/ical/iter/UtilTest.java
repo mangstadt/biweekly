@@ -14,10 +14,10 @@
 
 package biweekly.util.com.google.ical.iter;
 
-import junit.framework.TestCase;
+import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.values.DateValueImpl;
-import biweekly.util.com.google.ical.values.Weekday;
 import biweekly.util.com.google.ical.values.WeekdayNum;
+import junit.framework.TestCase;
 
 /**
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
@@ -42,28 +42,28 @@ public class UtilTest extends TestCase {
     // 12 13 14 15 16 17 18
     // 19 20 21 22 23 24 25
     // 26 27 28 29 30 31
-    Weekday dow0 = Weekday.WE;
+    DayOfWeek dow0 = DayOfWeek.WEDNESDAY;
     int nDays = 31;
     int d0 = 0;
 
-    assertEquals(1, Util.dayNumToDate(dow0, nDays, 1, Weekday.WE, d0, nDays));
-    assertEquals(8, Util.dayNumToDate(dow0, nDays, 2, Weekday.WE, d0, nDays));
-    assertEquals(29, Util.dayNumToDate(dow0, nDays, -1, Weekday.WE, d0, nDays));
-    assertEquals(22, Util.dayNumToDate(dow0, nDays, -2, Weekday.WE, d0, nDays));
+    assertEquals(1, Util.dayNumToDate(dow0, nDays, 1, DayOfWeek.WEDNESDAY, d0, nDays));
+    assertEquals(8, Util.dayNumToDate(dow0, nDays, 2, DayOfWeek.WEDNESDAY, d0, nDays));
+    assertEquals(29, Util.dayNumToDate(dow0, nDays, -1, DayOfWeek.WEDNESDAY, d0, nDays));
+    assertEquals(22, Util.dayNumToDate(dow0, nDays, -2, DayOfWeek.WEDNESDAY, d0, nDays));
 
-    assertEquals(3, Util.dayNumToDate(dow0, nDays, 1, Weekday.FR, d0, nDays));
-    assertEquals(10, Util.dayNumToDate(dow0, nDays, 2, Weekday.FR, d0, nDays));
-    assertEquals(31, Util.dayNumToDate(dow0, nDays, -1, Weekday.FR, d0, nDays));
-    assertEquals(24, Util.dayNumToDate(dow0, nDays, -2, Weekday.FR, d0, nDays));
+    assertEquals(3, Util.dayNumToDate(dow0, nDays, 1, DayOfWeek.FRIDAY, d0, nDays));
+    assertEquals(10, Util.dayNumToDate(dow0, nDays, 2, DayOfWeek.FRIDAY, d0, nDays));
+    assertEquals(31, Util.dayNumToDate(dow0, nDays, -1, DayOfWeek.FRIDAY, d0, nDays));
+    assertEquals(24, Util.dayNumToDate(dow0, nDays, -2, DayOfWeek.FRIDAY, d0, nDays));
 
-    assertEquals(7, Util.dayNumToDate(dow0, nDays, 1, Weekday.TU, d0, nDays));
-    assertEquals(14, Util.dayNumToDate(dow0, nDays, 2, Weekday.TU, d0, nDays));
-    assertEquals(28, Util.dayNumToDate(dow0, nDays, 4, Weekday.TU, d0, nDays));
-    assertEquals(0, Util.dayNumToDate(dow0, nDays, 5, Weekday.TU, d0, nDays));
-    assertEquals(28, Util.dayNumToDate(dow0, nDays, -1, Weekday.TU, d0, nDays));
-    assertEquals(21, Util.dayNumToDate(dow0, nDays, -2, Weekday.TU, d0, nDays));
-    assertEquals(7, Util.dayNumToDate(dow0, nDays, -4, Weekday.TU, d0, nDays));
-    assertEquals(0, Util.dayNumToDate(dow0, nDays, -5, Weekday.TU, d0, nDays));
+    assertEquals(7, Util.dayNumToDate(dow0, nDays, 1, DayOfWeek.TUESDAY, d0, nDays));
+    assertEquals(14, Util.dayNumToDate(dow0, nDays, 2, DayOfWeek.TUESDAY, d0, nDays));
+    assertEquals(28, Util.dayNumToDate(dow0, nDays, 4, DayOfWeek.TUESDAY, d0, nDays));
+    assertEquals(0, Util.dayNumToDate(dow0, nDays, 5, DayOfWeek.TUESDAY, d0, nDays));
+    assertEquals(28, Util.dayNumToDate(dow0, nDays, -1, DayOfWeek.TUESDAY, d0, nDays));
+    assertEquals(21, Util.dayNumToDate(dow0, nDays, -2, DayOfWeek.TUESDAY, d0, nDays));
+    assertEquals(7, Util.dayNumToDate(dow0, nDays, -4, DayOfWeek.TUESDAY, d0, nDays));
+    assertEquals(0, Util.dayNumToDate(dow0, nDays, -5, DayOfWeek.TUESDAY, d0, nDays));
   }
 
   public void testDayNumToDateInYear() throws Exception {
@@ -91,46 +91,46 @@ public class UtilTest extends TestCase {
     // 12 19 20 21 22 23 24 25
     // 13 26 27 28 29 30 31
 
-    Weekday dow0 = Weekday.SU;
+    DayOfWeek dow0 = DayOfWeek.SUNDAY;
     int nInMonth = 31;
     int nDays = 365;
     int d0 = 59;
 
     // TODO(msamuel): check that these answers are right
     assertEquals(
-        1, Util.dayNumToDate(dow0, nDays, 9, Weekday.WE, d0, nInMonth));
+        1, Util.dayNumToDate(dow0, nDays, 9, DayOfWeek.WEDNESDAY, d0, nInMonth));
     assertEquals(
-        8, Util.dayNumToDate(dow0, nDays, 10, Weekday.WE, d0, nInMonth));
+        8, Util.dayNumToDate(dow0, nDays, 10, DayOfWeek.WEDNESDAY, d0, nInMonth));
     assertEquals(
-        29, Util.dayNumToDate(dow0, nDays, -40, Weekday.WE, d0, nInMonth));
+        29, Util.dayNumToDate(dow0, nDays, -40, DayOfWeek.WEDNESDAY, d0, nInMonth));
     assertEquals(
-        22, Util.dayNumToDate(dow0, nDays, -41, Weekday.WE, d0, nInMonth));
+        22, Util.dayNumToDate(dow0, nDays, -41, DayOfWeek.WEDNESDAY, d0, nInMonth));
 
     assertEquals(
-        3, Util.dayNumToDate(dow0, nDays, 9, Weekday.FR, d0, nInMonth));
+        3, Util.dayNumToDate(dow0, nDays, 9, DayOfWeek.FRIDAY, d0, nInMonth));
     assertEquals(
-        10, Util.dayNumToDate(dow0, nDays, 10, Weekday.FR, d0, nInMonth));
+        10, Util.dayNumToDate(dow0, nDays, 10, DayOfWeek.FRIDAY, d0, nInMonth));
     assertEquals(
-        31, Util.dayNumToDate(dow0, nDays, -40, Weekday.FR, d0, nInMonth));
+        31, Util.dayNumToDate(dow0, nDays, -40, DayOfWeek.FRIDAY, d0, nInMonth));
     assertEquals(
-        24, Util.dayNumToDate(dow0, nDays, -41, Weekday.FR, d0, nInMonth));
+        24, Util.dayNumToDate(dow0, nDays, -41, DayOfWeek.FRIDAY, d0, nInMonth));
 
     assertEquals(
-        7, Util.dayNumToDate(dow0, nDays, 10, Weekday.TU, d0, nInMonth));
+        7, Util.dayNumToDate(dow0, nDays, 10, DayOfWeek.TUESDAY, d0, nInMonth));
     assertEquals(
-        14, Util.dayNumToDate(dow0, nDays, 11, Weekday.TU, d0, nInMonth));
+        14, Util.dayNumToDate(dow0, nDays, 11, DayOfWeek.TUESDAY, d0, nInMonth));
     assertEquals(
-        28, Util.dayNumToDate(dow0, nDays, 13, Weekday.TU, d0, nInMonth));
+        28, Util.dayNumToDate(dow0, nDays, 13, DayOfWeek.TUESDAY, d0, nInMonth));
     assertEquals(
-        0, Util.dayNumToDate(dow0, nDays, 14, Weekday.TU, d0, nInMonth));
+        0, Util.dayNumToDate(dow0, nDays, 14, DayOfWeek.TUESDAY, d0, nInMonth));
     assertEquals(
-        28, Util.dayNumToDate(dow0, nDays, -40, Weekday.TU, d0, nInMonth));
+        28, Util.dayNumToDate(dow0, nDays, -40, DayOfWeek.TUESDAY, d0, nInMonth));
     assertEquals(
-        21, Util.dayNumToDate(dow0, nDays, -41, Weekday.TU, d0, nInMonth));
+        21, Util.dayNumToDate(dow0, nDays, -41, DayOfWeek.TUESDAY, d0, nInMonth));
     assertEquals(
-        7, Util.dayNumToDate(dow0, nDays, -43, Weekday.TU, d0, nInMonth));
+        7, Util.dayNumToDate(dow0, nDays, -43, DayOfWeek.TUESDAY, d0, nInMonth));
     assertEquals(
-        0, Util.dayNumToDate(dow0, nDays, -44, Weekday.TU, d0, nInMonth));
+        0, Util.dayNumToDate(dow0, nDays, -44, DayOfWeek.TUESDAY, d0, nInMonth));
   }
 
   public void testUniquify() throws Exception {
@@ -142,31 +142,31 @@ public class UtilTest extends TestCase {
   public void testNextWeekStart() throws Exception {
     assertEquals(new DateValueImpl(2006, 1, 24),
                  Util.nextWeekStart(new DateValueImpl(2006, 1, 23),
-                                    Weekday.TU));
+                                    DayOfWeek.TUESDAY));
 
     assertEquals(new DateValueImpl(2006, 1, 24),
                  Util.nextWeekStart(new DateValueImpl(2006, 1, 24),
-                                    Weekday.TU));
+                                    DayOfWeek.TUESDAY));
 
     assertEquals(new DateValueImpl(2006, 1, 31),
                  Util.nextWeekStart(new DateValueImpl(2006, 1, 25),
-                                    Weekday.TU));
+                                    DayOfWeek.TUESDAY));
 
     assertEquals(new DateValueImpl(2006, 1, 23),
                  Util.nextWeekStart(new DateValueImpl(2006, 1, 23),
-                                    Weekday.MO));
+                                    DayOfWeek.MONDAY));
 
     assertEquals(new DateValueImpl(2006, 1, 30),
                  Util.nextWeekStart(new DateValueImpl(2006, 1, 24),
-                                    Weekday.MO));
+                                    DayOfWeek.MONDAY));
 
     assertEquals(new DateValueImpl(2006, 1, 30),
                  Util.nextWeekStart(new DateValueImpl(2006, 1, 25),
-                                    Weekday.MO));
+                                    DayOfWeek.MONDAY));
 
     assertEquals(new DateValueImpl(2006, 2, 6),
                  Util.nextWeekStart(new DateValueImpl(2006, 1, 31),
-                                    Weekday.MO));
+                                    DayOfWeek.MONDAY));
   }
 
   public void testCountInPeriod() throws Exception {
@@ -177,13 +177,13 @@ public class UtilTest extends TestCase {
     //  15 16 17 18 19 20 21
     //  22 23 24 25 26 27 28
     //  29 30 31
-    assertEquals(5, Util.countInPeriod(Weekday.SU, Weekday.SU, 31));
-    assertEquals(5, Util.countInPeriod(Weekday.MO, Weekday.SU, 31));
-    assertEquals(5, Util.countInPeriod(Weekday.TU, Weekday.SU, 31));
-    assertEquals(4, Util.countInPeriod(Weekday.WE, Weekday.SU, 31));
-    assertEquals(4, Util.countInPeriod(Weekday.TH, Weekday.SU, 31));
-    assertEquals(4, Util.countInPeriod(Weekday.FR, Weekday.SU, 31));
-    assertEquals(4, Util.countInPeriod(Weekday.SA, Weekday.SU, 31));
+    assertEquals(5, Util.countInPeriod(DayOfWeek.SUNDAY, DayOfWeek.SUNDAY, 31));
+    assertEquals(5, Util.countInPeriod(DayOfWeek.MONDAY, DayOfWeek.SUNDAY, 31));
+    assertEquals(5, Util.countInPeriod(DayOfWeek.TUESDAY, DayOfWeek.SUNDAY, 31));
+    assertEquals(4, Util.countInPeriod(DayOfWeek.WEDNESDAY, DayOfWeek.SUNDAY, 31));
+    assertEquals(4, Util.countInPeriod(DayOfWeek.THURSDAY, DayOfWeek.SUNDAY, 31));
+    assertEquals(4, Util.countInPeriod(DayOfWeek.FRIDAY, DayOfWeek.SUNDAY, 31));
+    assertEquals(4, Util.countInPeriod(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, 31));
 
     //      February 2006
     //  Su Mo Tu We Th Fr Sa
@@ -192,13 +192,13 @@ public class UtilTest extends TestCase {
     //  12 13 14 15 16 17 18
     //  19 20 21 22 23 24 25
     //  26 27 28
-    assertEquals(4, Util.countInPeriod(Weekday.SU, Weekday.WE, 28));
-    assertEquals(4, Util.countInPeriod(Weekday.MO, Weekday.WE, 28));
-    assertEquals(4, Util.countInPeriod(Weekday.TU, Weekday.WE, 28));
-    assertEquals(4, Util.countInPeriod(Weekday.WE, Weekday.WE, 28));
-    assertEquals(4, Util.countInPeriod(Weekday.TH, Weekday.WE, 28));
-    assertEquals(4, Util.countInPeriod(Weekday.FR, Weekday.WE, 28));
-    assertEquals(4, Util.countInPeriod(Weekday.SA, Weekday.WE, 28));
+    assertEquals(4, Util.countInPeriod(DayOfWeek.SUNDAY, DayOfWeek.WEDNESDAY, 28));
+    assertEquals(4, Util.countInPeriod(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, 28));
+    assertEquals(4, Util.countInPeriod(DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, 28));
+    assertEquals(4, Util.countInPeriod(DayOfWeek.WEDNESDAY, DayOfWeek.WEDNESDAY, 28));
+    assertEquals(4, Util.countInPeriod(DayOfWeek.THURSDAY, DayOfWeek.WEDNESDAY, 28));
+    assertEquals(4, Util.countInPeriod(DayOfWeek.FRIDAY, DayOfWeek.WEDNESDAY, 28));
+    assertEquals(4, Util.countInPeriod(DayOfWeek.SATURDAY, DayOfWeek.WEDNESDAY, 28));
   }
 
   public void testInvertWeekdayNum() throws Exception {
@@ -214,19 +214,19 @@ public class UtilTest extends TestCase {
     // the 1st falls on a sunday, so dow0 == SU
     assertEquals(
         5,
-        Util.invertWeekdayNum(new WeekdayNum(-1, Weekday.SU), Weekday.SU, 31));
+        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.SUNDAY), DayOfWeek.SUNDAY, 31));
     assertEquals(
         5,
-        Util.invertWeekdayNum(new WeekdayNum(-1, Weekday.MO), Weekday.SU, 31));
+        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.MONDAY), DayOfWeek.SUNDAY, 31));
     assertEquals(
         5,
-        Util.invertWeekdayNum(new WeekdayNum(-1, Weekday.TU), Weekday.SU, 31));
+        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.TUESDAY), DayOfWeek.SUNDAY, 31));
     assertEquals(
         4,
-        Util.invertWeekdayNum(new WeekdayNum(-1, Weekday.WE), Weekday.SU, 31));
+        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.WEDNESDAY), DayOfWeek.SUNDAY, 31));
     assertEquals(
         3,
-        Util.invertWeekdayNum(new WeekdayNum(-2, Weekday.WE), Weekday.SU, 31));
+        Util.invertWeekdayNum(new WeekdayNum(-2, DayOfWeek.WEDNESDAY), DayOfWeek.SUNDAY, 31));
 
 
     //      February 2006
@@ -239,19 +239,19 @@ public class UtilTest extends TestCase {
 
     assertEquals(
         4,
-        Util.invertWeekdayNum(new WeekdayNum(-1, Weekday.SU), Weekday.WE, 28));
+        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.SUNDAY), DayOfWeek.WEDNESDAY, 28));
     assertEquals(
         4,
-        Util.invertWeekdayNum(new WeekdayNum(-1, Weekday.MO), Weekday.WE, 28));
+        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.MONDAY), DayOfWeek.WEDNESDAY, 28));
     assertEquals(
         4,
-        Util.invertWeekdayNum(new WeekdayNum(-1, Weekday.TU), Weekday.WE, 28));
+        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.TUESDAY), DayOfWeek.WEDNESDAY, 28));
     assertEquals(
         4,
-        Util.invertWeekdayNum(new WeekdayNum(-1, Weekday.WE), Weekday.WE, 28));
+        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.WEDNESDAY), DayOfWeek.WEDNESDAY, 28));
     assertEquals(
         3,
-        Util.invertWeekdayNum(new WeekdayNum(-2, Weekday.WE), Weekday.WE, 28));
+        Util.invertWeekdayNum(new WeekdayNum(-2, DayOfWeek.WEDNESDAY), DayOfWeek.WEDNESDAY, 28));
   }
 
   private static String arrToString(int[] arr) {

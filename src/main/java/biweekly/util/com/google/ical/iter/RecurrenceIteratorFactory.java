@@ -14,6 +14,17 @@
 
 package biweekly.util.com.google.ical.iter;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
+import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.util.Predicate;
 import biweekly.util.com.google.ical.util.Predicates;
 import biweekly.util.com.google.ical.util.TimeUtils;
@@ -26,18 +37,7 @@ import biweekly.util.com.google.ical.values.IcalObject;
 import biweekly.util.com.google.ical.values.RDateList;
 import biweekly.util.com.google.ical.values.RRule;
 import biweekly.util.com.google.ical.values.TimeValue;
-import biweekly.util.com.google.ical.values.Weekday;
 import biweekly.util.com.google.ical.values.WeekdayNum;
-
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -171,7 +171,7 @@ public class RecurrenceIteratorFactory {
   public static RecurrenceIterator createRecurrenceIterator(
       RRule rrule, DateValue dtStart, TimeZone tzid) {
     Frequency freq = rrule.getFreq();
-    Weekday wkst = rrule.getWkSt();
+    DayOfWeek wkst = rrule.getWkSt();
     DateValue untilUtc = rrule.getUntil();
     int count = rrule.getCount();
     int interval = rrule.getInterval();
@@ -188,7 +188,7 @@ public class RecurrenceIteratorFactory {
     if (interval <= 0) {  interval = 1; }
 
     if (wkst == null) {
-      wkst = Weekday.MO;
+      wkst = DayOfWeek.MONDAY;
     }
 
     //optimize out BYSETPOS where possible
@@ -247,7 +247,7 @@ public class RecurrenceIteratorFactory {
               : new DateValueImpl(start.year(), start.month(), 1);
           break;
         case WEEKLY:
-          int d = (7 + wkst.ordinal() - Weekday.valueOf(dtStart).ordinal()) % 7;
+          int d = (7 + wkst.ordinal() - TimeUtils.dayOfWeek(dtStart).getCalendarConstant()) % 7;
           start = TimeUtils.add(dtStart, new DateValueImpl(0, 0, -d));
           break;
         default: break;
