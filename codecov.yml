@@ -3,7 +3,6 @@ comment:
 coverage:
   ignore:
   - src/main/java/biweekly/util/org/.*
-  - src/main/java/biweekly/util/com/.*
   status:
     patch: false
   precision: 0
