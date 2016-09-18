@@ -14,11 +14,11 @@
 
 package biweekly.util.com.google.ical.iter;
 
+import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.util.DTBuilder;
 import biweekly.util.com.google.ical.util.TimeUtils;
 import biweekly.util.com.google.ical.values.DateValue;
-import biweekly.util.com.google.ical.values.WeekdayNum;
 
 /**
  * A dumping ground for utility functions that don't fit anywhere else.
@@ -112,9 +112,9 @@ class Util {
    * @return the absolute week number
    */
   static int invertWeekdayNum(
-      WeekdayNum weekdayNum, DayOfWeek dow0, int nDays) {
+      ByDay weekdayNum, DayOfWeek dow0, int nDays) {
     //how many are there of that week?
-    return countInPeriod(weekdayNum.wday, dow0, nDays) + weekdayNum.num + 1;
+    return countInPeriod(weekdayNum.getDay(), dow0, nDays) + weekdayNum.getNum() + 1;
   }
 
   /**

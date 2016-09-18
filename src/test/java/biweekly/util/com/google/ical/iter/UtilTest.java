@@ -14,9 +14,9 @@
 
 package biweekly.util.com.google.ical.iter;
 
+import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.values.DateValueImpl;
-import biweekly.util.com.google.ical.values.WeekdayNum;
 import junit.framework.TestCase;
 
 /**
@@ -214,19 +214,19 @@ public class UtilTest extends TestCase {
     // the 1st falls on a sunday, so dow0 == SU
     assertEquals(
         5,
-        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.SUNDAY), DayOfWeek.SUNDAY, 31));
+        Util.invertWeekdayNum(new ByDay(-1, DayOfWeek.SUNDAY), DayOfWeek.SUNDAY, 31));
     assertEquals(
         5,
-        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.MONDAY), DayOfWeek.SUNDAY, 31));
+        Util.invertWeekdayNum(new ByDay(-1, DayOfWeek.MONDAY), DayOfWeek.SUNDAY, 31));
     assertEquals(
         5,
-        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.TUESDAY), DayOfWeek.SUNDAY, 31));
+        Util.invertWeekdayNum(new ByDay(-1, DayOfWeek.TUESDAY), DayOfWeek.SUNDAY, 31));
     assertEquals(
         4,
-        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.WEDNESDAY), DayOfWeek.SUNDAY, 31));
+        Util.invertWeekdayNum(new ByDay(-1, DayOfWeek.WEDNESDAY), DayOfWeek.SUNDAY, 31));
     assertEquals(
         3,
-        Util.invertWeekdayNum(new WeekdayNum(-2, DayOfWeek.WEDNESDAY), DayOfWeek.SUNDAY, 31));
+        Util.invertWeekdayNum(new ByDay(-2, DayOfWeek.WEDNESDAY), DayOfWeek.SUNDAY, 31));
 
 
     //      February 2006
@@ -239,19 +239,19 @@ public class UtilTest extends TestCase {
 
     assertEquals(
         4,
-        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.SUNDAY), DayOfWeek.WEDNESDAY, 28));
+        Util.invertWeekdayNum(new ByDay(-1, DayOfWeek.SUNDAY), DayOfWeek.WEDNESDAY, 28));
     assertEquals(
         4,
-        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.MONDAY), DayOfWeek.WEDNESDAY, 28));
+        Util.invertWeekdayNum(new ByDay(-1, DayOfWeek.MONDAY), DayOfWeek.WEDNESDAY, 28));
     assertEquals(
         4,
-        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.TUESDAY), DayOfWeek.WEDNESDAY, 28));
+        Util.invertWeekdayNum(new ByDay(-1, DayOfWeek.TUESDAY), DayOfWeek.WEDNESDAY, 28));
     assertEquals(
         4,
-        Util.invertWeekdayNum(new WeekdayNum(-1, DayOfWeek.WEDNESDAY), DayOfWeek.WEDNESDAY, 28));
+        Util.invertWeekdayNum(new ByDay(-1, DayOfWeek.WEDNESDAY), DayOfWeek.WEDNESDAY, 28));
     assertEquals(
         3,
-        Util.invertWeekdayNum(new WeekdayNum(-2, DayOfWeek.WEDNESDAY), DayOfWeek.WEDNESDAY, 28));
+        Util.invertWeekdayNum(new ByDay(-2, DayOfWeek.WEDNESDAY), DayOfWeek.WEDNESDAY, 28));
   }
 
   private static String arrToString(int[] arr) {

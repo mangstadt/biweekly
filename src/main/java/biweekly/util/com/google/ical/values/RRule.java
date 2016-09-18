@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
 
 /**
@@ -31,7 +32,7 @@ public class RRule extends AbstractIcalObject {
   private DateValue until;
   private int count;
   private int interval;
-  private List<WeekdayNum> byDay = new ArrayList<WeekdayNum>();
+  private List<ByDay> byDay = new ArrayList<ByDay>();
   private int[] byMonth = NO_INTS;  // in +/-[1-12]
   private int[] byMonthDay = NO_INTS;  // in +/-[1-31]
   private int[] byWeekNo = NO_INTS;  // in +/-[1-53]
@@ -103,13 +104,16 @@ public class RRule extends AbstractIcalObject {
     if (!byDay.isEmpty()) {
       buf.append(";BYDAY=");
       boolean first = true;
-      for (WeekdayNum day : this.byDay) {
+      for (ByDay day : this.byDay) {
         if (!first) {
           buf.append(',');
         } else {
           first = false;
         }
-        buf.append(day);
+        if (day.getNum() != null){
+        	buf.append(day.getNum());
+        }
+        buf.append(day.getDay().getAbbr());
       }
     }
     if (byHour.length != 0) {
@@ -155,10 +159,10 @@ public class RRule extends AbstractIcalObject {
       case MONTHLY:
         freqLengthDays = 30;
         if (!this.byDay.isEmpty()) {
-          for (WeekdayNum day : byDay) {
+          for (ByDay day : byDay) {
             // if it's every weekday in the month, assume four of that weekday,
             // otherwise there is one of that week-in-month,weekday pair
-            nPerPeriod += 0 != day.num ? 1 : 4;
+            nPerPeriod += day.getNum() != null && day.getNum() != 0 ? 1 : 4;
           }
         } else {
           nPerPeriod = this.byMonthDay.length;
@@ -173,12 +177,12 @@ public class RRule extends AbstractIcalObject {
         }
 
         if (!this.byDay.isEmpty()) {
-          for (WeekdayNum day : byDay) {
+          for (ByDay day : byDay) {
             // if it's every weekend in the months in the year,
             // assume 4 of that weekday per month,
             // otherwise there is one of that week-in-month,weekday pair per
             // month
-            nPerPeriod += (day.num != 0 ? 1 : 4) * monthCount;
+            nPerPeriod += (day.getNum() != null ? 1 : 4) * monthCount;
           }
         } else if (this.byMonthDay.length > 0) {
           nPerPeriod += monthCount * this.byMonthDay.length;
@@ -215,9 +219,9 @@ public class RRule extends AbstractIcalObject {
   public void setInterval(int interval) {
     this.interval = interval;
   }
-  public List<WeekdayNum> getByDay() { return this.byDay; }
-  public void setByDay(List<WeekdayNum> byDay) {
-    this.byDay = new ArrayList<WeekdayNum>(byDay);
+  public List<ByDay> getByDay() { return this.byDay; }
+  public void setByDay(List<ByDay> byDay) {
+    this.byDay = new ArrayList<ByDay>(byDay);
   }
   public int[] getByMonth() { return this.byMonth; }
   public void setByMonth(int[] byMonth) {

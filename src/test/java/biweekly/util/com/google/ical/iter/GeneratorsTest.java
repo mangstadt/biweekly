@@ -16,13 +16,13 @@ package biweekly.util.com.google.ical.iter;
 
 import java.lang.reflect.Field;
 
+import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.util.DTBuilder;
 import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
 import biweekly.util.com.google.ical.values.IcalParseUtil;
-import biweekly.util.com.google.ical.values.WeekdayNum;
 import junit.framework.TestCase;
 
 /**
@@ -125,11 +125,11 @@ public class GeneratorsTest extends TestCase {
   }
 
   public void testByDayGenerator() throws Exception {
-    WeekdayNum[] days = new WeekdayNum[] {
-      new WeekdayNum(0, DayOfWeek.SUNDAY), // every sunday
-      new WeekdayNum(1, DayOfWeek.MONDAY), // first monday
-      new WeekdayNum(5, DayOfWeek.MONDAY), // fifth monday
-      new WeekdayNum(-2, DayOfWeek.TUESDAY) // second to last tuesday
+    ByDay[] days = new ByDay[] {
+      new ByDay(DayOfWeek.SUNDAY), // every sunday
+      new ByDay(1, DayOfWeek.MONDAY), // first monday
+      new ByDay(5, DayOfWeek.MONDAY), // fifth monday
+      new ByDay(-2, DayOfWeek.TUESDAY) // second to last tuesday
     };
     Generator g = Generators.byDayGenerator(
         days, false, IcalParseUtil.parseDateValue("20060101"));

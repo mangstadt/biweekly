@@ -16,13 +16,13 @@ package biweekly.util.com.google.ical.iter;
 
 import java.util.Arrays;
 
+import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.util.DTBuilder;
 import biweekly.util.com.google.ical.util.TimeUtils;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
 import biweekly.util.com.google.ical.values.TimeValue;
-import biweekly.util.com.google.ical.values.WeekdayNum;
 
 /**
  * Factory for field generators.
@@ -722,8 +722,8 @@ final class Generators {
    * @return the generator
    */
   static Generator byDayGenerator(
-      WeekdayNum[] days, final boolean weeksInYear, final DateValue dtStart) {
-    final WeekdayNum[] udays = days.clone();
+      ByDay[] days, final boolean weeksInYear, final DateValue dtStart) {
+    final ByDay[] udays = days.clone();
 
     return new Generator() {
         int year = dtStart.year();
@@ -767,16 +767,16 @@ final class Generators {
            * day of the month.
            */
           IntSet udates = new IntSet();
-          for (WeekdayNum day : udays) {
-            if (day.num != 0) {
+          for (ByDay day : udays) {
+            if (day.getNum() != null && day.getNum() != 0) {
               int date = Util.dayNumToDate(
-                  dow0, nDays, day.num, day.wday, d0, nDaysInMonth);
+                  dow0, nDays, day.getNum(), day.getDay(), d0, nDaysInMonth);
               if (date != 0) { udates.add(date); }
             } else {
               int wn = w0 + 6;
               for (int w = w0; w <= wn; ++w) {
                 int date = Util.dayNumToDate(
-                    dow0, nDays, w, day.wday, d0, nDaysInMonth);
+                    dow0, nDays, w, day.getDay(), d0, nDaysInMonth);
                 if (date != 0) { udates.add(date); }
               }
             }

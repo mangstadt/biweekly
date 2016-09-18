@@ -24,6 +24,7 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.util.TimeUtils;
 
@@ -240,7 +241,7 @@ class RRuleSchema extends IcalSchema{
         public void apply(IcalSchema schema, String value, IcalObject target)
             throws ParseException {
           ((RRule) target).setByDay(
-              (List<WeekdayNum>) schema.applyXformSchema("bywdaylist", value));
+              (List<ByDay>) schema.applyXformSchema("bywdaylist", value));
         }
       });
 
@@ -353,24 +354,26 @@ class RRuleSchema extends IcalSchema{
     // ;Corresponding to SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY,
     // ;FRIDAY, SATURDAY and SUNDAY days of the week.
     xformRules.put("bywdaylist", new XformRule() {
-        public List<WeekdayNum> apply(IcalSchema schema, String value)
+        public List<ByDay> apply(IcalSchema schema, String value)
             throws ParseException {
           String[] parts = COMMA.split(value);
-          List<WeekdayNum> weekdays = new ArrayList<WeekdayNum>(parts.length);
+          List<ByDay> weekdays = new ArrayList<ByDay>(parts.length);
           for (String p : parts) {
             Matcher m = NUM_DAY.matcher(p);
             if (!m.matches()) { schema.badPart(p, null); }
             DayOfWeek wday = DayOfWeek.valueOfAbbr(m.group(2));
-            int n;
+            Integer n;
             String numText = m.group(1);
+            ByDay byDay;
             if (numText == null || "".equals(numText)) {
-              n = 0;
+              byDay = new ByDay(wday);
             } else {
               n = Integer.parseInt(numText);
               int absn = n < 0 ? -n : n;
               if (!(absn >= 1 && absn <= 53)) { schema.badPart(p, null); }
+              byDay = new ByDay(n, wday);
             }
-            weekdays.add(new WeekdayNum(n, wday));
+            weekdays.add(byDay);
           }
           return weekdays;
         }

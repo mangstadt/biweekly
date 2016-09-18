@@ -26,7 +26,6 @@ import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
 import biweekly.util.com.google.ical.values.RRule;
-import biweekly.util.com.google.ical.values.WeekdayNum;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -69,18 +68,7 @@ public final class Google2445Utils {
 	public static RRule convert(Recurrence recurrence, TimeZone timezone) {
 		RRule rrule = new RRule();
 
-		List<ByDay> byDays = recurrence.getByDay();
-		List<WeekdayNum> weekdayNums = new ArrayList<WeekdayNum>(byDays.size());
-		for (ByDay byDay : byDays) {
-			Integer prefix = byDay.getNum();
-			if (prefix == null) {
-				prefix = 0;
-			}
-
-			weekdayNums.add(new WeekdayNum(prefix, byDay.getDay()));
-		}
-		rrule.setByDay(weekdayNums);
-
+		rrule.setByDay(new ArrayList<ByDay>(recurrence.getByDay()));
 		rrule.setByYearDay(toArray(recurrence.getByYearDay()));
 		rrule.setByMonth(toArray(recurrence.getByMonth()));
 		rrule.setByWeekNo(toArray(recurrence.getByWeekNo()));

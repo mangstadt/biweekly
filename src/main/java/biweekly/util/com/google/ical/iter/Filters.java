@@ -14,6 +14,7 @@
 
 package biweekly.util.com.google.ical.iter;
 
+import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.util.DTBuilder;
 import biweekly.util.com.google.ical.util.Predicate;
@@ -21,7 +22,6 @@ import biweekly.util.com.google.ical.util.Predicates;
 import biweekly.util.com.google.ical.util.TimeUtils;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.TimeValue;
-import biweekly.util.com.google.ical.values.WeekdayNum;
 
 /**
  * <p>
@@ -52,7 +52,7 @@ class Filters {
    * @return the filter
    */
   static Predicate<DateValue> byDayFilter(
-      final WeekdayNum[] days, final boolean weeksInYear, final DayOfWeek weekStart) {
+      final ByDay[] days, final boolean weeksInYear, final DayOfWeek weekStart) {
     return new Predicate<DateValue>() {
 		private static final long serialVersionUID = 1636822853835207274L;
 		public boolean apply(DateValue date) {
@@ -94,11 +94,11 @@ class Filters {
            */
 
           for (int i = days.length-1; i >= 0; i--) {
-            WeekdayNum day = days[i];
+            ByDay day = days[i];
 
-            if (day.wday == dow) {
-              int weekNo = day.num;
-              if (weekNo == 0) { return true; }
+            if (day.getDay() == dow) {
+              Integer weekNo = day.getNum();
+              if (weekNo == null || weekNo == 0) { return true; }
 
               if (weekNo < 0) {
                 weekNo = Util.invertWeekdayNum(day, firstDayOfWeek, nDays);

@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.util.Predicate;
 import biweekly.util.com.google.ical.util.Predicates;
@@ -37,7 +38,6 @@ import biweekly.util.com.google.ical.values.IcalObject;
 import biweekly.util.com.google.ical.values.RDateList;
 import biweekly.util.com.google.ical.values.RRule;
 import biweekly.util.com.google.ical.values.TimeValue;
-import biweekly.util.com.google.ical.values.WeekdayNum;
 
 /**
  * <p>
@@ -175,7 +175,7 @@ public class RecurrenceIteratorFactory {
     DateValue untilUtc = rrule.getUntil();
     int count = rrule.getCount();
     int interval = rrule.getInterval();
-    WeekdayNum[] byDay = rrule.getByDay().toArray(new WeekdayNum[0]);
+    ByDay[] byDay = rrule.getByDay().toArray(new ByDay[0]);
     int[] byMonth = rrule.getByMonth();
     int[] byMonthDay = rrule.getByMonthDay();
     int[] byWeekNo = rrule.getByWeekNo();
@@ -612,7 +612,7 @@ public class RecurrenceIteratorFactory {
   }
 
   private static final int[] NO_INTS = new int[0];
-  private static final WeekdayNum[] NO_DAYS = new WeekdayNum[0];
+  private static final ByDay[] NO_DAYS = new ByDay[0];
 
   private RecurrenceIteratorFactory() {
     // uninstantiable

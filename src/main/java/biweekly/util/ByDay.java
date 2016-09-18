@@ -48,7 +48,7 @@ public class ByDay {
 
 	/**
 	 * Creates a BYDAY rule that represents all days in the month/year.
-	 * @param day the day of the week
+	 * @param day the day of the week (cannot be null)
 	 */
 	public ByDay(DayOfWeek day) {
 		this(null, day);
@@ -56,8 +56,8 @@ public class ByDay {
 
 	/**
 	 * Creates a BYDAY rule.
-	 * @param num the number (e.g. 3 for "third Sunday")
-	 * @param day the day of the week
+	 * @param num the number (e.g. 3 for "third Sunday", cannot be zero)
+	 * @param day the day of the week (cannot be null)
 	 */
 	public ByDay(Integer num, DayOfWeek day) {
 		this.num = num;
