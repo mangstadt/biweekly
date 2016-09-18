@@ -66,6 +66,7 @@ import biweekly.property.RecurrenceRule;
 import biweekly.property.Summary;
 import biweekly.property.Version;
 import biweekly.util.DateTimeComponents;
+import biweekly.util.DayOfWeek;
 import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.Duration;
 import biweekly.util.ICalDate;
@@ -73,7 +74,6 @@ import biweekly.util.IOUtils;
 import biweekly.util.Period;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.ByDay;
-import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
 import biweekly.util.UtcOffset;
 

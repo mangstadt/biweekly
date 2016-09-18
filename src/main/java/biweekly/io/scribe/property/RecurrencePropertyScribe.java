@@ -26,11 +26,11 @@ import biweekly.property.DateStart;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceProperty;
+import biweekly.util.DayOfWeek;
 import biweekly.util.ICalDate;
 import biweekly.util.ListMultimap;
 import biweekly.util.Recurrence;
 import biweekly.util.Recurrence.ByDay;
-import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
 import biweekly.util.XmlUtils;
 

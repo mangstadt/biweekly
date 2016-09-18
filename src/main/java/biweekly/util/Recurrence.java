@@ -2,7 +2,6 @@ package biweekly.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -288,48 +287,6 @@ public final class Recurrence {
 	 */
 	public static enum Frequency {
 		SECONDLY, MINUTELY, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY
-	}
-
-	/**
-	 * Represents each of the seven days of the week.
-	 * @author Michael Angstadt
-	 */
-	public static enum DayOfWeek {
-		MONDAY("MO", Calendar.MONDAY), TUESDAY("TU", Calendar.TUESDAY), WEDNESDAY("WE", Calendar.WEDNESDAY), THURSDAY("TH", Calendar.THURSDAY), FRIDAY("FR", Calendar.FRIDAY), SATURDAY("SA", Calendar.SATURDAY), SUNDAY("SU", Calendar.SUNDAY);
-
-		private final String abbr;
-		private final int calendarConstant;
-
-		private DayOfWeek(String abbr, int calendarConstant) {
-			this.abbr = abbr;
-			this.calendarConstant = calendarConstant;
-		}
-
-		/**
-		 * Gets the day's abbreviation.
-		 * @return the abbreviation (e.g. "MO" for Monday)
-		 */
-		public String getAbbr() {
-			return abbr;
-		}
-
-		public int getCalendarConstant() {
-			return calendarConstant;
-		}
-
-		/**
-		 * Gets a day by its abbreviation.
-		 * @param abbr the abbreviation (case-insensitive, e.g. "MO" for Monday)
-		 * @return the day or null if not found
-		 */
-		public static DayOfWeek valueOfAbbr(String abbr) {
-			for (DayOfWeek day : values()) {
-				if (day.abbr.equalsIgnoreCase(abbr)) {
-					return day;
-				}
-			}
-			return null;
-		}
 	}
 
 	public static class ByDay {

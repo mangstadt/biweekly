@@ -17,7 +17,6 @@ import biweekly.property.RecurrenceDates;
 import biweekly.property.RecurrenceRule;
 import biweekly.property.ValuedProperty;
 import biweekly.util.Recurrence.ByDay;
-import biweekly.util.Recurrence.DayOfWeek;
 import biweekly.util.Recurrence.Frequency;
 import biweekly.util.com.google.ical.compat.javautil.DateIterator;
 import biweekly.util.com.google.ical.compat.javautil.DateIteratorFactory;
