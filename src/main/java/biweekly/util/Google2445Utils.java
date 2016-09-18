@@ -18,6 +18,7 @@ import biweekly.property.RecurrenceRule;
 import biweekly.property.ValuedProperty;
 import biweekly.util.com.google.ical.compat.javautil.DateIterator;
 import biweekly.util.com.google.ical.compat.javautil.DateIteratorFactory;
+import biweekly.util.com.google.ical.iter.RecurrenceIterable;
 import biweekly.util.com.google.ical.iter.RecurrenceIterator;
 import biweekly.util.com.google.ical.iter.RecurrenceIteratorFactory;
 import biweekly.util.com.google.ical.values.DateTimeValue;
@@ -246,6 +247,20 @@ public final class Google2445Utils {
 		RRule googleRecurrence = convert(recurrence, timezone);
 		return RecurrenceIteratorFactory.createRecurrenceIterator(googleRecurrence, startValue, timezone);
 	}
+	
+	/**
+     * Creates a recurrence iterator based on the given recurrence rule.
+     * @param recurrence the recurrence rule
+     * @param start the start date
+     * @param timezone the timezone to iterate in. This is needed in order to
+     * account for when the iterator passes over a daylight savings boundary.
+     * @return the recurrence iterator
+     */
+    public static RecurrenceIterable createRecurrenceIterable(Recurrence recurrence, ICalDate start, TimeZone timezone) {
+        DateValue startValue = convert(start, timezone);
+        RRule googleRecurrence = convert(recurrence, timezone);
+        return RecurrenceIteratorFactory.createRecurrenceIterable(googleRecurrence, startValue, timezone);
+    }
 
 	/**
 	 * <p>
