@@ -14,63 +14,78 @@
 
 package biweekly.util.com.google.ical.values;
 
+import java.util.Calendar;
+
 import biweekly.util.com.google.ical.util.TimeUtils;
 
 /**
- * days of the week enum.  Names correspond to RFC2445 literals.
- *
+ * The days of the week.
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public enum Weekday {
-  SU(0),
-  MO(1),
-  TU(2),
-  WE(3),
-  TH(4),
-  FR(5),
-  SA(6),
+  SU(Calendar.SUNDAY),
+  MO(Calendar.MONDAY),
+  TU(Calendar.TUESDAY),
+  WE(Calendar.WEDNESDAY),
+  TH(Calendar.THURSDAY),
+  FR(Calendar.FRIDAY),
+  SA(Calendar.SATURDAY),
   ;
-
+  
+  private static final Weekday[] VALUES;
+  static {
+    Weekday[] values = values();
+    VALUES = new Weekday[values.length];
+    System.arraycopy(values, 0, VALUES, 0, values.length);
+  }
+  
   /**
-   * agrees with values returned by the javascript builtin Date.getDay and the
-   * corresponding ical.js function/method, but is one less than the Java
-   * Calendar's <code>DAY_OF_WEEK</code> values.
-   */
-  public final int jsDayNum;
-  /**
-   * agrees with the java weekday values as found in java.util.Calendar.
+   * The number that represents this day of the week according to Java's
+   * {@link Calendar} class.
    */
   public final int javaDayNum;
 
-  Weekday(int wDayNum) {
-    this.jsDayNum = wDayNum;
-    this.javaDayNum = 1 + wDayNum;
+  Weekday(int javaDayNum) {
+    this.javaDayNum = javaDayNum;
   }
 
-  private static Weekday[] VALUES = new Weekday[7];
-
-  static {
-    System.arraycopy(values(), 0, VALUES, 0, 7);
-  }
-
-  public static Weekday valueOf(DateValue dv) {
+  /**
+   * Gets the day of the week of the given date.
+   * @param date the date
+   * @return the day of the week
+   */
+  public static Weekday valueOf(DateValue date) {
     int dayIndex =
-      TimeUtils.fixedFromGregorian(dv.year(), dv.month(), dv.day()) % 7;
+      TimeUtils.fixedFromGregorian(date.year(), date.month(), date.day()) % 7;
     if (dayIndex < 0) { dayIndex += 7; }
     return VALUES[dayIndex];
   }
 
+  /**
+   * Gets the day of the week of the first day in the given month.
+   * @param year the year
+   * @param month the month (1-12)
+   * @return the day of the week
+   */
   public static Weekday firstDayOfWeekInMonth(int year, int month) {
     int result = TimeUtils.fixedFromGregorian(year, month, 1) % 7;
-    return VALUES[(result >= 0) ? result : result + 7];
+    if (result < 0) { result += 7; }
+    return VALUES[result];
   }
 
+  /**
+   * Gets the day of the week that comes after this day of the week.
+   * @return the next day
+   */
   public Weekday successor() {
     return VALUES[(ordinal() + 1) % 7];
   }
 
+  /**
+   * Gets the day of the week that comes before this day of the week.
+   * @return the previous day
+   */
   public Weekday predecessor() {
     return VALUES[(ordinal() - 1 + 7) % 7];
   }
-
 }

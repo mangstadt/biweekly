@@ -19,9 +19,8 @@ package biweekly.util.com.google.ical.values;
 
 /**
  * An instant in time.
- *
  * @author Neal Gafter
  */
 public interface DateTimeValue extends DateValue, TimeValue {
-  // Simple union.
+  //simple union
 }

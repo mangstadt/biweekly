@@ -19,14 +19,17 @@ import java.util.Arrays;
 import biweekly.util.com.google.ical.values.DateValue;
 
 /**
- * a recurrence iterator that iterates over an array of dates.
- *
+ * A recurrence iterator that iterates over an array of dates.
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 final class RDateIteratorImpl implements RecurrenceIterator {
   private final DateValue[] datesUtc;
   private int i;
 
+  /**
+   * Creates a new recurrence iterator.
+   * @param datesUtc the dates to iterate over (assumes they are all in UTC)
+   */
   RDateIteratorImpl(DateValue[] datesUtc) {
     datesUtc = datesUtc.clone();
     Arrays.sort(datesUtc);
@@ -68,5 +71,4 @@ final class RDateIteratorImpl implements RecurrenceIterator {
     }
     return dates;
   }
-
 }

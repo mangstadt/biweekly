@@ -19,14 +19,10 @@ import java.util.Map;
 import java.util.TimeZone;
 
 /**
- * a list of dates, as from an RDATE or EXDATE ical property.
- *
- * <p>See RFC 2445 sections 4.8.5.1 and 4.8.5.3.
- *
+ * Represents an RDATE or EXDATE property.
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public class RDateList extends AbstractIcalObject {
-
   private TimeZone tzid;
   private DateValue[] datesUtc;
   private IcalValueType valueType;

@@ -22,13 +22,10 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
 import biweekly.util.com.google.ical.values.TimeValue;
 
 /**
- * a mutable buffer that can be used to build {@link DateValue}s and
- * {@link DateTimeValue}s.
- *
+ * A mutable buffer used to build {@link DateValue}s and {@link DateTimeValue}s.
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public class DTBuilder {
-
   /** in AD.  0 -> 1BC. */
   public int year;
   /** one indexed. */
@@ -42,6 +39,15 @@ public class DTBuilder {
   /** zero indexed */
   public int second;
 
+  /**
+   * Creates a new date builder.
+   * @param year the initial year
+   * @param month the initial month (1-12)
+   * @param day the initial day
+   * @param hour the initial hour
+   * @param minute the initial minute
+   * @param second the initial second
+   */
   public DTBuilder(int year, int month, int day,
                    int hour, int minute, int second) {
     this.year = year;
@@ -52,18 +58,26 @@ public class DTBuilder {
     this.second = second;
   }
 
+  /**
+   * Creates a new date builder, setting the time components to zero.
+   * @param year the initial year
+   * @param month the initial month (1-12)
+   * @param day the initial day
+   */
   public DTBuilder(int year, int month, int day) {
-    this.year = year;
-    this.month = month;
-    this.day = day;
+    this(year, month, day, 0, 0, 0);
   }
 
-  public DTBuilder(DateValue dv) {
-    this.year = dv.year();
-    this.month = dv.month();
-    this.day = dv.day();
-    if (dv instanceof TimeValue) {
-      TimeValue tv = (TimeValue) dv;
+  /**
+   * Creates a new date builder, initializing it to the given date value.
+   * @param date the date value to initialize the builder with
+   */
+  public DTBuilder(DateValue date) {
+    this.year = date.year();
+    this.month = date.month();
+    this.day = date.day();
+    if (date instanceof TimeValue) {
+      TimeValue tv = (TimeValue) date;
       this.hour = tv.hour();
       this.minute = tv.minute();
       this.second = tv.second();
@@ -71,9 +85,9 @@ public class DTBuilder {
   }
 
   /**
-   * produces a normalized date time, using zero for the time fields if none
-   * were provided.
-   * @return not null
+   * Produces a normalized date-time value, using zero for the time fields if
+   * none were provided.
+   * @return the date-time value
    */
   public DateTimeValue toDateTime() {
     normalize();
@@ -81,8 +95,8 @@ public class DTBuilder {
   }
 
   /**
-   * produces a normalized date.
-   * @return not null
+   * Produces a normalized date value.
+   * @return the date value
    */
   public DateValue toDate() {
     normalize();
@@ -90,17 +104,27 @@ public class DTBuilder {
   }
 
   /**
-   * behavior undefined unless normalized.
+   * <p>
+   * Compares the value of this builder to a given {@link DateValue}. Note that
+   * this method's behavior is undefined unless {@link #normalize} is called
+   * first.
+   * </p>
+   * <p>
    * If you're not sure whether it's appropriate to use this method, use
    * <code>toDateValue().compareTo(dv)</code> instead.
+   * </p>
+   * @param date the date value to compare against
+   * @return a negative value if this date builder is less than the given date
+   * value, a positive value if this date builder is greater than the given date
+   * value, or zero if they are equal
    */
-  public int compareTo(DateValue dv) {
+  public int compareTo(DateValue date) {
     long dvComparable =
-      (((((long) dv.year()) << 4) + dv.month()) << 5) + dv.day();
+      (((((long) date.year()) << 4) + date.month()) << 5) + date.day();
     long dtbComparable =
       ((((long) year << 4) + month << 5)) + day;
-    if (dv instanceof TimeValue) {
-      TimeValue tv = (TimeValue) dv;
+    if (date instanceof TimeValue) {
+      TimeValue tv = (TimeValue) date;
       dvComparable = (((((dvComparable << 5) + tv.hour()) << 6) + tv.minute())
                       << 6) + tv.second();
       dtbComparable = (((((dtbComparable << 5) + hour) << 6) + minute)
@@ -111,12 +135,12 @@ public class DTBuilder {
   }
 
   /**
-   * makes sure that the fields are in the proper ranges, by e.g. converting
-   * 32 January to 1 February, or month 0 to December of the year before.
+   * Makes sure that the fields are in the proper ranges (for example, converts
+   * 32 January to 1 February, and 25:00:00 to 1:00:00 of the next day).
    */
   public void normalize() {
-    this.normalizeTime();
-    this.normalizeDate();
+    normalizeTime();
+    normalizeDate();
   }
 
   @Override
@@ -144,6 +168,10 @@ public class DTBuilder {
        << 6) + second;
   }
 
+  /**
+   * Makes sure that the time fields are in the proper ranges (for example,
+   * converts 25:00:00 to 1:00:00 of the next day).
+   */
   private void normalizeTime() {
     int addMinutes = ((second < 0) ? (second - 59) : second) / 60;
     second -= addMinutes * 60;
@@ -155,12 +183,18 @@ public class DTBuilder {
     hour -= addDays * 24;
     day += addDays;
   }
+  
+  /**
+   * Makes sure that the date fields are in the proper ranges (for example,
+   * converts 32 January to 1 February).
+   */
   private void normalizeDate() {
     while (day <= 0) {
       int days = TimeUtils.yearLength(month > 2 ? year : year - 1);
       day += days;
       --year;
     }
+
     if (month <= 0) {
       int years = month / 12 - 1;
       year += years;
@@ -170,6 +204,7 @@ public class DTBuilder {
       year += years;
       month -= 12 * years;
     }
+
     while (true) {
       if (month == 1) {
         int yearLength = TimeUtils.yearLength(year);
@@ -178,17 +213,17 @@ public class DTBuilder {
           day -= yearLength;
         }
       }
+
       int monthLength = TimeUtils.monthLength(year, month);
-      if (day > monthLength) {
-        day -= monthLength;
-        if (++month > 12) {
-          month -= 12;
-          ++year;
-        }
-      } else {
+      if (day <= monthLength){
         break;
+      }
+
+      day -= monthLength;
+      if (++month > 12) {
+        month -= 12;
+        ++year;
       }
     }
   }
-
 }

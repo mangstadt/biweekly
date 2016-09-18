@@ -25,6 +25,12 @@ package biweekly.util.com.google.ical.values;
 public class DateValueImpl implements DateValue {
   private final int year, month, day;
 
+  /**
+   * Creates a new date value.
+   * @param year the year
+   * @param month the month (1-12)
+   * @param day the day (1-31)
+   */
   public DateValueImpl(int year, int month, int day) {
     this.year = year;
     this.month = month;
@@ -49,9 +55,9 @@ public class DateValueImpl implements DateValue {
   }
 
   public final int compareTo(DateValue other) {
-    int n0 = this.day() +               // 5 bits
-             (this.month() << 5) +      // 4 bits
-             (this.year() << 9);
+    int n0 = day() +               //5 bits
+             (month() << 5) +      //4 bits
+             (year() << 9);
     int n1 = other.day() +
              (other.month() << 5) +
              (other.year() << 9);
@@ -62,8 +68,8 @@ public class DateValueImpl implements DateValue {
     TimeValue self = (TimeValue) this;
     if (!(other instanceof TimeValue)) return 1;
     TimeValue othr = (TimeValue) other;
-    int m0 = self.second() +            // 6 bits
-             (self.minute() << 6) +     // 6 bits
+    int m0 = self.second() +            //6 bits
+             (self.minute() << 6) +     //6 bits
              (self.hour() << 12);
     int m1 = othr.second() +
              (othr.minute() << 6) +
@@ -74,12 +80,11 @@ public class DateValueImpl implements DateValue {
   @Override
   public boolean equals(Object o) {
     if (!(o instanceof DateValue)) { return false; }
-
-    return this.compareTo((DateValue) o) == 0;
+    return compareTo((DateValue) o) == 0;
   }
 
   @Override
   public int hashCode() {
-    return (this.year << 9) + (this.month << 5) + this.day;
+    return (year() << 9) + (month() << 5) + day();
   }
 }

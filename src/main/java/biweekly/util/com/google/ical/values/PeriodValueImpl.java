@@ -17,37 +17,49 @@ package biweekly.util.com.google.ical.values;
 import biweekly.util.com.google.ical.util.TimeUtils;
 
 /**
- * a half-open range of {@link DateValue}s.
- *
+ * A half-open range of {@link DateValue}s.
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public class PeriodValueImpl implements PeriodValue {
-
   private DateValue start, end;
 
   /**
-   * returns a period with the given start and end dates.
-   * @param start non null.
-   * @param end on or after start.  May/must have a time if the start has a
-   *   time.
+   * Creates a period with the given start and end dates.
+   * @param start the start date
+   * @param end the end date (must be on or after the start date and must be the
+   * same data type as the start date).
+   * @return the period
+   * @throws IllegalArgumentException if the start date comes after the end
+   * date, or the start and end dates are not the same type (e.g. they are not
+   * both date values or both date-time values)
    */
   public static PeriodValue create(DateValue start, DateValue end) {
     return new PeriodValueImpl(start, end);
   }
 
   /**
-   * returns a period with the given start date and duration.
-   * @param start non null.
-   * @param dur a positive duration represented as a DateValue.
+   * Creates a period with the given start date and duration.
+   * @param start the start date
+   * @param duration the duration (must be positive)
+   * @return the period
+   * @throws IllegalArgumentException if the duration is negative
    */
-  public static PeriodValue createFromDuration(DateValue start, DateValue dur) {
-    DateValue end = TimeUtils.add(start, dur);
+  public static PeriodValue createFromDuration(DateValue start, DateValue duration) {
+    DateValue end = TimeUtils.add(start, duration);
     if (end instanceof TimeValue && !(start instanceof TimeValue)) {
       start = TimeUtils.dayStart(start);
     }
     return new PeriodValueImpl(start, end);
   }
 
+  /**
+   * Creates a new period.
+   * @param start the start date
+   * @param end the end date
+   * @throws IllegalArgumentException if the start date comes after the end
+   * date, or the start and end dates are not the same type (e.g. they are not
+   * both either both date values or date-time values)
+   */
   protected PeriodValueImpl(DateValue start, DateValue end) {
     if (start.compareTo(end) > 0) {
       throw new IllegalArgumentException
@@ -58,6 +70,7 @@ public class PeriodValueImpl implements PeriodValue {
         ("Start (" + start + ") and end (" + end +
          ") must both have times or neither have times.");
     }
+
     this.start = start;
     this.end = end;
   }
@@ -66,22 +79,20 @@ public class PeriodValueImpl implements PeriodValue {
 
   public DateValue end() { return end; }
 
-  /** true iff this period overlaps the given period. */
-  public boolean intersects(PeriodValue pv) {
-    DateValue sa = this.start,
-              ea = this.end,
-              sb = pv.start(),
-              eb = pv.end();
+  public boolean intersects(PeriodValue period) {
+    DateValue sa = start(),
+              ea = end(),
+              sb = period.start(),
+              eb = period.end();
 
     return sa.compareTo(eb) < 0 && sb.compareTo(ea) < 0;
   }
 
-  /** true iff this period completely contains the given period. */
-  public boolean contains(PeriodValue pv) {
-    DateValue sa = this.start,
-              ea = this.end,
-              sb = pv.start(),
-              eb = pv.end();
+  public boolean contains(PeriodValue period) {
+    DateValue sa = start(),
+              ea = end(),
+              sb = period.start(),
+              eb = period.end();
 
     return !(sb.compareTo(sa) < 0 || ea.compareTo(eb) < 0);
   }
@@ -94,11 +105,10 @@ public class PeriodValueImpl implements PeriodValue {
   }
 
   @Override public int hashCode() {
-    return start.hashCode() ^ (31 * end.hashCode());
+    return start().hashCode() ^ (31 * end().hashCode());
   }
 
   @Override public String toString() {
-    return start().toString() + "/" + end().toString();
+    return start() + "/" + end();
   }
-
-}  // PeriodValueImpl
+}

@@ -14,41 +14,53 @@
 
 package biweekly.util.com.google.ical.values;
 
-
 /**
- * a half-open range of {@link DateValue}s.  The start is inclusive, and the
- * end is exclusive.  The end must be on or after the start.  When the start and
- * end are the same, the period is zero width, i.e. contains zero seconds.
- *
+ * <p>
+ * A half-open range of {@link DateValue}s.
+ * </p>
+ * <p>
+ * The start is inclusive, and the end is exclusive. The end must be on or after
+ * the start. When the start and end are the same, the period is zero width
+ * (i.e. contains zero seconds).
+ * </p>
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public interface PeriodValue {
-
   /**
-   * the start of the period.
-   * @return non null.
+   * Gets the start of the period.
+   * @return the start
    */
   DateValue start();
 
   /**
-   * the end of the period.
-   * The end must be &gt;= {@link #start()}, and
-   * <tt>(start() instanceof {@link TimeValue}) ==
-   *     (end() instanceof TimeValue)</tt>.
-   * @return non null.
+   * <p>
+   * Gets the end of the period.
+   * </p>
+   * <p>
+   * The end date must be:
+   * </p>
+   * <ul>
+   * <li>on or after the start date</li>
+   * <li>the same data type as the start date (i.e.,
+   * <code>(start() instanceof {@link TimeValue}) ==
+   *     (end() instanceof TimeValue)</code>)</li>
+   * </ul>
+   * @return the end
    */
   DateValue end();
 
   /**
-   * true iff this period overlaps the given period.
-   * @param pv not null.
+   * Determines if this period overlaps the given period.
+   * @param period the period to compare against
+   * @return true if this period overlaps the given period, false if not
    */
-  boolean intersects(PeriodValue pv);
+  boolean intersects(PeriodValue period);
 
   /**
-   * true iff this period completely contains the given period.
-   * @param pv not null.
+   * Determines if this period completely contains the given period.
+   * @param period the period to compare against
+   * @return true if this period completely contains the given period, false if
+   * not
    */
-  boolean contains(PeriodValue pv);
-
-}  // PeriodValue
+  boolean contains(PeriodValue period);
+}

@@ -38,7 +38,9 @@ public interface RecurrenceIterator extends Iterator<DateValue> {
   DateValue next();
 
   /**
-   * Skips all dates in the series that come before the given date.
+   * Skips all dates in the series that come before the given date, so that the
+   * next call to {@link #next} will return a date on or after the given date
+   * (assuming the recurrence includes such a date).
    * @param newStartUtc the date to advance to (in UTC)
    */
   void advanceTo(DateValue newStartUtc);

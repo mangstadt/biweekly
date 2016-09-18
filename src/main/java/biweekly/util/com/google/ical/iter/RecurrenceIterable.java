@@ -17,12 +17,9 @@ package biweekly.util.com.google.ical.iter;
 import biweekly.util.com.google.ical.values.DateValue;
 
 /**
- * an iterable over date values in order.
- *
+ * Iterates over a series of dates in a recurrence rule in ascending order.
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public interface RecurrenceIterable extends Iterable<DateValue> {
-
   RecurrenceIterator iterator();
-
 }

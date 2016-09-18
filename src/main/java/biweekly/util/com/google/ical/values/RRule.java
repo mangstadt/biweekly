@@ -20,12 +20,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * encapsulates an RFC 2445 RRULE or EXRULE.
- *
+ * Represents an RRULE or EXRULE property.
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public class RRule extends AbstractIcalObject {
-
   private Frequency freq;
   private Weekday wkst;
   private DateValue until;

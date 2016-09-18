@@ -19,7 +19,6 @@ package biweekly.util.com.google.ical.values;
 
 /**
  * An instant in time.
- *
  * @author Neal Gafter
  */
 public class DateTimeValueImpl
@@ -27,6 +26,15 @@ public class DateTimeValueImpl
     implements DateTimeValue {
   private final int hour, minute, second;
 
+  /**
+   * Creates a new date-time value.
+   * @param year the year
+   * @param month the month (1-12)
+   * @param day the day (1-31)
+   * @param hour the hour (0-24)
+   * @param minute the minute (0-59)
+   * @param second the second (0-59)
+   */
   public DateTimeValueImpl(int year, int month, int day,
                            int hour, int minute, int second) {
     super(year, month, day);
@@ -50,7 +58,7 @@ public class DateTimeValueImpl
   @Override
   public int hashCode() {
     return super.hashCode() ^
-      ((this.hour << 12) + (this.minute << 6) + this.second);
+      ((hour << 12) + (minute << 6) + second);
   }
 
   @Override
@@ -60,8 +68,3 @@ public class DateTimeValueImpl
                          hour, minute, second);
   }
 }
-
-
-
-
-

@@ -19,17 +19,24 @@ package biweekly.util.com.google.ical.values;
 
 /**
  * A calendar date.
- *
  * @author Neal Gafter
  */
 public interface DateValue extends Comparable<DateValue> {
-
-  /** The Gregorian year, for example 2004. */
+  /**
+   * Gets the Gregorian year (for example, 2004).
+   * @return the year
+   */
   int year();
 
-  /** The Gregorian month, in the range 1-12. */
+  /**
+   * Gets the Gregorian month (in the range 1-12).
+   * @return the month
+   */
   int month();
 
-  /** The Gregorian day of the month, in the range 1-31. */
+  /**
+   * Gets the Gregorian day of the month (in the range 1-31).
+   * @return the day of the month
+   */
   int day();
 }

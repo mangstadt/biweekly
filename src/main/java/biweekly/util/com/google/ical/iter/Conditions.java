@@ -18,13 +18,15 @@ import biweekly.util.com.google.ical.util.Predicate;
 import biweekly.util.com.google.ical.values.DateValue;
 
 /**
- * factory for predicates used to test whether a recurrence is over.
- *
+ * Factory for predicates used to test whether a recurrence is over.
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 final class Conditions {
-
-  /** constructs a condition that fails after passing count dates. */
+  /**
+   * Constructs a condition that fails after counting a certain number of dates.
+   * @param count the number of dates to count before the condition fails
+   * @return the condition
+   */
   static Predicate<DateValue> countCondition(final int count) {
     return new Predicate<DateValue>() {
 	  private static final long serialVersionUID = -3770774958208833665L;
@@ -40,8 +42,9 @@ final class Conditions {
   }
 
   /**
-   * constructs a condition that passes for every date on or before until.
-   * @param until non null.
+   * Constructs a condition that passes all dates that are less than or equal to the given date.
+   * @param until the date
+   * @return the condition
    */
   static Predicate<DateValue> untilCondition(final DateValue until) {
     return new Predicate<DateValue>() {
@@ -57,7 +60,6 @@ final class Conditions {
   }
 
   private Conditions() {
-    // uninstantiable
+    //uninstantiable
   }
-
 }

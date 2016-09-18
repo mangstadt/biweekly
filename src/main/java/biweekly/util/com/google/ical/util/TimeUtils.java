@@ -35,7 +35,6 @@ import java.util.regex.Pattern;
  * @author Neal Gafter
  */
 public class TimeUtils {
-
   private static TimeZone ZULU = new SimpleTimeZone(0, "Etc/GMT");
   
   /**
@@ -141,10 +140,7 @@ public class TimeUtils {
       db.second += tdur.second();
       return db.toDateTime();
     }
-    if (date instanceof TimeValue) {
-      return db.toDateTime();
-    }
-    return db.toDate();
+    return (date instanceof TimeValue) ? db.toDateTime() : db.toDate();
   }
 
   /**
