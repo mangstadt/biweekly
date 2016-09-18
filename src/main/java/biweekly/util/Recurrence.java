@@ -213,17 +213,17 @@ public final class Recurrence {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((byDay == null) ? 0 : byDay.hashCode());
-		result = prime * result + ((byHour == null) ? 0 : byHour.hashCode());
-		result = prime * result + ((byMinute == null) ? 0 : byMinute.hashCode());
-		result = prime * result + ((byMonth == null) ? 0 : byMonth.hashCode());
-		result = prime * result + ((byMonthDay == null) ? 0 : byMonthDay.hashCode());
-		result = prime * result + ((bySecond == null) ? 0 : bySecond.hashCode());
-		result = prime * result + ((bySetPos == null) ? 0 : bySetPos.hashCode());
-		result = prime * result + ((byWeekNo == null) ? 0 : byWeekNo.hashCode());
-		result = prime * result + ((byYearDay == null) ? 0 : byYearDay.hashCode());
+		result = prime * result + byDay.hashCode();
+		result = prime * result + byHour.hashCode();
+		result = prime * result + byMinute.hashCode();
+		result = prime * result + byMonth.hashCode();
+		result = prime * result + byMonthDay.hashCode();
+		result = prime * result + bySecond.hashCode();
+		result = prime * result + bySetPos.hashCode();
+		result = prime * result + byWeekNo.hashCode();
+		result = prime * result + byYearDay.hashCode();
 		result = prime * result + ((count == null) ? 0 : count.hashCode());
-		result = prime * result + ((xrules == null) ? 0 : xrules.hashCode());
+		result = prime * result + xrules.hashCode();
 		result = prime * result + ((frequency == null) ? 0 : frequency.hashCode());
 		result = prime * result + ((interval == null) ? 0 : interval.hashCode());
 		result = prime * result + ((until == null) ? 0 : until.hashCode());
@@ -236,40 +236,21 @@ public final class Recurrence {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
+
 		Recurrence other = (Recurrence) obj;
-		if (byDay == null) {
-			if (other.byDay != null) return false;
-		} else if (!byDay.equals(other.byDay)) return false;
-		if (byHour == null) {
-			if (other.byHour != null) return false;
-		} else if (!byHour.equals(other.byHour)) return false;
-		if (byMinute == null) {
-			if (other.byMinute != null) return false;
-		} else if (!byMinute.equals(other.byMinute)) return false;
-		if (byMonth == null) {
-			if (other.byMonth != null) return false;
-		} else if (!byMonth.equals(other.byMonth)) return false;
-		if (byMonthDay == null) {
-			if (other.byMonthDay != null) return false;
-		} else if (!byMonthDay.equals(other.byMonthDay)) return false;
-		if (bySecond == null) {
-			if (other.bySecond != null) return false;
-		} else if (!bySecond.equals(other.bySecond)) return false;
-		if (bySetPos == null) {
-			if (other.bySetPos != null) return false;
-		} else if (!bySetPos.equals(other.bySetPos)) return false;
-		if (byWeekNo == null) {
-			if (other.byWeekNo != null) return false;
-		} else if (!byWeekNo.equals(other.byWeekNo)) return false;
-		if (byYearDay == null) {
-			if (other.byYearDay != null) return false;
-		} else if (!byYearDay.equals(other.byYearDay)) return false;
+		if (!byDay.equals(other.byDay)) return false;
+		if (!byHour.equals(other.byHour)) return false;
+		if (!byMinute.equals(other.byMinute)) return false;
+		if (!byMonth.equals(other.byMonth)) return false;
+		if (!byMonthDay.equals(other.byMonthDay)) return false;
+		if (!bySecond.equals(other.bySecond)) return false;
+		if (!bySetPos.equals(other.bySetPos)) return false;
+		if (!byWeekNo.equals(other.byWeekNo)) return false;
+		if (!byYearDay.equals(other.byYearDay)) return false;
 		if (count == null) {
 			if (other.count != null) return false;
 		} else if (!count.equals(other.count)) return false;
-		if (xrules == null) {
-			if (other.xrules != null) return false;
-		} else if (!xrules.equals(other.xrules)) return false;
+		if (!xrules.equals(other.xrules)) return false;
 		if (frequency != other.frequency) return false;
 		if (interval == null) {
 			if (other.interval != null) return false;
@@ -382,7 +363,8 @@ public final class Recurrence {
 		 * @return this
 		 */
 		public Builder until(Date until, boolean hasTime) {
-			return until(new ICalDate(until, hasTime));
+			this.until = new ICalDate(until, hasTime);
+			return this;
 		}
 
 		/**
