@@ -3,12 +3,11 @@ package biweekly.property;
 import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
+import static biweekly.util.TestUtils.assertIterator;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -54,15 +53,15 @@ public class RecurrencePropertyTest {
 	public void getDateIterator_empty() {
 		RecurrenceProperty property = new RecurrenceProperty((Recurrence) null);
 		Date start = date("2014-11-22 10:00:00");
-		DateIterator it = property.getDateIterator(start, TimeZone.getTimeZone("UTC"));
+		DateIterator it = property.getDateIterator(start, TimeZone.getDefault());
 		assertFalse(it.hasNext());
 	}
-
+	
 	@Test
 	public void getDateIterator() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).count(5).build();
-		Date start = date("2014-11-22 10:00:00");
 		RecurrenceProperty property = new RecurrenceProperty(recur);
+		Date start = date("2014-11-22 10:00:00");
 
 		//@formatter:off
 		List<Date> expected = Arrays.asList(
@@ -74,62 +73,8 @@ public class RecurrencePropertyTest {
 		);
 		//@formatter:on
 
-		List<Date> actual = new ArrayList<Date>();
-		DateIterator it = property.getDateIterator(start, TimeZone.getTimeZone("UTC"));
-		while (it.hasNext()) {
-			actual.add(it.next());
-		}
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void getDateIterator_gap_hour() {
-		TimeZone pacificTimeZone = TimeZone.getTimeZone("America/Los_Angeles");
-		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).interval(1).count(3).build();
-		Date start = date("2016-03-06 02:30:00", pacificTimeZone);
-		RecurrenceProperty property = new RecurrenceProperty(recur);
-
-		//@formatter:off
-		List<Date> expected = Arrays.asList(
-			date("2016-03-06 02:30:00", pacificTimeZone),
-			date("2016-03-13 03:30:00", pacificTimeZone),
-			date("2016-03-20 02:30:00", pacificTimeZone)
-		);
-		//@formatter:on
-
-		List<Date> actual = new ArrayList<Date>();
-		DateIterator it = property.getDateIterator(start, pacificTimeZone);
-		while (it.hasNext()) {
-			actual.add(it.next());
-		}
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void getDateIterator_overlap_hour() {
-		TimeZone pacificTimeZone = TimeZone.getTimeZone("America/Los_Angeles");
-		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).interval(1).count(3).build();
-		Date start = date("2016-10-30 01:30:00", pacificTimeZone);
-		RecurrenceProperty property = new RecurrenceProperty(recur);
-
-		//@formatter:off
-		// First date will be in PDT while the second and third are PST.
-		List<Date> expected = Arrays.asList(
-				date("2016-10-30 01:30:00", pacificTimeZone),
-				date("2016-11-06 01:30:00", pacificTimeZone),
-				date("2016-11-13 01:30:00", pacificTimeZone)
-		);
-		//@formatter:on
-
-		List<Date> actual = new ArrayList<Date>();
-		DateIterator it = property.getDateIterator(start, pacificTimeZone);
-		while (it.hasNext()) {
-			actual.add(it.next());
-		}
-
-		assertEquals(expected, actual);
+		DateIterator it = property.getDateIterator(start, TimeZone.getDefault());
+		assertIterator(expected, it);
 	}
 
 	@Test
@@ -178,89 +123,5 @@ public class RecurrencePropertyTest {
 
 		property = new RecurrenceProperty(new Recurrence.Builder(Frequency.SECONDLY).build());
 		assertValidate(property).versions(V2_0_DEPRECATED, V2_0).run();
-	}
-
-	@Test
-	public void advanceDateIterator_UTC() {
-		Date start = date("2014-11-22 10:00:00");
-		Date advanceTo = date("2014-11-24 10:00:00");
-
-		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).count(5).build();
-		RecurrenceProperty property = new RecurrenceProperty(recur);
-		DateIterator it = property.getDateIterator(start, TimeZone.getTimeZone("UTC"));
-		it.advanceTo(advanceTo);
-
-		//@formatter:off
-		List<Date> expected = Arrays.asList(
-			date("2014-11-24 10:00:00"),
-			date("2014-11-25 10:00:00"),
-			date("2014-11-26 10:00:00")
-		);
-		//@formatter:on
-
-		List<Date> actual = new ArrayList<Date>();
-		while (it.hasNext()) {
-			actual.add(it.next());
-		}
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void advanceDateIterator_negativeTimeZoneOffset() {
-		TimeZone pacificTimeZone = TimeZone.getTimeZone("America/Los_Angeles");
-		Date start = date("2016-07-01 00:01:00", pacificTimeZone);
-		Date advanceTo = date("2016-07-01 06:59:00", pacificTimeZone); //advance iterator to time 1-minute less than the time zone offset
-
-		//Note: date-time used for advancement must first be converted to UTC
-		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).count(4).build();
-		RecurrenceProperty recurrenceProperty = new RecurrenceProperty(recur);
-		DateIterator it = recurrenceProperty.getDateIterator(start, pacificTimeZone);
-		it.advanceTo(advanceTo);
-
-		//@formatter:off
-		//First occurrence is skipped; the last three should be returned
-		List<Date> expected = Arrays.asList(
-			date("2016-07-02 00:01:00", pacificTimeZone),
-			date("2016-07-03 00:01:00", pacificTimeZone),
-			date("2016-07-04 00:01:00", pacificTimeZone)
-		);
-		//@formatter:on
-
-		List<Date> actual = new ArrayList<Date>();
-		while (it.hasNext()) {
-			actual.add(it.next());
-		}
-
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void advanceDateIterator_positiveTimeZoneOffset() {
-		TimeZone singapore = TimeZone.getTimeZone("Asia/Singapore");
-		Date start = date("2016-07-01 00:01:00", singapore);
-		Date advanceTo = date("2016-07-01 00:05:00", singapore); //advance iterator 5-minutes from start time
-
-		//Note: date-time used for advancement must first be converted to UTC
-		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).count(4).build();
-		RecurrenceProperty recurrenceProperty = new RecurrenceProperty(recur);
-		DateIterator it = recurrenceProperty.getDateIterator(start, singapore);
-		it.advanceTo(advanceTo);
-
-		//@formatter:off
-		//First occurrence is skipped; the last three should be returned
-		List<Date> expected = Arrays.asList(
-			date("2016-07-02 00:01:00", singapore),
-			date("2016-07-03 00:01:00", singapore),
-			date("2016-07-04 00:01:00", singapore)
-		);
-		//@formatter:on
-
-		List<Date> actual = new ArrayList<Date>();
-		while (it.hasNext()) {
-			actual.add(it.next());
-		}
-
-		assertEquals(expected, actual);
 	}
 }

@@ -7,6 +7,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
+
+import biweekly.property.DateStart;
+import biweekly.util.com.google.ical.compat.javautil.DateIterator;
+import biweekly.util.com.google.ical.compat.javautil.DateIteratorFactory;
+import biweekly.util.com.google.ical.iter.RecurrenceIterator;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -207,6 +213,37 @@ public final class Recurrence {
 	 */
 	public Map<String, List<String>> getXRules() {
 		return xrules;
+	}
+	
+	/**
+	 * Creates an iterator that computes the dates defined by this recurrence.
+	 * @param startDate the date that the recurrence starts (typically, the
+	 * value of the {@link DateStart} property)
+	 * @param timezone the timezone to iterate in (typically, the timezone
+	 * associated with the {@link DateStart} property). This is needed in order
+	 * to adjust for when the iterator passes over a daylight savings boundary.
+	 * @return the iterator
+	 * @see <a
+	 * href="https://code.google.com/p/google-rfc-2445/">google-rfc-2445</a>
+	 */
+	public DateIterator getDateIterator(Date startDate, TimeZone timezone) {
+		return getDateIterator(new ICalDate(startDate), timezone);
+	}
+
+	/**
+	 * Creates an iterator that computes the dates defined by this recurrence.
+	 * @param startDate the date that the recurrence starts (typically, the
+	 * value of the {@link DateStart} property)
+	 * @param timezone the timezone to iterate in (typically, the timezone
+	 * associated with the {@link DateStart} property). This is needed in order
+	 * to adjust for when the iterator passes over a daylight savings boundary.
+	 * @return the iterator
+	 * @see <a
+	 * href="https://code.google.com/p/google-rfc-2445/">google-rfc-2445</a>
+	 */
+	public DateIterator getDateIterator(ICalDate startDate, TimeZone timezone) {
+		RecurrenceIterator iterator = Google2445Utils.createRecurrenceIterator(this, startDate, timezone);
+		return DateIteratorFactory.createDateIterator(iterator);
 	}
 
 	@Override
