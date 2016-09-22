@@ -14,79 +14,74 @@
 
 package biweekly.util.com.google.ical.iter;
 
-import java.util.TimeZone;
+import static biweekly.util.TestUtils.assertIterator;
+
+import java.util.Arrays;
 
 import junit.framework.TestCase;
+import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
-import biweekly.util.com.google.ical.values.RDateList;
+import biweekly.util.com.google.ical.values.DateValueImpl;
 
 /**
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
+ * @author Michael Angstadt
  */
 public class RDateIteratorImplTest extends TestCase {
-
-  static final TimeZone PST = TimeZone.getTimeZone("America/Los_Angeles");
-  static final TimeZone EST = TimeZone.getTimeZone("America/New_York");
-  static final TimeZone UTC = TimeZone.getTimeZone("Etc/GMT");
-
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-    assertEquals(-8 * 60 * 60 * 1000, PST.getRawOffset());
-    assertEquals(-5 * 60 * 60 * 1000, EST.getRawOffset());
-    assertEquals(0, UTC.getRawOffset());
+  public void testOneDate() {
+    DateValue[] dates = new DateValue[] {
+      new DateValueImpl(2006, 4, 12)
+    };
+    DateValue[] expected = dates;
+    
+    RDateIteratorImpl ri = new RDateIteratorImpl(dates);
+    assertIterator(Arrays.asList(expected), ri);
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
+  public void testOneDateTime() {
+    DateValue[] dates = new DateValue[] {
+      new DateTimeValueImpl(2006, 4, 12, 12, 0, 0)
+    };
+    DateValue[] expected = dates;
+    
+    RDateIteratorImpl ri = new RDateIteratorImpl(dates);
+    assertIterator(Arrays.asList(expected), ri);
   }
+  
+  public void testSortAndRemoveDuplicates(){
+    DateValue[] dates = new DateValue[] {
+      new DateTimeValueImpl(2006, 4, 14, 12, 0, 0),
+      new DateTimeValueImpl(2006, 4, 12, 12, 0, 0),
+      new DateTimeValueImpl(2006, 4, 12, 12, 0, 0),
+      new DateTimeValueImpl(2006, 4, 13, 12, 0, 0),
+      new DateTimeValueImpl(2006, 4, 12, 12, 0, 0),
+      new DateTimeValueImpl(2006, 4, 13, 12, 0, 0)
+    };
+    DateValue[] expected = new DateValue[] {
+      new DateTimeValueImpl(2006, 4, 12, 12, 0, 0),
+      new DateTimeValueImpl(2006, 4, 13, 12, 0, 0),
+      new DateTimeValueImpl(2006, 4, 14, 12, 0, 0)
+    };
 
-  public void testOneDate() throws Exception {
-    runRecurrenceIteratorTest("RDATE:20060412", PST, "20060412");
-    runRecurrenceIteratorTest("RDATE:20060412", EST, "20060412");
-    runRecurrenceIteratorTest("RDATE:20060412", UTC, "20060412");
+    RDateIteratorImpl ri = new RDateIteratorImpl(dates);
+    assertIterator(Arrays.asList(expected), ri);
   }
-
-  public void testOneDateTime() throws Exception {
-    runRecurrenceIteratorTest("RDATE:20060412T120000", PST, "20060412T190000");
-    runRecurrenceIteratorTest("RDATE:20060412T120000", EST, "20060412T160000");
-    runRecurrenceIteratorTest("RDATE:20060412T120000", UTC, "20060412T120000");
+  
+  public void testAdvanceTo(){
+    DateValue[] dates = new DateValue[] {
+      new DateTimeValueImpl(2006, 4, 12, 12, 0, 0),
+      new DateTimeValueImpl(2006, 4, 13, 12, 0, 0),
+      new DateTimeValueImpl(2006, 4, 14, 12, 0, 0),
+      new DateTimeValueImpl(2006, 4, 15, 12, 0, 0)
+    };
+    DateValue[] expected = new DateValue[] {
+      new DateTimeValueImpl(2006, 4, 13, 12, 0, 0),
+      new DateTimeValueImpl(2006, 4, 14, 12, 0, 0),
+      new DateTimeValueImpl(2006, 4, 15, 12, 0, 0)
+    };
+    
+    RDateIteratorImpl ri = new RDateIteratorImpl(dates);
+    ri.advanceTo(new DateTimeValueImpl(2006, 4, 13, 12, 0, 0));
+    assertIterator(Arrays.asList(expected), ri);
   }
-
-  public void testMore() throws Exception {
-    runRecurrenceIteratorTest("RDATE:20060412,20060412", PST, "20060412");
-    runRecurrenceIteratorTest(
-        "RDATE:20060412,20060413", EST, "20060412,20060413");
-    runRecurrenceIteratorTest(
-        "RDATE:20060413,20060412", UTC, "20060412,20060413");
-    runRecurrenceIteratorTest(
-        "RDATE:20060413,20060412,20060413", UTC, "20060412,20060413");
-    runRecurrenceIteratorTest(
-        "RDATE:20060413,20060412,20060412", UTC, "20060412,20060413");
-  }
-
-  private void runRecurrenceIteratorTest(
-      String icalText, TimeZone tz, String golden)
-  throws Exception {
-    runRecurrenceIteratorTest(icalText, tz, golden, null);
-  }
-
-  private void runRecurrenceIteratorTest(
-      String icalText, TimeZone tz, String golden, DateValue advanceTo)
-  throws Exception {
-    RecurrenceIterator ri = RecurrenceIteratorFactory.createRecurrenceIterator(
-        new RDateList(icalText, tz));
-    if (null != advanceTo) {
-      ri.advanceTo(advanceTo);
-    }
-    StringBuilder sb = new StringBuilder();
-    int k = 0;
-    while (ri.hasNext()) {
-      if (k++ != 0) { sb.append(','); }
-      sb.append(ri.next());
-    }
-    assertEquals(golden, sb.toString());
-  }
-
 }

@@ -31,7 +31,6 @@ import biweekly.util.com.google.ical.values.DateTimeValue;
 import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
-import biweekly.util.com.google.ical.values.RDateList;
 import biweekly.util.com.google.ical.values.RRule;
 import biweekly.util.com.google.ical.values.TimeValue;
 
@@ -69,16 +68,6 @@ import biweekly.util.com.google.ical.values.TimeValue;
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public class RecurrenceIteratorFactory {
-  /**
-   * Creates a recurrence iterator from an RDATE or EXDATE list.
-   * @param rdates the list
-   * @return the iterator
-   */
-  public static RecurrenceIterator createRecurrenceIterator(RDateList rdates) {
-    DateValue[] dates = rdates.getDatesUtc();
-    return new RDateIteratorImpl(dates);
-  }
-
   /**
    * Creates a recurrence iterator from an RDATE or EXDATE list.
    * @param dates the list of dates
