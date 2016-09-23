@@ -169,20 +169,20 @@ public class TestUtils {
 	 * @param it the iterator
 	 */
 	public static <T> void assertIterator(List<T> expected, Iterator<T> it) {
-		assertIterator(expected, it, false);
+		assertIterator(expected, it, true);
 	}
 
 	/**
 	 * Asserts the contents of an iterator.
 	 * @param expected the expected contents of the iterator
 	 * @param it the iterator
-	 * @param limit true to stop pulling items off the iterator when the number
-	 * of items retrieved equals the length of the expected list, false to keep
-	 * going until the iterator runs out of items
+	 * @param terminating true to keep pulling items off the iterator until it
+	 * runs out of items, false to stop pulling items off the iterator when the
+	 * number of items retrieved equals the length of the expected list
 	 */
-	public static <T> void assertIterator(List<T> expected, Iterator<T> it, boolean limit) {
+	public static <T> void assertIterator(List<T> expected, Iterator<T> it, boolean terminating) {
 		List<T> actual = new ArrayList<T>();
-		while (it.hasNext() && (!limit || actual.size() < expected.size())) {
+		while (it.hasNext() && (terminating || actual.size() < expected.size())) {
 			actual.add(it.next());
 		}
 		assertEquals(expected, actual);

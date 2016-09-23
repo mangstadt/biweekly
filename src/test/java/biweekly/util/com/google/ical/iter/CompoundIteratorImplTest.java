@@ -281,7 +281,7 @@ public class CompoundIteratorImplTest extends TestCase {
       new DateValueImpl(2006, 5, 3),
       new DateValueImpl(2006, 5, 4),
       new DateValueImpl(2006, 5, 5)
-    ), it, true);
+    ), it, false);
   }
   
   public void testInfiniteRecurrences_advanceTo_on_date() {
@@ -317,7 +317,7 @@ public class CompoundIteratorImplTest extends TestCase {
       new DateValueImpl(2006, 5, 3),
       new DateValueImpl(2006, 5, 4),
       new DateValueImpl(2006, 5, 5)
-    ), it, true);
+    ), it, false);
   }
   
   public void testInfiniteRecurrences_advanceTo_after_date() {
@@ -350,7 +350,7 @@ public class CompoundIteratorImplTest extends TestCase {
       new DateValueImpl(2006, 5, 3),
       new DateValueImpl(2006, 5, 4),
       new DateValueImpl(2006, 5, 5)
-    ), it, true);
+    ), it, false);
   }
 
   public void testInfiniteExclusionsAndFiniteInclusions() {
@@ -507,7 +507,7 @@ public class CompoundIteratorImplTest extends TestCase {
       new DateValueImpl(2007, 5, 3),
       new DateValueImpl(2007, 9, 3),
       new DateValueImpl(2008, 3, 3)
-    ), it, true);
+    ), it, false);
   }
 
   public void testMonkey2() {
@@ -547,7 +547,7 @@ public class CompoundIteratorImplTest extends TestCase {
       new DateTimeValueImpl(2007, 5, 9, 10, 45, 14),
       new DateTimeValueImpl(2008, 5, 9, 10, 45, 14),
       new DateTimeValueImpl(2009, 5, 9, 10, 45, 14)
-    ), it, true);
+    ), it, false);
   }
 
   public void testMonkey4() {
@@ -577,7 +577,7 @@ public class CompoundIteratorImplTest extends TestCase {
       new DateValueImpl(2006, 5, 31),
       new DateValueImpl(2006, 6, 1),
       new DateValueImpl(2006, 6, 6)
-    ), it, true);
+    ), it, false);
   }
 
   public void testMonkey5() {
@@ -663,7 +663,7 @@ public class CompoundIteratorImplTest extends TestCase {
       new DateTimeValueImpl(2006, 6, 12, 16, 47, 41),
       new DateTimeValueImpl(2006, 6, 19, 16, 47, 41),
       new DateTimeValueImpl(2006, 6, 26, 16, 47, 41)
-    ), it, true);
+    ), it, false);
   }
 
   public void testMonkey8() throws Exception {
@@ -729,7 +729,7 @@ public class CompoundIteratorImplTest extends TestCase {
       new DateValueImpl(2006, 6, 27),
       new DateValueImpl(2006, 7, 27),
       new DateValueImpl(2006, 8, 27)
-    ), it, true);
+    ), it, false);
   }
 
   public void testMonkey10() {
@@ -751,7 +751,7 @@ public class CompoundIteratorImplTest extends TestCase {
       new DateValueImpl(2008, 1, 1),
       new DateValueImpl(2009, 1, 1),
       new DateValueImpl(2010, 1, 1)
-    ), it, true);
+    ), it, false);
   }
   
   public void testMonkey10_2() {
@@ -796,7 +796,7 @@ public class CompoundIteratorImplTest extends TestCase {
       new DateValueImpl(2006, 12, 18),
       new DateValueImpl(2006, 12, 22),
       new DateValueImpl(2006, 12, 24)
-    ), it, true);
+    ), it, false);
   }
 
   public void testMonkey11WithAdvanceTo() {
@@ -820,7 +820,7 @@ public class CompoundIteratorImplTest extends TestCase {
       new DateValueImpl(2007, 12, 6),
       new DateValueImpl(2007, 12, 18),
       new DateValueImpl(2007, 12, 22)
-    ), it, true);
+    ), it, false);
   }
 
   public void testMonkey12() {
@@ -842,7 +842,7 @@ public class CompoundIteratorImplTest extends TestCase {
       new DateTimeValueImpl(2006, 5, 14, 1, 47, 45),
       new DateTimeValueImpl(2006, 5, 30, 1, 47, 45),
       new DateTimeValueImpl(2006, 6, 1, 1, 47, 45)
-    ), it, true);
+    ), it, false);
   }
 
   public void testMonkey13() {
@@ -885,7 +885,7 @@ public class CompoundIteratorImplTest extends TestCase {
       new DateValueImpl(2006, 5, 18),
       new DateValueImpl(2006, 5, 25),
       new DateValueImpl(2006, 6, 1)
-    ), it, true);
+    ), it, false);
   }
 
   public void testExcludedStart() {
@@ -936,7 +936,7 @@ public class CompoundIteratorImplTest extends TestCase {
       new DateTimeValueImpl(2006, 9, 22, 6, 59, 51),
       new DateTimeValueImpl(2006, 9, 23, 6, 59, 51),
       new DateTimeValueImpl(2006, 9, 24, 6, 59, 51)
-    ), it, true);
+    ), it, false);
 
     /*
      * We can't actually create an RRULE with BYMINUTE=60 since that's out of
