@@ -14,692 +14,1407 @@
 
 package biweekly.util.com.google.ical.iter;
 
+import static biweekly.util.TestUtils.assertIterator;
+import static biweekly.util.TestUtils.date;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.TimeZone;
 
 import junit.framework.TestCase;
+import biweekly.util.DayOfWeek;
+import biweekly.util.Frequency;
+import biweekly.util.ICalDate;
+import biweekly.util.Recurrence;
 import biweekly.util.com.google.ical.util.DTBuilder;
 import biweekly.util.com.google.ical.util.TimeUtils;
+import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
-import biweekly.util.com.google.ical.values.IcalParseUtil;
-import biweekly.util.com.google.ical.values.PeriodValue;
-import biweekly.util.com.google.ical.values.RRule;
+import biweekly.util.com.google.ical.values.DateValueImpl;
 
 /**
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
+ * @author Michael Angstadt
  */
 public class RRuleIteratorImplTest extends TestCase {
+  private static final TimeZone PST = TimeZone.getTimeZone("America/Los_Angeles");
+  private static final TimeZone UTC = TimeUtils.utcTimezone();
 
-  static final TimeZone PST = TimeZone.getTimeZone("America/Los_Angeles");
-  static final TimeZone UTC = TimeUtils.utcTimezone();
-
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
-
-  private void runRecurrenceIteratorTest(
-      String rruleText, DateValue dtStart, int limit, String golden)
-  throws Exception {
-    runRecurrenceIteratorTest(rruleText, dtStart, limit, golden, null, UTC);
-  }
-
-  private void runRecurrenceIteratorTest(
-      String rruleText, DateValue dtStart, int limit, String golden,
-      DateValue advanceTo)
-  throws Exception {
-    runRecurrenceIteratorTest(
-        rruleText, dtStart, limit, golden, advanceTo, UTC);
-  }
-
-  private void runRecurrenceIteratorTest(
-      String rruleText, DateValue dtStart, int limit, String golden,
-      TimeZone tz)
-  throws Exception {
-    runRecurrenceIteratorTest(rruleText, dtStart, limit, golden, null, tz);
-  }
-
-  private void runRecurrenceIteratorTest(
-      String rruleText, DateValue dtStart, int limit, String golden,
-      DateValue advanceTo, TimeZone tz)
-  throws Exception {
-    RecurrenceIterator ri = RecurrenceIteratorFactory.createRecurrenceIterator(
-        new RRule(rruleText), dtStart, tz);
-    if (null != advanceTo) {
-      ri.advanceTo(advanceTo);
+  public void testFrequencyLimits() {
+    Recurrence.Builder rb = new Recurrence.Builder(Frequency.SECONDLY);
+    for (int i = 0; i < 60; i++){
+      rb.bySecond(i);
     }
-    StringBuilder sb = new StringBuilder();
-    int k = 0, n = limit;
-    while (ri.hasNext() && --n >= 0) {
-      if (k++ != 0) { sb.append(','); }
-      sb.append(ri.next());
-    }
-    if (n < 0) { sb.append(",..."); }
-    assertEquals(golden, sb.toString());
-
-    if (null == advanceTo) {
-      runRecurrenceIteratorTest(rruleText, dtStart, limit, golden, dtStart, tz);
-    }
+    Recurrence recur = rb.build();
+    DateValue start = new DateValueImpl(2000, 1, 1);
+    
+    RecurrenceIteratorFactory.createRecurrenceIterator(recur, start, UTC);
   }
 
-  public void testFrequencyLimits() throws Exception {
-    RecurrenceIteratorFactory.createRecurrenceIterator(
-        new RRule(
-            "RRULE:FREQ=SECONDLY;BYSECOND=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,"
-            + "15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,"
-            + "30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,"
-            + "45,46,47,48,49,50,51,52,53,54,55,56,57,58,59"),
-            IcalParseUtil.parseDateValue("20000101"), TimeUtils.utcTimezone());
+  public void testSimpleDaily() {
+    Recurrence recur = new Recurrence.Builder(Frequency.DAILY).build();
+    DateValue start = new DateValueImpl(2006, 1, 20);
+    DateValue[] expected = {
+      new DateValueImpl(2006, 1, 20),
+      new DateValueImpl(2006, 1, 21),
+      new DateValueImpl(2006, 1, 22),
+      new DateValueImpl(2006, 1, 23),
+      new DateValueImpl(2006, 1, 24)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testSimpleDaily() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=DAILY", IcalParseUtil.parseDateValue("20060120"), 5,
-        "20060120,20060121,20060122,20060123,20060124,...");
+  public void testSimpleWeekly() {
+    Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).build();
+    DateValue start = new DateValueImpl(2006, 1, 20);
+    DateValue[] expected = {
+      new DateValueImpl(2006, 1, 20),
+      new DateValueImpl(2006, 1, 27),
+      new DateValueImpl(2006, 2, 3),
+      new DateValueImpl(2006, 2, 10),
+      new DateValueImpl(2006, 2, 17)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testSimpleWeekly() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY", IcalParseUtil.parseDateValue("20060120"), 5,
-        "20060120,20060127,20060203,20060210,20060217,...");
-  }
-
-  public void testSimpleMonthly() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY", IcalParseUtil.parseDateValue("20060120"), 5,
-        "20060120,20060220,20060320,20060420,20060520,...");
+  public void testSimpleMonthly() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY).build();
+    DateValue start = new DateValueImpl(2006, 1, 20);
+    DateValue[] expected = {
+      new DateValueImpl(2006, 1, 20),
+      new DateValueImpl(2006, 2, 20),
+      new DateValueImpl(2006, 3, 20),
+      new DateValueImpl(2006, 4, 20),
+      new DateValueImpl(2006, 5, 20)
+    };
+    
+    run(recur, start, expected);
   }
 
   public void testSimpleYearly() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY", IcalParseUtil.parseDateValue("20060120"), 5,
-        "20060120,20070120,20080120,20090120,20100120,...");
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY).build();
+    DateValue start = new DateValueImpl(2006, 1, 20);
+    DateValue[] expected = {
+      new DateValueImpl(2006, 1, 20),
+      new DateValueImpl(2007, 1, 20),
+      new DateValueImpl(2008, 1, 20),
+      new DateValueImpl(2009, 1, 20),
+      new DateValueImpl(2010, 1, 20)
+    };
+    
+    run(recur, start, expected);
   }
 
   // from section 4.3.10
-  public void testMultipleByParts() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;INTERVAL=2;BYMONTH=1;BYDAY=SU",
-        IcalParseUtil.parseDateValue("19970105"), 8,
-        "19970105,19970112,19970119,19970126," +
-        "19990103,19990110,19990117,19990124,...");
+  public void testMultipleByParts() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .interval(2)
+      .byMonth(1)
+      .byDay(DayOfWeek.SUNDAY)
+    .build();
+    DateValue start = new DateValueImpl(1997, 1, 5);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 1, 5),
+      new DateValueImpl(1997, 1, 12),
+      new DateValueImpl(1997, 1, 19),
+      new DateValueImpl(1997, 1, 26),
+      new DateValueImpl(1999, 1, 3),
+      new DateValueImpl(1999, 1, 10),
+      new DateValueImpl(1999, 1, 17),
+      new DateValueImpl(1999, 1, 24)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testCountWithInterval() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=DAILY;COUNT=10;INTERVAL=2",
-        IcalParseUtil.parseDateValue("19970105"), 11,
-        "19970105,19970107,19970109,19970111,19970113," +
-        "19970115,19970117,19970119,19970121,19970123");
+  public void testCountWithInterval() {
+    Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
+      .count(10)
+      .interval(2)
+    .build();
+    DateValue start = new DateValueImpl(1997, 1, 5);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 1, 5),
+      new DateValueImpl(1997, 1, 7),
+      new DateValueImpl(1997, 1, 9),
+      new DateValueImpl(1997, 1, 11),
+      new DateValueImpl(1997, 1, 13),
+      new DateValueImpl(1997, 1, 15),
+      new DateValueImpl(1997, 1, 17),
+      new DateValueImpl(1997, 1, 19),
+      new DateValueImpl(1997, 1, 21),
+      new DateValueImpl(1997, 1, 23)
+    };
+    
+    run(recur, start, expected);
   }
 
   // from section 4.6.5
-  public void testNegativeOffsets() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10",
-        IcalParseUtil.parseDateValue("19970105"), 5,
-        "19971026,19981025,19991031,20001029,20011028,...");
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4",
-        IcalParseUtil.parseDateValue("19970105"), 5,
-        "19970406,19980405,19990404,20000402,20010401,...");
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYDAY=1SU;BYMONTH=4;UNTIL=19980404T150000Z",
-        IcalParseUtil.parseDateValue("19970105"), 5, "19970406");
+  public void testNegativeOffsets() {
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+        .byDay(-1, DayOfWeek.SUNDAY)
+        .byMonth(10)
+      .build();
+      DateValue start = new DateValueImpl(1997, 1, 5);
+      DateValue[] expected = {
+        new DateValueImpl(1997, 10, 26),
+        new DateValueImpl(1998, 10, 25),
+        new DateValueImpl(1999, 10, 31),
+        new DateValueImpl(2000, 10, 29),
+        new DateValueImpl(2001, 10, 28)
+      };
+      
+      run(recur, start, expected);
+    }
+    
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+        .byDay(1, DayOfWeek.SUNDAY)
+        .byMonth(4)
+      .build();
+      DateValue start = new DateValueImpl(1997, 1, 5);
+      DateValue[] expected = {
+        new DateValueImpl(1997, 4, 6),
+        new DateValueImpl(1998, 4, 5),
+        new DateValueImpl(1999, 4, 4),
+        new DateValueImpl(2000, 4, 2),
+        new DateValueImpl(2001, 4, 1)
+      };
+      
+      run(recur, start, expected);
+    }
+    
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+        .byDay(1, DayOfWeek.SUNDAY)
+        .byMonth(4)
+        .until(date("1998-04-04 15:00:00", UTC))
+      .build();
+      DateValue start = new DateValueImpl(1997, 1, 5);
+      DateValue[] expected = {
+        new DateValueImpl(1997, 4, 6)
+      };
+      
+      run(recur, start, expected);
+    }
   }
 
   // from section 4.8.5.4
-  public void testDailyFor10Occ() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=DAILY;COUNT=10",
-        IcalParseUtil.parseDateValue("19970902T090000"), 11,
-        "19970902T090000,19970903T090000,19970904T090000,19970905T090000," +
-        "19970906T090000,19970907T090000,19970908T090000,19970909T090000," +
-        "19970910T090000,19970911T090000");
-
+  public void testDailyFor10Occ() {
+    Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
+      .count(10)
+    .build();
+    DateValue start = new DateTimeValueImpl(1997, 9, 2, 9, 0, 0);
+    DateValue[] expected = {
+      new DateTimeValueImpl(1997, 9, 2, 9, 0, 0),
+      new DateTimeValueImpl(1997, 9, 3, 9, 0, 0),
+      new DateTimeValueImpl(1997, 9, 4, 9, 0, 0),
+      new DateTimeValueImpl(1997, 9, 5, 9, 0, 0),
+      new DateTimeValueImpl(1997, 9, 6, 9, 0, 0),
+      new DateTimeValueImpl(1997, 9, 7, 9, 0, 0),
+      new DateTimeValueImpl(1997, 9, 8, 9, 0, 0),
+      new DateTimeValueImpl(1997, 9, 9, 9, 0, 0),
+      new DateTimeValueImpl(1997, 9, 10, 9, 0, 0),
+      new DateTimeValueImpl(1997, 9, 11, 9, 0, 0)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testDailyUntilDec4() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=DAILY;UNTIL=19971204",
-        IcalParseUtil.parseDateValue("19971128"), 11,
-        "19971128,19971129,19971130,19971201,19971202,19971203,19971204");
+  public void testDailyUntilDec4() {
+    Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
+      .until(new ICalDate(date("1997-12-04"), false))
+    .build();
+    DateValue start = new DateValueImpl(1997, 11, 28);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 11, 28),
+      new DateValueImpl(1997, 11, 29),
+      new DateValueImpl(1997, 11, 30),
+      new DateValueImpl(1997, 12, 1),
+      new DateValueImpl(1997, 12, 2),
+      new DateValueImpl(1997, 12, 3),
+      new DateValueImpl(1997, 12, 4)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testEveryOtherDayForever() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=DAILY;INTERVAL=2",
-        IcalParseUtil.parseDateValue("19971128"), 5,
-        "19971128,19971130,19971202,19971204,19971206,...");
+  public void testEveryOtherDayForever() {
+    Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
+      .interval(2)
+    .build();
+    DateValue start = new DateValueImpl(1997, 11, 28);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 11, 28),
+      new DateValueImpl(1997, 11, 30),
+      new DateValueImpl(1997, 12, 2),
+      new DateValueImpl(1997, 12, 4),
+      new DateValueImpl(1997, 12, 6)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testEvery10Days5Occ() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=DAILY;INTERVAL=10;COUNT=5",
-        IcalParseUtil.parseDateValue("19970902"), 5,
-        "19970902,19970912,19970922,19971002,19971012");
+  public void testEvery10Days5Occ() {
+    Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
+      .interval(10)
+      .count(5)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 2);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 2),
+      new DateValueImpl(1997, 9, 12),
+      new DateValueImpl(1997, 9, 22),
+      new DateValueImpl(1997, 10, 2),
+      new DateValueImpl(1997, 10, 12)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public String goldenDateRange(String dateStr) throws Exception {
-    return goldenDateRange(dateStr, 1);
+  public void testEveryDayInJanuaryFor3Years() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .until(date("2000-1-31 09:00:00", UTC))
+      .byMonth(1)
+      .byDay(DayOfWeek.values())
+    .build();
+    DateValue start = new DateValueImpl(1998, 1, 1);
+    
+    List<DateValue> expected = new ArrayList<DateValue>();
+    expected.addAll(dateRange(new DateValueImpl(1998, 1, 1), new DateValueImpl(1998, 1, 31)));
+    expected.addAll(dateRange(new DateValueImpl(1999, 1, 1), new DateValueImpl(1999, 1, 31)));
+    expected.addAll(dateRange(new DateValueImpl(2000, 1, 1), new DateValueImpl(2000, 1, 31)));
+    
+    run(recur, start, expected.toArray(new DateValue[0]));
   }
 
-  public String goldenDateRange(String dateStr, int interval) throws Exception {
-    PeriodValue period = IcalParseUtil.parsePeriodValue(dateStr);
-    DTBuilder b = new DTBuilder(period.start());
-    StringBuilder out = new StringBuilder();
-    while (true) {
-      DateValue d = b.toDate();
-      if (d.compareTo(period.end()) > 0) { break; }
-      if (0 != out.length()) { out.append(','); }
-      out.append(d);
-      b.day += interval;
-    }
-    return out.toString();
+  public void testWeeklyFor10Occ() {
+    Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+      .count(10)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 2);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 2),
+      new DateValueImpl(1997, 9, 9),
+      new DateValueImpl(1997, 9, 16),
+      new DateValueImpl(1997, 9, 23),
+      new DateValueImpl(1997, 9, 30),
+      new DateValueImpl(1997, 10, 7),
+      new DateValueImpl(1997, 10, 14),
+      new DateValueImpl(1997, 10, 21),
+      new DateValueImpl(1997, 10, 28),
+      new DateValueImpl(1997, 11, 4)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testEveryDayInJanuaryFor3Years() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;UNTIL=20000131T090000Z;\n" +
-        " BYMONTH=1;BYDAY=SU,MO,TU,WE,TH,FR,SA",
-        IcalParseUtil.parseDateValue("19980101"), 100,
-        goldenDateRange("19980101/19980131") + ","
-        + goldenDateRange("19990101/19990131") + ","
-        + goldenDateRange("20000101/20000131"));
+  public void testWeeklyUntilDec24() {
+    Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+      .until(new ICalDate(date("1997-12-24"), false))
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 2);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 2),
+      new DateValueImpl(1997, 9, 9),
+      new DateValueImpl(1997, 9, 16),
+      new DateValueImpl(1997, 9, 23),
+      new DateValueImpl(1997, 9, 30),
+      new DateValueImpl(1997, 10, 7),
+      new DateValueImpl(1997, 10, 14),
+      new DateValueImpl(1997, 10, 21),
+      new DateValueImpl(1997, 10, 28),
+      new DateValueImpl(1997, 11, 4),
+      new DateValueImpl(1997, 11, 11),
+      new DateValueImpl(1997, 11, 18),
+      new DateValueImpl(1997, 11, 25),
+      new DateValueImpl(1997, 12, 2),
+      new DateValueImpl(1997, 12, 9),
+      new DateValueImpl(1997, 12, 16),
+      new DateValueImpl(1997, 12, 23)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testWeeklyFor10Occ() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;COUNT=10",
-        IcalParseUtil.parseDateValue("19970902"), 10,
-        "19970902,19970909,19970916,19970923,19970930," +
-        "19971007,19971014,19971021,19971028,19971104");
-  }
-
-  public void testWeeklyUntilDec24() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;UNTIL=19971224",
-        IcalParseUtil.parseDateValue("19970902"), 25,
-        "19970902,19970909,19970916,19970923,19970930," +
-        "19971007,19971014,19971021,19971028,19971104," +
-        "19971111,19971118,19971125,19971202,19971209," +
-        "19971216,19971223");
-  }
-
-  public void testEveryOtherWeekForever() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;INTERVAL=2;WKST=SU",
-        IcalParseUtil.parseDateValue("19970902"), 11,
-        "19970902,19970916,19970930,19971014,19971028," +
-        "19971111,19971125,19971209,19971223,19980106," +
-        "19980120,...");
+  public void testEveryOtherWeekForever() {
+    Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+      .interval(2)
+      .workweekStarts(DayOfWeek.SUNDAY)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 2);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 2),
+      new DateValueImpl(1997, 9, 16),
+      new DateValueImpl(1997, 9, 30),
+      new DateValueImpl(1997, 10, 14),
+      new DateValueImpl(1997, 10, 28),
+      new DateValueImpl(1997, 11, 11),
+      new DateValueImpl(1997, 11, 25),
+      new DateValueImpl(1997, 12, 9),
+      new DateValueImpl(1997, 12, 23)
+    };
+    
+    run(recur, start, expected);
   }
 
   public void testWeeklyOnTuesdayAndThursdayFor5Weeks() throws Exception {
-    // if UNTIL date does not match start date, then until date treated as
-    // occurring on midnight.
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;UNTIL=19971007;WKST=SU;BYDAY=TU,TH",
-        IcalParseUtil.parseDateValue("19970902T090000"), 11,
-        "19970902T090000,19970904T090000,19970909T090000,19970911T090000," +
-        "19970916T090000,19970918T090000,19970923T090000,19970925T090000," +
-        "19970930T090000,19971002T090000");
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;UNTIL=19971007T000000Z;WKST=SU;BYDAY=TU,TH",
-        IcalParseUtil.parseDateValue("19970902T090000"), 11,
-        "19970902T090000,19970904T090000,19970909T090000,19970911T090000," +
-        "19970916T090000,19970918T090000,19970923T090000,19970925T090000," +
-        "19970930T090000,19971002T090000");
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;COUNT=10;WKST=SU;BYDAY=TU,TH",
-        IcalParseUtil.parseDateValue("19970902"), 11,
-        "19970902,19970904,19970909,19970911,19970916," +
-        "19970918,19970923,19970925,19970930,19971002");
+    /*
+     * If UNTIL date does not match start date, then until date treated as
+     * occurring on midnight.
+     */
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+        .until(new ICalDate(date("1997-10-07"), false))
+        .workweekStarts(DayOfWeek.SUNDAY)
+        .byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+      .build();
+      DateValue start = new DateTimeValueImpl(1997, 9, 2, 9, 0, 0);
+      DateValue[] expected = {
+        new DateTimeValueImpl(1997, 9, 2, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 4, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 9, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 11, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 16, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 18, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 23, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 25, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 30, 9, 0, 0),
+        new DateTimeValueImpl(1997, 10, 2, 9, 0, 0)
+      };
+      
+      run(recur, start, expected);
+    }
+    
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+        .until(date("1997-10-07 00:00:00", UTC))
+        .workweekStarts(DayOfWeek.SUNDAY)
+        .byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+      .build();
+      DateValue start = new DateTimeValueImpl(1997, 9, 2, 9, 0, 0);
+      DateValue[] expected = {
+        new DateTimeValueImpl(1997, 9, 2, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 4, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 9, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 11, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 16, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 18, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 23, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 25, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 30, 9, 0, 0),
+        new DateTimeValueImpl(1997, 10, 2, 9, 0, 0)
+      };
+      
+      run(recur, start, expected);
+    }
+    
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+        .count(10)
+        .workweekStarts(DayOfWeek.SUNDAY)
+        .byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+      .build();
+      DateValue start = new DateValueImpl(1997, 9, 2);
+      DateValue[] expected = {
+        new DateValueImpl(1997, 9, 2),
+        new DateValueImpl(1997, 9, 4),
+        new DateValueImpl(1997, 9, 9),
+        new DateValueImpl(1997, 9, 11),
+        new DateValueImpl(1997, 9, 16),
+        new DateValueImpl(1997, 9, 18),
+        new DateValueImpl(1997, 9, 23),
+        new DateValueImpl(1997, 9, 25),
+        new DateValueImpl(1997, 9, 30),
+        new DateValueImpl(1997, 10, 2)
+      };
+      
+      run(recur, start, expected);
+    }
   }
 
   public void testEveryOtherWeekOnMWFUntilDec24() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;INTERVAL=2;UNTIL=19971224T000000Z;WKST=SU;\n" +
-        " BYDAY=MO,WE,FR",
-        IcalParseUtil.parseDateValue("19970903T090000"), 25,
-        "19970903T090000,19970905T090000,19970915T090000,19970917T090000," +
-        "19970919T090000,19970929T090000,19971001T090000,19971003T090000," +
-        "19971013T090000,19971015T090000,19971017T090000,19971027T090000," +
-        "19971029T090000,19971031T090000,19971110T090000,19971112T090000," +
-        "19971114T090000,19971124T090000,19971126T090000,19971128T090000," +
-        "19971208T090000,19971210T090000,19971212T090000,19971222T090000");
-
-    // if the UNTIL date is timed, when the start is not, the time should be
-    // ignored, so we get one more instance
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;INTERVAL=2;UNTIL=19971224T000000Z;WKST=SU;\n" +
-        " BYDAY=MO,WE,FR",
-        IcalParseUtil.parseDateValue("19970903"), 25,
-        "19970903,19970905,19970915,19970917," +
-        "19970919,19970929,19971001,19971003," +
-        "19971013,19971015,19971017,19971027," +
-        "19971029,19971031,19971110,19971112," +
-        "19971114,19971124,19971126,19971128," +
-        "19971208,19971210,19971212,19971222," +
-        "19971224");
-
-    // test with an alternate timezone
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;INTERVAL=2;UNTIL=19971224T090000Z;WKST=SU;\n" +
-        " BYDAY=MO,WE,FR",
-        IcalParseUtil.parseDateValue("19970903T090000"), 25,
-        "19970903T160000,19970905T160000,19970915T160000,19970917T160000," +
-        "19970919T160000,19970929T160000,19971001T160000,19971003T160000," +
-        "19971013T160000,19971015T160000,19971017T160000,19971027T170000," +
-        "19971029T170000,19971031T170000,19971110T170000,19971112T170000," +
-        "19971114T170000,19971124T170000,19971126T170000,19971128T170000," +
-        "19971208T170000,19971210T170000,19971212T170000,19971222T170000",
-        PST);
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+        .interval(2)
+        .until(date("1997-12-24 00:00:00", UTC))
+        .workweekStarts(DayOfWeek.SUNDAY)
+        .byDay(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+      .build();
+      DateValue start = new DateTimeValueImpl(1997, 9, 3, 9, 0, 0);
+      DateValue[] expected = {
+        new DateTimeValueImpl(1997, 9, 3, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 5, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 15, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 17, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 19, 9, 0, 0),
+        new DateTimeValueImpl(1997, 9, 29, 9, 0, 0),
+        new DateTimeValueImpl(1997, 10, 1, 9, 0, 0),
+        new DateTimeValueImpl(1997, 10, 3, 9, 0, 0),
+        new DateTimeValueImpl(1997, 10, 13, 9, 0, 0),
+        new DateTimeValueImpl(1997, 10, 15, 9, 0, 0),
+        new DateTimeValueImpl(1997, 10, 17, 9, 0, 0),
+        new DateTimeValueImpl(1997, 10, 27, 9, 0, 0),
+        new DateTimeValueImpl(1997, 10, 29, 9, 0, 0),
+        new DateTimeValueImpl(1997, 10, 31, 9, 0, 0),
+        new DateTimeValueImpl(1997, 11, 10, 9, 0, 0),
+        new DateTimeValueImpl(1997, 11, 12, 9, 0, 0),
+        new DateTimeValueImpl(1997, 11, 14, 9, 0, 0),
+        new DateTimeValueImpl(1997, 11, 24, 9, 0, 0),
+        new DateTimeValueImpl(1997, 11, 26, 9, 0, 0),
+        new DateTimeValueImpl(1997, 11, 28, 9, 0, 0),
+        new DateTimeValueImpl(1997, 12, 8, 9, 0, 0),
+        new DateTimeValueImpl(1997, 12, 10, 9, 0, 0),
+        new DateTimeValueImpl(1997, 12, 12, 9, 0, 0),
+        new DateTimeValueImpl(1997, 12, 22, 9, 0, 0)
+      };
+      
+      run(recur, start, expected);
+    }
+    
+    /*
+     * If the UNTIL date is timed, when the start is not, the time should be
+     * ignored, so we get one more instance.
+     */
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+        .interval(2)
+        .until(date("1997-12-24 00:00:00", UTC))
+        .workweekStarts(DayOfWeek.SUNDAY)
+        .byDay(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+      .build();
+      DateValue start = new DateValueImpl(1997, 9, 3);
+      DateValue[] expected = {
+        new DateValueImpl(1997, 9, 3),
+        new DateValueImpl(1997, 9, 5),
+        new DateValueImpl(1997, 9, 15),
+        new DateValueImpl(1997, 9, 17),
+        new DateValueImpl(1997, 9, 19),
+        new DateValueImpl(1997, 9, 29),
+        new DateValueImpl(1997, 10, 1),
+        new DateValueImpl(1997, 10, 3),
+        new DateValueImpl(1997, 10, 13),
+        new DateValueImpl(1997, 10, 15),
+        new DateValueImpl(1997, 10, 17),
+        new DateValueImpl(1997, 10, 27),
+        new DateValueImpl(1997, 10, 29),
+        new DateValueImpl(1997, 10, 31),
+        new DateValueImpl(1997, 11, 10),
+        new DateValueImpl(1997, 11, 12),
+        new DateValueImpl(1997, 11, 14),
+        new DateValueImpl(1997, 11, 24),
+        new DateValueImpl(1997, 11, 26),
+        new DateValueImpl(1997, 11, 28),
+        new DateValueImpl(1997, 12, 8),
+        new DateValueImpl(1997, 12, 10),
+        new DateValueImpl(1997, 12, 12),
+        new DateValueImpl(1997, 12, 22),
+        new DateValueImpl(1997, 12, 24)
+      };
+      
+      run(recur, start, expected);
+    }
+    
+    /*
+     * Test with an alternate timezone.
+     */
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+        .interval(2)
+        .until(date("1997-12-24 09:00:00", UTC))
+        .workweekStarts(DayOfWeek.SUNDAY)
+        .byDay(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+      .build();
+      DateValue start = new DateTimeValueImpl(1997, 9, 3, 9, 0, 0);
+      DateValue[] expected = {
+        new DateTimeValueImpl(1997, 9, 3, 16, 0, 0),
+        new DateTimeValueImpl(1997, 9, 5, 16, 0, 0),
+        new DateTimeValueImpl(1997, 9, 15, 16, 0, 0),
+        new DateTimeValueImpl(1997, 9, 17, 16, 0, 0),
+        new DateTimeValueImpl(1997, 9, 19, 16, 0, 0),
+        new DateTimeValueImpl(1997, 9, 29, 16, 0, 0),
+        new DateTimeValueImpl(1997, 10, 1, 16, 0, 0),
+        new DateTimeValueImpl(1997, 10, 3, 16, 0, 0),
+        new DateTimeValueImpl(1997, 10, 13, 16, 0, 0),
+        new DateTimeValueImpl(1997, 10, 15, 16, 0, 0),
+        new DateTimeValueImpl(1997, 10, 17, 16, 0, 0),
+        new DateTimeValueImpl(1997, 10, 27, 17, 0, 0),
+        new DateTimeValueImpl(1997, 10, 29, 17, 0, 0),
+        new DateTimeValueImpl(1997, 10, 31, 17, 0, 0),
+        new DateTimeValueImpl(1997, 11, 10, 17, 0, 0),
+        new DateTimeValueImpl(1997, 11, 12, 17, 0, 0),
+        new DateTimeValueImpl(1997, 11, 14, 17, 0, 0),
+        new DateTimeValueImpl(1997, 11, 24, 17, 0, 0),
+        new DateTimeValueImpl(1997, 11, 26, 17, 0, 0),
+        new DateTimeValueImpl(1997, 11, 28, 17, 0, 0),
+        new DateTimeValueImpl(1997, 12, 8, 17, 0, 0),
+        new DateTimeValueImpl(1997, 12, 10, 17, 0, 0),
+        new DateTimeValueImpl(1997, 12, 12, 17, 0, 0),
+        new DateTimeValueImpl(1997, 12, 22, 17, 0, 0)
+      };
+      
+      run(recur, start, PST, expected);
+    }
   }
 
-  public void testEveryOtherWeekOnTuThFor8Occ() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=8;WKST=SU;BYDAY=TU,TH",
-        IcalParseUtil.parseDateValue("19970902"), 8,
-        "19970902,19970904,19970916,19970918,19970930," +
-        "19971002,19971014,19971016");
+  public void testEveryOtherWeekOnTuThFor8Occ() {
+    Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+      .interval(2)
+      .count(8)
+      .workweekStarts(DayOfWeek.SUNDAY)
+      .byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 2);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 2),
+      new DateValueImpl(1997, 9, 4),
+      new DateValueImpl(1997, 9, 16),
+      new DateValueImpl(1997, 9, 18),
+      new DateValueImpl(1997, 9, 30),
+      new DateValueImpl(1997, 10, 2),
+      new DateValueImpl(1997, 10, 14),
+      new DateValueImpl(1997, 10, 16)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testMonthlyOnThe1stFridayFor10Occ() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;COUNT=10;BYDAY=1FR",
-        IcalParseUtil.parseDateValue("19970905"), 10,
-        "19970905,19971003,19971107,19971205,19980102," +
-        "19980206,19980306,19980403,19980501,19980605");
+  public void testMonthlyOnThe1stFridayFor10Occ() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .count(10)
+      .byDay(1, DayOfWeek.FRIDAY)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 5);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 5),
+      new DateValueImpl(1997, 10, 3),
+      new DateValueImpl(1997, 11, 7),
+      new DateValueImpl(1997, 12, 5),
+      new DateValueImpl(1998, 1, 2),
+      new DateValueImpl(1998, 2, 6),
+      new DateValueImpl(1998, 3, 6),
+      new DateValueImpl(1998, 4, 3),
+      new DateValueImpl(1998, 5, 1),
+      new DateValueImpl(1998, 6, 5)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testMonthlyOnThe1stFridayUntilDec24() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;UNTIL=19971224T000000Z;BYDAY=1FR",
-        IcalParseUtil.parseDateValue("19970905"), 4,
-        "19970905,19971003,19971107,19971205");
+  public void testMonthlyOnThe1stFridayUntilDec24() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .until(date("1997-12-24 00:00:00", UTC))
+      .byDay(1, DayOfWeek.FRIDAY)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 5);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 5),
+      new DateValueImpl(1997, 10, 3),
+      new DateValueImpl(1997, 11, 7),
+      new DateValueImpl(1997, 12, 5)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testEveryOtherMonthOnThe1stAndLastSundayFor10Occ()
-      throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;INTERVAL=2;COUNT=10;BYDAY=1SU,-1SU",
-        IcalParseUtil.parseDateValue("19970907"), 10,
-        "19970907,19970928,19971102,19971130,19980104," +
-        "19980125,19980301,19980329,19980503,19980531");
+  public void testEveryOtherMonthOnThe1stAndLastSundayFor10Occ() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .interval(2)
+      .count(10)
+      .byDay(1, DayOfWeek.SUNDAY)
+      .byDay(-1, DayOfWeek.SUNDAY)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 7);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 7),
+      new DateValueImpl(1997, 9, 28),
+      new DateValueImpl(1997, 11, 2),
+      new DateValueImpl(1997, 11, 30),
+      new DateValueImpl(1998, 1, 4),
+      new DateValueImpl(1998, 1, 25),
+      new DateValueImpl(1998, 3, 1),
+      new DateValueImpl(1998, 3, 29),
+      new DateValueImpl(1998, 5, 3),
+      new DateValueImpl(1998, 5, 31)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testMonthlyOnTheSecondToLastMondayOfTheMonthFor6Months()
-      throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;COUNT=6;BYDAY=-2MO",
-        IcalParseUtil.parseDateValue("19970922"), 6,
-        "19970922,19971020,19971117,19971222,19980119," +
-        "19980216");
+  public void testMonthlyOnTheSecondToLastMondayOfTheMonthFor6Months() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .count(6)
+      .byDay(-2, DayOfWeek.MONDAY)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 22);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 22),
+      new DateValueImpl(1997, 10, 20),
+      new DateValueImpl(1997, 11, 17),
+      new DateValueImpl(1997, 12, 22),
+      new DateValueImpl(1998, 1, 19),
+      new DateValueImpl(1998, 2, 16)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testMonthlyOnTheThirdToLastDay() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;BYMONTHDAY=-3",
-        IcalParseUtil.parseDateValue("19970928"), 6,
-        "19970928,19971029,19971128,19971229,19980129,19980226,...");
+  public void testMonthlyOnTheThirdToLastDay() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .byMonthDay(-3)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 28);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 28),
+      new DateValueImpl(1997, 10, 29),
+      new DateValueImpl(1997, 11, 28),
+      new DateValueImpl(1997, 12, 29),
+      new DateValueImpl(1998, 1, 29),
+      new DateValueImpl(1998, 2, 26)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testMonthlyOnThe2ndAnd15thFor10Occ() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;COUNT=10;BYMONTHDAY=2,15",
-        IcalParseUtil.parseDateValue("19970902"), 10,
-        "19970902,19970915,19971002,19971015,19971102," +
-        "19971115,19971202,19971215,19980102,19980115");
+  public void testMonthlyOnThe2ndAnd15thFor10Occ() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .count(10)
+      .byMonthDay(2, 15)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 2);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 2),
+      new DateValueImpl(1997, 9, 15),
+      new DateValueImpl(1997, 10, 2),
+      new DateValueImpl(1997, 10, 15),
+      new DateValueImpl(1997, 11, 2),
+      new DateValueImpl(1997, 11, 15),
+      new DateValueImpl(1997, 12, 2),
+      new DateValueImpl(1997, 12, 15),
+      new DateValueImpl(1998, 1, 2),
+      new DateValueImpl(1998, 1, 15)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testMonthlyOnTheFirstAndLastFor10Occ() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;COUNT=10;BYMONTHDAY=1,-1",
-        IcalParseUtil.parseDateValue("19970930"), 10,
-        "19970930,19971001,19971031,19971101,19971130," +
-        "19971201,19971231,19980101,19980131,19980201");
+  public void testMonthlyOnTheFirstAndLastFor10Occ() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .count(10)
+      .byMonthDay(-1, 1)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 30);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 30),
+      new DateValueImpl(1997, 10, 1),
+      new DateValueImpl(1997, 10, 31),
+      new DateValueImpl(1997, 11, 1),
+      new DateValueImpl(1997, 11, 30),
+      new DateValueImpl(1997, 12, 1),
+      new DateValueImpl(1997, 12, 31),
+      new DateValueImpl(1998, 1, 1),
+      new DateValueImpl(1998, 1, 31),
+      new DateValueImpl(1998, 2, 1)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testEvery18MonthsOnThe10thThru15thFor10Occ() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;INTERVAL=18;COUNT=10;BYMONTHDAY=10,11,12,13,14,\n" +
-        " 15",
-        IcalParseUtil.parseDateValue("19970910"), 10,
-        "19970910,19970911,19970912,19970913,19970914," +
-        "19970915,19990310,19990311,19990312,19990313");
+  public void testEvery18MonthsOnThe10thThru15thFor10Occ() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .interval(18)
+      .count(10)
+      .byMonthDay(10, 11, 12, 13, 14, 15)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 10);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 10),
+      new DateValueImpl(1997, 9, 11),
+      new DateValueImpl(1997, 9, 12),
+      new DateValueImpl(1997, 9, 13),
+      new DateValueImpl(1997, 9, 14),
+      new DateValueImpl(1997, 9, 15),
+      new DateValueImpl(1999, 3, 10),
+      new DateValueImpl(1999, 3, 11),
+      new DateValueImpl(1999, 3, 12),
+      new DateValueImpl(1999, 3, 13)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testEveryTuesdayEveryOtherMonth() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;INTERVAL=2;BYDAY=TU",
-        IcalParseUtil.parseDateValue("19970902"), 18,
-        "19970902,19970909,19970916,19970923,19970930," +
-        "19971104,19971111,19971118,19971125,19980106," +
-        "19980113,19980120,19980127,19980303,19980310," +
-        "19980317,19980324,19980331,...");
+  public void testEveryTuesdayEveryOtherMonth() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .interval(2)
+      .byDay(DayOfWeek.TUESDAY)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 2);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 2),
+      new DateValueImpl(1997, 9, 9),
+      new DateValueImpl(1997, 9, 16),
+      new DateValueImpl(1997, 9, 23),
+      new DateValueImpl(1997, 9, 30),
+      new DateValueImpl(1997, 11, 4),
+      new DateValueImpl(1997, 11, 11),
+      new DateValueImpl(1997, 11, 18),
+      new DateValueImpl(1997, 11, 25),
+      new DateValueImpl(1998, 1, 6),
+      new DateValueImpl(1998, 1, 13),
+      new DateValueImpl(1998, 1, 20),
+      new DateValueImpl(1998, 1, 27),
+      new DateValueImpl(1998, 3, 3),
+      new DateValueImpl(1998, 3, 10),
+      new DateValueImpl(1998, 3, 17),
+      new DateValueImpl(1998, 3, 24),
+      new DateValueImpl(1998, 3, 31)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testYearlyInJuneAndJulyFor10Occurrences() throws Exception {
-    // Note: Since none of the BYDAY, BYMONTHDAY or BYYEARDAY components
-    // are specified, the day is gotten from DTSTART
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;COUNT=10;BYMONTH=6,7",
-        IcalParseUtil.parseDateValue("19970610"), 10,
-        "19970610,19970710,19980610,19980710,19990610," +
-        "19990710,20000610,20000710,20010610,20010710");
+  public void testYearlyInJuneAndJulyFor10Occurrences() {
+    /*
+     * Note: Since none of the BYDAY, BYMONTHDAY or BYYEARDAY components are
+     * specified, the day is gotten from DTSTART
+     */
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .count(10)
+      .byMonth(6, 7)
+    .build();
+    DateValue start = new DateValueImpl(1997, 6, 10);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 6, 10),
+      new DateValueImpl(1997, 7, 10),
+      new DateValueImpl(1998, 6, 10),
+      new DateValueImpl(1998, 7, 10),
+      new DateValueImpl(1999, 6, 10),
+      new DateValueImpl(1999, 7, 10),
+      new DateValueImpl(2000, 6, 10),
+      new DateValueImpl(2000, 7, 10),
+      new DateValueImpl(2001, 6, 10),
+      new DateValueImpl(2001, 7, 10),
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testEveryOtherYearOnJanuaryFebruaryAndMarchFor10Occurrences()
-      throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;INTERVAL=2;COUNT=10;BYMONTH=1,2,3",
-        IcalParseUtil.parseDateValue("19970310"), 10,
-        "19970310,19990110,19990210,19990310,20010110," +
-        "20010210,20010310,20030110,20030210,20030310");
+  public void testEveryOtherYearOnJanuaryFebruaryAndMarchFor10Occurrences() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .interval(2)
+      .count(10)
+      .byMonth(1, 2, 3)
+    .build();
+    DateValue start = new DateValueImpl(1997, 3, 10);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 3, 10),
+      new DateValueImpl(1999, 1, 10),
+      new DateValueImpl(1999, 2, 10),
+      new DateValueImpl(1999, 3, 10),
+      new DateValueImpl(2001, 1, 10),
+      new DateValueImpl(2001, 2, 10),
+      new DateValueImpl(2001, 3, 10),
+      new DateValueImpl(2003, 1, 10),
+      new DateValueImpl(2003, 2, 10),
+      new DateValueImpl(2003, 3, 10)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testEvery3rdYearOnThe1st100thAnd200thDayFor10Occurrences()
-      throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;INTERVAL=3;COUNT=10;BYYEARDAY=1,100,200",
-        IcalParseUtil.parseDateValue("19970101"), 10,
-        "19970101,19970410,19970719,20000101,20000409," +
-        "20000718,20030101,20030410,20030719,20060101");
+  public void testEvery3rdYearOnThe1st100thAnd200thDayFor10Occurrences() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .interval(3)
+      .count(10)
+      .byYearDay(1, 100, 200)
+    .build();
+    DateValue start = new DateValueImpl(1997, 1, 1);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 1, 1),
+      new DateValueImpl(1997, 4, 10),
+      new DateValueImpl(1997, 7, 19),
+      new DateValueImpl(2000, 1, 1),
+      new DateValueImpl(2000, 4, 9),
+      new DateValueImpl(2000, 7, 18),
+      new DateValueImpl(2003, 1, 1),
+      new DateValueImpl(2003, 4, 10),
+      new DateValueImpl(2003, 7, 19),
+      new DateValueImpl(2006, 1, 1)
+    };
+    
+    run(recur, start, expected);
   }
 
-  public void testEvery20thMondayOfTheYearForever() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYDAY=20MO",
-        IcalParseUtil.parseDateValue("19970519"), 3,
-        "19970519,19980518,19990517,...");
+  public void testEvery20thMondayOfTheYearForever() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .byDay(20, DayOfWeek.MONDAY)
+    .build();
+    DateValue start = new DateValueImpl(1997, 5, 19);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 5, 19),
+      new DateValueImpl(1998, 5, 18),
+      new DateValueImpl(1999, 5, 17)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testMondayOfWeekNumber20WhereTheDefaultStartOfTheWeekIsMonday()
-      throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYWEEKNO=20;BYDAY=MO",
-        IcalParseUtil.parseDateValue("19970512"), 3,
-        "19970512,19980511,19990517,...");
+  public void testMondayOfWeekNumber20WhereTheDefaultStartOfTheWeekIsMonday() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .byWeekNo(20)
+      .byDay(DayOfWeek.MONDAY)
+    .build();
+    DateValue start = new DateValueImpl(1997, 5, 12);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 5, 12),
+      new DateValueImpl(1998, 5, 11),
+      new DateValueImpl(1999, 5, 17)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testEveryThursdayInMarchForever() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=TH",
-        IcalParseUtil.parseDateValue("19970313"), 11,
-        "19970313,19970320,19970327,19980305,19980312," +
-        "19980319,19980326,19990304,19990311,19990318," +
-        "19990325,...");
+  public void testEveryThursdayInMarchForever() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .byMonth(3)
+      .byDay(DayOfWeek.THURSDAY)
+    .build();
+    DateValue start = new DateValueImpl(1997, 3, 13);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 3, 13),
+      new DateValueImpl(1997, 3, 20),
+      new DateValueImpl(1997, 3, 27),
+      new DateValueImpl(1998, 3, 5),
+      new DateValueImpl(1998, 3, 12),
+      new DateValueImpl(1998, 3, 19),
+      new DateValueImpl(1998, 3, 26),
+      new DateValueImpl(1999, 3, 4),
+      new DateValueImpl(1999, 3, 11),
+      new DateValueImpl(1999, 3, 18),
+      new DateValueImpl(1999, 3, 25)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testEveryThursdayButOnlyDuringJuneJulyAndAugustForever()
-      throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYDAY=TH;BYMONTH=6,7,8",
-        IcalParseUtil.parseDateValue("19970605"), 39,
-        "19970605,19970612,19970619,19970626,19970703," +
-        "19970710,19970717,19970724,19970731,19970807," +
-        "19970814,19970821,19970828,19980604,19980611," +
-        "19980618,19980625,19980702,19980709,19980716," +
-        "19980723,19980730,19980806,19980813,19980820," +
-        "19980827,19990603,19990610,19990617,19990624," +
-        "19990701,19990708,19990715,19990722,19990729," +
-        "19990805,19990812,19990819,19990826,...");
+  public void testEveryThursdayButOnlyDuringJuneJulyAndAugustForever() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .byDay(DayOfWeek.THURSDAY)
+      .byMonth(6, 7, 8)
+    .build();
+    DateValue start = new DateValueImpl(1997, 6, 5);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 6, 5),
+      new DateValueImpl(1997, 6, 12),
+      new DateValueImpl(1997, 6, 19),
+      new DateValueImpl(1997, 6, 26),
+      new DateValueImpl(1997, 7, 3),
+      new DateValueImpl(1997, 7, 10),
+      new DateValueImpl(1997, 7, 17),
+      new DateValueImpl(1997, 7, 24),
+      new DateValueImpl(1997, 7, 31),
+      new DateValueImpl(1997, 8, 7),
+      new DateValueImpl(1997, 8, 14),
+      new DateValueImpl(1997, 8, 21),
+      new DateValueImpl(1997, 8, 28),
+      new DateValueImpl(1998, 6, 4),
+      new DateValueImpl(1998, 6, 11),
+      new DateValueImpl(1998, 6, 18),
+      new DateValueImpl(1998, 6, 25),
+      new DateValueImpl(1998, 7, 2),
+      new DateValueImpl(1998, 7, 9),
+      new DateValueImpl(1998, 7, 16),
+      new DateValueImpl(1998, 7, 23),
+      new DateValueImpl(1998, 7, 30),
+      new DateValueImpl(1998, 8, 6),
+      new DateValueImpl(1998, 8, 13),
+      new DateValueImpl(1998, 8, 20),
+      new DateValueImpl(1998, 8, 27),
+      new DateValueImpl(1999, 6, 3),
+      new DateValueImpl(1999, 6, 10),
+      new DateValueImpl(1999, 6, 17),
+      new DateValueImpl(1999, 6, 24),
+      new DateValueImpl(1999, 7, 1),
+      new DateValueImpl(1999, 7, 8),
+      new DateValueImpl(1999, 7, 15),
+      new DateValueImpl(1999, 7, 22),
+      new DateValueImpl(1999, 7, 29),
+      new DateValueImpl(1999, 8, 5),
+      new DateValueImpl(1999, 8, 12),
+      new DateValueImpl(1999, 8, 19),
+      new DateValueImpl(1999, 8, 26)
+    };
+  
+    run(recur, start, expected);
   }
 
   public void testEveryFridayThe13thForever() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13",
-        IcalParseUtil.parseDateValue("19970902"), 5,
-        "19980213,19980313,19981113,19990813,20001013," +
-        "...");
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .byDay(DayOfWeek.FRIDAY)
+      .byMonthDay(13)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 2);
+    DateValue[] expected = {
+      new DateValueImpl(1998, 2, 13),
+      new DateValueImpl(1998, 3, 13),
+      new DateValueImpl(1998, 11, 13),
+      new DateValueImpl(1999, 8, 13),
+      new DateValueImpl(2000, 10, 13)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testTheFirstSaturdayThatFollowsTheFirstSundayOfTheMonthForever()
-      throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;BYDAY=SA;BYMONTHDAY=7,8,9,10,11,12,13",
-        IcalParseUtil.parseDateValue("19970913"), 10,
-        "19970913,19971011,19971108,19971213,19980110," +
-        "19980207,19980307,19980411,19980509,19980613," +
-        "...");
+  public void testTheFirstSaturdayThatFollowsTheFirstSundayOfTheMonthForever() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .byDay(DayOfWeek.SATURDAY)
+      .byMonthDay(7, 8, 9, 10, 11, 12, 13)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 13);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 13),
+      new DateValueImpl(1997, 10, 11),
+      new DateValueImpl(1997, 11, 8),
+      new DateValueImpl(1997, 12, 13),
+      new DateValueImpl(1998, 1, 10),
+      new DateValueImpl(1998, 2, 7),
+      new DateValueImpl(1998, 3, 7),
+      new DateValueImpl(1998, 4, 11),
+      new DateValueImpl(1998, 5, 9),
+      new DateValueImpl(1998, 6, 13),
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testEvery4YearsThe1stTuesAfterAMonInNovForever()
-      throws Exception {
+  public void testEvery4YearsThe1stTuesAfterAMonInNovForever() {
     // US Presidential Election Day
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;INTERVAL=4;BYMONTH=11;BYDAY=TU;BYMONTHDAY=2,3,4,\n" +
-        " 5,6,7,8",
-        IcalParseUtil.parseDateValue("19961105"), 3,
-        "19961105,20001107,20041102,...");
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .interval(4)
+      .byMonth(11)
+      .byDay(DayOfWeek.TUESDAY)
+      .byMonthDay(2, 3, 4, 5, 6, 7, 8)
+    .build();
+    DateValue start = new DateValueImpl(1996, 11, 5);
+    DateValue[] expected = {
+      new DateValueImpl(1996, 11, 5),
+      new DateValueImpl(2000, 11, 7),
+      new DateValueImpl(2004, 11, 2)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testThe3rdInstanceIntoTheMonthOfOneOfTuesWedThursForNext3Months()
-      throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;COUNT=3;BYDAY=TU,WE,TH;BYSETPOS=3",
-        IcalParseUtil.parseDateValue("19970904"), 3,
-        "19970904,19971007,19971106");
+  public void testThe3rdInstanceIntoTheMonthOfOneOfTuesWedThursForNext3Months() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .count(3)
+      .byDay(DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY)
+      .bySetPos(3)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 4);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 4),
+      new DateValueImpl(1997, 10, 7),
+      new DateValueImpl(1997, 11, 6)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testThe2ndToLastWeekdayOfTheMonth() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-2",
-        IcalParseUtil.parseDateValue("19970929"), 7,
-        "19970929,19971030,19971127,19971230,19980129," +
-        "19980226,19980330,...");
+  public void testThe2ndToLastWeekdayOfTheMonth() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
+      .bySetPos(-2)
+    .build();
+    DateValue start = new DateValueImpl(1997, 9, 29);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 9, 29),
+      new DateValueImpl(1997, 10, 30),
+      new DateValueImpl(1997, 11, 27),
+      new DateValueImpl(1997, 12, 30),
+      new DateValueImpl(1998, 1, 29),
+      new DateValueImpl(1998, 2, 26),
+      new DateValueImpl(1998, 3, 30)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testEvery3HoursFrom900AmTo500PmOnASpecificDay() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=HOURLY;INTERVAL=3;UNTIL=19970903T090000Z",
-        IcalParseUtil.parseDateValue("19970902T090000"), 50,
-        "19970902T090000,19970902T120000,19970902T150000," +
-        "19970902T180000,19970902T210000,19970903T000000," +
-        "19970903T030000,19970903T060000,19970903T090000");
+  public void testEvery3HoursFrom900AmTo500PmOnASpecificDay() {
+    Recurrence recur = new Recurrence.Builder(Frequency.HOURLY)
+      .interval(3)
+      .until(date("1997-09-03 09:00:00", UTC))
+    .build();
+    DateValue start = new DateTimeValueImpl(1997, 9, 2, 9, 0, 0);
+    DateValue[] expected = {
+      new DateTimeValueImpl(1997, 9, 2, 9, 0, 0),
+      new DateTimeValueImpl(1997, 9, 2, 12, 0, 0),
+      new DateTimeValueImpl(1997, 9, 2, 15, 0, 0),
+      new DateTimeValueImpl(1997, 9, 2, 18, 0, 0),
+      new DateTimeValueImpl(1997, 9, 2, 21, 0, 0),
+      new DateTimeValueImpl(1997, 9, 3, 0, 0, 0),
+      new DateTimeValueImpl(1997, 9, 3, 3, 0, 0),
+      new DateTimeValueImpl(1997, 9, 3, 6, 0, 0),
+      new DateTimeValueImpl(1997, 9, 3, 9, 0, 0)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testEvery15MinutesFor6Occurrences() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MINUTELY;INTERVAL=15;COUNT=6",
-        IcalParseUtil.parseDateValue("19970902T090000"), 13,
-        "19970902T090000,19970902T091500,19970902T093000,19970902T094500," +
-        "19970902T100000,19970902T101500");
+  public void testEvery15MinutesFor6Occurrences() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MINUTELY)
+      .interval(15)
+      .count(6)
+    .build();
+    DateValue start = new DateTimeValueImpl(1997, 9, 2, 9, 0, 0);
+    DateValue[] expected = {
+      new DateTimeValueImpl(1997, 9, 2, 9, 0, 0),
+      new DateTimeValueImpl(1997, 9, 2, 9, 15, 0),
+      new DateTimeValueImpl(1997, 9, 2, 9, 30, 0),
+      new DateTimeValueImpl(1997, 9, 2, 9, 45, 0),
+      new DateTimeValueImpl(1997, 9, 2, 10, 0, 0),
+      new DateTimeValueImpl(1997, 9, 2, 10, 15, 0)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testEveryHourAndAHalfFor4Occurrences() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MINUTELY;INTERVAL=90;COUNT=4",
-        IcalParseUtil.parseDateValue("19970902T090000"), 9,
-        "19970902T090000,19970902T103000,19970902T120000,19970902T133000");
+  public void testEveryHourAndAHalfFor4Occurrences() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MINUTELY)
+      .interval(90)
+      .count(4)
+    .build();
+    DateValue start = new DateTimeValueImpl(1997, 9, 2, 9, 0, 0);
+    DateValue[] expected = {
+      new DateTimeValueImpl(1997, 9, 2, 9, 0, 0),
+      new DateTimeValueImpl(1997, 9, 2, 10, 30, 0),
+      new DateTimeValueImpl(1997, 9, 2, 12, 0, 0),
+      new DateTimeValueImpl(1997, 9, 2, 13, 30, 0)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testEvert20MinutesFrom900AMto440PMEveryDay() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=DAILY;BYHOUR=9,10,11,12,13,14,15,16;BYMINUTE=0,20,40",
-        IcalParseUtil.parseDateValue("19970902T090000"), 48,
-        "19970902T090000,19970902T092000,19970902T094000,"
-        + "19970902T100000,19970902T102000,19970902T104000,"
-        + "19970902T110000,19970902T112000,19970902T114000,"
-        + "19970902T120000,19970902T122000,19970902T124000,"
-        + "19970902T130000,19970902T132000,19970902T134000,"
-        + "19970902T140000,19970902T142000,19970902T144000,"
-        + "19970902T150000,19970902T152000,19970902T154000,"
-        + "19970902T160000,19970902T162000,19970902T164000,"
-        + "19970903T090000,19970903T092000,19970903T094000,"
-        + "19970903T100000,19970903T102000,19970903T104000,"
-        + "19970903T110000,19970903T112000,19970903T114000,"
-        + "19970903T120000,19970903T122000,19970903T124000,"
-        + "19970903T130000,19970903T132000,19970903T134000,"
-        + "19970903T140000,19970903T142000,19970903T144000,"
-        + "19970903T150000,19970903T152000,19970903T154000,"
-        + "19970903T160000,19970903T162000,19970903T164000,"
-        + "...");
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MINUTELY;INTERVAL=20;BYHOUR=9,10,11,12,13,14,15,16",
-        IcalParseUtil.parseDateValue("19970902T090000"), 48,
-        "19970902T090000,19970902T092000,19970902T094000,"
-        + "19970902T100000,19970902T102000,19970902T104000,"
-        + "19970902T110000,19970902T112000,19970902T114000,"
-        + "19970902T120000,19970902T122000,19970902T124000,"
-        + "19970902T130000,19970902T132000,19970902T134000,"
-        + "19970902T140000,19970902T142000,19970902T144000,"
-        + "19970902T150000,19970902T152000,19970902T154000,"
-        + "19970902T160000,19970902T162000,19970902T164000,"
-        + "19970903T090000,19970903T092000,19970903T094000,"
-        + "19970903T100000,19970903T102000,19970903T104000,"
-        + "19970903T110000,19970903T112000,19970903T114000,"
-        + "19970903T120000,19970903T122000,19970903T124000,"
-        + "19970903T130000,19970903T132000,19970903T134000,"
-        + "19970903T140000,19970903T142000,19970903T144000,"
-        + "19970903T150000,19970903T152000,19970903T154000,"
-        + "19970903T160000,19970903T162000,19970903T164000,"
-        + "...");
+  public void testEvert20MinutesFrom900AMto440PMEveryDay() {
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
+        .byHour(9, 10, 11, 12, 13, 14, 15, 16)
+        .byMinute(0, 20, 40)
+      .build();
+      DateValue start = new DateTimeValueImpl(1997, 9, 2, 9, 0, 0);
+      DateValue[] expected = {
+        new DateTimeValueImpl(1997, 9, 2, 9, 0, 0), new DateTimeValueImpl(1997, 9, 2, 9, 20, 0), new DateTimeValueImpl(1997, 9, 2, 9, 40, 0),
+        new DateTimeValueImpl(1997, 9, 2, 10, 0, 0), new DateTimeValueImpl(1997, 9, 2, 10, 20, 0), new DateTimeValueImpl(1997, 9, 2, 10, 40, 0),
+        new DateTimeValueImpl(1997, 9, 2, 11, 0, 0), new DateTimeValueImpl(1997, 9, 2, 11, 20, 0), new DateTimeValueImpl(1997, 9, 2, 11, 40, 0),
+        new DateTimeValueImpl(1997, 9, 2, 12, 0, 0), new DateTimeValueImpl(1997, 9, 2, 12, 20, 0), new DateTimeValueImpl(1997, 9, 2, 12, 40, 0),
+        new DateTimeValueImpl(1997, 9, 2, 13, 0, 0), new DateTimeValueImpl(1997, 9, 2, 13, 20, 0), new DateTimeValueImpl(1997, 9, 2, 13, 40, 0),
+        new DateTimeValueImpl(1997, 9, 2, 14, 0, 0), new DateTimeValueImpl(1997, 9, 2, 14, 20, 0), new DateTimeValueImpl(1997, 9, 2, 14, 40, 0),
+        new DateTimeValueImpl(1997, 9, 2, 15, 0, 0), new DateTimeValueImpl(1997, 9, 2, 15, 20, 0), new DateTimeValueImpl(1997, 9, 2, 15, 40, 0),
+        new DateTimeValueImpl(1997, 9, 2, 16, 0, 0), new DateTimeValueImpl(1997, 9, 2, 16, 20, 0), new DateTimeValueImpl(1997, 9, 2, 16, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 9, 0, 0), new DateTimeValueImpl(1997, 9, 3, 9, 20, 0), new DateTimeValueImpl(1997, 9, 3, 9, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 10, 0, 0), new DateTimeValueImpl(1997, 9, 3, 10, 20, 0), new DateTimeValueImpl(1997, 9, 3, 10, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 11, 0, 0), new DateTimeValueImpl(1997, 9, 3, 11, 20, 0), new DateTimeValueImpl(1997, 9, 3, 11, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 12, 0, 0), new DateTimeValueImpl(1997, 9, 3, 12, 20, 0), new DateTimeValueImpl(1997, 9, 3, 12, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 13, 0, 0), new DateTimeValueImpl(1997, 9, 3, 13, 20, 0), new DateTimeValueImpl(1997, 9, 3, 13, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 14, 0, 0), new DateTimeValueImpl(1997, 9, 3, 14, 20, 0), new DateTimeValueImpl(1997, 9, 3, 14, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 15, 0, 0), new DateTimeValueImpl(1997, 9, 3, 15, 20, 0), new DateTimeValueImpl(1997, 9, 3, 15, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 16, 0, 0), new DateTimeValueImpl(1997, 9, 3, 16, 20, 0), new DateTimeValueImpl(1997, 9, 3, 16, 40, 0)
+      };
+    
+      run(recur, start, expected);
+    }
+    
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.MINUTELY)
+        .interval(20)
+        .byHour(9, 10, 11, 12, 13, 14, 15, 16)
+      .build();
+      DateValue start = new DateTimeValueImpl(1997, 9, 2, 9, 0, 0);
+      DateValue[] expected = {
+        new DateTimeValueImpl(1997, 9, 2, 9, 0, 0), new DateTimeValueImpl(1997, 9, 2, 9, 20, 0), new DateTimeValueImpl(1997, 9, 2, 9, 40, 0),
+        new DateTimeValueImpl(1997, 9, 2, 10, 0, 0), new DateTimeValueImpl(1997, 9, 2, 10, 20, 0), new DateTimeValueImpl(1997, 9, 2, 10, 40, 0),
+        new DateTimeValueImpl(1997, 9, 2, 11, 0, 0), new DateTimeValueImpl(1997, 9, 2, 11, 20, 0), new DateTimeValueImpl(1997, 9, 2, 11, 40, 0),
+        new DateTimeValueImpl(1997, 9, 2, 12, 0, 0), new DateTimeValueImpl(1997, 9, 2, 12, 20, 0), new DateTimeValueImpl(1997, 9, 2, 12, 40, 0),
+        new DateTimeValueImpl(1997, 9, 2, 13, 0, 0), new DateTimeValueImpl(1997, 9, 2, 13, 20, 0), new DateTimeValueImpl(1997, 9, 2, 13, 40, 0),
+        new DateTimeValueImpl(1997, 9, 2, 14, 0, 0), new DateTimeValueImpl(1997, 9, 2, 14, 20, 0), new DateTimeValueImpl(1997, 9, 2, 14, 40, 0),
+        new DateTimeValueImpl(1997, 9, 2, 15, 0, 0), new DateTimeValueImpl(1997, 9, 2, 15, 20, 0), new DateTimeValueImpl(1997, 9, 2, 15, 40, 0),
+        new DateTimeValueImpl(1997, 9, 2, 16, 0, 0), new DateTimeValueImpl(1997, 9, 2, 16, 20, 0), new DateTimeValueImpl(1997, 9, 2, 16, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 9, 0, 0), new DateTimeValueImpl(1997, 9, 3, 9, 20, 0), new DateTimeValueImpl(1997, 9, 3, 9, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 10, 0, 0), new DateTimeValueImpl(1997, 9, 3, 10, 20, 0), new DateTimeValueImpl(1997, 9, 3, 10, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 11, 0, 0), new DateTimeValueImpl(1997, 9, 3, 11, 20, 0), new DateTimeValueImpl(1997, 9, 3, 11, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 12, 0, 0), new DateTimeValueImpl(1997, 9, 3, 12, 20, 0), new DateTimeValueImpl(1997, 9, 3, 12, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 13, 0, 0), new DateTimeValueImpl(1997, 9, 3, 13, 20, 0), new DateTimeValueImpl(1997, 9, 3, 13, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 14, 0, 0), new DateTimeValueImpl(1997, 9, 3, 14, 20, 0), new DateTimeValueImpl(1997, 9, 3, 14, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 15, 0, 0), new DateTimeValueImpl(1997, 9, 3, 15, 20, 0), new DateTimeValueImpl(1997, 9, 3, 15, 40, 0),
+        new DateTimeValueImpl(1997, 9, 3, 16, 0, 0), new DateTimeValueImpl(1997, 9, 3, 16, 20, 0), new DateTimeValueImpl(1997, 9, 3, 16, 40, 0)
+      };
+    
+      run(recur, start, expected);
+    }
   }
 
-  public void testAnExampleWhereTheDaysGeneratedMakesADifferenceBecauseOfWkst()
-      throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=MO",
-        IcalParseUtil.parseDateValue("19970805"), 4,
-        "19970805,19970810,19970819,19970824");
+  public void testAnExampleWhereTheDaysGeneratedMakesADifferenceBecauseOfWkst() {
+    Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+      .interval(2)
+      .count(4)
+      .byDay(DayOfWeek.TUESDAY, DayOfWeek.SUNDAY)
+      .workweekStarts(DayOfWeek.MONDAY)
+    .build();
+    DateValue start = new DateValueImpl(1997, 8, 5);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 8, 5),
+      new DateValueImpl(1997, 8, 10),
+      new DateValueImpl(1997, 8, 19),
+      new DateValueImpl(1997, 8, 24)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testAnExampleWhereTheDaysGeneratedMakesADifferenceBecauseOfWkst2()
-      throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=SU",
-        IcalParseUtil.parseDateValue("19970805"), 8,
-        "19970805,19970817,19970819,19970831");
+  public void testAnExampleWhereTheDaysGeneratedMakesADifferenceBecauseOfWkst2() {
+    Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+      .interval(2)
+      .count(4)
+      .byDay(DayOfWeek.TUESDAY, DayOfWeek.SUNDAY)
+      .workweekStarts(DayOfWeek.SUNDAY)
+    .build();
+    DateValue start = new DateValueImpl(1997, 8, 5);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 8, 5),
+      new DateValueImpl(1997, 8, 17),
+      new DateValueImpl(1997, 8, 19),
+      new DateValueImpl(1997, 8, 31)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testWithByDayAndByMonthDayFilter() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;COUNT=4;BYDAY=TU,SU;" +
-        "BYMONTHDAY=13,14,15,16,17,18,19,20",
-        IcalParseUtil.parseDateValue("19970805"), 8,
-        "19970817,19970819,19970914,19970916");
+  public void testWithByDayAndByMonthDayFilter() {
+    Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+      .count(4)
+      .byDay(DayOfWeek.TUESDAY, DayOfWeek.SUNDAY)
+      .byMonthDay(13, 14, 15, 16, 17, 18, 19, 20)
+    .build();
+    DateValue start = new DateValueImpl(1997, 8, 5);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 8, 17),
+      new DateValueImpl(1997, 8, 19),
+      new DateValueImpl(1997, 9, 14),
+      new DateValueImpl(1997, 9, 16)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testAnnuallyInAugustOnTuesAndSunBetween13thAnd20th()
-      throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;COUNT=4;BYDAY=TU,SU;" +
-        "BYMONTHDAY=13,14,15,16,17,18,19,20;BYMONTH=8",
-        IcalParseUtil.parseDateValue("19970605"), 8,
-        "19970817,19970819,19980816,19980818");
+  public void testAnnuallyInAugustOnTuesAndSunBetween13thAnd20th() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .count(4)
+      .byDay(DayOfWeek.TUESDAY, DayOfWeek.SUNDAY)
+      .byMonthDay(13, 14, 15, 16, 17, 18, 19, 20)
+      .byMonth(8)
+    .build();
+    DateValue start = new DateValueImpl(1997, 6, 5);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 8, 17),
+      new DateValueImpl(1997, 8, 19),
+      new DateValueImpl(1998, 8, 16),
+      new DateValueImpl(1998, 8, 18)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testLastDayOfTheYearIsASundayOrTuesday()
-      throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;COUNT=4;BYDAY=TU,SU;BYYEARDAY=-1",
-        IcalParseUtil.parseDateValue("19940605"), 8,
-        "19951231,19961231,20001231,20021231");
+  public void testLastDayOfTheYearIsASundayOrTuesday() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .count(4)
+      .byDay(DayOfWeek.TUESDAY, DayOfWeek.SUNDAY)
+      .byYearDay(-1)
+    .build();
+    DateValue start = new DateValueImpl(1994, 6, 5);
+    DateValue[] expected = {
+      new DateValueImpl(1995, 12, 31),
+      new DateValueImpl(1996, 12, 31),
+      new DateValueImpl(2000, 12, 31),
+      new DateValueImpl(2002, 12, 31)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testLastWeekdayOfMonth() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;BYSETPOS=-1;BYDAY=-1MO,-1TU,-1WE,-1TH,-1FR",
-        IcalParseUtil.parseDateValue("19940605"), 8,
-        "19940630,19940729,19940831,19940930,"
-        + "19941031,19941130,19941230,19950131,...");
+  public void testLastWeekdayOfMonth() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .bySetPos(-1)
+      .byDay(-1, DayOfWeek.MONDAY)
+      .byDay(-1, DayOfWeek.TUESDAY)
+      .byDay(-1, DayOfWeek.WEDNESDAY)
+      .byDay(-1, DayOfWeek.THURSDAY)
+      .byDay(-1, DayOfWeek.FRIDAY)
+    .build();
+    DateValue start = new DateValueImpl(1994, 6, 5);
+    DateValue[] expected = {
+      new DateValueImpl(1994, 6, 30),
+      new DateValueImpl(1994, 7, 29),
+      new DateValueImpl(1994, 8, 31),
+      new DateValueImpl(1994, 9, 30),
+      new DateValueImpl(1994, 10, 31),
+      new DateValueImpl(1994, 11, 30),
+      new DateValueImpl(1994, 12, 30),
+      new DateValueImpl(1995, 1, 31)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testMonthsThatStartOrEndOnFriday() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;BYMONTHDAY=1,-1;BYDAY=FR;COUNT=6",
-        IcalParseUtil.parseDateValue("19940605"), 8,
-        "19940701,19940930,19950331,19950630,19950901,19951201");
+  public void testMonthsThatStartOrEndOnFriday() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .byMonthDay(1, -1)
+      .byDay(DayOfWeek.FRIDAY)
+      .count(6)
+    .build();
+    DateValue start = new DateValueImpl(1994, 6, 5);
+    DateValue[] expected = {
+      new DateValueImpl(1994, 7, 1),
+      new DateValueImpl(1994, 9, 30),
+      new DateValueImpl(1995, 3, 31),
+      new DateValueImpl(1995, 6, 30),
+      new DateValueImpl(1995, 9, 1),
+      new DateValueImpl(1995, 12, 1)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testMonthsThatStartOrEndOnFridayOnEvenWeeks() throws Exception {
-    // figure out which of the answers from the above fall on even weeks
-    DateValue dtStart = IcalParseUtil.parseDateValue("19940603");
-    StringBuilder golden = new StringBuilder();
+  public void testMonthsThatStartOrEndOnFridayOnEvenWeeks() {
+    Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+      .interval(2)
+      .byMonthDay(1, -1)
+      .byDay(DayOfWeek.FRIDAY)
+      .count(3)
+    .build();
+    DateValue start = new DateValueImpl(1994, 6, 3);
+    
+    /*
+     * Figure out which of the answers from the above test fall on even weeks.
+     */
+    List<DateValue> expected = new ArrayList<DateValue>();
     for (DateValue candidate : new DateValue[] {
-      IcalParseUtil.parseDateValue("19940701"),
-      IcalParseUtil.parseDateValue("19940930"),
-      IcalParseUtil.parseDateValue("19950331"),
-      IcalParseUtil.parseDateValue("19950630"),
-      IcalParseUtil.parseDateValue("19950901"),
-      IcalParseUtil.parseDateValue("19951201"),
+      new DateValueImpl(1994, 7, 1),
+      new DateValueImpl(1994, 9, 30),
+      new DateValueImpl(1995, 3, 31),
+      new DateValueImpl(1995, 6, 30),
+      new DateValueImpl(1995, 9, 1),
+      new DateValueImpl(1995, 12, 1),
     }) {
-      if (0 == TimeUtils.daysBetween(candidate, dtStart) % 14) {
-        if (0 != golden.length()) { golden.append(','); }
-        golden.append(candidate);
+      if (TimeUtils.daysBetween(candidate, start) % 14 == 0) {
+        expected.add(candidate);
       }
     }
-
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;INTERVAL=2;BYMONTHDAY=1,-1;BYDAY=FR;COUNT=3",
-        dtStart, 8, golden.toString());
+  
+    run(recur, start, expected.toArray(new DateValue[0]));
   }
 
-  public void testCenturiesThatAreNotLeapYears() throws Exception {
-    // I can't think of a good reason anyone would want to specify both a
-    // month day and a year day, so here's a really contrived example
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;INTERVAL=100;BYYEARDAY=60;BYMONTHDAY=1",
-        IcalParseUtil.parseDateValue("19000101"), 4,
-        "19000301,21000301,22000301,23000301,...");
+  public void testCenturiesThatAreNotLeapYears() {
+    /*
+     * I can't think of a good reason anyone would want to specify both a month
+     * day and a year day, so here's a really contrived example.
+     */
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .interval(100)
+      .byYearDay(60)
+      .byMonthDay(1)
+    .build();
+    DateValue start = new DateValueImpl(1900, 1, 1);
+    DateValue[] expected = {
+      new DateValueImpl(1900, 3, 1),
+      new DateValueImpl(2100, 3, 1),
+      new DateValueImpl(2200, 3, 1),
+      new DateValueImpl(2300, 3, 1)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testNextCalledWithoutHasNext() throws Exception {
-    RecurrenceIterator riter =
-      RecurrenceIteratorFactory.createRecurrenceIterator(
-        new RRule("RRULE:FREQ=DAILY"),
-        IcalParseUtil.parseDateValue("20000101"), TimeUtils.utcTimezone());
-    assertEquals(IcalParseUtil.parseDateValue("20000101"), riter.next());
-    assertEquals(IcalParseUtil.parseDateValue("20000102"), riter.next());
-    assertEquals(IcalParseUtil.parseDateValue("20000103"), riter.next());
+  public void testNextCalledWithoutHasNext() {
+    Recurrence recur = new Recurrence.Builder(Frequency.DAILY).build();
+    DateValue start = new DateValueImpl(2000, 1, 1);
+    
+    RecurrenceIterator it = RecurrenceIteratorFactory.createRecurrenceIterator(recur, start, UTC);
+    assertEquals(new DateValueImpl(2000, 1, 1), it.next());
+    assertEquals(new DateValueImpl(2000, 1, 2), it.next());
+    assertEquals(new DateValueImpl(2000, 1, 3), it.next());
   }
 
-  public void testNoInstancesGenerated() throws Exception {
-    RecurrenceIterator riter =
-      RecurrenceIteratorFactory.createRecurrenceIterator(
-        new RRule("RRULE:FREQ=DAILY;UNTIL=19990101"),
-        IcalParseUtil.parseDateValue("20000101"), TimeUtils.utcTimezone());
-    assertTrue(!riter.hasNext());
-
-    assertNull(riter.next());
-    assertNull(riter.next());
-    assertNull(riter.next());
+  public void testNoInstancesGenerated() {
+    Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
+      .until(new ICalDate(date("1999-01-01"), false))
+    .build();
+    DateValue start = new DateValueImpl(2000, 1, 1);
+    
+    RecurrenceIterator it = RecurrenceIteratorFactory.createRecurrenceIterator(recur, start, UTC);
+    assertFalse(it.hasNext());
+    assertNull(it.next());
+    assertNull(it.next());
+    assertNull(it.next());
   }
 
-  public void testNoInstancesGenerated2() throws Exception {
-    RecurrenceIterator riter =
-      RecurrenceIteratorFactory.createRecurrenceIterator(
-        new RRule("RRULE:FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=30"),
-        IcalParseUtil.parseDateValue("20000101"), TimeUtils.utcTimezone());
-    assertTrue(!riter.hasNext());
+  public void testNoInstancesGenerated2() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .byMonth(2)
+      .byMonthDay(30)
+    .build();
+    DateValue start = new DateValueImpl(2000, 1, 1);
+    
+    RecurrenceIterator it = RecurrenceIteratorFactory.createRecurrenceIterator(recur, start, UTC);
+    assertFalse(it.hasNext());
   }
 
-  public void testNoInstancesGenerated3() throws Exception {
-    RecurrenceIterator riter =
-      RecurrenceIteratorFactory.createRecurrenceIterator(
-        new RRule("RRULE:FREQ=YEARLY;INTERVAL=4;BYYEARDAY=366"),
-        IcalParseUtil.parseDateValue("20010101"), TimeUtils.utcTimezone());
-    assertTrue(!riter.hasNext());
+  public void testNoInstancesGenerated3() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .interval(4)
+      .byYearDay(366)
+    .build();
+    DateValue start = new DateValueImpl(2001, 1, 1);
+    
+    RecurrenceIterator it = RecurrenceIteratorFactory.createRecurrenceIterator(recur, start, UTC);
+    assertFalse(it.hasNext());
   }
 
-  public void testLastWeekdayOfMarch() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;BYMONTH=3;BYDAY=SA,SU;BYSETPOS=-1",
-        IcalParseUtil.parseDateValue("20000101"), 4,
-        "20000326,20010331,20020331,20030330,...");
+  public void testLastWeekdayOfMarch() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .byMonth(3)
+      .byDay(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
+      .bySetPos(-1)
+    .build();
+    DateValue start = new DateValueImpl(2000, 1, 1);
+    DateValue[] expected = {
+      new DateValueImpl(2000, 3, 26),
+      new DateValueImpl(2001, 3, 31),
+      new DateValueImpl(2002, 3, 31),
+      new DateValueImpl(2003, 3, 30)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testFirstWeekdayOfMarch() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;BYMONTH=3;BYDAY=SA,SU;BYSETPOS=1",
-        IcalParseUtil.parseDateValue("20000101"), 4,
-        "20000304,20010303,20020302,20030301,...");
+  public void testFirstWeekdayOfMarch() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .byMonth(3)
+      .byDay(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
+      .bySetPos(1)
+    .build();
+    DateValue start = new DateValueImpl(2000, 1, 1);
+    DateValue[] expected = {
+      new DateValueImpl(2000, 3, 4),
+      new DateValueImpl(2001, 3, 3),
+      new DateValueImpl(2002, 3, 2),
+      new DateValueImpl(2003, 3, 1)
+    };
+  
+    run(recur, start, expected);
   }
 
 
@@ -728,48 +1443,103 @@ public class RRuleIteratorImplTest extends TestCase {
    * The first week of the year may be partial, and the first week is considered
    * to be the first one with at least four days.
    */
-  public void testFirstWeekdayOfFirstWeekOfYear() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYWEEKNO=1;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=1",
-        IcalParseUtil.parseDateValue("19990101"), 4,
-        "19990104,20000103,20010101,20020101,...");
+  public void testFirstWeekdayOfFirstWeekOfYear() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .byWeekNo(1)
+      .byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
+      .bySetPos(1)
+    .build();
+    DateValue start = new DateValueImpl(1999, 1, 1);
+    DateValue[] expected = {
+      new DateValueImpl(1999, 1, 4),
+      new DateValueImpl(2000, 1, 3),
+      new DateValueImpl(2001, 1, 1),
+      new DateValueImpl(2002, 1, 1)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testFirstSundayOfTheYear1() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYWEEKNO=1;BYDAY=SU",
-        IcalParseUtil.parseDateValue("19990101"), 4,
-        "19990110,20000109,20010107,20020106,...");
+  public void testFirstSundayOfTheYear1() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .byWeekNo(1)
+      .byDay(DayOfWeek.SUNDAY)
+    .build();
+    DateValue start = new DateValueImpl(1999, 1, 1);
+    DateValue[] expected = {
+      new DateValueImpl(1999, 1, 10),
+      new DateValueImpl(2000, 1, 9),
+      new DateValueImpl(2001, 1, 7),
+      new DateValueImpl(2002, 1, 6)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testFirstSundayOfTheYear2() throws Exception {
+  public void testFirstSundayOfTheYear2() {
     // TODO(msamuel): is this right?
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYDAY=1SU",
-        IcalParseUtil.parseDateValue("19990101"), 4,
-        "19990103,20000102,20010107,20020106,...");
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .byDay(1, DayOfWeek.SUNDAY)
+    .build();
+    DateValue start = new DateValueImpl(1999, 1, 1);
+    DateValue[] expected = {
+      new DateValueImpl(1999, 1, 3),
+      new DateValueImpl(2000, 1, 2),
+      new DateValueImpl(2001, 1, 7),
+      new DateValueImpl(2002, 1, 6)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testFirstSundayOfTheYear3() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYDAY=SU;BYYEARDAY=1,2,3,4,5,6,7,8,9,10,11,12,13"
-        + ";BYSETPOS=1",
-        IcalParseUtil.parseDateValue("19990101"), 4,
-        "19990103,20000102,20010107,20020106,...");
+  public void testFirstSundayOfTheYear3() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .byDay(DayOfWeek.SUNDAY)
+      .byYearDay(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+      .bySetPos(1)
+    .build();
+    DateValue start = new DateValueImpl(1999, 1, 1);
+    DateValue[] expected = {
+      new DateValueImpl(1999, 1, 3),
+      new DateValueImpl(2000, 1, 2),
+      new DateValueImpl(2001, 1, 7),
+      new DateValueImpl(2002, 1, 6)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testFirstWeekdayOfYear() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=1",
-        IcalParseUtil.parseDateValue("19990101"), 4,
-        "19990101,20000103,20010101,20020101,...");
+  public void testFirstWeekdayOfYear() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
+      .bySetPos(1)
+    .build();
+    DateValue start = new DateValueImpl(1999, 1, 1);
+    DateValue[] expected = {
+      new DateValueImpl(1999, 1, 1),
+      new DateValueImpl(2000, 1, 3),
+      new DateValueImpl(2001, 1, 1),
+      new DateValueImpl(2002, 1, 1)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testLastWeekdayOfFirstWeekOfYear() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYWEEKNO=1;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=-1",
-        IcalParseUtil.parseDateValue("19990101"), 4,
-        "19990108,20000107,20010105,20020104,...");
+  public void testLastWeekdayOfFirstWeekOfYear() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .byWeekNo(1)
+      .byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
+      .bySetPos(-1)
+    .build();
+    DateValue start = new DateValueImpl(1999, 1, 1);
+    DateValue[] expected = {
+      new DateValueImpl(1999, 1, 8),
+      new DateValueImpl(2000, 1, 7),
+      new DateValueImpl(2001, 1, 5),
+      new DateValueImpl(2002, 1, 4)
+    };
+
+    run(recur, start, expected);
   }
 
   //     January 1999
@@ -780,11 +1550,20 @@ public class RRuleIteratorImplTest extends TestCase {
   // 18 19 20 21 22 23 24
   // 25 26 27 28 29 30 31
 
-  public void testSecondWeekday1() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=2",
-        IcalParseUtil.parseDateValue("19990101"), 4,
-        "19990105,19990112,19990119,19990126,...");
+  public void testSecondWeekday1() {
+    Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+      .byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
+      .bySetPos(2)
+    .build();
+    DateValue start = new DateValueImpl(1999, 1, 1);
+    DateValue[] expected = {
+      new DateValueImpl(1999, 1, 5),
+      new DateValueImpl(1999, 1, 12),
+      new DateValueImpl(1999, 1, 19),
+      new DateValueImpl(1999, 1, 26)
+    };
+  
+    run(recur, start, expected);
   }
 
   //     January 1997
@@ -795,299 +1574,731 @@ public class RRuleIteratorImplTest extends TestCase {
   // 20 21 22 23 24 25 26
   // 27 28 29 30 31
 
-  public void testSecondWeekday2() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;BYSETPOS=2",
-        IcalParseUtil.parseDateValue("19970101"), 4,
-        "19970102,19970107,19970114,19970121,...");
+  public void testSecondWeekday2() {
+    Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+      .byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
+      .bySetPos(2)
+    .build();
+    DateValue start = new DateValueImpl(1997, 1, 1);
+    DateValue[] expected = {
+      new DateValueImpl(1997, 1, 2),
+      new DateValueImpl(1997, 1, 7),
+      new DateValueImpl(1997, 1, 14),
+      new DateValueImpl(1997, 1, 21)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testByYearDayAndByDayFilterInteraction() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYYEARDAY=15;BYDAY=3MO",
-        IcalParseUtil.parseDateValue("19990101"), 4,
-        "20010115,20070115,20180115,20240115,...");
+  public void testByYearDayAndByDayFilterInteraction() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .byYearDay(15)
+      .byDay(3, DayOfWeek.MONDAY)
+    .build();
+    DateValue start = new DateValueImpl(1999, 1, 1);
+    DateValue[] expected = {
+      new DateValueImpl(2001, 1, 15),
+      new DateValueImpl(2007, 1, 15),
+      new DateValueImpl(2018, 1, 15),
+      new DateValueImpl(2024, 1, 15)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testByDayWithNegWeekNoAsFilter() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;BYMONTHDAY=26;BYDAY=-1FR",
-        IcalParseUtil.parseDateValue("19990101"), 4,
-        "19990226,19990326,19991126,20000526,...");
+  public void testByDayWithNegWeekNoAsFilter() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+      .byMonthDay(26)
+      .byDay(-1, DayOfWeek.FRIDAY)
+    .build();
+    DateValue start = new DateValueImpl(1999, 1, 1);
+    DateValue[] expected = {
+      new DateValueImpl(1999, 2, 26),
+      new DateValueImpl(1999, 3, 26),
+      new DateValueImpl(1999, 11, 26),
+      new DateValueImpl(2000, 5, 26)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testLastWeekOfTheYear() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYWEEKNO=-1",
-        IcalParseUtil.parseDateValue("19990101"), 6,
-        "19991227,19991228,19991229,19991230,19991231,20001225,...");
+  public void testLastWeekOfTheYear() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .byWeekNo(-1)
+    .build();
+    DateValue start = new DateValueImpl(1999, 1, 1);
+    DateValue[] expected = {
+      new DateValueImpl(1999, 12, 27),
+      new DateValueImpl(1999, 12, 28),
+      new DateValueImpl(1999, 12, 29),
+      new DateValueImpl(1999, 12, 30),
+      new DateValueImpl(1999, 12, 31),
+      new DateValueImpl(2000, 12, 25)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testUserSubmittedTest1() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;INTERVAL=2;WKST=WE;BYDAY=SU,TU,TH,SA"
-        + ";UNTIL=20000215T113000Z",
-        IcalParseUtil.parseDateValue("20000127T033000"), 20,
-        "20000127T033000,20000129T033000,20000130T033000,20000201T033000,"
-        + "20000210T033000,20000212T033000,20000213T033000,20000215T033000");
+  public void testUserSubmittedTest1() {
+    Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+      .interval(2)
+      .workweekStarts(DayOfWeek.WEDNESDAY)
+      .byDay(DayOfWeek.SUNDAY, DayOfWeek.TUESDAY, DayOfWeek.THURSDAY, DayOfWeek.SATURDAY)
+      .until(date("2000-02-15 11:30:00", UTC))
+    .build();
+    DateValue start = new DateTimeValueImpl(2000, 1, 27, 3, 30, 0);
+    DateValue[] expected = {
+      new DateTimeValueImpl(2000, 1, 27, 3, 30, 0),
+      new DateTimeValueImpl(2000, 1, 29, 3, 30, 0),
+      new DateTimeValueImpl(2000, 1, 30, 3, 30, 0),
+      new DateTimeValueImpl(2000, 2, 1, 3, 30, 0),
+      new DateTimeValueImpl(2000, 2, 10, 3, 30, 0),
+      new DateTimeValueImpl(2000, 2, 12, 3, 30, 0),
+      new DateTimeValueImpl(2000, 2, 13, 3, 30, 0),
+      new DateTimeValueImpl(2000, 2, 15, 3, 30, 0)
+    };
+  
+    run(recur, start, expected);
   }
 
   public void testAdvanceTo() throws Exception {
-    // a bunch of tests grabbed from above with an advance-to date tacked on
+    //a bunch of tests grabbed from above with an advance-to date tacked on
+    
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+        .byMonth(3)
+        .byDay(DayOfWeek.THURSDAY)
+      .build();
+      DateValue start = new DateValueImpl(1997, 3, 13);
+      DateValue advanceTo = new DateValueImpl(1997, 6, 1);
+      DateValue[] expected = {
+        //new DateValueImpl(1997, 3, 13),
+        //new DateValueImpl(1997, 3, 20),
+        //new DateValueImpl(1997, 3, 27),
+        new DateValueImpl(1998, 3, 5),
+        new DateValueImpl(1998, 3, 12),
+        new DateValueImpl(1998, 3, 19),
+        new DateValueImpl(1998, 3, 26),
+        new DateValueImpl(1999, 3, 4),
+        new DateValueImpl(1999, 3, 11),
+        new DateValueImpl(1999, 3, 18),
+        new DateValueImpl(1999, 3, 25),
+        new DateValueImpl(2000, 3, 2),
+        new DateValueImpl(2000, 3, 9),
+        new DateValueImpl(2000, 3, 16)
+      };
+    
+      run(recur, start, advanceTo, expected);
+    }
+    
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+        .byDay(20, DayOfWeek.MONDAY)
+      .build();
+      DateValue start = new DateValueImpl(1997, 5, 19);
+      DateValue advanceTo = new DateValueImpl(1998, 5, 15);
+      DateValue[] expected = {
+        //new DateValueImpl(1997, 5, 19),
+        new DateValueImpl(1998, 5, 18),
+        new DateValueImpl(1999, 5, 17),
+        new DateValueImpl(2000, 5, 15)
+      };
+    
+      run(recur, start, advanceTo, expected);
+    }
+    
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+        .interval(3)
+        .until(new ICalDate(date("2009-01-01"), false))
+        .byYearDay(1, 100, 200)
+      .build();
+      DateValue start = new DateValueImpl(1997, 1, 1);
+      DateValue advanceTo = new DateValueImpl(2000, 2, 28);
+      DateValue[] expected = {
+        //new DateValueImpl(1997, 1, 1),
+        //new DateValueImpl(1997, 4, 10),
+        //new DateValueImpl(1997, 7, 19),
+        //new DateValueImpl(2000, 1, 1),
+        new DateValueImpl(2000, 4, 9),
+        new DateValueImpl(2000, 7, 18),
+        new DateValueImpl(2003, 1, 1),
+        new DateValueImpl(2003, 4, 10),
+        new DateValueImpl(2003, 7, 19),
+        new DateValueImpl(2006, 1, 1),
+        new DateValueImpl(2006, 4, 10),
+        new DateValueImpl(2006, 7, 19),
+        new DateValueImpl(2009, 1, 1)
+      };
+    
+      run(recur, start, advanceTo, expected);
+    }
 
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=TH",
-        IcalParseUtil.parseDateValue("19970313"), 11,
-        /*"19970313,19970320,19970327,"*/"19980305,19980312," +
-        "19980319,19980326,19990304,19990311,19990318," +
-        "19990325,20000302,20000309,20000316,...",
-        IcalParseUtil.parseDateValue("19970601"));
+    //make sure that count preserved
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+        .interval(3)
+        .count(10)
+        .byYearDay(1, 100, 200)
+      .build();
+      DateValue start = new DateValueImpl(1997, 1, 1);
+      DateValue advanceTo = new DateValueImpl(2000, 2, 28);
+      DateValue[] expected = {
+        //new DateValueImpl(1997, 1, 1),
+        //new DateValueImpl(1997, 4, 10),
+        //new DateValueImpl(1997, 7, 19),
+        //new DateValueImpl(2000, 1, 1),
+        new DateValueImpl(2000, 4, 9),
+        new DateValueImpl(2000, 7, 18),
+        new DateValueImpl(2003, 1, 1),
+        new DateValueImpl(2003, 4, 10),
+        new DateValueImpl(2003, 7, 19),
+        new DateValueImpl(2006, 1, 1)
+      };
+    
+      run(recur, start, advanceTo, expected);
+    }
+    
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+        .interval(2)
+        .count(10)
+        .byMonth(1, 2, 3)
+      .build();
+      DateValue start = new DateValueImpl(1997, 3, 10);
+      DateValue advanceTo = new DateValueImpl(1998, 4, 1);
+      DateValue[] expected = {
+        //new DateValueImpl(1997, 3, 10),
+        new DateValueImpl(1999, 1, 10),
+        new DateValueImpl(1999, 2, 10),
+        new DateValueImpl(1999, 3, 10),
+        new DateValueImpl(2001, 1, 10),
+        new DateValueImpl(2001, 2, 10),
+        new DateValueImpl(2001, 3, 10),
+        new DateValueImpl(2003, 1, 10),
+        new DateValueImpl(2003, 2, 10),
+        new DateValueImpl(2003, 3, 10)
+      };
+      
+      run(recur, start, advanceTo, expected);
+    }
+    
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+        .until(new ICalDate(date("1997-12-24"), false))
+      .build();
+      DateValue start = new DateValueImpl(1997, 9, 2);
+      DateValue advanceTo = new DateValueImpl(1997, 9, 30);
+      DateValue[] expected = {
+        //new DateValueImpl(1997, 9, 2),
+        //new DateValueImpl(1997, 9, 9),
+        //new DateValueImpl(1997, 9, 16),
+        //new DateValueImpl(1997, 9, 23),
+        new DateValueImpl(1997, 9, 30),
+        new DateValueImpl(1997, 10, 7),
+        new DateValueImpl(1997, 10, 14),
+        new DateValueImpl(1997, 10, 21),
+        new DateValueImpl(1997, 10, 28),
+        new DateValueImpl(1997, 11, 4),
+        new DateValueImpl(1997, 11, 11),
+        new DateValueImpl(1997, 11, 18),
+        new DateValueImpl(1997, 11, 25),
+        new DateValueImpl(1997, 12, 2),
+        new DateValueImpl(1997, 12, 9),
+        new DateValueImpl(1997, 12, 16),
+        new DateValueImpl(1997, 12, 23)
+      };
+      
+      run(recur, start, advanceTo, expected);
+    }
+    
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+        .interval(18)
+        .byMonthDay(10, 11, 12, 13, 14, 15)
+      .build();
+      DateValue start = new DateValueImpl(1997, 9, 10);
+      DateValue advanceTo = new DateValueImpl(1999, 1, 1);
+      DateValue[] expected = {
+        //new DateValueImpl(1997, 9, 10),
+        //new DateValueImpl(1997, 9, 11),
+        //new DateValueImpl(1997, 9, 12),
+        //new DateValueImpl(1997, 9, 13),
+        //new DateValueImpl(1997, 9, 14),
+        //new DateValueImpl(1997, 9, 15),
+        new DateValueImpl(1999, 3, 10),
+        new DateValueImpl(1999, 3, 11),
+        new DateValueImpl(1999, 3, 12),
+        new DateValueImpl(1999, 3, 13),
+        new DateValueImpl(1999, 3, 14)
+      };
+      
+      run(recur, start, advanceTo, expected);
+    }
 
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYDAY=20MO",
-        IcalParseUtil.parseDateValue("19970519"), 3,
-        /*"19970519,"*/"19980518,19990517,20000515,...",
-        IcalParseUtil.parseDateValue("19980515"));
+    //advancing into the past
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
+        .interval(18)
+        .byMonthDay(10, 11, 12, 13, 14, 15)
+      .build();
+      DateValue start = new DateValueImpl(1997, 9, 10);
+      DateValue advanceTo = new DateValueImpl(1997, 9, 1);
+      DateValue[] expected = {
+        new DateValueImpl(1997, 9, 10),
+        new DateValueImpl(1997, 9, 11),
+        new DateValueImpl(1997, 9, 12),
+        new DateValueImpl(1997, 9, 13),
+        new DateValueImpl(1997, 9, 14),
+        new DateValueImpl(1997, 9, 15),
+        new DateValueImpl(1999, 3, 10),
+        new DateValueImpl(1999, 3, 11),
+        new DateValueImpl(1999, 3, 12),
+        new DateValueImpl(1999, 3, 13),
+        new DateValueImpl(1999, 3, 14)
+      };
+      
+      run(recur, start, advanceTo, expected);
+    }
 
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;INTERVAL=3;UNTIL=20090101;BYYEARDAY=1,100,200",
-        IcalParseUtil.parseDateValue("19970101"), 10,
-        /*"19970101,19970410,19970719,20000101,"*/"20000409," +
-        "20000718,20030101,20030410,20030719,20060101,20060410,20060719," +
-        "20090101",
-        IcalParseUtil.parseDateValue("20000228"));
+    //skips first instance
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+        .interval(100)
+        .byMonth(2)
+        .byMonthDay(29)
+      .build();
+      DateValue start = new DateValueImpl(1900, 1, 1);
+      DateValue advanceTo = new DateValueImpl(2004, 1, 1);
+      DateValue[] expected = {
+        new DateValueImpl(2400, 2, 29),
+        new DateValueImpl(2800, 2, 29),
+        new DateValueImpl(3200, 2, 29),
+        new DateValueImpl(3600, 2, 29),
+        new DateValueImpl(4000, 2, 29)
+      };
+      
+      run(recur, start, advanceTo, expected);
+    }
 
-    // make sure that count preserved
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;INTERVAL=3;COUNT=10;BYYEARDAY=1,100,200",
-        IcalParseUtil.parseDateValue("19970101"), 10,
-        /*"19970101,19970410,19970719,20000101,"*/"20000409," +
-        "20000718,20030101,20030410,20030719,20060101",
-        IcalParseUtil.parseDateValue("20000228"));
+    //filter hits until date before first instance
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+        .interval(100)
+        .byMonth(2)
+        .byMonthDay(29)
+        .until(new ICalDate(date("2100-01-01"), false))
+      .build();
+      DateValue start = new DateValueImpl(1900, 1, 1);
+      DateValue advanceTo = new DateValueImpl(2004, 1, 1);
+      DateValue[] expected = {
+      };
+      
+      run(recur, start, advanceTo, expected);
+    }
 
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;INTERVAL=2;COUNT=10;BYMONTH=1,2,3",
-        IcalParseUtil.parseDateValue("19970310"), 10,
-        /*"19970310,"*/"19990110,19990210,19990310,20010110," +
-        "20010210,20010310,20030110,20030210,20030310",
-        IcalParseUtil.parseDateValue("19980401"));
+    //advancing something that returns no instances
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+        .byMonth(2)
+        .byMonthDay(30)
+      .build();
+      DateValue start = new DateValueImpl(2000, 1, 1);
+      DateValue advanceTo = new DateValueImpl(1997, 9, 1);
+      DateValue[] expected = {
+      };
+      
+      run(recur, start, advanceTo, expected);
+    }
+    
+    //advancing something that returns no instances and has a BYSETPOS rule
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+        .byMonth(2)
+        .byMonthDay(30, 31)
+        .bySetPos(1)
+      .build();
+      DateValue start = new DateValueImpl(2000, 1, 1);
+      DateValue advanceTo = new DateValueImpl(1997, 9, 1);
+      DateValue[] expected = {
+      };
+      
+      run(recur, start, advanceTo, expected);
+    }
 
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;UNTIL=19971224",
-        IcalParseUtil.parseDateValue("19970902"), 25,
-        /*"19970902,19970909,19970916,19970923,"*/"19970930," +
-        "19971007,19971014,19971021,19971028,19971104," +
-        "19971111,19971118,19971125,19971202,19971209," +
-        "19971216,19971223",
-        IcalParseUtil.parseDateValue("19970930"));
-
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;INTERVAL=18;BYMONTHDAY=10,11,12,13,14,\n" +
-        " 15",
-        IcalParseUtil.parseDateValue("19970910"), 5,
-        /*"19970910,19970911,19970912,19970913,19970914," +
-          "19970915,"*/"19990310,19990311,19990312,19990313,19990314,...",
-        IcalParseUtil.parseDateValue("19990101"));
-
-    // advancing into the past
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MONTHLY;INTERVAL=18;BYMONTHDAY=10,11,12,13,14,\n" +
-        " 15",
-        IcalParseUtil.parseDateValue("19970910"), 11,
-        "19970910,19970911,19970912,19970913,19970914," +
-        "19970915,19990310,19990311,19990312,19990313,19990314,...",
-        IcalParseUtil.parseDateValue("19970901"));
-
-    // skips first instance
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;INTERVAL=100;BYMONTH=2;BYMONTHDAY=29",
-        IcalParseUtil.parseDateValue("19000101"), 5,
-        // would return 2000
-        "24000229,28000229,32000229,36000229,40000229,...",
-        IcalParseUtil.parseDateValue("20040101"));
-
-    // filter hits until date before first instnace
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;INTERVAL=100;BYMONTH=2;BYMONTHDAY=29;UNTIL=21000101",
-        IcalParseUtil.parseDateValue("19000101"), 5,
-        "",
-        IcalParseUtil.parseDateValue("20040101"));
-
-    // advancing something that returns no instances
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=30",
-        IcalParseUtil.parseDateValue("20000101"), 10,
-        "",
-        IcalParseUtil.parseDateValue("19970901"));
-
-    // advancing something that returns no instances and has a BYSETPOS rule
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=30,31;BYSETPOS=1",
-        IcalParseUtil.parseDateValue("20000101"), 10,
-        "",
-        IcalParseUtil.parseDateValue("19970901"));
-
-    // advancing way past year generator timeout
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=28",
-        IcalParseUtil.parseDateValue("20000101"), 10,
-        "",
-        IcalParseUtil.parseDateValue("25000101"));
-
-    // advancing right to the start
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTHDAY=10;BYMONTH=1;COUNT=3",
-        IcalParseUtil.parseDateValue("20100110T140000"), 3,
-        "20100110T140000,20110110T140000,20120110T140000");
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTHDAY=10;BYMONTH=1;COUNT=3",
-        IcalParseUtil.parseDateValue("20100110T140000"), 3,
-        "20100110T140000,20110110T140000,20120110T140000",
-        IcalParseUtil.parseDateValue("20100110T140000"));
+    //advancing way past year generator timeout
+    {
+      Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+        .byMonth(2)
+        .byMonthDay(28)
+      .build();
+      DateValue start = new DateValueImpl(2000, 1, 1);
+      DateValue advanceTo = new DateValueImpl(2500, 9, 1);
+      DateValue[] expected = {
+      };
+      
+      run(recur, start, advanceTo, expected);
+    }
 
     // TODO(msamuel): check advancement of more examples
   }
 
-  /** a testcase that yielded dupes due to bysetPos evilness */
-  public void testCaseThatYieldedDupes() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;WKST=SU;INTERVAL=1;BYMONTH=9,1,12,8"
-        + ";BYMONTHDAY=-9,-29,24;BYSETPOS=-1,-4,10,-6,-1,-10,-10,-9,-8",
-        IcalParseUtil.parseDateValue("20060528"), 200,
-        "20060924,20061203,20061224,20070902,20071223,20080803,20080824,"
-        + "20090823,20100103,20100124,20110123,20120902,20121223,20130922,"
-        + "20140803,20140824,20150823,20160103,20160124,20170924,20171203,"
-        + "20171224,20180902,20181223,20190922,20200823,20210103,20210124,"
-        + "20220123,20230924,20231203,20231224,20240922,20250803,20250824,"
-        + "20260823,20270103,20270124,20280123,20280924,20281203,20281224,"
-        + "20290902,20291223,20300922,20310803,20310824,20330123,20340924,"
-        + "20341203,20341224,20350902,20351223,20360803,20360824,20370823,"
-        + "20380103,20380124,20390123,20400902,20401223,20410922,20420803,"
-        + "20420824,20430823,20440103,20440124,20450924,20451203,20451224,"
-        + "20460902,20461223,20470922,20480823,20490103,20490124,20500123,"
-        + "20510924,20511203,20511224,20520922,20530803,20530824,20540823,"
-        + "20550103,20550124,20560123,20560924,20561203,20561224,20570902,"
-        + "20571223,20580922,20590803,20590824,20610123,20620924,20621203,"
-        + "20621224,20630902,20631223,20640803,20640824,20650823,20660103,"
-        + "20660124,20670123,20680902,20681223,20690922,20700803,20700824,"
-        + "20710823,20720103,20720124,20730924,20731203,20731224,20740902,"
-        + "20741223,20750922,20760823,20770103,20770124,20780123,20790924,"
-        + "20791203,20791224,20800922,20810803,20810824,20820823,20830103,"
-        + "20830124,20840123,20840924,20841203,20841224,20850902,20851223,"
-        + "20860922,20870803,20870824,20890123,20900924,20901203,20901224,"
-        + "20910902,20911223,20920803,20920824,20930823,20940103,20940124,"
-        + "20950123,20960902,20961223,20970922,20980803,20980824,20990823,"
-        + "21000103,21000124,21010123,21020924,21021203,21021224,21030902,"
-        + "21031223,21040803,21040824,21050823,21060103,21060124,21070123,"
-        + "21080902,21081223,21090922,21100803,21100824,21110823,21120103,"
-        + "21120124,21130924,21131203,21131224,21140902,21141223,21150922,"
-        + "21160823,21170103,21170124,21180123,21190924,21191203,21191224,"
-        + "21200922,21210803,21210824,21220823,...");
+  /**
+   * A testcase that yielded dupes due to BYSETPOS evilness
+   */
+  public void testCaseThatYieldedDupes() {
+    Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+      .workweekStarts(DayOfWeek.SUNDAY)
+      .interval(1)
+      .byMonth(9, 1, 12, 8)
+      .byMonthDay(-9, -29, 24)
+      .bySetPos(-1, -4, 10, -6, -1, -10, -10, -9, -8)
+    .build();
+    DateValue start = new DateValueImpl(2006, 5, 28);
+    DateValue[] expected = {
+      new DateValueImpl(2006, 9, 24), new DateValueImpl(2006, 12, 3), new DateValueImpl(2006, 12, 24), new DateValueImpl(2007, 9, 2), new DateValueImpl(2007, 12, 23), new DateValueImpl(2008, 8, 3), new DateValueImpl(2008, 8, 24),
+      new DateValueImpl(2009, 8, 23), new DateValueImpl(2010, 1, 3), new DateValueImpl(2010, 1, 24), new DateValueImpl(2011, 1, 23), new DateValueImpl(2012, 9, 2), new DateValueImpl(2012, 12, 23), new DateValueImpl(2013, 9, 22),
+      new DateValueImpl(2014, 8, 3), new DateValueImpl(2014, 8, 24), new DateValueImpl(2015, 8, 23), new DateValueImpl(2016, 1, 3), new DateValueImpl(2016, 1, 24), new DateValueImpl(2017, 9, 24), new DateValueImpl(2017, 12, 3),
+      new DateValueImpl(2017, 12, 24), new DateValueImpl(2018, 9, 2), new DateValueImpl(2018, 12, 23), new DateValueImpl(2019, 9, 22), new DateValueImpl(2020, 8, 23), new DateValueImpl(2021, 1, 3), new DateValueImpl(2021, 1, 24),
+      new DateValueImpl(2022, 1, 23), new DateValueImpl(2023, 9, 24), new DateValueImpl(2023, 12, 3), new DateValueImpl(2023, 12, 24), new DateValueImpl(2024, 9, 22), new DateValueImpl(2025, 8, 3), new DateValueImpl(2025, 8, 24),
+      new DateValueImpl(2026, 8, 23), new DateValueImpl(2027, 1, 3), new DateValueImpl(2027, 1, 24), new DateValueImpl(2028, 1, 23), new DateValueImpl(2028, 9, 24), new DateValueImpl(2028, 12, 3), new DateValueImpl(2028, 12, 24),
+      new DateValueImpl(2029, 9, 2), new DateValueImpl(2029, 12, 23), new DateValueImpl(2030, 9, 22), new DateValueImpl(2031, 8, 3), new DateValueImpl(2031, 8, 24), new DateValueImpl(2033, 1, 23), new DateValueImpl(2034, 9, 24),
+      new DateValueImpl(2034, 12, 3), new DateValueImpl(2034, 12, 24), new DateValueImpl(2035, 9, 2), new DateValueImpl(2035, 12, 23), new DateValueImpl(2036, 8, 3), new DateValueImpl(2036, 8, 24), new DateValueImpl(2037, 8, 23),
+      new DateValueImpl(2038, 1, 3), new DateValueImpl(2038, 1, 24), new DateValueImpl(2039, 1, 23), new DateValueImpl(2040, 9, 2), new DateValueImpl(2040, 12, 23), new DateValueImpl(2041, 9, 22), new DateValueImpl(2042, 8, 3),
+      new DateValueImpl(2042, 8, 24), new DateValueImpl(2043, 8, 23), new DateValueImpl(2044, 1, 3), new DateValueImpl(2044, 1, 24), new DateValueImpl(2045, 9, 24), new DateValueImpl(2045, 12, 3), new DateValueImpl(2045, 12, 24),
+      new DateValueImpl(2046, 9, 2), new DateValueImpl(2046, 12, 23), new DateValueImpl(2047, 9, 22), new DateValueImpl(2048, 8, 23), new DateValueImpl(2049, 1, 3), new DateValueImpl(2049, 1, 24), new DateValueImpl(2050, 1, 23),
+      new DateValueImpl(2051, 9, 24), new DateValueImpl(2051, 12, 3), new DateValueImpl(2051, 12, 24), new DateValueImpl(2052, 9, 22), new DateValueImpl(2053, 8, 3), new DateValueImpl(2053, 8, 24), new DateValueImpl(2054, 8, 23),
+      new DateValueImpl(2055, 1, 3), new DateValueImpl(2055, 1, 24), new DateValueImpl(2056, 1, 23), new DateValueImpl(2056, 9, 24), new DateValueImpl(2056, 12, 3), new DateValueImpl(2056, 12, 24), new DateValueImpl(2057, 9, 2),
+      new DateValueImpl(2057, 12, 23), new DateValueImpl(2058, 9, 22), new DateValueImpl(2059, 8, 3), new DateValueImpl(2059, 8, 24), new DateValueImpl(2061, 1, 23), new DateValueImpl(2062, 9, 24), new DateValueImpl(2062, 12, 3),
+      new DateValueImpl(2062, 12, 24), new DateValueImpl(2063, 9, 2), new DateValueImpl(2063, 12, 23), new DateValueImpl(2064, 8, 3), new DateValueImpl(2064, 8, 24), new DateValueImpl(2065, 8, 23), new DateValueImpl(2066, 1, 3),
+      new DateValueImpl(2066, 1, 24), new DateValueImpl(2067, 1, 23), new DateValueImpl(2068, 9, 2), new DateValueImpl(2068, 12, 23), new DateValueImpl(2069, 9, 22), new DateValueImpl(2070, 8, 3), new DateValueImpl(2070, 8, 24),
+      new DateValueImpl(2071, 8, 23), new DateValueImpl(2072, 1, 3), new DateValueImpl(2072, 1, 24), new DateValueImpl(2073, 9, 24), new DateValueImpl(2073, 12, 3), new DateValueImpl(2073, 12, 24), new DateValueImpl(2074, 9, 2),
+      new DateValueImpl(2074, 12, 23), new DateValueImpl(2075, 9, 22), new DateValueImpl(2076, 8, 23), new DateValueImpl(2077, 1, 3), new DateValueImpl(2077, 1, 24), new DateValueImpl(2078, 1, 23), new DateValueImpl(2079, 9, 24),
+      new DateValueImpl(2079, 12, 3), new DateValueImpl(2079, 12, 24), new DateValueImpl(2080, 9, 22), new DateValueImpl(2081, 8, 3), new DateValueImpl(2081, 8, 24), new DateValueImpl(2082, 8, 23), new DateValueImpl(2083, 1, 3),
+      new DateValueImpl(2083, 1, 24), new DateValueImpl(2084, 1, 23), new DateValueImpl(2084, 9, 24), new DateValueImpl(2084, 12, 3), new DateValueImpl(2084, 12, 24), new DateValueImpl(2085, 9, 2), new DateValueImpl(2085, 12, 23),
+      new DateValueImpl(2086, 9, 22), new DateValueImpl(2087, 8, 3), new DateValueImpl(2087, 8, 24), new DateValueImpl(2089, 1, 23), new DateValueImpl(2090, 9, 24), new DateValueImpl(2090, 12, 3), new DateValueImpl(2090, 12, 24),
+      new DateValueImpl(2091, 9, 2), new DateValueImpl(2091, 12, 23), new DateValueImpl(2092, 8, 3), new DateValueImpl(2092, 8, 24), new DateValueImpl(2093, 8, 23), new DateValueImpl(2094, 1, 3), new DateValueImpl(2094, 1, 24),
+      new DateValueImpl(2095, 1, 23), new DateValueImpl(2096, 9, 2), new DateValueImpl(2096, 12, 23), new DateValueImpl(2097, 9, 22), new DateValueImpl(2098, 8, 3), new DateValueImpl(2098, 8, 24), new DateValueImpl(2099, 8, 23),
+      new DateValueImpl(2100, 1, 3), new DateValueImpl(2100, 1, 24), new DateValueImpl(2101, 1, 23), new DateValueImpl(2102, 9, 24), new DateValueImpl(2102, 12, 3), new DateValueImpl(2102, 12, 24), new DateValueImpl(2103, 9, 2),
+      new DateValueImpl(2103, 12, 23), new DateValueImpl(2104, 8, 3), new DateValueImpl(2104, 8, 24), new DateValueImpl(2105, 8, 23), new DateValueImpl(2106, 1, 3), new DateValueImpl(2106, 1, 24), new DateValueImpl(2107, 1, 23),
+      new DateValueImpl(2108, 9, 2), new DateValueImpl(2108, 12, 23), new DateValueImpl(2109, 9, 22), new DateValueImpl(2110, 8, 3), new DateValueImpl(2110, 8, 24), new DateValueImpl(2111, 8, 23), new DateValueImpl(2112, 1, 3),
+      new DateValueImpl(2112, 1, 24), new DateValueImpl(2113, 9, 24), new DateValueImpl(2113, 12, 3), new DateValueImpl(2113, 12, 24), new DateValueImpl(2114, 9, 2), new DateValueImpl(2114, 12, 23), new DateValueImpl(2115, 9, 22),
+      new DateValueImpl(2116, 8, 23), new DateValueImpl(2117, 1, 3), new DateValueImpl(2117, 1, 24), new DateValueImpl(2118, 1, 23), new DateValueImpl(2119, 9, 24), new DateValueImpl(2119, 12, 3), new DateValueImpl(2119, 12, 24),
+      new DateValueImpl(2120, 9, 22), new DateValueImpl(2121, 8, 3), new DateValueImpl(2121, 8, 24), new DateValueImpl(2122, 8, 23)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testHourlyWithByday() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=HOURLY;INTERVAL=6;BYDAY=TU,TH;COUNT=5",
-        IcalParseUtil.parseDateValue("20110809T123000"), 20,
-        "20110809T123000,20110809T183000,20110811T003000,"
-        + "20110811T063000,20110811T123000");
+  public void testHourlyWithByday() {
+    Recurrence recur = new Recurrence.Builder(Frequency.HOURLY)
+      .interval(6)
+      .byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+      .count(5)
+    .build();
+    DateValue start = new DateTimeValueImpl(2011, 8, 9, 12, 30, 0);
+    DateValue[] expected = {
+      new DateTimeValueImpl(2011, 8, 9, 12, 30, 0),
+      new DateTimeValueImpl(2011, 8, 9, 18, 30, 0),
+      new DateTimeValueImpl(2011, 8, 11, 0, 30, 0),
+      new DateTimeValueImpl(2011, 8, 11, 6, 30, 0),
+      new DateTimeValueImpl(2011, 8, 11, 12, 30, 0)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testHourlyWithBydayAcrossMonthBoundary() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=HOURLY;INTERVAL=6;BYDAY=TU,TH;COUNT=5",
-        IcalParseUtil.parseDateValue("20110831T123000"), 20,
-        "20110901T003000,20110901T063000,20110901T123000,20110901T183000,"
-        + "20110906T003000");
+  public void testHourlyWithBydayAcrossMonthBoundary() {
+    Recurrence recur = new Recurrence.Builder(Frequency.HOURLY)
+      .interval(6)
+      .byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+      .count(5)
+    .build();
+    DateValue start = new DateTimeValueImpl(2011, 8, 31, 12, 30, 0);
+    DateValue[] expected = {
+      new DateTimeValueImpl(2011, 9, 1, 0, 30, 0),
+      new DateTimeValueImpl(2011, 9, 1, 6, 30, 0),
+      new DateTimeValueImpl(2011, 9, 1, 12, 30, 0),
+      new DateTimeValueImpl(2011, 9, 1, 18, 30, 0),
+      new DateTimeValueImpl(2011, 9, 6, 0, 30, 0)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testHourlyWithByMonthday() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=HOURLY;INTERVAL=6;BYMONTHDAY=9;COUNT=5",
-        IcalParseUtil.parseDateValue("20110809T123000"), 20,
-        "20110809T123000,20110809T183000,20110909T003000,"
-        + "20110909T063000,20110909T123000");
+  public void testHourlyWithByMonthday() {
+    Recurrence recur = new Recurrence.Builder(Frequency.HOURLY)
+      .interval(6)
+      .byMonthDay(9)
+      .count(5)
+    .build();
+    DateValue start = new DateTimeValueImpl(2011, 8, 9, 12, 30, 0);
+    DateValue[] expected = {
+      new DateTimeValueImpl(2011, 8, 9, 12, 30, 0),
+      new DateTimeValueImpl(2011, 8, 9, 18, 30, 0),
+      new DateTimeValueImpl(2011, 9, 9, 0, 30, 0),
+      new DateTimeValueImpl(2011, 9, 9, 6, 30, 0),
+      new DateTimeValueImpl(2011, 9, 9, 12, 30, 0)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testWeirdByMonth() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=YEARLY;INTERVAL=1;BYMONTH=2,7,4,9,9,6,11,1",
-        IcalParseUtil.parseDateValue("19490320"), 12,
-        "19490420,19490620,19490720,19490920,19491120,"
-        + "19500120,19500220,19500420,19500620,19500720,19500920,19501120,...");
+  public void testWeirdByMonth() {
+    Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
+      .interval(1)
+      .byMonth(2, 7, 4, 9, 9, 6, 11, 1)
+    .build();
+    DateValue start = new DateValueImpl(1949, 3, 20);
+    DateValue[] expected = {
+        new DateValueImpl(1949, 4, 20),
+        new DateValueImpl(1949, 6, 20),
+        new DateValueImpl(1949, 7, 20),
+        new DateValueImpl(1949, 9, 20),
+        new DateValueImpl(1949, 11, 20),
+        new DateValueImpl(1950, 1, 20),
+        new DateValueImpl(1950, 2, 20),
+        new DateValueImpl(1950, 4, 20),
+        new DateValueImpl(1950, 6, 20),
+        new DateValueImpl(1950, 7, 20),
+        new DateValueImpl(1950, 9, 20),
+        new DateValueImpl(1950, 11, 20)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testMonkeyByMinute1() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=DAILY;INTERVAL=1;BYMINUTE=19,27,38,1,5",
-        IcalParseUtil.parseDateValue("19360508T000941"), 3,
-        "19360508T001941,19360508T002741,19360508T003841,...");
+  public void testMonkeyByMinute1() {
+    Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
+      .interval(1)
+      .byMinute(19, 27, 38, 1, 5)
+    .build();
+    DateValue start = new DateTimeValueImpl(1936, 5, 8, 0, 9, 41);
+    DateValue[] expected = {
+      new DateTimeValueImpl(1936, 5, 8, 0, 19, 41),
+      new DateTimeValueImpl(1936, 5, 8, 0, 27, 41),
+      new DateTimeValueImpl(1936, 5, 8, 0, 38, 41)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testMonkeyByMinute2() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=MINUTELY;WKST=SU;INTERVAL=1;BYMONTH=10,12"
-        + ";BYMONTHDAY=9,28,-5,-19;BYHOUR=13,0,13,8;BYSECOND=51,26,31",
-        IcalParseUtil.parseDateValue("19390108T105827"), 9,
-        // Since it starts at month 10 instead of January, the minute 58 is
-        // irrelevant.
-        "19391009T000026,19391009T000031,19391009T000051," +
-        "19391009T000126,19391009T000131,19391009T000151," +
-        "19391009T000226,19391009T000231,19391009T000251,...");
+  public void testMonkeyByMinute2() {
+    Recurrence recur = new Recurrence.Builder(Frequency.MINUTELY)
+      .workweekStarts(DayOfWeek.MONDAY)
+      .interval(1)
+      .byMonth(10, 12)
+      .byMonthDay(9, 28, -5, -19)
+      .byHour(13, 0, 13, 8)
+      .bySecond(51, 26, 31)
+    .build();
+    DateValue start = new DateTimeValueImpl(1939, 1, 8, 10, 58, 27);
+    
+    //since it starts at month 10 instead of January, the minute 58 is irrelevant
+    DateValue[] expected = {
+      new DateTimeValueImpl(1939, 10, 9, 0, 0, 26),
+      new DateTimeValueImpl(1939, 10, 9, 0, 0, 31),
+      new DateTimeValueImpl(1939, 10, 9, 0, 0, 51),
+      new DateTimeValueImpl(1939, 10, 9, 0, 1, 26),
+      new DateTimeValueImpl(1939, 10, 9, 0, 1, 31),
+      new DateTimeValueImpl(1939, 10, 9, 0, 1, 51),
+      new DateTimeValueImpl(1939, 10, 9, 0, 2, 26),
+      new DateTimeValueImpl(1939, 10, 9, 0, 2, 31),
+      new DateTimeValueImpl(1939, 10, 9, 0, 2, 51)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testMonkeyBySecondSetPos() throws Exception {
-    runRecurrenceIteratorTest(
-        "RRULE:FREQ=WEEKLY;COUNT=13;INTERVAL=1;BYDAY=MO,SA,SU,FR"
-        + ";BYSECOND=6,48,20;BYSETPOS=8,2,5,7,-8,4",
-        IcalParseUtil.parseDateValue("19090424T075754"), 9,
-        "19090425T075706,19090425T075748,19090430T075706,"
-        + "19090430T075720,19090430T075748,19090501T075706,"
-        + "19090501T075748,19090502T075706,19090507T075706,...");
+  public void testMonkeyBySecondSetPos() {
+    Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
+      .count(9)
+      .interval(1)
+      .byDay(DayOfWeek.MONDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY, DayOfWeek.FRIDAY)
+      .bySecond(6, 48, 20)
+      .bySetPos(8, 2, 5, 7, -8, 4)
+    .build();
+    DateValue start = new DateTimeValueImpl(1909, 4, 24, 7, 57, 54);
+    DateValue[] expected = {
+      new DateTimeValueImpl(1909, 4, 25, 7, 57, 6),
+      new DateTimeValueImpl(1909, 4, 25, 7, 57, 48),
+      new DateTimeValueImpl(1909, 4, 30, 7, 57, 6),
+      new DateTimeValueImpl(1909, 4, 30, 7, 57, 20),
+      new DateTimeValueImpl(1909, 4, 30, 7, 57, 48),
+      new DateTimeValueImpl(1909, 5, 1, 7, 57, 6),
+      new DateTimeValueImpl(1909, 5, 1, 7, 57, 48),
+      new DateTimeValueImpl(1909, 5, 2, 7, 57, 6),
+      new DateTimeValueImpl(1909, 5, 7, 7, 57, 6)
+    };
+  
+    run(recur, start, expected);
   }
 
-  public void testMonkeyHourly() throws Exception {
-    runRecurrenceIteratorTest(
-        "EXRULE:FREQ=HOURLY;INTERVAL=1;BYMONTHDAY=12,10,-4",
-        IcalParseUtil.parseDateValue("20510120T031047"), 144,
-        "20510128T001047,20510128T011047,20510128T021047,20510128T031047," +
-        "20510128T041047,20510128T051047,20510128T061047,20510128T071047," +
-        "20510128T081047,20510128T091047,20510128T101047,20510128T111047," +
-        "20510128T121047,20510128T131047,20510128T141047,20510128T151047," +
-        "20510128T161047,20510128T171047,20510128T181047,20510128T191047," +
-        "20510128T201047,20510128T211047,20510128T221047,20510128T231047," +
-        "20510210T001047,20510210T011047,20510210T021047,20510210T031047," +
-        "20510210T041047,20510210T051047,20510210T061047,20510210T071047," +
-        "20510210T081047,20510210T091047,20510210T101047,20510210T111047," +
-        "20510210T121047,20510210T131047,20510210T141047,20510210T151047," +
-        "20510210T161047,20510210T171047,20510210T181047,20510210T191047," +
-        "20510210T201047,20510210T211047,20510210T221047,20510210T231047," +
-        "20510212T001047,20510212T011047,20510212T021047,20510212T031047," +
-        "20510212T041047,20510212T051047,20510212T061047,20510212T071047," +
-        "20510212T081047,20510212T091047,20510212T101047,20510212T111047," +
-        "20510212T121047,20510212T131047,20510212T141047,20510212T151047," +
-        "20510212T161047,20510212T171047,20510212T181047,20510212T191047," +
-        "20510212T201047,20510212T211047,20510212T221047,20510212T231047," +
-        "20510225T001047,20510225T011047,20510225T021047,20510225T031047," +
-        "20510225T041047,20510225T051047,20510225T061047,20510225T071047," +
-        "20510225T081047,20510225T091047,20510225T101047,20510225T111047," +
-        "20510225T121047,20510225T131047,20510225T141047,20510225T151047," +
-        "20510225T161047,20510225T171047,20510225T181047,20510225T191047," +
-        "20510225T201047,20510225T211047,20510225T221047,20510225T231047," +
-        "20510310T001047,20510310T011047,20510310T021047,20510310T031047," +
-        "20510310T041047,20510310T051047,20510310T061047,20510310T071047," +
-        "20510310T081047,20510310T091047,20510310T101047,20510310T111047," +
-        "20510310T121047,20510310T131047,20510310T141047,20510310T151047," +
-        "20510310T161047,20510310T171047,20510310T181047,20510310T191047," +
-        "20510310T201047,20510310T211047,20510310T221047,20510310T231047," +
-        "20510312T001047,20510312T011047,20510312T021047,20510312T031047," +
-        "20510312T041047,20510312T051047,20510312T061047,20510312T071047," +
-        "20510312T081047,20510312T091047,20510312T101047,20510312T111047," +
-        "20510312T121047,20510312T131047,20510312T141047,20510312T151047," +
-        "20510312T161047,20510312T171047,20510312T181047,20510312T191047," +
-        "20510312T201047,20510312T211047,20510312T221047,20510312T231047," +
-        "..."
-        );
+  public void testMonkeyHourly() {
+    Recurrence recur = new Recurrence.Builder(Frequency.HOURLY)
+      .interval(1)
+      .byMonthDay(12, 10, -4)
+    .build();
+    DateValue start = new DateTimeValueImpl(2051, 1, 20, 3, 10, 47);
+    DateValue[] expected = {
+      new DateTimeValueImpl(2051, 1, 28, 0, 10, 47), new DateTimeValueImpl(2051, 1, 28, 1, 10, 47), new DateTimeValueImpl(2051, 1, 28, 2, 10, 47), new DateTimeValueImpl(2051, 1, 28, 3, 10, 47),
+      new DateTimeValueImpl(2051, 1, 28, 4, 10, 47), new DateTimeValueImpl(2051, 1, 28, 5, 10, 47), new DateTimeValueImpl(2051, 1, 28, 6, 10, 47), new DateTimeValueImpl(2051, 1, 28, 7, 10, 47),
+      new DateTimeValueImpl(2051, 1, 28, 8, 10, 47), new DateTimeValueImpl(2051, 1, 28, 9, 10, 47), new DateTimeValueImpl(2051, 1, 28, 10, 10, 47), new DateTimeValueImpl(2051, 1, 28, 11, 10, 47),
+      new DateTimeValueImpl(2051, 1, 28, 12, 10, 47), new DateTimeValueImpl(2051, 1, 28, 13, 10, 47), new DateTimeValueImpl(2051, 1, 28, 14, 10, 47), new DateTimeValueImpl(2051, 1, 28, 15, 10, 47),
+      new DateTimeValueImpl(2051, 1, 28, 16, 10, 47), new DateTimeValueImpl(2051, 1, 28, 17, 10, 47), new DateTimeValueImpl(2051, 1, 28, 18, 10, 47), new DateTimeValueImpl(2051, 1, 28, 19, 10, 47),
+      new DateTimeValueImpl(2051, 1, 28, 20, 10, 47), new DateTimeValueImpl(2051, 1, 28, 21, 10, 47), new DateTimeValueImpl(2051, 1, 28, 22, 10, 47), new DateTimeValueImpl(2051, 1, 28, 23, 10, 47),
+      new DateTimeValueImpl(2051, 2, 10, 0, 10, 47), new DateTimeValueImpl(2051, 2, 10, 1, 10, 47), new DateTimeValueImpl(2051, 2, 10, 2, 10, 47), new DateTimeValueImpl(2051, 2, 10, 3, 10, 47),
+      new DateTimeValueImpl(2051, 2, 10, 4, 10, 47), new DateTimeValueImpl(2051, 2, 10, 5, 10, 47), new DateTimeValueImpl(2051, 2, 10, 6, 10, 47), new DateTimeValueImpl(2051, 2, 10, 7, 10, 47),
+      new DateTimeValueImpl(2051, 2, 10, 8, 10, 47), new DateTimeValueImpl(2051, 2, 10, 9, 10, 47), new DateTimeValueImpl(2051, 2, 10, 10, 10, 47), new DateTimeValueImpl(2051, 2, 10, 11, 10, 47),
+      new DateTimeValueImpl(2051, 2, 10, 12, 10, 47), new DateTimeValueImpl(2051, 2, 10, 13, 10, 47), new DateTimeValueImpl(2051, 2, 10, 14, 10, 47), new DateTimeValueImpl(2051, 2, 10, 15, 10, 47),
+      new DateTimeValueImpl(2051, 2, 10, 16, 10, 47), new DateTimeValueImpl(2051, 2, 10, 17, 10, 47), new DateTimeValueImpl(2051, 2, 10, 18, 10, 47), new DateTimeValueImpl(2051, 2, 10, 19, 10, 47),
+      new DateTimeValueImpl(2051, 2, 10, 20, 10, 47), new DateTimeValueImpl(2051, 2, 10, 21, 10, 47), new DateTimeValueImpl(2051, 2, 10, 22, 10, 47), new DateTimeValueImpl(2051, 2, 10, 23, 10, 47),
+      new DateTimeValueImpl(2051, 2, 12, 0, 10, 47), new DateTimeValueImpl(2051, 2, 12, 1, 10, 47), new DateTimeValueImpl(2051, 2, 12, 2, 10, 47), new DateTimeValueImpl(2051, 2, 12, 3, 10, 47),
+      new DateTimeValueImpl(2051, 2, 12, 4, 10, 47), new DateTimeValueImpl(2051, 2, 12, 5, 10, 47), new DateTimeValueImpl(2051, 2, 12, 6, 10, 47), new DateTimeValueImpl(2051, 2, 12, 7, 10, 47),
+      new DateTimeValueImpl(2051, 2, 12, 8, 10, 47), new DateTimeValueImpl(2051, 2, 12, 9, 10, 47), new DateTimeValueImpl(2051, 2, 12, 10, 10, 47), new DateTimeValueImpl(2051, 2, 12, 11, 10, 47),
+      new DateTimeValueImpl(2051, 2, 12, 12, 10, 47), new DateTimeValueImpl(2051, 2, 12, 13, 10, 47), new DateTimeValueImpl(2051, 2, 12, 14, 10, 47), new DateTimeValueImpl(2051, 2, 12, 15, 10, 47),
+      new DateTimeValueImpl(2051, 2, 12, 16, 10, 47), new DateTimeValueImpl(2051, 2, 12, 17, 10, 47), new DateTimeValueImpl(2051, 2, 12, 18, 10, 47), new DateTimeValueImpl(2051, 2, 12, 19, 10, 47),
+      new DateTimeValueImpl(2051, 2, 12, 20, 10, 47), new DateTimeValueImpl(2051, 2, 12, 21, 10, 47), new DateTimeValueImpl(2051, 2, 12, 22, 10, 47), new DateTimeValueImpl(2051, 2, 12, 23, 10, 47),
+      new DateTimeValueImpl(2051, 2, 25, 0, 10, 47), new DateTimeValueImpl(2051, 2, 25, 1, 10, 47), new DateTimeValueImpl(2051, 2, 25, 2, 10, 47), new DateTimeValueImpl(2051, 2, 25, 3, 10, 47),
+      new DateTimeValueImpl(2051, 2, 25, 4, 10, 47), new DateTimeValueImpl(2051, 2, 25, 5, 10, 47), new DateTimeValueImpl(2051, 2, 25, 6, 10, 47), new DateTimeValueImpl(2051, 2, 25, 7, 10, 47),
+      new DateTimeValueImpl(2051, 2, 25, 8, 10, 47), new DateTimeValueImpl(2051, 2, 25, 9, 10, 47), new DateTimeValueImpl(2051, 2, 25, 10, 10, 47), new DateTimeValueImpl(2051, 2, 25, 11, 10, 47),
+      new DateTimeValueImpl(2051, 2, 25, 12, 10, 47), new DateTimeValueImpl(2051, 2, 25, 13, 10, 47), new DateTimeValueImpl(2051, 2, 25, 14, 10, 47), new DateTimeValueImpl(2051, 2, 25, 15, 10, 47),
+      new DateTimeValueImpl(2051, 2, 25, 16, 10, 47), new DateTimeValueImpl(2051, 2, 25, 17, 10, 47), new DateTimeValueImpl(2051, 2, 25, 18, 10, 47), new DateTimeValueImpl(2051, 2, 25, 19, 10, 47),
+      new DateTimeValueImpl(2051, 2, 25, 20, 10, 47), new DateTimeValueImpl(2051, 2, 25, 21, 10, 47), new DateTimeValueImpl(2051, 2, 25, 22, 10, 47), new DateTimeValueImpl(2051, 2, 25, 23, 10, 47),
+      new DateTimeValueImpl(2051, 3, 10, 0, 10, 47), new DateTimeValueImpl(2051, 3, 10, 1, 10, 47), new DateTimeValueImpl(2051, 3, 10, 2, 10, 47), new DateTimeValueImpl(2051, 3, 10, 3, 10, 47),
+      new DateTimeValueImpl(2051, 3, 10, 4, 10, 47), new DateTimeValueImpl(2051, 3, 10, 5, 10, 47), new DateTimeValueImpl(2051, 3, 10, 6, 10, 47), new DateTimeValueImpl(2051, 3, 10, 7, 10, 47),
+      new DateTimeValueImpl(2051, 3, 10, 8, 10, 47), new DateTimeValueImpl(2051, 3, 10, 9, 10, 47), new DateTimeValueImpl(2051, 3, 10, 10, 10, 47), new DateTimeValueImpl(2051, 3, 10, 11, 10, 47),
+      new DateTimeValueImpl(2051, 3, 10, 12, 10, 47), new DateTimeValueImpl(2051, 3, 10, 13, 10, 47), new DateTimeValueImpl(2051, 3, 10, 14, 10, 47), new DateTimeValueImpl(2051, 3, 10, 15, 10, 47),
+      new DateTimeValueImpl(2051, 3, 10, 16, 10, 47), new DateTimeValueImpl(2051, 3, 10, 17, 10, 47), new DateTimeValueImpl(2051, 3, 10, 18, 10, 47), new DateTimeValueImpl(2051, 3, 10, 19, 10, 47),
+      new DateTimeValueImpl(2051, 3, 10, 20, 10, 47), new DateTimeValueImpl(2051, 3, 10, 21, 10, 47), new DateTimeValueImpl(2051, 3, 10, 22, 10, 47), new DateTimeValueImpl(2051, 3, 10, 23, 10, 47),
+      new DateTimeValueImpl(2051, 3, 12, 0, 10, 47), new DateTimeValueImpl(2051, 3, 12, 1, 10, 47), new DateTimeValueImpl(2051, 3, 12, 2, 10, 47), new DateTimeValueImpl(2051, 3, 12, 3, 10, 47),
+      new DateTimeValueImpl(2051, 3, 12, 4, 10, 47), new DateTimeValueImpl(2051, 3, 12, 5, 10, 47), new DateTimeValueImpl(2051, 3, 12, 6, 10, 47), new DateTimeValueImpl(2051, 3, 12, 7, 10, 47),
+      new DateTimeValueImpl(2051, 3, 12, 8, 10, 47), new DateTimeValueImpl(2051, 3, 12, 9, 10, 47), new DateTimeValueImpl(2051, 3, 12, 10, 10, 47), new DateTimeValueImpl(2051, 3, 12, 11, 10, 47),
+      new DateTimeValueImpl(2051, 3, 12, 12, 10, 47), new DateTimeValueImpl(2051, 3, 12, 13, 10, 47), new DateTimeValueImpl(2051, 3, 12, 14, 10, 47), new DateTimeValueImpl(2051, 3, 12, 15, 10, 47),
+      new DateTimeValueImpl(2051, 3, 12, 16, 10, 47), new DateTimeValueImpl(2051, 3, 12, 17, 10, 47), new DateTimeValueImpl(2051, 3, 12, 18, 10, 47), new DateTimeValueImpl(2051, 3, 12, 19, 10, 47),
+      new DateTimeValueImpl(2051, 3, 12, 20, 10, 47), new DateTimeValueImpl(2051, 3, 12, 21, 10, 47), new DateTimeValueImpl(2051, 3, 12, 22, 10, 47), new DateTimeValueImpl(2051, 3, 12, 23, 10, 47)
+    };
+  
+    run(recur, start, expected);
+  }
+  
+  /**
+   * <p>
+   * Asserts the dates in a given recurrence.
+   * </p>
+   * <p>
+   * Also asserts that the same dates are generated when the iterator is
+   * advanced to the given start date.
+   * </p>
+   * <p>
+   * This method automatically determines if the the given recurrence is
+   * non-terminating. If it is non-terminating, then this method will stop
+   * iterating once it generates the same number of items that there are in the
+   * list of expected values.
+   * </p>
+   * @param recur the recurrence
+   * @param start the start date (in UTC)
+   * @param expected the expected dates in the recurrence
+   */
+  private static void run(Recurrence recur, DateValue start, DateValue[] expected) {
+    run(recur, start, UTC, null, expected);
+  }
+  
+  /**
+   * <p>
+   * Asserts the dates in a given recurrence.
+   * </p>
+   * <p>
+   * Also asserts that the same dates are generated when the iterator is
+   * advanced to the given start date.
+   * </p>
+   * <p>
+   * This method automatically determines if the the given recurrence is
+   * non-terminating. If it is non-terminating, then this method will stop
+   * iterating once it generates the same number of items that there are in the
+   * list of expected values.
+   * </p>
+   * @param recur the recurrence
+   * @param start the start date
+   * @param tz the timezone of the start date
+   * @param expected the expected dates in the recurrence
+   */
+  private static void run(Recurrence recur, DateValue start, TimeZone tz, DateValue[] expected) {
+    run(recur, start, tz, null, expected);
+  }
+  
+  /**
+   * <p>
+   * Asserts the dates in a given recurrence.
+   * </p>
+   * <p>
+   * This method automatically determines if the the given recurrence is
+   * non-terminating. If it is non-terminating, then this method will stop
+   * iterating once it generates the same number of items that there are in the
+   * list of expected values.
+   * </p>
+   * @param recur the recurrence
+   * @param start the start date
+   * @param advanceTo the date for the iterator to advance to
+   * @param expected the expected dates in the recurrence
+   */
+  private static void run(Recurrence recur, DateValue start, DateValue advanceTo, DateValue[] expected) {
+    run(recur, start, UTC, advanceTo, expected);
+  }
+  
+  /**
+   * <p>
+   * Asserts the dates in a given recurrence.
+   * </p>
+   * <p>
+   * This method automatically determines if the the given recurrence is
+   * non-terminating. If it is non-terminating, then this method will stop
+   * iterating once it generates the same number of items that there are in the
+   * list of expected values.
+   * </p>
+   * @param recur the recurrence
+   * @param start the start date
+   * @param tz the timezone of the start date
+   * @param advanceTo the date for the iterator to advance to (in UTC)
+   * @param expected the expected dates in the recurrence
+   */
+  private static void run(Recurrence recur, DateValue start, TimeZone tz, DateValue advanceTo, DateValue[] expected) {    
+    RecurrenceIterator it = RecurrenceIteratorFactory.createRecurrenceIterator(recur, start, tz);
+    if (advanceTo != null){
+      it.advanceTo(advanceTo);
+    }
+    
+    boolean iteratorIsTerminating = (recur.getUntil() != null || recur.getCount() != null);
+    
+    assertIterator(Arrays.asList(expected), it, iteratorIsTerminating);
+    
+    /*
+     * Advancing to the start date should yield the same result.
+     */
+    if (advanceTo == null){
+      it = RecurrenceIteratorFactory.createRecurrenceIterator(recur, start, tz);
+      it.advanceTo(start);
+      assertIterator(Arrays.asList(expected), it, iteratorIsTerminating);
+    }
+  }
+
+  /**
+   * Generates a list of dates in between two given dates. Each date is one day
+   * apart.
+   * @param start the start date
+   * @param end the end date
+   * @return the list of dates (including the start and end dates)
+   */
+  private static List<DateValue> dateRange(DateValue start, DateValue end) {
+    DTBuilder b = new DTBuilder(start);
+    List<DateValue> list = new ArrayList<DateValue>();
+    while (true) {
+      DateValue d = b.toDate();
+      if (d.compareTo(end) > 0) { break; }
+      list.add(d);
+      b.day += 1;
+    }
+    return list;
   }
 
   // TODO(msamuel): test BYSETPOS with FREQ in (WEEKLY,MONTHLY,YEARLY) x
@@ -1098,5 +2309,4 @@ public class RRuleIteratorImplTest extends TestCase {
   // TODO(msamuel): test that monotonically increasing over timezone boundaries
 
   // TODO(msamuel): test that advanceTo handles timezones properly
-
 }

@@ -24,6 +24,8 @@ import java.util.TimeZone;
 import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
 import biweekly.util.Frequency;
+import biweekly.util.Google2445Utils;
+import biweekly.util.Recurrence;
 import biweekly.util.com.google.ical.util.Predicate;
 import biweekly.util.com.google.ical.util.Predicates;
 import biweekly.util.com.google.ical.util.TimeUtils;
@@ -92,6 +94,19 @@ public class RecurrenceIteratorFactory {
         return createRecurrenceIterator(rrule, dtStart, tzid);
       }
     };
+  }
+
+  /**
+   * Creates a recurrence iterable from an RRULE.
+   * @param rrule the recurrence rule
+   * @param dtStart the start date of the series
+   * @param tzid the timezone that the given start date is in
+   * @return the iterable
+   */
+  public static RecurrenceIterator createRecurrenceIterator(
+      Recurrence rrule, DateValue dtStart, TimeZone tzid) {
+    RRule rrule2 = Google2445Utils.convert(rrule, tzid);
+    return createRecurrenceIterator(rrule2, dtStart, tzid);
   }
 
   /**
