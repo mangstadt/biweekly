@@ -298,13 +298,13 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	private T parseTextVersion1(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		final Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
 
-		String[] splitValues = value.toUpperCase().split("\\s+");
+		List<String> splitValues = Arrays.asList(value.toUpperCase().split("\\s+"));
 
 		//parse the frequency and interval from the first token (e.g. "W2")
 		String frequencyStr;
 		Integer interval;
 		{
-			String firstToken = splitValues[0];
+			String firstToken = splitValues.get(0);
 			Pattern p = Pattern.compile("^([A-Z]+)(\\d+)$");
 			Matcher m = p.matcher(firstToken);
 			if (!m.find()) {
@@ -313,16 +313,17 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 			frequencyStr = m.group(1);
 			interval = integerValueOf(m.group(2));
-			splitValues = Arrays.copyOfRange(splitValues, 1, splitValues.length);
+
+			splitValues = splitValues.subList(1, splitValues.size());
 		}
 		builder.interval(interval);
 
 		Integer count = null;
 		ICalDate until = null;
-		if (splitValues.length == 0) {
+		if (splitValues.isEmpty()) {
 			count = 2;
 		} else {
-			String lastToken = splitValues[splitValues.length - 1];
+			String lastToken = splitValues.get(splitValues.size() - 1);
 			if (lastToken.startsWith("#")) {
 				String countStr = lastToken.substring(1, lastToken.length());
 				count = integerValueOf(countStr);
@@ -331,12 +332,12 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 					count = null;
 				}
 
-				splitValues = Arrays.copyOfRange(splitValues, 0, splitValues.length - 1);
+				splitValues = splitValues.subList(0, splitValues.size() - 1);
 			} else {
 				try {
 					//see if the value is an "until" date
 					until = date(lastToken).parse();
-					splitValues = Arrays.copyOfRange(splitValues, 0, splitValues.length - 1);
+					splitValues = splitValues.subList(0, splitValues.size() - 1);
 				} catch (IllegalArgumentException e) {
 					//last token is a regular value
 					count = 2;

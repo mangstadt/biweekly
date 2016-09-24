@@ -51,7 +51,7 @@ public class AudioAlarm extends VCalAlarmProperty {
 	 */
 	public AudioAlarm(AudioAlarm original) {
 		super(original);
-		data = Arrays.copyOf(original.data, original.data.length);
+		data = (original.data == null) ? null : original.data.clone();
 		uri = original.uri;
 		contentId = original.contentId;
 	}

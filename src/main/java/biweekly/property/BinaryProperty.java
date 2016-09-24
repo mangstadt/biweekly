@@ -79,7 +79,7 @@ public class BinaryProperty extends ICalProperty {
 	 */
 	public BinaryProperty(BinaryProperty original) {
 		super(original);
-		data = (original.data == null) ? null : Arrays.copyOf(original.data, original.data.length);
+		data = (original.data == null) ? null : original.data.clone();
 		uri = original.uri;
 	}
 
