@@ -25,9 +25,9 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
 public class ConditionsTest extends TestCase {
   public void testCountCondition() {
     Predicate<DateValue> cc = Conditions.countCondition(3);
-    assertTrue(cc.apply(new DateValueImpl(2006, 2, 1)));
-    assertTrue(cc.apply(new DateValueImpl(2006, 2, 2)));
-    assertTrue(cc.apply(new DateValueImpl(2006, 2, 3)));
+    assertTrue( cc.apply(new DateValueImpl(2006, 2, 1)));
+    assertTrue( cc.apply(new DateValueImpl(2006, 2, 2)));
+    assertTrue( cc.apply(new DateValueImpl(2006, 2, 3)));
     assertTrue(!cc.apply(new DateValueImpl(2006, 2, 4)));
   }
 }

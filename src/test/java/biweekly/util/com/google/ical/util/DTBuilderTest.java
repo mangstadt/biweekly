@@ -22,7 +22,7 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public class DTBuilderTest extends TestCase {
-  public void testEquals() throws Exception {
+  public void testEquals() {
     assertTrue(!new DTBuilder(2006, 1, 2).equals(null));
     assertTrue(!new DTBuilder(2006, 1, 2).equals(new Object()));
     assertTrue(!new DTBuilder(2006, 1, 2).equals(
@@ -48,29 +48,29 @@ public class DTBuilderTest extends TestCase {
     assertEquals(new DTBuilder(0, 0, 0), new DTBuilder(0, 0, 0, 0, 0, 0));
   }
 
-  public void testToDate() throws Exception {
+  public void testToDate() {
     assertEquals(new DateValueImpl(2006, 1, 2),
                  new DTBuilder(2006, 1, 2).toDate());
     assertEquals(new DateValueImpl(2006, 1, 2),
                  new DTBuilder(2006, 1, 2, 12, 30, 45).toDate());
-    // test normalization
+    //test normalization
     assertEquals(new DateValueImpl(2006, 1, 2),
                  new DTBuilder(2005, 12, 33).toDate());
   }
 
-  public void testToDateTime() throws Exception {
+  public void testToDateTime() {
     assertEquals(new DateTimeValueImpl(2006, 1, 2, 0, 0, 0),
                  new DTBuilder(2006, 1, 2).toDateTime());
     assertEquals(new DateTimeValueImpl(2006, 1, 2, 12, 30, 45),
                  new DTBuilder(2006, 1, 2, 12, 30, 45).toDateTime());
-    // test normalization
+    //test normalization
     assertEquals(new DateTimeValueImpl(2006, 1, 2, 0, 0, 0),
                  new DTBuilder(2005, 12, 33, 0, 0, 0).toDateTime());
     assertEquals(new DateTimeValueImpl(2006, 1, 2, 12, 0, 0),
                  new DTBuilder(2005, 12, 31, 60, 0, 0).toDateTime());
   }
 
-  public void testCompareTo() throws Exception {
+  public void testCompareTo() {
     assertTrue(
         new DTBuilder(2005, 6, 15).compareTo(new DateValueImpl(2005, 6, 15))
         == 0);
@@ -106,41 +106,61 @@ public class DTBuilderTest extends TestCase {
         > 0);
   }
 
-  public void testNormalize() throws Exception {
+  public void testNormalize() {
     DTBuilder dtb = new DTBuilder(2006, 1, 1);
-    assertEquals("2006-1-1 0:0:0", dtb.toString());
+    assertDtBuilder(2006, 1, 1, 0, 0, 0, dtb);
+
     dtb.day -= 1;
     dtb.normalize();
-    assertEquals("2005-12-31 0:0:0", dtb.toString());
+    assertDtBuilder(2005, 12, 31, 0, 0, 0, dtb);
+
     dtb.day -=61;
     dtb.normalize();
-    assertEquals("2005-10-31 0:0:0", dtb.toString());
+    assertDtBuilder(2005, 10, 31, 0, 0, 0, dtb);
+    
     dtb.day -= 365;
     dtb.normalize();
-    assertEquals("2004-10-31 0:0:0", dtb.toString());
-    dtb.month += 25; // + 24 -> 2006-10-31, + 1 -> 2006-11-31 -> 2006-12-1
+    assertDtBuilder(2004, 10, 31, 0, 0, 0, dtb);
+    
+    dtb.month += 25; //+ 24 -> 2006-10-31, + 1 -> 2006-11-31 -> 2006-12-1
     dtb.normalize();
-    assertEquals("2006-12-1 0:0:0", dtb.toString());
+    assertDtBuilder(2006, 12, 1, 0, 0, 0, dtb);
+    
     dtb.month -= 13;
     dtb.normalize();
-    assertEquals("2005-11-1 0:0:0", dtb.toString());
+    assertDtBuilder(2005, 11, 1, 0, 0, 0, dtb);
+    
     dtb.month += 2;
     dtb.normalize();
-    assertEquals("2006-1-1 0:0:0", dtb.toString());
-    dtb.day += 398;  // 1 year + 1 month + 2 days
+    assertDtBuilder(2006, 1, 1, 0, 0, 0, dtb);
+    
+    dtb.day += 398;  //1 year + 1 month + 2 days
     dtb.normalize();
-    assertEquals("2007-2-3 0:0:0", dtb.toString());
+    assertDtBuilder(2007, 2, 3, 0, 0, 0, dtb);
+    
     dtb.hour += 252;
     dtb.normalize();
-    assertEquals("2007-2-13 12:0:0", dtb.toString());
+    assertDtBuilder(2007, 2, 13, 12, 0, 0, dtb);
+    
     dtb.hour -= 365 * 24 - 8;
     dtb.normalize();
-    assertEquals("2006-2-13 20:0:0", dtb.toString());
+    assertDtBuilder(2006, 2, 13, 20, 0, 0, dtb);
+    
     dtb.minute -= 24 * 60;
     dtb.normalize();
-    assertEquals("2006-2-12 20:0:0", dtb.toString());
+    assertDtBuilder(2006, 2, 12, 20, 0, 0, dtb);
+    
     dtb.second -= 12 * 60 * 60;
     dtb.normalize();
-    assertEquals("2006-2-12 8:0:0", dtb.toString());
+    assertDtBuilder(2006, 2, 12, 8, 0, 0, dtb);
+  }
+  
+  private static void assertDtBuilder(int year, int month, int day, int hour, int minute, int second, DTBuilder dtBuilder){
+    assertEquals(year, dtBuilder.year);
+    assertEquals(month, dtBuilder.month);
+    assertEquals(day, dtBuilder.day);
+    assertEquals(hour, dtBuilder.hour);
+    assertEquals(minute, dtBuilder.minute);
+    assertEquals(second, dtBuilder.second);
   }
 }

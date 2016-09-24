@@ -14,6 +14,8 @@
 
 package biweekly.util.com.google.ical.iter;
 
+import java.util.Arrays;
+
 import junit.framework.TestCase;
 
 /**
@@ -22,6 +24,7 @@ import junit.framework.TestCase;
 public class IntSetTest extends TestCase {
   public void testAddAndContainsAndSize() {
     IntSet a = new IntSet();
+
     assertTrue(!a.contains(-2));
     assertTrue(!a.contains(-1));
     assertTrue(!a.contains(0));
@@ -59,7 +62,9 @@ public class IntSetTest extends TestCase {
 
   public void testToIntArray() {
     IntSet a = new IntSet();
-    assertEquals(0, a.toIntArray().length);
+    int[] expected = {};
+    int[] actual = a.toIntArray();
+    assertTrue(Arrays.equals(expected, actual));
 
     a.add(17);
     a.add(0);
@@ -68,12 +73,8 @@ public class IntSetTest extends TestCase {
     a.add(-12);
     a.add(4);
 
-    int[] ints = a.toIntArray();
-    assertEquals(5, ints.length);
-    assertEquals(-24, ints[0]);
-    assertEquals(-12, ints[1]);
-    assertEquals(0, ints[2]);
-    assertEquals(4, ints[3]);
-    assertEquals(17, ints[4]);
+    expected = new int[]{-24, -12, 0, 4, 17};
+    actual = a.toIntArray();
+    assertTrue(Arrays.equals(expected, actual));
   }
 }

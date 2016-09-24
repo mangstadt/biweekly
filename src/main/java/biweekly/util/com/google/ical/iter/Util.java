@@ -69,7 +69,8 @@ class Util {
    * @param dow0 the day of week of the first day in the current year/month
    * @param nDays the number of days in the current year/month (must be one of
    * the following values [28,29,30,31,365,366])
-   * @param weekNum the weekday number (for example, {@code -1SU})
+   * @param weekNum the weekday number (for example, the -1 in {@code -1SU})
+   * @param dow the day of the week (for example, the SU in {@code -1SU})
    * @param d0 the number of days between the first day of the current
    * year/month and the current month
    * @param nDaysInMonth the number of days in the current month

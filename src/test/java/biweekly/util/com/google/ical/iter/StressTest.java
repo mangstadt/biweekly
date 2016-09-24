@@ -29,7 +29,6 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author Michael Angstadt
  */
 public class StressTest extends TestCase {
-
   @Override
   protected void setUp() throws Exception {
     super.setUp();
@@ -50,7 +49,7 @@ public class StressTest extends TestCase {
     System.out.println(getName() + " took " + (dt / 1e6) + " ms");
   }
 
-  static Recurrence[] RECURRENCE_RULES = {
+  private static final Recurrence[] RECURRENCE_RULES = {
     new Recurrence.Builder(Frequency.DAILY).build(),
     new Recurrence.Builder(Frequency.WEEKLY)
       .byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
@@ -83,7 +82,7 @@ public class StressTest extends TestCase {
   private static final DateValue DT_START = new DateValueImpl(2006, 4, 3);
   private static final DateValue T0 = new DateValueImpl(2006, 8, 3);
 
-  private void runOne() {
+  private static void runOne() {
     for (Recurrence rrule : RECURRENCE_RULES) {
       RecurrenceIterator iter =
         RecurrenceIteratorFactory.createRecurrenceIterator(

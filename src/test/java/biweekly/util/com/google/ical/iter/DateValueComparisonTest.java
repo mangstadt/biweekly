@@ -24,8 +24,10 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  */
 public class DateValueComparisonTest extends TestCase {
   public void testComparisonSameAsDateValueImpl() {
-    // It's more important for DateValueComparison to be a total ordering
-    // (see the class comments) than it be consistent with DateValue.
+    /*
+     * It's more important for DateValueComparison to be a total ordering (see
+     * the class comments) than to be consistent with DateValue.
+     */
     DateValue[] inOrder = {
       new DateValueImpl(2006, 4, 11),
       new DateTimeValueImpl(2006, 4, 11, 0, 0, 0),
@@ -39,8 +41,9 @@ public class DateValueComparisonTest extends TestCase {
     };
 
     for (int i = 1; i < inOrder.length; ++i) {
-      assertTrue(DateValueComparison.comparable(inOrder[i - 1]) <
-                 DateValueComparison.comparable(inOrder[i]));
+      long prev = DateValueComparison.comparable(inOrder[i - 1]);
+      long cur = DateValueComparison.comparable(inOrder[i]);
+      assertTrue(prev < cur);
     }
     for (int i = 0; i < inOrder.length; ++i) {
       for (int j = 0; j < inOrder.length; ++j) {
@@ -54,11 +57,11 @@ public class DateValueComparisonTest extends TestCase {
     }
   }
 
-  static final int sign3(int i) {
+  private static final int sign3(int i) {
     return i < 0 ? -1 : i != 0 ? 1 : 0;
   }
 
-  static final int sign3(long a, long b) {
+  private static final int sign3(long a, long b) {
     return a < b ? -1 : a != b ? 1 : 0;
   }
 }
