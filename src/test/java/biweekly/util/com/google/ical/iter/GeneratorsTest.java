@@ -14,540 +14,1222 @@
 
 package biweekly.util.com.google.ical.iter;
 
-import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import junit.framework.TestCase;
 import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
+import biweekly.util.com.google.ical.iter.Generator.IteratorShortCircuitingException;
 import biweekly.util.com.google.ical.util.DTBuilder;
 import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
-import junit.framework.TestCase;
 
 /**
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
+ * @author Michael Angstadt
  */
 public class GeneratorsTest extends TestCase {
-  private void runGeneratorTests(
-      Generator generator, DTBuilder builder, String fieldName, String golden)
-      throws Exception {
-    runGeneratorTests(generator, builder, fieldName, golden, 50);
-  }
-
-  private void runGeneratorTests(
-      Generator generator, DTBuilder builder, String fieldName, String golden,
-      int max)
-      throws Exception {
-
-    Field field = DTBuilder.class.getDeclaredField(fieldName);
-    StringBuilder output = new StringBuilder();
-    for (int k = 0; k < max && generator.generate(builder); ++k) {
-      if (0 != k) { output.append(", "); }
-      output.append(String.valueOf(field.get(builder)));
-    }
-    assertEquals(golden, output.toString());
-  }
-
   public void testByYearDayGenerator() throws Exception {
-    runGeneratorTests(
-        Generators.byYearDayGenerator(new int[] { 1, 5, -1, 100 },
-                                      new DateValueImpl(2006, 1, 1)),
-        new DTBuilder(2006, 1, 1), "day", "1, 5");
-    runGeneratorTests(
-        Generators.byYearDayGenerator(new int[] { 1, 5, -1, 100 },
-                                      new DateValueImpl(2006, 1, 2)),
-        new DTBuilder(2006, 1, 2), "day", "1, 5");
-    runGeneratorTests(
-        Generators.byYearDayGenerator(new int[] { 100 },
-                                      new DateValueImpl(2006, 1, 6)),
-        new DTBuilder(2006, 1, 6), "day", "");
-    runGeneratorTests(
-        Generators.byYearDayGenerator(new int[] {  },
-                                      new DateValueImpl(2006, 1, 6)),
-        new DTBuilder(2006, 1, 6), "day", "");
-    runGeneratorTests(
-        Generators.byYearDayGenerator(new int[] { 1, 5, -1, 100 },
-                                      new DateValueImpl(2006, 2, 1)),
-        new DTBuilder(2006, 2, 1), "day", "");
-    runGeneratorTests(
-        Generators.byYearDayGenerator(new int[] { 1, 5, -1, 100 },
-                                      new DateValueImpl(2006, 12, 1)),
-        new DTBuilder(2006, 12, 1), "day", "31");
-    runGeneratorTests(
-        Generators.byYearDayGenerator(new int[] { 1, 5, -1, 100 },
-                                      new DateValueImpl(2006, 4, 1)),
-        new DTBuilder(2006, 4, 1), "day", "10");
+    {
+      int[] yearDays = { 1, 5, -1, 100 };
+      DateValue start = new DateValueImpl(2006, 1, 1);
+      Generator generator = Generators.byYearDayGenerator(yearDays, start);
+      DTBuilder builder = new DTBuilder(start);
+      DateValue expected[] = {
+        new DateValueImpl(2006, 1, 1),
+        new DateValueImpl(2006, 1, 5),
+      };
+      
+      run(generator, builder, expected);
+    }
+    
+    {
+      int[] yearDays = { 1, 5, -1, 100 };
+      DateValue start = new DateValueImpl(2006, 1, 2);
+      Generator generator = Generators.byYearDayGenerator(yearDays, start);
+      DTBuilder builder = new DTBuilder(start);
+      DateValue expected[] = {
+        new DateValueImpl(2006, 1, 1),
+        new DateValueImpl(2006, 1, 5),
+      };
+      
+      run(generator, builder, expected);
+    }
+    
+    {
+      int[] yearDays = { 100 };
+      DateValue start = new DateValueImpl(2006, 1, 6);
+      Generator generator = Generators.byYearDayGenerator(yearDays, start);
+      DTBuilder builder = new DTBuilder(start);
+      DateValue expected[] = {
+      };
+      
+      run(generator, builder, expected);
+    }
+    
+    {
+      int[] yearDays = {};
+      DateValue start = new DateValueImpl(2006, 1, 6);
+      Generator generator = Generators.byYearDayGenerator(yearDays, start);
+      DTBuilder builder = new DTBuilder(start);
+      DateValue expected[] = {
+      };
+      
+      run(generator, builder, expected);
+    }
+    
+    {
+      int[] yearDays = { 1, 5, -1, 100 };
+      DateValue start = new DateValueImpl(2006, 2, 1);
+      Generator generator = Generators.byYearDayGenerator(yearDays, start);
+      DTBuilder builder = new DTBuilder(start);
+      DateValue expected[] = {
+      };
+      
+      run(generator, builder, expected);
+    }
+    
+    {
+      int[] yearDays = { 1, 5, -1, 100 };
+      DateValue start = new DateValueImpl(2006, 12, 1);
+      Generator generator = Generators.byYearDayGenerator(yearDays, start);
+      DTBuilder builder = new DTBuilder(start);
+      DateValue expected[] = {
+        new DateValueImpl(2006, 12, 31)
+      };
+      
+      run(generator, builder, expected);
+    }
+    
+    {
+      int[] yearDays = { 1, 5, -1, 100 };
+      DateValue start = new DateValueImpl(2006, 4, 1);
+      Generator generator = Generators.byYearDayGenerator(yearDays, start);
+      DTBuilder builder = new DTBuilder(start);
+      DateValue expected[] = {
+        new DateValueImpl(2006, 4, 10)
+      };
+      
+      run(generator, builder, expected);
+    }
   }
 
   public void testByWeekNoGenerator() throws Exception {
-    Generator g = Generators.byWeekNoGenerator(
-        new int[] { 22 }, DayOfWeek.SUNDAY, new DateValueImpl(2006, 1, 1));
-    runGeneratorTests(g, new DTBuilder(2006, 1, 1), "day", "");
-    runGeneratorTests(g, new DTBuilder(2006, 2, 1), "day", "");
-    runGeneratorTests(g, new DTBuilder(2006, 3, 1), "day", "");
-    runGeneratorTests(g, new DTBuilder(2006, 4, 1), "day", "");
-    runGeneratorTests(g, new DTBuilder(2006, 5, 1), "day", "28, 29, 30, 31");
-    runGeneratorTests(g, new DTBuilder(2006, 6, 1), "day", "1, 2, 3");
-    runGeneratorTests(g, new DTBuilder(2006, 7, 1), "day", "");
+    {
+      int[] weekNumbers = { 22 };
+      DayOfWeek weekStart = DayOfWeek.SUNDAY;
+      DateValue start = new DateValueImpl(2006, 1, 1);
+      Generator generator = Generators.byWeekNoGenerator(weekNumbers, weekStart, start);
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 1, 1);
+        DateValue[] expected = new DateValue[]{
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 2, 1);
+        DateValue[] expected = new DateValue[]{
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 3, 1);
+        DateValue[] expected = new DateValue[]{
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 4, 1);
+        DateValue[] expected = new DateValue[]{
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 5, 1);
+        DateValue[] expected = new DateValue[]{
+          new DateValueImpl(2006, 5, 28),
+          new DateValueImpl(2006, 5, 29),
+          new DateValueImpl(2006, 5, 30),
+          new DateValueImpl(2006, 5, 31)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 6, 1);
+        DateValue[] expected = new DateValue[]{
+          new DateValueImpl(2006, 6, 1),
+          new DateValueImpl(2006, 6, 2),
+          new DateValueImpl(2006, 6, 3)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 7, 1);
+        DateValue[] expected = new DateValue[]{
+        };
+        run(generator, builder, expected);
+      }
+    }
 
-    // weekstart of monday shifts each week forward by one
-    Generator g2 = Generators.byWeekNoGenerator(
-        new int[] { 22 }, DayOfWeek.MONDAY, new DateValueImpl(2006, 1, 1));
-    runGeneratorTests(g2, new DTBuilder(2006, 1, 1), "day", "");
-    runGeneratorTests(g2, new DTBuilder(2006, 2, 1), "day", "");
-    runGeneratorTests(g2, new DTBuilder(2006, 3, 1), "day", "");
-    runGeneratorTests(g2, new DTBuilder(2006, 4, 1), "day", "");
-    runGeneratorTests(g2, new DTBuilder(2006, 5, 1), "day", "29, 30, 31");
-    runGeneratorTests(g2, new DTBuilder(2006, 6, 1), "day", "1, 2, 3, 4");
-    runGeneratorTests(g2, new DTBuilder(2006, 7, 1), "day", "");
+    //weekstart of monday shifts each week forward by one
+    {
+      int[] weekNumbers = { 22 };
+      DayOfWeek weekStart = DayOfWeek.MONDAY;
+      DateValue start = new DateValueImpl(2006, 1, 1);
+      Generator generator = Generators.byWeekNoGenerator(weekNumbers, weekStart, start);
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 1, 1);
+        DateValue[] expected = new DateValue[]{
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 2, 1);
+        DateValue[] expected = new DateValue[]{
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 3, 1);
+        DateValue[] expected = new DateValue[]{
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 4, 1);
+        DateValue[] expected = new DateValue[]{
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 5, 1);
+        DateValue[] expected = new DateValue[]{
+          new DateValueImpl(2006, 5, 29),
+          new DateValueImpl(2006, 5, 30),
+          new DateValueImpl(2006, 5, 31)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 6, 1);
+        DateValue[] expected = new DateValue[]{
+          new DateValueImpl(2006, 6, 1),
+          new DateValueImpl(2006, 6, 2),
+          new DateValueImpl(2006, 6, 3),
+          new DateValueImpl(2006, 6, 4)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 7, 1);
+        DateValue[] expected = new DateValue[]{
+        };
+        run(generator, builder, expected);
+      }
+    }
 
-    // 2004 with a week start of monday has no orphaned days.
-    // 2004-01-01 falls on Thursday
-    Generator g3 = Generators.byWeekNoGenerator(
-        new int[] { 14 }, DayOfWeek.MONDAY, new DateValueImpl(2004, 1, 1));
-    runGeneratorTests(g3, new DTBuilder(2004, 1, 1), "day", "");
-    runGeneratorTests(g3, new DTBuilder(2004, 2, 1), "day", "");
-    runGeneratorTests(g3, new DTBuilder(2004, 3, 1), "day", "29, 30, 31");
-    runGeneratorTests(g3, new DTBuilder(2004, 4, 1), "day", "1, 2, 3, 4");
-    runGeneratorTests(g3, new DTBuilder(2004, 5, 1), "day", "");
+    //2004 with a week start of monday has no orphaned days.
+    //2004-01-01 falls on Thursday
+    {
+      int[] weekNumbers = { 14 };
+      DayOfWeek weekStart = DayOfWeek.MONDAY;
+      DateValue start = new DateValueImpl(2004, 1, 1);
+      Generator generator = Generators.byWeekNoGenerator(weekNumbers, weekStart, start);
+      
+      {
+        DTBuilder builder = new DTBuilder(2004, 1, 1);
+        DateValue[] expected = new DateValue[]{
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2004, 2, 1);
+        DateValue[] expected = new DateValue[]{
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2004, 3, 1);
+        DateValue[] expected = new DateValue[]{
+          new DateValueImpl(2004, 3, 29),
+          new DateValueImpl(2004, 3, 30),
+          new DateValueImpl(2004, 3, 31)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2004, 4, 1);
+        DateValue[] expected = new DateValue[]{
+          new DateValueImpl(2004, 4, 1),
+          new DateValueImpl(2004, 4, 2),
+          new DateValueImpl(2004, 4, 3),
+          new DateValueImpl(2004, 4, 4)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2004, 5, 1);
+        DateValue[] expected = new DateValue[]{
+        };
+        run(generator, builder, expected);
+        }
+    }
   }
 
   public void testByDayGenerator() throws Exception {
-    ByDay[] days = new ByDay[] {
-      new ByDay(DayOfWeek.SUNDAY), // every sunday
-      new ByDay(1, DayOfWeek.MONDAY), // first monday
-      new ByDay(5, DayOfWeek.MONDAY), // fifth monday
-      new ByDay(-2, DayOfWeek.TUESDAY) // second to last tuesday
+    ByDay[] days = {
+      new ByDay(DayOfWeek.SUNDAY), //every sunday
+      new ByDay(1, DayOfWeek.MONDAY), //first monday
+      new ByDay(5, DayOfWeek.MONDAY), //fifth monday
+      new ByDay(-2, DayOfWeek.TUESDAY) //second to last tuesday
     };
-    Generator g = Generators.byDayGenerator(
-        days, false, new DateValueImpl(2006, 1, 1));
-    runGeneratorTests(
-        g, new DTBuilder(2006, 1, 1), "day", "1, 2, 8, 15, 22, 24, 29, 30");
-    runGeneratorTests(
-        g, new DTBuilder(2006, 2, 1), "day", "5, 6, 12, 19, 21, 26");
+    boolean weeksInYear = false;
+    DateValue start = new DateValueImpl(2006, 1, 1);
+    Generator generator = Generators.byDayGenerator(days, weeksInYear, start);
+    
+    {
+      DTBuilder builder = new DTBuilder(2006, 1, 1);
+      DateValue[] expected = new DateValue[] {
+        new DateValueImpl(2006, 1, 1),
+        new DateValueImpl(2006, 1, 2),
+        new DateValueImpl(2006, 1, 8),
+        new DateValueImpl(2006, 1, 15),
+        new DateValueImpl(2006, 1, 22),
+        new DateValueImpl(2006, 1, 24),
+        new DateValueImpl(2006, 1, 29),
+        new DateValueImpl(2006, 1, 30)
+      };
+      run(generator, builder, expected);
+    }
+    
+    {
+      DTBuilder builder = new DTBuilder(2006, 2, 1);
+      DateValue[] expected = new DateValue[] {
+        new DateValueImpl(2006, 2, 5),
+        new DateValueImpl(2006, 2, 6),
+        new DateValueImpl(2006, 2, 12),
+        new DateValueImpl(2006, 2, 19),
+        new DateValueImpl(2006, 2, 21),
+        new DateValueImpl(2006, 2, 26)
+      };
+      run(generator, builder, expected);
+    }
   }
 
   public void testByMonthDayGenerator() throws Exception {
-    int[] monthDays = new int[] { 1, 15, 29 };
-    runGeneratorTests(Generators.byMonthDayGenerator(
-                          monthDays, new DateValueImpl(2006, 1, 1)),
-                      new DTBuilder(2006, 1, 1), "day", "1, 15, 29");
-    runGeneratorTests(Generators.byMonthDayGenerator(
-                          monthDays, new DateValueImpl(2006, 1, 15)),
-                      new DTBuilder(2006, 1, 15), "day", "1, 15, 29");
-    runGeneratorTests(Generators.byMonthDayGenerator(
-                          monthDays, new DateValueImpl(2006, 2, 1)),
-                      new DTBuilder(2006, 2, 1), "day", "1, 15");
-    runGeneratorTests(Generators.byMonthDayGenerator(
-                          monthDays, new DateValueImpl(2006, 2, 16)),
-                      new DTBuilder(2006, 2, 16), "day", "1, 15");
+    {
+      int[] monthDays = { 1, 15, 29 };
 
-    monthDays = new int[] { 1, -30, 30 };
-    Generator g2 = Generators.byMonthDayGenerator(
-        monthDays, new DateValueImpl(2006, 1, 1));
-    runGeneratorTests(g2,
-                      new DTBuilder(2006, 1, 1), "day", "1, 2, 30");
-    runGeneratorTests(g2,
-                      new DTBuilder(2006, 2, 1), "day", "1");
-    runGeneratorTests(g2,
-                      new DTBuilder(2006, 3, 1), "day", "1, 2, 30");
-    runGeneratorTests(g2,
-                      new DTBuilder(2006, 4, 1), "day", "1, 30");
+      {
+        DateValue start = new DateValueImpl(2006, 1, 1);
+        Generator generator = Generators.byMonthDayGenerator(monthDays, start);
+        DTBuilder builder = new DTBuilder(start);
+        DateValue[] expected = new DateValue[] {
+          new DateValueImpl(2006, 1, 1),
+          new DateValueImpl(2006, 1, 15),
+          new DateValueImpl(2006, 1, 29)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DateValue start = new DateValueImpl(2006, 1, 15);
+        Generator generator = Generators.byMonthDayGenerator(monthDays, start);
+        DTBuilder builder = new DTBuilder(start);
+        DateValue[] expected = new DateValue[] {
+          new DateValueImpl(2006, 1, 1),
+          new DateValueImpl(2006, 1, 15),
+          new DateValueImpl(2006, 1, 29)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DateValue start = new DateValueImpl(2006, 2, 1);
+        Generator generator = Generators.byMonthDayGenerator(monthDays, start);
+        DTBuilder builder = new DTBuilder(start);
+        DateValue[] expected = new DateValue[] {
+          new DateValueImpl(2006, 2, 1),
+          new DateValueImpl(2006, 2, 15)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DateValue start = new DateValueImpl(2006, 2, 16);
+        Generator generator = Generators.byMonthDayGenerator(monthDays, start);
+        DTBuilder builder = new DTBuilder(start);
+        DateValue[] expected = new DateValue[] {
+          new DateValueImpl(2006, 2, 1),
+          new DateValueImpl(2006, 2, 15)
+        };
+        run(generator, builder, expected);
+      }
+    }
+
+    
+    {
+      int[] monthDays = { 1, -30, 30 };
+      DateValue start = new DateValueImpl(2006, 1, 1);
+      Generator generator = Generators.byMonthDayGenerator(monthDays, start);
+
+      {
+        DTBuilder builder = new DTBuilder(2006, 1, 1);
+        DateValue[] expected = new DateValue[] {
+          new DateValueImpl(2006, 1, 1),
+          new DateValueImpl(2006, 1, 2),
+          new DateValueImpl(2006, 1, 30)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 2, 1);
+        DateValue[] expected = new DateValue[] {
+          new DateValueImpl(2006, 2, 1)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 3, 1);
+        DateValue[] expected = new DateValue[] {
+          new DateValueImpl(2006, 3, 1),
+          new DateValueImpl(2006, 3, 2),
+          new DateValueImpl(2006, 3, 30)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 4, 1);
+        DateValue[] expected = new DateValue[] {
+          new DateValueImpl(2006, 4, 1),
+          new DateValueImpl(2006, 4, 30)
+        };
+        run(generator, builder, expected);
+      }
+    }
   }
 
   public void testByMonthGenerator() throws Exception {
-    runGeneratorTests(Generators.byMonthGenerator(
-                          new int[] { 2, 8, 6, 10 },
-                          new DateValueImpl(2006, 1, 1)),
-                      new DTBuilder(2006, 1, 1), "month", "2, 6, 8, 10");
-    Generator g = Generators.byMonthGenerator(
-        new int[] { 2, 8, 6, 10 }, new DateValueImpl(2006, 4, 1));
-    runGeneratorTests(g, new DTBuilder(2006, 4, 1), "month", "2, 6, 8, 10");
-    runGeneratorTests(g, new DTBuilder(2007, 11, 1), "month", "2, 6, 8, 10");
+    {
+      int[] months = { 2, 8, 6, 10 };
+      DateValue start = new DateValueImpl(2006, 1, 1);
+      Generator generator = Generators.byMonthGenerator(months, start);
+      DTBuilder builder = new DTBuilder(start);
+      DateValue[] expected = {
+        new DateValueImpl(2006, 2, 1),
+        new DateValueImpl(2006, 6, 1),
+        new DateValueImpl(2006, 8, 1),
+        new DateValueImpl(2006, 10, 1),
+      };
+      run(generator, builder, expected);
+    }
+    
+    {
+      int[] months = { 2, 8, 6, 10 };
+      DateValue start = new DateValueImpl(2006, 4, 1);
+      Generator generator = Generators.byMonthGenerator(months, start);
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 4, 1);
+        DateValue[] expected = new DateValue[]{
+          new DateValueImpl(2006, 2, 1),
+          new DateValueImpl(2006, 6, 1),
+          new DateValueImpl(2006, 8, 1),
+          new DateValueImpl(2006, 10, 1),
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2007, 11, 1);
+        DateValue[] expected = new DateValue[]{
+          new DateValueImpl(2007, 2, 1),
+          new DateValueImpl(2007, 6, 1),
+          new DateValueImpl(2007, 8, 1),
+          new DateValueImpl(2007, 10, 1),
+        };
+        run(generator, builder, expected);
+      }
+    }
   }
 
   public void testByYearGenerator() throws Exception {
-    runGeneratorTests(
-        Generators.byYearGenerator(new int[] { 1066, 1492, 1876, 1975, 2006 },
-                                   new DateValueImpl(2006, 1, 1)),
-        new DTBuilder(2006, 1, 1), "year", "2006");
-    runGeneratorTests(
-        Generators.byYearGenerator(new int[] { 1066, 1492, 1876, 1975, 2006 },
-                                   new DateValueImpl(2007, 1, 1)),
-        new DTBuilder(2007, 1, 1), "year", "");
-    runGeneratorTests(
-        Generators.byYearGenerator(new int[] { 1066, 1492, 1876, 1975, 2006 },
-                                   new DateValueImpl(1066, 7, 1)),
-        new DTBuilder(1066, 7, 1), "year", "1066, 1492, 1876, 1975, 2006");
-    runGeneratorTests(
-        Generators.byYearGenerator(new int[] { 1066, 1492, 1876, 1975, 2006 },
-                                   new DateValueImpl(1900, 7, 1)),
-        new DTBuilder(1900, 7, 1), "year", "1975, 2006");
+    {
+      int years[] = { 1066, 1492, 1876, 1975, 2006 };
+      
+      {
+        DateValue start = new DateValueImpl(2006, 1, 1);
+        Generator generator = Generators.byYearGenerator(years, start);
+        DTBuilder builder = new DTBuilder(start);
+        DateValue[] expected = {
+            new DateValueImpl(2006, 1, 1)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DateValue start = new DateValueImpl(2007, 1, 1);
+        Generator generator = Generators.byYearGenerator(years, start);
+        DTBuilder builder = new DTBuilder(start);
+        DateValue[] expected = {
+        };
+        run(generator, builder, expected);
+      }
+    }
+    
+    {
+      int years[] = { 1066, 1492, 1876, 1975, 2006 };
+      
+      {
+        DateValue start = new DateValueImpl(1066, 7, 1);
+        Generator generator = Generators.byYearGenerator(years, start);
+        DTBuilder builder = new DTBuilder(start);
+        DateValue[] expected = {
+            new DateValueImpl(1066, 7, 1),
+            new DateValueImpl(1492, 7, 1),
+            new DateValueImpl(1876, 7, 1),
+            new DateValueImpl(1975, 7, 1),
+            new DateValueImpl(2006, 7, 1),
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DateValue start = new DateValueImpl(1900, 7, 1);
+        Generator generator = Generators.byYearGenerator(years, start);
+        DTBuilder builder = new DTBuilder(start);
+        DateValue[] expected = {
+            new DateValueImpl(1975, 7, 1),
+            new DateValueImpl(2006, 7, 1),
+        };
+        run(generator, builder, expected);
+      }
+    }
   }
 
   public void testSerialDayGenerator() throws Exception {
-    runGeneratorTests(
-        Generators.serialDayGenerator(
-            1, new DateValueImpl(2006, 1, 15)),
-        new DTBuilder(2006, 1, 15), "day",
-          "15, 16, 17, 18, 19, 20, 21, 22, 23, 24, "
-          + "25, 26, 27, 28, 29, 30, 31");
-    runGeneratorTests(Generators.serialDayGenerator(
-                          1, new DateValueImpl(2006, 1, 1)),
-                      new DTBuilder(2006, 1, 1), "day",
-                      "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, "
-                      + "11, 12, 13, 14, 15, 16, 17, 18, 19, 20, "
-                      + "21, 22, 23, 24, 25, 26, 27, 28, 29, 30, "
-                      + "31");
-    Generator g = Generators.serialDayGenerator(
-        2, new DateValueImpl(2006, 1, 1));
-    runGeneratorTests(
-        g, new DTBuilder(2006, 1, 1), "day",
-        "1, 3, 5, 7, 9, "
-        + "11, 13, 15, 17, 19, "
-        + "21, 23, 25, 27, 29, "
-        + "31");
-    // now g should start on the second of February
-    runGeneratorTests(
-        g, new DTBuilder(2006, 2, 1), "day",
-        "2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28");
-    // and if we skip way ahead to June, it should start on the 1st
-    // This test is limited to one output value
-    runGeneratorTests(g,
-                      new DTBuilder(2006, 4, 1), "day", "1", 1);
-    // test with intervals longer than 30 days
-    Generator g2 = Generators.serialDayGenerator(
-        45, new DateValueImpl(2006, 1, 1));
-    runGeneratorTests(g2, new DTBuilder(2006, 1, 1), "day", "1");
-    runGeneratorTests(g2, new DTBuilder(2006, 2, 1), "day", "15");
-    runGeneratorTests(g2, new DTBuilder(2006, 3, 1), "day", "");
-    runGeneratorTests(g2, new DTBuilder(2006, 4, 1), "day", "1");
-    runGeneratorTests(g2, new DTBuilder(2006, 5, 1), "day", "16");
+    {
+      int interval = 1;
+      DateValue start = new DateValueImpl(2006, 1, 15);
+      Generator generator = Generators.serialDayGenerator(interval, start);
+      DTBuilder builder = new DTBuilder(start);
+      DateValue[] expected = allDaysInMonth(new DateValueImpl(2006, 1, 15));
+      run(generator, builder, expected);
+    }
+    
+    {
+      int interval = 1;
+      DateValue start = new DateValueImpl(2006, 1, 1);
+      Generator generator = Generators.serialDayGenerator(interval, start);
+      DTBuilder builder = new DTBuilder(start);
+      DateValue[] expected = allDaysInMonth(new DateValueImpl(2006, 1, 1));
+      run(generator, builder, expected);
+    }
+    
+    {
+      int interval = 2;
+      DateValue start = new DateValueImpl(2006, 1, 1);
+      Generator generator = Generators.serialDayGenerator(interval, start);
+      
+      {
+        DTBuilder builder = new DTBuilder(start);
+        DateValue[] expected = everyOtherDayInMonth(new DateValueImpl(2006, 1, 1));
+        run(generator, builder, expected);
+      }
+      
+      //now generator should start on the second of February
+      {
+        DTBuilder builder = new DTBuilder(2006, 2, 1);
+        DateValue[] expected = everyOtherDayInMonth(new DateValueImpl(2006, 2, 2));
+        run(generator, builder, expected);
+      }
+      
+
+      //and if we skip way ahead to June, it should start on the 1st
+      {
+        DTBuilder builder = new DTBuilder(2006, 4, 1);
+        DateValue[] expected = everyOtherDayInMonth(new DateValueImpl(2006, 4, 1));
+        run(generator, builder, expected);
+      }
+    }
+    
+    //test with intervals longer than 30 days
+    {
+      int interval = 45;
+      DateValue start = new DateValueImpl(2006, 1, 1);
+      Generator generator = Generators.serialDayGenerator(interval, start);
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 1, 1);
+        DateValue[] expected = {
+            new DateValueImpl(2006, 1, 1)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 2, 1);
+        DateValue[] expected = {
+            new DateValueImpl(2006, 2, 15)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 3, 1);
+        DateValue[] expected = {
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 4, 1);
+        DateValue[] expected = {
+            new DateValueImpl(2006, 4, 1)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 5, 1);
+        DateValue[] expected = {
+            new DateValueImpl(2006, 5, 16)
+        };
+        run(generator, builder, expected);
+      }
+    }
   }
 
   public void testSerialMonthGenerator() throws Exception {
-    runGeneratorTests(
-        Generators.serialMonthGenerator(
-            1, new DateValueImpl(2006, 1, 1)),
-        new DTBuilder(2006, 1, 1), "month",
-        "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12");
-    runGeneratorTests(
-        Generators.serialMonthGenerator(
-            1, new DateValueImpl(2006, 4, 1)),
-        new DTBuilder(2006, 4, 1), "month", "4, 5, 6, 7, 8, 9, 10, 11, 12");
-    runGeneratorTests(
-        Generators.serialMonthGenerator(
-            2, new DateValueImpl(2006, 4, 1)),
-        new DTBuilder(2006, 4, 1), "month", "4, 6, 8, 10, 12");
-    Generator g = Generators.serialMonthGenerator(
-        7, new DateValueImpl(2006, 4, 1));
-    runGeneratorTests(g, new DTBuilder(2006, 4, 1), "month", "4, 11");
-    runGeneratorTests(g, new DTBuilder(2007, 11, 1), "month", "6");
-    runGeneratorTests(g, new DTBuilder(2008, 6, 1), "month", "1, 8");
-    Generator g2 = Generators.serialMonthGenerator(
-        18, new DateValueImpl(2006, 4, 1));
-    runGeneratorTests(g2, new DTBuilder(2006, 4, 1), "month", "4");
-    runGeneratorTests(g2, new DTBuilder(2007, 11, 1), "month", "10");
-    runGeneratorTests(g2, new DTBuilder(2008, 6, 1), "month", "");
-    runGeneratorTests(g2, new DTBuilder(2009, 6, 1), "month", "4");
+    {
+      int interval = 1;
+      DateValue start = new DateValueImpl(2006, 1, 1);
+      Generator generator = Generators.serialMonthGenerator(interval, start);
+      DTBuilder builder = new DTBuilder(start);
+      DateValue[] expected = allMonthsInYear(start);
+      run(generator, builder, expected);
+    }
+    
+    {
+      int interval = 1;
+      DateValue start = new DateValueImpl(2006, 4, 1);
+      Generator generator = Generators.serialMonthGenerator(interval, start);
+      DTBuilder builder = new DTBuilder(start);
+      DateValue[] expected = allMonthsInYear(start);
+      run(generator, builder, expected);
+    }
+    
+    {
+      int interval = 2;
+      DateValue start = new DateValueImpl(2006, 4, 1);
+      Generator generator = Generators.serialMonthGenerator(interval, start);
+      DTBuilder builder = new DTBuilder(start);
+      DateValue[] expected = everyOtherMonthInYear(start);
+      run(generator, builder, expected);
+    }
+    
+    {
+      int interval = 7;
+      DateValue start = new DateValueImpl(2006, 4, 1);
+      Generator generator = Generators.serialMonthGenerator(interval, start);
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 4, 1);
+        DateValue[] expected = {
+            new DateValueImpl(2006, 4, 1),
+            new DateValueImpl(2006, 11, 1),
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2007, 11, 1);
+        DateValue[] expected = {
+            new DateValueImpl(2007, 6, 1)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2008, 4, 1);
+        DateValue[] expected = {
+            new DateValueImpl(2008, 1, 1),
+            new DateValueImpl(2008, 8, 1)
+        };
+        run(generator, builder, expected);
+      }
+    }
+    
+    {
+      int interval = 18;
+      DateValue start = new DateValueImpl(2006, 4, 1);
+      Generator generator = Generators.serialMonthGenerator(interval, start);
+      
+      {
+        DTBuilder builder = new DTBuilder(2006, 4, 1);
+        DateValue[] expected = {
+            new DateValueImpl(2006, 4, 1)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2007, 11, 1);
+        DateValue[] expected = {
+            new DateValueImpl(2007, 10, 1)
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2008, 6, 1);
+        DateValue[] expected = {
+        };
+        run(generator, builder, expected);
+      }
+      
+      {
+        DTBuilder builder = new DTBuilder(2009, 6, 1);
+        DateValue[] expected = {
+          new DateValueImpl(2009, 4, 1)
+        };
+        run(generator, builder, expected);
+      }
+    }
   }
 
   public void testSerialYearGenerator() throws Exception {
-    runGeneratorTests(
-        Generators.serialYearGenerator(
-            1, new DateValueImpl(2006, 1, 1)),
-        new DTBuilder(2006, 1, 1), "year", "2006, 2007, 2008, 2009, 2010", 5);
-    runGeneratorTests(
-        Generators.serialYearGenerator(
-            2, new DateValueImpl(2006, 1, 1)),
-        new DTBuilder(2006, 1, 1), "year", "2006, 2008, 2010, 2012, 2014", 5);
+    {
+      int interval = 1;
+      DateValue start = new DateValueImpl(2006, 4, 1);
+      Generator generator = Generators.serialYearGenerator(interval, start);
+      DTBuilder builder = new DTBuilder(start);
+      DateValue[] expected = {
+        new DateValueImpl(2006, 4, 1),
+        new DateValueImpl(2007, 4, 1),
+        new DateValueImpl(2008, 4, 1),
+        new DateValueImpl(2009, 4, 1),
+        new DateValueImpl(2010, 4, 1),
+      };
+      run(generator, builder, expected, false);
+    }
+    
+    {
+      int interval = 2;
+      DateValue start = new DateValueImpl(2006, 1, 1);
+      Generator generator = Generators.serialYearGenerator(interval, start);
+      DTBuilder builder = new DTBuilder(start);
+      DateValue[] expected = {
+        new DateValueImpl(2006, 1, 1),
+        new DateValueImpl(2008, 1, 1),
+        new DateValueImpl(2010, 1, 1),
+        new DateValueImpl(2012, 1, 1),
+        new DateValueImpl(2014, 1, 1)
+      };
+      run(generator, builder, expected, false);
+    }
   }
 
   public void testSerialHourGeneratorGivenDate() throws Exception {
-    DateValue dtStart = new DateValueImpl(2011, 8, 8);
-    Generator g = Generators.serialHourGenerator(7, dtStart);
-    DTBuilder b = new DTBuilder(dtStart);
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 0:0:0", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 7:0:0", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 14:0:0", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 21:0:0", b.toString());
-    assertFalse(g.generate(b));
-    assertEquals("2011-8-8 21:0:0", b.toString());
-    ++b.day;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-9 4:0:0", b.toString());
-    b.day += 2;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-11 5:0:0", b.toString());
+    int interval = 7;
+    DateValue start = new DateValueImpl(2011, 8, 8);
+    Generator generator = Generators.serialHourGenerator(interval, start);
+    DTBuilder builder = new DTBuilder(start);
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 0, 0, 0), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 7, 0, 0), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 14, 0, 0), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 21, 0, 0), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 21, 0, 0), builder.toDateTime());
+    
+    ++builder.day;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 9, 4, 0, 0), builder.toDateTime());
+    
+    builder.day += 2;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 11, 5, 0, 0), builder.toDateTime());
   }
 
   public void testSerialHourGeneratorGivenTime() throws Exception {
-    DateValue dtStart = new DateTimeValueImpl(2011, 8, 8, 1, 25, 30);
-    Generator g = Generators.serialHourGenerator(7, dtStart);
-    DTBuilder b = new DTBuilder(dtStart);
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 1:25:30", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 8:25:30", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 15:25:30", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 22:25:30", b.toString());
-    assertFalse(g.generate(b));
-    assertEquals("2011-8-8 22:25:30", b.toString());
-    ++b.day;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-9 5:25:30", b.toString());
-    b.day += 2;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-11 6:25:30", b.toString());
+    int interval = 7;
+    DateValue start = new DateTimeValueImpl(2011, 8, 8, 1, 25, 30);
+    Generator generator = Generators.serialHourGenerator(interval, start);
+    DTBuilder builder = new DTBuilder(start);
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 1, 25, 30), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 8, 25, 30), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 15, 25, 30), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 22, 25, 30), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 22, 25, 30), builder.toDateTime());
+    
+    ++builder.day;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 9, 5, 25, 30), builder.toDateTime());
+    
+    builder.day += 2;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 11, 6, 25, 30), builder.toDateTime());
   }
 
   public void testSerialHourGeneratorRolledBack() throws Exception {
-    DateValue dtStart = new DateTimeValueImpl(2011, 8, 8, 1, 25, 30);
-    Generator g = Generators.serialHourGenerator(7, dtStart);
-    DTBuilder b = new DTBuilder(new DateTimeValueImpl(2011, 8, 1, 0, 29, 50));
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-1 1:29:50", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-1 8:29:50", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-1 15:29:50", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-1 22:29:50", b.toString());
-    assertFalse(g.generate(b));
-    assertEquals("2011-8-1 22:29:50", b.toString());
-    ++b.day;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-2 5:29:50", b.toString());
-    b.day += 2;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-4 6:29:50", b.toString());
+    int interval = 7;
+    DateValue start = new DateTimeValueImpl(2011, 8, 8, 1, 25, 30);
+    Generator generator = Generators.serialHourGenerator(interval, start);
+    DTBuilder builder = new DTBuilder(new DateTimeValueImpl(2011, 8, 1, 0, 29, 50));
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 1, 1, 29, 50), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 1, 8, 29, 50), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 1, 15, 29, 50), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 1, 22, 29, 50), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 1, 22, 29, 50), builder.toDateTime());
+    
+    ++builder.day;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 2, 5, 29, 50), builder.toDateTime());
+    
+    builder.day += 2;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 4, 6, 29, 50), builder.toDateTime());
   }
 
   public void testByHourGeneratorGivenDate() throws Exception {
-    DateValue dtStart = new DateValueImpl(2011, 8, 8);
-    Generator g = Generators.byHourGenerator(new int[] { 3, 9, 11 }, dtStart);
-    DTBuilder b = new DTBuilder(dtStart);
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 3:0:0", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 9:0:0", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 11:0:0", b.toString());
-    assertFalse(g.generate(b));
-    assertEquals("2011-8-8 11:0:0", b.toString());
-    ++b.day;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-9 3:0:0", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-9 9:0:0", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-9 11:0:0", b.toString());
-    ++b.month;
-    assertTrue(g.generate(b));
-    assertEquals("2011-9-9 3:0:0", b.toString());
+    int[] hours = { 3, 9, 11 };
+    DateValue start = new DateValueImpl(2011, 8, 8);
+    Generator generator = Generators.byHourGenerator(hours, start);
+    DTBuilder builder = new DTBuilder(start);
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 3, 0, 0), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 9, 0, 0), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 11, 0, 0), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 11, 0, 0), builder.toDateTime());
+    
+    ++builder.day;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 9, 3, 0, 0), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 9, 9, 0, 0), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 9, 11, 0, 0), builder.toDateTime());
+    
+    ++builder.month;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 9, 9, 3, 0, 0), builder.toDateTime());
   }
 
   public void testByHourGeneratorGivenDateTime() throws Exception {
-    DateValue dtStart = new DateTimeValueImpl(2011, 8, 8, 3, 11, 12);
-    Generator g = Generators.byHourGenerator(new int[] { 3, 9, 11 }, dtStart);
-    DTBuilder b = new DTBuilder(dtStart);
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 3:11:12", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 9:11:12", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 11:11:12", b.toString());
-    assertFalse(g.generate(b));
-    assertEquals("2011-8-8 11:11:12", b.toString());
-    ++b.day;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-9 3:11:12", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-9 9:11:12", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-9 11:11:12", b.toString());
-    ++b.month;
-    assertTrue(g.generate(b));
-    assertEquals("2011-9-9 3:11:12", b.toString());
+    int[] hours = { 3, 9, 11 };
+    DateValue start = new DateTimeValueImpl(2011, 8, 8, 3, 11, 12);
+    Generator generator = Generators.byHourGenerator(hours, start);
+    DTBuilder builder = new DTBuilder(start);
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 3, 11, 12), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 9, 11, 12), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 11, 11, 12), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 11, 11, 12), builder.toDateTime());
+    
+    ++builder.day;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 9, 3, 11, 12), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 9, 9, 11, 12), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 9, 11, 11, 12), builder.toDateTime());
+    
+    ++builder.month;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 9, 9, 3, 11, 12), builder.toDateTime());
   }
 
   public void testSingleByHourGeneratorGivenDateTime() throws Exception {
-    DateValue dtStart = new DateTimeValueImpl(2011, 8, 8, 3, 11, 12);
-    Generator g = Generators.byHourGenerator(new int[] { 7 }, dtStart);
-    DTBuilder b = new DTBuilder(dtStart);
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 7:11:12", b.toString());
-    ++b.day;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-9 7:11:12", b.toString());
-    ++b.month;
-    assertTrue(g.generate(b));
-    assertEquals("2011-9-9 7:11:12", b.toString());
+    int[] hours = { 7 };
+    DateValue start = new DateTimeValueImpl(2011, 8, 8, 3, 11, 12);
+    Generator generator = Generators.byHourGenerator(hours, start);
+    DTBuilder builder = new DTBuilder(start);
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 7, 11, 12), builder.toDateTime());
+    
+    ++builder.day;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 9, 7, 11, 12), builder.toDateTime());
+    
+    ++builder.month;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 9, 9, 7, 11, 12), builder.toDateTime());
   }
 
   public void testSerialMinuteGeneratorBigInterval() throws Exception {
-    DateValue dtStart = new DateTimeValueImpl(2011, 8, 8, 15, 30, 0);
-    Generator g = Generators.serialMinuteGenerator(100, dtStart);
-    DTBuilder b = new DTBuilder(dtStart);
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 15:30:0", b.toString());
-    assertFalse(g.generate(b));
-    assertEquals("2011-8-8 15:30:0", b.toString());
-    ++b.hour;
-    assertFalse(g.generate(b));
-    assertEquals("2011-8-8 16:30:0", b.toString());
-    ++b.hour;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 17:10:0", b.toString());
-    assertFalse(g.generate(b));
-    ++b.hour;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 18:50:0", b.toString());
-    assertFalse(g.generate(b));
-    ++b.hour;
-    assertFalse(g.generate(b));
-    ++b.hour;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 20:30:0", b.toString());
-    assertFalse(g.generate(b));
-    ++b.hour;
-    assertFalse(g.generate(b));
-    ++b.hour;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 22:10:0", b.toString());
-    assertFalse(g.generate(b));
-    ++b.hour;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 23:50:0", b.toString());
-    assertFalse(g.generate(b));
-    assertEquals("2011-8-8 23:50:0", b.toString());
-    ++b.day;
-    b.hour = 0;
-    assertFalse(g.generate(b));
-    ++b.hour;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-9 1:30:0", b.toString());
-    b.day += 2;
-    b.hour = 6;
-    // Skipping over 3:10, 4:50, 6:30, 8:10, 9:50, 11:30, 13:10, 14:50, 16:30,
-    //               18:10, 19:50, 21:30, 23:10,
-    // on the 9th, and 0:50, 2:30, 4:10, 5:50, 7:30, 9:10, 10:50, 12:30,
-    //               14:10, 15:50, 17:30, 19:10, 20:50, 22:30,
-    // on the 10th, and 00:10, 1:50, 3:30, 5:10 on the 11th, to 6:50.
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-11 6:50:0", b.toString());
+    int interval = 100;
+    DateValue start = new DateTimeValueImpl(2011, 8, 8, 15, 30, 0);
+    Generator generator = Generators.serialMinuteGenerator(interval, start);
+    DTBuilder builder = new DTBuilder(start);
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 15, 30, 0), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 15, 30, 0), builder.toDateTime());
+    
+    ++builder.hour;
+    assertFalse(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 16, 30, 0), builder.toDateTime());
+    
+    ++builder.hour;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 17, 10, 0), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    ++builder.hour;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 18, 50, 0), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    ++builder.hour;
+    assertFalse(generator.generate(builder));
+    ++builder.hour;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 20, 30, 0), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    ++builder.hour;
+    assertFalse(generator.generate(builder));
+    ++builder.hour;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 22, 10, 0), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    ++builder.hour;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 23, 50, 0), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 23, 50, 0), builder.toDateTime());
+    
+    ++builder.day;
+    builder.hour = 0;
+    assertFalse(generator.generate(builder));
+    ++builder.hour;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 9, 1, 30, 0), builder.toDateTime());
+    
+    builder.day += 2;
+    builder.hour = 6;
+    //Skipping over 3:10, 4:50, 6:30, 8:10, 9:50, 11:30, 13:10, 14:50, 16:30,
+    //              18:10, 19:50, 21:30, 23:10,
+    //on the 9th, and 0:50, 2:30, 4:10, 5:50, 7:30, 9:10, 10:50, 12:30,
+    //              14:10, 15:50, 17:30, 19:10, 20:50, 22:30,
+    //on the 10th, and 00:10, 1:50, 3:30, 5:10 on the 11th, to 6:50.
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 11, 6, 50, 0), builder.toDateTime());
   }
 
   public void testSerialMinuteGeneratorSmallInterval() throws Exception {
-    DateValue dtStart = new DateValueImpl(2011, 8, 8);
-    Generator g = Generators.serialMinuteGenerator(15, dtStart);
-    DTBuilder b = new DTBuilder(dtStart);
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 0:0:0", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 0:15:0", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 0:30:0", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 0:45:0", b.toString());
-    assertFalse(g.generate(b));
-    ++b.hour;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 1:0:0", b.toString());
+    int interval = 15;
+    DateValue start = new DateValueImpl(2011, 8, 8);
+    Generator generator = Generators.serialMinuteGenerator(interval, start);
+    DTBuilder builder = new DTBuilder(start);
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 0, 0, 0), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 0, 15, 0), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 0, 30, 0), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 0, 45, 0), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    ++builder.hour;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 1, 0, 0), builder.toDateTime());
   }
 
   public void testByMinuteGenerator() throws Exception {
-    DateValue dtStart = new DateTimeValueImpl(2011, 8, 8, 5, 0, 17);
-    Generator g = Generators.byMinuteGenerator(
-        new int[] { 3, 57, 20, 3 }, dtStart);
-    DTBuilder b = new DTBuilder(dtStart);
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 5:3:17", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 5:20:17", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 5:57:17", b.toString());
-    assertFalse(g.generate(b));
-    ++b.hour;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 6:3:17", b.toString());
+    int[] minutes = { 3, 57, 20, 3 };
+    DateValue start = new DateTimeValueImpl(2011, 8, 8, 5, 0, 17);
+    Generator generator = Generators.byMinuteGenerator(minutes, start);
+    DTBuilder builder = new DTBuilder(start);
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 5, 3, 17), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 5, 20, 17), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 5, 57, 17), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    ++builder.hour;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 6, 3, 17), builder.toDateTime());
   }
 
   public void testSingleByMinuteGenerator() throws Exception {
-    DateValue dtStart = new DateTimeValueImpl(2011, 8, 8, 5, 30, 17);
-    Generator g = Generators.byMinuteGenerator(new int[0], dtStart);
-    DTBuilder b = new DTBuilder(dtStart);
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 5:30:17", b.toString());
-    assertFalse(g.generate(b));
-    ++b.hour;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 6:30:17", b.toString());
-    assertFalse(g.generate(b));
-    b.day += 1;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-9 6:30:17", b.toString());
-    assertFalse(g.generate(b));
+    int minutes[] = {};
+    DateValue start = new DateTimeValueImpl(2011, 8, 8, 5, 30, 17);
+    Generator generator = Generators.byMinuteGenerator(minutes, start);
+    DTBuilder builder = new DTBuilder(start);
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 5, 30, 17), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    ++builder.hour;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 6, 30, 17), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    builder.day += 1;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 9, 6, 30, 17), builder.toDateTime());
+    assertFalse(generator.generate(builder));
   }
 
   public void testSerialSecondGenerator() throws Exception {
-    DateValue dtStart = new DateTimeValueImpl(2011, 8, 8, 19, 1, 23);
-    Generator g = Generators.serialSecondGenerator(25, dtStart);
-    DTBuilder b = new DTBuilder(dtStart);
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 19:1:23", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 19:1:48", b.toString());
-    assertFalse(g.generate(b));
-    b.minute += 1;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 19:2:13", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 19:2:38", b.toString());
-    assertFalse(g.generate(b));
-    b.minute += 1;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 19:3:3", b.toString());
-    b.minute += 1;
-    // skipped 2:28, 2:53
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 19:4:18", b.toString());
+    int interval = 25;
+    DateValue start = new DateTimeValueImpl(2011, 8, 8, 19, 1, 23);
+    Generator generator = Generators.serialSecondGenerator(interval, start);
+    DTBuilder builder = new DTBuilder(start);
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 19, 1, 23), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 19, 1, 48), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    builder.minute += 1;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 19, 2, 13), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 19, 2, 38), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    builder.minute += 1;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 19, 3, 3), builder.toDateTime());
+    
+    builder.minute += 1;
+    //skipped 2:28, 2:53
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 19, 4, 18), builder.toDateTime());
   }
 
   public void testBySecondGenerator() throws Exception {
-    DateValue dtStart = new DateTimeValueImpl(2011, 8, 8, 19, 1, 23);
-    Generator g = Generators.bySecondGenerator(
-        new int[] { 25, 48, 2 }, dtStart);
-    DTBuilder b = new DTBuilder(dtStart);
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 19:1:25", b.toString());
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 19:1:48", b.toString());
-    assertFalse(g.generate(b));
-    ++b.minute;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 19:2:2", b.toString());
+    int seconds[] = { 25, 48, 2 };
+    DateValue start = new DateTimeValueImpl(2011, 8, 8, 19, 1, 23);
+    Generator generator = Generators.bySecondGenerator(seconds, start);
+    DTBuilder builder = new DTBuilder(start);
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 19, 1, 25), builder.toDateTime());
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 19, 1, 48), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    ++builder.minute;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 19, 2, 2), builder.toDateTime());
   }
 
   public void testSingleBySecondGenerator() throws Exception {
-    DateValue dtStart = new DateTimeValueImpl(2011, 8, 8, 19, 1, 23);
-    Generator g = Generators.bySecondGenerator(new int[0], dtStart);
-    DTBuilder b = new DTBuilder(dtStart);
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 19:1:23", b.toString());
-    assertFalse(g.generate(b));
-    ++b.minute;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 19:2:23", b.toString());
-    assertFalse(g.generate(b));
-    ++b.minute;
-    assertTrue(g.generate(b));
-    assertEquals("2011-8-8 19:3:23", b.toString());
+    int seconds[] = {};
+    DateValue start = new DateTimeValueImpl(2011, 8, 8, 19, 1, 23);
+    Generator generator = Generators.bySecondGenerator(seconds, start);
+    DTBuilder builder = new DTBuilder(start);
+    
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 19, 1, 23), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    ++builder.minute;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 19, 2, 23), builder.toDateTime());
+    
+    assertFalse(generator.generate(builder));
+    ++builder.minute;
+    assertTrue(generator.generate(builder));
+    assertEquals(new DateTimeValueImpl(2011, 8, 8, 19, 3, 23), builder.toDateTime());
+  }
+  
+  /**
+   * Asserts the date values that a generator will produce. This method assumes
+   * that the given generator will eventually terminate.
+   * @param generator the generator
+   * @param builder the date builder to pass into the generator
+   * @param expected the expected date values
+   * @throws IteratorShortCircuitingException
+   */
+  private static void run(Generator generator, DTBuilder builder, DateValue[] expected) throws IteratorShortCircuitingException {
+    run(generator, builder, expected, true);
+  }
+
+  /**
+   * Asserts the date values that a generator will produce.
+   * @param generator the generator
+   * @param builder the date builder to pass into the generator
+   * @param expected the expected date values
+   * @param terminating true if the generator will eventually terminate, false
+   * to limit the number of generated dates to however long the expected date
+   * list is
+   * @throws IteratorShortCircuitingException
+   */
+  private static void run(Generator generator, DTBuilder builder, DateValue[] expected, boolean terminating) throws IteratorShortCircuitingException {
+    List<DateValue> actual = new ArrayList<DateValue>();
+    while (generator.generate(builder) && (terminating || actual.size() < expected.length)) {
+      actual.add(builder.toDate());
+    }
+    assertEquals(Arrays.asList(expected), actual);
+  }
+  
+  /**
+   * Generates date values for all the days in a month.
+   * @param start the day to start on
+   * @return the days
+   */
+  private static DateValue[] allDaysInMonth(DateValue start){
+    return daysInMonth(start, 1);
+  }
+  
+  /**
+   * Generates date values for all the days in a month.
+   * @param start the day to start on
+   * @return the days
+   */
+  private static DateValue[] everyOtherDayInMonth(DateValue start){
+    return daysInMonth(start, 2);
+  }
+  
+  /**
+   * Generates date values for all the days in a month.
+   * @param start the day to start on
+   * @param interval the interval (e.g. "2" for every other day)
+   * @return the date values
+   */
+  private static DateValue[] daysInMonth(DateValue start, int interval){
+    List<DateValue> dates = new ArrayList<DateValue>();
+    DTBuilder builder = new DTBuilder(start);
+    DateValue d = builder.toDate();
+    while (d.month() == start.month()) {
+      dates.add(d);
+      builder.day += interval;
+      d = builder.toDate();
+    }
+    
+    return dates.toArray(new DateValue[0]);
+  }
+  
+  
+  /**
+   * Generates date values for all the months in a year.
+   * @param start the day to start on
+   * @return the days
+   */
+  private static DateValue[] allMonthsInYear(DateValue start){
+    return monthsInYear(start, 1);
+  }
+  
+  /**
+   * Generates date values for all the months in a year.
+   * @param start the day to start on
+   * @return the days
+   */
+  private static DateValue[] everyOtherMonthInYear(DateValue start){
+    return monthsInYear(start, 2);
+  }
+  
+  /**
+   * Generates date values for all the months in a year.
+   * @param start the day to start on
+   * @param interval the interval (e.g. "2" for every other month)
+   * @return the date values
+   */
+  private static DateValue[] monthsInYear(DateValue start, int interval){
+    List<DateValue> dates = new ArrayList<DateValue>();
+    DTBuilder builder = new DTBuilder(start);
+    DateValue d = builder.toDate();
+    while (d.year() == start.year()) {
+      dates.add(d);
+      builder.month += interval;
+      d = builder.toDate();
+    }
+    
+    return dates.toArray(new DateValue[0]);
   }
 }
