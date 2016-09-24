@@ -17,7 +17,7 @@ package biweekly.util.com.google.ical.iter;
 import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.util.Predicate;
 import biweekly.util.com.google.ical.values.DateValue;
-import biweekly.util.com.google.ical.values.IcalParseUtil;
+import biweekly.util.com.google.ical.values.DateValueImpl;
 import junit.framework.TestCase;
 
 /**
@@ -39,7 +39,7 @@ public class FiltersTest extends TestCase {
     // *s match those that are in the weeks that should pass the filter
 
     Predicate<? super DateValue> f1 = Filters.weekIntervalFilter(
-        2, DayOfWeek.MONDAY, IcalParseUtil.parseDateValue("20050911"));
+        2, DayOfWeek.MONDAY, new DateValueImpl(2005, 9, 11));
     // FOR f1
     //    September 2005
     //  Su  Mo  Tu  We  Th  Fr  Sa
@@ -48,27 +48,27 @@ public class FiltersTest extends TestCase {
     // *11  12  13  14  15  16  17
     //  18 *19 *20 *21 *22 *23 *24
     // *25  26  27  28  29  30
-    assertTrue( f1.apply(IcalParseUtil.parseDateValue("20050909")));
-    assertTrue( f1.apply(IcalParseUtil.parseDateValue("20050910")));
-    assertTrue( f1.apply(IcalParseUtil.parseDateValue("20050911")));
-    assertTrue(!f1.apply(IcalParseUtil.parseDateValue("20050912")));
-    assertTrue(!f1.apply(IcalParseUtil.parseDateValue("20050913")));
-    assertTrue(!f1.apply(IcalParseUtil.parseDateValue("20050914")));
-    assertTrue(!f1.apply(IcalParseUtil.parseDateValue("20050915")));
-    assertTrue(!f1.apply(IcalParseUtil.parseDateValue("20050916")));
-    assertTrue(!f1.apply(IcalParseUtil.parseDateValue("20050917")));
-    assertTrue(!f1.apply(IcalParseUtil.parseDateValue("20050918")));
-    assertTrue( f1.apply(IcalParseUtil.parseDateValue("20050919")));
-    assertTrue( f1.apply(IcalParseUtil.parseDateValue("20050920")));
-    assertTrue( f1.apply(IcalParseUtil.parseDateValue("20050921")));
-    assertTrue( f1.apply(IcalParseUtil.parseDateValue("20050922")));
-    assertTrue( f1.apply(IcalParseUtil.parseDateValue("20050923")));
-    assertTrue( f1.apply(IcalParseUtil.parseDateValue("20050924")));
-    assertTrue( f1.apply(IcalParseUtil.parseDateValue("20050925")));
-    assertTrue(!f1.apply(IcalParseUtil.parseDateValue("20050926")));
+    assertTrue( f1.apply(new DateValueImpl(2005, 9, 9)));
+    assertTrue( f1.apply(new DateValueImpl(2005, 9, 10)));
+    assertTrue( f1.apply(new DateValueImpl(2005, 9, 11)));
+    assertTrue(!f1.apply(new DateValueImpl(2005, 9, 12)));
+    assertTrue(!f1.apply(new DateValueImpl(2005, 9, 13)));
+    assertTrue(!f1.apply(new DateValueImpl(2005, 9, 14)));
+    assertTrue(!f1.apply(new DateValueImpl(2005, 9, 15)));
+    assertTrue(!f1.apply(new DateValueImpl(2005, 9, 16)));
+    assertTrue(!f1.apply(new DateValueImpl(2005, 9, 17)));
+    assertTrue(!f1.apply(new DateValueImpl(2005, 9, 18)));
+    assertTrue( f1.apply(new DateValueImpl(2005, 9, 19)));
+    assertTrue( f1.apply(new DateValueImpl(2005, 9, 20)));
+    assertTrue( f1.apply(new DateValueImpl(2005, 9, 21)));
+    assertTrue( f1.apply(new DateValueImpl(2005, 9, 22)));
+    assertTrue( f1.apply(new DateValueImpl(2005, 9, 23)));
+    assertTrue( f1.apply(new DateValueImpl(2005, 9, 24)));
+    assertTrue( f1.apply(new DateValueImpl(2005, 9, 25)));
+    assertTrue(!f1.apply(new DateValueImpl(2005, 9, 26)));
 
     Predicate<? super DateValue> f2 = Filters.weekIntervalFilter(
-        2, DayOfWeek.SUNDAY, IcalParseUtil.parseDateValue("20050911"));
+        2, DayOfWeek.SUNDAY, new DateValueImpl(2005, 9, 11));
     // FOR f2
     //    September 2005
     //  Su  Mo  Tu  We  Th  Fr  Sa
@@ -77,24 +77,23 @@ public class FiltersTest extends TestCase {
     // *11 *12 *13 *14 *15 *16 *17
     //  18  19  20  21  22  23  24
     // *25 *26 *27 *28 *29 *30
-    assertTrue(!f2.apply(IcalParseUtil.parseDateValue("20050909")));
-    assertTrue(!f2.apply(IcalParseUtil.parseDateValue("20050910")));
-    assertTrue( f2.apply(IcalParseUtil.parseDateValue("20050911")));
-    assertTrue( f2.apply(IcalParseUtil.parseDateValue("20050912")));
-    assertTrue( f2.apply(IcalParseUtil.parseDateValue("20050913")));
-    assertTrue( f2.apply(IcalParseUtil.parseDateValue("20050914")));
-    assertTrue( f2.apply(IcalParseUtil.parseDateValue("20050915")));
-    assertTrue( f2.apply(IcalParseUtil.parseDateValue("20050916")));
-    assertTrue( f2.apply(IcalParseUtil.parseDateValue("20050917")));
-    assertTrue(!f2.apply(IcalParseUtil.parseDateValue("20050918")));
-    assertTrue(!f2.apply(IcalParseUtil.parseDateValue("20050919")));
-    assertTrue(!f2.apply(IcalParseUtil.parseDateValue("20050920")));
-    assertTrue(!f2.apply(IcalParseUtil.parseDateValue("20050921")));
-    assertTrue(!f2.apply(IcalParseUtil.parseDateValue("20050922")));
-    assertTrue(!f2.apply(IcalParseUtil.parseDateValue("20050923")));
-    assertTrue(!f2.apply(IcalParseUtil.parseDateValue("20050924")));
-    assertTrue( f2.apply(IcalParseUtil.parseDateValue("20050925")));
-    assertTrue( f2.apply(IcalParseUtil.parseDateValue("20050926")));
+    assertTrue(!f2.apply(new DateValueImpl(2005, 9, 9)));
+    assertTrue(!f2.apply(new DateValueImpl(2005, 9, 10)));
+    assertTrue( f2.apply(new DateValueImpl(2005, 9, 11)));
+    assertTrue( f2.apply(new DateValueImpl(2005, 9, 12)));
+    assertTrue( f2.apply(new DateValueImpl(2005, 9, 13)));
+    assertTrue( f2.apply(new DateValueImpl(2005, 9, 14)));
+    assertTrue( f2.apply(new DateValueImpl(2005, 9, 15)));
+    assertTrue( f2.apply(new DateValueImpl(2005, 9, 16)));
+    assertTrue( f2.apply(new DateValueImpl(2005, 9, 17)));
+    assertTrue(!f2.apply(new DateValueImpl(2005, 9, 18)));
+    assertTrue(!f2.apply(new DateValueImpl(2005, 9, 19)));
+    assertTrue(!f2.apply(new DateValueImpl(2005, 9, 20)));
+    assertTrue(!f2.apply(new DateValueImpl(2005, 9, 21)));
+    assertTrue(!f2.apply(new DateValueImpl(2005, 9, 22)));
+    assertTrue(!f2.apply(new DateValueImpl(2005, 9, 23)));
+    assertTrue(!f2.apply(new DateValueImpl(2005, 9, 24)));
+    assertTrue( f2.apply(new DateValueImpl(2005, 9, 25)));
+    assertTrue( f2.apply(new DateValueImpl(2005, 9, 26)));
   }
-
 }

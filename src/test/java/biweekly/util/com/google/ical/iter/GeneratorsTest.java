@@ -22,7 +22,6 @@ import biweekly.util.com.google.ical.util.DTBuilder;
 import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
-import biweekly.util.com.google.ical.values.IcalParseUtil;
 import junit.framework.TestCase;
 
 /**
@@ -63,37 +62,37 @@ public class GeneratorsTest extends TestCase {
   public void testByYearDayGenerator() throws Exception {
     runGeneratorTests(
         Generators.byYearDayGenerator(new int[] { 1, 5, -1, 100 },
-                                      IcalParseUtil.parseDateValue("20060101")),
+                                      new DateValueImpl(2006, 1, 1)),
         new DTBuilder(2006, 1, 1), "day", "1, 5");
     runGeneratorTests(
         Generators.byYearDayGenerator(new int[] { 1, 5, -1, 100 },
-                                      IcalParseUtil.parseDateValue("20060102")),
+                                      new DateValueImpl(2006, 1, 2)),
         new DTBuilder(2006, 1, 2), "day", "1, 5");
     runGeneratorTests(
         Generators.byYearDayGenerator(new int[] { 100 },
-                                      IcalParseUtil.parseDateValue("20060106")),
+                                      new DateValueImpl(2006, 1, 6)),
         new DTBuilder(2006, 1, 6), "day", "");
     runGeneratorTests(
         Generators.byYearDayGenerator(new int[] {  },
-                                      IcalParseUtil.parseDateValue("20060106")),
+                                      new DateValueImpl(2006, 1, 6)),
         new DTBuilder(2006, 1, 6), "day", "");
     runGeneratorTests(
         Generators.byYearDayGenerator(new int[] { 1, 5, -1, 100 },
-                                      IcalParseUtil.parseDateValue("20060201")),
+                                      new DateValueImpl(2006, 2, 1)),
         new DTBuilder(2006, 2, 1), "day", "");
     runGeneratorTests(
         Generators.byYearDayGenerator(new int[] { 1, 5, -1, 100 },
-                                      IcalParseUtil.parseDateValue("20061201")),
+                                      new DateValueImpl(2006, 12, 1)),
         new DTBuilder(2006, 12, 1), "day", "31");
     runGeneratorTests(
         Generators.byYearDayGenerator(new int[] { 1, 5, -1, 100 },
-                                      IcalParseUtil.parseDateValue("20060401")),
+                                      new DateValueImpl(2006, 4, 1)),
         new DTBuilder(2006, 4, 1), "day", "10");
   }
 
   public void testByWeekNoGenerator() throws Exception {
     Generator g = Generators.byWeekNoGenerator(
-        new int[] { 22 }, DayOfWeek.SUNDAY, IcalParseUtil.parseDateValue("20060101"));
+        new int[] { 22 }, DayOfWeek.SUNDAY, new DateValueImpl(2006, 1, 1));
     runGeneratorTests(g, new DTBuilder(2006, 1, 1), "day", "");
     runGeneratorTests(g, new DTBuilder(2006, 2, 1), "day", "");
     runGeneratorTests(g, new DTBuilder(2006, 3, 1), "day", "");
@@ -104,7 +103,7 @@ public class GeneratorsTest extends TestCase {
 
     // weekstart of monday shifts each week forward by one
     Generator g2 = Generators.byWeekNoGenerator(
-        new int[] { 22 }, DayOfWeek.MONDAY, IcalParseUtil.parseDateValue("20060101"));
+        new int[] { 22 }, DayOfWeek.MONDAY, new DateValueImpl(2006, 1, 1));
     runGeneratorTests(g2, new DTBuilder(2006, 1, 1), "day", "");
     runGeneratorTests(g2, new DTBuilder(2006, 2, 1), "day", "");
     runGeneratorTests(g2, new DTBuilder(2006, 3, 1), "day", "");
@@ -116,7 +115,7 @@ public class GeneratorsTest extends TestCase {
     // 2004 with a week start of monday has no orphaned days.
     // 2004-01-01 falls on Thursday
     Generator g3 = Generators.byWeekNoGenerator(
-        new int[] { 14 }, DayOfWeek.MONDAY, IcalParseUtil.parseDateValue("20040101"));
+        new int[] { 14 }, DayOfWeek.MONDAY, new DateValueImpl(2004, 1, 1));
     runGeneratorTests(g3, new DTBuilder(2004, 1, 1), "day", "");
     runGeneratorTests(g3, new DTBuilder(2004, 2, 1), "day", "");
     runGeneratorTests(g3, new DTBuilder(2004, 3, 1), "day", "29, 30, 31");
@@ -132,7 +131,7 @@ public class GeneratorsTest extends TestCase {
       new ByDay(-2, DayOfWeek.TUESDAY) // second to last tuesday
     };
     Generator g = Generators.byDayGenerator(
-        days, false, IcalParseUtil.parseDateValue("20060101"));
+        days, false, new DateValueImpl(2006, 1, 1));
     runGeneratorTests(
         g, new DTBuilder(2006, 1, 1), "day", "1, 2, 8, 15, 22, 24, 29, 30");
     runGeneratorTests(
@@ -142,21 +141,21 @@ public class GeneratorsTest extends TestCase {
   public void testByMonthDayGenerator() throws Exception {
     int[] monthDays = new int[] { 1, 15, 29 };
     runGeneratorTests(Generators.byMonthDayGenerator(
-                          monthDays, IcalParseUtil.parseDateValue("20060101")),
+                          monthDays, new DateValueImpl(2006, 1, 1)),
                       new DTBuilder(2006, 1, 1), "day", "1, 15, 29");
     runGeneratorTests(Generators.byMonthDayGenerator(
-                          monthDays, IcalParseUtil.parseDateValue("20060115")),
+                          monthDays, new DateValueImpl(2006, 1, 15)),
                       new DTBuilder(2006, 1, 15), "day", "1, 15, 29");
     runGeneratorTests(Generators.byMonthDayGenerator(
-                          monthDays, IcalParseUtil.parseDateValue("20060201")),
+                          monthDays, new DateValueImpl(2006, 2, 1)),
                       new DTBuilder(2006, 2, 1), "day", "1, 15");
     runGeneratorTests(Generators.byMonthDayGenerator(
-                          monthDays, IcalParseUtil.parseDateValue("20060216")),
+                          monthDays, new DateValueImpl(2006, 2, 16)),
                       new DTBuilder(2006, 2, 16), "day", "1, 15");
 
     monthDays = new int[] { 1, -30, 30 };
     Generator g2 = Generators.byMonthDayGenerator(
-        monthDays, IcalParseUtil.parseDateValue("20060101"));
+        monthDays, new DateValueImpl(2006, 1, 1));
     runGeneratorTests(g2,
                       new DTBuilder(2006, 1, 1), "day", "1, 2, 30");
     runGeneratorTests(g2,
@@ -170,10 +169,10 @@ public class GeneratorsTest extends TestCase {
   public void testByMonthGenerator() throws Exception {
     runGeneratorTests(Generators.byMonthGenerator(
                           new int[] { 2, 8, 6, 10 },
-                          IcalParseUtil.parseDateValue("20060101")),
+                          new DateValueImpl(2006, 1, 1)),
                       new DTBuilder(2006, 1, 1), "month", "2, 6, 8, 10");
     Generator g = Generators.byMonthGenerator(
-        new int[] { 2, 8, 6, 10 }, IcalParseUtil.parseDateValue("20060401"));
+        new int[] { 2, 8, 6, 10 }, new DateValueImpl(2006, 4, 1));
     runGeneratorTests(g, new DTBuilder(2006, 4, 1), "month", "2, 6, 8, 10");
     runGeneratorTests(g, new DTBuilder(2007, 11, 1), "month", "2, 6, 8, 10");
   }
@@ -181,38 +180,38 @@ public class GeneratorsTest extends TestCase {
   public void testByYearGenerator() throws Exception {
     runGeneratorTests(
         Generators.byYearGenerator(new int[] { 1066, 1492, 1876, 1975, 2006 },
-                                   IcalParseUtil.parseDateValue("20060101")),
+                                   new DateValueImpl(2006, 1, 1)),
         new DTBuilder(2006, 1, 1), "year", "2006");
     runGeneratorTests(
         Generators.byYearGenerator(new int[] { 1066, 1492, 1876, 1975, 2006 },
-                                   IcalParseUtil.parseDateValue("20070101")),
+                                   new DateValueImpl(2007, 1, 1)),
         new DTBuilder(2007, 1, 1), "year", "");
     runGeneratorTests(
         Generators.byYearGenerator(new int[] { 1066, 1492, 1876, 1975, 2006 },
-                                   IcalParseUtil.parseDateValue("10660701")),
+                                   new DateValueImpl(1066, 7, 1)),
         new DTBuilder(1066, 7, 1), "year", "1066, 1492, 1876, 1975, 2006");
     runGeneratorTests(
         Generators.byYearGenerator(new int[] { 1066, 1492, 1876, 1975, 2006 },
-                                   IcalParseUtil.parseDateValue("19000701")),
+                                   new DateValueImpl(1900, 7, 1)),
         new DTBuilder(1900, 7, 1), "year", "1975, 2006");
   }
 
   public void testSerialDayGenerator() throws Exception {
     runGeneratorTests(
         Generators.serialDayGenerator(
-            1, IcalParseUtil.parseDateValue("20060115")),
+            1, new DateValueImpl(2006, 1, 15)),
         new DTBuilder(2006, 1, 15), "day",
           "15, 16, 17, 18, 19, 20, 21, 22, 23, 24, "
           + "25, 26, 27, 28, 29, 30, 31");
     runGeneratorTests(Generators.serialDayGenerator(
-                          1, IcalParseUtil.parseDateValue("20060101")),
+                          1, new DateValueImpl(2006, 1, 1)),
                       new DTBuilder(2006, 1, 1), "day",
                       "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, "
                       + "11, 12, 13, 14, 15, 16, 17, 18, 19, 20, "
                       + "21, 22, 23, 24, 25, 26, 27, 28, 29, 30, "
                       + "31");
     Generator g = Generators.serialDayGenerator(
-        2, IcalParseUtil.parseDateValue("20060101"));
+        2, new DateValueImpl(2006, 1, 1));
     runGeneratorTests(
         g, new DTBuilder(2006, 1, 1), "day",
         "1, 3, 5, 7, 9, "
@@ -229,7 +228,7 @@ public class GeneratorsTest extends TestCase {
                       new DTBuilder(2006, 4, 1), "day", "1", 1);
     // test with intervals longer than 30 days
     Generator g2 = Generators.serialDayGenerator(
-        45, IcalParseUtil.parseDateValue("20060101"));
+        45, new DateValueImpl(2006, 1, 1));
     runGeneratorTests(g2, new DTBuilder(2006, 1, 1), "day", "1");
     runGeneratorTests(g2, new DTBuilder(2006, 2, 1), "day", "15");
     runGeneratorTests(g2, new DTBuilder(2006, 3, 1), "day", "");
@@ -240,24 +239,24 @@ public class GeneratorsTest extends TestCase {
   public void testSerialMonthGenerator() throws Exception {
     runGeneratorTests(
         Generators.serialMonthGenerator(
-            1, IcalParseUtil.parseDateValue("20060101")),
+            1, new DateValueImpl(2006, 1, 1)),
         new DTBuilder(2006, 1, 1), "month",
         "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12");
     runGeneratorTests(
         Generators.serialMonthGenerator(
-            1, IcalParseUtil.parseDateValue("20060401")),
+            1, new DateValueImpl(2006, 4, 1)),
         new DTBuilder(2006, 4, 1), "month", "4, 5, 6, 7, 8, 9, 10, 11, 12");
     runGeneratorTests(
         Generators.serialMonthGenerator(
-            2, IcalParseUtil.parseDateValue("20060401")),
+            2, new DateValueImpl(2006, 4, 1)),
         new DTBuilder(2006, 4, 1), "month", "4, 6, 8, 10, 12");
     Generator g = Generators.serialMonthGenerator(
-        7, IcalParseUtil.parseDateValue("20060401"));
+        7, new DateValueImpl(2006, 4, 1));
     runGeneratorTests(g, new DTBuilder(2006, 4, 1), "month", "4, 11");
     runGeneratorTests(g, new DTBuilder(2007, 11, 1), "month", "6");
     runGeneratorTests(g, new DTBuilder(2008, 6, 1), "month", "1, 8");
     Generator g2 = Generators.serialMonthGenerator(
-        18, IcalParseUtil.parseDateValue("20060401"));
+        18, new DateValueImpl(2006, 4, 1));
     runGeneratorTests(g2, new DTBuilder(2006, 4, 1), "month", "4");
     runGeneratorTests(g2, new DTBuilder(2007, 11, 1), "month", "10");
     runGeneratorTests(g2, new DTBuilder(2008, 6, 1), "month", "");
@@ -267,11 +266,11 @@ public class GeneratorsTest extends TestCase {
   public void testSerialYearGenerator() throws Exception {
     runGeneratorTests(
         Generators.serialYearGenerator(
-            1, IcalParseUtil.parseDateValue("20060101")),
+            1, new DateValueImpl(2006, 1, 1)),
         new DTBuilder(2006, 1, 1), "year", "2006, 2007, 2008, 2009, 2010", 5);
     runGeneratorTests(
         Generators.serialYearGenerator(
-            2, IcalParseUtil.parseDateValue("20060101")),
+            2, new DateValueImpl(2006, 1, 1)),
         new DTBuilder(2006, 1, 1), "year", "2006, 2008, 2010, 2012, 2014", 5);
   }
 
