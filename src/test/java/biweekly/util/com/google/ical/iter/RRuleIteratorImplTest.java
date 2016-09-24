@@ -94,7 +94,7 @@ public class RRuleIteratorImplTest extends TestCase {
     run(recur, start, expected);
   }
 
-  public void testSimpleYearly() throws Exception {
+  public void testSimpleYearly() {
     Recurrence recur = new Recurrence.Builder(Frequency.YEARLY).build();
     DateValue start = new DateValueImpl(2006, 1, 20);
     DateValue[] expected = {
@@ -362,7 +362,7 @@ public class RRuleIteratorImplTest extends TestCase {
     run(recur, start, expected);
   }
 
-  public void testWeeklyOnTuesdayAndThursdayFor5Weeks() throws Exception {
+  public void testWeeklyOnTuesdayAndThursdayFor5Weeks() {
     /*
      * If UNTIL date does not match start date, then until date treated as
      * occurring on midnight.
@@ -437,7 +437,7 @@ public class RRuleIteratorImplTest extends TestCase {
     }
   }
 
-  public void testEveryOtherWeekOnMWFUntilDec24() throws Exception {
+  public void testEveryOtherWeekOnMWFUntilDec24() {
     {
       Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
         .interval(2)
@@ -952,7 +952,7 @@ public class RRuleIteratorImplTest extends TestCase {
     run(recur, start, expected);
   }
 
-  public void testEveryFridayThe13thForever() throws Exception {
+  public void testEveryFridayThe13thForever() {
     Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
       .byDay(DayOfWeek.FRIDAY)
       .byMonthDay(13)
@@ -1661,7 +1661,7 @@ public class RRuleIteratorImplTest extends TestCase {
     run(recur, start, expected);
   }
 
-  public void testAdvanceTo() throws Exception {
+  public void testAdvanceTo() {
     //a bunch of tests grabbed from above with an advance-to date tacked on
     
     {

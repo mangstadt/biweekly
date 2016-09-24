@@ -110,7 +110,7 @@ public class CompoundIteratorImplTest extends TestCase {
     ), it);
   }
   
-  public void testInterleavingOfDateIterators_advanceTo_after_date() throws Exception {
+  public void testInterleavingOfDateIterators_advanceTo_after_date() {
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
       RecurrenceIteratorFactory.createRecurrenceIterator(Arrays.asList(
         new DateValueImpl(2006, 4, 18),
@@ -132,7 +132,7 @@ public class CompoundIteratorImplTest extends TestCase {
     ), it);
   }
   
-  public void testInterleavingOfDateIterators_advanceTo_after_end() throws Exception {
+  public void testInterleavingOfDateIterators_advanceTo_after_end() {
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
       RecurrenceIteratorFactory.createRecurrenceIterator(Arrays.asList(
         new DateValueImpl(2006, 4, 18),
@@ -665,7 +665,7 @@ public class CompoundIteratorImplTest extends TestCase {
     ), it, false);
   }
 
-  public void testMonkey8() throws Exception {
+  public void testMonkey8() {
     //I don't know which side this failing on?
     Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
       .count(18)
@@ -705,7 +705,7 @@ public class CompoundIteratorImplTest extends TestCase {
     ), it);
   }
 
-  public void testMonkey9() throws Exception {
+  public void testMonkey9() {
     // another libical crasher
     Recurrence rrule = new Recurrence.Builder(Frequency.MONTHLY)
       .workweekStarts(DayOfWeek.SUNDAY)
@@ -911,7 +911,7 @@ public class CompoundIteratorImplTest extends TestCase {
     ), it);
   }
 
-  public void testMonkeySeptember1() throws Exception {
+  public void testMonkeySeptember1() {
     // From the Monkey Tester
     // RANDOM SEED 1156837020593
     // RRULE:FREQ=DAILY;WKST=SU;INTERVAL=1;BYMINUTE=60 / 2006-09-20 23:15:51

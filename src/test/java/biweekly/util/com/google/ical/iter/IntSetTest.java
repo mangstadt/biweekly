@@ -20,7 +20,7 @@ import junit.framework.TestCase;
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public class IntSetTest extends TestCase {
-  public void testAddAndContainsAndSize() throws Exception {
+  public void testAddAndContainsAndSize() {
     IntSet a = new IntSet();
     assertTrue(!a.contains(-2));
     assertTrue(!a.contains(-1));
@@ -57,7 +57,7 @@ public class IntSetTest extends TestCase {
     assertEquals(2, a.size());
   }
 
-  public void testToIntArray() throws Exception {
+  public void testToIntArray() {
     IntSet a = new IntSet();
     assertEquals(0, a.toIntArray().length);
 

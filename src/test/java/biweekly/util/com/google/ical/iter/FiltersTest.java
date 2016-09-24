@@ -24,7 +24,7 @@ import junit.framework.TestCase;
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public class FiltersTest extends TestCase {
-  public void testWeekIntervalFilter() throws Exception {
+  public void testWeekIntervalFilter() {
     // *s match those that are in the weeks that should pass the filter
 
     Predicate<? super DateValue> f1 = Filters.weekIntervalFilter(

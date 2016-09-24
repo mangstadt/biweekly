@@ -40,7 +40,7 @@ public class StressTest extends TestCase {
     }
   }
 
-  public void testSpeed() throws Exception {
+  public void testSpeed() {
     long t0 = System.nanoTime();
     //cycle through 10 recurrence rules, advancing and pulling a few dates off each
     for (int runs = 5000; --runs >= 0;) {
