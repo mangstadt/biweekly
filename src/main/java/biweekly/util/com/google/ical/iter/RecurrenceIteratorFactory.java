@@ -25,6 +25,7 @@ import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
 import biweekly.util.Frequency;
 import biweekly.util.Google2445Utils;
+import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 import biweekly.util.com.google.ical.util.Predicate;
 import biweekly.util.com.google.ical.util.Predicates;
@@ -33,7 +34,6 @@ import biweekly.util.com.google.ical.values.DateTimeValue;
 import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
-import biweekly.util.com.google.ical.values.RRule;
 import biweekly.util.com.google.ical.values.TimeValue;
 
 /**
@@ -84,7 +84,8 @@ public class RecurrenceIteratorFactory {
    * Creates a recurrence iterable from an RRULE.
    * @param rrule the recurrence rule
    * @param dtStart the start date of the series
-   * @param tzid the timezone that the given start date is in
+   * @param tzid the timezone that the start date is in, as well as the
+   * timezone to iterate in
    * @return the iterable
    */
   public static RecurrenceIterable createRecurrenceIterable(
@@ -95,61 +96,36 @@ public class RecurrenceIteratorFactory {
       }
     };
   }
-  
-  /**
-   * Creates a recurrence iterable from an RRULE.
-   * @param rrule the recurrence rule
-   * @param dtStart the start date of the series
-   * @param tzid the timezone that the given start date is in
-   * @return the iterable
-   */
-  public static RecurrenceIterable createRecurrenceIterable(
-      final RRule rrule, final DateValue dtStart, final TimeZone tzid) {
-    return new RecurrenceIterable(){
-      public RecurrenceIterator iterator() {
-        return createRecurrenceIterator(rrule, dtStart, tzid);
-      }
-    };
-  }
-
-  /**
-   * Creates a recurrence iterable from an RRULE.
-   * @param rrule the recurrence rule
-   * @param dtStart the start date of the series
-   * @param tzid the timezone that the given start date is in
-   * @return the iterable
-   */
-  public static RecurrenceIterator createRecurrenceIterator(
-      Recurrence rrule, DateValue dtStart, TimeZone tzid) {
-    RRule rrule2 = Google2445Utils.convert(rrule, tzid);
-    return createRecurrenceIterator(rrule2, dtStart, tzid);
-  }
 
   /**
    * Creates a recurrence iterator from an RRULE.
    * @param rrule the recurrence rule
    * @param dtStart the start date of the series
-   * @param tzid the timezone that the given start date is in
+   * @param tzid the timezone that the start date is in, as well as the
+   * timezone to iterate in
    * @return the iterator
    */
   public static RecurrenceIterator createRecurrenceIterator(
-      RRule rrule, DateValue dtStart, TimeZone tzid) {
-    Frequency freq = rrule.getFreq();
-    DayOfWeek wkst = rrule.getWkSt();
-    DateValue untilUtc = rrule.getUntil();
-    int count = rrule.getCount();
-    int interval = rrule.getInterval();
-    ByDay[] byDay = rrule.getByDay().toArray(new ByDay[0]);
-    int[] byMonth = rrule.getByMonth();
-    int[] byMonthDay = rrule.getByMonthDay();
-    int[] byWeekNo = rrule.getByWeekNo();
-    int[] byYearDay = rrule.getByYearDay();
-    int[] bySetPos = rrule.getBySetPos();
-    int[] byHour = rrule.getByHour();
-    int[] byMinute = rrule.getByMinute();
-    int[] bySecond = rrule.getBySecond();
+      Recurrence rrule, DateValue dtStart, TimeZone tzid) {
+    Frequency freq = rrule.getFrequency();
+    DayOfWeek wkst = rrule.getWorkweekStarts();
+    
+    ICalDate until = rrule.getUntil();
+    DateValue untilUtc = (until == null) ? null : Google2445Utils.convert(until, tzid);
 
-    if (interval <= 0) {  interval = 1; }
+    int count = toInt(rrule.getCount());
+    int interval = toInt(rrule.getInterval());
+    ByDay[] byDay = rrule.getByDay().toArray(new ByDay[0]);
+    int[] byMonth = toIntArray(rrule.getByMonth());
+    int[] byMonthDay = toIntArray(rrule.getByMonthDay());
+    int[] byWeekNo = toIntArray(rrule.getByWeekNo());
+    int[] byYearDay = toIntArray(rrule.getByYearDay());
+    int[] bySetPos = toIntArray(rrule.getBySetPos());
+    int[] byHour = toIntArray(rrule.getByHour());
+    int[] byMinute = toIntArray(rrule.getByMinute());
+    int[] bySecond = toIntArray(rrule.getBySecond());
+
+    if (interval <= 0) { interval = 1; }
 
     if (wkst == null) {
       wkst = DayOfWeek.MONDAY;
@@ -524,11 +500,30 @@ public class RecurrenceIteratorFactory {
     }
     return iset.toIntArray();
   }
+  
+  /**
+   * Converts an {@link Integer} list to an int array. Null values are
+   * converted to zero.
+   * @param list the {@link Integer} list
+   * @return the int array
+   */
+  private static int[] toIntArray(List<Integer> list) {
+    int[] array = new int[list.size()];
+    int i = 0;
+    for (Integer intObj : list) {
+      array[i++] = toInt(intObj);
+    }
+    return array;
+  }
+  
+  private static int toInt(Integer integer){
+    return (integer == null) ? 0 : integer;
+  }
 
   private static final int[] NO_INTS = new int[0];
   private static final ByDay[] NO_DAYS = new ByDay[0];
 
   private RecurrenceIteratorFactory() {
-    // uninstantiable
+    //uninstantiable
   }
 }

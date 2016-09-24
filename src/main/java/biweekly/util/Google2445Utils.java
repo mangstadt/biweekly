@@ -25,7 +25,6 @@ import biweekly.util.com.google.ical.values.DateTimeValue;
 import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
-import biweekly.util.com.google.ical.values.RRule;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -58,54 +57,6 @@ import biweekly.util.com.google.ical.values.RRule;
  * @see <a href="https://code.google.com/p/google-rfc-2445/">google-rfc-2445</a>
  */
 public final class Google2445Utils {
-	/**
-	 * Converts a {@link Recurrence} object to a google-rfc-2445 {@link RRule}
-	 * object.
-	 * @param recurrence the recurrence object
-	 * @param timezone the timezone that the UNTIL component should be in
-	 * @return the google-rfc-2445 object
-	 */
-	public static RRule convert(Recurrence recurrence, TimeZone timezone) {
-		RRule rrule = new RRule();
-
-		rrule.setByDay(new ArrayList<ByDay>(recurrence.getByDay()));
-		rrule.setByYearDay(toArray(recurrence.getByYearDay()));
-		rrule.setByMonth(toArray(recurrence.getByMonth()));
-		rrule.setByWeekNo(toArray(recurrence.getByWeekNo()));
-		rrule.setByMonthDay(toArray(recurrence.getByMonthDay()));
-		rrule.setByHour(toArray(recurrence.getByHour()));
-		rrule.setByMinute(toArray(recurrence.getByMinute()));
-		rrule.setBySecond(toArray(recurrence.getBySecond()));
-		rrule.setBySetPos(toArray(recurrence.getBySetPos()));
-
-		Integer count = recurrence.getCount();
-		if (count != null) {
-			rrule.setCount(count);
-		}
-
-		Frequency freq = recurrence.getFrequency();
-		if (freq != null) {
-			rrule.setFreq(freq);
-		}
-
-		Integer interval = recurrence.getInterval();
-		if (interval != null) {
-			rrule.setInterval(interval);
-		}
-
-		ICalDate until = recurrence.getUntil();
-		if (until != null) {
-			rrule.setUntil(convert(until, timezone));
-		}
-
-		DayOfWeek workweekStarts = recurrence.getWorkweekStarts();
-		if (workweekStarts != null) {
-			rrule.setWkSt(workweekStarts);
-		}
-
-		return rrule;
-	}
-
 	/**
 	 * <p>
 	 * Converts an {@link ICalDate} object to a google-rfc-2445
@@ -371,21 +322,6 @@ public final class Google2445Utils {
 		RecurrenceIterator first = iterators.get(0);
 		List<RecurrenceIterator> rest = iterators.subList(1, iterators.size());
 		return RecurrenceIteratorFactory.join(first, rest.toArray(new RecurrenceIterator[0]));
-	}
-
-	/**
-	 * Converts an {@link Integer} list to an int array. Null values are
-	 * converted to zero.
-	 * @param list the {@link Integer} list
-	 * @return the int array
-	 */
-	private static int[] toArray(List<Integer> list) {
-		int[] array = new int[list.size()];
-		int i = 0;
-		for (Integer intObj : list) {
-			array[i++] = (intObj == null) ? 0 : intObj;
-		}
-		return array;
 	}
 
 	/**
