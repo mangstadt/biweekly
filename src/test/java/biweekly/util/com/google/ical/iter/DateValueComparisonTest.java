@@ -23,17 +23,6 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public class DateValueComparisonTest extends TestCase {
-
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
-
   public void testComparisonSameAsDateValueImpl() throws Exception {
     // It's more important for DateValueComparison to be a total ordering
     // (see the class comments) than it be consistent with DateValue.

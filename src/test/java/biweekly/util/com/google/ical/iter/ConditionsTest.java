@@ -23,17 +23,6 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public class ConditionsTest extends TestCase {
-
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
-
   public void testCountCondition() throws Exception {
     Predicate<DateValue> cc = Conditions.countCondition(3);
     assertTrue(cc.apply(new DateValueImpl(2006, 2, 1)));
@@ -41,6 +30,4 @@ public class ConditionsTest extends TestCase {
     assertTrue(cc.apply(new DateValueImpl(2006, 2, 3)));
     assertTrue(!cc.apply(new DateValueImpl(2006, 2, 4)));
   }
-
-
 }

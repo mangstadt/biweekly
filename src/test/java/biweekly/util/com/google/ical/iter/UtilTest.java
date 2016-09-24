@@ -23,17 +23,6 @@ import junit.framework.TestCase;
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
 public class UtilTest extends TestCase {
-
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
-
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
-
   public void testDayNumToDateInMonth() throws Exception {
     //        March 2006
     // Su Mo Tu We Th Fr Sa
