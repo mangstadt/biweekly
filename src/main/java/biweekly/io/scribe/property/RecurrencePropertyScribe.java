@@ -506,7 +506,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 	/**
 	 * Parses an integer string, where the sign is at the end of the string
-	 * instead of at the beginning (e.g. "5-").
+	 * instead of at the beginning (for example, "5-").
 	 * @param value the string
 	 * @return the value
 	 * @throws NumberFormatException if the string cannot be parsed as an

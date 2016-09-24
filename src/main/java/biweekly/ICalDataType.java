@@ -57,14 +57,14 @@ public class ICalDataType {
 	public static final ICalDataType BINARY = new ICalDataType("BINARY");
 
 	/**
-	 * Boolean value (i.e. "true" or "false").
+	 * Boolean value ("true" or "false").
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-31">RFC 5545
 	 * p.31</a>
 	 */
 	public static final ICalDataType BOOLEAN = new ICalDataType("BOOLEAN");
 
 	/**
-	 * A URI containing a calendar user address (i.e. a "mailto" URI).
+	 * A URI containing a calendar user address (typically, a "mailto" URI).
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-30">RFC 5545
 	 * p.30-1</a>
 	 */
@@ -77,7 +77,7 @@ public class ICalDataType {
 	public static final ICalDataType CONTENT_ID = new ICalDataType("CONTENT-ID"); //1.0 only
 
 	/**
-	 * A date (e.g. "2014-03-12")
+	 * A date (for example, "2014-03-12").
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-32">RFC 5545
 	 * p.32</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.16-7</a>
@@ -85,7 +85,7 @@ public class ICalDataType {
 	public static final ICalDataType DATE = new ICalDataType("DATE");
 
 	/**
-	 * A date/time value (e.g. "2014-03-12 13:30:00")
+	 * A date/time value (for example, "2014-03-12 13:30:00").
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-32">RFC 5545
 	 * p.32-4</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.16-7</a>
@@ -93,7 +93,7 @@ public class ICalDataType {
 	public static final ICalDataType DATE_TIME = new ICalDataType("DATE-TIME");
 
 	/**
-	 * A duration of time (e.g. "2 hours, 30 minutes").
+	 * A duration of time (for example, "2 hours, 30 minutes").
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-35">RFC 5545
 	 * p.35-6</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.17</a>
@@ -101,28 +101,28 @@ public class ICalDataType {
 	public static final ICalDataType DURATION = new ICalDataType("DURATION");
 
 	/**
-	 * A floating point value (e.g. "3.14")
+	 * A floating point value (for example, "3.14")
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-36">RFC 5545
 	 * p.36</a>
 	 */
 	public static final ICalDataType FLOAT = new ICalDataType("FLOAT");
 
 	/**
-	 * An integer value (e.g. "42")
+	 * An integer value (for example, "42")
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-37">RFC 5545
 	 * p.37</a>
 	 */
 	public static final ICalDataType INTEGER = new ICalDataType("INTEGER");
 
 	/**
-	 * A period of time (e.g. "October 3 through October 5").
+	 * A period of time (for example, "October 3 through October 5").
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-37-8">RFC 5545
 	 * p.37-8</a>
 	 */
 	public static final ICalDataType PERIOD = new ICalDataType("PERIOD");
 
 	/**
-	 * A recurrence rule (e.g. "every Monday at 2pm").
+	 * A recurrence rule (for example, "every Monday at 2pm").
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-38">RFC 5545
 	 * p.38-45</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.18-23</a>
@@ -137,7 +137,7 @@ public class ICalDataType {
 	public static final ICalDataType TEXT = new ICalDataType("TEXT");
 
 	/**
-	 * A time value (e.g. "2pm").
+	 * A time value (for example, "2pm").
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-47">RFC 5545
 	 * p.47-8</a>
 	 */
@@ -151,13 +151,13 @@ public class ICalDataType {
 	public static final ICalDataType URI = new ICalDataType("URI");
 
 	/**
-	 * A URL (e.g. "http://example.com/picture.jpg") (vCal 1.0 only).
+	 * A URL (for example, "http://example.com/picture.jpg") (vCal 1.0 only).
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.17-8</a>
 	 */
 	public static final ICalDataType URL = new ICalDataType("URL");
 
 	/**
-	 * A UTC-offset (e.g. "+0500").
+	 * A UTC-offset (for example, "+0500").
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-49">RFC 5545
 	 * p.49-50</a>
 	 */

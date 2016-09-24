@@ -479,7 +479,7 @@ public class RecurrenceIteratorFactory {
    * <p>
    * Generates a recurrence iterator that iterates over all the dates in a
    * {@link RecurrenceIterator}, excluding those dates found in another
-   * {@link RecurrenceIterator} (i.e. inclusions - exclusions).
+   * {@link RecurrenceIterator}.
    * </p>
    * <p>
    * Exclusions trump inclusions, and {@link DateValue dates} and
