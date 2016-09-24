@@ -26,7 +26,6 @@ import java.util.TimeZone;
 import junit.framework.TestCase;
 import biweekly.util.DayOfWeek;
 import biweekly.util.Frequency;
-import biweekly.util.Google2445Utils;
 import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 import biweekly.util.com.google.ical.util.TimeUtils;
@@ -48,7 +47,7 @@ public class CompoundIteratorImplTest extends TestCase {
       .count(3)
     .build();
     DateValue start = new DateValueImpl(2006, 4, 9);
-    RecurrenceIterator ri = RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST);
+    RecurrenceIterator ri = RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST);
     
     List<DateValue> expected = Arrays.<DateValue>asList(
       new DateValueImpl(2006, 4, 13),
@@ -253,10 +252,10 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 4, 11);
 
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList(
-        RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(exrule, PST), start, PST)
+        RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
     );
     
     CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
@@ -295,10 +294,10 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 4, 11);
 
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList(
-        RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(exrule, PST), start, PST)
+        RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
     );
     
     CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
@@ -331,10 +330,10 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 4, 11);
 
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList(
-        RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(exrule, PST), start, PST)
+        RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
     );
     
     CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
@@ -365,10 +364,10 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 4, 11);
 
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList(
-        RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(exrule, PST), start, PST)
+        RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
     );
     
     CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
@@ -405,10 +404,10 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 4, 11);
 
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList(
-        RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(exrule, PST), start, PST)
+        RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
     );
     
     CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
@@ -441,10 +440,10 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 4, 11);
 
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList(
-        RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(exrule, PST), start, PST)
+        RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
     );
     
     CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
@@ -471,7 +470,7 @@ public class CompoundIteratorImplTest extends TestCase {
         new DateValueImpl(2007, 1, 1),
         new DateValueImpl(2006, 4, 17)
       )),
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList(
       RecurrenceIteratorFactory.createRecurrenceIterator(Arrays.asList(
@@ -480,7 +479,7 @@ public class CompoundIteratorImplTest extends TestCase {
         new DateValueImpl(2007, 1, 1),
         new DateValueImpl(2006, 4, 17)
       )),
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     
     CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
@@ -495,7 +494,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 5, 3);
 
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -520,7 +519,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 4, 22);
 
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -538,7 +537,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateTimeValueImpl(2006, 5, 9, 3, 45, 40);
 
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -559,7 +558,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 5, 1);
 
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -589,7 +588,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateTimeValueImpl(2006, 5, 2, 22, 46, 53);
   
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -629,7 +628,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateTimeValueImpl(2006, 4, 5, 4, 42, 26);
   
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -649,7 +648,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateTimeValueImpl(2006, 5, 8, 9, 47, 41);
   
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -675,7 +674,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 4, 27);
   
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -717,7 +716,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 4, 27);
   
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -741,7 +740,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 4, 27);
   
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -763,7 +762,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 4, 27);
   
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -786,7 +785,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 4, 9);
   
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -808,7 +807,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 4, 9);
   
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -831,7 +830,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateTimeValueImpl(2006, 5, 2, 18, 47, 45);
   
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -855,7 +854,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 5, 19);
   
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -875,7 +874,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 5, 6);
   
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     
@@ -901,7 +900,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateValueImpl(2006, 4, 16);
   
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList(
       RecurrenceIteratorFactory.createRecurrenceIterator(exdates)
@@ -926,7 +925,7 @@ public class CompoundIteratorImplTest extends TestCase {
     DateValue start = new DateTimeValueImpl(2006, 9, 20, 23, 15, 51);
   
     Collection<RecurrenceIterator> inclusions = Arrays.asList(
-      RecurrenceIteratorFactory.createRecurrenceIterator(Google2445Utils.convert(rrule, PST), start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList();
     

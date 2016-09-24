@@ -14,14 +14,19 @@
 
 package biweekly.util.com.google.ical.iter;
 
+import static biweekly.util.TestUtils.date;
 import junit.framework.TestCase;
+import biweekly.util.DayOfWeek;
+import biweekly.util.Frequency;
+import biweekly.util.ICalDate;
+import biweekly.util.Recurrence;
 import biweekly.util.com.google.ical.util.TimeUtils;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
-import biweekly.util.com.google.ical.values.RRule;
 
 /**
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
+ * @author Michael Angstadt
  */
 public class StressTest extends TestCase {
 
@@ -35,15 +40,9 @@ public class StressTest extends TestCase {
     }
   }
 
-  @Override
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
-
   public void testSpeed() throws Exception {
     long t0 = System.nanoTime();
-    // cycle through 10 recurrence rules, advancing and pulling a few dates off
-    // each
+    //cycle through 10 recurrence rules, advancing and pulling a few dates off each
     for (int runs = 5000; --runs >= 0;) {
       runOne();
     }
@@ -51,22 +50,41 @@ public class StressTest extends TestCase {
     System.out.println(getName() + " took " + (dt / 1e6) + " ms");
   }
 
-  static String[] RECURRENCE_RULES = {
-    "RRULE:FREQ=DAILY",
-    "RRULE:FREQ=WEEKLY;BYDAY=TU,TH",
-    "RRULE:FREQ=WEEKLY;BYDAY=TU,TH;COUNT=10",
-    "RRULE:FREQ=WEEKLY;BYDAY=TU,TH;UNTIL=20060801",
-    "RRULE:FREQ=MONTHLY;INTERVAL=2;BYDAY=TH;UNTIL=20060801",
-    "RRULE:FREQ=MONTHLY;BYMONTHDAY=13;BYDAY=FR;UNTIL=20060801",
-    "RRULE:FREQ=YEARLY;BYMONTH=6;BYMONTHDAY=15;UNTIL=20200615",
+  static Recurrence[] RECURRENCE_RULES = {
+    new Recurrence.Builder(Frequency.DAILY).build(),
+    new Recurrence.Builder(Frequency.WEEKLY)
+      .byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+      .build(),
+    new Recurrence.Builder(Frequency.WEEKLY)
+      .byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+      .count(10)
+      .build(),
+    new Recurrence.Builder(Frequency.WEEKLY)
+      .byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+      .until(new ICalDate(date("2006-08-01"), false))
+      .build(),
+    new Recurrence.Builder(Frequency.MONTHLY)
+      .interval(2)
+      .byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+      .until(new ICalDate(date("2006-08-01"), false))
+      .build(),
+    new Recurrence.Builder(Frequency.MONTHLY)
+      .byMonthDay(13)
+      .byDay(DayOfWeek.FRIDAY)
+      .until(new ICalDate(date("2006-08-01"), false))
+      .build(),
+    new Recurrence.Builder(Frequency.YEARLY)
+      .byMonth(6)
+      .byMonthDay(15)
+      .until(new ICalDate(date("2020-06-15"), false))
+      .build()
   };
 
   private static final DateValue DT_START = new DateValueImpl(2006, 4, 3);
   private static final DateValue T0 = new DateValueImpl(2006, 8, 3);
 
-  void runOne() throws Exception {
-    for (String rdata : RECURRENCE_RULES) {
-      RRule rrule = new RRule(rdata);
+  private void runOne() {
+    for (Recurrence rrule : RECURRENCE_RULES) {
       RecurrenceIterator iter =
         RecurrenceIteratorFactory.createRecurrenceIterator(
             rrule, DT_START, TimeUtils.utcTimezone());
@@ -76,5 +94,4 @@ public class StressTest extends TestCase {
       }
     }
   }
-
 }

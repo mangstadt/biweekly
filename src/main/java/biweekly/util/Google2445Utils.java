@@ -244,23 +244,21 @@ public final class Google2445Utils {
 	 */
 	public static RecurrenceIterator createRecurrenceIterator(Recurrence recurrence, ICalDate start, TimeZone timezone) {
 		DateValue startValue = convert(start, timezone);
-		RRule googleRecurrence = convert(recurrence, timezone);
-		return RecurrenceIteratorFactory.createRecurrenceIterator(googleRecurrence, startValue, timezone);
+		return RecurrenceIteratorFactory.createRecurrenceIterator(recurrence, startValue, timezone);
 	}
-	
+
 	/**
-     * Creates a recurrence iterator based on the given recurrence rule.
-     * @param recurrence the recurrence rule
-     * @param start the start date
-     * @param timezone the timezone to iterate in. This is needed in order to
-     * account for when the iterator passes over a daylight savings boundary.
-     * @return the recurrence iterator
-     */
-    public static RecurrenceIterable createRecurrenceIterable(Recurrence recurrence, ICalDate start, TimeZone timezone) {
-        DateValue startValue = convert(start, timezone);
-        RRule googleRecurrence = convert(recurrence, timezone);
-        return RecurrenceIteratorFactory.createRecurrenceIterable(googleRecurrence, startValue, timezone);
-    }
+	 * Creates a recurrence iterator based on the given recurrence rule.
+	 * @param recurrence the recurrence rule
+	 * @param start the start date
+	 * @param timezone the timezone to iterate in. This is needed in order to
+	 * account for when the iterator passes over a daylight savings boundary.
+	 * @return the recurrence iterator
+	 */
+	public static RecurrenceIterable createRecurrenceIterable(Recurrence recurrence, ICalDate start, TimeZone timezone) {
+		DateValue startValue = convert(start, timezone);
+		return RecurrenceIteratorFactory.createRecurrenceIterable(recurrence, startValue, timezone);
+	}
 
 	/**
 	 * <p>

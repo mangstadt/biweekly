@@ -88,6 +88,22 @@ public class RecurrenceIteratorFactory {
    * @return the iterable
    */
   public static RecurrenceIterable createRecurrenceIterable(
+      final Recurrence rrule, final DateValue dtStart, final TimeZone tzid) {
+    return new RecurrenceIterable(){
+      public RecurrenceIterator iterator() {
+        return createRecurrenceIterator(rrule, dtStart, tzid);
+      }
+    };
+  }
+  
+  /**
+   * Creates a recurrence iterable from an RRULE.
+   * @param rrule the recurrence rule
+   * @param dtStart the start date of the series
+   * @param tzid the timezone that the given start date is in
+   * @return the iterable
+   */
+  public static RecurrenceIterable createRecurrenceIterable(
       final RRule rrule, final DateValue dtStart, final TimeZone tzid) {
     return new RecurrenceIterable(){
       public RecurrenceIterator iterator() {

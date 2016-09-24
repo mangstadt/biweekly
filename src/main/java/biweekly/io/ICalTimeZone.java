@@ -1,7 +1,6 @@
 package biweekly.io;
 
 import static biweekly.property.ValuedProperty.getValue;
-import static biweekly.util.Google2445Utils.convert;
 import static biweekly.util.Google2445Utils.convertFromRawComponents;
 
 import java.util.ArrayList;
@@ -38,7 +37,6 @@ import biweekly.util.com.google.ical.iter.RecurrenceIteratorFactory;
 import biweekly.util.com.google.ical.values.DateTimeValue;
 import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
-import biweekly.util.com.google.ical.values.RRule;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -498,8 +496,7 @@ public class ICalTimeZone extends TimeZone {
 			for (RecurrenceRule rrule : observance.getProperties(RecurrenceRule.class)) {
 				Recurrence recur = rrule.getValue();
 				if (recur != null) {
-					RRule rruleValue = convert(recur, utc);
-					inclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(rruleValue, dtstartValue, utc));
+					inclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(recur, dtstartValue, utc));
 				}
 			}
 
@@ -507,8 +504,7 @@ public class ICalTimeZone extends TimeZone {
 			for (ExceptionRule exrule : observance.getProperties(ExceptionRule.class)) {
 				Recurrence recur = exrule.getValue();
 				if (recur != null) {
-					RRule exruleValue = convert(recur, utc);
-					exclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(exruleValue, dtstartValue, utc));
+					exclusions.add(RecurrenceIteratorFactory.createRecurrenceIterator(recur, dtstartValue, utc));
 				}
 			}
 		}
