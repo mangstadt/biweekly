@@ -18,13 +18,15 @@ import static biweekly.util.TestUtils.date;
 
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
 import biweekly.util.Frequency;
-import biweekly.util.Google2445Utils;
-import biweekly.util.ICalDate;
 import biweekly.util.Recurrence;
 import biweekly.util.com.google.ical.iter.RecurrenceIterable;
+import biweekly.util.com.google.ical.iter.RecurrenceIteratorFactory;
 import biweekly.util.com.google.ical.util.TimeUtils;
+import biweekly.util.com.google.ical.values.DateTimeValueImpl;
+import biweekly.util.com.google.ical.values.DateValue;
+import biweekly.util.com.google.ical.values.DateValueImpl;
+import junit.framework.TestCase;
 
 /**
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
@@ -34,34 +36,40 @@ public class DateIteratorFactoryTest extends TestCase {
   private static final TimeZone UTC = TimeUtils.utcTimezone();
   private static final TimeZone PST = TimeZone.getTimeZone("America/Los_Angeles");
 
-  public void testCreateDateIterableUntimed() throws Exception {
-    Recurrence recur = new Recurrence.Builder(Frequency.DAILY).interval(2).count(3).build();
-    ICalDate start = new ICalDate(date("2006-01-01"), false);
-    RecurrenceIterable recurIt = Google2445Utils.createRecurrenceIterable(recur, start, PST);
+  public void testCreateDateIterableUntimed() {
+    Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
+      .interval(2)
+      .count(3)
+    .build();
+    DateValue start = new DateValueImpl(2006, 1, 1);
+    RecurrenceIterable recurIt = RecurrenceIteratorFactory.createRecurrenceIterable(recur, start, PST);
     DateIterable iterable = DateIteratorFactory.createDateIterable(recurIt);
 
     DateIterator it = iterable.iterator();
     assertTrue(it.hasNext());
-    assertEquals(date("2006-01-01"), it.next());
+    assertEquals(date("2006-01-01", UTC), it.next());
     assertTrue(it.hasNext());
-    assertEquals(date("2006-01-03"), it.next());
+    assertEquals(date("2006-01-03", UTC), it.next());
     assertTrue(it.hasNext());
-    assertEquals(date("2006-01-05"), it.next());
+    assertEquals(date("2006-01-05", UTC), it.next());
     assertFalse(it.hasNext());
 
     it = iterable.iterator();
-    it.advanceTo(date("2006-01-03"));
+    it.advanceTo(date("2006-01-03", UTC));
     assertTrue(it.hasNext());
-    assertEquals(date("2006-01-03"), it.next());
+    assertEquals(date("2006-01-03", UTC), it.next());
     assertTrue(it.hasNext());
-    assertEquals(date("2006-01-05"), it.next());
+    assertEquals(date("2006-01-05", UTC), it.next());
     assertFalse(it.hasNext());
   }
 
-  public void testCreateDateIterableMidnight() throws Exception {
-    Recurrence recur = new Recurrence.Builder(Frequency.HOURLY).interval(2).count(3).build();
-    ICalDate start = new ICalDate(date("2006-01-01 22:00:00", UTC));
-    RecurrenceIterable recurIt = Google2445Utils.createRecurrenceIterable(recur, start, UTC);
+  public void testCreateDateIterableMidnight() {
+    Recurrence recur = new Recurrence.Builder(Frequency.HOURLY)
+      .interval(2)
+      .count(3)
+    .build();
+    DateValue start = new DateTimeValueImpl(2006, 1, 1, 22, 0, 0);
+    RecurrenceIterable recurIt = RecurrenceIteratorFactory.createRecurrenceIterable(recur, start, UTC);
     DateIterable iterable = DateIteratorFactory.createDateIterable(recurIt);
 
     DateIterator it = iterable.iterator();
@@ -82,10 +90,13 @@ public class DateIteratorFactoryTest extends TestCase {
     assertFalse(it.hasNext());
   }
 
-  public void testCreateDateIterableTimed() throws Exception {
-    Recurrence recur = new Recurrence.Builder(Frequency.DAILY).interval(2).count(3).build();
-    ICalDate start = new ICalDate(date("2006-01-01 12:30:01", PST));
-    RecurrenceIterable recurIt = Google2445Utils.createRecurrenceIterable(recur, start, PST);
+  public void testCreateDateIterableTimed() {
+    Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
+      .interval(2)
+      .count(3)
+    .build();
+    DateValue start = new DateTimeValueImpl(2006, 1, 1, 12, 30, 1);
+    RecurrenceIterable recurIt = RecurrenceIteratorFactory.createRecurrenceIterable(recur, start, PST);
     DateIterable iterable = DateIteratorFactory.createDateIterable(recurIt);
 
     DateIterator it = iterable.iterator();

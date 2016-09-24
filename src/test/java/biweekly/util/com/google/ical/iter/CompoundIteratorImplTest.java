@@ -297,7 +297,7 @@ public class CompoundIteratorImplTest extends TestCase {
       RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList(
-        RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
     );
     
     CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
@@ -333,7 +333,7 @@ public class CompoundIteratorImplTest extends TestCase {
       RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList(
-        RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
     );
     
     CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
@@ -367,7 +367,7 @@ public class CompoundIteratorImplTest extends TestCase {
       RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList(
-        RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
     );
     
     CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
@@ -407,7 +407,7 @@ public class CompoundIteratorImplTest extends TestCase {
       RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList(
-        RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
     );
     
     CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
@@ -443,7 +443,7 @@ public class CompoundIteratorImplTest extends TestCase {
       RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
     );
     Collection<RecurrenceIterator> exclusions = Arrays.asList(
-        RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
+      RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
     );
     
     CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
@@ -621,7 +621,7 @@ public class CompoundIteratorImplTest extends TestCase {
 
   public void testMonkey6() {
     Recurrence rrule = new Recurrence.Builder(Frequency.MONTHLY)
-      .until(new ICalDate(date("2006-05-10 15:10:44", UTC)))
+      .until(date("2006-05-10 15:10:44", UTC))
       .interval(1)
       .bySecond(48)
     .build();
@@ -889,7 +889,7 @@ public class CompoundIteratorImplTest extends TestCase {
 
   public void testExcludedStart() {
     Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY)
-      .until(new ICalDate(date("2007-04-14", PST)))
+      .until(date("2007-04-14", PST))
       .interval(1)
       .byDay(3, DayOfWeek.SUNDAY)
       .byMonth(4)
