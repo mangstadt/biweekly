@@ -143,8 +143,7 @@ import biweekly.util.Duration;
  * </pre>
  * 
  * <p>
- * For more information on working with timezones, see this page:<br />
- * <a
+ * For more information on working with timezones, see this page: <a
  * href="https://github.com/mangstadt/biweekly/wiki/Timezones">https://github.
  * com/mangstadt/biweekly/wiki/Timezones</a>
  * </p>

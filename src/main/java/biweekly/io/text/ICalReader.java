@@ -175,7 +175,7 @@ public class ICalReader extends StreamReader {
 	 * accent encoding (enabled by default). This escaping mechanism allows
 	 * newlines and double quotes to be included in parameter values.
 	 * @return true if circumflex accent decoding is enabled, false if not
-	 * @see ICalRawReader#isCaretDecodingEnabled()
+	 * @see VObjectReader#isCaretDecodingEnabled()
 	 */
 	public boolean isCaretDecodingEnabled() {
 		return reader.isCaretDecodingEnabled();
@@ -187,7 +187,7 @@ public class ICalReader extends StreamReader {
 	 * newlines and double quotes to be included in parameter values. This only
 	 * applies to version 2.0 iCalendar objects.
 	 * @param enable true to use circumflex accent decoding, false not to
-	 * @see ICalRawReader#setCaretDecodingEnabled(boolean)
+	 * @see VObjectReader#setCaretDecodingEnabled(boolean)
 	 */
 	public void setCaretDecodingEnabled(boolean enable) {
 		reader.setCaretDecodingEnabled(enable);

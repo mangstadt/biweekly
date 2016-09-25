@@ -52,23 +52,41 @@ import biweekly.util.com.google.ical.values.TimeValue;
  * @author Michael Angstadt
  */
 public class DTBuilder {
-  /** in AD.  0 -> 1BC. */
+  /**
+   * The year.
+   */
   public int year;
-  /** one indexed. */
+  
+  /**
+   * The month. This value is one-indexed, so "1" represents January.
+   */
   public int month;
-  /** one indexed */
+  
+  /**
+   * The day of the month.
+   */
   public int day;
-  /** zero indexed in 24 hour time. */
+  
+  /**
+   * The hour.
+   */
   public int hour;
-  /** zero indexed */
+  
+  /**
+   * The minute.
+   */
   public int minute;
-  /** zero indexed */
+  
+  /**
+   * The second.
+   */
   public int second;
 
   /**
    * Creates a new date builder.
    * @param year the initial year
-   * @param month the initial month (1-12)
+   * @param month the initial month (this value is one-indexed, so "1"
+   * represents January)
    * @param day the initial day
    * @param hour the initial hour
    * @param minute the initial minute
@@ -85,9 +103,11 @@ public class DTBuilder {
   }
 
   /**
-   * Creates a new date builder, setting the time components to zero.
+   * Creates a new date builder. This constructor sets the time components to
+   * zero.
    * @param year the initial year
-   * @param month the initial month (1-12)
+   * @param month the initial month (this value is one-indexed, so "1"
+   * represents January)
    * @param day the initial day
    */
   public DTBuilder(int year, int month, int day) {

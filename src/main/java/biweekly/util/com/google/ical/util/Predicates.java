@@ -42,6 +42,7 @@ public class Predicates {
 
   /**
    * Returns a predicate that always evaluates to true.
+   * @param <T> the input type
    * @return the predicate
    */
   @SuppressWarnings("unchecked")
@@ -51,6 +52,7 @@ public class Predicates {
 
   /**
    * Returns a predicate that always evaluates to false.
+   * @param <T> the input type
    * @return the predicate
    */
   @SuppressWarnings("unchecked")
@@ -62,6 +64,7 @@ public class Predicates {
    * Returns a predicate that evaluates to true iff the given predicate
    * evaluates to false.
    * @param predicate the predicate to evaluate
+   * @param <T> the input type
    * @return the resultant predicate
    */
   public static <T> Predicate<T> not(Predicate<? super T> predicate) {
@@ -73,6 +76,7 @@ public class Predicates {
    * evaluates to true. The components are evaluated in order, and evaluation
    * will be "short-circuited" as soon as the answer is determined.
    * @param components the predicates to evaluate
+   * @param <T> the input type
    * @return the resultant predicate
    */
   public static <T> Predicate<T> and(Predicate<? super T>... components) {
@@ -101,6 +105,7 @@ public class Predicates {
    * evaluates to true. The components are evaluated in order, and evaluation
    * will be "short-circuited" as soon as the answer is determined.
    * @param components the predicates to evaluate
+   * @param <T> the input type
    * @return the resultant predicate
    */
   @SuppressWarnings("unchecked")
@@ -114,6 +119,7 @@ public class Predicates {
    * evaluates to true.  The components are evaluated in order, and evaluation
    * will be "short-circuited" as soon as the answer is determined.
    * @param components the predicates to evaluate
+   * @param <T> the input type
    * @return the resultant predicate
    */
   public static <T> Predicate<T> or(Predicate<? super T>... components) {

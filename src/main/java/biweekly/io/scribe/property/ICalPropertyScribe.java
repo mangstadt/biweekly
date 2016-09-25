@@ -136,6 +136,8 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	/**
 	 * Gets the property name. Child classes should override this method if the
 	 * property's name differs between versions.
+	 * @param version the iCalendar version (a few properties have different
+	 * names under different versions)
 	 * @return the property name (e.g. "DTSTART")
 	 */
 	public String getPropertyName(ICalVersion version) {

@@ -33,6 +33,7 @@ import java.io.Serializable;
  * A function with a boolean return value. Useful for filtering.
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  * @author Michael Angstadt
+ * @param <T> the input type
  */
 public interface Predicate<T> extends Serializable {
   /**
