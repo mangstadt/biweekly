@@ -271,9 +271,6 @@
 					<excludedClasses>
 						<!-- exclude commons-codec -->
 						<param>biweekly.util.org.*</param>
-						
-						<!--  exclude google-rfc-2445 -->
-						<param>biweekly.util.com.*</param>
 					</excludedClasses>
 					<targetTests>
 						<param>biweekly.*</param>
