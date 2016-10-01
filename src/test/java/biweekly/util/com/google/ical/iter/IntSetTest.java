@@ -39,15 +39,19 @@
 
 package biweekly.util.com.google.ical.iter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
-public class IntSetTest extends TestCase {
-	public void testAddAndContainsAndSize() {
+public class IntSetTest {
+	@Test
+	public void addAndContainsAndSize() {
 		IntSet a = new IntSet();
 
 		assertTrue(!a.contains(-2));
@@ -85,7 +89,8 @@ public class IntSetTest extends TestCase {
 		assertEquals(2, a.size());
 	}
 
-	public void testToIntArray() {
+	@Test
+	public void toIntArray() {
 		IntSet a = new IntSet();
 		int[] expected = {};
 		int[] actual = a.toIntArray();

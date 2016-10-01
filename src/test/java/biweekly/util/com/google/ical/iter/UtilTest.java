@@ -39,9 +39,13 @@
 
 package biweekly.util.com.google.ical.iter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
 import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.values.DateValueImpl;
@@ -50,8 +54,9 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  * @author Michael Angstadt
  */
-public class UtilTest extends TestCase {
-	public void testDayNumToDateInMonth() {
+public class UtilTest {
+	@Test
+	public void dayNumToDateInMonth() {
 		//        March 2006
 		// Su Mo Tu We Th Fr Sa
 		//           1  2  3  4
@@ -86,7 +91,8 @@ public class UtilTest extends TestCase {
 		assertEquals(0, Util.dayNumToDate(dow0, nDays, -5, dow, d0, nDays));
 	}
 
-	public void testDayNumToDateInYear() {
+	@Test
+	public void dayNumToDateInYear() {
 		//        January 2006
 		//  # Su Mo Tu We Th Fr Sa
 		//  1  1  2  3  4  5  6  7
@@ -140,14 +146,16 @@ public class UtilTest extends TestCase {
 		assertEquals(0, Util.dayNumToDate(dow0, nDays, -44, dow, d0, nInMonth));
 	}
 
-	public void testUniquify() {
+	@Test
+	public void uniquify() {
 		int[] ints = new int[] { 1, 4, 4, 2, 7, 3, 8, 0, 0, 3 };
 		int[] actual = Util.uniquify(ints);
 		int[] expected = { 0, 1, 2, 3, 4, 7, 8 };
 		assertTrue(Arrays.equals(expected, actual));
 	}
 
-	public void testNextWeekStart() {
+	@Test
+	public void nextWeekStart() {
 		assertEquals(new DateValueImpl(2006, 1, 24), Util.nextWeekStart(new DateValueImpl(2006, 1, 23), DayOfWeek.TUESDAY));
 		assertEquals(new DateValueImpl(2006, 1, 24), Util.nextWeekStart(new DateValueImpl(2006, 1, 24), DayOfWeek.TUESDAY));
 		assertEquals(new DateValueImpl(2006, 1, 31), Util.nextWeekStart(new DateValueImpl(2006, 1, 25), DayOfWeek.TUESDAY));
@@ -157,7 +165,8 @@ public class UtilTest extends TestCase {
 		assertEquals(new DateValueImpl(2006, 2, 6), Util.nextWeekStart(new DateValueImpl(2006, 1, 31), DayOfWeek.MONDAY));
 	}
 
-	public void testCountInPeriod() {
+	@Test
+	public void countInPeriod() {
 		//        January 2006
 		//  Su Mo Tu We Th Fr Sa
 		//   1  2  3  4  5  6  7
@@ -189,7 +198,8 @@ public class UtilTest extends TestCase {
 		assertEquals(4, Util.countInPeriod(DayOfWeek.SATURDAY, DayOfWeek.WEDNESDAY, 28));
 	}
 
-	public void testInvertWeekdayNum() {
+	@Test
+	public void invertWeekdayNum() {
 		//        January 2006
 		//  # Su Mo Tu We Th Fr Sa
 		//  1  1  2  3  4  5  6  7

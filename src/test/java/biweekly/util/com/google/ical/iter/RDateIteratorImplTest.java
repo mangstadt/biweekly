@@ -43,7 +43,8 @@ import static biweekly.util.TestUtils.assertIterator;
 
 import java.util.Arrays;
 
-import junit.framework.TestCase;
+import org.junit.Test;
+
 import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
@@ -53,8 +54,9 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author Michael Angstadt
  */
 //@formatter:off
-public class RDateIteratorImplTest extends TestCase {
-	public void testOneDate() {
+public class RDateIteratorImplTest {
+	@Test
+	public void oneDate() {
 		DateValue[] dates = new DateValue[] {
 			new DateValueImpl(2006, 4, 12)
 		};
@@ -64,7 +66,8 @@ public class RDateIteratorImplTest extends TestCase {
 		assertIterator(Arrays.asList(expected), ri);
 	}
 
-	public void testOneDateTime() {
+	@Test
+	public void oneDateTime() {
 		DateValue[] dates = new DateValue[] {
 			new DateTimeValueImpl(2006, 4, 12, 12, 0, 0)
 		};
@@ -74,7 +77,8 @@ public class RDateIteratorImplTest extends TestCase {
 		assertIterator(Arrays.asList(expected), ri);
 	}
 	
-	public void testSortAndRemoveDuplicates(){
+	@Test
+	public void sortAndRemoveDuplicates(){
 		DateValue[] dates = new DateValue[] {
 			new DateTimeValueImpl(2006, 4, 14, 12, 0, 0),
 			new DateTimeValueImpl(2006, 4, 12, 12, 0, 0),
@@ -93,7 +97,8 @@ public class RDateIteratorImplTest extends TestCase {
 		assertIterator(Arrays.asList(expected), ri);
 	}
 	
-	public void testAdvanceTo(){
+	@Test
+	public void advanceTo(){
 		DateValue[] dates = new DateValue[] {
 			new DateTimeValueImpl(2006, 4, 12, 12, 0, 0),
 			new DateTimeValueImpl(2006, 4, 13, 12, 0, 0),

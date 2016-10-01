@@ -40,7 +40,10 @@
 package biweekly.util.com.google.ical.iter;
 
 import static biweekly.util.TestUtils.date;
-import junit.framework.TestCase;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import biweekly.util.DayOfWeek;
 import biweekly.util.Frequency;
 import biweekly.util.ICalDate;
@@ -53,25 +56,24 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  * @author Michael Angstadt
  */
-public class StressTest extends TestCase {
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-
-		// prime the VM
+public class StressTest {
+	@Before
+	public void before() {
+		//prime the VM
 		for (int runs = 10; --runs >= 0;) {
 			runOne();
 		}
 	}
 
-	public void testSpeed() {
+	@Test
+	public void speed() {
 		long t0 = System.nanoTime();
 		//cycle through 10 recurrence rules, advancing and pulling a few dates off each
 		for (int runs = 5000; --runs >= 0;) {
 			runOne();
 		}
 		long dt = System.nanoTime() - t0;
-		System.out.println(getName() + " took " + (dt / 1e6) + " ms");
+		System.out.println(getClass().getSimpleName() + " took " + (dt / 1e6) + " ms");
 	}
 
 	//@formatter:off

@@ -39,7 +39,11 @@
 
 package biweekly.util.com.google.ical.util;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValueImpl;
 
@@ -47,8 +51,9 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  * @author Michael Angstadt
  */
-public class DTBuilderTest extends TestCase {
-	public void testEquals() {
+public class DTBuilderTest {
+	@Test
+	public void equals() {
 		assertTrue(!new DTBuilder(2006, 1, 2).equals(null));
 		assertTrue(!new DTBuilder(2006, 1, 2).equals(new Object()));
 		assertTrue(!new DTBuilder(2006, 1, 2).equals(new DTBuilder(2006, 1, 2).toString()));
@@ -65,14 +70,16 @@ public class DTBuilderTest extends TestCase {
 		assertEquals(new DTBuilder(0, 0, 0), new DTBuilder(0, 0, 0, 0, 0, 0));
 	}
 
-	public void testToDate() {
+	@Test
+	public void toDate() {
 		assertEquals(new DateValueImpl(2006, 1, 2), new DTBuilder(2006, 1, 2).toDate());
 		assertEquals(new DateValueImpl(2006, 1, 2), new DTBuilder(2006, 1, 2, 12, 30, 45).toDate());
 		//test normalization
 		assertEquals(new DateValueImpl(2006, 1, 2), new DTBuilder(2005, 12, 33).toDate());
 	}
 
-	public void testToDateTime() {
+	@Test
+	public void toDateTime() {
 		assertEquals(new DateTimeValueImpl(2006, 1, 2, 0, 0, 0), new DTBuilder(2006, 1, 2).toDateTime());
 		assertEquals(new DateTimeValueImpl(2006, 1, 2, 12, 30, 45), new DTBuilder(2006, 1, 2, 12, 30, 45).toDateTime());
 		//test normalization
@@ -80,7 +87,8 @@ public class DTBuilderTest extends TestCase {
 		assertEquals(new DateTimeValueImpl(2006, 1, 2, 12, 0, 0), new DTBuilder(2005, 12, 31, 60, 0, 0).toDateTime());
 	}
 
-	public void testCompareTo() {
+	@Test
+	public void compareTo() {
 		assertTrue(new DTBuilder(2005, 6, 15).compareTo(new DateValueImpl(2005, 6, 15)) == 0);
 		assertTrue(new DTBuilder(2005, 6, 15).compareTo(new DateValueImpl(2006, 6, 15)) < 0);
 		assertTrue(new DTBuilder(2005, 6, 15).compareTo(new DateValueImpl(2005, 7, 15)) < 0);
@@ -93,7 +101,8 @@ public class DTBuilderTest extends TestCase {
 		assertTrue(new DTBuilder(2005, 6, 15, 13, 0, 0).compareTo(new DateTimeValueImpl(2005, 6, 15, 12, 0, 0)) > 0);
 	}
 
-	public void testNormalize() {
+	@Test
+	public void normalize() {
 		DTBuilder dtb = new DTBuilder(2006, 1, 1);
 		assertDtBuilder(2006, 1, 1, 0, 0, 0, dtb);
 

@@ -39,7 +39,10 @@
 
 package biweekly.util.com.google.ical.iter;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
 import biweekly.util.com.google.ical.util.Predicate;
 import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
@@ -47,8 +50,9 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
 /**
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
-public class ConditionsTest extends TestCase {
-	public void testCountCondition() {
+public class ConditionsTest {
+	@Test
+	public void countCondition() {
 		Predicate<DateValue> cc = Conditions.countCondition(3);
 		assertTrue(cc.apply(new DateValueImpl(2006, 2, 1)));
 		assertTrue(cc.apply(new DateValueImpl(2006, 2, 2)));
