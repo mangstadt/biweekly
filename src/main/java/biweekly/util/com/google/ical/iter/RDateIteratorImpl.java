@@ -40,6 +40,7 @@
 package biweekly.util.com.google.ical.iter;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 import biweekly.util.com.google.ical.values.DateValue;
 
@@ -67,6 +68,9 @@ final class RDateIteratorImpl implements RecurrenceIterator {
 	}
 
 	public DateValue next() {
+		if (i >= datesUtc.length) {
+			throw new NoSuchElementException();
+		}
 		return datesUtc[i++];
 	}
 
