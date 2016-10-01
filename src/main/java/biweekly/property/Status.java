@@ -57,12 +57,12 @@ import biweekly.component.VTodo;
  * 
  * <pre class="brush:java">
  * ICalendar ical = ...
- * for (VTodo todo : ical.getTodos()){
+ * for (VTodo todo : ical.getTodos()) {
  *   Status status = todo.getStatus();
  *   if (action.isCompleted()) {
- * 	   ...
- *   } else if (action.isDraft()){
- *     ...
+ *     //...
+ *   } else if (action.isDraft()) {
+ *     //...
  *   }
  *   //etc.
  * }

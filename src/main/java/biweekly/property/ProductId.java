@@ -38,7 +38,7 @@ import biweekly.Biweekly;
  * <pre class="brush:java">
  * ICalendar ical = new ICalendar();
  * 
- * ProductId prodid = new ProductId(&quot;-//Company//Application Name//EN&quot;);
+ * ProductId prodid = new ProductId("-//Company//Application Name//EN");
  * ical.setProductId(prodid);
  * </pre>
  * @author Michael Angstadt

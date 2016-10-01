@@ -36,7 +36,7 @@ package biweekly.property;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * Comment comment = new Comment(&quot;Free text&quot;);
+ * Comment comment = new Comment("Free text");
  * event.addComment(comment);
  * </pre>
  * @author Michael Angstadt

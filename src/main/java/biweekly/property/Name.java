@@ -43,7 +43,7 @@ import biweekly.ICalendar;
  * <pre class="brush:java">
  * ICalendar ical = new ICalendar();
  * 
- * Name name = new Name(&quot;Company Vacation Days&quot;);
+ * Name name = new Name("Company Vacation Days");
  * ical.addName(name);
  * </pre>
  * 
@@ -54,12 +54,12 @@ import biweekly.ICalendar;
  * <pre class="brush:java">
  * ICalendar ical = new ICalendar();
  * 
- * Name englishName = new Name(&quot;Company Vacation Days&quot;);
- * englishName.setLanguage(&quot;en&quot;);
+ * Name englishName = new Name("Company Vacation Days");
+ * englishName.setLanguage("en");
  * ical.addName(englishName);
  * 
- * Name frenchName = new Name(&quot;Société Jours de Vacances&quot;);
- * frenchName.setLanguage(&quot;fr&quot;);
+ * Name frenchName = new Name("Société Jours de Vacances");
+ * frenchName.setLanguage("fr");
  * ical.addName(frenchName);
  * </pre>
  * @author Michael Angstadt

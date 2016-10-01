@@ -99,8 +99,8 @@ import biweekly.util.XmlUtils;
  * try {
  *   reader = new XCalReader(file);
  *   ICalendar ical;
- *   while ((ical = reader.readNext()) != null){
- * 	   ...
+ *   while ((ical = reader.readNext()) != null) {
+ *     //...
  *   }
  * } finally {
  *   if (reader != null) reader.close();

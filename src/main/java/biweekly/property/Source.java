@@ -36,7 +36,7 @@ package biweekly.property;
  * <pre class="brush:java">
  * ICalendar ical = new ICalendar();
  * 
- * Source source = new Source(&quot;http://example.com/holidays.ics&quot;);
+ * Source source = new Source("http://example.com/holidays.ics");
  * ical.setSource(source);
  * </pre>
  * @author Michael Angstadt

@@ -76,8 +76,8 @@ import com.fasterxml.jackson.core.JsonParser;
  * try {
  *   reader = new JCalReader(file);
  *   ICalendar ical;
- *   while ((ical = reader.readNext()) != null){
- *     ...
+ *   while ((ical = reader.readNext()) != null) {
+ *     //...
  *   }
  * } finally {
  *   if (reader != null) reader.close();

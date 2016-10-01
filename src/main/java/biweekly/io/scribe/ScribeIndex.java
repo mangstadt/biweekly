@@ -135,14 +135,14 @@ import biweekly.property.Xml;
  * reader.setScribeIndex(index);
  * List&lt;ICalendar&gt; icals = new ArrayList&lt;ICalendar&gt;();
  * ICalendar ical;
- * while ((ical = reader.readNext()) != null){
+ * while ((ical = reader.readNext()) != null) {
  *   icals.add(ical);
  * }
  * 
  * //inject the same instance in another reader/writer class
  * JCalWriter writer = new JCalWriter(...);
  * writer.setScribeIndex(index);
- * for (ICalendar ical : icals){
+ * for (ICalendar ical : icals) {
  *   writer.write(ical);
  * }
  * </pre>

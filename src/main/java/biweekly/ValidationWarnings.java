@@ -57,17 +57,17 @@ import biweekly.util.StringUtils.JoinCallback;
  * //iterate over each warnings group
  * //this gives you access to the property/component object and its parent components
  * for (WarningsGroup group : warnings) {
- * 	ICalProperty prop = group.getProperty();
- * 	if (prop == null) {
- * 		//then it was a component that caused the warnings
- * 		ICalComponent comp = group.getComponent();
- * 	}
+ * ICalProperty prop = group.getProperty();
+ *   if (prop == null) {
+ *     //then it was a component that caused the warnings
+ *     ICalComponent comp = group.getComponent();
+ *   }
  * 
- * 	//get parent components
- * 	List&lt;ICalComponent&gt; hierarchy = group.getComponentHierarchy();
+ *   //get parent components
+ *   List&lt;ICalComponent&gt; hierarchy = group.getComponentHierarchy();
  * 
- * 	//get warning messages
- * 	List&lt;String&gt; messages = group.getMessages();
+ *   //get warning messages
+ *   List&lt;String&gt; messages = group.getMessages();
  * }
  * 
  * //you can also get the warnings of specific properties/components

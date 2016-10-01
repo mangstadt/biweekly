@@ -58,13 +58,13 @@ import biweekly.util.ICalDate;
  * 
  * <pre class="brush:java">
  * ICalendar ical = ...
- * for (VEvent event : ical.getEvents()){
+ * for (VEvent event : ical.getEvents()) {
  *   DateStart dtstart = event.getDateStart();
  *   
  *   //get property value (ICalDate extends java.util.Date)
  *   ICalDate value = dtstart.getValue();
  *   
- *   if (value.hasTime()){
+ *   if (value.hasTime()) {
  *     //the value includes a time component
  *   } else {
  *     //the value is just a date

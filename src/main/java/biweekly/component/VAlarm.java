@@ -61,14 +61,14 @@ import biweekly.util.Duration;
  * 
  * //display alarm
  * Trigger trigger = ...
- * String message = &quot;Meeting at 1pm&quot;;
+ * String message = "Meeting at 1pm";
  * VAlarm display = VAlarm.display(trigger, message);
  * 
  * //email alarm
  * Trigger trigger = ...
- * String subject = &quot;Reminder: Meeting at 1pm&quot;;
- * String body = &quot;Team,\n\nThe team meeting scheduled for 1pm is about to start.  Snacks will be served!\n\nThanks,\nJohn&quot;;
- * List&lt;String&gt; to = Arrays.asList(&quot;janedoe@example.com&quot;, &quot;bobsmith@example.com&quot;);
+ * String subject = "Reminder: Meeting at 1pm";
+ * String body = "Team,\n\nThe team meeting scheduled for 1pm is about to start.  Snacks will be served!\n\nThanks,\nJohn";
+ * List&lt;String&gt; to = Arrays.asList("janedoe@example.com", "bobsmith@example.com");
  * VAlarm email = VAlarm.email(trigger, subject, body, to);
  * </pre>
  * @author Michael Angstadt

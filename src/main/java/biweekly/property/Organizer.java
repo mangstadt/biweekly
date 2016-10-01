@@ -51,8 +51,8 @@ import biweekly.component.VTodo;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * Organizer organizer = Organizer.email(&quot;johndoe@example.com&quot;);
- * organizer.setCommonName(&quot;John Doe&quot;);
+ * Organizer organizer = Organizer.email("johndoe@example.com");
+ * organizer.setCommonName("John Doe");
  * event.setOrganizer(organizer);
  * </pre>
  * @author Michael Angstadt

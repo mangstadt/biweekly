@@ -49,11 +49,11 @@ import biweekly.Messages;
  * DateTimeComponents components = new DateTimeComponents(2013, 07, 22, 17, 25, 0, false);
  * 
  * //parsing a date string (accepts basic and extended formats)
- * DateTimeComponents components = DateTimeComponents.parse(&quot;20130722T172500&quot;);
+ * DateTimeComponents components = DateTimeComponents.parse("20130722T172500");
  * 
  * //converting to date string
  * DateTimeComponents components = new DateTimeComponents(2013, 07, 22, 17, 25, 0, false);
- * String str = components.toString(true); //&quot;2013-07-22T17:25:00&quot;
+ * String str = components.toString(true); //"2013-07-22T17:25:00"
  * 
  * //converting to a Date object
  * DateTimeComponents components = new DateTimeComponents(2013, 07, 22, 17, 25, 0, false);

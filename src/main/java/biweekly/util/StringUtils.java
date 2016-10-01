@@ -47,10 +47,10 @@ public final class StringUtils {
 	 * </p>
 	 * 
 	 * <pre class="brush:java">
-	 * String result = StringUtils.afterPrefixIgnoreCase(&quot;MAILTO:email@example.com&quot;, &quot;mailto:&quot;);
-	 * assertEquals(&quot;email@example.com&quot;, result);
+	 * String result = StringUtils.afterPrefixIgnoreCase("MAILTO:email@example.com", "mailto:");
+	 * assertEquals("email@example.com", result);
 	 * 
-	 * result = StringUtils.afterPrefixIgnoreCase(&quot;http://www.google.com&quot;, &quot;mailto:&quot;);
+	 * result = StringUtils.afterPrefixIgnoreCase("http://www.google.com", "mailto:");
 	 * assertNull(result);
 	 * </pre>
 	 * 

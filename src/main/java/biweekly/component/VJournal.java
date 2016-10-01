@@ -994,7 +994,7 @@ public class VJournal extends ICalComponent {
 		//TODO create a method that accepts a component and make the RelatedTo property invisible to the user
 		//@formatter:off
 		/*
-		 * addRelation(RelationshipType relType, ICalComponent component){
+		 * addRelation(RelationshipType relType, ICalComponent component) {
 		 *   RelatedTo prop = new RelatedTo(component.getUid().getValue());
 		 *   prop.setRelationshipType(relType);
 		 *   addProperty(prop);

@@ -47,7 +47,7 @@ import biweekly.ICalendar;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * Description description = new Description(&quot;During this meeting, we will discuss...&quot;);
+ * Description description = new Description("During this meeting, we will discuss...");
  * event.setDescription(description);
  * </pre>
  * @author Michael Angstadt

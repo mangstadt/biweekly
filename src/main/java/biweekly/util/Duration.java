@@ -47,7 +47,7 @@ import biweekly.Messages;
  * 
  * <pre class="brush:java">
  * Duration duration = Duration.builder().hours(2).minutes(30).build();
- * Duration duration = Duration.parse(&quot;PT2H30M&quot;);
+ * Duration duration = Duration.parse("PT2H30M");
  * 
  * //add a duration value to a Date
  * Date start = ...

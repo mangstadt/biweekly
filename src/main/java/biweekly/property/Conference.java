@@ -40,8 +40,8 @@ import biweekly.parameter.Feature;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * Conference conference = new Conference(&quot;tel:+1-412-555-0123,,,654321&quot;);
- * conference.setLabel(&quot;Audio conference, access code=77869&quot;);
+ * Conference conference = new Conference("tel:+1-412-555-0123,,,654321");
+ * conference.setLabel("Audio conference, access code=77869");
  * conference.getFeatures().add(Feature.AUDIO);
  * conference.getFeatures().add(Feature.PHONE);
  * event.addConference(conference);

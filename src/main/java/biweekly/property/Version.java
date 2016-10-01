@@ -47,7 +47,7 @@ import biweekly.util.VersionNumber;
  * ICalendar ical = new ICalendar();
  * 
  * //all ICalendar objects are given a VERSION property on creation
- * ical.getVersion(); //&quot;2.0&quot;
+ * ical.getVersion(); //"2.0"
  * 
  * //get the default iCal version
  * Version version = Version.v2_0();

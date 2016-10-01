@@ -59,8 +59,8 @@ import biweekly.component.ICalComponent;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * RequestStatus requestStatus = new RequestStatus(&quot;2.0&quot;);
- * requestStatus.setDescription(&quot;Success&quot;);
+ * RequestStatus requestStatus = new RequestStatus("2.0");
+ * requestStatus.setDescription("Success");
  * event.setRequestStatus(requestStatus);
  * </pre>
  * @author Michael Angstadt

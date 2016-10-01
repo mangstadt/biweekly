@@ -43,7 +43,7 @@ import biweekly.ICalendar;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * Url url = new Url(&quot;http://example.com&quot;);
+ * Url url = new Url("http://example.com");
  * event.setUrl(url);
  * </pre>
  * @author Michael Angstadt

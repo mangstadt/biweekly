@@ -36,7 +36,7 @@ package biweekly.property;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * Location location = new Location(&quot;Room 32B&quot;);
+ * Location location = new Location("Room 32B");
  * event.setLocation(location);
  * </pre>
  * @author Michael Angstadt

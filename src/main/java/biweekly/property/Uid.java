@@ -39,7 +39,7 @@ import java.util.UUID;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * Uid uid = new Uid(&quot;19970610T172345Z-AF23B2@example.com&quot;);
+ * Uid uid = new Uid("19970610T172345Z-AF23B2@example.com");
  * event.setUid(uid);
  * </pre>
  * @author Michael Angstadt

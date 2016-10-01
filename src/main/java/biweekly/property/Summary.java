@@ -38,7 +38,7 @@ package biweekly.property;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * Summary summary = new Summary(&quot;Team Meeting&quot;);
+ * Summary summary = new Summary("Team Meeting");
  * event.setSummary(summary);
  * </pre>
  * @author Michael Angstadt

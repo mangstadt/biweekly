@@ -39,7 +39,7 @@ import java.util.List;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * Resources resources = new Resources(&quot;projector&quot;, &quot;DVD player&quot;);
+ * Resources resources = new Resources("projector", "DVD player");
  * event.addResources(resources);
  * </pre>
  * @author Michael Angstadt

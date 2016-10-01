@@ -44,7 +44,7 @@ package biweekly.property;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * Color color = new Color(&quot;mistyrose&quot;);
+ * Color color = new Color("mistyrose");
  * event.setColor(color);
  * </pre>
  * @author Michael Angstadt

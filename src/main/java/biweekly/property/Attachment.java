@@ -49,16 +49,16 @@ import biweekly.component.ICalComponent;
  * 
  * //from a byte array
  * byte[] data = ...
- * Attachment attach = new Attachment(&quot;image/png&quot;, data);
+ * Attachment attach = new Attachment("image/png", data);
  * event.addAttachment(attach);
  * 
  * //from a file 
- * File file = new File(&quot;image.png&quot;);
- * attach = new Attachment(&quot;image/png&quot;, file);
+ * File file = new File("image.png");
+ * attach = new Attachment("image/png", file);
  * event.addAttachment(attach);
  * 
  * //referencing a URL
- * attach = new Attachment(&quot;image/png&quot;, &quot;http://example.com/image.png&quot;);
+ * attach = new Attachment("image/png", "http://example.com/image.png");
  * event.addAttachment(attach);
  * </pre>
  * @author Michael Angstadt

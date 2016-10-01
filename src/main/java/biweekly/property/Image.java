@@ -50,12 +50,12 @@ import biweekly.parameter.Display;
  * 
  * //from a byte array
  * byte[] data = ...
- * Image image = new Image(&quot;image/png&quot;, data);
+ * Image image = new Image("image/png", data);
  * image.getDisplays().add(Display.BADGE);
  * event.addImage(image);
  * 
  * //referencing a URL
- * image = new Image(&quot;image/png&quot;, &quot;http://example.com/image.png&quot;);
+ * image = new Image("image/png", "http://example.com/image.png");
  * image.getDisplays().add(Display.THUMBNAIL);
  * image.setOnClickUri("http://example.com");
  * event.addImage(image);

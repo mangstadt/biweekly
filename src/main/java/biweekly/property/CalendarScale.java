@@ -47,7 +47,7 @@ import biweekly.ICalVersion;
  * ical.setCalendarScale(CalendarScale.gregorian());
  * 
  * ical = new ICalendar();
- * ical.setCalendarScale(new CalendarScale(&quot;another-calendar-system&quot;));
+ * ical.setCalendarScale(new CalendarScale("another-calendar-system"));
  * </pre>
  * 
  * <p>
@@ -59,10 +59,10 @@ import biweekly.ICalVersion;
  * CalendarScale calscale = ical.getCalendarscale();
  * 
  * if (calscale.isGregorian()) {
- * 	 ...
+ *   //...
  * } else {
  *   String value = calscale.getValue();
- *   ...
+ *   //...
  * }
  * </pre>
  * @author Michael Angstadt

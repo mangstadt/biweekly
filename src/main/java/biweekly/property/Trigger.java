@@ -48,7 +48,7 @@ import biweekly.util.Duration;
  * //15 minutes before the start time
  * Duration duration = Duration.builder().prior(true).minutes(15).build();
  * Trigger trigger = new Trigger(duration, Related.START);
- * VAlarm alarm = VAlarm.display(trigger, &quot;Meeting in 15 minutes&quot;);
+ * VAlarm alarm = VAlarm.display(trigger, "Meeting in 15 minutes");
  * </pre>
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-133">RFC 5545

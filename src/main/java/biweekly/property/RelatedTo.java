@@ -39,7 +39,7 @@ import biweekly.parameter.RelationshipType;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * RelatedTo relatedTo = new RelatedTo(&quot;uid-value&quot;);
+ * RelatedTo relatedTo = new RelatedTo("uid-value");
  * event.addRelatedTo(relatedTo);
  * </pre>
  * @author Michael Angstadt

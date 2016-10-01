@@ -38,7 +38,7 @@ import java.util.List;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * Categories categories = new Categories(&quot;conference&quot;, &quot;meeting&quot;);
+ * Categories categories = new Categories("conference", "meeting");
  * event.addCategories(categories);
  * </pre>
  * @author Michael Angstadt

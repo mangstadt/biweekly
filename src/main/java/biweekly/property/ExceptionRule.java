@@ -48,7 +48,7 @@ import biweekly.util.Recurrence;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * //&quot;bi-weekly&quot;
+ * //"bi-weekly"
  * Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).interval(2).build();
  * ExceptionRule exrule = new ExceptionRule(recur);
  * event.addExceptionRule(exrule);

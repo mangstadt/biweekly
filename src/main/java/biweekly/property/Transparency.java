@@ -56,12 +56,12 @@ import biweekly.ICalVersion;
  * 
  * <pre class="brush:java">
  * ICalendar ical = ...
- * for (VEvent event : ical.getEvents()){
+ * for (VEvent event : ical.getEvents()) {
  *   Transparency transp = event.getTransparency();
  *   if (transp.isOpaque()) {
- * 	   ...
- *   } else if (transp.isTransparent()){
- *     ...
+ *     //...
+ *   } else if (transp.isTransparent()) {
+ *     //...
  *   }
  * }
  * </pre>

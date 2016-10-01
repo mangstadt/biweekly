@@ -37,7 +37,7 @@ package biweekly.property;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * Contact contact = new Contact(&quot;Acme Co: (212) 555-1234&quot;);
+ * Contact contact = new Contact("Acme Co: (212) 555-1234");
  * event.addContact(contact);
  * </pre>
  * @author Michael Angstadt

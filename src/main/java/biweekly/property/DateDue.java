@@ -59,13 +59,13 @@ import biweekly.util.ICalDate;
  * ICalendar ical = ...
  * TimezoneInfo tzinfo = ical.getTimezoneInfo();
  * 
- * for (VTodo todo : ical.getTodos()){
+ * for (VTodo todo : ical.getTodos()) {
  *   DateDue due = todo.getDateDue();
  *   
  *   //get property value (ICalDate extends java.util.Date)
  *   ICalDate value = due.getValue();
  *   
- *   if (value.hasTime()){
+ *   if (value.hasTime()) {
  *     //the value includes a time component
  *   } else {
  *     //the value is just a date

@@ -75,8 +75,8 @@ import com.github.mangstadt.vinnie.io.VObjectReader;
  * try {
  *   reader = new ICalReader(file);
  *   ICalendar ical;
- *   while ((ical = reader.readNext()) != null){
- *     ...
+ *   while ((ical = reader.readNext()) != null) {
+ *     //...
  *   }
  * } finally {
  *   if (reader != null) reader.close();
