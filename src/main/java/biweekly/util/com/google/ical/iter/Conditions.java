@@ -48,44 +48,50 @@ import biweekly.util.com.google.ical.values.DateValue;
  * @author Michael Angstadt
  */
 final class Conditions {
-  /**
-   * Constructs a condition that fails after counting a certain number of dates.
-   * @param count the number of dates to count before the condition fails
-   * @return the condition
-   */
-  static Predicate<DateValue> countCondition(final int count) {
-    return new Predicate<DateValue>() {
-	  private static final long serialVersionUID = -3770774958208833665L;
-	  int count_ = count;
-      public boolean apply(DateValue value) {
-        return --count_ >= 0;
-      }
-      @Override
-      public String toString() {
-        return "CountCondition:" + count_;
-      }
-    };
-  }
+	/**
+	 * Constructs a condition that fails after counting a certain number of
+	 * dates.
+	 * @param count the number of dates to count before the condition fails
+	 * @return the condition
+	 */
+	static Predicate<DateValue> countCondition(final int count) {
+		return new Predicate<DateValue>() {
+			private static final long serialVersionUID = -3770774958208833665L;
+			int count_ = count;
 
-  /**
-   * Constructs a condition that passes all dates that are less than or equal to the given date.
-   * @param until the date
-   * @return the condition
-   */
-  static Predicate<DateValue> untilCondition(final DateValue until) {
-    return new Predicate<DateValue>() {
-      private static final long serialVersionUID = -130394842437801858L;
-      public boolean apply(DateValue date) {
-        return date.compareTo(until) <= 0;
-      }
-      @Override
-      public String toString() {
-        return "UntilCondition:" + until;
-      }
-    };
-  }
+			public boolean apply(DateValue value) {
+				return --count_ >= 0;
+			}
 
-  private Conditions() {
-    //uninstantiable
-  }
+			@Override
+			public String toString() {
+				return "CountCondition:" + count_;
+			}
+		};
+	}
+
+	/**
+	 * Constructs a condition that passes all dates that are less than or equal
+	 * to the given date.
+	 * @param until the date
+	 * @return the condition
+	 */
+	static Predicate<DateValue> untilCondition(final DateValue until) {
+		return new Predicate<DateValue>() {
+			private static final long serialVersionUID = -130394842437801858L;
+
+			public boolean apply(DateValue date) {
+				return date.compareTo(until) <= 0;
+			}
+
+			@Override
+			public String toString() {
+				return "UntilCondition:" + until;
+			}
+		};
+	}
+
+	private Conditions() {
+		//uninstantiable
+	}
 }

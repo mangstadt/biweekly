@@ -47,5 +47,5 @@ import biweekly.util.com.google.ical.values.DateValue;
  * @author Michael Angstadt
  */
 public interface RecurrenceIterable extends Iterable<DateValue> {
-  RecurrenceIterator iterator();
+	RecurrenceIterator iterator();
 }

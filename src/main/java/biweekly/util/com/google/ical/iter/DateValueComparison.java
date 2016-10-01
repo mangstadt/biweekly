@@ -106,7 +106,7 @@ final class DateValueComparison {
    * @return the value to use for comparisons
    */
   static long comparable(DateValue date) {
-    long comp = (((((long) date.year()) << 4) + date.month()) << 5) + date.day();
+  long comp = (((((long) date.year()) << 4) + date.month()) << 5) + date.day();
     if (date instanceof TimeValue) {
       TimeValue time = (TimeValue) date;
 

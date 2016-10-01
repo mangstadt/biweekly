@@ -36,10 +36,10 @@ import java.io.Serializable;
  * @param <T> the input type
  */
 public interface Predicate<T> extends Serializable {
-  /**
-   * Applies this predicate to the given object.
-   * @param input the input
-   * @return the value of this predicate when applied to the input
-   */
-  boolean apply(T input);
+	/**
+	 * Applies this predicate to the given object.
+	 * @param input the input
+	 * @return the value of this predicate when applied to the input
+	 */
+	boolean apply(T input);
 }

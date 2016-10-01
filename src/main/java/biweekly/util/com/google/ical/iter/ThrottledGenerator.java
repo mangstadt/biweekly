@@ -47,6 +47,7 @@ package biweekly.util.com.google.ical.iter;
  * <p>
  * This is used to stop rules like the one below from hanging an iterator.
  * </p>
+ * 
  * <pre>
  * RRULE:FREQ=YEARLY;BYMONTH=2;BYMONTHDAY=30
  * </pre>
@@ -58,9 +59,9 @@ package biweekly.util.com.google.ical.iter;
  * @author Michael Angstadt
  */
 abstract class ThrottledGenerator extends Generator {
-  /**
-   * Called to reset any throttle after work is done. This must be called in the
-   * outermost loop of any iterator.
-   */
-  abstract void workDone();
+	/**
+	 * Called to reset any throttle after work is done. This must be called in
+	 * the outermost loop of any iterator.
+	 */
+	abstract void workDone();
 }

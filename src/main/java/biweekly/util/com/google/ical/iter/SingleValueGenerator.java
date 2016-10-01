@@ -53,9 +53,9 @@ package biweekly.util.com.google.ical.iter;
  * @author Michael Angstadt
  */
 abstract class SingleValueGenerator extends Generator {
-  /**
-   * Gets the single value that this generator generates.
-   * @return the value
-   */
-  abstract int getValue();
+	/**
+	 * Gets the single value that this generator generates.
+	 * @return the value
+	 */
+	abstract int getValue();
 }

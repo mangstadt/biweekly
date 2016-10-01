@@ -49,31 +49,31 @@ import biweekly.util.com.google.ical.values.DateValue;
  * @author Michael Angstadt
  */
 public interface RecurrenceIterator extends Iterator<DateValue> {
-  /**
-   * Determines if there are more dates in the series.
-   * @return true if there are more dates, false if not
-   */
-  boolean hasNext();
+	/**
+	 * Determines if there are more dates in the series.
+	 * @return true if there are more dates, false if not
+	 */
+	boolean hasNext();
 
-  /**
-   * Returns the next date in the series. If {@link #hasNext()} returns
-   * {@code false}, then this method's behavior is undefined.
-   * @return the next date (in UTC; will be strictly later than any date
-   * previously returned by this iterator)
-   */
-  DateValue next();
+	/**
+	 * Returns the next date in the series. If {@link #hasNext()} returns
+	 * {@code false}, then this method's behavior is undefined.
+	 * @return the next date (in UTC; will be strictly later than any date
+	 * previously returned by this iterator)
+	 */
+	DateValue next();
 
-  /**
-   * Skips all dates in the series that come before the given date, so that the
-   * next call to {@link #next} will return a date on or after the given date
-   * (assuming the recurrence includes such a date).
-   * @param newStartUtc the date to advance to (in UTC)
-   */
-  void advanceTo(DateValue newStartUtc);
+	/**
+	 * Skips all dates in the series that come before the given date, so that
+	 * the next call to {@link #next} will return a date on or after the given
+	 * date (assuming the recurrence includes such a date).
+	 * @param newStartUtc the date to advance to (in UTC)
+	 */
+	void advanceTo(DateValue newStartUtc);
 
-  /**
-   * Implementors of this interface are not expected to implement this method.
-   * @throws UnsupportedOperationException always
-   */
-  void remove();
+	/**
+	 * Implementors of this interface are not expected to implement this method.
+	 * @throws UnsupportedOperationException always
+	 */
+	void remove();
 }

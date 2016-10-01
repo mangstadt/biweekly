@@ -60,110 +60,110 @@ import biweekly.util.com.google.ical.values.TimeValue;
  * @author Michael Angstadt
  */
 public class DateIteratorFactory {
-  /**
-   * Creates a date iterator from a recurrence iterator.
-   * @param rit the recurrence iterator
-   * @return the date iterator
-   */
-  public static DateIterator createDateIterator(RecurrenceIterator rit) {
-    return new RecurrenceIteratorWrapper(rit);
-  }
+	/**
+	 * Creates a date iterator from a recurrence iterator.
+	 * @param rit the recurrence iterator
+	 * @return the date iterator
+	 */
+	public static DateIterator createDateIterator(RecurrenceIterator rit) {
+		return new RecurrenceIteratorWrapper(rit);
+	}
 
-  /**
-   * Creates a date iterable from a recurrence iterable.
-   * @param rit the recurrence iterable
-   * @return the date iterable
-   */
-  public static DateIterable createDateIterable(RecurrenceIterable rit) {
-    return new RecurrenceIterableWrapper(rit);
-  }
+	/**
+	 * Creates a date iterable from a recurrence iterable.
+	 * @param rit the recurrence iterable
+	 * @return the date iterable
+	 */
+	public static DateIterable createDateIterable(RecurrenceIterable rit) {
+		return new RecurrenceIterableWrapper(rit);
+	}
 
-  private static final class RecurrenceIterableWrapper implements DateIterable {
-    private final RecurrenceIterable it;
+	private static final class RecurrenceIterableWrapper implements DateIterable {
+		private final RecurrenceIterable it;
 
-    public RecurrenceIterableWrapper(RecurrenceIterable it) {
-      this.it = it;
-    }
+		public RecurrenceIterableWrapper(RecurrenceIterable it) {
+			this.it = it;
+		}
 
-    public DateIterator iterator() {
-      return new RecurrenceIteratorWrapper(it.iterator());
-    }
-  }
+		public DateIterator iterator() {
+			return new RecurrenceIteratorWrapper(it.iterator());
+		}
+	}
 
-  private static final class RecurrenceIteratorWrapper implements DateIterator {
-    private final RecurrenceIterator it;
-    private final Calendar utcCalendar = new GregorianCalendar(TimeUtils.utcTimezone());
+	private static final class RecurrenceIteratorWrapper implements DateIterator {
+		private final RecurrenceIterator it;
+		private final Calendar utcCalendar = new GregorianCalendar(TimeUtils.utcTimezone());
 
-    public RecurrenceIteratorWrapper(RecurrenceIterator it) {
-      this.it = it;
-    }
+		public RecurrenceIteratorWrapper(RecurrenceIterator it) {
+			this.it = it;
+		}
 
-    public boolean hasNext() {
-      return it.hasNext();
-    }
+		public boolean hasNext() {
+			return it.hasNext();
+		}
 
-    public Date next() {
-      return toDate(it.next());
-    }
+		public Date next() {
+			return toDate(it.next());
+		}
 
-    public void advanceTo(Date d) {
-      it.advanceTo(toDateValue(d));
-    }
+		public void advanceTo(Date d) {
+			it.advanceTo(toDateValue(d));
+		}
 
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
 
-    /**
-     * Converts a {@link DateValue} object into a Java {@link Date} object.
-     * @param dateValue the date value object (assumed to be in UTC time)
-     * @return the Java date object
-     */
-    private Date toDate(DateValue dateValue) {
-      TimeValue time = TimeUtils.timeOf(dateValue);
-      utcCalendar.clear();
-      //@formatter:off
-      utcCalendar.set(
-        dateValue.year(),
-        dateValue.month() - 1, //java.util's dates are zero-indexed
-        dateValue.day(),
-        time.hour(),
-        time.minute(),
-        time.second()
-      );
-      //@formatter:on
-      return utcCalendar.getTime();
-    }
+		/**
+		 * Converts a {@link DateValue} object into a Java {@link Date} object.
+		 * @param dateValue the date value object (assumed to be in UTC time)
+		 * @return the Java date object
+		 */
+		private Date toDate(DateValue dateValue) {
+			TimeValue time = TimeUtils.timeOf(dateValue);
+			utcCalendar.clear();
+			//@formatter:off
+			utcCalendar.set(
+				dateValue.year(),
+				dateValue.month() - 1, //java.util's dates are zero-indexed
+				dateValue.day(),
+				time.hour(),
+				time.minute(),
+				time.second()
+			);
+			//@formatter:on
+			return utcCalendar.getTime();
+		}
 
-    /**
-     * Converts a Java {@link Date} object into a {@link DateValue} object. The
-     * {@link DateValue} object will be in UTC time.
-     * @param date the Java date object
-     * @return the date value object (in UTC time)
-     */
-    private DateValue toDateValue(Date date) {
-      utcCalendar.setTime(date);
+		/**
+		 * Converts a Java {@link Date} object into a {@link DateValue} object.
+		 * The {@link DateValue} object will be in UTC time.
+		 * @param date the Java date object
+		 * @return the date value object (in UTC time)
+		 */
+		private DateValue toDateValue(Date date) {
+			utcCalendar.setTime(date);
 
-      int year = utcCalendar.get(Calendar.YEAR);
-      int month = utcCalendar.get(Calendar.MONTH) + 1; //java.util's dates are zero-indexed
-      int day = utcCalendar.get(Calendar.DAY_OF_MONTH);
-      int hour = utcCalendar.get(Calendar.HOUR_OF_DAY);
-      int minute = utcCalendar.get(Calendar.MINUTE);
-      int second = utcCalendar.get(Calendar.SECOND);
+			int year = utcCalendar.get(Calendar.YEAR);
+			int month = utcCalendar.get(Calendar.MONTH) + 1; //java.util's dates are zero-indexed
+			int day = utcCalendar.get(Calendar.DAY_OF_MONTH);
+			int hour = utcCalendar.get(Calendar.HOUR_OF_DAY);
+			int minute = utcCalendar.get(Calendar.MINUTE);
+			int second = utcCalendar.get(Calendar.SECOND);
 
-      /*
-       * We need to treat midnight as a date value so that passing in
-       * dateValueToDate(<some-date-value>) will not advance past any
-       * occurrences of some-date-value in the iterator.
-       */
-      if ((hour | minute | second) == 0) {
-        return new DateValueImpl(year, month, day);
-      }
-      return new DateTimeValueImpl(year, month, day, hour, minute, second);
-    }
-  }
+			/*
+			 * We need to treat midnight as a date value so that passing in
+			 * dateValueToDate(<some-date-value>) will not advance past any
+			 * occurrences of some-date-value in the iterator.
+			 */
+			if ((hour | minute | second) == 0) {
+				return new DateValueImpl(year, month, day);
+			}
+			return new DateTimeValueImpl(year, month, day, hour, minute, second);
+		}
+	}
 
-  private DateIteratorFactory() {
-    // uninstantiable
-  }
+	private DateIteratorFactory() {
+		// uninstantiable
+	}
 }

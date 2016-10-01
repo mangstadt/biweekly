@@ -54,6 +54,7 @@ import biweekly.util.com.google.ical.values.TimeValue;
  * generator that do not pass some secondary criterion. For example, the
  * recurrence rule below should generate every Friday the 13th:
  * </p>
+ * 
  * <pre>
  * FREQ=MONTHLY;BYDAY=FR;BYMONTHDAY=13
  * </pre>
@@ -69,199 +70,221 @@ import biweekly.util.com.google.ical.values.TimeValue;
  * @author Michael Angstadt
  */
 class Filters {
-  /**
-   * Constructs a day filter based on a BYDAY rule.
-   * @param days the BYDAY values
-   * @param weeksInYear true if the week numbers are meant to be weeks in the
-   * current year, false if they are meant to be weeks in the current month
-   * @param weekStart the day of the week that the week starts on
-   * @return the filter
-   */
-  static Predicate<DateValue> byDayFilter(
-      final ByDay[] days, final boolean weeksInYear, final DayOfWeek weekStart) {
-    return new Predicate<DateValue>() {
-		private static final long serialVersionUID = 1636822853835207274L;
-		public boolean apply(DateValue date) {
-          DayOfWeek dow = TimeUtils.dayOfWeek(date);
-          int nDays;
-          DayOfWeek firstDayOfWeek;
+	/**
+	 * Constructs a day filter based on a BYDAY rule.
+	 * @param days the BYDAY values
+	 * @param weeksInYear true if the week numbers are meant to be weeks in the
+	 * current year, false if they are meant to be weeks in the current month
+	 * @param weekStart the day of the week that the week starts on
+	 * @return the filter
+	 */
+	static Predicate<DateValue> byDayFilter(final ByDay[] days, final boolean weeksInYear, final DayOfWeek weekStart) {
+		return new Predicate<DateValue>() {
+			private static final long serialVersionUID = 1636822853835207274L;
 
-          //where does date appear in the year or month?
-          //in [0, lengthOfMonthOrYear - 1]
-          int instance;
-          if (weeksInYear) {
-            nDays = TimeUtils.yearLength(date.year());
-            firstDayOfWeek = TimeUtils.firstDayOfWeekInMonth(date.year(), 1);
-            instance = TimeUtils.dayOfYear(
-                date.year(), date.month(), date.day());
-          } else {
-            nDays = TimeUtils.monthLength(date.year(), date.month());
-            firstDayOfWeek = TimeUtils.firstDayOfWeekInMonth(date.year(), date.month());
-            instance = date.day() - 1;
-          }
+			public boolean apply(DateValue date) {
+				DayOfWeek dow = TimeUtils.dayOfWeek(date);
+				int nDays;
+				DayOfWeek firstDayOfWeek;
 
-          //which week of the year or month does this date fall on?
-          //one-indexed
-          int dateWeekNo = instance / 7;
-          if (weekStart.getCalendarConstant() <= dow.getCalendarConstant()) {
-            dateWeekNo += 1;
-          }
-          
-          /*
-           * TODO(msamuel): According to section 4.3.10:
-           * 
-           * Week number one of the calendar year is the first week which contains
-           * at least four (4) days in that calendar year. This rule part is only
-           * valid for YEARLY rules.
-           * 
-           * That's mentioned under the BYWEEKNO rule, and there's no mention of
-           * it in the earlier discussion of the BYDAY rule. Does it apply to
-           * yearly week numbers calculated for BYDAY rules in a FREQ=YEARLY rule?
-           */
+				//where does date appear in the year or month?
+				//in [0, lengthOfMonthOrYear - 1]
+				int instance;
+				if (weeksInYear) {
+					nDays = TimeUtils.yearLength(date.year());
+					firstDayOfWeek = TimeUtils.firstDayOfWeekInMonth(date.year(), 1);
+					instance = TimeUtils.dayOfYear(date.year(), date.month(), date.day());
+				} else {
+					nDays = TimeUtils.monthLength(date.year(), date.month());
+					firstDayOfWeek = TimeUtils.firstDayOfWeekInMonth(date.year(), date.month());
+					instance = date.day() - 1;
+				}
 
-          for (int i = days.length-1; i >= 0; i--) {
-            ByDay day = days[i];
+				//which week of the year or month does this date fall on?
+				//one-indexed
+				int dateWeekNo = instance / 7;
+				if (weekStart.getCalendarConstant() <= dow.getCalendarConstant()) {
+					dateWeekNo += 1;
+				}
 
-            if (day.getDay() == dow) {
-              Integer weekNo = day.getNum();
-              if (weekNo == null || weekNo == 0) { return true; }
+				/*
+				 * TODO(msamuel): According to section 4.3.10:
+				 * 
+				 * Week number one of the calendar year is the first week which
+				 * contains at least four (4) days in that calendar year. This
+				 * rule part is only valid for YEARLY rules.
+				 * 
+				 * That's mentioned under the BYWEEKNO rule, and there's no
+				 * mention of it in the earlier discussion of the BYDAY rule.
+				 * Does it apply to yearly week numbers calculated for BYDAY
+				 * rules in a FREQ=YEARLY rule?
+				 */
 
-              if (weekNo < 0) {
-                weekNo = Util.invertWeekdayNum(day, firstDayOfWeek, nDays);
-              }
+				for (int i = days.length - 1; i >= 0; i--) {
+					ByDay day = days[i];
 
-              if (dateWeekNo == weekNo) { return true; }
-            }
-          }
-          return false;
-        }
-      };
-  }
+					if (day.getDay() == dow) {
+						Integer weekNo = day.getNum();
+						if (weekNo == null || weekNo == 0) {
+							return true;
+						}
 
-  /**
-   * Constructs a day filter based on a BYDAY rule.
-   * @param monthDays days of the month (values must be in range [-31,31])
-   * @return the filter
-   */
-  static Predicate<DateValue> byMonthDayFilter(final int[] monthDays) {
-    return new Predicate<DateValue>() {
-	  private static final long serialVersionUID = -1618039447294490037L;
-	  public boolean apply(DateValue date) {
-        int nDays = TimeUtils.monthLength(date.year(), date.month());
-        for (int i = monthDays.length - 1; i >= 0; i--) {
-          int day = monthDays[i];
-          if (day < 0) { day += nDays + 1; }
-          if (day == date.day()) { return true; }
-        }
-        return false;
-      }
-    };
-  }
+						if (weekNo < 0) {
+							weekNo = Util.invertWeekdayNum(day, firstDayOfWeek, nDays);
+						}
 
-  /**
-   * Constructs a filter that accepts only every X week starting from the week
-   * containing the given date.
-   * @param interval the interval (for example, 3 for "every third week"; must
-   * be &gt; 0)
-   * @param weekStart the day of the week that the week starts on
-   * @param dtStart the filter will start at the week that contains this date
-   * @return the filter
-   */
-  static Predicate<DateValue> weekIntervalFilter(
-      final int interval, final DayOfWeek weekStart, final DateValue dtStart) {
-    return new Predicate<DateValue>() {
-	  private static final long serialVersionUID = 7059994888520369846L;
-	  //the latest day with day of week weekStart on or before dtStart
-	  DateValue wkStart;
-      {
-        DTBuilder wkStartB = new DTBuilder(dtStart);
-        wkStartB.day -=
-          (7 + TimeUtils.dayOfWeek(dtStart).getCalendarConstant() - weekStart.getCalendarConstant()) % 7;
-        wkStart = wkStartB.toDate();
-      }
+						if (dateWeekNo == weekNo) {
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+		};
+	}
 
-      public boolean apply(DateValue date) {
-        int daysBetween = TimeUtils.daysBetween(date, wkStart);
-        if (daysBetween < 0) {
-          //date must be before dtStart.  Shouldn't occur in practice.
-          daysBetween += (interval * 7 * (1 + daysBetween / (-7 * interval)));
-        }
-        int off = (daysBetween / 7) % interval;
-        return off == 0;
-      }
-    };
-  }
+	/**
+	 * Constructs a day filter based on a BYDAY rule.
+	 * @param monthDays days of the month (values must be in range [-31,31])
+	 * @return the filter
+	 */
+	static Predicate<DateValue> byMonthDayFilter(final int[] monthDays) {
+		return new Predicate<DateValue>() {
+			private static final long serialVersionUID = -1618039447294490037L;
 
-  private static final int LOW_24_BITS = ~(-1 << 24);
-  private static final long LOW_60_BITS = ~(-1L << 60);
+			public boolean apply(DateValue date) {
+				int nDays = TimeUtils.monthLength(date.year(), date.month());
+				for (int i = monthDays.length - 1; i >= 0; i--) {
+					int day = monthDays[i];
+					if (day < 0) {
+						day += nDays + 1;
+					}
+					if (day == date.day()) {
+						return true;
+					}
+				}
+				return false;
+			}
+		};
+	}
 
-  /**
-   * Constructs an hour filter based on a BYHOUR rule.
-   * @param hours hours of the day (values must be in range [0,23])
-   * @return the filter
-   */
-  static Predicate<DateValue> byHourFilter(int[] hours) {
-    int hoursByBit = 0;
-    for (int hour : hours) { hoursByBit |= 1 << hour; }
-    if ((hoursByBit & LOW_24_BITS) == LOW_24_BITS) {
-      return Predicates.alwaysTrue();
-    }
-    final int bitField = hoursByBit;
-    return new Predicate<DateValue>() {
-	  private static final long serialVersionUID = -6284974028385246889L;
-	  public boolean apply(DateValue date) {
-        if (!(date instanceof TimeValue)) { return false; }
-        TimeValue tv = (TimeValue) date;
-        return (bitField & (1 << tv.hour())) != 0;
-      }
-    };
-  }
+	/**
+	 * Constructs a filter that accepts only every X week starting from the week
+	 * containing the given date.
+	 * @param interval the interval (for example, 3 for "every third week"; must
+	 * be &gt; 0)
+	 * @param weekStart the day of the week that the week starts on
+	 * @param dtStart the filter will start at the week that contains this date
+	 * @return the filter
+	 */
+	static Predicate<DateValue> weekIntervalFilter(final int interval, final DayOfWeek weekStart, final DateValue dtStart) {
+		return new Predicate<DateValue>() {
+			private static final long serialVersionUID = 7059994888520369846L;
+			//the latest day with day of week weekStart on or before dtStart
+			DateValue wkStart;
+			{
+				DTBuilder wkStartB = new DTBuilder(dtStart);
+				wkStartB.day -= (7 + TimeUtils.dayOfWeek(dtStart).getCalendarConstant() - weekStart.getCalendarConstant()) % 7;
+				wkStart = wkStartB.toDate();
+			}
 
-  /**
-   * Constructs a minute filter based on a BYMINUTE rule.
-   * @param minutes minutes of the hour (values must be in range [0,59])
-   * @return the filter
-   */
-  static Predicate<DateValue> byMinuteFilter(int[] minutes) {
-    long minutesByBit = 0;
-    for (int minute : minutes) { minutesByBit |= 1L << minute; }
-    if ((minutesByBit & LOW_60_BITS) == LOW_60_BITS) {
-      return Predicates.alwaysTrue();
-    }
-    final long bitField = minutesByBit;
-    return new Predicate<DateValue>() {
-	  private static final long serialVersionUID = 5028303473420393470L;
-	  public boolean apply(DateValue date) {
-        if (!(date instanceof TimeValue)) { return false; }
-        TimeValue tv = (TimeValue) date;
-        return (bitField & (1L << tv.minute())) != 0;
-      }
-    };
-  }
+			public boolean apply(DateValue date) {
+				int daysBetween = TimeUtils.daysBetween(date, wkStart);
+				if (daysBetween < 0) {
+					//date must be before dtStart.  Shouldn't occur in practice.
+					daysBetween += (interval * 7 * (1 + daysBetween / (-7 * interval)));
+				}
+				int off = (daysBetween / 7) % interval;
+				return off == 0;
+			}
+		};
+	}
 
-  /**
-   * Constructs a second filter based on a BYMINUTE rule.
-   * @param seconds seconds of the minute (values must be in rage [0,59])
-   * @return the filter
-   */
-  static Predicate<DateValue> bySecondFilter(int[] seconds) {
-    long secondsByBit = 0;
-    for (int second : seconds) { secondsByBit |= 1L << second; }
-    if ((secondsByBit & LOW_60_BITS) == LOW_60_BITS) {
-      return Predicates.alwaysTrue();
-    }
-    final long bitField = secondsByBit;
-    return new Predicate<DateValue>() {
-	  private static final long serialVersionUID = 4109739845053177924L;
-	  public boolean apply(DateValue date) {
-        if (!(date instanceof TimeValue)) { return false; }
-        TimeValue tv = (TimeValue) date;
-        return (bitField & (1L << tv.second())) != 0;
-      }
-    };
-  }
+	private static final int LOW_24_BITS = ~(-1 << 24);
+	private static final long LOW_60_BITS = ~(-1L << 60);
 
-  private Filters() {
-    //uninstantiable
-  }
+	/**
+	 * Constructs an hour filter based on a BYHOUR rule.
+	 * @param hours hours of the day (values must be in range [0,23])
+	 * @return the filter
+	 */
+	static Predicate<DateValue> byHourFilter(int[] hours) {
+		int hoursByBit = 0;
+		for (int hour : hours) {
+			hoursByBit |= 1 << hour;
+		}
+		if ((hoursByBit & LOW_24_BITS) == LOW_24_BITS) {
+			return Predicates.alwaysTrue();
+		}
+		final int bitField = hoursByBit;
+		return new Predicate<DateValue>() {
+			private static final long serialVersionUID = -6284974028385246889L;
+
+			public boolean apply(DateValue date) {
+				if (!(date instanceof TimeValue)) {
+					return false;
+				}
+				TimeValue tv = (TimeValue) date;
+				return (bitField & (1 << tv.hour())) != 0;
+			}
+		};
+	}
+
+	/**
+	 * Constructs a minute filter based on a BYMINUTE rule.
+	 * @param minutes minutes of the hour (values must be in range [0,59])
+	 * @return the filter
+	 */
+	static Predicate<DateValue> byMinuteFilter(int[] minutes) {
+		long minutesByBit = 0;
+		for (int minute : minutes) {
+			minutesByBit |= 1L << minute;
+		}
+		if ((minutesByBit & LOW_60_BITS) == LOW_60_BITS) {
+			return Predicates.alwaysTrue();
+		}
+		final long bitField = minutesByBit;
+		return new Predicate<DateValue>() {
+			private static final long serialVersionUID = 5028303473420393470L;
+
+			public boolean apply(DateValue date) {
+				if (!(date instanceof TimeValue)) {
+					return false;
+				}
+				TimeValue tv = (TimeValue) date;
+				return (bitField & (1L << tv.minute())) != 0;
+			}
+		};
+	}
+
+	/**
+	 * Constructs a second filter based on a BYMINUTE rule.
+	 * @param seconds seconds of the minute (values must be in rage [0,59])
+	 * @return the filter
+	 */
+	static Predicate<DateValue> bySecondFilter(int[] seconds) {
+		long secondsByBit = 0;
+		for (int second : seconds) {
+			secondsByBit |= 1L << second;
+		}
+		if ((secondsByBit & LOW_60_BITS) == LOW_60_BITS) {
+			return Predicates.alwaysTrue();
+		}
+		final long bitField = secondsByBit;
+		return new Predicate<DateValue>() {
+			private static final long serialVersionUID = 4109739845053177924L;
+
+			public boolean apply(DateValue date) {
+				if (!(date instanceof TimeValue)) {
+					return false;
+				}
+				TimeValue tv = (TimeValue) date;
+				return (bitField & (1L << tv.second())) != 0;
+			}
+		};
+	}
+
+	private Filters() {
+		//uninstantiable
+	}
 }

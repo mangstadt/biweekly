@@ -47,50 +47,44 @@ package biweekly.util.com.google.ical.values;
  * @author Neal Gafter
  * @author Michael Angstadt
  */
-public class DateTimeValueImpl
-    extends DateValueImpl
-    implements DateTimeValue {
-  private final int hour, minute, second;
+public class DateTimeValueImpl extends DateValueImpl implements DateTimeValue {
+	private final int hour, minute, second;
 
-  /**
-   * Creates a new date-time value.
-   * @param year the year
-   * @param month the month (1-12)
-   * @param day the day (1-31)
-   * @param hour the hour (0-24)
-   * @param minute the minute (0-59)
-   * @param second the second (0-59)
-   */
-  public DateTimeValueImpl(int year, int month, int day,
-                           int hour, int minute, int second) {
-    super(year, month, day);
-    this.hour = hour;
-    this.minute = minute;
-    this.second = second;
-  }
+	/**
+	 * Creates a new date-time value.
+	 * @param year the year
+	 * @param month the month (1-12)
+	 * @param day the day (1-31)
+	 * @param hour the hour (0-24)
+	 * @param minute the minute (0-59)
+	 * @param second the second (0-59)
+	 */
+	public DateTimeValueImpl(int year, int month, int day, int hour, int minute, int second) {
+		super(year, month, day);
+		this.hour = hour;
+		this.minute = minute;
+		this.second = second;
+	}
 
-  public int hour() {
-    return hour;
-  }
+	public int hour() {
+		return hour;
+	}
 
-  public int minute() {
-    return minute;
-  }
+	public int minute() {
+		return minute;
+	}
 
-  public int second() {
-    return second;
-  }
+	public int second() {
+		return second;
+	}
 
-  @Override
-  public int hashCode() {
-    return super.hashCode() ^
-      ((hour << 12) + (minute << 6) + second);
-  }
+	@Override
+	public int hashCode() {
+		return super.hashCode() ^ ((hour << 12) + (minute << 6) + second);
+	}
 
-  @Override
-  public String toString() {
-    return String.format("%sT%02d%02d%02d",
-                         super.toString(),
-                         hour, minute, second);
-  }
+	@Override
+	public String toString() {
+		return String.format("%sT%02d%02d%02d", super.toString(), hour, minute, second);
+	}
 }

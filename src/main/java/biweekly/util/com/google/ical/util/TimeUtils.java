@@ -62,422 +62,401 @@ import biweekly.util.com.google.ical.values.TimeValue;
  * @author Michael Angstadt
  */
 public class TimeUtils {
-  private static TimeZone ZULU = new SimpleTimeZone(0, "Etc/GMT");
-  
-  /**
-   * Gets the UTC timezone.
-   * @return the UTC timezone
-   */
-  public static TimeZone utcTimezone() {
-    return ZULU;
-  }
+	private static TimeZone ZULU = new SimpleTimeZone(0, "Etc/GMT");
 
-  /**
-   * Get a "time_t" in milliseconds given a number of seconds since the
-   * Dershowitz/Reingold epoch relative to a given timezone.
-   * @param epochSecs the number of seconds since the Dershowitz/Reingold epoch
-   * relative to the given timezone
-   * @param zone timezone against which epochSecs applies
-   * @return the number of milliseconds since 00:00:00 Jan 1, 1970 GMT
-   */
-  private static long timetMillisFromEpochSecs(long epochSecs,
-                                               TimeZone zone) {
-    DateTimeValue date = timeFromSecsSinceEpoch(epochSecs);
-    Calendar cal = new GregorianCalendar(zone);
-    cal.clear();
-    cal.set(date.year(), date.month() - 1, date.day(),
-            date.hour(), date.minute(), date.second());
-    return cal.getTimeInMillis();
-  }
+	/**
+	 * Gets the UTC timezone.
+	 * @return the UTC timezone
+	 */
+	public static TimeZone utcTimezone() {
+		return ZULU;
+	}
 
-  private static DateTimeValue convert(DateTimeValue time,
-                                       TimeZone zone,
-                                       int sense) {
-    if (zone == null ||
-        zone.hasSameRules(ZULU) ||
-        time.year() == 0) {
-      return time;
-    }
+	/**
+	 * Get a "time_t" in milliseconds given a number of seconds since the
+	 * Dershowitz/Reingold epoch relative to a given timezone.
+	 * @param epochSecs the number of seconds since the Dershowitz/Reingold
+	 * epoch relative to the given timezone
+	 * @param zone timezone against which epochSecs applies
+	 * @return the number of milliseconds since 00:00:00 Jan 1, 1970 GMT
+	 */
+	private static long timetMillisFromEpochSecs(long epochSecs, TimeZone zone) {
+		DateTimeValue date = timeFromSecsSinceEpoch(epochSecs);
+		Calendar cal = new GregorianCalendar(zone);
+		cal.clear();
+		cal.set(date.year(), date.month() - 1, date.day(), date.hour(), date.minute(), date.second());
+		return cal.getTimeInMillis();
+	}
 
-    TimeZone epochTz, dateTimeValueTz;
-    if (sense > 0) {
-      //time is in UTC; convert to time in zone provided
-      epochTz = ZULU;
-      dateTimeValueTz = zone;
-    } else {
-      //time is in local time; convert to UTC
-      epochTz = zone;
-      dateTimeValueTz = ZULU;
-    }
+	private static DateTimeValue convert(DateTimeValue time, TimeZone zone, int sense) {
+		if (zone == null || zone.hasSameRules(ZULU) || time.year() == 0) {
+			return time;
+		}
 
-    long epochSeconds = secsSinceEpoch(time);
-    long timetMillis = timetMillisFromEpochSecs(epochSeconds, epochTz);
-    return toDateTimeValue(timetMillis, dateTimeValueTz);
-  }
+		TimeZone epochTz, dateTimeValueTz;
+		if (sense > 0) {
+			//time is in UTC; convert to time in zone provided
+			epochTz = ZULU;
+			dateTimeValueTz = zone;
+		} else {
+			//time is in local time; convert to UTC
+			epochTz = zone;
+			dateTimeValueTz = ZULU;
+		}
 
-  /**
-   * Converts a {@link DateValue} from UTC to another timezone.
-   * @param date the date value (in UTC)
-   * @param zone the timezone to convert to
-   * @return the converted date value
-   */
-  public static DateValue fromUtc(DateValue date, TimeZone zone) {
-    return (date instanceof DateTimeValue)
-      ? fromUtc((DateTimeValue) date, zone)
-      : date;
-  }
+		long epochSeconds = secsSinceEpoch(time);
+		long timetMillis = timetMillisFromEpochSecs(epochSeconds, epochTz);
+		return toDateTimeValue(timetMillis, dateTimeValueTz);
+	}
 
-  /**
-   * Converts a {@link DateTimeValue} from UTC to another timezone.
-   * @param date the date-time value (in UTC)
-   * @param zone the timezone to convert to
-   * @return the converted date-time value
-   */
-  public static DateTimeValue fromUtc(DateTimeValue date, TimeZone zone) {
-    return convert(date, zone, +1);
-  }
+	/**
+	 * Converts a {@link DateValue} from UTC to another timezone.
+	 * @param date the date value (in UTC)
+	 * @param zone the timezone to convert to
+	 * @return the converted date value
+	 */
+	public static DateValue fromUtc(DateValue date, TimeZone zone) {
+		return (date instanceof DateTimeValue) ? fromUtc((DateTimeValue) date, zone) : date;
+	}
 
-  /**
-   * Converts a {@link DateValue} to UTC.
-   * @param date the date value
-   * @param zone the timezone the date value is in
-   * @return the converted date value
-   */
-  public static DateValue toUtc(DateValue date, TimeZone zone) {
-    return (date instanceof TimeValue)
-      ? convert((DateTimeValue) date, zone, -1)
-      : date;
-  }
+	/**
+	 * Converts a {@link DateTimeValue} from UTC to another timezone.
+	 * @param date the date-time value (in UTC)
+	 * @param zone the timezone to convert to
+	 * @return the converted date-time value
+	 */
+	public static DateTimeValue fromUtc(DateTimeValue date, TimeZone zone) {
+		return convert(date, zone, +1);
+	}
 
-  /**
-   * Adds a duration to a date.
-   * @param date the date
-   * @param duration the duration to add to the date
-   * @return the result
-   */
-  public static DateValue add(DateValue date, DateValue duration) {
-    DTBuilder db = new DTBuilder(date);
-    db.year += duration.year();
-    db.month += duration.month();
-    db.day += duration.day();
-    if (duration instanceof TimeValue) {
-      TimeValue tdur = (TimeValue) duration;
-      db.hour += tdur.hour();
-      db.minute += tdur.minute();
-      db.second += tdur.second();
-      return db.toDateTime();
-    }
-    return (date instanceof TimeValue) ? db.toDateTime() : db.toDate();
-  }
+	/**
+	 * Converts a {@link DateValue} to UTC.
+	 * @param date the date value
+	 * @param zone the timezone the date value is in
+	 * @return the converted date value
+	 */
+	public static DateValue toUtc(DateValue date, TimeZone zone) {
+		return (date instanceof TimeValue) ? convert((DateTimeValue) date, zone, -1) : date;
+	}
 
-  /**
-   * Calculates the number of days between two dates.
-   * @param date1 the first date
-   * @param date2 the second date
-   * @return the number of days
-   */
-  public static int daysBetween(DateValue date1, DateValue date2) {
-    return fixedFromGregorian(date1) - fixedFromGregorian(date2);
-  }
+	/**
+	 * Adds a duration to a date.
+	 * @param date the date
+	 * @param duration the duration to add to the date
+	 * @return the result
+	 */
+	public static DateValue add(DateValue date, DateValue duration) {
+		DTBuilder db = new DTBuilder(date);
+		db.year += duration.year();
+		db.month += duration.month();
+		db.day += duration.day();
+		if (duration instanceof TimeValue) {
+			TimeValue tdur = (TimeValue) duration;
+			db.hour += tdur.hour();
+			db.minute += tdur.minute();
+			db.second += tdur.second();
+			return db.toDateTime();
+		}
+		return (date instanceof TimeValue) ? db.toDateTime() : db.toDate();
+	}
 
-  /**
-   * Calculates the number of days between two dates.
-   * @param year1 the year of the first date
-   * @param month1 the month of the first date
-   * @param day1 the day of the first date
-   * @param year2 the year of the second date
-   * @param month2 the month of the second date
-   * @param day2 the day of the second date
-   * @return the number of days
-   */
-  public static int daysBetween(
-      int year1, int month1, int day1,
-      int year2, int month2, int day2) {
-    return fixedFromGregorian(year1, month1, day1) - fixedFromGregorian(year2, month2, day2);
-  }
+	/**
+	 * Calculates the number of days between two dates.
+	 * @param date1 the first date
+	 * @param date2 the second date
+	 * @return the number of days
+	 */
+	public static int daysBetween(DateValue date1, DateValue date2) {
+		return fixedFromGregorian(date1) - fixedFromGregorian(date2);
+	}
 
-  /**
-   * <p>
-   * Calculates the number of days since the epoch.
-   * </p>
-   * <p>
-   * This is the imaginary beginning of year zero in a hypothetical backward
-   * extension of the Gregorian calendar through time. See
-   * "Calendrical Calculations" by Reingold and Dershowitz.
-   * </p>
-   * @param date the date to start from
-   * @return the number of days
-   */
-  private static int fixedFromGregorian(DateValue date) {
-    return fixedFromGregorian(date.year(), date.month(), date.day());
-  }
+	/**
+	 * Calculates the number of days between two dates.
+	 * @param year1 the year of the first date
+	 * @param month1 the month of the first date
+	 * @param day1 the day of the first date
+	 * @param year2 the year of the second date
+	 * @param month2 the month of the second date
+	 * @param day2 the day of the second date
+	 * @return the number of days
+	 */
+	public static int daysBetween(int year1, int month1, int day1, int year2, int month2, int day2) {
+		return fixedFromGregorian(year1, month1, day1) - fixedFromGregorian(year2, month2, day2);
+	}
 
-  /**
-   * <p>
-   * Calculates the number of days since the epoch.
-   * </p>
-   * <p>
-   * This is the imaginary beginning of year zero in a hypothetical backward
-   * extension of the Gregorian calendar through time. See
-   * "Calendrical Calculations" by Reingold and Dershowitz.
-   * </p>
-   * @param year the year of the date to start from
-   * @param month the month of the date to start from
-   * @param day the day of the date to start from
-   * @return the number of days
-   */
-  public static int fixedFromGregorian(int year, int month, int day) {
-    int yearM1 = year - 1;
-    return 365 * yearM1 +
-      yearM1/4 -
-      yearM1/100 +
-      yearM1/400 +
-      (367*month - 362)/12 +
-      (month <= 2 ? 0 :
-       isLeapYear(year) ? -1 :
-       -2) +
-      day;
-  }
+	/**
+	 * <p>
+	 * Calculates the number of days since the epoch.
+	 * </p>
+	 * <p>
+	 * This is the imaginary beginning of year zero in a hypothetical backward
+	 * extension of the Gregorian calendar through time. See
+	 * "Calendrical Calculations" by Reingold and Dershowitz.
+	 * </p>
+	 * @param date the date to start from
+	 * @return the number of days
+	 */
+	private static int fixedFromGregorian(DateValue date) {
+		return fixedFromGregorian(date.year(), date.month(), date.day());
+	}
 
-  /**
-   * Determines if a year is a leap year.
-   * @param year the year
-   * @return true if it's a leap year, false if not
-   */
-  public static boolean isLeapYear(int year) {
-    return (year % 4 == 0) && ((year % 100 != 0) || (year % 400 == 0));
-  }
+	/**
+	 * <p>
+	 * Calculates the number of days since the epoch.
+	 * </p>
+	 * <p>
+	 * This is the imaginary beginning of year zero in a hypothetical backward
+	 * extension of the Gregorian calendar through time. See
+	 * "Calendrical Calculations" by Reingold and Dershowitz.
+	 * </p>
+	 * @param year the year of the date to start from
+	 * @param month the month of the date to start from
+	 * @param day the day of the date to start from
+	 * @return the number of days
+	 */
+	public static int fixedFromGregorian(int year, int month, int day) {
+		int yearM1 = year - 1;
+		return 365 * yearM1 + yearM1 / 4 - yearM1 / 100 + yearM1 / 400 + (367 * month - 362) / 12 + (month <= 2 ? 0 : isLeapYear(year) ? -1 : -2) + day;
+	}
 
-  /**
-   * Determines how many days are in a year.
-   * @param year the year
-   * @return the number of days
-   */
-  public static int yearLength(int year) {
-    return isLeapYear(year) ? 366 : 365;
-  }
+	/**
+	 * Determines if a year is a leap year.
+	 * @param year the year
+	 * @return true if it's a leap year, false if not
+	 */
+	public static boolean isLeapYear(int year) {
+		return (year % 4 == 0) && ((year % 100 != 0) || (year % 400 == 0));
+	}
 
-  /**
-   * Calculates the number of days in a month.
-   * @param year the year
-   * @param month the month (in range [1,12])
-   * @return the number of days
-   */
-  public static int monthLength(int year, int month) {
-    switch (month) {
-      case 1:
-      case 3:
-      case 5:
-      case 7:
-      case 8:
-      case 10:
-      case 12:
-        return 31;
-      case 4:
-      case 6:
-      case 9:
-      case 11:
-        return 30;
-      case 2:
-        return isLeapYear(year) ? 29 : 28;
-      default:
-        throw new AssertionError(month);
-    }
-  }
+	/**
+	 * Determines how many days are in a year.
+	 * @param year the year
+	 * @return the number of days
+	 */
+	public static int yearLength(int year) {
+		return isLeapYear(year) ? 366 : 365;
+	}
 
-  private static int[] MONTH_START_TO_DOY = new int[12];
-  static {
-    for (int m = 1; m < 12; ++m) {
-      MONTH_START_TO_DOY[m] = MONTH_START_TO_DOY[m - 1] + monthLength(1970, m);
-    }
-  }
+	/**
+	 * Calculates the number of days in a month.
+	 * @param year the year
+	 * @param month the month (in range [1,12])
+	 * @return the number of days
+	 */
+	public static int monthLength(int year, int month) {
+		switch (month) {
+		case 1:
+		case 3:
+		case 5:
+		case 7:
+		case 8:
+		case 10:
+		case 12:
+			return 31;
+		case 4:
+		case 6:
+		case 9:
+		case 11:
+			return 30;
+		case 2:
+			return isLeapYear(year) ? 29 : 28;
+		default:
+			throw new AssertionError(month);
+		}
+	}
 
-  /**
-   * Gets the day of the year for a given date.
-   * @param year the date's year
-   * @param month the date's month
-   * @param date the date's day
-   * @return the day of the year (in range [0-365])
-   */
-  public static int dayOfYear(int year, int month, int date) {
-    int leapAdjust = month > 2 && isLeapYear(year) ? 1 : 0;
-    return MONTH_START_TO_DOY[month - 1] + leapAdjust + date - 1;
-  }
-  
-  private static final DayOfWeek[] DAYS_OF_WEEK;
-  static {
-    DayOfWeek[] values = DayOfWeek.values();
-    DAYS_OF_WEEK = new DayOfWeek[values.length];
-    System.arraycopy(values, 0, DAYS_OF_WEEK, 0, values.length);
-  }
-  
-  /**
-   * Gets the day of the week the given date falls on.
-   * @param date the date
-   * @return the day of the week
-   */
-  public static DayOfWeek dayOfWeek(DateValue date){
-    int dayIndex = fixedFromGregorian(date.year(), date.month(), date.day()) % 7;
-    if (dayIndex < 0) { dayIndex += 7; }
-    return DAYS_OF_WEEK[dayIndex];
-  }
-  
-  /**
-   * Gets the day of the week of the first day in the given month.
-   * @param year the year
-   * @param month the month (1-12)
-   * @return the day of the week
-   */
-  public static DayOfWeek firstDayOfWeekInMonth(int year, int month) {
-    int result = fixedFromGregorian(year, month, 1) % 7;
-    if (result < 0) { result += 7; }
-    return DAYS_OF_WEEK[result];
-  }
+	private static int[] MONTH_START_TO_DOY = new int[12];
+	static {
+		for (int m = 1; m < 12; ++m) {
+			MONTH_START_TO_DOY[m] = MONTH_START_TO_DOY[m - 1] + monthLength(1970, m);
+		}
+	}
 
-  /**
-   * Computes the gregorian time from the number of seconds since the Proleptic
-   * Gregorian Epoch. See "Calendrical Calculations", Reingold and Dershowitz.
-   * @param secsSinceEpoch the number of seconds since the epoch
-   * @return the gregorian time
-   */
-  public static DateTimeValue timeFromSecsSinceEpoch(long secsSinceEpoch) {
-    // TODO: should we handle -ve years?
-    int secsInDay = (int) (secsSinceEpoch % SECS_PER_DAY);
-    int daysSinceEpoch = (int) (secsSinceEpoch / SECS_PER_DAY);
-    int approx = (int) ((daysSinceEpoch + 10) * 400L / 146097);
-    int year = (daysSinceEpoch >= fixedFromGregorian(approx+1, 1, 1))
-               ? approx+1 : approx;
-    int jan1 = fixedFromGregorian(year, 1, 1);
-    int priorDays = daysSinceEpoch - jan1;
-    int march1 = fixedFromGregorian(year, 3, 1);
-    int correction = (daysSinceEpoch < march1) ? 0 :
-                     isLeapYear(year) ? 1 : 2;
-    int month = (12 * (priorDays + correction) + 373) / 367;
-    int month1 = fixedFromGregorian(year, month, 1);
-    int day = daysSinceEpoch - month1 + 1;
-    int second = secsInDay % 60;
-    int minutesInDay = secsInDay / 60;
-    int minute = minutesInDay % 60;
-    int hour = minutesInDay / 60;
-    if (!(hour >= 0 && hour < 24)) throw new AssertionError(
-        "Input was: " + secsSinceEpoch + "to make hour: " + hour);
-    return new DateTimeValueImpl(year, month, day, hour, minute, second);
-  }
+	/**
+	 * Gets the day of the year for a given date.
+	 * @param year the date's year
+	 * @param month the date's month
+	 * @param date the date's day
+	 * @return the day of the year (in range [0-365])
+	 */
+	public static int dayOfYear(int year, int month, int date) {
+		int leapAdjust = month > 2 && isLeapYear(year) ? 1 : 0;
+		return MONTH_START_TO_DOY[month - 1] + leapAdjust + date - 1;
+	}
 
-  private static final long SECS_PER_DAY = 60L * 60 * 24;
+	private static final DayOfWeek[] DAYS_OF_WEEK;
+	static {
+		DayOfWeek[] values = DayOfWeek.values();
+		DAYS_OF_WEEK = new DayOfWeek[values.length];
+		System.arraycopy(values, 0, DAYS_OF_WEEK, 0, values.length);
+	}
 
-  /**
-   * Computes the number of seconds from the Proleptic Gregorian epoch
-   * to the given time. See "Calendrical Calculations", Reingold and Dershowitz.
-   * @param date the date
-   * @return the number of seconds
-   */
-  public static long secsSinceEpoch(DateValue date) {
-    long result = fixedFromGregorian(date) *
-                  SECS_PER_DAY;
-    if (date instanceof TimeValue) {
-      TimeValue time = (TimeValue) date;
-      result +=
-        time.second() +
-        60 * (time.minute() +
-              60 * time.hour());
-    }
-    return result;
-  }
+	/**
+	 * Gets the day of the week the given date falls on.
+	 * @param date the date
+	 * @return the day of the week
+	 */
+	public static DayOfWeek dayOfWeek(DateValue date) {
+		int dayIndex = fixedFromGregorian(date.year(), date.month(), date.day()) % 7;
+		if (dayIndex < 0) {
+			dayIndex += 7;
+		}
+		return DAYS_OF_WEEK[dayIndex];
+	}
 
-  /**
-   * Builds a date-time value that represents the start of the given day (all
-   * time components set to 0).
-   * @param date the day
-   * @return the date-time value
-   */
-  public static DateTimeValue dayStart(DateValue date) {
-    return new DateTimeValueImpl(date.year(), date.month(), date.day(), 0, 0, 0);
-  }
+	/**
+	 * Gets the day of the week of the first day in the given month.
+	 * @param year the year
+	 * @param month the month (1-12)
+	 * @return the day of the week
+	 */
+	public static DayOfWeek firstDayOfWeekInMonth(int year, int month) {
+		int result = fixedFromGregorian(year, month, 1) % 7;
+		if (result < 0) {
+			result += 7;
+		}
+		return DAYS_OF_WEEK[result];
+	}
 
-  /**
-   * Converts the given date to a {@link DateValue} object if it is a
-   * {@link TimeValue} instance. If it is not a {@link TimeValue} instance, then
-   * the same date object is returned unchanged.
-   * @param date the date
-   * @return the date value
-   */
-  public static DateValue toDateValue(DateValue date) {
-    return (date instanceof TimeValue) ? new DateValueImpl(date.year(), date.month(), date.day()) : date;
-  }
+	/**
+	 * Computes the gregorian time from the number of seconds since the
+	 * Proleptic Gregorian Epoch. See "Calendrical Calculations", Reingold and
+	 * Dershowitz.
+	 * @param secsSinceEpoch the number of seconds since the epoch
+	 * @return the gregorian time
+	 */
+	public static DateTimeValue timeFromSecsSinceEpoch(long secsSinceEpoch) {
+		// TODO: should we handle -ve years?
+		int secsInDay = (int) (secsSinceEpoch % SECS_PER_DAY);
+		int daysSinceEpoch = (int) (secsSinceEpoch / SECS_PER_DAY);
+		int approx = (int) ((daysSinceEpoch + 10) * 400L / 146097);
+		int year = (daysSinceEpoch >= fixedFromGregorian(approx + 1, 1, 1)) ? approx + 1 : approx;
+		int jan1 = fixedFromGregorian(year, 1, 1);
+		int priorDays = daysSinceEpoch - jan1;
+		int march1 = fixedFromGregorian(year, 3, 1);
+		int correction = (daysSinceEpoch < march1) ? 0 : isLeapYear(year) ? 1 : 2;
+		int month = (12 * (priorDays + correction) + 373) / 367;
+		int month1 = fixedFromGregorian(year, month, 1);
+		int day = daysSinceEpoch - month1 + 1;
+		int second = secsInDay % 60;
+		int minutesInDay = secsInDay / 60;
+		int minute = minutesInDay % 60;
+		int hour = minutesInDay / 60;
+		if (!(hour >= 0 && hour < 24)) {
+			throw new AssertionError("Input was: " + secsSinceEpoch + "to make hour: " + hour);
+		}
+		return new DateTimeValueImpl(year, month, day, hour, minute, second);
+	}
 
-  private static final TimeZone BOGUS_TIMEZONE =
-    TimeZone.getTimeZone("noSuchTimeZone");
+	private static final long SECS_PER_DAY = 60L * 60 * 24;
 
-  private static final Pattern UTC_TZID =
-      Pattern.compile("^GMT([+-]0(:00)?)?$|UTC|Zulu|Etc\\/GMT|Greenwich.*",
-                      Pattern.CASE_INSENSITIVE);
+	/**
+	 * Computes the number of seconds from the Proleptic Gregorian epoch to the
+	 * given time. See "Calendrical Calculations", Reingold and Dershowitz.
+	 * @param date the date
+	 * @return the number of seconds
+	 */
+	public static long secsSinceEpoch(DateValue date) {
+		long result = fixedFromGregorian(date) * SECS_PER_DAY;
+		if (date instanceof TimeValue) {
+			TimeValue time = (TimeValue) date;
+			result += time.second() + 60 * (time.minute() + 60 * time.hour());
+		}
+		return result;
+	}
 
-  /**
-   * Returns the timezone with the given name or null if no such timezone.
-   * @param tzString the timezone name (e.g. "America/New_York")
-   * @return the timezone or null if no such timezone exists
-   */
-  public static TimeZone timeZoneForName(String tzString) {
-    TimeZone tz = TimeZone.getTimeZone(tzString);
-    if (!tz.hasSameRules(BOGUS_TIMEZONE)) {
-      return tz;
-    }
+	/**
+	 * Builds a date-time value that represents the start of the given day (all
+	 * time components set to 0).
+	 * @param date the day
+	 * @return the date-time value
+	 */
+	public static DateTimeValue dayStart(DateValue date) {
+		return new DateTimeValueImpl(date.year(), date.month(), date.day(), 0, 0, 0);
+	}
 
-    /*
-     * See if the user really was asking for GMT because if
-     * TimeZone.getTimeZone can't recognize tzString, then that is what it
-     * will return.
-     */
-    Matcher m = UTC_TZID.matcher(tzString);
-    return m.matches() ? TimeUtils.utcTimezone() : null;
-  }
+	/**
+	 * Converts the given date to a {@link DateValue} object if it is a
+	 * {@link TimeValue} instance. If it is not a {@link TimeValue} instance,
+	 * then the same date object is returned unchanged.
+	 * @param date the date
+	 * @return the date value
+	 */
+	public static DateValue toDateValue(DateValue date) {
+		return (date instanceof TimeValue) ? new DateValueImpl(date.year(), date.month(), date.day()) : date;
+	}
 
-  /**
-   * Builds a {@link DateTimeValue} object from the given data.
-   * @param millisFromEpoch the number of milliseconds from the epoch
-   * @param zone the timezone the number of milliseconds is in
-   * @return the {@link DateTimeValue} object
-   */
-  public static DateTimeValue toDateTimeValue(long millisFromEpoch, TimeZone zone) {
-    GregorianCalendar c = new GregorianCalendar(zone);
-    c.clear();
-    c.setTimeInMillis(millisFromEpoch);
-    return new DateTimeValueImpl (
-      c.get(Calendar.YEAR),
-      c.get(Calendar.MONTH) + 1,
-      c.get(Calendar.DAY_OF_MONTH),
-      c.get(Calendar.HOUR_OF_DAY),
-      c.get(Calendar.MINUTE),
-      c.get(Calendar.SECOND)
-    );
-  }
-  
-  private static final TimeValue MIDNIGHT = new TimeValue() {
-    public int hour() {
-      return 0;
-    }
+	private static final TimeZone BOGUS_TIMEZONE = TimeZone.getTimeZone("noSuchTimeZone");
 
-    public int minute() {
-      return 0;
-    }
+	private static final Pattern UTC_TZID = Pattern.compile("^GMT([+-]0(:00)?)?$|UTC|Zulu|Etc\\/GMT|Greenwich.*", Pattern.CASE_INSENSITIVE);
 
-    public int second() {
-      return 0;
-    }
-  };
+	/**
+	 * Returns the timezone with the given name or null if no such timezone.
+	 * @param tzString the timezone name (e.g. "America/New_York")
+	 * @return the timezone or null if no such timezone exists
+	 */
+	public static TimeZone timeZoneForName(String tzString) {
+		TimeZone tz = TimeZone.getTimeZone(tzString);
+		if (!tz.hasSameRules(BOGUS_TIMEZONE)) {
+			return tz;
+		}
 
-  /**
-   * Gets the time component of a date value.
-   * @param date the date value
-   * @return the date value's time component or a time value representing
-   * midnight if the date value does not have a time component
-   */
-  public static TimeValue timeOf(DateValue date) {
-    return (date instanceof TimeValue) ? (TimeValue) date : MIDNIGHT;
-  }
+		/*
+		 * See if the user really was asking for GMT because if
+		 * TimeZone.getTimeZone can't recognize tzString, then that is what it
+		 * will return.
+		 */
+		Matcher m = UTC_TZID.matcher(tzString);
+		return m.matches() ? TimeUtils.utcTimezone() : null;
+	}
 
-  private TimeUtils() {
-    // uninstantiable
-  }
+	/**
+	 * Builds a {@link DateTimeValue} object from the given data.
+	 * @param millisFromEpoch the number of milliseconds from the epoch
+	 * @param zone the timezone the number of milliseconds is in
+	 * @return the {@link DateTimeValue} object
+	 */
+	public static DateTimeValue toDateTimeValue(long millisFromEpoch, TimeZone zone) {
+		GregorianCalendar c = new GregorianCalendar(zone);
+		c.clear();
+		c.setTimeInMillis(millisFromEpoch);
+		//@formatter:off
+		return new DateTimeValueImpl (
+			c.get(Calendar.YEAR),
+			c.get(Calendar.MONTH) + 1,
+			c.get(Calendar.DAY_OF_MONTH),
+			c.get(Calendar.HOUR_OF_DAY),
+			c.get(Calendar.MINUTE),
+			c.get(Calendar.SECOND)
+		);
+		//@formatter:on
+	}
+
+	private static final TimeValue MIDNIGHT = new TimeValue() {
+		public int hour() {
+			return 0;
+		}
+
+		public int minute() {
+			return 0;
+		}
+
+		public int second() {
+			return 0;
+		}
+	};
+
+	/**
+	 * Gets the time component of a date value.
+	 * @param date the date value
+	 * @return the date value's time component or a time value representing
+	 * midnight if the date value does not have a time component
+	 */
+	public static TimeValue timeOf(DateValue date) {
+		return (date instanceof TimeValue) ? (TimeValue) date : MIDNIGHT;
+	}
+
+	private TimeUtils() {
+		// uninstantiable
+	}
 }

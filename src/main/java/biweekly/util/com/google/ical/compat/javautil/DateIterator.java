@@ -48,9 +48,9 @@ import java.util.Iterator;
  * @author Michael Angstadt
  */
 public interface DateIterator extends Iterator<Date> {
-  /**
-   * Skips all dates in the series that come before the given date.
-   * @param newStartUtc the date to advance to (in UTC)
-   */
-  void advanceTo(Date newStartUtc);
+	/**
+	 * Skips all dates in the series that come before the given date.
+	 * @param newStartUtc the date to advance to (in UTC)
+	 */
+	void advanceTo(Date newStartUtc);
 }

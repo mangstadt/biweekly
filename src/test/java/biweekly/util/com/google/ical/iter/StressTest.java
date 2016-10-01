@@ -54,68 +54,68 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author Michael Angstadt
  */
 public class StressTest extends TestCase {
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
 
-    // prime the VM
-    for (int runs = 10; --runs >= 0;) {
-      runOne();
-    }
-  }
+		// prime the VM
+		for (int runs = 10; --runs >= 0;) {
+			runOne();
+		}
+	}
 
-  public void testSpeed() {
-    long t0 = System.nanoTime();
-    //cycle through 10 recurrence rules, advancing and pulling a few dates off each
-    for (int runs = 5000; --runs >= 0;) {
-      runOne();
-    }
-    long dt = System.nanoTime() - t0;
-    System.out.println(getName() + " took " + (dt / 1e6) + " ms");
-  }
+	public void testSpeed() {
+		long t0 = System.nanoTime();
+		//cycle through 10 recurrence rules, advancing and pulling a few dates off each
+		for (int runs = 5000; --runs >= 0;) {
+			runOne();
+		}
+		long dt = System.nanoTime() - t0;
+		System.out.println(getName() + " took " + (dt / 1e6) + " ms");
+	}
 
-  private static final Recurrence[] RECURRENCE_RULES = {
-    new Recurrence.Builder(Frequency.DAILY).build(),
-    new Recurrence.Builder(Frequency.WEEKLY)
-      .byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
-      .build(),
-    new Recurrence.Builder(Frequency.WEEKLY)
-      .byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
-      .count(10)
-      .build(),
-    new Recurrence.Builder(Frequency.WEEKLY)
-      .byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
-      .until(new ICalDate(date("2006-08-01"), false))
-      .build(),
-    new Recurrence.Builder(Frequency.MONTHLY)
-      .interval(2)
-      .byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
-      .until(new ICalDate(date("2006-08-01"), false))
-      .build(),
-    new Recurrence.Builder(Frequency.MONTHLY)
-      .byMonthDay(13)
-      .byDay(DayOfWeek.FRIDAY)
-      .until(new ICalDate(date("2006-08-01"), false))
-      .build(),
-    new Recurrence.Builder(Frequency.YEARLY)
-      .byMonth(6)
-      .byMonthDay(15)
-      .until(new ICalDate(date("2020-06-15"), false))
-      .build()
-  };
+	//@formatter:off
+	private static final Recurrence[] RECURRENCE_RULES = {
+		new Recurrence.Builder(Frequency.DAILY).build(),
+		new Recurrence.Builder(Frequency.WEEKLY)
+			.byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+			.build(),
+		new Recurrence.Builder(Frequency.WEEKLY)
+			.byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+			.count(10)
+			.build(),
+		new Recurrence.Builder(Frequency.WEEKLY)
+			.byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+			.until(new ICalDate(date("2006-08-01"), false))
+			.build(),
+		new Recurrence.Builder(Frequency.MONTHLY)
+			.interval(2)
+			.byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+			.until(new ICalDate(date("2006-08-01"), false))
+			.build(),
+		new Recurrence.Builder(Frequency.MONTHLY)
+			.byMonthDay(13)
+			.byDay(DayOfWeek.FRIDAY)
+			.until(new ICalDate(date("2006-08-01"), false))
+			.build(),
+		new Recurrence.Builder(Frequency.YEARLY)
+			.byMonth(6)
+			.byMonthDay(15)
+			.until(new ICalDate(date("2020-06-15"), false))
+			.build()
+	};
+	//@formatter:on
 
-  private static final DateValue DT_START = new DateValueImpl(2006, 4, 3);
-  private static final DateValue T0 = new DateValueImpl(2006, 8, 3);
+	private static final DateValue DT_START = new DateValueImpl(2006, 4, 3);
+	private static final DateValue T0 = new DateValueImpl(2006, 8, 3);
 
-  private static void runOne() {
-    for (Recurrence rrule : RECURRENCE_RULES) {
-      RecurrenceIterator iter =
-        RecurrenceIteratorFactory.createRecurrenceIterator(
-            rrule, DT_START, TimeUtils.utcTimezone());
-      iter.advanceTo(T0);
-      for (int k = 20; iter.hasNext() && --k >= 0;) {
-        iter.next();
-      }
-    }
-  }
+	private static void runOne() {
+		for (Recurrence rrule : RECURRENCE_RULES) {
+			RecurrenceIterator iter = RecurrenceIteratorFactory.createRecurrenceIterator(rrule, DT_START, TimeUtils.utcTimezone());
+			iter.advanceTo(T0);
+			for (int k = 20; iter.hasNext() && --k >= 0;) {
+				iter.next();
+			}
+		}
+	}
 }

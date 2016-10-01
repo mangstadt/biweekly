@@ -48,23 +48,23 @@ package biweekly.util.com.google.ical.values;
  * @author Michael Angstadt
  */
 public interface TimeValue {
-  /**
-   * Gets the hour (in the range 0-24).
-   * @return the hour
-   */
-  int hour();
+	/**
+	 * Gets the hour (in the range 0-24).
+	 * @return the hour
+	 */
+	int hour();
 
-  /**
-   * Gets the minute (in the range 0-59). If the hour is 24, then this method
-   * should return zero.
-   * @return the minute
-   */
-  int minute();
+	/**
+	 * Gets the minute (in the range 0-59). If the hour is 24, then this method
+	 * should return zero.
+	 * @return the minute
+	 */
+	int minute();
 
-  /**
-   * Gets the second (in the range 0 through 59). If the hour is 24, then this
-   * method should return zero.
-   * @return the second
-   */
-  int second();
+	/**
+	 * Gets the second (in the range 0 through 59). If the hour is 24, then this
+	 * method should return zero.
+	 * @return the second
+	 */
+	int second();
 }

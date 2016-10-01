@@ -48,68 +48,82 @@ package biweekly.util.com.google.ical.values;
  * @author Michael Angstadt
  */
 public class DateValueImpl implements DateValue {
-  private final int year, month, day;
+	private final int year, month, day;
 
-  /**
-   * Creates a new date value.
-   * @param year the year
-   * @param month the month (1-12)
-   * @param day the day (1-31)
-   */
-  public DateValueImpl(int year, int month, int day) {
-    this.year = year;
-    this.month = month;
-    this.day = day;
-  }
+	/**
+	 * Creates a new date value.
+	 * @param year the year
+	 * @param month the month (1-12)
+	 * @param day the day (1-31)
+	 */
+	public DateValueImpl(int year, int month, int day) {
+		this.year = year;
+		this.month = month;
+		this.day = day;
+	}
 
-  public int year() {
-    return year;
-  }
+	public int year() {
+		return year;
+	}
 
-  public int month() {
-    return month;
-  }
+	public int month() {
+		return month;
+	}
 
-  public int day() {
-    return day;
-  }
+	public int day() {
+		return day;
+	}
 
-  @Override
-  public String toString() {
-    return String.format("%04d%02d%02d", year, month, day);
-  }
+	@Override
+	public String toString() {
+		return String.format("%04d%02d%02d", year, month, day);
+	}
 
-  public final int compareTo(DateValue other) {
-    int n0 = day() +               //5 bits
-             (month() << 5) +      //4 bits
-             (year() << 9);
-    int n1 = other.day() +
-             (other.month() << 5) +
-             (other.year() << 9);
-    if (n0 != n1) return n0 - n1;
-    if (!(this instanceof TimeValue))
-      return (other instanceof TimeValue) ? -1 : 0;
+	public final int compareTo(DateValue other) {
+		//@formatter:off
+		int n0 = day() +		//5 bits
+			(month() << 5) +	//4 bits
+			(year() << 9);
+		int n1 = other.day() +
+			(other.month() << 5) +
+			(other.year() << 9);
+		//@formatter:on
 
-    TimeValue self = (TimeValue) this;
-    if (!(other instanceof TimeValue)) return 1;
-    TimeValue othr = (TimeValue) other;
-    int m0 = self.second() +            //6 bits
-             (self.minute() << 6) +     //6 bits
-             (self.hour() << 12);
-    int m1 = othr.second() +
-             (othr.minute() << 6) +
-             (othr.hour() << 12);
-    return m0 - m1;
-  }
+		if (n0 != n1) {
+			return n0 - n1;
+		}
 
-  @Override
-  public boolean equals(Object o) {
-    if (!(o instanceof DateValue)) { return false; }
-    return compareTo((DateValue) o) == 0;
-  }
+		if (!(this instanceof TimeValue)) {
+			return (other instanceof TimeValue) ? -1 : 0;
+		}
 
-  @Override
-  public int hashCode() {
-    return (year() << 9) + (month() << 5) + day();
-  }
+		TimeValue self = (TimeValue) this;
+		if (!(other instanceof TimeValue)) {
+			return 1;
+		}
+
+		TimeValue othr = (TimeValue) other;
+		//@formatter:off
+		int m0 = self.second() +	//6 bits
+			(self.minute() << 6) +	//6 bits
+			(self.hour() << 12);
+		int m1 = othr.second() +
+			(othr.minute() << 6) +
+			(othr.hour() << 12);
+		//@formatter:on
+		return m0 - m1;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof DateValue)) {
+			return false;
+		}
+		return compareTo((DateValue) o) == 0;
+	}
+
+	@Override
+	public int hashCode() {
+		return (year() << 9) + (month() << 5) + day();
+	}
 }

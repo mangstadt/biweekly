@@ -47,5 +47,5 @@ import java.util.Date;
  * @author Michael Angstadt
  */
 public interface DateIterable extends Iterable<Date> {
-  DateIterator iterator();
+	DateIterator iterator();
 }

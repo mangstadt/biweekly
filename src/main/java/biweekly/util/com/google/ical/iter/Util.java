@@ -51,117 +51,113 @@ import biweekly.util.com.google.ical.values.DateValue;
  * @author Michael Angstadt
  */
 class Util {
-  /**
-   * <p>
-   * Advances the given date to next date that falls on the given weekday. If
-   * the given date already falls on the given weekday, then the same date is
-   * returned.
-   * </p>
-   * <p>
-   * For example, if the date is a Thursday, and the week start is Monday, this
-   * method will return a date value that is set to the next Monday (4 days in
-   * the future).
-   * </p>
-   * @param date the date
-   * @param weekday the day of the week that the week starts on
-   * @return the resultant date
-   */
-  static DateValue nextWeekStart(DateValue date, DayOfWeek weekday) {
-    DTBuilder builder = new DTBuilder(date);
-    builder.day += (7 - ((7 + (TimeUtils.dayOfWeek(date).getCalendarConstant()
-                               - weekday.getCalendarConstant())) % 7))
-                   % 7;
-    return builder.toDate();
-  }
+	/**
+	 * <p>
+	 * Advances the given date to next date that falls on the given weekday. If
+	 * the given date already falls on the given weekday, then the same date is
+	 * returned.
+	 * </p>
+	 * <p>
+	 * For example, if the date is a Thursday, and the week start is Monday,
+	 * this method will return a date value that is set to the next Monday (4
+	 * days in the future).
+	 * </p>
+	 * @param date the date
+	 * @param weekday the day of the week that the week starts on
+	 * @return the resultant date
+	 */
+	static DateValue nextWeekStart(DateValue date, DayOfWeek weekday) {
+		DTBuilder builder = new DTBuilder(date);
+		builder.day += (7 - ((7 + (TimeUtils.dayOfWeek(date).getCalendarConstant() - weekday.getCalendarConstant())) % 7)) % 7;
+		return builder.toDate();
+	}
 
-  /**
-   * Returns a sorted copy of an integer array with duplicate values removed.
-   * @param ints the integer array
-   * @return the sorted copy with duplicates removed
-   */
-  static int[] uniquify(int[] ints) {
-    IntSet iset = new IntSet();
-    for (int i : ints){
-      iset.add(i);
-    }
-    return iset.toIntArray();
-  }
+	/**
+	 * Returns a sorted copy of an integer array with duplicate values removed.
+	 * @param ints the integer array
+	 * @return the sorted copy with duplicates removed
+	 */
+	static int[] uniquify(int[] ints) {
+		IntSet iset = new IntSet();
+		for (int i : ints) {
+			iset.add(i);
+		}
+		return iset.toIntArray();
+	}
 
-  /**
-   * Given a weekday number, such as {@code -1SU}, this method calculates the
-   * day of the month that it falls on. The weekday number may be refer to a
-   * week in the current month in some contexts, or a week in the current year
-   * in other contexts.
-   * @param dow0 the day of week of the first day in the current year/month
-   * @param nDays the number of days in the current year/month (must be one of
-   * the following values [28,29,30,31,365,366])
-   * @param weekNum the weekday number (for example, the -1 in {@code -1SU})
-   * @param dow the day of the week (for example, the SU in {@code -1SU})
-   * @param d0 the number of days between the first day of the current
-   * year/month and the current month
-   * @param nDaysInMonth the number of days in the current month
-   * @return the day of the month, or 0 if no such day exists
-   */
-  static int dayNumToDate(DayOfWeek dow0, int nDays, int weekNum,
-                          DayOfWeek dow, int d0, int nDaysInMonth) {
-    //if dow is wednesday, then this is the date of the first wednesday
-    int firstDateOfGivenDow = 1 + ((7 + dow.getCalendarConstant() - dow0.getCalendarConstant()) % 7);
+	/**
+	 * Given a weekday number, such as {@code -1SU}, this method calculates the
+	 * day of the month that it falls on. The weekday number may be refer to a
+	 * week in the current month in some contexts, or a week in the current year
+	 * in other contexts.
+	 * @param dow0 the day of week of the first day in the current year/month
+	 * @param nDays the number of days in the current year/month (must be one of
+	 * the following values [28,29,30,31,365,366])
+	 * @param weekNum the weekday number (for example, the -1 in {@code -1SU})
+	 * @param dow the day of the week (for example, the SU in {@code -1SU})
+	 * @param d0 the number of days between the first day of the current
+	 * year/month and the current month
+	 * @param nDaysInMonth the number of days in the current month
+	 * @return the day of the month, or 0 if no such day exists
+	 */
+	static int dayNumToDate(DayOfWeek dow0, int nDays, int weekNum, DayOfWeek dow, int d0, int nDaysInMonth) {
+		//if dow is wednesday, then this is the date of the first wednesday
+		int firstDateOfGivenDow = 1 + ((7 + dow.getCalendarConstant() - dow0.getCalendarConstant()) % 7);
 
-    int date;
-    if (weekNum > 0) {
-      date = ((weekNum - 1) * 7) + firstDateOfGivenDow - d0;
-    } else {  //count weeks from end of month
-      //calculate last day of the given dow
-      //since nDays <= 366, this should be > nDays
-      int lastDateOfGivenDow = firstDateOfGivenDow + (7 * 54);
-      lastDateOfGivenDow -= 7 * ((lastDateOfGivenDow - nDays + 6) / 7);
-      date = lastDateOfGivenDow + 7 * (weekNum + 1) - d0;
-    }
-    return (date <= 0 || date > nDaysInMonth) ? 0 : date;
-  }
+		int date;
+		if (weekNum > 0) {
+			date = ((weekNum - 1) * 7) + firstDateOfGivenDow - d0;
+		} else { //count weeks from end of month
+			//calculate last day of the given dow
+			//since nDays <= 366, this should be > nDays
+			int lastDateOfGivenDow = firstDateOfGivenDow + (7 * 54);
+			lastDateOfGivenDow -= 7 * ((lastDateOfGivenDow - nDays + 6) / 7);
+			date = lastDateOfGivenDow + 7 * (weekNum + 1) - d0;
+		}
+		return (date <= 0 || date > nDaysInMonth) ? 0 : date;
+	}
 
-  /**
-   * <p>
-   * Converts a relative week number (such as {@code -1SU}) to an absolute week
-   * number.
-   * </p>
-   * <p>
-   * For example, the week number {@code -1SU} refers to the last Sunday of
-   * either the month or year (depending on how this method was called). So if
-   * there are 5 Sundays in the given period, then given a week number of
-   * {@code -1SU}, this method would return 5. Similarly, {@code -2SU} would
-   * return 4.
-   * </p>
-   * @param weekdayNum the weekday number (must be a negative value, such as
-   * {@code -1SU})
-   * @param dow0 the day of the week of the first day of the week or month
-   * @param nDays the number of days in the month or year
-   * @return the absolute week number
-   */
-  static int invertWeekdayNum(
-      ByDay weekdayNum, DayOfWeek dow0, int nDays) {
-    //how many are there of that week?
-    return countInPeriod(weekdayNum.getDay(), dow0, nDays) + weekdayNum.getNum() + 1;
-  }
+	/**
+	 * <p>
+	 * Converts a relative week number (such as {@code -1SU}) to an absolute
+	 * week number.
+	 * </p>
+	 * <p>
+	 * For example, the week number {@code -1SU} refers to the last Sunday of
+	 * either the month or year (depending on how this method was called). So if
+	 * there are 5 Sundays in the given period, then given a week number of
+	 * {@code -1SU}, this method would return 5. Similarly, {@code -2SU} would
+	 * return 4.
+	 * </p>
+	 * @param weekdayNum the weekday number (must be a negative value, such as
+	 * {@code -1SU})
+	 * @param dow0 the day of the week of the first day of the week or month
+	 * @param nDays the number of days in the month or year
+	 * @return the absolute week number
+	 */
+	static int invertWeekdayNum(ByDay weekdayNum, DayOfWeek dow0, int nDays) {
+		//how many are there of that week?
+		return countInPeriod(weekdayNum.getDay(), dow0, nDays) + weekdayNum.getNum() + 1;
+	}
 
-  /**
-   * Counts the number of occurrences of a weekday in a given period.
-   * @param dow the weekday
-   * @param dow0 the weekday of the first day of the period
-   * @param nDays the number of days in the period
-   */
-  static int countInPeriod(DayOfWeek dow, DayOfWeek dow0, int nDays) {
-    //two cases:
-    //   (1a) dow >= dow0: count === (nDays - (dow - dow0)) / 7
-    //   (1b) dow < dow0:  count === (nDays - (7 - dow0 - dow)) / 7
-    if (dow.getCalendarConstant() >= dow0.getCalendarConstant()) {
-      return 1 + ((nDays - (dow.getCalendarConstant() - dow0.getCalendarConstant()) - 1) / 7);
-    } else {
-      return 1 + ((nDays - (7 - (dow0.getCalendarConstant() - dow.getCalendarConstant())) - 1) / 7);
-    }
-  }
+	/**
+	 * Counts the number of occurrences of a weekday in a given period.
+	 * @param dow the weekday
+	 * @param dow0 the weekday of the first day of the period
+	 * @param nDays the number of days in the period
+	 */
+	static int countInPeriod(DayOfWeek dow, DayOfWeek dow0, int nDays) {
+		//two cases:
+		//   (1a) dow >= dow0: count === (nDays - (dow - dow0)) / 7
+		//   (1b) dow < dow0:  count === (nDays - (7 - dow0 - dow)) / 7
+		if (dow.getCalendarConstant() >= dow0.getCalendarConstant()) {
+			return 1 + ((nDays - (dow.getCalendarConstant() - dow0.getCalendarConstant()) - 1) / 7);
+		} else {
+			return 1 + ((nDays - (7 - (dow0.getCalendarConstant() - dow.getCalendarConstant())) - 1) / 7);
+		}
+	}
 
-  private Util() {
-    //uninstantiable
-  }
+	private Util() {
+		//uninstantiable
+	}
 }

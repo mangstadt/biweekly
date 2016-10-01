@@ -49,52 +49,57 @@ import biweekly.util.com.google.ical.values.DateValue;
  * @author Michael Angstadt
  */
 final class RDateIteratorImpl implements RecurrenceIterator {
-  private final DateValue[] datesUtc;
-  private int i;
+	private final DateValue[] datesUtc;
+	private int i;
 
-  /**
-   * Creates a new recurrence iterator.
-   * @param datesUtc the dates to iterate over (assumes they are all in UTC)
-   */
-  RDateIteratorImpl(DateValue[] datesUtc) {
-    datesUtc = datesUtc.clone();
-    Arrays.sort(datesUtc);
-    this.datesUtc = removeDuplicates(datesUtc);
-  }
+	/**
+	 * Creates a new recurrence iterator.
+	 * @param datesUtc the dates to iterate over (assumes they are all in UTC)
+	 */
+	RDateIteratorImpl(DateValue[] datesUtc) {
+		datesUtc = datesUtc.clone();
+		Arrays.sort(datesUtc);
+		this.datesUtc = removeDuplicates(datesUtc);
+	}
 
-  public boolean hasNext() { return i < datesUtc.length; }
+	public boolean hasNext() {
+		return i < datesUtc.length;
+	}
 
-  public DateValue next() { return datesUtc[i++]; }
+	public DateValue next() {
+		return datesUtc[i++];
+	}
 
-  public void remove() { throw new UnsupportedOperationException(); }
+	public void remove() {
+		throw new UnsupportedOperationException();
+	}
 
-  public void advanceTo(DateValue newStartUtc) {
-    long startCmp = DateValueComparison.comparable(newStartUtc);
-    while (i < datesUtc.length
-           && startCmp > DateValueComparison.comparable(datesUtc[i])) {
-      ++i;
-    }
-  }
-  
-  /**
-   * Removes duplicates from a list of date values.
-   * @param dates the date values (must be sorted in ascending order)
-   * @return a new array if any elements were removed or the original array
-   * if no elements were removed
-   */
-  private static DateValue[] removeDuplicates(DateValue[] dates) {
-    int k = 0;
-    for (int i = 1; i < dates.length; ++i) {
-      if (!dates[i].equals(dates[k])) {
-        dates[++k] = dates[i];
-      }
-    }
+	public void advanceTo(DateValue newStartUtc) {
+		long startCmp = DateValueComparison.comparable(newStartUtc);
+		while (i < datesUtc.length && startCmp > DateValueComparison.comparable(datesUtc[i])) {
+			++i;
+		}
+	}
 
-    if (++k < dates.length) {
-      DateValue[] uniqueDates = new DateValue[k];
-      System.arraycopy(dates, 0, uniqueDates, 0, k);
-      return uniqueDates;
-    }
-    return dates;
-  }
+	/**
+	 * Removes duplicates from a list of date values.
+	 * @param dates the date values (must be sorted in ascending order)
+	 * @return a new array if any elements were removed or the original array if
+	 * no elements were removed
+	 */
+	private static DateValue[] removeDuplicates(DateValue[] dates) {
+		int k = 0;
+		for (int i = 1; i < dates.length; ++i) {
+			if (!dates[i].equals(dates[k])) {
+				dates[++k] = dates[i];
+			}
+		}
+
+		if (++k < dates.length) {
+			DateValue[] uniqueDates = new DateValue[k];
+			System.arraycopy(dates, 0, uniqueDates, 0, k);
+			return uniqueDates;
+		}
+		return dates;
+	}
 }

@@ -48,5 +48,5 @@ package biweekly.util.com.google.ical.values;
  * @author Michael Angstadt
  */
 public interface DateTimeValue extends DateValue, TimeValue {
-  //simple union
+	//simple union
 }
