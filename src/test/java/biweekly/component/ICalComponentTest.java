@@ -634,7 +634,7 @@ public class ICalComponentTest {
 
 	/**
 	 * This tests to make sure that, if some hashing mechanism is used to
-	 * determine equality, identical properties in the same vCard are not
+	 * determine equality, identical properties in the same component are not
 	 * treated as a single property when they are put in a HashSet.
 	 */
 	@Test
