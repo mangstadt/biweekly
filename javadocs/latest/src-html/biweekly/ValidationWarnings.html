@@ -65,17 +65,17 @@
 <span class="sourceLineNo">057</span> * //iterate over each warnings group<a name="line.57"></a>
 <span class="sourceLineNo">058</span> * //this gives you access to the property/component object and its parent components<a name="line.58"></a>
 <span class="sourceLineNo">059</span> * for (WarningsGroup group : warnings) {<a name="line.59"></a>
-<span class="sourceLineNo">060</span> *      ICalProperty prop = group.getProperty();<a name="line.60"></a>
-<span class="sourceLineNo">061</span> *      if (prop == null) {<a name="line.61"></a>
-<span class="sourceLineNo">062</span> *              //then it was a component that caused the warnings<a name="line.62"></a>
-<span class="sourceLineNo">063</span> *              ICalComponent comp = group.getComponent();<a name="line.63"></a>
-<span class="sourceLineNo">064</span> *      }<a name="line.64"></a>
+<span class="sourceLineNo">060</span> * ICalProperty prop = group.getProperty();<a name="line.60"></a>
+<span class="sourceLineNo">061</span> *   if (prop == null) {<a name="line.61"></a>
+<span class="sourceLineNo">062</span> *     //then it was a component that caused the warnings<a name="line.62"></a>
+<span class="sourceLineNo">063</span> *     ICalComponent comp = group.getComponent();<a name="line.63"></a>
+<span class="sourceLineNo">064</span> *   }<a name="line.64"></a>
 <span class="sourceLineNo">065</span> * <a name="line.65"></a>
-<span class="sourceLineNo">066</span> *      //get parent components<a name="line.66"></a>
-<span class="sourceLineNo">067</span> *      List&amp;lt;ICalComponent&amp;gt; hierarchy = group.getComponentHierarchy();<a name="line.67"></a>
+<span class="sourceLineNo">066</span> *   //get parent components<a name="line.66"></a>
+<span class="sourceLineNo">067</span> *   List&amp;lt;ICalComponent&amp;gt; hierarchy = group.getComponentHierarchy();<a name="line.67"></a>
 <span class="sourceLineNo">068</span> * <a name="line.68"></a>
-<span class="sourceLineNo">069</span> *      //get warning messages<a name="line.69"></a>
-<span class="sourceLineNo">070</span> *      List&amp;lt;String&amp;gt; messages = group.getMessages();<a name="line.70"></a>
+<span class="sourceLineNo">069</span> *   //get warning messages<a name="line.69"></a>
+<span class="sourceLineNo">070</span> *   List&amp;lt;String&amp;gt; messages = group.getMessages();<a name="line.70"></a>
 <span class="sourceLineNo">071</span> * }<a name="line.71"></a>
 <span class="sourceLineNo">072</span> * <a name="line.72"></a>
 <span class="sourceLineNo">073</span> * //you can also get the warnings of specific properties/components<a name="line.73"></a>
