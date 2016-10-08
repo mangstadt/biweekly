@@ -63,7 +63,7 @@
 		<dependency>
 			<groupId>com.github.mangstadt</groupId>
 			<artifactId>vinnie</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -339,7 +339,7 @@
 		<!--
 		Disables DocLint, a Java 8 feature that fails the build if it detects errors in the javadocs.
 		See: http://stackoverflow.com/a/22296107/13379
-		-->
+		
 		<profile>
 			<id>doclint-java8-disable</id>
 			<activation>
