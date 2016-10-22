@@ -9,13 +9,17 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -60,6 +64,9 @@ import biweekly.util.XmlUtils;
  * @author Michael Angstadt
  */
 public class BiweeklyTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+
 	@Test
 	public void parse_first() {
 		//@formatter:off
@@ -366,6 +373,14 @@ public class BiweeklyTest {
 		String actual = Biweekly.write(ical).register(new TestPropertyMarshaller()).register(new PartyMarshaller()).go();
 
 		assertRegex(expected, actual);
+	}
+
+	@Test
+	public void write_file() throws Exception {
+		ICalendar ical = new ICalendar();
+		File file = folder.newFile();
+		Biweekly.write(ical).go(file);
+		assertTrue(file.length() > 0);
 	}
 
 	@Test
