@@ -74,22 +74,22 @@ import biweekly.component.VTodo;
  */
 public class Status extends EnumProperty {
 	//2.0
-	private static final String CANCELLED = "CANCELLED";
-	private static final String DRAFT = "DRAFT";
-	private static final String FINAL = "FINAL";
-	private static final String IN_PROGRESS = "IN-PROGRESS";
+	public static final String CANCELLED = "CANCELLED";
+	public static final String DRAFT = "DRAFT";
+	public static final String FINAL = "FINAL";
+	public static final String IN_PROGRESS = "IN-PROGRESS";
 
 	//1.0
-	private static final String ACCEPTED = "ACCEPTED";
-	private static final String DECLINED = "DECLINED";
-	private static final String DELEGATED = "DELEGATED";
-	private static final String SENT = "SENT";
+	public static final String ACCEPTED = "ACCEPTED";
+	public static final String DECLINED = "DECLINED";
+	public static final String DELEGATED = "DELEGATED";
+	public static final String SENT = "SENT";
 
 	//1.0 and 2.0
-	private static final String COMPLETED = "COMPLETED";
-	private static final String CONFIRMED = "CONFIRMED";
-	private static final String NEEDS_ACTION = "NEEDS-ACTION";
-	private static final String TENTATIVE = "TENTATIVE";
+	public static final String COMPLETED = "COMPLETED";
+	public static final String CONFIRMED = "CONFIRMED";
+	public static final String NEEDS_ACTION = "NEEDS-ACTION";
+	public static final String TENTATIVE = "TENTATIVE";
 
 	/**
 	 * Creates a status property. Use of this constructor is discouraged and may

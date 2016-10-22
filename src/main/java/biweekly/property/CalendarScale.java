@@ -70,7 +70,7 @@ import biweekly.ICalVersion;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-73">RFC 2445 p.73-4</a>
  */
 public class CalendarScale extends EnumProperty {
-	private static final String GREGORIAN = "GREGORIAN";
+	public static final String GREGORIAN = "GREGORIAN";
 
 	/**
 	 * Creates a new calendar scale property. Use of this constructor is

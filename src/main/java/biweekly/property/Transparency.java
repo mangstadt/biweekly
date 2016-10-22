@@ -72,8 +72,8 @@ import biweekly.ICalVersion;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.36-7</a>
  */
 public class Transparency extends EnumProperty {
-	private static final String OPAQUE = "OPAQUE";
-	private static final String TRANSPARENT = "TRANSPARENT";
+	public static final String OPAQUE = "OPAQUE";
+	public static final String TRANSPARENT = "TRANSPARENT";
 
 	/**
 	 * Creates a new transparency property.

@@ -68,9 +68,9 @@ import biweekly.ICalVersion;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.28-9</a>
  */
 public class Classification extends EnumProperty {
-	private static final String PUBLIC = "PUBLIC";
-	private static final String PRIVATE = "PRIVATE";
-	private static final String CONFIDENTIAL = "CONFIDENTIAL";
+	public static final String PUBLIC = "PUBLIC";
+	public static final String PRIVATE = "PRIVATE";
+	public static final String CONFIDENTIAL = "CONFIDENTIAL";
 
 	/**
 	 * Creates a new classification property. Use the static factory methods to

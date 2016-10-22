@@ -67,10 +67,10 @@ import biweekly.ICalVersion;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-126">RFC 2445 p.126</a>
  */
 public class Action extends EnumProperty {
-	private static final String AUDIO = "AUDIO";
-	private static final String DISPLAY = "DISPLAY";
-	private static final String EMAIL = "EMAIL";
-	private static final String PROCEDURE = "PROCEDURE";
+	public static final String AUDIO = "AUDIO";
+	public static final String DISPLAY = "DISPLAY";
+	public static final String EMAIL = "EMAIL";
+	public static final String PROCEDURE = "PROCEDURE";
 
 	/**
 	 * Creates an action property. Use of this constructor is discouraged and

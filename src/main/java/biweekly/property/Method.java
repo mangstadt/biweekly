@@ -58,14 +58,14 @@ import biweekly.ICalVersion;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-74">RFC 2445 p.74-5</a>
  */
 public class Method extends EnumProperty {
-	private static final String ADD = "ADD";
-	private static final String CANCEL = "CANCEL";
-	private static final String COUNTER = "COUNTER";
-	private static final String DECLINECOUNTER = "DECLINECOUNTER";
-	private static final String PUBLISH = "PUBLISH";
-	private static final String REFRESH = "REFRESH";
-	private static final String REPLY = "REPLY";
-	private static final String REQUEST = "REQUEST";
+	public static final String ADD = "ADD";
+	public static final String CANCEL = "CANCEL";
+	public static final String COUNTER = "COUNTER";
+	public static final String DECLINECOUNTER = "DECLINECOUNTER";
+	public static final String PUBLISH = "PUBLISH";
+	public static final String REFRESH = "REFRESH";
+	public static final String REPLY = "REPLY";
+	public static final String REQUEST = "REQUEST";
 
 	/**
 	 * Creates a new method property.
