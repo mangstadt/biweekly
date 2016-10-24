@@ -6,7 +6,6 @@ import static biweekly.io.xml.XCalQNames.ICALENDAR;
 import static biweekly.io.xml.XCalQNames.PARAMETERS;
 import static biweekly.io.xml.XCalQNames.PROPERTIES;
 import static biweekly.io.xml.XCalQNames.VCALENDAR;
-import static biweekly.util.IOUtils.utf8Writer;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,6 +56,7 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.Version;
 import biweekly.property.Xml;
+import biweekly.util.Utf8Writer;
 import biweekly.util.XmlUtils;
 
 /*
@@ -366,7 +366,7 @@ public class XCalDocument {
 	 * stream
 	 */
 	public void write(OutputStream out, Map<String, String> outputProperties) throws TransformerException {
-		write(utf8Writer(out), outputProperties);
+		write(new Utf8Writer(out), outputProperties);
 	}
 
 	/**
@@ -417,7 +417,7 @@ public class XCalDocument {
 	 * @throws TransformerException if there's a problem writing the XML
 	 */
 	public void write(File file, Map<String, String> outputProperties) throws TransformerException, IOException {
-		Writer writer = utf8Writer(file);
+		Writer writer = new Utf8Writer(file);
 		try {
 			write(writer, outputProperties);
 		} finally {

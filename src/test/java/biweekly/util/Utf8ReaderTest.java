@@ -1,7 +1,16 @@
 package biweekly.util;
 
-import java.io.Closeable;
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -29,25 +38,37 @@ import java.io.IOException;
  */
 
 /**
- * I/O helper classes.
  * @author Michael Angstadt
  */
-public final class IOUtils {
-	/**
-	 * Closes a closeable resource, catching its {@link IOException}.
-	 * @param closeable the resource to close (can be null)
-	 */
-	public static void closeQuietly(Closeable closeable) {
-		try {
-			if (closeable != null) {
-				closeable.close();
-			}
-		} catch (IOException e) {
-			//ignore
-		}
+public class Utf8ReaderTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+
+	@Test
+	public void inputStream() throws Exception {
+		String data = "one two three";
+		byte bytes[] = data.getBytes("UTF-8");
+
+		Utf8Reader reader = new Utf8Reader(new ByteArrayInputStream(bytes));
+
+		String expected = data;
+		String actual = new Gobble(reader).asString();
+		assertEquals(expected, actual);
 	}
 
-	private IOUtils() {
-		//hide
+	@Test
+	public void file() throws Exception {
+		String data = "one two three";
+
+		File file = folder.newFile();
+		Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+		writer.write(data);
+		writer.close();
+
+		Utf8Reader reader = new Utf8Reader(file);
+
+		String expected = data;
+		String actual = new Gobble(reader).asString();
+		assertEquals(expected, actual);
 	}
 }

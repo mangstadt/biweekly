@@ -1,7 +1,5 @@
 package biweekly.io.json;
 
-import static biweekly.util.IOUtils.utf8Writer;
-
 import java.io.File;
 import java.io.Flushable;
 import java.io.IOException;
@@ -22,6 +20,7 @@ import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.Version;
+import biweekly.util.Utf8Writer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 
@@ -82,7 +81,7 @@ public class JCalWriter extends StreamWriter implements Flushable {
 	 * @param out the output stream to write to (UTF-8 encoding will be used)
 	 */
 	public JCalWriter(OutputStream out) {
-		this(utf8Writer(out));
+		this(new Utf8Writer(out));
 	}
 
 	/**
@@ -91,7 +90,7 @@ public class JCalWriter extends StreamWriter implements Flushable {
 	 * false not to (useful when writing more than one iCalendar object)
 	 */
 	public JCalWriter(OutputStream out, boolean wrapInArray) {
-		this(utf8Writer(out), wrapInArray);
+		this(new Utf8Writer(out), wrapInArray);
 	}
 
 	/**
@@ -99,7 +98,7 @@ public class JCalWriter extends StreamWriter implements Flushable {
 	 * @throws IOException if the file cannot be written to
 	 */
 	public JCalWriter(File file) throws IOException {
-		this(utf8Writer(file));
+		this(new Utf8Writer(file));
 	}
 
 	/**
@@ -109,7 +108,7 @@ public class JCalWriter extends StreamWriter implements Flushable {
 	 * @throws IOException if the file cannot be written to
 	 */
 	public JCalWriter(File file, boolean wrapInArray) throws IOException {
-		this(utf8Writer(file), wrapInArray);
+		this(new Utf8Writer(file), wrapInArray);
 	}
 
 	/**

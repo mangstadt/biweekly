@@ -77,10 +77,11 @@ import biweekly.util.DayOfWeek;
 import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.Duration;
 import biweekly.util.Frequency;
-import biweekly.util.IOUtils;
+import biweekly.util.Gobble;
 import biweekly.util.Period;
 import biweekly.util.Recurrence;
 import biweekly.util.UtcOffset;
+import biweekly.util.Utf8Writer;
 import biweekly.util.XmlUtils;
 
 /*
@@ -650,7 +651,7 @@ public class XCalDocumentTest {
 		"</icalendar>";
 		//@formatter:on
 		File file = tempFolder.newFile();
-		Writer writer = IOUtils.utf8Writer(file);
+		Writer writer = new Utf8Writer(file);
 		writer.write(xml);
 		writer.close();
 
@@ -1046,7 +1047,7 @@ public class XCalDocumentTest {
 		File file = tempFolder.newFile();
 		xcal.write(file);
 
-		String xml = IOUtils.getFileContents(file, "UTF-8");
+		String xml = new Gobble(file).asString("UTF-8");
 		assertTrue(xml.matches("(?i)<\\?xml.*?encoding=\"utf-8\".*?\\?>.*"));
 		assertTrue(xml.matches(".*?<summary><text>\u1e66ummary</text></summary>.*"));
 	}

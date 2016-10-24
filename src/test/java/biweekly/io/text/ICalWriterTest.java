@@ -60,7 +60,7 @@ import biweekly.util.DateTimeComponents;
 import biweekly.util.DayOfWeek;
 import biweekly.util.Duration;
 import biweekly.util.Frequency;
-import biweekly.util.IOUtils;
+import biweekly.util.Gobble;
 import biweekly.util.Period;
 import biweekly.util.Recurrence;
 import biweekly.util.UtcOffset;
@@ -439,7 +439,7 @@ public class ICalWriterTest {
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
-		String actual = IOUtils.getFileContents(file, "UTF-8");
+		String actual = new Gobble(file).asString("UTF-8");
 		assertEquals(expected, actual);
 	}
 
@@ -1094,7 +1094,7 @@ public class ICalWriterTest {
 		writer.write(ical);
 		writer.close();
 
-		String expected = new String(IOUtils.toByteArray(getClass().getResourceAsStream(exampleFileName)));
+		String expected = new Gobble(getClass().getResourceAsStream(exampleFileName)).asString();
 		expected = expected.replaceAll("([^\r])\n", "$1\r\n"); //replace \n with \r\n
 		expected = expected.replaceAll("\r\n ", ""); //unfold folded lines
 

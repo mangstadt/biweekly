@@ -72,10 +72,10 @@ import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.Duration;
 import biweekly.util.Frequency;
 import biweekly.util.ICalDate;
-import biweekly.util.IOUtils;
 import biweekly.util.Period;
 import biweekly.util.Recurrence;
 import biweekly.util.UtcOffset;
+import biweekly.util.Utf8Writer;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -884,7 +884,7 @@ public class ICalReaderTest {
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 		File file = tempFolder.newFile();
-		Writer writer = IOUtils.utf8Writer(file);
+		Writer writer = new Utf8Writer(file);
 		writer.write(ical);
 		writer.close();
 

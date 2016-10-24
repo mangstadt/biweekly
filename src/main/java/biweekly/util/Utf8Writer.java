@@ -1,7 +1,11 @@
 package biweekly.util;
 
-import java.io.Closeable;
-import java.io.IOException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -29,25 +33,35 @@ import java.io.IOException;
  */
 
 /**
- * I/O helper classes.
+ * Writes characters that are UTF-8 encoded.
  * @author Michael Angstadt
  */
-public final class IOUtils {
+public class Utf8Writer extends OutputStreamWriter {
 	/**
-	 * Closes a closeable resource, catching its {@link IOException}.
-	 * @param closeable the resource to close (can be null)
+	 * Creates a new UTF-8 writer.
+	 * @param out the output stream to write to
 	 */
-	public static void closeQuietly(Closeable closeable) {
-		try {
-			if (closeable != null) {
-				closeable.close();
-			}
-		} catch (IOException e) {
-			//ignore
-		}
+	public Utf8Writer(OutputStream out) {
+		super(out, Charset.forName("UTF-8"));
 	}
 
-	private IOUtils() {
-		//hide
+	/**
+	 * Creates a new UTF-8 writer.
+	 * @param file the file to write to
+	 * @throws FileNotFoundException if the file cannot be written to
+	 */
+	public Utf8Writer(File file) throws FileNotFoundException {
+		this(file, false);
+	}
+
+	/**
+	 * Creates a new UTF-8 writer.
+	 * @param file the file to write to
+	 * @param append true to append to the file, false to overwrite it (this
+	 * parameter has no effect if the file does not exist)
+	 * @throws FileNotFoundException if the file cannot be written to
+	 */
+	public Utf8Writer(File file, boolean append) throws FileNotFoundException {
+		this(new FileOutputStream(file, append));
 	}
 }

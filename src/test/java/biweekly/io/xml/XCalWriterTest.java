@@ -57,7 +57,7 @@ import biweekly.util.DateTimeComponents;
 import biweekly.util.DayOfWeek;
 import biweekly.util.Duration;
 import biweekly.util.Frequency;
-import biweekly.util.IOUtils;
+import biweekly.util.Gobble;
 import biweekly.util.Period;
 import biweekly.util.Recurrence;
 import biweekly.util.UtcOffset;
@@ -671,7 +671,7 @@ public class XCalWriterTest {
 
 		writer.close();
 
-		String xml = IOUtils.getFileContents(file, "UTF-8");
+		String xml = new Gobble(file).asString("UTF-8");
 		assertTrue(xml.matches("(?i)<\\?xml.*?encoding=\"utf-8\".*?\\?>.*"));
 		assertTrue(xml.matches(".*?<summary><text>\u1e66ummary</text></summary>.*"));
 	}
@@ -849,7 +849,7 @@ public class XCalWriterTest {
 		writer.write(ical);
 		writer.close();
 
-		String expected = new String(IOUtils.toByteArray(getClass().getResourceAsStream(exampleFileName)));
+		String expected = new Gobble(getClass().getResourceAsStream(exampleFileName)).asString();
 		assertOutput(expected);
 	}
 

@@ -1,7 +1,6 @@
 package biweekly.io.text;
 
 import static biweekly.io.DataModelConverter.convert;
-import static biweekly.util.IOUtils.utf8Writer;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -29,6 +28,7 @@ import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.property.Timezone;
 import biweekly.property.Version;
+import biweekly.util.Utf8Writer;
 
 import com.github.mangstadt.vinnie.VObjectParameters;
 import com.github.mangstadt.vinnie.io.VObjectWriter;
@@ -112,7 +112,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	 * @param targetVersion the iCalendar version to adhere to
 	 */
 	public ICalWriter(OutputStream out, ICalVersion targetVersion) {
-		this((targetVersion == ICalVersion.V1_0) ? new OutputStreamWriter(out) : utf8Writer(out), targetVersion);
+		this((targetVersion == ICalVersion.V1_0) ? new OutputStreamWriter(out) : new Utf8Writer(out), targetVersion);
 	}
 
 	/**
@@ -134,7 +134,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	 * @throws IOException if the file cannot be written to
 	 */
 	public ICalWriter(File file, boolean append, ICalVersion targetVersion) throws IOException {
-		this((targetVersion == ICalVersion.V1_0) ? new FileWriter(file, append) : utf8Writer(file, append), targetVersion);
+		this((targetVersion == ICalVersion.V1_0) ? new FileWriter(file, append) : new Utf8Writer(file, append), targetVersion);
 	}
 
 	/**

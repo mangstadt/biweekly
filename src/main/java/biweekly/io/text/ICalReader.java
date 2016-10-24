@@ -1,7 +1,5 @@
 package biweekly.io.text;
 
-import static biweekly.util.IOUtils.utf8Reader;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,6 +27,7 @@ import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.util.Utf8Reader;
 
 import com.github.mangstadt.vinnie.VObjectProperty;
 import com.github.mangstadt.vinnie.io.Context;
@@ -126,7 +125,7 @@ public class ICalReader extends StreamReader {
 	 * @param in the input stream to read from
 	 */
 	public ICalReader(InputStream in, ICalVersion defaultVersion) {
-		this(utf8Reader(in), defaultVersion);
+		this(new Utf8Reader(in), defaultVersion);
 	}
 
 	/**
@@ -146,7 +145,7 @@ public class ICalReader extends StreamReader {
 	 * @throws FileNotFoundException if the file doesn't exist
 	 */
 	public ICalReader(File file, ICalVersion defaultVersion) throws FileNotFoundException {
-		this(new BufferedReader(utf8Reader(file)), defaultVersion);
+		this(new BufferedReader(new Utf8Reader(file)), defaultVersion);
 	}
 
 	/**

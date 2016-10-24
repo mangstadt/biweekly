@@ -1,7 +1,11 @@
 package biweekly.util;
 
-import java.io.Closeable;
-import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -29,25 +33,25 @@ import java.io.IOException;
  */
 
 /**
- * I/O helper classes.
+ * Reads characters that are encoded in UTF-8.
  * @author Michael Angstadt
  */
-public final class IOUtils {
+public class Utf8Reader extends InputStreamReader {
 	/**
-	 * Closes a closeable resource, catching its {@link IOException}.
-	 * @param closeable the resource to close (can be null)
+	 * Creates a new UTF-8 reader.
+	 * @param in the input stream to read from
 	 */
-	public static void closeQuietly(Closeable closeable) {
-		try {
-			if (closeable != null) {
-				closeable.close();
-			}
-		} catch (IOException e) {
-			//ignore
-		}
+	public Utf8Reader(InputStream in) {
+		super(in, Charset.forName("UTF-8"));
 	}
 
-	private IOUtils() {
-		//hide
+	/**
+	 * Creates a new UTF-8 reader.
+	 * @param file the file to read from
+	 * @throws FileNotFoundException if the file does not exist or cannot be
+	 * opened
+	 */
+	public Utf8Reader(File file) throws FileNotFoundException {
+		this(new FileInputStream(file));
 	}
 }

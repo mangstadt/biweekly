@@ -1,7 +1,5 @@
 package biweekly.io.json;
 
-import static biweekly.util.IOUtils.utf8Reader;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,6 +31,7 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.Version;
+import biweekly.util.Utf8Reader;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -101,7 +100,7 @@ public class JCalReader extends StreamReader {
 	 * @param in the input stream to read from
 	 */
 	public JCalReader(InputStream in) {
-		this(utf8Reader(in));
+		this(new Utf8Reader(in));
 	}
 
 	/**
@@ -109,7 +108,7 @@ public class JCalReader extends StreamReader {
 	 * @throws FileNotFoundException if the file doesn't exist
 	 */
 	public JCalReader(File file) throws FileNotFoundException {
-		this(new BufferedReader(utf8Reader(file)));
+		this(new BufferedReader(new Utf8Reader(file)));
 	}
 
 	/**

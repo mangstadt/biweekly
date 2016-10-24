@@ -70,10 +70,10 @@ import biweekly.util.DayOfWeek;
 import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.Duration;
 import biweekly.util.Frequency;
-import biweekly.util.IOUtils;
 import biweekly.util.Period;
 import biweekly.util.Recurrence;
 import biweekly.util.UtcOffset;
+import biweekly.util.Utf8Writer;
 import biweekly.util.XmlUtils;
 
 /*
@@ -919,7 +919,7 @@ public class XCalReaderTest {
 		//@formatter:on
 
 		File file = tempFolder.newFile();
-		Writer writer = IOUtils.utf8Writer(file);
+		Writer writer = new Utf8Writer(file);
 		writer.write(xml);
 		writer.close();
 

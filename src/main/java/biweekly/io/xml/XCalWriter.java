@@ -5,7 +5,6 @@ import static biweekly.io.xml.XCalQNames.COMPONENTS;
 import static biweekly.io.xml.XCalQNames.ICALENDAR;
 import static biweekly.io.xml.XCalQNames.PARAMETERS;
 import static biweekly.io.xml.XCalQNames.PROPERTIES;
-import static biweekly.util.IOUtils.utf8Writer;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +47,7 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.Version;
 import biweekly.property.Xml;
+import biweekly.util.Utf8Writer;
 import biweekly.util.XmlUtils;
 
 /*
@@ -139,7 +139,7 @@ public class XCalWriter extends XCalWriterBase {
 	 * >xalan</a> to your project)
 	 */
 	public XCalWriter(OutputStream out, Integer indent, String xmlVersion) {
-		this(utf8Writer(out), indent, xmlVersion);
+		this(new Utf8Writer(out), indent, xmlVersion);
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class XCalWriter extends XCalWriterBase {
 	 * {@link Transformer#setOutputProperties(Properties)})
 	 */
 	public XCalWriter(OutputStream out, Map<String, String> outputProperties) {
-		this(utf8Writer(out), outputProperties);
+		this(new Utf8Writer(out), outputProperties);
 	}
 
 	/**
@@ -181,7 +181,7 @@ public class XCalWriter extends XCalWriterBase {
 	 * @throws IOException if there's a problem opening the file
 	 */
 	public XCalWriter(File file, Integer indent, String xmlVersion) throws IOException {
-		this(utf8Writer(file), indent, xmlVersion);
+		this(new Utf8Writer(file), indent, xmlVersion);
 	}
 
 	/**
@@ -191,7 +191,7 @@ public class XCalWriter extends XCalWriterBase {
 	 * @throws IOException if there's a problem opening the file
 	 */
 	public XCalWriter(File file, Map<String, String> outputProperties) throws IOException {
-		this(utf8Writer(file), outputProperties);
+		this(new Utf8Writer(file), outputProperties);
 	}
 
 	/**

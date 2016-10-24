@@ -1,8 +1,6 @@
 package biweekly.property;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -12,7 +10,7 @@ import java.util.Map;
 import biweekly.ICalVersion;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
-import biweekly.util.IOUtils;
+import biweekly.util.Gobble;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -53,7 +51,7 @@ public class BinaryProperty extends ICalProperty {
 	 * @throws IOException if there's a problem reading from the file
 	 */
 	public BinaryProperty(File file) throws IOException {
-		this.data = IOUtils.toByteArray(new BufferedInputStream(new FileInputStream(file)), true);
+		this.data = new Gobble(file).asByteArray();
 	}
 
 	/**

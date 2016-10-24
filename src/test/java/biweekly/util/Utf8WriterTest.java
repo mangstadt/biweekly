@@ -1,13 +1,13 @@
 package biweekly.util;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertEquals;
 
-import java.io.Closeable;
-import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -37,18 +37,55 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class IOUtilsTest {
+public class Utf8WriterTest {
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+
 	@Test
-	public void closeQuietly() throws Exception {
-		IOUtils.closeQuietly(null);
+	public void outputStream() throws Exception {
+		String data = "one two three";
 
-		Closeable closeable = mock(Closeable.class);
-		IOUtils.closeQuietly(closeable);
-		verify(closeable).close();
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		Utf8Writer writer = new Utf8Writer(out);
+		writer.write(data);
+		writer.close();
 
-		closeable = mock(Closeable.class);
-		doThrow(new IOException()).when(closeable).close();
-		IOUtils.closeQuietly(closeable);
-		verify(closeable).close();
+		String expected = data;
+		String actual = new String(out.toByteArray(), "UTF-8");
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void file() throws Exception {
+		String data = "one two three";
+
+		File file = folder.newFile();
+		Utf8Writer writer = new Utf8Writer(file);
+		writer.write(data);
+		writer.close();
+
+		String expected = data;
+		String actual = new Gobble(file).asString("UTF-8");
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void file_append() throws Exception {
+		File file = folder.newFile();
+		Utf8Writer writer = new Utf8Writer(file);
+		writer.write("one");
+		writer.close();
+
+		writer = new Utf8Writer(file, false);
+		writer.write("two");
+		writer.close();
+
+		writer = new Utf8Writer(file, true);
+		writer.write(" three");
+		writer.close();
+
+		String expected = "two three";
+		String actual = new Gobble(file).asString("UTF-8");
+		assertEquals(expected, actual);
 	}
 }
