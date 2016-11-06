@@ -42,7 +42,7 @@ import org.junit.Test;
 public class DurationTest {
 	@Test
 	public void parse_all() {
-		Duration duration = Duration.parse("P1W2D3H4M50S");
+		Duration duration = Duration.parse("P1W2DT3H4M50S");
 		assertEquals(false, duration.isPrior());
 		assertIntEquals(1, duration.getWeeks());
 		assertIntEquals(2, duration.getDays());
@@ -60,11 +60,47 @@ public class DurationTest {
 		assertNull(duration.getHours());
 		assertNull(duration.getMinutes());
 		assertNull(duration.getSeconds());
+
+		duration = Duration.parse("+P1W");
+		assertEquals(false, duration.isPrior());
+		assertIntEquals(1, duration.getWeeks());
+		assertNull(duration.getDays());
+		assertNull(duration.getHours());
+		assertNull(duration.getMinutes());
+		assertNull(duration.getSeconds());
+
+		duration = Duration.parse("P1W");
+		assertEquals(false, duration.isPrior());
+		assertIntEquals(1, duration.getWeeks());
+		assertNull(duration.getDays());
+		assertNull(duration.getHours());
+		assertNull(duration.getMinutes());
+		assertNull(duration.getSeconds());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void parse_invalid() {
 		Duration.parse("not valid");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void parse_no_number() {
+		Duration.parse("PW");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void parse_unknown_character_before_0() {
+		Duration.parse("P5*");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void parse_unknown_character_after_9() {
+		Duration.parse("P5Z");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void parse_empty_string() {
+		Duration.parse("");
 	}
 
 	@Test

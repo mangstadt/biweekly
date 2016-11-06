@@ -2,8 +2,6 @@ package biweekly.util;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import biweekly.Messages;
 
@@ -75,20 +73,80 @@ public final class Duration {
 	 * @throws IllegalArgumentException if the duration string is invalid
 	 */
 	public static Duration parse(String value) {
-		if (!value.matches("-?P.*")) {
-			throw Messages.INSTANCE.getIllegalArgumentException(20, value);
+		/*
+		 * Implementation note: Regular expressions are not used to improve
+		 * performance.
+		 */
+
+		if (value.length() == 0) {
+			throw parseError(value);
 		}
 
-		//@formatter:off
-		return builder()
-		.prior(value.startsWith("-"))
-		.weeks(parseComponent(value, 'W'))
-		.days(parseComponent(value, 'D'))
-		.hours(parseComponent(value, 'H'))
-		.minutes(parseComponent(value, 'M'))
-		.seconds(parseComponent(value, 'S'))
-		.build();
-		//@formatter:on
+		int index = 0;
+		char first = value.charAt(index);
+		boolean prior = (first == '-');
+		if (first == '-' || first == '+') {
+			index++;
+		}
+
+		if (value.charAt(index) != 'P') {
+			throw parseError(value);
+		}
+
+		Builder builder = new Builder();
+		builder.prior(prior);
+
+		StringBuilder buffer = new StringBuilder();
+		for (int i = index + 1; i < value.length(); i++) {
+			char c = value.charAt(i);
+
+			if (c == 'T') {
+				/*
+				 * A "T" character is supposed to immediately precede the time
+				 * component value(s). It is required by the syntax, but not
+				 * really necessary. Ignore it.
+				 */
+				continue;
+			}
+
+			if (c >= '0' && c <= '9') {
+				buffer.append(c);
+				continue;
+			}
+
+			if (buffer.length() == 0) {
+				throw parseError(value);
+			}
+
+			Integer num = Integer.valueOf(buffer.toString());
+			buffer.setLength(0);
+
+			switch (c) {
+			case 'W':
+				builder.weeks(num);
+				break;
+			case 'D':
+				builder.days(num);
+				break;
+			case 'H':
+				builder.hours(num);
+				break;
+			case 'M':
+				builder.minutes(num);
+				break;
+			case 'S':
+				builder.seconds(num);
+				break;
+			default:
+				throw parseError(value);
+			}
+		}
+
+		return builder.build();
+	}
+
+	private static IllegalArgumentException parseError(String value) {
+		return Messages.INSTANCE.getIllegalArgumentException(20, value);
 	}
 
 	/**
@@ -153,12 +211,6 @@ public final class Duration {
 	 */
 	public static Builder builder() {
 		return new Builder();
-	}
-
-	private static Integer parseComponent(String value, char ch) {
-		Pattern p = Pattern.compile("(\\d+)" + ch);
-		Matcher m = p.matcher(value);
-		return m.find() ? Integer.valueOf(m.group(1)) : null;
 	}
 
 	/**
