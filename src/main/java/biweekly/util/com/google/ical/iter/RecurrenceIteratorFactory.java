@@ -135,7 +135,9 @@ public class RecurrenceIteratorFactory {
 		DayOfWeek wkst = rrule.getWorkweekStarts();
 
 		ICalDate until = rrule.getUntil();
-		DateValue untilUtc = (until == null) ? null : Google2445Utils.convert(until, tzid);
+		
+		TimeZone utc = TimeZone.getTimeZone("UTC");
+		DateValue untilUtc = (until == null) ? null : Google2445Utils.convert(until, utc);
 
 		int count = toInt(rrule.getCount());
 		int interval = toInt(rrule.getInterval());
