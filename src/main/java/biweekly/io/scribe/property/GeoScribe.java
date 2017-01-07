@@ -1,8 +1,5 @@
 package biweekly.io.scribe.property;
 
-import java.util.Arrays;
-import java.util.Iterator;
-
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.CannotParseException;
@@ -14,9 +11,6 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.Geo;
 import biweekly.util.ICalFloatFormatter;
 
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueBuilder;
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
 import com.github.mangstadt.vinnie.io.VObjectPropertyValues.StructuredValueIterator;
 
 /*
@@ -74,51 +68,20 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 		}
 		String longitudeStr = formatter.format(longitude);
 
-		switch (context.getVersion()) {
-		case V1_0:
-			return VObjectPropertyValues.writeList(Arrays.asList(latitudeStr, longitudeStr));
-		default:
-			SemiStructuredValueBuilder builder = new SemiStructuredValueBuilder();
-			builder.append(latitudeStr);
-			builder.append(longitudeStr);
-			return builder.build(true);
-		}
+		char delimiter = getDelimiter(context.getVersion());
+		return latitudeStr + delimiter + longitudeStr;
 	}
 
 	@Override
 	protected Geo _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		String latitudeStr, longitudeStr;
-		switch (context.getVersion()) {
-		case V1_0:
-			Iterator<String> listIt = VObjectPropertyValues.parseList(value).iterator();
-
-			latitudeStr = null;
-			if (listIt.hasNext()) {
-				latitudeStr = listIt.next();
-				if (latitudeStr.length() == 0) {
-					latitudeStr = null;
-				}
-			}
-
-			longitudeStr = null;
-			if (listIt.hasNext()) {
-				longitudeStr = listIt.next();
-				if (longitudeStr.length() == 0) {
-					longitudeStr = null;
-				}
-			}
-			break;
-		default:
-			SemiStructuredValueIterator semiStructuredIt = new SemiStructuredValueIterator(value);
-			latitudeStr = semiStructuredIt.next();
-			longitudeStr = semiStructuredIt.next();
-			break;
-		}
-
-		if (latitudeStr == null || longitudeStr == null) {
+		char delimiter = getDelimiter(context.getVersion());
+		int pos = value.indexOf(delimiter);
+		if (pos < 0) {
 			throw new CannotParseException(20);
 		}
 
+		String latitudeStr = value.substring(0, pos);
+		String longitudeStr = value.substring(pos + 1);
 		return parse(latitudeStr, longitudeStr);
 	}
 
@@ -177,6 +140,10 @@ public class GeoScribe extends ICalPropertyScribe<Geo> {
 		String latitudeStr = it.nextValue();
 		String longitudeStr = it.nextValue();
 		return parse(latitudeStr, longitudeStr);
+	}
+
+	private char getDelimiter(ICalVersion version) {
+		return (version == ICalVersion.V1_0) ? ',' : ';';
 	}
 
 	private Geo parse(String latitudeStr, String longitudeStr) {
