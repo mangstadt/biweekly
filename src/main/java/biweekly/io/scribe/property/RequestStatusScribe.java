@@ -56,7 +56,8 @@ public class RequestStatusScribe extends ICalPropertyScribe<RequestStatus> {
 		builder.append(property.getStatusCode());
 		builder.append(property.getDescription());
 		builder.append(property.getExceptionText());
-		return builder.build(true);
+		boolean escapeCommas = (context.getVersion() != ICalVersion.V1_0);
+		return builder.build(escapeCommas, true);
 	}
 
 	@Override

@@ -64,7 +64,7 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 
 		switch (context.getVersion()) {
 		case V1_0:
-			return VObjectPropertyValues.writeSemiStructured(valuesStr, true);
+			return VObjectPropertyValues.writeSemiStructured(valuesStr, false, true);
 		default:
 			return VObjectPropertyValues.writeList(valuesStr);
 		}

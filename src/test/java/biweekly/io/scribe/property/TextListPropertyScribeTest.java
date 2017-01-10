@@ -61,7 +61,7 @@ public class TextListPropertyScribeTest extends ScribeTest<biweekly.io.scribe.pr
 
 	@Test
 	public void writeText() {
-		sensei.assertWriteText(withMultiple).version(V1_0).run("one;two;three\\,four");
+		sensei.assertWriteText(withMultiple).version(V1_0).run("one;two;three,four");
 		sensei.assertWriteText(withMultiple).version(V2_0_DEPRECATED).run("one,two,three\\,four");
 		sensei.assertWriteText(withMultiple).version(V2_0).run("one,two,three\\,four");
 

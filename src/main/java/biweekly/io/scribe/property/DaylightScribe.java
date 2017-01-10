@@ -76,7 +76,7 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 		String daylightName = property.getDaylightName();
 		values.add((daylightName == null) ? "" : daylightName);
 
-		return VObjectPropertyValues.writeSemiStructured(values, true);
+		return VObjectPropertyValues.writeSemiStructured(values, false, true);
 	}
 
 	@Override

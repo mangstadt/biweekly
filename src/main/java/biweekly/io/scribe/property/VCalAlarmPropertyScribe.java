@@ -79,7 +79,8 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 		List<String> dataValues = writeData(property);
 		values.addAll(dataValues);
 
-		return VObjectPropertyValues.writeSemiStructured(values, true);
+		boolean escapeCommas = (context.getVersion() != ICalVersion.V1_0);
+		return VObjectPropertyValues.writeSemiStructured(values, escapeCommas, true);
 	}
 
 	@Override
