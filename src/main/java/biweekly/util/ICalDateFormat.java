@@ -2,10 +2,11 @@ package biweekly.util;
 
 import java.text.DateFormat;
 import java.text.FieldPosition;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /*
@@ -45,50 +46,35 @@ public enum ICalDateFormat {
 	 * Example: 20120701
 	 */
 	DATE_BASIC(
-	"\\d{8}",
 	"yyyyMMdd"),
 	
 	/**
 	 * Example: 2012-07-01
 	 */
 	DATE_EXTENDED(
-	"\\d{4}-\\d{2}-\\d{2}",
 	"yyyy-MM-dd"),
 	
 	/**
 	 * Example: 20120701T142110-0500
 	 */
 	DATE_TIME_BASIC(
-	"\\d{8}T\\d{6}[-\\+]\\d{4}",
 	"yyyyMMdd'T'HHmmssZ"),
 	
 	/**
 	 * Example: 20120701T142110
 	 */
 	DATE_TIME_BASIC_WITHOUT_TZ(
-	"\\d{8}T\\d{6}",
 	"yyyyMMdd'T'HHmmss"),
 	
 	/**
 	 * Example: 2012-07-01T14:21:10-05:00
 	 */
 	DATE_TIME_EXTENDED(
-	"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[-\\+]\\d{2}:\\d{2}",
 	"yyyy-MM-dd'T'HH:mm:ssZ"){
 		@Override
 		public DateFormat getDateFormat(TimeZone timezone) {
 			DateFormat df = new SimpleDateFormat(formatStr){
 				private static final long serialVersionUID = -297452842012115768L;
-
-				@Override
-				public Date parse(String str) throws ParseException {
-					//remove the colon from the timezone offset
-					//SimpleDateFormat doesn't recognize timezone offsets that have colons
-					int index = str.lastIndexOf(':');
-					str = str.substring(0, index) + str.substring(index+1);
-
-					return super.parse(str);
-				}
 				
 				@Override
 				public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition){
@@ -113,14 +99,12 @@ public enum ICalDateFormat {
 	 * Example: 2012-07-01T14:21:10
 	 */
 	DATE_TIME_EXTENDED_WITHOUT_TZ(
-	"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}",
 	"yyyy-MM-dd'T'HH:mm:ss"),
 	
 	/**
 	 * Example: 20120701T192110Z
 	 */
 	UTC_TIME_BASIC(
-	"\\d{8}T\\d{6}Z",
 	"yyyyMMdd'T'HHmmss'Z'"){
 		@Override
 		public DateFormat getDateFormat(TimeZone timezone) {
@@ -134,7 +118,6 @@ public enum ICalDateFormat {
 	 * Example: 2012-07-01T19:21:10Z
 	 */
 	UTC_TIME_EXTENDED(
-	"\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z",
 	"yyyy-MM-dd'T'HH:mm:ss'Z'"){
 		@Override
 		public DateFormat getDateFormat(TimeZone timezone) {
@@ -146,32 +129,16 @@ public enum ICalDateFormat {
 	//@formatter:on
 
 	/**
-	 * The regular expression pattern for the date format.
-	 */
-	private final Pattern pattern;
-
-	/**
 	 * The {@link SimpleDateFormat} format string used for parsing dates.
 	 */
 	protected final String formatStr;
 
 	/**
-	 * @param regex the regular expression for the date format
 	 * @param formatStr the {@link SimpleDateFormat} format string used for
 	 * parsing dates.
 	 */
-	private ICalDateFormat(String regex, String formatStr) {
-		pattern = Pattern.compile(regex);
+	private ICalDateFormat(String formatStr) {
 		this.formatStr = formatStr;
-	}
-
-	/**
-	 * Determines whether a date string is in this ISO format.
-	 * @param dateStr the date string
-	 * @return true if it matches the date format, false if not
-	 */
-	public boolean matches(String dateStr) {
-		return pattern.matcher(dateStr).matches();
 	}
 
 	/**
@@ -220,20 +187,6 @@ public enum ICalDateFormat {
 	}
 
 	/**
-	 * Determines the ISO format a date string is in.
-	 * @param dateStr the date string (e.g. "20140322T120000Z")
-	 * @return the ISO format (e.g. DATETIME_BASIC) or null if not found
-	 */
-	public static ICalDateFormat find(String dateStr) {
-		for (ICalDateFormat format : values()) {
-			if (format.matches(dateStr)) {
-				return format;
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * Parses an iCalendar date.
 	 * @param dateStr the date string to parse (e.g. "20130609T181023Z")
 	 * @return the parsed date
@@ -247,27 +200,137 @@ public enum ICalDateFormat {
 	/**
 	 * Parses an iCalendar date.
 	 * @param dateStr the date string to parse (e.g. "20130609T181023Z")
-	 * @param timezone the timezone to parse the date as or null to use the
-	 * JVM's default timezone (if the date string contains its own timezone,
-	 * then that timezone will be used instead)
+	 * @param timezone the timezone to parse the date under or null to use the
+	 * JVM's default timezone. If the date string contains its own UTC offset,
+	 * then that will be used instead.
 	 * @return the parsed date
 	 * @throws IllegalArgumentException if the date string isn't in one of the
 	 * accepted ISO8601 formats
 	 */
 	public static Date parse(String dateStr, TimeZone timezone) {
-		//determine which ISOFormat the date is in
-		ICalDateFormat format = find(dateStr);
-		if (format == null) {
+		TimestampPattern p = new TimestampPattern(dateStr);
+		if (!p.matches()) {
 			throw parseException(dateStr);
 		}
 
-		//parse the date
-		DateFormat df = format.getDateFormat(timezone);
-		try {
-			return df.parse(dateStr);
-		} catch (ParseException e) {
-			//should never be thrown because the string is checked against a regex before being parsed
-			throw parseException(dateStr);
+		if (p.hasOffset()) {
+			timezone = TimeZone.getTimeZone("UTC");
+		} else if (timezone == null) {
+			timezone = TimeZone.getDefault();
+		}
+
+		Calendar c = Calendar.getInstance(timezone);
+		c.clear();
+
+		c.set(Calendar.YEAR, p.year());
+		c.set(Calendar.MONTH, p.month() - 1);
+		c.set(Calendar.DATE, p.date());
+
+		if (p.hasTime()) {
+			c.set(Calendar.HOUR_OF_DAY, p.hour());
+			c.set(Calendar.MINUTE, p.minute());
+			c.set(Calendar.SECOND, p.second());
+			c.set(Calendar.MILLISECOND, p.millisecond());
+
+			if (p.hasOffset()) {
+				c.set(Calendar.ZONE_OFFSET, p.offsetMillis());
+			}
+		}
+
+		return c.getTime();
+	}
+
+	/**
+	 * Wrapper for a complex regular expression that parses multiple date
+	 * formats.
+	 */
+	private static class TimestampPattern {
+		//@formatter:off
+		private static final Pattern regex = Pattern.compile(
+			"^(\\d{4})-?(\\d{2})-?(\\d{2})" +
+			"(" +
+				"T(\\d{2}):?(\\d{2}):?(\\d{2})(\\.\\d+)?" +
+				"(" +
+					"Z|([-+])((\\d{2})|((\\d{2}):?(\\d{2})))" +
+				")?" +
+			")?$"
+		);
+		//@formatter:on
+
+		private final Matcher m;
+		private final boolean matches;
+
+		public TimestampPattern(String str) {
+			m = regex.matcher(str);
+			matches = m.find();
+		}
+
+		public boolean matches() {
+			return matches;
+		}
+
+		public int year() {
+			return parseInt(1);
+		}
+
+		public int month() {
+			return parseInt(2);
+		}
+
+		public int date() {
+			return parseInt(3);
+		}
+
+		public boolean hasTime() {
+			return m.group(5) != null;
+		}
+
+		public int hour() {
+			return parseInt(5);
+		}
+
+		public int minute() {
+			return parseInt(6);
+		}
+
+		public int second() {
+			return parseInt(7);
+		}
+
+		public int millisecond() {
+			if (m.group(8) == null) {
+				return 0;
+			}
+
+			double ms = Double.parseDouble(m.group(8)) * 1000;
+			return (int) Math.round(ms);
+		}
+
+		public boolean hasOffset() {
+			return m.group(9) != null;
+		}
+
+		public int offsetMillis() {
+			if (m.group(9).equals("Z")) {
+				return 0;
+			}
+
+			int positive = m.group(10).equals("+") ? 1 : -1;
+
+			int offsetHour, offsetMinute;
+			if (m.group(12) != null) {
+				offsetHour = parseInt(12);
+				offsetMinute = 0;
+			} else {
+				offsetHour = parseInt(14);
+				offsetMinute = parseInt(15);
+			}
+
+			return (offsetHour * 60 * 60 * 1000 + offsetMinute * 60 * 1000) * positive;
+		}
+
+		private int parseInt(int group) {
+			return Integer.parseInt(m.group(group));
 		}
 	}
 

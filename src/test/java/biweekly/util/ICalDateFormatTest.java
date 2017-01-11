@@ -8,6 +8,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -88,6 +89,8 @@ public class ICalDateFormatTest {
 
 		//basic, datetime, timezone
 		assertEquals(datetime, ICalDateFormat.parse("20120701T100130+0300"));
+		assertEquals(datetime, ICalDateFormat.parse("20120701T100130+03"));
+		assertEquals(datetime, ICalDateFormat.parse("20120701T040130-0300"));
 
 		//extended, datetime, timezone
 		assertEquals(datetime, ICalDateFormat.parse("2012-07-01T10:01:30+03:00"));
@@ -97,6 +100,17 @@ public class ICalDateFormatTest {
 
 		//extended, datetime (should use local timezone)
 		assertEquals(datetime, ICalDateFormat.parse("2012-07-01T08:01:30"));
+
+		//with milliseconds
+		Calendar c = Calendar.getInstance();
+		c.setTime(datetime);
+		c.set(Calendar.MILLISECOND, 100);
+		assertEquals(c.getTime(), ICalDateFormat.parse("20120701T070130.1Z"));
+		c.set(Calendar.MILLISECOND, 124);
+		assertEquals(c.getTime(), ICalDateFormat.parse("20120701T070130.1239Z")); //round
+
+		//ignore timezone if there is an offset in the string
+		assertEquals(datetime, ICalDateFormat.parse("20120701T100130+0300", TimeZone.getTimeZone("Europe/Paris")));
 	}
 
 	@Test
@@ -138,6 +152,9 @@ public class ICalDateFormatTest {
 	public void parseTimezoneId() {
 		TimeZone tz = ICalDateFormat.parseTimeZoneId("America/New_York");
 		assertEquals(tz.getID(), "America/New_York");
+
+		tz = ICalDateFormat.parseTimeZoneId("GMT");
+		assertEquals(tz.getID(), "GMT");
 
 		tz = ICalDateFormat.parseTimeZoneId("Bogus/Timezone");
 		assertNull(tz);
