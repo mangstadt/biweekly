@@ -9,6 +9,7 @@ import java.util.List;
 
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
+import biweekly.io.ParseWarning;
 import biweekly.io.StreamReader;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.component.ICalComponentScribe;
@@ -53,7 +54,7 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 	final File file;
 
 	ScribeIndex index;
-	List<List<String>> warnings;
+	List<List<ParseWarning>> warnings;
 
 	@SuppressWarnings("unchecked")
 	final T this_ = (T) this;
@@ -120,7 +121,7 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 	 * does not have any warnings, then its warning list will be empty.
 	 * @return this
 	 */
-	public T warnings(List<List<String>> warnings) {
+	public T warnings(List<List<ParseWarning>> warnings) {
 		this.warnings = warnings;
 		return this_;
 	}

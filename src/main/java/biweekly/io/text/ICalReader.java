@@ -14,10 +14,10 @@ import java.util.List;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
-import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
 import biweekly.io.DataModelConversionException;
+import biweekly.io.ParseWarning;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamReader;
 import biweekly.io.scribe.ScribeIndex;
@@ -304,11 +304,15 @@ public class ICalReader extends StreamReader {
 			String propertyName = vobjectProperty.getName();
 			ICalParameters parameters = new ICalParameters(vobjectProperty.getParameters().getMap());
 			String value = vobjectProperty.getValue();
+			
+			context.getWarnings().clear();
+			context.setLineNumber(vobjectContext.getLineNumber());
+			context.setPropertyName(propertyName);
 
 			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyName, version);
 
 			//process nameless parameters
-			processNamelessParameters(parameters, propertyName, version, vobjectContext.getLineNumber());
+			processNamelessParameters(parameters, version);
 
 			//get the data type (VALUE parameter)
 			ICalDataType dataType = parameters.getValue();
@@ -319,14 +323,23 @@ public class ICalReader extends StreamReader {
 			}
 
 			ICalComponent parentComponent = stack.peek();
-			context.getWarnings().clear();
 			try {
 				ICalProperty property = scribe.parseText(value, dataType, parameters, context);
 				parentComponent.addProperty(property);
 			} catch (SkipMeException e) {
-				warnings.add(vobjectContext.getLineNumber(), propertyName, 0, e.getMessage());
+				//@formatter:off
+				warnings.add(new ParseWarning.Builder(context)
+					.message(0, e.getMessage())
+					.build()
+				);
+				//@formatter:on
 			} catch (CannotParseException e) {
-				warnings.add(vobjectContext.getLineNumber(), propertyName, 1, value, e.getMessage());
+				//@formatter:off
+				warnings.add(new ParseWarning.Builder(context)
+					.message(e)
+					.build()
+				);
+				//@formatter:on
 				ICalProperty property = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters, context);
 				parentComponent.addProperty(property);
 			} catch (DataModelConversionException e) {
@@ -338,9 +351,7 @@ public class ICalReader extends StreamReader {
 				}
 			}
 
-			for (Warning warning : context.getWarnings()) {
-				warnings.add(vobjectContext.getLineNumber(), propertyName, warning);
-			}
+			warnings.addAll(context.getWarnings());
 		}
 
 		public void onVersion(String value, Context vobjectContext) {
@@ -359,7 +370,14 @@ public class ICalReader extends StreamReader {
 				return;
 			}
 
-			warnings.add(vobjectContext.getLineNumber(), (property == null) ? null : property.getName(), new Warning(warning.getMessage()));
+			//@formatter:off
+			warnings.add(new ParseWarning.Builder()
+				.lineNumber(vobjectContext.getLineNumber())
+				.propertyName((property == null) ? null : property.getName())
+				.message(warning.getMessage())
+				.build()
+			);
+			//@formatter:on
 		}
 
 		private boolean isVCalendarComponent(String componentName) {
@@ -372,14 +390,19 @@ public class ICalReader extends StreamReader {
 		 * @param parameters the parameters
 		 * @param propertyName the property name
 		 */
-		private void processNamelessParameters(ICalParameters parameters, String propertyName, ICalVersion version, int lineNumber) {
+		private void processNamelessParameters(ICalParameters parameters, ICalVersion version) {
 			List<String> namelessParamValues = parameters.removeAll(null);
 			if (namelessParamValues.isEmpty()) {
 				return;
 			}
 
 			if (version != ICalVersion.V1_0) {
-				warnings.add(lineNumber, propertyName, 4, namelessParamValues);
+				//@formatter:off
+				warnings.add(new ParseWarning.Builder(context)
+					.message(4, namelessParamValues)
+					.build()
+				);
+				//@formatter:on
 			}
 
 			for (String paramValue : namelessParamValues) {

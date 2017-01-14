@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
+import biweekly.io.ParseWarning;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
@@ -76,7 +77,7 @@ public class BiweeklyTest {
 		"PRODID:prodid\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
-		List<List<String>> warnings = new ArrayList<List<String>>();
+		List<List<ParseWarning>> warnings = new ArrayList<List<ParseWarning>>();
 
 		ICalendar ical = Biweekly.parse(icalStr).warnings(warnings).first();
 
@@ -98,7 +99,7 @@ public class BiweeklyTest {
 		"PRODID:two\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
-		List<List<String>> warnings = new ArrayList<List<String>>();
+		List<List<ParseWarning>> warnings = new ArrayList<List<ParseWarning>>();
 
 		List<ICalendar> icals = Biweekly.parse(icalStr).warnings(warnings).all();
 		Iterator<ICalendar> it = icals.iterator();
@@ -177,7 +178,7 @@ public class BiweeklyTest {
 		  "</vcalendar>" +
 		"</icalendar>";
 		//@formatter:on
-		List<List<String>> warnings = new ArrayList<List<String>>();
+		List<List<ParseWarning>> warnings = new ArrayList<List<ParseWarning>>();
 
 		ICalendar ical = Biweekly.parseXml(xml).warnings(warnings).first();
 
@@ -206,7 +207,7 @@ public class BiweeklyTest {
 		  "</vcalendar>" +
 		"</icalendar>";
 		//@formatter:on
-		List<List<String>> warnings = new ArrayList<List<String>>();
+		List<List<ParseWarning>> warnings = new ArrayList<List<ParseWarning>>();
 
 		List<ICalendar> icals = Biweekly.parseXml(xml).warnings(warnings).all();
 		Iterator<ICalendar> it = icals.iterator();

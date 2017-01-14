@@ -11,11 +11,11 @@ import org.w3c.dom.Element;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
 import biweekly.io.DataModelConversionException;
 import biweekly.io.ParseContext;
+import biweekly.io.ParseWarning;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
@@ -207,21 +207,20 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 		ListMultimap<String, String> rules = new ListMultimap<String, String>(VObjectPropertyValues.parseMultimap(value));
 
-		List<Warning> warnings = context.getWarnings();
-		parseFreq(rules, builder, warnings);
-		parseUntil(rules, builder, warnings);
-		parseCount(rules, builder, warnings);
-		parseInterval(rules, builder, warnings);
-		parseBySecond(rules, builder, warnings);
-		parseByMinute(rules, builder, warnings);
-		parseByHour(rules, builder, warnings);
-		parseByDay(rules, builder, warnings);
-		parseByMonthDay(rules, builder, warnings);
-		parseByYearDay(rules, builder, warnings);
-		parseByWeekNo(rules, builder, warnings);
-		parseByMonth(rules, builder, warnings);
-		parseBySetPos(rules, builder, warnings);
-		parseWkst(rules, builder, warnings);
+		parseFreq(rules, builder, context);
+		parseUntil(rules, builder, context);
+		parseCount(rules, builder, context);
+		parseInterval(rules, builder, context);
+		parseBySecond(rules, builder, context);
+		parseByMinute(rules, builder, context);
+		parseByHour(rules, builder, context);
+		parseByDay(rules, builder, context);
+		parseByMonthDay(rules, builder, context);
+		parseByYearDay(rules, builder, context);
+		parseByWeekNo(rules, builder, context);
+		parseByMonth(rules, builder, context);
+		parseBySetPos(rules, builder, context);
+		parseWkst(rules, builder, context);
 		parseXRules(rules, builder); //must be called last
 
 		T property = newInstance(builder.build());
@@ -259,7 +258,12 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			try {
 				property = parseTextVersion1(v, dataType, parametersCopy, context);
 			} catch (CannotParseException e) {
-				context.getWarnings().add(e.getWarning());
+				//@formatter:off
+				context.getWarnings().add(new ParseWarning.Builder(context)
+					.message(e)
+					.build()
+				);
+				//@formatter:on
 				property = new RawProperty(getPropertyName(context.getVersion()), dataType, v);
 				property.setParameters(parametersCopy);
 			}
@@ -599,21 +603,20 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 		Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
 
-		List<Warning> warnings = context.getWarnings();
-		parseFreq(rules, builder, warnings);
-		parseUntil(rules, builder, warnings);
-		parseCount(rules, builder, warnings);
-		parseInterval(rules, builder, warnings);
-		parseBySecond(rules, builder, warnings);
-		parseByMinute(rules, builder, warnings);
-		parseByHour(rules, builder, warnings);
-		parseByDay(rules, builder, warnings);
-		parseByMonthDay(rules, builder, warnings);
-		parseByYearDay(rules, builder, warnings);
-		parseByWeekNo(rules, builder, warnings);
-		parseByMonth(rules, builder, warnings);
-		parseBySetPos(rules, builder, warnings);
-		parseWkst(rules, builder, warnings);
+		parseFreq(rules, builder, context);
+		parseUntil(rules, builder, context);
+		parseCount(rules, builder, context);
+		parseInterval(rules, builder, context);
+		parseBySecond(rules, builder, context);
+		parseByMinute(rules, builder, context);
+		parseByHour(rules, builder, context);
+		parseByDay(rules, builder, context);
+		parseByMonthDay(rules, builder, context);
+		parseByYearDay(rules, builder, context);
+		parseByWeekNo(rules, builder, context);
+		parseByMonth(rules, builder, context);
+		parseBySetPos(rules, builder, context);
+		parseWkst(rules, builder, context);
 		parseXRules(rules, builder); //must be called last
 
 		T property = newInstance(builder.build());
@@ -657,21 +660,20 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			rules.putAll(key, entry.getValue());
 		}
 
-		List<Warning> warnings = context.getWarnings();
-		parseFreq(rules, builder, warnings);
-		parseUntil(rules, builder, warnings);
-		parseCount(rules, builder, warnings);
-		parseInterval(rules, builder, warnings);
-		parseBySecond(rules, builder, warnings);
-		parseByMinute(rules, builder, warnings);
-		parseByHour(rules, builder, warnings);
-		parseByDay(rules, builder, warnings);
-		parseByMonthDay(rules, builder, warnings);
-		parseByYearDay(rules, builder, warnings);
-		parseByWeekNo(rules, builder, warnings);
-		parseByMonth(rules, builder, warnings);
-		parseBySetPos(rules, builder, warnings);
-		parseWkst(rules, builder, warnings);
+		parseFreq(rules, builder, context);
+		parseUntil(rules, builder, context);
+		parseCount(rules, builder, context);
+		parseInterval(rules, builder, context);
+		parseBySecond(rules, builder, context);
+		parseByMinute(rules, builder, context);
+		parseByHour(rules, builder, context);
+		parseByDay(rules, builder, context);
+		parseByMonthDay(rules, builder, context);
+		parseByYearDay(rules, builder, context);
+		parseByWeekNo(rules, builder, context);
+		parseByMonth(rules, builder, context);
+		parseBySetPos(rules, builder, context);
+		parseWkst(rules, builder, context);
 		parseXRules(rules, builder); //must be called last
 
 		T property = newInstance(builder.build());
@@ -691,7 +693,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	 */
 	protected abstract T newInstance(Recurrence recur);
 
-	private void parseFreq(ListMultimap<String, String> rules, final Recurrence.Builder builder, final List<Warning> warnings) {
+	private void parseFreq(ListMultimap<String, String> rules, final Recurrence.Builder builder, final ParseContext context) {
 		parseFirst(rules, FREQ, new Handler<String>() {
 			public void handle(String value) {
 				value = value.toUpperCase();
@@ -699,88 +701,88 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 					Frequency frequency = Frequency.valueOf(value);
 					builder.frequency(frequency);
 				} catch (IllegalArgumentException e) {
-					warnings.add(Warning.parse(7, FREQ, value));
+					context.addWarning(7, FREQ, value);
 				}
 			}
 		});
 	}
 
-	private void parseUntil(ListMultimap<String, String> rules, final Recurrence.Builder builder, final List<Warning> warnings) {
+	private void parseUntil(ListMultimap<String, String> rules, final Recurrence.Builder builder, final ParseContext context) {
 		parseFirst(rules, UNTIL, new Handler<String>() {
 			public void handle(String value) {
 				try {
 					ICalDate date = date(value).parse();
 					builder.until(date);
 				} catch (IllegalArgumentException e) {
-					warnings.add(Warning.parse(7, UNTIL, value));
+					context.addWarning(7, UNTIL, value);
 				}
 			}
 		});
 	}
 
-	private void parseCount(ListMultimap<String, String> rules, final Recurrence.Builder builder, final List<Warning> warnings) {
+	private void parseCount(ListMultimap<String, String> rules, final Recurrence.Builder builder, final ParseContext context) {
 		parseFirst(rules, COUNT, new Handler<String>() {
 			public void handle(String value) {
 				try {
 					builder.count(Integer.valueOf(value));
 				} catch (NumberFormatException e) {
-					warnings.add(Warning.parse(7, COUNT, value));
+					context.addWarning(7, COUNT, value);
 				}
 			}
 		});
 	}
 
-	private void parseInterval(ListMultimap<String, String> rules, final Recurrence.Builder builder, final List<Warning> warnings) {
+	private void parseInterval(ListMultimap<String, String> rules, final Recurrence.Builder builder, final ParseContext context) {
 		parseFirst(rules, INTERVAL, new Handler<String>() {
 			public void handle(String value) {
 				try {
 					builder.interval(Integer.valueOf(value));
 				} catch (NumberFormatException e) {
-					warnings.add(Warning.parse(7, INTERVAL, value));
+					context.addWarning(7, INTERVAL, value);
 				}
 			}
 		});
 	}
 
-	private void parseBySecond(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
-		parseIntegerList(BYSECOND, rules, warnings, new Handler<Integer>() {
+	private void parseBySecond(ListMultimap<String, String> rules, final Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYSECOND, rules, context, new Handler<Integer>() {
 			public void handle(Integer value) {
 				builder.bySecond(value);
 			}
 		});
 	}
 
-	private void parseByMinute(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
-		parseIntegerList(BYMINUTE, rules, warnings, new Handler<Integer>() {
+	private void parseByMinute(ListMultimap<String, String> rules, final Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYMINUTE, rules, context, new Handler<Integer>() {
 			public void handle(Integer value) {
 				builder.byMinute(value);
 			}
 		});
 	}
 
-	private void parseByHour(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
-		parseIntegerList(BYHOUR, rules, warnings, new Handler<Integer>() {
+	private void parseByHour(ListMultimap<String, String> rules, final Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYHOUR, rules, context, new Handler<Integer>() {
 			public void handle(Integer value) {
 				builder.byHour(value);
 			}
 		});
 	}
 
-	private void parseByDay(ListMultimap<String, String> rules, Recurrence.Builder builder, List<Warning> warnings) {
+	private void parseByDay(ListMultimap<String, String> rules, Recurrence.Builder builder, ParseContext context) {
 		Pattern p = Pattern.compile("^([-+]?\\d+)?(.*)$");
 		for (String value : rules.removeAll(BYDAY)) {
 			Matcher m = p.matcher(value);
 			if (!m.find()) {
 				//this should never happen
 				//the regex contains a "match-all" pattern and should never not find anything
-				warnings.add(Warning.parse(7, BYDAY, value));
+				context.addWarning(7, BYDAY, value);
 				continue;
 			}
 
 			String dayStr = m.group(2);
 			DayOfWeek day = DayOfWeek.valueOfAbbr(dayStr);
 			if (day == null) {
-				warnings.add(Warning.parse(7, BYDAY, value));
+				context.addWarning(7, BYDAY, value);
 				continue;
 			}
 
@@ -791,52 +793,52 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		}
 	}
 
-	private void parseByMonthDay(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
-		parseIntegerList(BYMONTHDAY, rules, warnings, new Handler<Integer>() {
+	private void parseByMonthDay(ListMultimap<String, String> rules, final Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYMONTHDAY, rules, context, new Handler<Integer>() {
 			public void handle(Integer value) {
 				builder.byMonthDay(value);
 			}
 		});
 	}
 
-	private void parseByYearDay(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
-		parseIntegerList(BYYEARDAY, rules, warnings, new Handler<Integer>() {
+	private void parseByYearDay(ListMultimap<String, String> rules, final Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYYEARDAY, rules, context, new Handler<Integer>() {
 			public void handle(Integer value) {
 				builder.byYearDay(value);
 			}
 		});
 	}
 
-	private void parseByWeekNo(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
-		parseIntegerList(BYWEEKNO, rules, warnings, new Handler<Integer>() {
+	private void parseByWeekNo(ListMultimap<String, String> rules, final Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYWEEKNO, rules, context, new Handler<Integer>() {
 			public void handle(Integer value) {
 				builder.byWeekNo(value);
 			}
 		});
 	}
 
-	private void parseByMonth(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
-		parseIntegerList(BYMONTH, rules, warnings, new Handler<Integer>() {
+	private void parseByMonth(ListMultimap<String, String> rules, final Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYMONTH, rules, context, new Handler<Integer>() {
 			public void handle(Integer value) {
 				builder.byMonth(value);
 			}
 		});
 	}
 
-	private void parseBySetPos(ListMultimap<String, String> rules, final Recurrence.Builder builder, List<Warning> warnings) {
-		parseIntegerList(BYSETPOS, rules, warnings, new Handler<Integer>() {
+	private void parseBySetPos(ListMultimap<String, String> rules, final Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYSETPOS, rules, context, new Handler<Integer>() {
 			public void handle(Integer value) {
 				builder.bySetPos(value);
 			}
 		});
 	}
 
-	private void parseWkst(ListMultimap<String, String> rules, final Recurrence.Builder builder, final List<Warning> warnings) {
+	private void parseWkst(ListMultimap<String, String> rules, final Recurrence.Builder builder, final ParseContext context) {
 		parseFirst(rules, WKST, new Handler<String>() {
 			public void handle(String value) {
 				DayOfWeek day = DayOfWeek.valueOfAbbr(value);
 				if (day == null) {
-					warnings.add(Warning.parse(7, WKST, value));
+					context.addWarning(7, WKST, value);
 					return;
 				}
 
@@ -990,13 +992,13 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		handler.handle(value);
 	}
 
-	private void parseIntegerList(String name, ListMultimap<String, String> rules, List<Warning> warnings, Handler<Integer> handler) {
+	private void parseIntegerList(String name, ListMultimap<String, String> rules, ParseContext context, Handler<Integer> handler) {
 		List<String> values = rules.removeAll(name);
 		for (String value : values) {
 			try {
 				handler.handle(Integer.valueOf(value));
 			} catch (NumberFormatException e) {
-				warnings.add(Warning.parse(8, name, value));
+				context.addWarning(8, name, value);
 			}
 		}
 	}

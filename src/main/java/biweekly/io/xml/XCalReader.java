@@ -42,10 +42,10 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
-import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
+import biweekly.io.ParseWarning;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamReader;
 import biweekly.io.scribe.component.ICalComponentScribe;
@@ -393,12 +393,12 @@ public class XCalReader extends StreamReader {
 
 				case property:
 					context.getWarnings().clear();
+					context.setPropertyName(localName);
 
 					propertyElement.appendChild(DOC.createTextNode(textContent));
 
 					//unmarshal property and add to parent component
 					QName propertyQName = new QName(propertyElement.getNamespaceURI(), propertyElement.getLocalName());
-					String propertyName = localName;
 					ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyQName);
 					try {
 						ICalProperty property = scribe.parseXml(propertyElement, parameters, context);
@@ -416,13 +416,21 @@ public class XCalReader extends StreamReader {
 						}
 
 						curComponent.addProperty(property);
-						for (Warning warning : context.getWarnings()) {
-							warnings.add(null, propertyName, warning);
-						}
+						warnings.addAll(context.getWarnings());
 					} catch (SkipMeException e) {
-						warnings.add(null, propertyName, 22, e.getMessage());
+						//@formatter:off
+						warnings.add(new ParseWarning.Builder(context)
+							.message(22, e.getMessage())
+							.build()
+						);
+						//@formatter:on
 					} catch (CannotParseException e) {
-						warnings.add(null, propertyName, 16, e.getMessage());
+						//@formatter:off
+						warnings.add(new ParseWarning.Builder(context)
+							.message(e)
+							.build()
+						);
+						//@formatter:on
 
 						scribe = index.getPropertyScribe(Xml.class);
 						ICalProperty property = scribe.parseXml(propertyElement, parameters, context);

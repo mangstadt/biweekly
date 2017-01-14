@@ -36,6 +36,7 @@ import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
+import biweekly.io.ParseWarning;
 import biweekly.io.StreamReader;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
@@ -106,12 +107,12 @@ public class TestUtils {
 	 * @param warningsLists the list of warnings lists
 	 * @param expectedSizes the expected sizes of each warnings list
 	 */
-	public static void assertWarningsLists(List<List<String>> warningsLists, int... expectedSizes) {
+	public static void assertWarningsLists(List<List<ParseWarning>> warningsLists, int... expectedSizes) {
 		assertEquals(warningsLists.toString(), expectedSizes.length, warningsLists.size());
 
 		for (int i = 0; i < expectedSizes.length; i++) {
 			int expectedSize = expectedSizes[i];
-			List<String> warnings = warningsLists.get(i);
+			List<ParseWarning> warnings = warningsLists.get(i);
 
 			assertWarnings(expectedSize, warnings);
 		}
@@ -162,7 +163,7 @@ public class TestUtils {
 		assertEquals(subComponents, component.getComponents().size());
 		assertEquals(properties, component.getProperties().size());
 	}
-	
+
 	/**
 	 * Asserts the contents of an iterator.
 	 * @param expected the expected contents of the iterator

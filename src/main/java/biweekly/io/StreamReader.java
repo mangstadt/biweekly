@@ -56,7 +56,7 @@ import biweekly.util.ICalDateFormat;
  * @author Michael Angstadt
  */
 public abstract class StreamReader implements Closeable {
-	protected final ParseWarnings warnings = new ParseWarnings();
+	protected final List<ParseWarning> warnings = new ArrayList<ParseWarning>();
 	protected ScribeIndex index = new ScribeIndex();
 	protected ParseContext context;
 
@@ -107,12 +107,11 @@ public abstract class StreamReader implements Closeable {
 	}
 
 	/**
-	 * Gets the warnings from the last iCalendar object that was read. This list
-	 * is reset every time a new iCalendar object is read.
+	 * Gets the warnings from the last iCalendar object that was read.
 	 * @return the warnings or empty list if there were no warnings
 	 */
-	public List<String> getWarnings() {
-		return warnings.copy();
+	public List<ParseWarning> getWarnings() {
+		return new ArrayList<ParseWarning>(warnings);
 	}
 
 	/**
@@ -169,7 +168,7 @@ public abstract class StreamReader implements Closeable {
 			String id = ValuedProperty.getValue(component.getTimezoneId());
 			if (id == null || id.trim().length() == 0) {
 				//note: do not remove invalid VTIMEZONE components from the ICalendar object
-				warnings.add(null, null, 39);
+				warnings.add(new ParseWarning.Builder().message(39).build());
 				continue;
 			}
 
@@ -209,7 +208,7 @@ public abstract class StreamReader implements Closeable {
 				TimeZone timezone = ICalDateFormat.parseTimeZoneId(globalId);
 				if (timezone == null) {
 					//timezone could not be determined
-					warnings.add(null, null, 38, tzid);
+					warnings.add(new ParseWarning.Builder().message(38, tzid).build());
 					continue;
 				}
 				assignment = new TimezoneAssignment(timezone, globalId);
@@ -222,13 +221,13 @@ public abstract class StreamReader implements Closeable {
 					TimeZone timezone = ICalDateFormat.parseTimeZoneId(tzid);
 					if (timezone == null) {
 						//timezone could not be determined
-						warnings.add(null, null, 38, tzid);
+						warnings.add(new ParseWarning.Builder().message(38, tzid).build());
 						continue;
 					}
 					assignment = new TimezoneAssignment(timezone, tzid);
 					tzinfo.getTimezones().add(assignment);
 
-					warnings.add(null, null, 37, tzid);
+					warnings.add(new ParseWarning.Builder().message(37, tzid).build());
 				}
 			}
 

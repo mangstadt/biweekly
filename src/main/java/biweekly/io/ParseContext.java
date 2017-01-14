@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.util.ICalDate;
@@ -41,9 +40,11 @@ import biweekly.util.ListMultimap;
  */
 public class ParseContext {
 	private ICalVersion version;
-	private List<Warning> warnings = new ArrayList<Warning>();
+	private List<ParseWarning> warnings = new ArrayList<ParseWarning>();
 	private ListMultimap<String, TimezonedDate> timezonedDates = new ListMultimap<String, TimezonedDate>();
 	private List<TimezonedDate> floatingDates = new ArrayList<TimezonedDate>();
+	private Integer lineNumber;
+	private String propertyName;
 
 	/**
 	 * Gets the version of the iCalendar object being parsed.
@@ -59,6 +60,39 @@ public class ParseContext {
 	 */
 	public void setVersion(ICalVersion version) {
 		this.version = version;
+	}
+
+	/**
+	 * Gets the line number the parser is currently on.
+	 * @return the line number or null if not applicable
+	 */
+	public Integer getLineNumber() {
+		return lineNumber;
+	}
+
+	/**
+	 * Sets the line number the parser is currently on.
+	 * @param line the line number or null if not applicable
+	 */
+	public void setLineNumber(Integer lineNumber) {
+		this.lineNumber = lineNumber;
+	}
+
+	/**
+	 * Gets the name of the property that the parser is currently parsing.
+	 * @return the property name (e.g. "DTSTART") or null if not applicable
+	 */
+	public String getPropertyName() {
+		return propertyName;
+	}
+
+	/**
+	 * Sets the name of the property that the parser is currently parsing.
+	 * @param propertyName the property name (e.g. "DTSTART") or null if not
+	 * applicable
+	 */
+	public void setPropertyName(String propertyName) {
+		this.propertyName = propertyName;
 	}
 
 	/**
@@ -135,7 +169,11 @@ public class ParseContext {
 	 * @param args the warning message arguments
 	 */
 	public void addWarning(int code, Object... args) {
-		warnings.add(Warning.parse(code, args));
+		//@formatter:off
+		warnings.add(new ParseWarning.Builder(this)
+			.message(code, args)
+		.build());
+		//@formatter:on
 	}
 
 	/**
@@ -143,14 +181,18 @@ public class ParseContext {
 	 * @param message the warning message
 	 */
 	public void addWarning(String message) {
-		warnings.add(new Warning(message));
+		//@formatter:off
+		warnings.add(new ParseWarning.Builder(this)
+			.message(message)
+		.build());
+		//@formatter:on
 	}
 
 	/**
 	 * Gets the parse warnings.
 	 * @return the parse warnings
 	 */
-	public List<Warning> getWarnings() {
+	public List<ParseWarning> getWarnings() {
 		return warnings;
 	}
 

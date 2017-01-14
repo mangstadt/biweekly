@@ -30,7 +30,6 @@ import org.junit.rules.TemporaryFolder;
 
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
-import biweekly.Warning;
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.ICalComponent;
 import biweekly.component.RawComponent;
@@ -43,6 +42,7 @@ import biweekly.component.VTimezone;
 import biweekly.component.VTodo;
 import biweekly.io.ICalTimeZone;
 import biweekly.io.ParseContext;
+import biweekly.io.ParseWarning;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.WriteContext;
 import biweekly.io.scribe.component.ICalComponentScribe;
@@ -1772,7 +1772,12 @@ public class ICalReaderTest {
 				number = 3;
 			} else if (value.equals("four")) {
 				number = 4;
-				context.getWarnings().add(new Warning("too high"));
+				//@formatter:off
+				context.getWarnings().add(new ParseWarning.Builder(context)
+					.message("too high")
+					.build()
+				);
+				//@formatter:on
 			}
 			prop.number = number;
 			prop.parsedDataType = dataType;

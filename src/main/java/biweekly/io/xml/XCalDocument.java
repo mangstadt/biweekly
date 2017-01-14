@@ -41,10 +41,10 @@ import org.xml.sax.SAXException;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
-import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseWarning;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamReader;
 import biweekly.io.StreamWriter;
@@ -576,18 +576,27 @@ public class XCalDocument {
 			QName qname = new QName(propertyElement.getNamespaceURI(), propertyName);
 
 			context.getWarnings().clear();
+			context.setPropertyName(propertyName);
 			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(qname);
 			try {
 				ICalProperty property = scribe.parseXml(propertyElement, parameters, context);
-				for (Warning warning : context.getWarnings()) {
-					warnings.add(null, propertyName, warning);
-				}
+				warnings.addAll(context.getWarnings());
 				return property;
 			} catch (SkipMeException e) {
-				warnings.add(null, propertyName, 0, e.getMessage());
+				//@formatter:off
+				warnings.add(new ParseWarning.Builder(context)
+					.message(0, e.getMessage())
+					.build()
+				);
+				//@formatter:on
 				return null;
 			} catch (CannotParseException e) {
-				warnings.add(null, propertyName, 16, e.getMessage());
+				//@formatter:off
+				warnings.add(new ParseWarning.Builder(context)
+					.message(e)
+					.build()
+				);
+				//@formatter:on
 
 				scribe = index.getPropertyScribe(Xml.class);
 				return scribe.parseXml(propertyElement, parameters, context);

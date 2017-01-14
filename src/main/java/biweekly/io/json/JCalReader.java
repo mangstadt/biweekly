@@ -13,12 +13,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
-import biweekly.Warning;
 import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
+import biweekly.io.ParseWarning;
 import biweekly.io.SkipMeException;
 import biweekly.io.StreamReader;
 import biweekly.io.json.JCalRawReader.JCalDataStreamListener;
@@ -32,9 +35,6 @@ import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.Version;
 import biweekly.util.Utf8Reader;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -157,6 +157,8 @@ public class JCalReader extends StreamReader {
 
 		public void readProperty(List<String> componentHierarchy, String propertyName, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 			context.getWarnings().clear();
+			context.setLineNumber(reader.getLineNum());
+			context.setPropertyName(propertyName);
 
 			//get the component that the property belongs to
 			ICalComponent parent = components.get(componentHierarchy);
@@ -165,9 +167,7 @@ public class JCalReader extends StreamReader {
 			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyName, ICalVersion.V2_0);
 			try {
 				ICalProperty property = scribe.parseJson(value, dataType, parameters, context);
-				for (Warning warning : context.getWarnings()) {
-					warnings.add(reader.getLineNum(), propertyName, warning);
-				}
+				warnings.addAll(context.getWarnings());
 
 				//set "ICalendar.version" if the value of the VERSION property is recognized
 				//otherwise, unmarshal VERSION like a normal property
@@ -182,13 +182,22 @@ public class JCalReader extends StreamReader {
 
 				parent.addProperty(property);
 			} catch (SkipMeException e) {
-				warnings.add(reader.getLineNum(), propertyName, 0, e.getMessage());
+				//@formatter:off
+				warnings.add(new ParseWarning.Builder(context)
+					.message(0, e.getMessage())
+					.build()
+				);
+				//@formatter:on
 			} catch (CannotParseException e) {
 				RawProperty property = new RawPropertyScribe(propertyName).parseJson(value, dataType, parameters, context);
 				parent.addProperty(property);
 
-				String valueStr = property.getValue();
-				warnings.add(reader.getLineNum(), propertyName, 1, valueStr, e.getMessage());
+				//@formatter:off
+				warnings.add(new ParseWarning.Builder(context)
+					.message(e)
+					.build()
+				);
+				//@formatter:on
 			}
 		}
 

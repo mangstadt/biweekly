@@ -1,7 +1,5 @@
 package biweekly.io;
 
-import biweekly.Warning;
-
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -34,8 +32,10 @@ import biweekly.Warning;
  * @author Michael Angstadt
  */
 public class CannotParseException extends RuntimeException {
-	private static final long serialVersionUID = 5286121765702004202L;
-	private final Warning warning;
+	private static final long serialVersionUID = 5509704168351401110L;
+	private final Integer code;
+	private final Object args[];
+	private final String reason;
 
 	/**
 	 * Creates a new "cannot parse" exception.
@@ -43,7 +43,9 @@ public class CannotParseException extends RuntimeException {
 	 * @param args the warning message arguments
 	 */
 	public CannotParseException(int code, Object... args) {
-		this(Warning.parse(code, args));
+		this.code = code;
+		this.args = args;
+		this.reason = null;
 	}
 
 	/**
@@ -51,15 +53,32 @@ public class CannotParseException extends RuntimeException {
 	 * @param reason the reason why the property value cannot be parsed
 	 */
 	public CannotParseException(String reason) {
-		this(new Warning(reason));
+		this.code = null;
+		this.args = null;
+		this.reason = reason;
 	}
 
-	private CannotParseException(Warning warning) {
-		super(warning.toString());
-		this.warning = warning;
+	/**
+	 * Gets the warning message code.
+	 * @return the message code or null if a reason string was supplied
+	 */
+	public Integer getCode() {
+		return code;
 	}
 
-	public Warning getWarning() {
-		return warning;
+	/**
+	 * Gets the warning message arguments.
+	 * @return the message arguments or null if a reason string was supplied
+	 */
+	public Object[] getArgs() {
+		return args;
+	}
+
+	/**
+	 * Gets the parse warning reason.
+	 * @return the parse warning reason or null if a message code was supplied
+	 */
+	public String getReason() {
+		return reason;
 	}
 }
