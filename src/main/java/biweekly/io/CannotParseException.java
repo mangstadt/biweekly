@@ -1,5 +1,7 @@
 package biweekly.io;
 
+import biweekly.Messages;
+
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -80,5 +82,14 @@ public class CannotParseException extends RuntimeException {
 	 */
 	public String getReason() {
 		return reason;
+	}
+
+	@Override
+	public String getMessage() {
+		if (reason != null) {
+			return reason;
+		}
+
+		return Messages.INSTANCE.getParseMessage(code, args);
 	}
 }
