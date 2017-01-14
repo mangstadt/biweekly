@@ -351,9 +351,9 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 
 	@Test
 	public void parseText_vcal() {
-		sensei.assertParseText("S2").versions(V1_0).cannotParse();
+		sensei.assertParseText("S2").versions(V1_0).cannotParse(41);
 
-		sensei.assertParseText("D2 0600$ 1230$ 1400 #0").versions(V1_0).warnings(2).run(is(new Recurrence.Builder(Frequency.DAILY).interval(2).byHour(6).byHour(12).byHour(14).byMinute(0).byMinute(30).byMinute(0).build()));
+		sensei.assertParseText("D2 0600$ 1230$ 1400 #0").versions(V1_0).warnings(36, 36).run(is(new Recurrence.Builder(Frequency.DAILY).interval(2).byHour(6).byHour(12).byHour(14).byMinute(0).byMinute(30).byMinute(0).build()));
 
 		sensei.assertParseText("M2").versions(V1_0).run(is(new Recurrence.Builder(Frequency.MINUTELY).interval(2).count(2).build()));
 		sensei.assertParseText("M2 #0").versions(V1_0).run(is(new Recurrence.Builder(Frequency.MINUTELY).interval(2).build()));
@@ -375,11 +375,11 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 
 		sensei.assertParseText("D2 #0").versions(V1_0).run(is(new Recurrence.Builder(Frequency.DAILY).interval(2).build()));
 		sensei.assertParseText("D2 0600 1230 #0").versions(V1_0).run(is(new Recurrence.Builder(Frequency.DAILY).interval(2).byHour(6).byHour(12).byMinute(0).byMinute(30).build()));
-		sensei.assertParseText("D2 0600 1230 invalid #0").versions(V1_0).cannotParse();
+		sensei.assertParseText("D2 0600 1230 invalid #0").versions(V1_0).cannotParse(40);
 
 		sensei.assertParseText("W2 #0").versions(V1_0).run(is(new Recurrence.Builder(Frequency.WEEKLY).interval(2).build()));
 		sensei.assertParseText("W2 MO WE #0").versions(V1_0).run(is(new Recurrence.Builder(Frequency.WEEKLY).interval(2).byDay(DayOfWeek.MONDAY).byDay(DayOfWeek.WEDNESDAY).build()));
-		sensei.assertParseText("W2 MO WE AA #0").versions(V1_0).cannotParse();
+		sensei.assertParseText("W2 MO WE AA #0").versions(V1_0).cannotParse(42);
 
 		sensei.assertParseText("MP2 #0").versions(V1_0).run(is(new Recurrence.Builder(Frequency.MONTHLY).interval(2).build()));
 		sensei.assertParseText("MP2 1+ 1- MO 1200 #0").versions(V1_0).run(is(new Recurrence.Builder(Frequency.MONTHLY).interval(2).byDay(1, DayOfWeek.MONDAY).byDay(-1, DayOfWeek.MONDAY).byHour(12).byMinute(0).build()));
@@ -392,13 +392,13 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 
 		sensei.assertParseText("YM2 #0").versions(V1_0).run(is(new Recurrence.Builder(Frequency.YEARLY).interval(2).build()));
 		sensei.assertParseText("YM2 4 7 #0").versions(V1_0).run(is(new Recurrence.Builder(Frequency.YEARLY).interval(2).byMonth(4).byMonth(7).build()));
-		sensei.assertParseText("YM2 4 invalid #0").versions(V1_0).cannotParse();
+		sensei.assertParseText("YM2 4 invalid #0").versions(V1_0).cannotParse(40);
 
 		sensei.assertParseText("YD2 #0").versions(V1_0).run(is(new Recurrence.Builder(Frequency.YEARLY).interval(2).build()));
 		sensei.assertParseText("YD2 1 100 #0").versions(V1_0).run(is(new Recurrence.Builder(Frequency.YEARLY).interval(2).byYearDay(1).byYearDay(100).build()));
-		sensei.assertParseText("YD2 4 invalid #0").versions(V1_0).cannotParse();
+		sensei.assertParseText("YD2 4 invalid #0").versions(V1_0).cannotParse(40);
 
-		sensei.assertParseText("invalid").versions(V1_0).cannotParse();
+		sensei.assertParseText("invalid").versions(V1_0).cannotParse(40);
 	}
 
 	@Test
@@ -499,7 +499,12 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 
 	@Test
 	public void parseText_invalid_values() {
-		sensei.assertParseText("FREQ=W;COUNT=a;INTERVAL=b;UNTIL=invalid;BYSECOND=58,c,59;BYMINUTE=3,d,4;BYHOUR=1,e,2;BYDAY=f,MO,TU,WE,TH,FR,SA,SU,5FR,fFR;BYMONTHDAY=1,g,2;BYYEARDAY=100,h,101;BYWEEKNO=1,w,2;BYMONTH=5,i,6;BYSETPOS=7,8,j,9;WKST=k").versions(V2_0).warnings(15).run(invalidValuesCheck);
+		//@formatter:off
+		sensei.assertParseText("FREQ=W;COUNT=a;INTERVAL=b;UNTIL=invalid;BYSECOND=58,c,59;BYMINUTE=3,d,4;BYHOUR=1,e,2;BYDAY=f,MO,TU,WE,TH,FR,SA,SU,5FR,fFR;BYMONTHDAY=1,g,2;BYYEARDAY=100,h,101;BYWEEKNO=1,w,2;BYMONTH=5,i,6;BYSETPOS=7,8,j,9;WKST=k")
+			.versions(V2_0)
+			.warnings(7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8)
+		.run(invalidValuesCheck);
+		//@formatter:on
 	}
 
 	@Test
@@ -751,13 +756,13 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 			"<bysetpos>9</bysetpos>" +
 			"<wkst>k</wkst>" +
 		"</recur>"
-		).warnings(15).run(invalidValuesCheck);
+		).warnings(7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8).run(invalidValuesCheck);
 		//@formatter:on
 	}
 
 	@Test
 	public void parseXml_empty() {
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
@@ -971,7 +976,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 		map.put("bysetpos", 9);
 		map.put("wkst", "k");
 
-		sensei.assertParseJson(JCalValue.object(map)).warnings(15).run(invalidValuesCheck);
+		sensei.assertParseJson(JCalValue.object(map)).warnings(7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8).run(invalidValuesCheck);
 	}
 
 	@Test

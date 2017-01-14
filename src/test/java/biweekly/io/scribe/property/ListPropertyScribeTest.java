@@ -102,8 +102,8 @@ public class ListPropertyScribeTest extends ScribeTest<ListPropertyImpl> {
 		sensei.assertParseXml("<text>one</text><text>two</text><float>2.5</float><text>three,four</text>").run(is(withMultiple));
 		sensei.assertParseXml("<text>one</text>").run(is(withSingle));
 		sensei.assertParseXml("<float>2.5</float><text>one</text>").run(is(withSingle));
-		sensei.assertParseXml("<float>2.5</float>").cannotParse();
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("<float>2.5</float>").cannotParse(23);
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
@@ -114,8 +114,8 @@ public class ListPropertyScribeTest extends ScribeTest<ListPropertyImpl> {
 		sensei.assertParseXml("<integer>one</integer><integer>two</integer><float>2.5</float><integer>three,four</integer>").run(is(withMultiple));
 		sensei.assertParseXml("<integer>one</integer>").run(is(withSingle));
 		sensei.assertParseXml("<float>2.5</float><integer>one</integer>").run(is(withSingle));
-		sensei.assertParseXml("<float>2.5</float>").cannotParse();
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("<float>2.5</float>").cannotParse(23);
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test

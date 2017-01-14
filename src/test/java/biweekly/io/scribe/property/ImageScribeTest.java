@@ -59,7 +59,7 @@ public class ImageScribeTest extends ScribeTest<Image> {
 	public void parseXml() {
 		sensei.assertParseXml("<uri>" + url + "</uri>").run(hasUri(url));
 		sensei.assertParseXml("<binary>" + base64Data + "</binary>").run(has(data));
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test

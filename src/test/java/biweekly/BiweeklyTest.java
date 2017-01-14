@@ -3,8 +3,8 @@ package biweekly;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertIntEquals;
+import static biweekly.util.TestUtils.assertParseWarnings;
 import static biweekly.util.TestUtils.assertRegex;
-import static biweekly.util.TestUtils.assertWarningsLists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -83,7 +83,9 @@ public class BiweeklyTest {
 
 		assertEquals(V2_0, ical.getVersion());
 		assertEquals("prodid", ical.getProductId().getValue());
-		assertWarningsLists(warnings, 0);
+
+		assertEquals(1, warnings.size());
+		assertParseWarnings(warnings.get(0));
 	}
 
 	@Test
@@ -112,7 +114,10 @@ public class BiweeklyTest {
 		assertEquals(V2_0, ical.getVersion());
 		assertEquals("two", ical.getProductId().getValue());
 
-		assertWarningsLists(warnings, 0, 0);
+		assertEquals(2, warnings.size());
+		assertParseWarnings(warnings.get(0));
+		assertParseWarnings(warnings.get(1));
+
 		assertFalse(it.hasNext());
 	}
 
@@ -184,7 +189,9 @@ public class BiweeklyTest {
 
 		assertEquals(V2_0, ical.getVersion());
 		assertEquals("one", ical.getProductId().getValue());
-		assertWarningsLists(warnings, 0);
+
+		assertEquals(1, warnings.size());
+		assertParseWarnings(warnings.get(0));
 	}
 
 	@Test
@@ -219,8 +226,11 @@ public class BiweeklyTest {
 		ical = it.next();
 		assertEquals(V2_0, ical.getVersion());
 		assertEquals("two", ical.getProductId().getValue());
+ 
+		assertEquals(2, warnings.size());
+		assertParseWarnings(warnings.get(0));
+		assertParseWarnings(warnings.get(1));
 
-		assertWarningsLists(warnings, 0, 0);
 		assertFalse(it.hasNext());
 	}
 

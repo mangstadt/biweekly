@@ -1,11 +1,13 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import static biweekly.ICalVersion.*;
 import biweekly.io.ParseContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -76,15 +78,15 @@ public class GeoScribeTest extends ScribeTest<Geo> {
 	@Test
 	public void parseText() {
 		sensei.assertParseText("12.34,56.78").versions(V1_0).run(has(12.34, 56.78));
-		sensei.assertParseText("12.34;56.78").versions(V1_0).cannotParse();
+		sensei.assertParseText("12.34;56.78").versions(V1_0).cannotParse(20);
 
 		sensei.assertParseText("12.34;56.78").versions(V2_0_DEPRECATED, V2_0).run(has(12.34, 56.78));
-		sensei.assertParseText("12.34,56.78").versions(V2_0_DEPRECATED, V2_0).cannotParse();
+		sensei.assertParseText("12.34,56.78").versions(V2_0_DEPRECATED, V2_0).cannotParse(20);
 
-		sensei.assertParseText("invalid;56.78").cannotParse();
-		sensei.assertParseText("12.34;invalid").cannotParse();
-		sensei.assertParseText("12.34").cannotParse();
-		sensei.assertParseText("").cannotParse();
+		sensei.assertParseText("invalid;56.78").versions(V2_0).cannotParse(21);
+		sensei.assertParseText("12.34;invalid").versions(V2_0).cannotParse(22);
+		sensei.assertParseText("12.34").cannotParse(20);
+		sensei.assertParseText("").cannotParse(20);
 	}
 
 	@Test
@@ -99,11 +101,11 @@ public class GeoScribeTest extends ScribeTest<Geo> {
 	@Test
 	public void parseXml() {
 		sensei.assertParseXml("<latitude>12.34</latitude><longitude>56.78</longitude>").run(has(12.34, 56.78));
-		sensei.assertParseXml("<latitude>invalid</latitude><longitude>56.78</longitude>").cannotParse();
-		sensei.assertParseXml("<latitude>12.34</latitude><longitude>invalid</longitude>").cannotParse();
-		sensei.assertParseXml("<latitude>12.34</latitude>").cannotParse();
-		sensei.assertParseXml("<longitude>56.78</longitude>").cannotParse();
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("<latitude>invalid</latitude><longitude>56.78</longitude>").cannotParse(21);
+		sensei.assertParseXml("<latitude>12.34</latitude><longitude>invalid</longitude>").cannotParse(22);
+		sensei.assertParseXml("<latitude>12.34</latitude>").cannotParse(23);
+		sensei.assertParseXml("<longitude>56.78</longitude>").cannotParse(23);
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
@@ -122,8 +124,8 @@ public class GeoScribeTest extends ScribeTest<Geo> {
 		sensei.assertParseJson(JCalValue.structured(12.34, null)).run(has(12.34, null));
 		sensei.assertParseJson(JCalValue.structured(null, null)).run(has(null, null));
 
-		sensei.assertParseJson(JCalValue.structured("invalid", 56.78)).cannotParse();
-		sensei.assertParseJson(JCalValue.structured(12.34, "invalid")).cannotParse();
+		sensei.assertParseJson(JCalValue.structured("invalid", 56.78)).cannotParse(21);
+		sensei.assertParseJson(JCalValue.structured(12.34, "invalid")).cannotParse(22);
 		sensei.assertParseJson("").run(has(null, null));
 	}
 

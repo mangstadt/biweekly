@@ -129,7 +129,7 @@ public class AttachmentScribeTest extends ScribeTest<Attachment> {
 		sensei.assertParseXml("<uri>aaa:" + contentId + "</uri>").run(hasUri("aaa:" + contentId));
 		sensei.assertParseXml("<uri>http:" + contentId + "</uri>").run(hasUri("http:" + contentId));
 
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test

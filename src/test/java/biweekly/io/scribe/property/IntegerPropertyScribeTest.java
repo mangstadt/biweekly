@@ -57,7 +57,7 @@ public class IntegerPropertyScribeTest extends ScribeTest<IntegerProperty> {
 	@Test
 	public void parseText() {
 		sensei.assertParseText("5").run(has(5));
-		sensei.assertParseText("invalid").cannotParse();
+		sensei.assertParseText("invalid").cannotParse(24);
 		sensei.assertParseText("").run(has(null));
 	}
 
@@ -70,8 +70,8 @@ public class IntegerPropertyScribeTest extends ScribeTest<IntegerProperty> {
 	@Test
 	public void parseXml() {
 		sensei.assertParseXml("<integer>5</integer>").run(has(5));
-		sensei.assertParseXml("<integer>invalid</integer>").cannotParse();
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("<integer>invalid</integer>").cannotParse(24);
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class IntegerPropertyScribeTest extends ScribeTest<IntegerProperty> {
 	public void parseJson() {
 		sensei.assertParseJson(new JCalValue(Arrays.asList(new JsonValue(5)))).run(has(5));
 		sensei.assertParseJson("5").run(has(5));
-		sensei.assertParseJson("invalid").cannotParse();
+		sensei.assertParseJson("invalid").cannotParse(24);
 		sensei.assertParseJson("").run(has(null));
 	}
 

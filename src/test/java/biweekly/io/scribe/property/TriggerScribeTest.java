@@ -76,8 +76,8 @@ public class TriggerScribeTest extends ScribeTest<Trigger> {
 	public void parseText() {
 		sensei.assertParseText(datetimeStr).run(is(withDateTime));
 		sensei.assertParseText(durationStr).run(is(withDuration));
-		sensei.assertParseText("invalid").cannotParse();
-		sensei.assertParseText("").cannotParse();
+		sensei.assertParseText("invalid").cannotParse(25);
+		sensei.assertParseText("").cannotParse(25);
 	}
 
 	@Test
@@ -95,9 +95,9 @@ public class TriggerScribeTest extends ScribeTest<Trigger> {
 		//prefers <duration> element if both elements exist
 		sensei.assertParseXml("<duration>" + durationStr + "</duration><date-time>" + datetimeStrExt + "</date-time>").run(is(withDuration));
 
-		sensei.assertParseXml("<date-time>invalid</date-time>").cannotParse();
-		sensei.assertParseXml("<duration>invalid</duration>").cannotParse();
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("<date-time>invalid</date-time>").cannotParse(27);
+		sensei.assertParseXml("<duration>invalid</duration>").cannotParse(26);
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
@@ -111,8 +111,8 @@ public class TriggerScribeTest extends ScribeTest<Trigger> {
 	public void parseJson_date() {
 		sensei.assertParseJson(datetimeStrExt).run(is(withDateTime));
 		sensei.assertParseJson(durationStr).run(is(withDuration));
-		sensei.assertParseJson("invalid").cannotParse();
-		sensei.assertParseJson("").cannotParse();
+		sensei.assertParseJson("invalid").cannotParse(25);
+		sensei.assertParseJson("").cannotParse(25);
 	}
 
 	private Check<Trigger> is(final Trigger expected) {

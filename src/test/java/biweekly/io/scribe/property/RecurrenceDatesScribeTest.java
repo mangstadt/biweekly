@@ -185,16 +185,16 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 	@Test
 	public void parseText() {
 		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/" + durationStr).dataType(PERIOD).run(is(withMultiplePeriods));
-		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + "invalid/" + durationStr).dataType(PERIOD).warnings(1).cannotParse();
-		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/invalid").dataType(PERIOD).cannotParse();
-		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/").dataType(PERIOD).cannotParse();
-		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr).dataType(PERIOD).cannotParse();
+		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + "invalid/" + durationStr).dataType(PERIOD).warnings(1).cannotParse(10);
+		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/invalid").dataType(PERIOD).cannotParse(14);
+		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/").dataType(PERIOD).cannotParse(14);
+		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr).dataType(PERIOD).cannotParse(13);
 
 		sensei.assertParseText(startDateStr + "," + endDateStr).dataType(DATE).run(is(withMultipleDates));
-		sensei.assertParseText(startDateStr + ",invalid").dataType(DATE).cannotParse();
+		sensei.assertParseText(startDateStr + ",invalid").dataType(DATE).cannotParse(15);
 
 		sensei.assertParseText(startDateTimeStr + "," + endDateTimeStr).dataType(DATE_TIME).run(is(withMultipleDateTimes));
-		sensei.assertParseText(startDateTimeStr + ",invalid").dataType(DATE_TIME).cannotParse();
+		sensei.assertParseText(startDateTimeStr + ",invalid").dataType(DATE_TIME).cannotParse(15);
 
 		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr).dataType(PERIOD).run(is(withSinglePeriod));
 		sensei.assertParseText(startDateStr).dataType(DATE).run(is(withSingleDate));
@@ -278,7 +278,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 			"<start>invalid</start>" +
 			"<duration>" + durationStr + "</duration>" +
 		"</period>"
-		).cannotParse();
+		).cannotParse(10);
 		
 		//invalid duration
 		sensei.assertParseXml(
@@ -290,7 +290,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 			"<start>" + startDateTimeStrExt + "</start>" +
 			"<duration>invalid</duration>" +
 		"</period>"
-		).cannotParse();
+		).cannotParse(12);
 		
 		//missing start date
 		sensei.assertParseXml(
@@ -301,7 +301,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 		"<period>" +
 			"<duration>" + durationStr + "</duration>" +
 		"</period>"
-		).cannotParse();
+		).cannotParse(9);
 		
 		//missing duration
 		sensei.assertParseXml(
@@ -312,7 +312,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 		"<period>" +
 			"<start>" + startDateTimeStrExt + "</start>" +
 		"</period>"
-		).cannotParse();
+		).cannotParse(13);
 		
 		//empty <period> element
 		sensei.assertParseXml(
@@ -321,7 +321,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 			"<end>" + endDateTimeStrExt + "</end>" +
 		"</period>" +
 		"<period/>"
-		).cannotParse();
+		).cannotParse(9);
 		
 		sensei.assertParseXml(
 		"<date>" + startDateStrExt + "</date>" +
@@ -332,7 +332,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 		sensei.assertParseXml(
 		"<date>" + startDateStrExt + "</date>" +
 		"<date>invalid</date>"
-		).cannotParse();
+		).cannotParse(15);
 		
 		sensei.assertParseXml(
 		"<date-time>" + startDateTimeStrExt + "</date-time>" +
@@ -343,7 +343,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 		sensei.assertParseXml(
 		"<date-time>" + startDateTimeStrExt + "</date-time>" +
 		"<date-time>invalid</date-time>"
-		).cannotParse();
+		).cannotParse(15);
 		
 		sensei.assertParseXml(
 		"<period>" +
@@ -360,7 +360,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 		"<date-time>" + startDateTimeStrExt + "</date-time>"
 		).run(is(withSingleDateTime));
 		
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("").cannotParse(23);
 		
 		//timezone tests
 		{
@@ -423,22 +423,22 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 		sensei.assertParseJson(JCalValue.multi(
 			startDateTimeStrExt + "/" + endDateTimeStrExt,
 			"invalid/" + durationStr
-		)).dataType(PERIOD).cannotParse();
+		)).dataType(PERIOD).cannotParse(10);
 		
 		sensei.assertParseJson(JCalValue.multi(
 			startDateTimeStrExt + "/" + endDateTimeStrExt,
 			startDateTimeStrExt + "/invalid"
-		)).dataType(PERIOD).cannotParse();
+		)).dataType(PERIOD).cannotParse(14);
 		
 		sensei.assertParseJson(JCalValue.multi(
 			startDateTimeStrExt + "/" + endDateTimeStrExt,
 			startDateTimeStrExt + "/"
-		)).dataType(PERIOD).cannotParse();
+		)).dataType(PERIOD).cannotParse(14);
 		
 		sensei.assertParseJson(JCalValue.multi(
 			startDateTimeStrExt + "/" + endDateTimeStrExt,
 			startDateTimeStrExt
-		)).dataType(PERIOD).cannotParse();
+		)).dataType(PERIOD).cannotParse(13);
 
 		sensei.assertParseJson(JCalValue.multi(
 			startDateStrExt,
@@ -448,7 +448,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 		sensei.assertParseJson(JCalValue.multi(
 			startDateStrExt,
 			"invalid"
-		)).dataType(DATE).cannotParse();
+		)).dataType(DATE).cannotParse(15);
 
 		sensei.assertParseJson(JCalValue.multi(
 			startDateTimeStrExt,
@@ -458,7 +458,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 		sensei.assertParseJson(JCalValue.multi(
 			startDateTimeStrExt,
 			"invalid"
-		)).dataType(DATE_TIME).cannotParse();
+		)).dataType(DATE_TIME).cannotParse(15);
 
 		sensei.assertParseJson(JCalValue.multi(
 			startDateTimeStrExt + "/" + endDateTimeStrExt

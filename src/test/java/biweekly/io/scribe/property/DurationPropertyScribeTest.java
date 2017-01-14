@@ -57,8 +57,8 @@ public class DurationPropertyScribeTest extends ScribeTest<DurationProperty> {
 	@Test
 	public void parseText() {
 		sensei.assertParseText(durationStr).run(hasDuration);
-		sensei.assertParseText("invalid").cannotParse();
-		sensei.assertParseText("").cannotParse();
+		sensei.assertParseText("invalid").cannotParse(18);
+		sensei.assertParseText("").cannotParse(18);
 	}
 
 	@Test
@@ -70,8 +70,8 @@ public class DurationPropertyScribeTest extends ScribeTest<DurationProperty> {
 	@Test
 	public void parseXml() {
 		sensei.assertParseXml("<duration>" + durationStr + "</duration>").run(hasDuration);
-		sensei.assertParseXml("<duration>invalid</duration>").cannotParse();
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("<duration>invalid</duration>").cannotParse(18);
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
@@ -83,8 +83,8 @@ public class DurationPropertyScribeTest extends ScribeTest<DurationProperty> {
 	@Test
 	public void parseJson() {
 		sensei.assertParseJson(durationStr).run(hasDuration);
-		sensei.assertParseJson("invalid").cannotParse();
-		sensei.assertParseJson("").cannotParse();
+		sensei.assertParseJson("invalid").cannotParse(18);
+		sensei.assertParseJson("").cannotParse(18);
 	}
 
 	private final Check<DurationProperty> hasDuration = new Check<DurationProperty>() {

@@ -70,8 +70,8 @@ public class VersionScribeTest extends ScribeTest<Version> {
 	@Test
 	public void parseXml() {
 		sensei.assertParseXml("<text>2.0</text>").run(has(null, "2.0"));
-		sensei.assertParseXml("<text/>").cannotParse();
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("<text/>").cannotParse(30);
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class VersionScribeTest extends ScribeTest<Version> {
 	@Test
 	public void parseJson() {
 		sensei.assertParseJson("2.0").run(has(null, "2.0"));
-		sensei.assertParseJson("").cannotParse();
+		sensei.assertParseJson("").cannotParse(30);
 	}
 
 	private Check<Version> has(final String min, final String max) {

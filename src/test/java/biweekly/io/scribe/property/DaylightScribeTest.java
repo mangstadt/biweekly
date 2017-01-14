@@ -59,9 +59,9 @@ public class DaylightScribeTest extends ScribeTest<Daylight> {
 	public void parseText() {
 		sensei.assertParseText("FALSE").run(is(empty));
 		sensei.assertParseText("true;-0500;20140101T010000;20140301T010000;EST;EDT").run(is(withAllValues));
-		sensei.assertParseText("true;invalid;20140101T010000;20140301T010000;EST;EDT").cannotParse();
-		sensei.assertParseText("true;-0500;invalid;20140301T010000;EST;EDT").cannotParse();
-		sensei.assertParseText("true;-0500;20140101T010000;invalid;EST;EDT").cannotParse();
+		sensei.assertParseText("true;invalid;20140101T010000;20140301T010000;EST;EDT").cannotParse(33);
+		sensei.assertParseText("true;-0500;invalid;20140301T010000;EST;EDT").cannotParse(34);
+		sensei.assertParseText("true;-0500;20140101T010000;invalid;EST;EDT").cannotParse(35);
 		sensei.assertParseText("TRUE;;;;;").run(is(withNoValues));
 	}
 

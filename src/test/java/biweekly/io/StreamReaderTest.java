@@ -1,6 +1,6 @@
 package biweekly.io;
 
-import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertParseWarnings;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.icalDate;
 import static biweekly.util.TestUtils.utc;
@@ -198,7 +198,7 @@ public class StreamReaderTest {
 		assertEquals(date("2014-06-11 14:00:00"), property.date);
 
 		assertFalse(it.hasNext());
-		assertWarnings(3, reader);
+		assertParseWarnings(reader, 39, 37, 38);
 	}
 
 	@Test
@@ -232,7 +232,7 @@ public class StreamReaderTest {
 		TimezoneInfo tzinfo = ical.getTimezoneInfo();
 		assertEquals(0, tzinfo.getTimezones().size());
 		assertEquals(1, ical.getComponents(VTimezone.class).size());
-		assertWarnings(1, reader);
+		assertParseWarnings(reader, 39);
 	}
 
 	private abstract class StreamReaderImpl extends StreamReader {

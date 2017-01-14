@@ -125,8 +125,8 @@ public class ExceptionDatesScribeTest extends ScribeTest<ExceptionDates> {
 		sensei.assertParseText(datetime1Str + ";" + datetime2Str).versions(V1_0).dataType(DATE_TIME).run(is(withDateTimes));
 		sensei.assertParseText(datetime1Str + "," + datetime2Str).versions(V2_0_DEPRECATED, V2_0).dataType(DATE_TIME).run(is(withDateTimes));
 
-		sensei.assertParseText(datetime1Str + ";invalid").versions(V1_0).cannotParse();
-		sensei.assertParseText(datetime1Str + ",invalid").versions(V2_0_DEPRECATED, V2_0).cannotParse();
+		sensei.assertParseText(datetime1Str + ";invalid").versions(V1_0).cannotParse(19);
+		sensei.assertParseText(datetime1Str + ",invalid").versions(V2_0_DEPRECATED, V2_0).cannotParse(19);
 
 		sensei.assertParseText("").run(has());
 		sensei.assertParseText("").dataType(DATE).run(has());
@@ -170,8 +170,8 @@ public class ExceptionDatesScribeTest extends ScribeTest<ExceptionDates> {
 		sensei.assertParseXml(
 		"<date>" + date1Str + "</date>" + 
 		"<date>invalid</date>")
-		.cannotParse();
-		sensei.assertParseXml("").cannotParse();
+		.cannotParse(19);
+		sensei.assertParseXml("").cannotParse(23);
 		
 		//timezone tests
 		{
@@ -205,8 +205,8 @@ public class ExceptionDatesScribeTest extends ScribeTest<ExceptionDates> {
 		sensei.assertParseJson(JCalValue.multi(datetime1StrExt, datetime2StrExt)).dataType(DATE).run(has(new ICalDate(datetime1, false), new ICalDate(datetime2, false)));
 		sensei.assertParseJson(JCalValue.multi(datetime1StrExt, datetime2StrExt)).dataType(DATE_TIME).run(is(withDateTimes));
 
-		sensei.assertParseJson(JCalValue.multi(date1Str, "invalid")).cannotParse();
-		sensei.assertParseJson("").cannotParse();
+		sensei.assertParseJson(JCalValue.multi(date1Str, "invalid")).cannotParse(19);
+		sensei.assertParseJson("").cannotParse(19);
 
 		sensei.assertParseJson(JCalValue.multi()).run(has());
 		sensei.assertParseJson(JCalValue.multi()).dataType(DATE).run(has());

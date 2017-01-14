@@ -55,7 +55,7 @@ public class UtcOffsetPropertyScribeTest extends ScribeTest<UtcOffsetPropertyImp
 	@Test
 	public void parseText() {
 		sensei.assertParseText("+0130").run(is(withValue));
-		sensei.assertParseText("invalid").cannotParse();
+		sensei.assertParseText("invalid").cannotParse(28);
 	}
 
 	@Test
@@ -67,8 +67,8 @@ public class UtcOffsetPropertyScribeTest extends ScribeTest<UtcOffsetPropertyImp
 	@Test
 	public void parseXml() {
 		sensei.assertParseXml("<utc-offset>+01:30</utc-offset>").run(is(withValue));
-		sensei.assertParseXml("<utc-offset>invalid</utc-offset>").cannotParse();
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("<utc-offset>invalid</utc-offset>").cannotParse(28);
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
@@ -80,8 +80,8 @@ public class UtcOffsetPropertyScribeTest extends ScribeTest<UtcOffsetPropertyImp
 	@Test
 	public void parseJson() {
 		sensei.assertParseJson("+01:30").run(is(withValue));
-		sensei.assertParseJson("invalid").cannotParse();
-		sensei.assertParseJson("").cannotParse();
+		sensei.assertParseJson("invalid").cannotParse(28);
+		sensei.assertParseJson("").cannotParse(28);
 	}
 
 	public static class UtcOffsetPropertyMarshallerImpl extends UtcOffsetPropertyScribe<UtcOffsetPropertyImpl> {

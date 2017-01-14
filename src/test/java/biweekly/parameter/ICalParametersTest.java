@@ -5,7 +5,7 @@ import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertEqualsAndHash;
 import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
-import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertListSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -61,25 +61,25 @@ public class ICalParametersTest {
 
 	@Test
 	public void validate_empty() {
-		assertWarnings(0, params.validate(V2_0));
+		assertListSize(0, params.validate(V2_0));
 	}
 
 	@Test
 	public void validate_rsvp() {
 		params.replace(ICalParameters.RSVP, "foo");
-		assertWarnings(1, params.validate(V2_0));
+		assertListSize(1, params.validate(V2_0));
 
 		params.replace(ICalParameters.RSVP, "true");
-		assertWarnings(0, params.validate(V2_0));
+		assertListSize(0, params.validate(V2_0));
 
 		params.replace(ICalParameters.RSVP, "false");
-		assertWarnings(0, params.validate(V2_0));
+		assertListSize(0, params.validate(V2_0));
 
 		params.replace(ICalParameters.RSVP, "TRUE");
-		assertWarnings(0, params.validate(V2_0));
+		assertListSize(0, params.validate(V2_0));
 
 		params.replace(ICalParameters.RSVP, "FALSE");
-		assertWarnings(0, params.validate(V2_0));
+		assertListSize(0, params.validate(V2_0));
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public class ICalParametersTest {
 		params.put(ICalParameters.ROLE, "foo");
 		params.put(ICalParameters.VALUE, "foo");
 
-		assertWarnings(8, params.validate(V2_0));
+		assertListSize(8, params.validate(V2_0));
 	}
 
 	@Test
@@ -107,48 +107,48 @@ public class ICalParametersTest {
 		params.put(ICalParameters.ROLE, Role.CHAIR.getValue());
 		params.put(ICalParameters.VALUE, ICalDataType.BINARY.getName());
 
-		assertWarnings(0, params.validate(V2_0));
+		assertListSize(0, params.validate(V2_0));
 	}
 
 	@Test
 	public void validate_deprecated_values() {
 		params.put(ICalParameters.RANGE, Range.THIS_AND_PRIOR.getValue());
-		assertWarnings(0, params.validate(V1_0));
-		assertWarnings(0, params.validate(V2_0_DEPRECATED));
-		assertWarnings(1, params.validate(V2_0));
+		assertListSize(0, params.validate(V1_0));
+		assertListSize(0, params.validate(V2_0_DEPRECATED));
+		assertListSize(1, params.validate(V2_0));
 	}
 
 	@Test
 	public void validate_parameter_name() {
 		params.replace("YES/NO", "value");
-		assertWarnings(0, params.validate(V1_0));
-		assertWarnings(1, params.validate(V2_0_DEPRECATED));
-		assertWarnings(1, params.validate(V2_0));
+		assertListSize(0, params.validate(V1_0));
+		assertListSize(1, params.validate(V2_0_DEPRECATED));
+		assertListSize(1, params.validate(V2_0));
 
 		params.clear();
 		params.replace("NAME[]", "value");
-		assertWarnings(1, params.validate(V1_0));
-		assertWarnings(1, params.validate(V2_0_DEPRECATED));
-		assertWarnings(1, params.validate(V2_0));
+		assertListSize(1, params.validate(V1_0));
+		assertListSize(1, params.validate(V2_0_DEPRECATED));
+		assertListSize(1, params.validate(V2_0));
 
 		params.clear();
 		params.replace("NAME", "value");
-		assertWarnings(0, params.validate(V1_0));
-		assertWarnings(0, params.validate(V2_0_DEPRECATED));
-		assertWarnings(0, params.validate(V2_0));
+		assertListSize(0, params.validate(V1_0));
+		assertListSize(0, params.validate(V2_0_DEPRECATED));
+		assertListSize(0, params.validate(V2_0));
 	}
 
 	@Test
 	public void validate_parameter_value_characters() {
 		for (char c : ",.:=[]".toCharArray()) {
 			params.replace("NAME", "value" + c);
-			assertWarnings(1, params.validate(V1_0));
+			assertListSize(1, params.validate(V1_0));
 		}
 
 		char c = (char) 7;
 		params.replace("NAME", "value" + c);
 		for (ICalVersion version : ICalVersion.values()) {
-			assertWarnings(1, params.validate(version));
+			assertListSize(1, params.validate(version));
 		}
 	}
 

@@ -120,7 +120,7 @@ public class BinaryPropertyScribeTest extends ScribeTest<BinaryProperty> {
 		//<uri> is preferred
 		sensei.assertParseXml("<uri>" + url + "</uri><binary>" + base64Data + "</binary>").run(has(url));
 
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test

@@ -106,8 +106,8 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 	public void parseText() {
 		sensei.assertParseText(dateStr).dataType(ICalDataType.DATE).run(hasDate);
 		sensei.assertParseText(datetimeStr).dataType(ICalDataType.DATE_TIME).run(hasDateTime);
-		sensei.assertParseText("invalid").dataType(ICalDataType.DATE_TIME).cannotParse();
-		sensei.assertParseText("").dataType(ICalDataType.DATE_TIME).cannotParse();
+		sensei.assertParseText("invalid").dataType(ICalDataType.DATE_TIME).cannotParse(17);
+		sensei.assertParseText("").dataType(ICalDataType.DATE_TIME).cannotParse(17);
 	}
 
 	@Test
@@ -130,8 +130,8 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 	public void parseXml() {
 		sensei.assertParseXml("<date>" + dateStrExt + "</date>").run(hasDate);
 		sensei.assertParseXml("<date-time>" + datetimeStrExt + "</date-time>").run(hasDateTime);
-		sensei.assertParseXml("<date-time>invalid</date-time>").cannotParse();
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("<date-time>invalid</date-time>").cannotParse(17);
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
@@ -154,8 +154,8 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 	public void parseJson() {
 		sensei.assertParseJson(dateStrExt).dataType(ICalDataType.DATE_TIME).run(hasDate);
 		sensei.assertParseJson(datetimeStrExt).dataType(ICalDataType.DATE_TIME).run(hasDateTime);
-		sensei.assertParseJson("invalid").dataType(ICalDataType.DATE_TIME).cannotParse();
-		sensei.assertParseJson("").dataType(ICalDataType.DATE_TIME).cannotParse();
+		sensei.assertParseJson("invalid").dataType(ICalDataType.DATE_TIME).cannotParse(17);
+		sensei.assertParseJson("").dataType(ICalDataType.DATE_TIME).cannotParse(17);
 	}
 
 	@SuppressWarnings("rawtypes")

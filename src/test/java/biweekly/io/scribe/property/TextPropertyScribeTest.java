@@ -79,7 +79,7 @@ public class TextPropertyScribeTest extends ScribeTest<TextPropertyImpl> {
 	@Test
 	public void parseXml() {
 		sensei.assertParseXml("<text>" + value + "</text>").run(has(value));
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test

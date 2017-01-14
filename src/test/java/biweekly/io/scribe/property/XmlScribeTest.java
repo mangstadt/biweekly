@@ -1,6 +1,6 @@
 package biweekly.io.scribe.property;
 
-import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertParseWarnings;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 
 import org.junit.Test;
@@ -69,8 +69,8 @@ public class XmlScribeTest extends ScribeTest<Xml> {
 	@Test
 	public void parseText() {
 		sensei.assertParseText(xml).run(has(value));
-		sensei.assertParseText("invalid").cannotParse();
-		sensei.assertParseText("").cannotParse();
+		sensei.assertParseText("invalid").cannotParse(29);
+		sensei.assertParseText("").cannotParse(29);
 	}
 
 	@Test
@@ -84,7 +84,7 @@ public class XmlScribeTest extends ScribeTest<Xml> {
 		Xml prop = scribe.parseXml(value.getDocumentElement(), new ICalParameters(), context);
 
 		assertXMLEqual(value, prop.getValue());
-		assertWarnings(0, context.getWarnings());
+		assertParseWarnings(context.getWarnings());
 	}
 
 	@Test
@@ -108,7 +108,7 @@ public class XmlScribeTest extends ScribeTest<Xml> {
 		Xml prop = scribe.parseXml(doc.getDocumentElement(), parameters, context);
 
 		assertXMLEqual(value, prop.getValue());
-		assertWarnings(0, context.getWarnings());
+		assertParseWarnings(context.getWarnings());
 	}
 
 	@Test
@@ -120,8 +120,8 @@ public class XmlScribeTest extends ScribeTest<Xml> {
 	@Test
 	public void parseJson() {
 		sensei.assertParseJson(xml).run(has(value));
-		sensei.assertParseJson("invalid").cannotParse();
-		sensei.assertParseJson("").cannotParse();
+		sensei.assertParseJson("invalid").cannotParse(29);
+		sensei.assertParseJson("").cannotParse(29);
 	}
 
 	private Check<Xml> has(final Document expected) {

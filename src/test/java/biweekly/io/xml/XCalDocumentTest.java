@@ -4,9 +4,9 @@ import static biweekly.ICalVersion.V2_0;
 import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
 import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertIntEquals;
+import static biweekly.util.TestUtils.assertParseWarnings;
 import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertValidate;
-import static biweekly.util.TestUtils.assertWarnings;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
@@ -178,7 +178,7 @@ public class XCalDocumentTest {
 			assertSize(event, 0, 1);
 			assertEquals("Team Meeting", event.getSummary().getValue());
 
-			assertWarnings(0, reader);
+			assertParseWarnings(reader);
 		}
 
 		{
@@ -192,7 +192,7 @@ public class XCalDocumentTest {
 			assertSize(event, 0, 1);
 			assertEquals("Team Happy Hour", event.getSummary().getValue());
 
-			assertWarnings(0, reader);
+			assertParseWarnings(reader);
 		}
 
 		assertNull(reader.readNext());
@@ -216,7 +216,7 @@ public class XCalDocumentTest {
 		StreamReader reader = xcal.reader();
 		ICalendar ical = reader.readNext();
 		assertNull(ical);
-		assertWarnings(0, reader);
+		assertParseWarnings(reader);
 	}
 
 	@Test
@@ -238,7 +238,7 @@ public class XCalDocumentTest {
 		ICalendar ical = reader.readNext();
 		assertNull(ical);
 
-		assertWarnings(0, reader);
+		assertParseWarnings(reader);
 		assertNull(reader.readNext());
 	}
 
@@ -295,7 +295,7 @@ public class XCalDocumentTest {
 			assertEquals("Team Meeting", event.getSummary().getValue());
 		}
 
-		assertWarnings(0, reader);
+		assertParseWarnings(reader);
 		assertNull(reader.readNext());
 	}
 
@@ -321,7 +321,7 @@ public class XCalDocumentTest {
 		Summary prop = ical.getProperty(Summary.class);
 		assertEquals("  This \t  is \n   a   note ", prop.getValue());
 
-		assertWarnings(0, reader);
+		assertParseWarnings(reader);
 		assertNull(reader.readNext());
 	}
 
@@ -397,7 +397,7 @@ public class XCalDocumentTest {
 		assertEquals(2, prop.getParameters().size());
 		assertEquals(Arrays.asList("a", "b"), prop.getParameters("X-FOO"));
 
-		assertWarnings(0, reader);
+		assertParseWarnings(reader);
 		assertNull(reader.readNext());
 	}
 
@@ -429,7 +429,7 @@ public class XCalDocumentTest {
 		Summary prop = comp.getProperty(Summary.class);
 		assertEquals("Party", prop.getValue());
 
-		assertWarnings(0, reader);
+		assertParseWarnings(reader);
 		assertNull(reader.readNext());
 	}
 
@@ -457,7 +457,7 @@ public class XCalDocumentTest {
 
 		assertNotNull(ical.getExperimentalComponent("x-party"));
 
-		assertWarnings(0, reader);
+		assertParseWarnings(reader);
 		assertNull(reader.readNext());
 	}
 
@@ -484,7 +484,7 @@ public class XCalDocumentTest {
 		assertEquals("John Doe", prop.getValue());
 		assertEquals(ICalDataType.TEXT, prop.getDataType());
 
-		assertWarnings(0, reader);
+		assertParseWarnings(reader);
 		assertNull(reader.readNext());
 	}
 
@@ -513,7 +513,7 @@ public class XCalDocumentTest {
 		Company prop = ical.getProperty(Company.class);
 		assertEquals("John Doe", prop.getBoss());
 
-		assertWarnings(0, reader);
+		assertParseWarnings(reader);
 		assertNull(reader.readNext());
 	}
 
@@ -542,7 +542,7 @@ public class XCalDocumentTest {
 		Document expected = XmlUtils.toDocument("<m:company xmlns:m=\"http://example.com\"><m:boss>John Doe</m:boss></m:company>");
 		assertXMLEqual(expected, prop.getValue());
 
-		assertWarnings(0, reader);
+		assertParseWarnings(reader);
 		assertNull(reader.readNext());
 	}
 
@@ -572,7 +572,7 @@ public class XCalDocumentTest {
 		assertEquals("X-FOO", property.getName());
 		assertEquals("bar", property.getValue());
 
-		assertWarnings(1, reader);
+		assertParseWarnings(reader, 0);
 		assertNull(reader.readNext());
 	}
 
@@ -606,7 +606,7 @@ public class XCalDocumentTest {
 		Document expected = XmlUtils.toDocument("<cannotparse xmlns=\"" + XCAL_NS + "\"><unknown>value</unknown></cannotparse>");
 		assertXMLEqual(expected, prop.getValue());
 
-		assertWarnings(1, reader);
+		assertParseWarnings(reader, (Integer) null);
 		assertNull(reader.readNext());
 	}
 
@@ -634,7 +634,7 @@ public class XCalDocumentTest {
 		Summary prop = ical.getProperty(Summary.class);
 		assertEquals("summary", prop.getValue());
 
-		assertWarnings(0, reader);
+		assertParseWarnings(reader);
 		assertNull(reader.readNext());
 	}
 
@@ -664,7 +664,7 @@ public class XCalDocumentTest {
 		Summary prop = ical.getProperty(Summary.class);
 		assertEquals("\u1e66ummary", prop.getValue());
 
-		assertWarnings(0, reader);
+		assertParseWarnings(reader);
 		assertNull(reader.readNext());
 	}
 

@@ -116,12 +116,12 @@ public class RequestStatusScribeTest extends ScribeTest<RequestStatus> {
 		sensei.assertParseXml("<code>" + code + "</code><description>" + description + "</description><data>" + data + "</data>").run(is(withAll));
 		sensei.assertParseXml("<code>" + code + "</code><description>" + description + "</description>").run(is(withCodeDescription));
 		sensei.assertParseXml("<code>" + code + "</code><data>" + data + "</data>").run(is(withCodeData));
-		sensei.assertParseXml("<description>" + description + "</description><data>" + data + "</data>").cannotParse();
+		sensei.assertParseXml("<description>" + description + "</description><data>" + data + "</data>").cannotParse(23);
 		sensei.assertParseXml("<code>" + code + "</code>").run(is(withCode));
-		sensei.assertParseXml("<description>" + description + "</description>").cannotParse();
-		sensei.assertParseXml("<data>" + data + "</data>").cannotParse();
+		sensei.assertParseXml("<description>" + description + "</description>").cannotParse(23);
+		sensei.assertParseXml("<data>" + data + "</data>").cannotParse(23);
 		sensei.assertParseXml("<code/><description/><data/>").run(is(empty));
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test

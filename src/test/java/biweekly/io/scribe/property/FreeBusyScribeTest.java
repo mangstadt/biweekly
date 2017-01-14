@@ -89,11 +89,11 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 		sensei.assertParseText(startStr + "/" + endStr).run(hasSingle);
 		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/" + durationStr).run(hasMultiple);
 
-		sensei.assertParseText(startStr + "/").cannotParse();
-		sensei.assertParseText(startStr + "/" + endStr + ",invalid/" + durationStr).cannotParse();
-		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/invalid").cannotParse();
-		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/").cannotParse();
-		sensei.assertParseText(startStr + "/" + endStr + "," + startStr).cannotParse();
+		sensei.assertParseText(startStr + "/").cannotParse(14);
+		sensei.assertParseText(startStr + "/" + endStr + ",invalid/" + durationStr).cannotParse(10);
+		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/invalid").cannotParse(14);
+		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/").cannotParse(14);
+		sensei.assertParseText(startStr + "/" + endStr + "," + startStr).cannotParse(13);
 		sensei.assertParseText("").run(has());
 	}
 
@@ -150,7 +150,7 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 			"<start>invalid</start>" +
 			"<duration>" + durationStr + "</duration>" +
 		"</period>"
-		).cannotParse();
+		).cannotParse(10);
 		
 		sensei.assertParseXml(
 		"<period>" +
@@ -161,7 +161,7 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 			"<start>" + startStrExt  + "</start>" +
 			"<duration>invalid</duration>" +
 		"</period>"
-		).cannotParse();
+		).cannotParse(12);
 		
 		sensei.assertParseXml(
 		"<period>" +
@@ -172,7 +172,7 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 			"<start>" + startStrExt  + "</start>" +
 			"<end>invalid</end>" +
 		"</period>"
-		).cannotParse();
+		).cannotParse(11);
 		
 		sensei.assertParseXml(
 		"<period>" +
@@ -182,7 +182,7 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 		"<period>" +
 			"<start>" + startStrExt  + "</start>" +
 		"</period>"
-		).cannotParse();
+		).cannotParse(13);
 		
 		sensei.assertParseXml(
 		"<period>" +
@@ -192,7 +192,7 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 		"<period>" +
 			"<end>" + endStrExt + "</end>" +
 		"</period>"
-		).cannotParse();
+		).cannotParse(9);
 		
 		sensei.assertParseXml(
 		"<period>" +
@@ -202,7 +202,7 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 		"<period>" +
 			"<duration>" + durationStr + "</duration>" +
 		"</period>"
-		).cannotParse();
+		).cannotParse(9);
 		
 		sensei.assertParseXml(
 		"<period>" +
@@ -210,9 +210,9 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 			"<end>" + endStrExt + "</end>" +
 		"</period>" +
 		"<period/>"
-		).cannotParse();
+		).cannotParse(9);
 		
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("").cannotParse(23);
 		//@formatter:on
 	}
 
@@ -228,11 +228,11 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt)).run(hasSingle);
 		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/" + durationStr)).run(hasMultiple);
 
-		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, "invalid/" + durationStr)).cannotParse();
-		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/invalid")).cannotParse();
-		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/")).cannotParse();
-		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt)).cannotParse();
-		sensei.assertParseJson("").cannotParse();
+		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, "invalid/" + durationStr)).cannotParse(10);
+		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/invalid")).cannotParse(14);
+		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/")).cannotParse(14);
+		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt)).cannotParse(13);
+		sensei.assertParseJson("").cannotParse(13);
 	}
 
 	private final Check<FreeBusy> hasSingle = has(new Period(start, end));

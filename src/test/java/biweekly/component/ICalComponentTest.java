@@ -4,7 +4,7 @@ import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertEqualsAndHash;
 import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertSize;
-import static biweekly.util.TestUtils.assertWarnings;
+import static biweekly.util.TestUtils.assertListSize;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -451,7 +451,7 @@ public class ICalComponentTest {
 		component.checkRequiredCardinality(warnings, Summary.class, Description.class, Location.class);
 
 		//too many instances of Description and no instances of Location
-		assertWarnings(2, warnings);
+		assertListSize(2, warnings);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -466,7 +466,7 @@ public class ICalComponentTest {
 		component.checkOptionalCardinality(warnings, Summary.class, Description.class, Location.class);
 
 		//too many instances of Description
-		assertWarnings(1, warnings);
+		assertListSize(1, warnings);
 	}
 
 	@Test
@@ -477,7 +477,7 @@ public class ICalComponentTest {
 		List<Warning> warnings = new ArrayList<Warning>();
 		component.checkStatus(warnings, Status.cancelled());
 
-		assertWarnings(0, warnings);
+		assertListSize(0, warnings);
 	}
 
 	@Test
@@ -488,7 +488,7 @@ public class ICalComponentTest {
 		List<Warning> warnings = new ArrayList<Warning>();
 		component.checkStatus(warnings, Status.completed());
 
-		assertWarnings(1, warnings);
+		assertListSize(1, warnings);
 	}
 
 	@Test
@@ -498,7 +498,7 @@ public class ICalComponentTest {
 		List<Warning> warnings = new ArrayList<Warning>();
 		component.checkStatus(warnings, Status.cancelled());
 
-		assertWarnings(0, warnings);
+		assertListSize(0, warnings);
 	}
 
 	@Test

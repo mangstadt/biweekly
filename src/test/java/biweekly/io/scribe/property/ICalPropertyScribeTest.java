@@ -163,7 +163,7 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 
 	@Test
 	public void parseText() {
-		sensei.assertParseText("value").warnings(1).run(new Check<TestProperty>() {
+		sensei.assertParseText("value").warnings((Integer) null).run(new Check<TestProperty>() {
 			public void check(TestProperty property, ParseContext context) {
 				has(ICalDataType.TEXT, "value").check(property, context);
 			}
@@ -183,22 +183,22 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 		"<ignore xmlns=\"http://example.com\">ignore-me</ignore>" +
 		"<integer>value</integer>" +
 		"<text>ignore-me</text>"
-		).warnings(1).run(has(ICalDataType.INTEGER, "value"));
+		).warnings((Integer) null).run(has(ICalDataType.INTEGER, "value"));
 		
 		//no xCal element
 		sensei.assertParseXml(
 		"<one xmlns=\"http://example.com\">1</one>" +
 		"<two xmlns=\"http://example.com\">2</two>"
-		).warnings(1).run(has(null, "12"));
+		).warnings((Integer) null).run(has(null, "12"));
 		
 		//no child elements
-		sensei.assertParseXml("value").warnings(1).run(has(null, "value"));
+		sensei.assertParseXml("value").warnings((Integer)null).run(has(null, "value"));
 		
 		//unknown data type
 		sensei.assertParseXml("<unknown>value</unknown>"
-		).warnings(1).run(has(null, "value"));
+		).warnings((Integer) null).run(has(null, "value"));
 		sensei.assertParseXml("<unknown />"
-		).warnings(1).run(has(null, ""));
+		).warnings((Integer) null).run(has(null, ""));
 		//@formatter:on
 	}
 
@@ -211,20 +211,20 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	@Test
 	public void parseJson() {
 		//@formatter:off
-		sensei.assertParseJson("value").warnings(1).run(has(ICalDataType.TEXT, "value"));
+		sensei.assertParseJson("value").warnings((Integer)null).run(has(ICalDataType.TEXT, "value"));
 		
 		//multivalued
-		sensei.assertParseJson(JCalValue.multi("value1", "val,;ue2")).warnings(1).run(has(ICalDataType.TEXT, "value1,val\\,\\;ue2"));
+		sensei.assertParseJson(JCalValue.multi("value1", "val,;ue2")).warnings((Integer)null).run(has(ICalDataType.TEXT, "value1,val\\,\\;ue2"));
 		
 		//structured
-		sensei.assertParseJson(JCalValue.structured("value1", "val,;ue2")).warnings(1).run(has(ICalDataType.TEXT, "value1;val\\,\\;ue2"));
+		sensei.assertParseJson(JCalValue.structured("value1", "val,;ue2")).warnings((Integer)null).run(has(ICalDataType.TEXT, "value1;val\\,\\;ue2"));
 		
 		//object
 		ListMultimap<String, Object> map = new ListMultimap<String, Object>();
 		map.put("a", "one");
 		map.put("b", "two");
 		map.put("b", "three,four;five\\six=seven");
-		sensei.assertParseJson(JCalValue.object(map)).warnings(1).run(has(ICalDataType.TEXT, "A=one;B=two,three\\,four\\;five\\\\six=seven"));
+		sensei.assertParseJson(JCalValue.object(map)).warnings((Integer)null).run(has(ICalDataType.TEXT, "A=one;B=two,three\\,four\\;five\\\\six=seven"));
 		//@formatter:on
 	}
 

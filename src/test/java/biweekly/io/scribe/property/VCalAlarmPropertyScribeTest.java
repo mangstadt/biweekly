@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
+
 import biweekly.ICalDataType;
 import biweekly.component.VAlarm;
 import biweekly.io.DataModelConversionException;
@@ -19,8 +21,6 @@ import biweekly.property.Action;
 import biweekly.property.Trigger;
 import biweekly.property.VCalAlarmProperty;
 import biweekly.util.Duration;
-
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -108,9 +108,9 @@ public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImp
 			assertEquals(Arrays.asList(expected), e.getComponents());
 		}
 
-		sensei.assertParseText("invalid;;").cannotParse();
-		sensei.assertParseText("20140101T010000Z;invalid;").cannotParse();
-		sensei.assertParseText("20140101T010000Z;PT10M;invalid").cannotParse();
+		sensei.assertParseText("invalid;;").cannotParse(27);
+		sensei.assertParseText("20140101T010000Z;invalid;").cannotParse(26);
+		sensei.assertParseText("20140101T010000Z;PT10M;invalid").cannotParse(24);
 	}
 
 	public static class VCalAlarmPropertyImpl extends VCalAlarmProperty {

@@ -61,8 +61,8 @@ public class DateTimePropertyScribeTest extends ScribeTest<DateTimePropertyImpl>
 	@Test
 	public void parseText() {
 		sensei.assertParseText(datetimeStr).run(hasDateTime);
-		sensei.assertParseText("invalid").cannotParse();
-		sensei.assertParseText("").cannotParse();
+		sensei.assertParseText("invalid").cannotParse(17);
+		sensei.assertParseText("").cannotParse(17);
 	}
 
 	@Test
@@ -74,8 +74,8 @@ public class DateTimePropertyScribeTest extends ScribeTest<DateTimePropertyImpl>
 	@Test
 	public void parseXml() {
 		sensei.assertParseXml("<date-time>" + datetimeStrExt + "</date-time>").run(hasDateTime);
-		sensei.assertParseXml("<date-time>invalid</date-time>").cannotParse();
-		sensei.assertParseXml("").cannotParse();
+		sensei.assertParseXml("<date-time>invalid</date-time>").cannotParse(17);
+		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
@@ -87,8 +87,8 @@ public class DateTimePropertyScribeTest extends ScribeTest<DateTimePropertyImpl>
 	@Test
 	public void parseJson() {
 		sensei.assertParseJson(datetimeStrExt).run(hasDateTime);
-		sensei.assertParseJson("invalid").cannotParse();
-		sensei.assertParseJson("").cannotParse();
+		sensei.assertParseJson("invalid").cannotParse(17);
+		sensei.assertParseJson("").cannotParse(17);
 	}
 
 	public static class DateTimePropertyMarshallerImpl extends DateTimePropertyScribe<DateTimePropertyImpl> {
