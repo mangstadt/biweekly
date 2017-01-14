@@ -34,10 +34,9 @@ import biweekly.Messages;
  * @author Michael Angstadt
  */
 public class CannotParseException extends RuntimeException {
-	private static final long serialVersionUID = 5509704168351401110L;
+	private static final long serialVersionUID = 8299420302297241326L;
 	private final Integer code;
 	private final Object args[];
-	private final String reason;
 
 	/**
 	 * Creates a new "cannot parse" exception.
@@ -47,7 +46,6 @@ public class CannotParseException extends RuntimeException {
 	public CannotParseException(int code, Object... args) {
 		this.code = code;
 		this.args = args;
-		this.reason = null;
 	}
 
 	/**
@@ -55,14 +53,12 @@ public class CannotParseException extends RuntimeException {
 	 * @param reason the reason why the property value cannot be parsed
 	 */
 	public CannotParseException(String reason) {
-		this.code = null;
-		this.args = null;
-		this.reason = reason;
+		this(1, reason);
 	}
 
 	/**
 	 * Gets the warning message code.
-	 * @return the message code or null if a reason string was supplied
+	 * @return the message code
 	 */
 	public Integer getCode() {
 		return code;
@@ -70,26 +66,14 @@ public class CannotParseException extends RuntimeException {
 
 	/**
 	 * Gets the warning message arguments.
-	 * @return the message arguments or null if a reason string was supplied
+	 * @return the message arguments
 	 */
 	public Object[] getArgs() {
 		return args;
 	}
 
-	/**
-	 * Gets the parse warning reason.
-	 * @return the parse warning reason or null if a message code was supplied
-	 */
-	public String getReason() {
-		return reason;
-	}
-
 	@Override
 	public String getMessage() {
-		if (reason != null) {
-			return reason;
-		}
-
 		return Messages.INSTANCE.getParseMessage(code, args);
 	}
 }

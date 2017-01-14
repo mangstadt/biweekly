@@ -476,7 +476,7 @@ public class JCalReaderTest {
 		assertEquals("X-FOO", property.getName());
 		assertEquals("bar", property.getValue());
 
-		assertParseWarnings(reader, (Integer) null);
+		assertParseWarnings(reader, 1);
 
 		assertNull(reader.readNext());
 	}

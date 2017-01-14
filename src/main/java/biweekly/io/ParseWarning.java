@@ -172,8 +172,7 @@ public class ParseWarning {
 		 * @return this
 		 */
 		public Builder message(CannotParseException exception) {
-			String reason = exception.getReason();
-			return (reason == null) ? message(exception.getCode(), exception.getArgs()) : message(reason);
+			return message(exception.getCode(), exception.getArgs());
 		}
 
 		/**

@@ -74,8 +74,8 @@ public class ParseWarningTest {
 		ParseWarning warning = builder.message(e).build();
 		assertNull(warning.getLineNumber());
 		assertNull(warning.getPropertyName());
-		assertNull(warning.getCode());
-		assertEquals("reason", warning.getMessage());
+		assertIntEquals(1, warning.getCode());
+		assertEquals(Messages.INSTANCE.getParseMessage(1, "reason"), warning.getMessage());
 	}
 
 	@Test

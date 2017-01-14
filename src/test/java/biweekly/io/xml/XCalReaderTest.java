@@ -864,7 +864,7 @@ public class XCalReaderTest {
 			Xml prop = ical.getProperty(Xml.class);
 			Document expected = XmlUtils.toDocument("<cannotparse xmlns=\"" + XCAL_NS + "\"><unknown>value</unknown></cannotparse>");
 			assertXMLEqual(expected, prop.getValue());
-			assertParseWarnings(reader, (Integer) null);
+			assertParseWarnings(reader, 1);
 		}
 
 		assertNull(reader.readNext());
