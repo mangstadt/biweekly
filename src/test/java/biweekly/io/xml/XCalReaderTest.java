@@ -828,7 +828,7 @@ public class XCalReaderTest {
 			assertNull(property.getDataType());
 			assertEquals("X-FOO", property.getName());
 			assertEquals("bar", property.getValue());
-			assertParseWarnings(reader, 22);
+			assertParseWarnings(reader, 0);
 		}
 
 		assertNull(reader.readNext());

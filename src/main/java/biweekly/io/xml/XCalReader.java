@@ -420,7 +420,7 @@ public class XCalReader extends StreamReader {
 					} catch (SkipMeException e) {
 						//@formatter:off
 						warnings.add(new ParseWarning.Builder(context)
-							.message(22, e.getMessage())
+							.message(0, e.getMessage())
 							.build()
 						);
 						//@formatter:on
