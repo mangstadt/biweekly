@@ -1,7 +1,6 @@
 package biweekly.io;
 
 import biweekly.ICalendar;
-import biweekly.Warning;
 
 /*
  Copyright (c) 2013-2016, Michael Angstadt
@@ -35,32 +34,23 @@ import biweekly.Warning;
  * @author Michael Angstadt
  */
 public class SkipMeException extends RuntimeException {
-	private static final long serialVersionUID = -4029746115565159207L;
-	private final Warning warning;
+	private static final long serialVersionUID = 3384029056232963767L;
+	private final String reason;
 
 	/**
 	 * Creates a new "skip me" exception.
-	 * @param code the warning message code
-	 * @param args the warning message arguments
-	 */
-	public SkipMeException(int code, Object... args) {
-		this(Warning.parse(code, args));
-	}
-
-	/**
-	 * Creates a new "skip me" exception.
-	 * @param reason the reason why the property value cannot be parsed
+	 * @param reason the reason why the property was skipped
 	 */
 	public SkipMeException(String reason) {
-		this(new Warning(reason));
+		super(reason);
+		this.reason = reason;
 	}
 
-	private SkipMeException(Warning warning) {
-		super(warning.toString());
-		this.warning = warning;
-	}
-
-	public Warning getWarning() {
-		return warning;
+	/**
+	 * Gets the reason why the property was skipped.
+	 * @return the reason
+	 */
+	public String getReason() {
+		return reason;
 	}
 }
