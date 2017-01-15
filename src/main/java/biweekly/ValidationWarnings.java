@@ -178,7 +178,7 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 		private final ICalProperty property;
 		private final ICalComponent component;
 		private final List<ICalComponent> componentHierarchy;
-		private final List<Warning> warnings;
+		private final List<ValidationWarning> warnings;
 
 		/**
 		 * Creates a new set of validation warnings for a property.
@@ -187,7 +187,7 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 		 * property belongs to
 		 * @param warning the warnings
 		 */
-		public WarningsGroup(ICalProperty property, List<ICalComponent> componentHierarchy, List<Warning> warning) {
+		public WarningsGroup(ICalProperty property, List<ICalComponent> componentHierarchy, List<ValidationWarning> warning) {
 			this(null, property, componentHierarchy, warning);
 		}
 
@@ -198,11 +198,11 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 		 * component belongs to
 		 * @param warning the warnings
 		 */
-		public WarningsGroup(ICalComponent component, List<ICalComponent> componentHierarchy, List<Warning> warning) {
+		public WarningsGroup(ICalComponent component, List<ICalComponent> componentHierarchy, List<ValidationWarning> warning) {
 			this(component, null, componentHierarchy, warning);
 		}
 
-		private WarningsGroup(ICalComponent component, ICalProperty property, List<ICalComponent> componentHierarchy, List<Warning> warning) {
+		private WarningsGroup(ICalComponent component, ICalProperty property, List<ICalComponent> componentHierarchy, List<ValidationWarning> warning) {
 			this.component = component;
 			this.property = property;
 			this.componentHierarchy = componentHierarchy;
@@ -237,10 +237,10 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 		}
 
 		/**
-		 * Gets the warnings.
+		 * Gets the warnings that belong to the property or component.
 		 * @return the warnings
 		 */
-		public List<Warning> getWarnings() {
+		public List<ValidationWarning> getWarnings() {
 			return warnings;
 		}
 
@@ -259,8 +259,8 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 		@Override
 		public String toString() {
 			final String prefix = "[" + buildPath() + "]: ";
-			return StringUtils.join(warnings, StringUtils.NEWLINE, new JoinCallback<Warning>() {
-				public void handle(StringBuilder sb, Warning warning) {
+			return StringUtils.join(warnings, StringUtils.NEWLINE, new JoinCallback<ValidationWarning>() {
+				public void handle(StringBuilder sb, ValidationWarning warning) {
 					sb.append(prefix).append(warning);
 				}
 			});

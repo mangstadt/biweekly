@@ -22,7 +22,7 @@ import java.util.List;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.property.Description;
 import biweekly.property.Location;
 import biweekly.property.RawProperty;
@@ -447,7 +447,7 @@ public class ICalComponentTest {
 		component.addProperty(new Description(""));
 		component.addProperty(new Description(""));
 
-		List<Warning> warnings = new ArrayList<Warning>();
+		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>();
 		component.checkRequiredCardinality(warnings, Summary.class, Description.class, Location.class);
 
 		//too many instances of Description and no instances of Location
@@ -462,7 +462,7 @@ public class ICalComponentTest {
 		component.addProperty(new Description(""));
 		component.addProperty(new Description(""));
 
-		List<Warning> warnings = new ArrayList<Warning>();
+		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>();
 		component.checkOptionalCardinality(warnings, Summary.class, Description.class, Location.class);
 
 		//too many instances of Description
@@ -474,7 +474,7 @@ public class ICalComponentTest {
 		ICalComponentImpl component = new ICalComponentImpl();
 		component.addProperty(Status.cancelled());
 
-		List<Warning> warnings = new ArrayList<Warning>();
+		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>();
 		component.checkStatus(warnings, Status.cancelled());
 
 		assertListSize(0, warnings);
@@ -485,7 +485,7 @@ public class ICalComponentTest {
 		ICalComponentImpl component = new ICalComponentImpl();
 		component.addProperty(Status.cancelled());
 
-		List<Warning> warnings = new ArrayList<Warning>();
+		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>();
 		component.checkStatus(warnings, Status.completed());
 
 		assertListSize(1, warnings);
@@ -495,7 +495,7 @@ public class ICalComponentTest {
 	public void checkStatus_null() {
 		ICalComponentImpl component = new ICalComponentImpl();
 
-		List<Warning> warnings = new ArrayList<Warning>();
+		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>();
 		component.checkStatus(warnings, Status.cancelled());
 
 		assertListSize(0, warnings);

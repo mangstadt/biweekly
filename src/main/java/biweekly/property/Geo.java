@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 
 /*
@@ -121,12 +121,12 @@ public class Geo extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		if (latitude == null) {
-			warnings.add(Warning.validate(41));
+			warnings.add(new ValidationWarning(41));
 		}
 		if (longitude == null) {
-			warnings.add(Warning.validate(42));
+			warnings.add(new ValidationWarning(42));
 		}
 	}
 

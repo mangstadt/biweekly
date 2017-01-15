@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 import biweekly.parameter.Related;
 import biweekly.util.Duration;
@@ -145,14 +145,14 @@ public class Trigger extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		if (duration == null && date == null) {
-			warnings.add(Warning.validate(33));
+			warnings.add(new ValidationWarning(33));
 		}
 
 		Related related = getRelated();
 		if (duration != null && related == null) {
-			warnings.add(Warning.validate(10));
+			warnings.add(new ValidationWarning(10));
 		}
 	}
 

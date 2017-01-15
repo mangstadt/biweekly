@@ -3,7 +3,7 @@ package biweekly.property;
 import java.util.List;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 import biweekly.util.UtcOffset;
 
@@ -59,11 +59,11 @@ public class Timezone extends UtcOffsetProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		super.validate(components, version, warnings);
 
 		if (version != ICalVersion.V1_0) {
-			warnings.add(Warning.validate(45, version));
+			warnings.add(new ValidationWarning(45, version));
 		}
 	}
 

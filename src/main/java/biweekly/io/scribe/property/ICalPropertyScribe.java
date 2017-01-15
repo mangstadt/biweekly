@@ -17,7 +17,7 @@ import org.w3c.dom.Element;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.Observance;
 import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
@@ -853,14 +853,14 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 */
 	public static class Result<T> {
 		private final T property;
-		private final List<Warning> warnings;
+		private final List<ValidationWarning> warnings;
 
 		/**
 		 * Creates a new result.
 		 * @param property the property object
 		 * @param warnings the warnings
 		 */
-		public Result(T property, List<Warning> warnings) {
+		public Result(T property, List<ValidationWarning> warnings) {
 			this.property = property;
 			this.warnings = warnings;
 		}
@@ -869,7 +869,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		 * Gets the warnings.
 		 * @return the warnings
 		 */
-		public List<Warning> getWarnings() {
+		public List<ValidationWarning> getWarnings() {
 			return warnings;
 		}
 

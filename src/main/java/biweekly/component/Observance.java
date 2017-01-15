@@ -3,7 +3,7 @@ package biweekly.component;
 import java.util.List;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.property.Comment;
 import biweekly.property.DateStart;
 import biweekly.property.ExceptionDates;
@@ -374,9 +374,9 @@ public class Observance extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		if (version == ICalVersion.V1_0) {
-			warnings.add(Warning.validate(48, version));
+			warnings.add(new ValidationWarning(48, version));
 		}
 
 		checkRequiredCardinality(warnings, DateStart.class, TimezoneOffsetTo.class, TimezoneOffsetFrom.class);
@@ -390,7 +390,7 @@ public class Observance extends ICalComponent {
 			Recurrence recur = rrule.getValue();
 			if (start != null && recur != null) {
 				if (!start.hasTime() && (!recur.getByHour().isEmpty() || !recur.getByMinute().isEmpty() || !recur.getBySecond().isEmpty())) {
-					warnings.add(Warning.validate(5));
+					warnings.add(new ValidationWarning(5));
 				}
 			}
 		}
@@ -398,7 +398,7 @@ public class Observance extends ICalComponent {
 		//there *should* be only 1 instance of RRULE
 		//RFC 5545 p. 167
 		if (getProperties(RecurrenceRule.class).size() > 1) {
-			warnings.add(Warning.validate(6));
+			warnings.add(new ValidationWarning(6));
 		}
 	}
 

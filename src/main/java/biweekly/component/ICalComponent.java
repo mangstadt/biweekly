@@ -12,7 +12,7 @@ import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Messages;
 import biweekly.ValidationWarnings.WarningsGroup;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.Status;
@@ -458,7 +458,7 @@ public abstract class ICalComponent {
 		List<WarningsGroup> warnings = new ArrayList<WarningsGroup>();
 
 		//validate this component
-		List<Warning> warningsBuf = new ArrayList<Warning>(0);
+		List<ValidationWarning> warningsBuf = new ArrayList<ValidationWarning>(0);
 		validate(hierarchy, version, warningsBuf);
 		if (!warningsBuf.isEmpty()) {
 			warnings.add(new WarningsGroup(this, hierarchy, warningsBuf));
@@ -471,7 +471,7 @@ public abstract class ICalComponent {
 
 		//validate properties
 		for (ICalProperty property : properties.values()) {
-			List<Warning> propWarnings = property.validate(hierarchy, version);
+			List<ValidationWarning> propWarnings = property.validate(hierarchy, version);
 			if (!propWarnings.isEmpty()) {
 				warnings.add(new WarningsGroup(property, hierarchy, propWarnings));
 			}
@@ -499,7 +499,7 @@ public abstract class ICalComponent {
 	 * @param version the version to validate against
 	 * @param warnings the list to add the warnings to
 	 */
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		//do nothing
 	}
 
@@ -509,17 +509,17 @@ public abstract class ICalComponent {
 	 * @param warnings the list to add the warnings to
 	 * @param classes the properties to check
 	 */
-	protected void checkRequiredCardinality(List<Warning> warnings, Class<? extends ICalProperty>... classes) {
+	protected void checkRequiredCardinality(List<ValidationWarning> warnings, Class<? extends ICalProperty>... classes) {
 		for (Class<? extends ICalProperty> clazz : classes) {
 			List<? extends ICalProperty> props = getProperties(clazz);
 
 			if (props.isEmpty()) {
-				warnings.add(Warning.validate(2, clazz.getSimpleName()));
+				warnings.add(new ValidationWarning(2, clazz.getSimpleName()));
 				continue;
 			}
 
 			if (props.size() > 1) {
-				warnings.add(Warning.validate(3, clazz.getSimpleName()));
+				warnings.add(new ValidationWarning(3, clazz.getSimpleName()));
 				continue;
 			}
 		}
@@ -531,12 +531,12 @@ public abstract class ICalComponent {
 	 * @param warnings the list to add the warnings to
 	 * @param classes the properties to check
 	 */
-	protected void checkOptionalCardinality(List<Warning> warnings, Class<? extends ICalProperty>... classes) {
+	protected void checkOptionalCardinality(List<ValidationWarning> warnings, Class<? extends ICalProperty>... classes) {
 		for (Class<? extends ICalProperty> clazz : classes) {
 			List<? extends ICalProperty> props = getProperties(clazz);
 
 			if (props.size() > 1) {
-				warnings.add(Warning.validate(3, clazz.getSimpleName()));
+				warnings.add(new ValidationWarning(3, clazz.getSimpleName()));
 				continue;
 			}
 		}
@@ -547,7 +547,7 @@ public abstract class ICalComponent {
 	 * @param warnings the list to add the warnings to
 	 * @param allowed the valid statuses
 	 */
-	protected void checkStatus(List<Warning> warnings, Status... allowed) {
+	protected void checkStatus(List<ValidationWarning> warnings, Status... allowed) {
 		Status actual = getProperty(Status.class);
 		if (actual == null) {
 			return;
@@ -561,7 +561,7 @@ public abstract class ICalComponent {
 
 		String actualValue = actual.getValue().toLowerCase();
 		if (!allowedValues.contains(actualValue)) {
-			warnings.add(Warning.validate(13, actual.getValue(), allowedValues));
+			warnings.add(new ValidationWarning(13, actual.getValue(), allowedValues));
 		}
 	}
 

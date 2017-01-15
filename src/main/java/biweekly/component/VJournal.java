@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.Categories;
@@ -1220,9 +1220,9 @@ public class VJournal extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		if (version == ICalVersion.V1_0) {
-			warnings.add(Warning.validate(48, version));
+			warnings.add(new ValidationWarning(48, version));
 		}
 
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
@@ -1233,7 +1233,7 @@ public class VJournal extends ICalComponent {
 		ICalDate recurrenceId = getValue(getRecurrenceId());
 		ICalDate dateStart = getValue(getDateStart());
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
-			warnings.add(Warning.validate(19));
+			warnings.add(new ValidationWarning(19));
 		}
 
 		//BYHOUR, BYMINUTE, and BYSECOND cannot be specified in RRULE if DTSTART's data type is "date"
@@ -1241,14 +1241,14 @@ public class VJournal extends ICalComponent {
 		Recurrence rrule = getValue(getRecurrenceRule());
 		if (dateStart != null && rrule != null) {
 			if (!dateStart.hasTime() && (!rrule.getByHour().isEmpty() || !rrule.getByMinute().isEmpty() || !rrule.getBySecond().isEmpty())) {
-				warnings.add(Warning.validate(5));
+				warnings.add(new ValidationWarning(5));
 			}
 		}
 
 		//there *should* be only 1 instance of RRULE
 		//RFC 5545 p. 167
 		if (getProperties(RecurrenceRule.class).size() > 1) {
-			warnings.add(Warning.validate(6));
+			warnings.add(new ValidationWarning(6));
 		}
 	}
 

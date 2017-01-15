@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.parameter.Related;
 import biweekly.property.Action;
 import biweekly.property.Attachment;
@@ -517,7 +517,7 @@ public class VAlarm extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		checkRequiredCardinality(warnings, Action.class, Trigger.class);
 
 		Action action = getAction();
@@ -525,7 +525,7 @@ public class VAlarm extends ICalComponent {
 			//AUDIO alarms should not have more than 1 attachment
 			if (action.isAudio()) {
 				if (getAttachments().size() > 1) {
-					warnings.add(Warning.validate(7));
+					warnings.add(new ValidationWarning(7));
 				}
 			}
 
@@ -540,12 +540,12 @@ public class VAlarm extends ICalComponent {
 
 				//EMAIL alarms must have at least 1 ATTENDEE
 				if (getAttendees().isEmpty()) {
-					warnings.add(Warning.validate(8));
+					warnings.add(new ValidationWarning(8));
 				}
 			} else {
 				//only EMAIL alarms can have ATTENDEEs
 				if (!getAttendees().isEmpty()) {
-					warnings.add(Warning.validate(9));
+					warnings.add(new ValidationWarning(9));
 				}
 			}
 
@@ -562,7 +562,7 @@ public class VAlarm extends ICalComponent {
 
 				//if the TRIGGER is relative to DTSTART, confirm that DTSTART exists
 				if (related == Related.START && parent.getProperty(DateStart.class) == null) {
-					warnings.add(Warning.validate(11));
+					warnings.add(new ValidationWarning(11));
 				}
 
 				//if the TRIGGER is relative to DTEND, confirm that DTEND (or DUE) exists
@@ -576,7 +576,7 @@ public class VAlarm extends ICalComponent {
 					}
 
 					if (noEndDate) {
-						warnings.add(Warning.validate(12));
+						warnings.add(new ValidationWarning(12));
 					}
 				}
 			}

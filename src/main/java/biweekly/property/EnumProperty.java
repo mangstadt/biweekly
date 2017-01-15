@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 
 /*
@@ -82,7 +82,7 @@ public abstract class EnumProperty extends TextProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		super.validate(components, version, warnings);
 		if (value == null) {
 			return;
@@ -91,13 +91,13 @@ public abstract class EnumProperty extends TextProperty {
 		Collection<ICalVersion> supportedVersions = getValueSupportedVersions();
 		if (supportedVersions.isEmpty()) {
 			//it's a non-standard value
-			warnings.add(Warning.validate(28, value, getStandardValues(version)));
+			warnings.add(new ValidationWarning(28, value, getStandardValues(version)));
 			return;
 		}
 
 		boolean supported = supportedVersions.contains(version);
 		if (!supported) {
-			warnings.add(Warning.validate(46, value, supportedVersions));
+			warnings.add(new ValidationWarning(46, value, supportedVersions));
 		}
 	}
 

@@ -8,7 +8,7 @@ import java.util.Map;
 
 import biweekly.ICalVersion;
 import biweekly.Messages;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 
 /*
@@ -88,9 +88,9 @@ public class ListProperty<T> extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		if (values.isEmpty()) {
-			warnings.add(Warning.validate(26));
+			warnings.add(new ValidationWarning(26));
 		}
 	}
 

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.Categories;
@@ -1681,7 +1681,7 @@ public class VTodo extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		if (version != ICalVersion.V1_0) {
 			checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
 			checkOptionalCardinality(warnings, Classification.class, Completed.class, Created.class, Description.class, DateStart.class, Geo.class, LastModified.class, Location.class, Organizer.class, PercentComplete.class, Priority.class, RecurrenceId.class, Sequence.class, Status.class, Summary.class, Url.class);
@@ -1705,30 +1705,30 @@ public class VTodo extends ICalComponent {
 		if (dateStart != null && dateDue != null) {
 			//DTSTART must come before DUE
 			if (dateStart.compareTo(dateDue) > 0) {
-				warnings.add(Warning.validate(22));
+				warnings.add(new ValidationWarning(22));
 			}
 
 			//DTSTART and DUE must have the same data type
 			if (dateStart.hasTime() != dateDue.hasTime()) {
-				warnings.add(Warning.validate(23));
+				warnings.add(new ValidationWarning(23));
 			}
 		}
 
 		//DUE and DURATION cannot both exist
 		DurationProperty duration = getDuration();
 		if (dateDue != null && duration != null) {
-			warnings.add(Warning.validate(24));
+			warnings.add(new ValidationWarning(24));
 		}
 
 		//DTSTART is required if DURATION exists
 		if (dateStart == null && duration != null) {
-			warnings.add(Warning.validate(25));
+			warnings.add(new ValidationWarning(25));
 		}
 
 		//DTSTART and RECURRENCE-ID must have the same data type
 		ICalDate recurrenceId = getValue(getRecurrenceId());
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
-			warnings.add(Warning.validate(19));
+			warnings.add(new ValidationWarning(19));
 		}
 
 		//BYHOUR, BYMINUTE, and BYSECOND cannot be specified in RRULE if DTSTART's data type is "date"
@@ -1736,14 +1736,14 @@ public class VTodo extends ICalComponent {
 		Recurrence rrule = getValue(getRecurrenceRule());
 		if (dateStart != null && rrule != null) {
 			if (!dateStart.hasTime() && (!rrule.getByHour().isEmpty() || !rrule.getByMinute().isEmpty() || !rrule.getBySecond().isEmpty())) {
-				warnings.add(Warning.validate(5));
+				warnings.add(new ValidationWarning(5));
 			}
 		}
 
 		//there *should* be only 1 instance of RRULE
 		//RFC 5545 p. 167
 		if (getProperties(RecurrenceRule.class).size() > 1) {
-			warnings.add(Warning.validate(6));
+			warnings.add(new ValidationWarning(6));
 		}
 	}
 

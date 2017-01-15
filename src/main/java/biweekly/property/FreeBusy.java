@@ -3,7 +3,7 @@ package biweekly.property;
 import java.util.List;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 import biweekly.parameter.FreeBusyType;
 import biweekly.util.Period;
@@ -103,7 +103,7 @@ public class FreeBusy extends ListProperty<Period> {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		super.validate(components, version, warnings);
 		if (values.isEmpty()) {
 			return;
@@ -111,14 +111,14 @@ public class FreeBusy extends ListProperty<Period> {
 
 		for (Period timePeriod : values) {
 			if (timePeriod.getStartDate() == null) {
-				warnings.add(Warning.validate(39));
+				warnings.add(new ValidationWarning(39));
 				break;
 			}
 		}
 
 		for (Period timePeriod : values) {
 			if (timePeriod.getEndDate() == null && timePeriod.getDuration() == null) {
-				warnings.add(Warning.validate(40));
+				warnings.add(new ValidationWarning(40));
 				break;
 			}
 		}

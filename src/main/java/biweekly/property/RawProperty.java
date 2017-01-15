@@ -6,7 +6,7 @@ import java.util.Map;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 
 import com.github.mangstadt.vinnie.SyntaxStyle;
@@ -128,15 +128,15 @@ public class RawProperty extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		SyntaxStyle syntax = version.getSyntaxStyle();
 		AllowedCharacters allowed = VObjectValidator.allowedCharactersParameterName(syntax, true);
 		if (!allowed.check(name)) {
 			if (syntax == SyntaxStyle.OLD) {
 				AllowedCharacters notAllowed = allowed.flip();
-				warnings.add(Warning.validate(59, name, notAllowed.toString(true)));
+				warnings.add(new ValidationWarning(59, name, notAllowed.toString(true)));
 			} else {
-				warnings.add(Warning.validate(52, name));
+				warnings.add(new ValidationWarning(52, name));
 			}
 		}
 	}

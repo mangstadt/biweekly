@@ -972,16 +972,16 @@ public class ICalendar extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		if (version != ICalVersion.V1_0) {
 			checkRequiredCardinality(warnings, ProductId.class);
 
 			if (this.components.isEmpty()) {
-				warnings.add(Warning.validate(4));
+				warnings.add(new ValidationWarning(4));
 			}
 
 			if (getProperty(Geo.class) != null) {
-				warnings.add(Warning.validate(44));
+				warnings.add(new ValidationWarning(44));
 			}
 		}
 
@@ -990,7 +990,7 @@ public class ICalendar extends ICalComponent {
 		checkUniqueLanguages(warnings, Description.class);
 	}
 
-	private void checkUniqueLanguages(List<Warning> warnings, Class<? extends ICalProperty> clazz) {
+	private void checkUniqueLanguages(List<ValidationWarning> warnings, Class<? extends ICalProperty> clazz) {
 		List<? extends ICalProperty> properties = getProperties(clazz);
 		if (properties.size() <= 1) {
 			return;
@@ -1005,7 +1005,7 @@ public class ICalendar extends ICalComponent {
 
 			boolean added = languages.add(language);
 			if (!added) {
-				warnings.add(Warning.validate(55, clazz.getSimpleName()));
+				warnings.add(new ValidationWarning(55, clazz.getSimpleName()));
 				break;
 			}
 		}

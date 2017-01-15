@@ -10,7 +10,7 @@ import java.util.Map;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Messages;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 import biweekly.parameter.ICalParameters;
 
@@ -342,9 +342,9 @@ public abstract class ICalProperty {
 	 * @see ICalendar#validate
 	 * @return a list of warnings or an empty list if no problems were found
 	 */
-	public final List<Warning> validate(List<ICalComponent> components, ICalVersion version) {
+	public final List<ValidationWarning> validate(List<ICalComponent> components, ICalVersion version) {
 		//validate property value
-		List<Warning> warnings = new ArrayList<Warning>(0);
+		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>(0);
 		validate(components, version, warnings);
 
 		//validate parameters
@@ -367,7 +367,7 @@ public abstract class ICalProperty {
 	 * @param version the version to validate against
 	 * @param warnings the list to add the warnings to
 	 */
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		//do nothing
 	}
 

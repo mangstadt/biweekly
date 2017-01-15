@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 import biweekly.util.Frequency;
 import biweekly.util.Google2445Utils;
@@ -91,30 +91,30 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		super.validate(components, version, warnings);
 		if (value == null) {
 			return;
 		}
 
 		if (value.getFrequency() == null) {
-			warnings.add(Warning.validate(30));
+			warnings.add(new ValidationWarning(30));
 		}
 
 		if (value.getUntil() != null && value.getCount() != null) {
-			warnings.add(Warning.validate(31));
+			warnings.add(new ValidationWarning(31));
 		}
 
 		switch (version) {
 		case V1_0:
 			if (!value.getXRules().isEmpty()) {
-				warnings.add(new Warning("X-Rules are not supported by vCal."));
+				warnings.add(new ValidationWarning("X-Rules are not supported by vCal."));
 			}
 			if (!value.getBySetPos().isEmpty()) {
-				warnings.add(new Warning("BYSETPOS is not supported by vCal."));
+				warnings.add(new ValidationWarning("BYSETPOS is not supported by vCal."));
 			}
 			if (value.getFrequency() == Frequency.SECONDLY) {
-				warnings.add(new Warning(Frequency.SECONDLY.name() + " frequency is not supported by vCal."));
+				warnings.add(new ValidationWarning(Frequency.SECONDLY.name() + " frequency is not supported by vCal."));
 			}
 			break;
 
@@ -124,7 +124,7 @@ public class RecurrenceProperty extends ValuedProperty<Recurrence> {
 
 		case V2_0:
 			if (!value.getXRules().isEmpty()) {
-				warnings.add(Warning.validate(32));
+				warnings.add(new ValidationWarning(32));
 			}
 
 			break;

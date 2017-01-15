@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 import biweekly.util.VersionNumber;
 
@@ -194,9 +194,9 @@ public class Version extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		if (maxVersion == null) {
-			warnings.add(Warning.validate(35));
+			warnings.add(new ValidationWarning(35));
 		}
 	}
 

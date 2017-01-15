@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.property.LastModified;
 import biweekly.property.TimezoneId;
 import biweekly.property.TimezoneUrl;
@@ -261,9 +261,9 @@ public class VTimezone extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		if (version == ICalVersion.V1_0) {
-			warnings.add(Warning.validate(48, version));
+			warnings.add(new ValidationWarning(48, version));
 		}
 
 		checkRequiredCardinality(warnings, TimezoneId.class);
@@ -271,7 +271,7 @@ public class VTimezone extends ICalComponent {
 
 		//STANDARD or DAYLIGHT must be defined
 		if (getStandardTimes().isEmpty() && getDaylightSavingsTime().isEmpty()) {
-			warnings.add(Warning.validate(21));
+			warnings.add(new ValidationWarning(21));
 		}
 	}
 

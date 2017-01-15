@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 import biweekly.util.ICalDate;
 import biweekly.util.UtcOffset;
@@ -185,9 +185,9 @@ public class Daylight extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		if (daylight && (offset == null || start == null || end == null || standardName == null || daylightName == null)) {
-			warnings.add(Warning.validate(43));
+			warnings.add(new ValidationWarning(43));
 		}
 	}
 

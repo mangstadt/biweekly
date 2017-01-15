@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 import biweekly.util.ICalDate;
 import biweekly.util.Period;
@@ -118,20 +118,20 @@ public class RecurrenceDates extends ICalProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		if (dates.isEmpty() && periods.isEmpty()) {
 			//no value
-			warnings.add(Warning.validate(26));
+			warnings.add(new ValidationWarning(26));
 		}
 
 		if (!dates.isEmpty() && !periods.isEmpty()) {
 			//can't mix dates and periods
-			warnings.add(Warning.validate(49));
+			warnings.add(new ValidationWarning(49));
 		}
 
 		if (version == ICalVersion.V1_0 && !periods.isEmpty()) {
 			//1.0 doesn't support periods
-			warnings.add(Warning.validate(51));
+			warnings.add(new ValidationWarning(51));
 		}
 
 		if (!dates.isEmpty()) {
@@ -139,7 +139,7 @@ public class RecurrenceDates extends ICalProperty {
 			boolean hasTime = dates.get(0).hasTime();
 			for (ICalDate date : dates.subList(1, dates.size())) {
 				if (date.hasTime() != hasTime) {
-					warnings.add(Warning.validate(50));
+					warnings.add(new ValidationWarning(50));
 					break;
 				}
 			}

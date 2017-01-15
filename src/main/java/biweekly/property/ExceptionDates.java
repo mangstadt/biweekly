@@ -3,7 +3,7 @@ package biweekly.property;
 import java.util.List;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 import biweekly.util.ICalDate;
 
@@ -81,7 +81,7 @@ public class ExceptionDates extends ListProperty<ICalDate> {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		super.validate(components, version, warnings);
 
 		List<ICalDate> dates = getValues();
@@ -93,7 +93,7 @@ public class ExceptionDates extends ListProperty<ICalDate> {
 		boolean hasTime = dates.get(0).hasTime();
 		for (ICalDate date : dates.subList(1, dates.size())) {
 			if (date.hasTime() != hasTime) {
-				warnings.add(Warning.validate(50));
+				warnings.add(new ValidationWarning(50));
 				break;
 			}
 		}

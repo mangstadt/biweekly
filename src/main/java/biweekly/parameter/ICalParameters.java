@@ -14,7 +14,7 @@ import com.github.mangstadt.vinnie.validate.VObjectValidator;
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.Messages;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.property.Attendee;
 import biweekly.property.Conference;
 import biweekly.property.FreeBusy;
@@ -123,8 +123,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * client application should display the image (for example, as a
 	 * thumbnail-sized image).
 	 * @see <a href=
-	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-13"
-	 * >draft-ietf-calext-extensions p.13</a>
+	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-13" >
+	 * draft-ietf-calext-extensions p.13</a>
 	 */
 	public static final String DISPLAY = "DISPLAY";
 
@@ -134,8 +134,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * must hold something else, this parameter can be used to store the
 	 * attendee's email address.
 	 * @see <a href=
-	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-14"
-	 * >draft-ietf-calext-extensions p.14</a>
+	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-14" >
+	 * draft-ietf-calext-extensions p.14</a>
 	 */
 	public static final String EMAIL = "EMAIL";
 
@@ -159,8 +159,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * Used by the {@link Conference} property. It defines the features that the
 	 * conference supports (for example, audio and video).
 	 * @see <a href=
-	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-15"
-	 * >draft-ietf-calext-extensions p.15</a>
+	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-15" >
+	 * draft-ietf-calext-extensions p.15</a>
 	 */
 	public static final String FEATURE = "FEATURE";
 
@@ -184,9 +184,9 @@ public class ICalParameters extends ListMultimap<String, String> {
 
 	/**
 	 * Defines a human-readable label for the property.
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16">draft-ietf-calext-extensions-01
-	 * p.16</a>
+	 * @see <a href=
+	 * "http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16">
+	 * draft-ietf-calext-extensions-01 p.16</a>
 	 */
 	public static final String LABEL = "LABEL";
 
@@ -579,8 +579,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * </p>
 	 * @return the display suggestions or empty list if none are defined
 	 * @see <a href=
-	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-13"
-	 * >draft-ietf-calext-extensions p.13</a>
+	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-13" >
+	 * draft-ietf-calext-extensions p.13</a>
 	 */
 	public List<Display> getDisplays() {
 		return new EnumParameterList<Display>(DISPLAY) {
@@ -603,8 +603,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * </p>
 	 * @return the email or null if not set
 	 * @see <a href=
-	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-14"
-	 * >draft-ietf-calext-extensions p.14</a>
+	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-14" >
+	 * draft-ietf-calext-extensions p.14</a>
 	 */
 	public String getEmail() {
 		return first(EMAIL);
@@ -622,8 +622,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * </p>
 	 * @param email the email or null to remove
 	 * @see <a href=
-	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-14"
-	 * >draft-ietf-calext-extensions p.14</a>
+	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-14" >
+	 * draft-ietf-calext-extensions p.14</a>
 	 */
 	public void setEmail(String email) {
 		replace(EMAIL, email);
@@ -708,8 +708,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * </p>
 	 * @return the features or empty list if none are set
 	 * @see <a href=
-	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-15"
-	 * >draft-ietf-calext-extensions p.15</a>
+	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-15" >
+	 * draft-ietf-calext-extensions p.15</a>
 	 */
 	public List<Feature> getFeatures() {
 		return new EnumParameterList<Feature>(FEATURE) {
@@ -797,9 +797,9 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * This parameter defines a human-readable label for the property.
 	 * </p>
 	 * @return the label or null if not set
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16">draft-ietf-calext-extensions-01
-	 * p.16</a>
+	 * @see <a href=
+	 * "http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16">
+	 * draft-ietf-calext-extensions-01 p.16</a>
 	 */
 	public String getLabel() {
 		return first(LABEL);
@@ -813,9 +813,9 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * This parameter defines a human-readable label for the property.
 	 * </p>
 	 * @param label the label or null to remove
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16">draft-ietf-calext-extensions-01
-	 * p.16</a>
+	 * @see <a href=
+	 * "http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16">
+	 * draft-ietf-calext-extensions-01 p.16</a>
 	 */
 	public void setLabel(String label) {
 		replace(LABEL, label);
@@ -1296,8 +1296,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @param version the version to validate against
 	 * @return a list of warnings or an empty list if no problems were found
 	 */
-	public List<Warning> validate(ICalVersion version) {
-		List<Warning> warnings = new ArrayList<Warning>(0);
+	public List<ValidationWarning> validate(ICalVersion version) {
+		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>(0);
 
 		SyntaxStyle syntax;
 		switch (version) {
@@ -1319,9 +1319,9 @@ public class ICalParameters extends ListMultimap<String, String> {
 			if (!VObjectValidator.validateParameterName(name, syntax, true)) {
 				if (syntax == SyntaxStyle.OLD) {
 					AllowedCharacters notAllowed = VObjectValidator.allowedCharactersParameterName(syntax, true).flip();
-					warnings.add(Warning.validate(57, name, notAllowed.toString(true)));
+					warnings.add(new ValidationWarning(57, name, notAllowed.toString(true)));
 				} else {
-					warnings.add(Warning.validate(54, name));
+					warnings.add(new ValidationWarning(54, name));
 				}
 			}
 
@@ -1331,7 +1331,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 				if (!VObjectValidator.validateParameterValue(value, syntax, false, true)) {
 					AllowedCharacters notAllowed = VObjectValidator.allowedCharactersParameterValue(syntax, false, true).flip();
 					int code = (syntax == SyntaxStyle.OLD) ? 58 : 53;
-					warnings.add(Warning.validate(code, name, value, notAllowed.toString(true)));
+					warnings.add(new ValidationWarning(code, name, value, notAllowed.toString(true)));
 				}
 			}
 		}
@@ -1343,28 +1343,28 @@ public class ICalParameters extends ListMultimap<String, String> {
 			value = value.toLowerCase();
 			List<String> validValues = Arrays.asList("true", "false", "yes", "no");
 			if (!validValues.contains(value)) {
-				warnings.add(Warning.validate(nonStandardCode, RSVP, value, validValues));
+				warnings.add(new ValidationWarning(nonStandardCode, RSVP, value, validValues));
 			}
 		}
 
 		value = first(CUTYPE);
 		if (value != null && CalendarUserType.find(value) == null) {
-			warnings.add(Warning.validate(nonStandardCode, CUTYPE, value, CalendarUserType.all()));
+			warnings.add(new ValidationWarning(nonStandardCode, CUTYPE, value, CalendarUserType.all()));
 		}
 
 		value = first(ENCODING);
 		if (value != null && Encoding.find(value) == null) {
-			warnings.add(Warning.validate(nonStandardCode, ENCODING, value, Encoding.all()));
+			warnings.add(new ValidationWarning(nonStandardCode, ENCODING, value, Encoding.all()));
 		}
 
 		value = first(FBTYPE);
 		if (value != null && FreeBusyType.find(value) == null) {
-			warnings.add(Warning.validate(nonStandardCode, FBTYPE, value, FreeBusyType.all()));
+			warnings.add(new ValidationWarning(nonStandardCode, FBTYPE, value, FreeBusyType.all()));
 		}
 
 		value = first(PARTSTAT);
 		if (value != null && ParticipationStatus.find(value) == null) {
-			warnings.add(Warning.validate(nonStandardCode, PARTSTAT, value, ParticipationStatus.all()));
+			warnings.add(new ValidationWarning(nonStandardCode, PARTSTAT, value, ParticipationStatus.all()));
 		}
 
 		value = first(RANGE);
@@ -1372,32 +1372,32 @@ public class ICalParameters extends ListMultimap<String, String> {
 			Range range = Range.find(value);
 
 			if (range == null) {
-				warnings.add(Warning.validate(nonStandardCode, RANGE, value, Range.all()));
+				warnings.add(new ValidationWarning(nonStandardCode, RANGE, value, Range.all()));
 			}
 
 			if (range == Range.THIS_AND_PRIOR && version == ICalVersion.V2_0) {
-				warnings.add(Warning.validate(deprecated, RANGE, value));
+				warnings.add(new ValidationWarning(deprecated, RANGE, value));
 			}
 		}
 
 		value = first(RELATED);
 		if (value != null && Related.find(value) == null) {
-			warnings.add(Warning.validate(nonStandardCode, RELATED, value, Related.all()));
+			warnings.add(new ValidationWarning(nonStandardCode, RELATED, value, Related.all()));
 		}
 
 		value = first(RELTYPE);
 		if (value != null && RelationshipType.find(value) == null) {
-			warnings.add(Warning.validate(nonStandardCode, RELTYPE, value, RelationshipType.all()));
+			warnings.add(new ValidationWarning(nonStandardCode, RELTYPE, value, RelationshipType.all()));
 		}
 
 		value = first(ROLE);
 		if (value != null && Role.find(value) == null) {
-			warnings.add(Warning.validate(nonStandardCode, ROLE, value, Role.all()));
+			warnings.add(new ValidationWarning(nonStandardCode, ROLE, value, Role.all()));
 		}
 
 		value = first(VALUE);
 		if (value != null && ICalDataType.find(value) == null) {
-			warnings.add(Warning.validate(nonStandardCode, VALUE, value, ICalDataType.all()));
+			warnings.add(new ValidationWarning(nonStandardCode, VALUE, value, ICalDataType.all()));
 		}
 
 		return warnings;

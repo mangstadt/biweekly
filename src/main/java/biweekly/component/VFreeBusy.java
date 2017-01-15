@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.parameter.FreeBusyType;
 import biweekly.property.Attendee;
 import biweekly.property.Comment;
@@ -618,9 +618,9 @@ public class VFreeBusy extends ICalComponent {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		if (version == ICalVersion.V1_0) {
-			warnings.add(Warning.validate(48, version));
+			warnings.add(new ValidationWarning(48, version));
 		}
 
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
@@ -631,20 +631,20 @@ public class VFreeBusy extends ICalComponent {
 
 		//DTSTART is required if DTEND exists
 		if (dateEnd != null && dateStart == null) {
-			warnings.add(Warning.validate(15));
+			warnings.add(new ValidationWarning(15));
 		}
 
 		//DTSTART and DTEND must contain a time component
 		if (dateStart != null && !dateStart.hasTime()) {
-			warnings.add(Warning.validate(20, DateStart.class.getSimpleName()));
+			warnings.add(new ValidationWarning(20, DateStart.class.getSimpleName()));
 		}
 		if (dateEnd != null && !dateEnd.hasTime()) {
-			warnings.add(Warning.validate(20, DateEnd.class.getSimpleName()));
+			warnings.add(new ValidationWarning(20, DateEnd.class.getSimpleName()));
 		}
 
 		//DTSTART must come before DTEND
 		if (dateStart != null && dateEnd != null && dateStart.compareTo(dateEnd) >= 0) {
-			warnings.add(Warning.validate(16));
+			warnings.add(new ValidationWarning(16));
 		}
 	}
 

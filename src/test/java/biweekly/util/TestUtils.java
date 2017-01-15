@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.ValidationWarnings.WarningsGroup;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
 import biweekly.io.ParseWarning;
@@ -379,7 +379,7 @@ public class TestUtils {
 		 */
 		public void run(Integer... expectedCodes) {
 			for (ICalVersion version : versions) {
-				List<Warning> warnings = property.validate(components, version);
+				List<ValidationWarning> warnings = property.validate(components, version);
 				boolean passed = checkCodes(warnings, expectedCodes);
 				if (!passed) {
 					fail(version.name() + ": Expected codes were " + Arrays.toString(expectedCodes) + " but were actually:\n" + warnings);
@@ -459,7 +459,7 @@ public class TestUtils {
 				int count = 0;
 				List<WarningsGroup> groups = component.validate(components, version);
 				for (WarningsGroup group : groups) {
-					List<Warning> warnings = group.getWarnings();
+					List<ValidationWarning> warnings = group.getWarnings();
 
 					ICalComponent comp = group.getComponent();
 					if (comp != null) {
@@ -524,13 +524,13 @@ public class TestUtils {
 		}
 	}
 
-	public static boolean checkCodes(List<Warning> warnings, Integer... expectedCodes) {
+	public static boolean checkCodes(List<ValidationWarning> warnings, Integer... expectedCodes) {
 		if (warnings.size() != expectedCodes.length) {
 			return false;
 		}
 
 		List<Integer> actualCodes = new ArrayList<Integer>(); //don't use a Set because there can be multiple warnings with the same code
-		for (Warning warning : warnings) {
+		for (ValidationWarning warning : warnings) {
 			actualCodes.add(warning.getCode());
 		}
 

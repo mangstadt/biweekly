@@ -10,7 +10,7 @@ import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 import biweekly.util.XmlUtils;
 
@@ -93,9 +93,9 @@ public class Xml extends ValuedProperty<Document> {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		if (value == null) {
-			warnings.add(Warning.validate(26));
+			warnings.add(new ValidationWarning(26));
 		}
 	}
 

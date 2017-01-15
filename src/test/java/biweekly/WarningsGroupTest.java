@@ -45,29 +45,29 @@ public class WarningsGroupTest {
 		//@formatter:off
 		assertToString(
 			"[Grandparent > Parent > TestComponent]: one",
-			new WarningsGroup(new TestComponent(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new Warning("one")))
+			new WarningsGroup(new TestComponent(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new ValidationWarning("one")))
 		);
 		assertToString(
 			"[Grandparent > Parent > TestComponent]: one" + NEWLINE + 
 			"[Grandparent > Parent > TestComponent]: two",
-			new WarningsGroup(new TestComponent(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new Warning("one"), new Warning("two")))
+			new WarningsGroup(new TestComponent(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new ValidationWarning("one"), new ValidationWarning("two")))
 		);
 		assertToString(
 			"[TestComponent]: one",
-			new WarningsGroup(new TestComponent(), Arrays.asList(new ICalComponent[0]), Arrays.asList(new Warning("one")))
+			new WarningsGroup(new TestComponent(), Arrays.asList(new ICalComponent[0]), Arrays.asList(new ValidationWarning("one")))
 		);
 		assertToString(
 			"[Grandparent > Parent > TestProperty]: one",
-			new WarningsGroup(new TestProperty(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new Warning("one")))
+			new WarningsGroup(new TestProperty(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new ValidationWarning("one")))
 		);
 		assertToString(
 			"[Grandparent > Parent > TestProperty]: one" + NEWLINE + 
 			"[Grandparent > Parent > TestProperty]: two",
-			new WarningsGroup(new TestProperty(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new Warning("one"), new Warning("two")))
+			new WarningsGroup(new TestProperty(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new ValidationWarning("one"), new ValidationWarning("two")))
 		);
 		assertToString(
 			"[TestProperty]: one",
-			new WarningsGroup(new TestProperty(), Arrays.asList(new ICalComponent[0]), Arrays.asList(new Warning("one")))
+			new WarningsGroup(new TestProperty(), Arrays.asList(new ICalComponent[0]), Arrays.asList(new ValidationWarning("one")))
 		);
 		//@formatter:on
 	}

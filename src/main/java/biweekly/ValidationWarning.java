@@ -1,7 +1,5 @@
 package biweekly;
 
-import java.io.Serializable;
-
 /*
  Copyright (c) 2013-2016, Michael Angstadt
  All rights reserved.
@@ -31,51 +29,31 @@ import java.io.Serializable;
  * Represents a warning.
  * @author Michael Angstadt
  */
-public class Warning implements Serializable {
-	private static final long serialVersionUID = 992007104513833624L;
+public class ValidationWarning {
 	private final Integer code;
 	private final String message;
 
 	/**
-	 * Creates a parser warning.
-	 * @param code the message code
-	 * @param args the message arguments
-	 * @return the warning
+	 * Creates a new validation warning.
+	 * @param code the warning message code
+	 * @param args the warning message arguments
 	 */
-	public static Warning parse(int code, Object... args) {
-		return new Warning(Messages.INSTANCE.getParseMessage(code, args), code);
-	}
-
-	/**
-	 * Creates a validation warning.
-	 * @param code the message code
-	 * @param args the message arguments
-	 * @return the warning
-	 */
-	public static Warning validate(int code, Object... args) {
-		return new Warning(Messages.INSTANCE.getValidationWarning(code, args), code);
-	}
-
-	/**
-	 * Creates a new warning.
-	 * @param message the warning message
-	 */
-	public Warning(String message) {
-		this(message, null);
-	}
-
-	/**
-	 * Creates a new warning.
-	 * @param message the warning message
-	 * @param code the message code
-	 */
-	public Warning(String message, Integer code) {
+	public ValidationWarning(int code, Object... args) {
 		this.code = code;
+		this.message = Messages.INSTANCE.getValidationWarning(code, args);
+	}
+
+	/**
+	 * Creates a new validation warning.
+	 * @param message the warning message
+	 */
+	public ValidationWarning(String message) {
+		this.code = null;
 		this.message = message;
 	}
 
 	/**
-	 * Gets the warning code.
+	 * Gets the validation warning code.
 	 * @return the warning code or null if no code was specified
 	 */
 	public Integer getCode() {
@@ -83,7 +61,7 @@ public class Warning implements Serializable {
 	}
 
 	/**
-	 * Gets the warning message
+	 * Gets the validation warning message.
 	 * @return the warning message
 	 */
 	public String getMessage() {

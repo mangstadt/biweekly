@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import biweekly.ICalVersion;
-import biweekly.Warning;
+import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 import biweekly.parameter.Display;
 
@@ -132,10 +132,10 @@ public class Image extends BinaryProperty {
 	}
 
 	@Override
-	protected void validate(List<ICalComponent> components, ICalVersion version, List<Warning> warnings) {
+	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		super.validate(components, version, warnings);
 		if (data != null && getFormatType() == null) {
-			warnings.add(Warning.validate(56));
+			warnings.add(new ValidationWarning(56));
 		}
 	}
 
