@@ -26,7 +26,7 @@ package biweekly;
  */
 
 /**
- * Represents a warning.
+ * Represents a validation warning.
  * @author Michael Angstadt
  */
 public class ValidationWarning {

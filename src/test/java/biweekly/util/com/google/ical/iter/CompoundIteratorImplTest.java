@@ -428,8 +428,7 @@ public class CompoundIteratorImplTest {
 			new DateValueImpl(2006, 4, 28),
 			
 			new DateValueImpl(2006, 5, 1),
-			new DateValueImpl(2006, 5, 2),
-			new DateValueImpl(2006, 5, 3)
+			new DateValueImpl(2006, 5, 2)
 		), it);
 	}
 	
@@ -466,8 +465,7 @@ public class CompoundIteratorImplTest {
 				new DateValueImpl(2006, 4, 28),
 				
 				new DateValueImpl(2006, 5, 1),
-				new DateValueImpl(2006, 5, 2),
-				new DateValueImpl(2006, 5, 3)
+				new DateValueImpl(2006, 5, 2)
 		), it);
 	}
 	
@@ -499,8 +497,7 @@ public class CompoundIteratorImplTest {
 				new DateValueImpl(2006, 4, 28),
 				
 				new DateValueImpl(2006, 5, 1),
-				new DateValueImpl(2006, 5, 2),
-				new DateValueImpl(2006, 5, 3)
+				new DateValueImpl(2006, 5, 2)
 		), it);
 	}
 	
