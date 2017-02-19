@@ -32,6 +32,12 @@ import java.util.Calendar;
  * @author Michael Angstadt
  */
 public enum DayOfWeek {
+	/*
+	 * These constants are defined in the order that the days of the week are
+	 * arranged on a calendar. Do not rearrange them. Other parts of the code
+	 * base rely on this ordering (i.e. this class's ordinal() and values()
+	 * methods are used).
+	 */
 	//@formatter:off
 	SUNDAY("SU", Calendar.SUNDAY),
 	MONDAY("MO", Calendar.MONDAY),
