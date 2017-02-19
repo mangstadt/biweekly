@@ -6,7 +6,7 @@ import biweekly.property.Completed;
 
 
 /*
- Copyright (c) 2013-2016, Michael Angstadt
+ Copyright (c) 2013-2017, Michael Angstadt
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
