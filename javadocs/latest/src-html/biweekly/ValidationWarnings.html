@@ -19,7 +19,7 @@
 <span class="sourceLineNo">011</span>import biweekly.util.StringUtils.JoinCallback;<a name="line.11"></a>
 <span class="sourceLineNo">012</span><a name="line.12"></a>
 <span class="sourceLineNo">013</span>/*<a name="line.13"></a>
-<span class="sourceLineNo">014</span> Copyright (c) 2013-2016, Michael Angstadt<a name="line.14"></a>
+<span class="sourceLineNo">014</span> Copyright (c) 2013-2017, Michael Angstadt<a name="line.14"></a>
 <span class="sourceLineNo">015</span> All rights reserved.<a name="line.15"></a>
 <span class="sourceLineNo">016</span><a name="line.16"></a>
 <span class="sourceLineNo">017</span> Redistribution and use in source and binary forms, with or without<a name="line.17"></a>
@@ -186,7 +186,7 @@
 <span class="sourceLineNo">178</span>                private final ICalProperty property;<a name="line.178"></a>
 <span class="sourceLineNo">179</span>                private final ICalComponent component;<a name="line.179"></a>
 <span class="sourceLineNo">180</span>                private final List&lt;ICalComponent&gt; componentHierarchy;<a name="line.180"></a>
-<span class="sourceLineNo">181</span>                private final List&lt;Warning&gt; warnings;<a name="line.181"></a>
+<span class="sourceLineNo">181</span>                private final List&lt;ValidationWarning&gt; warnings;<a name="line.181"></a>
 <span class="sourceLineNo">182</span><a name="line.182"></a>
 <span class="sourceLineNo">183</span>                /**<a name="line.183"></a>
 <span class="sourceLineNo">184</span>                 * Creates a new set of validation warnings for a property.<a name="line.184"></a>
@@ -195,7 +195,7 @@
 <span class="sourceLineNo">187</span>                 * property belongs to<a name="line.187"></a>
 <span class="sourceLineNo">188</span>                 * @param warning the warnings<a name="line.188"></a>
 <span class="sourceLineNo">189</span>                 */<a name="line.189"></a>
-<span class="sourceLineNo">190</span>                public WarningsGroup(ICalProperty property, List&lt;ICalComponent&gt; componentHierarchy, List&lt;Warning&gt; warning) {<a name="line.190"></a>
+<span class="sourceLineNo">190</span>                public WarningsGroup(ICalProperty property, List&lt;ICalComponent&gt; componentHierarchy, List&lt;ValidationWarning&gt; warning) {<a name="line.190"></a>
 <span class="sourceLineNo">191</span>                        this(null, property, componentHierarchy, warning);<a name="line.191"></a>
 <span class="sourceLineNo">192</span>                }<a name="line.192"></a>
 <span class="sourceLineNo">193</span><a name="line.193"></a>
@@ -206,11 +206,11 @@
 <span class="sourceLineNo">198</span>                 * component belongs to<a name="line.198"></a>
 <span class="sourceLineNo">199</span>                 * @param warning the warnings<a name="line.199"></a>
 <span class="sourceLineNo">200</span>                 */<a name="line.200"></a>
-<span class="sourceLineNo">201</span>                public WarningsGroup(ICalComponent component, List&lt;ICalComponent&gt; componentHierarchy, List&lt;Warning&gt; warning) {<a name="line.201"></a>
+<span class="sourceLineNo">201</span>                public WarningsGroup(ICalComponent component, List&lt;ICalComponent&gt; componentHierarchy, List&lt;ValidationWarning&gt; warning) {<a name="line.201"></a>
 <span class="sourceLineNo">202</span>                        this(component, null, componentHierarchy, warning);<a name="line.202"></a>
 <span class="sourceLineNo">203</span>                }<a name="line.203"></a>
 <span class="sourceLineNo">204</span><a name="line.204"></a>
-<span class="sourceLineNo">205</span>                private WarningsGroup(ICalComponent component, ICalProperty property, List&lt;ICalComponent&gt; componentHierarchy, List&lt;Warning&gt; warning) {<a name="line.205"></a>
+<span class="sourceLineNo">205</span>                private WarningsGroup(ICalComponent component, ICalProperty property, List&lt;ICalComponent&gt; componentHierarchy, List&lt;ValidationWarning&gt; warning) {<a name="line.205"></a>
 <span class="sourceLineNo">206</span>                        this.component = component;<a name="line.206"></a>
 <span class="sourceLineNo">207</span>                        this.property = property;<a name="line.207"></a>
 <span class="sourceLineNo">208</span>                        this.componentHierarchy = componentHierarchy;<a name="line.208"></a>
@@ -245,10 +245,10 @@
 <span class="sourceLineNo">237</span>                }<a name="line.237"></a>
 <span class="sourceLineNo">238</span><a name="line.238"></a>
 <span class="sourceLineNo">239</span>                /**<a name="line.239"></a>
-<span class="sourceLineNo">240</span>                 * Gets the warnings.<a name="line.240"></a>
+<span class="sourceLineNo">240</span>                 * Gets the warnings that belong to the property or component.<a name="line.240"></a>
 <span class="sourceLineNo">241</span>                 * @return the warnings<a name="line.241"></a>
 <span class="sourceLineNo">242</span>                 */<a name="line.242"></a>
-<span class="sourceLineNo">243</span>                public List&lt;Warning&gt; getWarnings() {<a name="line.243"></a>
+<span class="sourceLineNo">243</span>                public List&lt;ValidationWarning&gt; getWarnings() {<a name="line.243"></a>
 <span class="sourceLineNo">244</span>                        return warnings;<a name="line.244"></a>
 <span class="sourceLineNo">245</span>                }<a name="line.245"></a>
 <span class="sourceLineNo">246</span><a name="line.246"></a>
@@ -267,8 +267,8 @@
 <span class="sourceLineNo">259</span>                @Override<a name="line.259"></a>
 <span class="sourceLineNo">260</span>                public String toString() {<a name="line.260"></a>
 <span class="sourceLineNo">261</span>                        final String prefix = "[" + buildPath() + "]: ";<a name="line.261"></a>
-<span class="sourceLineNo">262</span>                        return StringUtils.join(warnings, StringUtils.NEWLINE, new JoinCallback&lt;Warning&gt;() {<a name="line.262"></a>
-<span class="sourceLineNo">263</span>                                public void handle(StringBuilder sb, Warning warning) {<a name="line.263"></a>
+<span class="sourceLineNo">262</span>                        return StringUtils.join(warnings, StringUtils.NEWLINE, new JoinCallback&lt;ValidationWarning&gt;() {<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                                public void handle(StringBuilder sb, ValidationWarning warning) {<a name="line.263"></a>
 <span class="sourceLineNo">264</span>                                        sb.append(prefix).append(warning);<a name="line.264"></a>
 <span class="sourceLineNo">265</span>                                }<a name="line.265"></a>
 <span class="sourceLineNo">266</span>                        });<a name="line.266"></a>

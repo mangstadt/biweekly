@@ -22,7 +22,7 @@
 <span class="sourceLineNo">014</span>import biweekly.ICalDataType;<a name="line.14"></a>
 <span class="sourceLineNo">015</span>import biweekly.ICalVersion;<a name="line.15"></a>
 <span class="sourceLineNo">016</span>import biweekly.Messages;<a name="line.16"></a>
-<span class="sourceLineNo">017</span>import biweekly.Warning;<a name="line.17"></a>
+<span class="sourceLineNo">017</span>import biweekly.ValidationWarning;<a name="line.17"></a>
 <span class="sourceLineNo">018</span>import biweekly.property.Attendee;<a name="line.18"></a>
 <span class="sourceLineNo">019</span>import biweekly.property.Conference;<a name="line.19"></a>
 <span class="sourceLineNo">020</span>import biweekly.property.FreeBusy;<a name="line.20"></a>
@@ -34,7 +34,7 @@
 <span class="sourceLineNo">026</span>import biweekly.util.ListMultimap;<a name="line.26"></a>
 <span class="sourceLineNo">027</span><a name="line.27"></a>
 <span class="sourceLineNo">028</span>/*<a name="line.28"></a>
-<span class="sourceLineNo">029</span> Copyright (c) 2013-2016, Michael Angstadt<a name="line.29"></a>
+<span class="sourceLineNo">029</span> Copyright (c) 2013-2017, Michael Angstadt<a name="line.29"></a>
 <span class="sourceLineNo">030</span> All rights reserved.<a name="line.30"></a>
 <span class="sourceLineNo">031</span><a name="line.31"></a>
 <span class="sourceLineNo">032</span> Redistribution and use in source and binary forms, with or without<a name="line.32"></a>
@@ -131,8 +131,8 @@
 <span class="sourceLineNo">123</span>         * client application should display the image (for example, as a<a name="line.123"></a>
 <span class="sourceLineNo">124</span>         * thumbnail-sized image).<a name="line.124"></a>
 <span class="sourceLineNo">125</span>         * @see &lt;a href=<a name="line.125"></a>
-<span class="sourceLineNo">126</span>         * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-13"<a name="line.126"></a>
-<span class="sourceLineNo">127</span>         * &gt;draft-ietf-calext-extensions p.13&lt;/a&gt;<a name="line.127"></a>
+<span class="sourceLineNo">126</span>         * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-13" &gt;<a name="line.126"></a>
+<span class="sourceLineNo">127</span>         * draft-ietf-calext-extensions p.13&lt;/a&gt;<a name="line.127"></a>
 <span class="sourceLineNo">128</span>         */<a name="line.128"></a>
 <span class="sourceLineNo">129</span>        public static final String DISPLAY = "DISPLAY";<a name="line.129"></a>
 <span class="sourceLineNo">130</span><a name="line.130"></a>
@@ -142,8 +142,8 @@
 <span class="sourceLineNo">134</span>         * must hold something else, this parameter can be used to store the<a name="line.134"></a>
 <span class="sourceLineNo">135</span>         * attendee's email address.<a name="line.135"></a>
 <span class="sourceLineNo">136</span>         * @see &lt;a href=<a name="line.136"></a>
-<span class="sourceLineNo">137</span>         * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-14"<a name="line.137"></a>
-<span class="sourceLineNo">138</span>         * &gt;draft-ietf-calext-extensions p.14&lt;/a&gt;<a name="line.138"></a>
+<span class="sourceLineNo">137</span>         * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-14" &gt;<a name="line.137"></a>
+<span class="sourceLineNo">138</span>         * draft-ietf-calext-extensions p.14&lt;/a&gt;<a name="line.138"></a>
 <span class="sourceLineNo">139</span>         */<a name="line.139"></a>
 <span class="sourceLineNo">140</span>        public static final String EMAIL = "EMAIL";<a name="line.140"></a>
 <span class="sourceLineNo">141</span><a name="line.141"></a>
@@ -167,8 +167,8 @@
 <span class="sourceLineNo">159</span>         * Used by the {@link Conference} property. It defines the features that the<a name="line.159"></a>
 <span class="sourceLineNo">160</span>         * conference supports (for example, audio and video).<a name="line.160"></a>
 <span class="sourceLineNo">161</span>         * @see &lt;a href=<a name="line.161"></a>
-<span class="sourceLineNo">162</span>         * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-15"<a name="line.162"></a>
-<span class="sourceLineNo">163</span>         * &gt;draft-ietf-calext-extensions p.15&lt;/a&gt;<a name="line.163"></a>
+<span class="sourceLineNo">162</span>         * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-15" &gt;<a name="line.162"></a>
+<span class="sourceLineNo">163</span>         * draft-ietf-calext-extensions p.15&lt;/a&gt;<a name="line.163"></a>
 <span class="sourceLineNo">164</span>         */<a name="line.164"></a>
 <span class="sourceLineNo">165</span>        public static final String FEATURE = "FEATURE";<a name="line.165"></a>
 <span class="sourceLineNo">166</span><a name="line.166"></a>
@@ -192,9 +192,9 @@
 <span class="sourceLineNo">184</span><a name="line.184"></a>
 <span class="sourceLineNo">185</span>        /**<a name="line.185"></a>
 <span class="sourceLineNo">186</span>         * Defines a human-readable label for the property.<a name="line.186"></a>
-<span class="sourceLineNo">187</span>         * @see &lt;a<a name="line.187"></a>
-<span class="sourceLineNo">188</span>         * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16"&gt;draft-ietf-calext-extensions-01<a name="line.188"></a>
-<span class="sourceLineNo">189</span>         * p.16&lt;/a&gt;<a name="line.189"></a>
+<span class="sourceLineNo">187</span>         * @see &lt;a href=<a name="line.187"></a>
+<span class="sourceLineNo">188</span>         * "http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16"&gt;<a name="line.188"></a>
+<span class="sourceLineNo">189</span>         * draft-ietf-calext-extensions-01 p.16&lt;/a&gt;<a name="line.189"></a>
 <span class="sourceLineNo">190</span>         */<a name="line.190"></a>
 <span class="sourceLineNo">191</span>        public static final String LABEL = "LABEL";<a name="line.191"></a>
 <span class="sourceLineNo">192</span><a name="line.192"></a>
@@ -587,8 +587,8 @@
 <span class="sourceLineNo">579</span>         * &lt;/p&gt;<a name="line.579"></a>
 <span class="sourceLineNo">580</span>         * @return the display suggestions or empty list if none are defined<a name="line.580"></a>
 <span class="sourceLineNo">581</span>         * @see &lt;a href=<a name="line.581"></a>
-<span class="sourceLineNo">582</span>         * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-13"<a name="line.582"></a>
-<span class="sourceLineNo">583</span>         * &gt;draft-ietf-calext-extensions p.13&lt;/a&gt;<a name="line.583"></a>
+<span class="sourceLineNo">582</span>         * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-13" &gt;<a name="line.582"></a>
+<span class="sourceLineNo">583</span>         * draft-ietf-calext-extensions p.13&lt;/a&gt;<a name="line.583"></a>
 <span class="sourceLineNo">584</span>         */<a name="line.584"></a>
 <span class="sourceLineNo">585</span>        public List&lt;Display&gt; getDisplays() {<a name="line.585"></a>
 <span class="sourceLineNo">586</span>                return new EnumParameterList&lt;Display&gt;(DISPLAY) {<a name="line.586"></a>
@@ -611,8 +611,8 @@
 <span class="sourceLineNo">603</span>         * &lt;/p&gt;<a name="line.603"></a>
 <span class="sourceLineNo">604</span>         * @return the email or null if not set<a name="line.604"></a>
 <span class="sourceLineNo">605</span>         * @see &lt;a href=<a name="line.605"></a>
-<span class="sourceLineNo">606</span>         * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-14"<a name="line.606"></a>
-<span class="sourceLineNo">607</span>         * &gt;draft-ietf-calext-extensions p.14&lt;/a&gt;<a name="line.607"></a>
+<span class="sourceLineNo">606</span>         * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-14" &gt;<a name="line.606"></a>
+<span class="sourceLineNo">607</span>         * draft-ietf-calext-extensions p.14&lt;/a&gt;<a name="line.607"></a>
 <span class="sourceLineNo">608</span>         */<a name="line.608"></a>
 <span class="sourceLineNo">609</span>        public String getEmail() {<a name="line.609"></a>
 <span class="sourceLineNo">610</span>                return first(EMAIL);<a name="line.610"></a>
@@ -630,8 +630,8 @@
 <span class="sourceLineNo">622</span>         * &lt;/p&gt;<a name="line.622"></a>
 <span class="sourceLineNo">623</span>         * @param email the email or null to remove<a name="line.623"></a>
 <span class="sourceLineNo">624</span>         * @see &lt;a href=<a name="line.624"></a>
-<span class="sourceLineNo">625</span>         * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-14"<a name="line.625"></a>
-<span class="sourceLineNo">626</span>         * &gt;draft-ietf-calext-extensions p.14&lt;/a&gt;<a name="line.626"></a>
+<span class="sourceLineNo">625</span>         * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-14" &gt;<a name="line.625"></a>
+<span class="sourceLineNo">626</span>         * draft-ietf-calext-extensions p.14&lt;/a&gt;<a name="line.626"></a>
 <span class="sourceLineNo">627</span>         */<a name="line.627"></a>
 <span class="sourceLineNo">628</span>        public void setEmail(String email) {<a name="line.628"></a>
 <span class="sourceLineNo">629</span>                replace(EMAIL, email);<a name="line.629"></a>
@@ -716,8 +716,8 @@
 <span class="sourceLineNo">708</span>         * &lt;/p&gt;<a name="line.708"></a>
 <span class="sourceLineNo">709</span>         * @return the features or empty list if none are set<a name="line.709"></a>
 <span class="sourceLineNo">710</span>         * @see &lt;a href=<a name="line.710"></a>
-<span class="sourceLineNo">711</span>         * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-15"<a name="line.711"></a>
-<span class="sourceLineNo">712</span>         * &gt;draft-ietf-calext-extensions p.15&lt;/a&gt;<a name="line.712"></a>
+<span class="sourceLineNo">711</span>         * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-15" &gt;<a name="line.711"></a>
+<span class="sourceLineNo">712</span>         * draft-ietf-calext-extensions p.15&lt;/a&gt;<a name="line.712"></a>
 <span class="sourceLineNo">713</span>         */<a name="line.713"></a>
 <span class="sourceLineNo">714</span>        public List&lt;Feature&gt; getFeatures() {<a name="line.714"></a>
 <span class="sourceLineNo">715</span>                return new EnumParameterList&lt;Feature&gt;(FEATURE) {<a name="line.715"></a>
@@ -805,9 +805,9 @@
 <span class="sourceLineNo">797</span>         * This parameter defines a human-readable label for the property.<a name="line.797"></a>
 <span class="sourceLineNo">798</span>         * &lt;/p&gt;<a name="line.798"></a>
 <span class="sourceLineNo">799</span>         * @return the label or null if not set<a name="line.799"></a>
-<span class="sourceLineNo">800</span>         * @see &lt;a<a name="line.800"></a>
-<span class="sourceLineNo">801</span>         * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16"&gt;draft-ietf-calext-extensions-01<a name="line.801"></a>
-<span class="sourceLineNo">802</span>         * p.16&lt;/a&gt;<a name="line.802"></a>
+<span class="sourceLineNo">800</span>         * @see &lt;a href=<a name="line.800"></a>
+<span class="sourceLineNo">801</span>         * "http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16"&gt;<a name="line.801"></a>
+<span class="sourceLineNo">802</span>         * draft-ietf-calext-extensions-01 p.16&lt;/a&gt;<a name="line.802"></a>
 <span class="sourceLineNo">803</span>         */<a name="line.803"></a>
 <span class="sourceLineNo">804</span>        public String getLabel() {<a name="line.804"></a>
 <span class="sourceLineNo">805</span>                return first(LABEL);<a name="line.805"></a>
@@ -821,9 +821,9 @@
 <span class="sourceLineNo">813</span>         * This parameter defines a human-readable label for the property.<a name="line.813"></a>
 <span class="sourceLineNo">814</span>         * &lt;/p&gt;<a name="line.814"></a>
 <span class="sourceLineNo">815</span>         * @param label the label or null to remove<a name="line.815"></a>
-<span class="sourceLineNo">816</span>         * @see &lt;a<a name="line.816"></a>
-<span class="sourceLineNo">817</span>         * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16"&gt;draft-ietf-calext-extensions-01<a name="line.817"></a>
-<span class="sourceLineNo">818</span>         * p.16&lt;/a&gt;<a name="line.818"></a>
+<span class="sourceLineNo">816</span>         * @see &lt;a href=<a name="line.816"></a>
+<span class="sourceLineNo">817</span>         * "http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16"&gt;<a name="line.817"></a>
+<span class="sourceLineNo">818</span>         * draft-ietf-calext-extensions-01 p.16&lt;/a&gt;<a name="line.818"></a>
 <span class="sourceLineNo">819</span>         */<a name="line.819"></a>
 <span class="sourceLineNo">820</span>        public void setLabel(String label) {<a name="line.820"></a>
 <span class="sourceLineNo">821</span>                replace(LABEL, label);<a name="line.821"></a>
@@ -1304,8 +1304,8 @@
 <span class="sourceLineNo">1296</span>         * @param version the version to validate against<a name="line.1296"></a>
 <span class="sourceLineNo">1297</span>         * @return a list of warnings or an empty list if no problems were found<a name="line.1297"></a>
 <span class="sourceLineNo">1298</span>         */<a name="line.1298"></a>
-<span class="sourceLineNo">1299</span>        public List&lt;Warning&gt; validate(ICalVersion version) {<a name="line.1299"></a>
-<span class="sourceLineNo">1300</span>                List&lt;Warning&gt; warnings = new ArrayList&lt;Warning&gt;(0);<a name="line.1300"></a>
+<span class="sourceLineNo">1299</span>        public List&lt;ValidationWarning&gt; validate(ICalVersion version) {<a name="line.1299"></a>
+<span class="sourceLineNo">1300</span>                List&lt;ValidationWarning&gt; warnings = new ArrayList&lt;ValidationWarning&gt;(0);<a name="line.1300"></a>
 <span class="sourceLineNo">1301</span><a name="line.1301"></a>
 <span class="sourceLineNo">1302</span>                SyntaxStyle syntax;<a name="line.1302"></a>
 <span class="sourceLineNo">1303</span>                switch (version) {<a name="line.1303"></a>
@@ -1327,9 +1327,9 @@
 <span class="sourceLineNo">1319</span>                        if (!VObjectValidator.validateParameterName(name, syntax, true)) {<a name="line.1319"></a>
 <span class="sourceLineNo">1320</span>                                if (syntax == SyntaxStyle.OLD) {<a name="line.1320"></a>
 <span class="sourceLineNo">1321</span>                                        AllowedCharacters notAllowed = VObjectValidator.allowedCharactersParameterName(syntax, true).flip();<a name="line.1321"></a>
-<span class="sourceLineNo">1322</span>                                        warnings.add(Warning.validate(57, name, notAllowed.toString(true)));<a name="line.1322"></a>
+<span class="sourceLineNo">1322</span>                                        warnings.add(new ValidationWarning(57, name, notAllowed.toString(true)));<a name="line.1322"></a>
 <span class="sourceLineNo">1323</span>                                } else {<a name="line.1323"></a>
-<span class="sourceLineNo">1324</span>                                        warnings.add(Warning.validate(54, name));<a name="line.1324"></a>
+<span class="sourceLineNo">1324</span>                                        warnings.add(new ValidationWarning(54, name));<a name="line.1324"></a>
 <span class="sourceLineNo">1325</span>                                }<a name="line.1325"></a>
 <span class="sourceLineNo">1326</span>                        }<a name="line.1326"></a>
 <span class="sourceLineNo">1327</span><a name="line.1327"></a>
@@ -1339,7 +1339,7 @@
 <span class="sourceLineNo">1331</span>                                if (!VObjectValidator.validateParameterValue(value, syntax, false, true)) {<a name="line.1331"></a>
 <span class="sourceLineNo">1332</span>                                        AllowedCharacters notAllowed = VObjectValidator.allowedCharactersParameterValue(syntax, false, true).flip();<a name="line.1332"></a>
 <span class="sourceLineNo">1333</span>                                        int code = (syntax == SyntaxStyle.OLD) ? 58 : 53;<a name="line.1333"></a>
-<span class="sourceLineNo">1334</span>                                        warnings.add(Warning.validate(code, name, value, notAllowed.toString(true)));<a name="line.1334"></a>
+<span class="sourceLineNo">1334</span>                                        warnings.add(new ValidationWarning(code, name, value, notAllowed.toString(true)));<a name="line.1334"></a>
 <span class="sourceLineNo">1335</span>                                }<a name="line.1335"></a>
 <span class="sourceLineNo">1336</span>                        }<a name="line.1336"></a>
 <span class="sourceLineNo">1337</span>                }<a name="line.1337"></a>
@@ -1351,28 +1351,28 @@
 <span class="sourceLineNo">1343</span>                        value = value.toLowerCase();<a name="line.1343"></a>
 <span class="sourceLineNo">1344</span>                        List&lt;String&gt; validValues = Arrays.asList("true", "false", "yes", "no");<a name="line.1344"></a>
 <span class="sourceLineNo">1345</span>                        if (!validValues.contains(value)) {<a name="line.1345"></a>
-<span class="sourceLineNo">1346</span>                                warnings.add(Warning.validate(nonStandardCode, RSVP, value, validValues));<a name="line.1346"></a>
+<span class="sourceLineNo">1346</span>                                warnings.add(new ValidationWarning(nonStandardCode, RSVP, value, validValues));<a name="line.1346"></a>
 <span class="sourceLineNo">1347</span>                        }<a name="line.1347"></a>
 <span class="sourceLineNo">1348</span>                }<a name="line.1348"></a>
 <span class="sourceLineNo">1349</span><a name="line.1349"></a>
 <span class="sourceLineNo">1350</span>                value = first(CUTYPE);<a name="line.1350"></a>
 <span class="sourceLineNo">1351</span>                if (value != null &amp;&amp; CalendarUserType.find(value) == null) {<a name="line.1351"></a>
-<span class="sourceLineNo">1352</span>                        warnings.add(Warning.validate(nonStandardCode, CUTYPE, value, CalendarUserType.all()));<a name="line.1352"></a>
+<span class="sourceLineNo">1352</span>                        warnings.add(new ValidationWarning(nonStandardCode, CUTYPE, value, CalendarUserType.all()));<a name="line.1352"></a>
 <span class="sourceLineNo">1353</span>                }<a name="line.1353"></a>
 <span class="sourceLineNo">1354</span><a name="line.1354"></a>
 <span class="sourceLineNo">1355</span>                value = first(ENCODING);<a name="line.1355"></a>
 <span class="sourceLineNo">1356</span>                if (value != null &amp;&amp; Encoding.find(value) == null) {<a name="line.1356"></a>
-<span class="sourceLineNo">1357</span>                        warnings.add(Warning.validate(nonStandardCode, ENCODING, value, Encoding.all()));<a name="line.1357"></a>
+<span class="sourceLineNo">1357</span>                        warnings.add(new ValidationWarning(nonStandardCode, ENCODING, value, Encoding.all()));<a name="line.1357"></a>
 <span class="sourceLineNo">1358</span>                }<a name="line.1358"></a>
 <span class="sourceLineNo">1359</span><a name="line.1359"></a>
 <span class="sourceLineNo">1360</span>                value = first(FBTYPE);<a name="line.1360"></a>
 <span class="sourceLineNo">1361</span>                if (value != null &amp;&amp; FreeBusyType.find(value) == null) {<a name="line.1361"></a>
-<span class="sourceLineNo">1362</span>                        warnings.add(Warning.validate(nonStandardCode, FBTYPE, value, FreeBusyType.all()));<a name="line.1362"></a>
+<span class="sourceLineNo">1362</span>                        warnings.add(new ValidationWarning(nonStandardCode, FBTYPE, value, FreeBusyType.all()));<a name="line.1362"></a>
 <span class="sourceLineNo">1363</span>                }<a name="line.1363"></a>
 <span class="sourceLineNo">1364</span><a name="line.1364"></a>
 <span class="sourceLineNo">1365</span>                value = first(PARTSTAT);<a name="line.1365"></a>
 <span class="sourceLineNo">1366</span>                if (value != null &amp;&amp; ParticipationStatus.find(value) == null) {<a name="line.1366"></a>
-<span class="sourceLineNo">1367</span>                        warnings.add(Warning.validate(nonStandardCode, PARTSTAT, value, ParticipationStatus.all()));<a name="line.1367"></a>
+<span class="sourceLineNo">1367</span>                        warnings.add(new ValidationWarning(nonStandardCode, PARTSTAT, value, ParticipationStatus.all()));<a name="line.1367"></a>
 <span class="sourceLineNo">1368</span>                }<a name="line.1368"></a>
 <span class="sourceLineNo">1369</span><a name="line.1369"></a>
 <span class="sourceLineNo">1370</span>                value = first(RANGE);<a name="line.1370"></a>
@@ -1380,32 +1380,32 @@
 <span class="sourceLineNo">1372</span>                        Range range = Range.find(value);<a name="line.1372"></a>
 <span class="sourceLineNo">1373</span><a name="line.1373"></a>
 <span class="sourceLineNo">1374</span>                        if (range == null) {<a name="line.1374"></a>
-<span class="sourceLineNo">1375</span>                                warnings.add(Warning.validate(nonStandardCode, RANGE, value, Range.all()));<a name="line.1375"></a>
+<span class="sourceLineNo">1375</span>                                warnings.add(new ValidationWarning(nonStandardCode, RANGE, value, Range.all()));<a name="line.1375"></a>
 <span class="sourceLineNo">1376</span>                        }<a name="line.1376"></a>
 <span class="sourceLineNo">1377</span><a name="line.1377"></a>
 <span class="sourceLineNo">1378</span>                        if (range == Range.THIS_AND_PRIOR &amp;&amp; version == ICalVersion.V2_0) {<a name="line.1378"></a>
-<span class="sourceLineNo">1379</span>                                warnings.add(Warning.validate(deprecated, RANGE, value));<a name="line.1379"></a>
+<span class="sourceLineNo">1379</span>                                warnings.add(new ValidationWarning(deprecated, RANGE, value));<a name="line.1379"></a>
 <span class="sourceLineNo">1380</span>                        }<a name="line.1380"></a>
 <span class="sourceLineNo">1381</span>                }<a name="line.1381"></a>
 <span class="sourceLineNo">1382</span><a name="line.1382"></a>
 <span class="sourceLineNo">1383</span>                value = first(RELATED);<a name="line.1383"></a>
 <span class="sourceLineNo">1384</span>                if (value != null &amp;&amp; Related.find(value) == null) {<a name="line.1384"></a>
-<span class="sourceLineNo">1385</span>                        warnings.add(Warning.validate(nonStandardCode, RELATED, value, Related.all()));<a name="line.1385"></a>
+<span class="sourceLineNo">1385</span>                        warnings.add(new ValidationWarning(nonStandardCode, RELATED, value, Related.all()));<a name="line.1385"></a>
 <span class="sourceLineNo">1386</span>                }<a name="line.1386"></a>
 <span class="sourceLineNo">1387</span><a name="line.1387"></a>
 <span class="sourceLineNo">1388</span>                value = first(RELTYPE);<a name="line.1388"></a>
 <span class="sourceLineNo">1389</span>                if (value != null &amp;&amp; RelationshipType.find(value) == null) {<a name="line.1389"></a>
-<span class="sourceLineNo">1390</span>                        warnings.add(Warning.validate(nonStandardCode, RELTYPE, value, RelationshipType.all()));<a name="line.1390"></a>
+<span class="sourceLineNo">1390</span>                        warnings.add(new ValidationWarning(nonStandardCode, RELTYPE, value, RelationshipType.all()));<a name="line.1390"></a>
 <span class="sourceLineNo">1391</span>                }<a name="line.1391"></a>
 <span class="sourceLineNo">1392</span><a name="line.1392"></a>
 <span class="sourceLineNo">1393</span>                value = first(ROLE);<a name="line.1393"></a>
 <span class="sourceLineNo">1394</span>                if (value != null &amp;&amp; Role.find(value) == null) {<a name="line.1394"></a>
-<span class="sourceLineNo">1395</span>                        warnings.add(Warning.validate(nonStandardCode, ROLE, value, Role.all()));<a name="line.1395"></a>
+<span class="sourceLineNo">1395</span>                        warnings.add(new ValidationWarning(nonStandardCode, ROLE, value, Role.all()));<a name="line.1395"></a>
 <span class="sourceLineNo">1396</span>                }<a name="line.1396"></a>
 <span class="sourceLineNo">1397</span><a name="line.1397"></a>
 <span class="sourceLineNo">1398</span>                value = first(VALUE);<a name="line.1398"></a>
 <span class="sourceLineNo">1399</span>                if (value != null &amp;&amp; ICalDataType.find(value) == null) {<a name="line.1399"></a>
-<span class="sourceLineNo">1400</span>                        warnings.add(Warning.validate(nonStandardCode, VALUE, value, ICalDataType.all()));<a name="line.1400"></a>
+<span class="sourceLineNo">1400</span>                        warnings.add(new ValidationWarning(nonStandardCode, VALUE, value, ICalDataType.all()));<a name="line.1400"></a>
 <span class="sourceLineNo">1401</span>                }<a name="line.1401"></a>
 <span class="sourceLineNo">1402</span><a name="line.1402"></a>
 <span class="sourceLineNo">1403</span>                return warnings;<a name="line.1403"></a>
