@@ -284,12 +284,7 @@ public class TimeUtils {
 		return MONTH_START_TO_DOY[month - 1] + leapAdjust + date - 1;
 	}
 
-	private static final DayOfWeek[] DAYS_OF_WEEK;
-	static {
-		DayOfWeek[] values = DayOfWeek.values();
-		DAYS_OF_WEEK = new DayOfWeek[values.length];
-		System.arraycopy(values, 0, DAYS_OF_WEEK, 0, values.length);
-	}
+	private static final DayOfWeek[] DAYS_OF_WEEK = DayOfWeek.values();
 
 	/**
 	 * Gets the day of the week the given date falls on.
