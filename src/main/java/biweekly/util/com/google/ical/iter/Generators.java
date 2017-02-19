@@ -766,10 +766,10 @@ final class Generators {
 
 	/**
 	 * Constructs a day generator based on a BYDAY rule.
-	 * @param days day of week/number pairs (e.g. SU,3MO means every Sunday and
+	 * @param days list of week/number pairs (e.g. SU,3MO means every Sunday and
 	 * the 3rd Monday)
-	 * @param weeksInYear are the week numbers meant to be weeks in the current
-	 * year, or weeks in the current month
+	 * @param weeksInYear true if the week numbers are meant to be weeks in the
+	 * current year, false if they are meant to be weeks in the current month
 	 * @param dtStart the start date
 	 * @return the generator
 	 */
