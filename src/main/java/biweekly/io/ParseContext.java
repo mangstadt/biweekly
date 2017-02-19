@@ -72,7 +72,7 @@ public class ParseContext {
 
 	/**
 	 * Sets the line number the parser is currently on.
-	 * @param line the line number or null if not applicable
+	 * @param lineNumber the line number or null if not applicable
 	 */
 	public void setLineNumber(Integer lineNumber) {
 		this.lineNumber = lineNumber;
