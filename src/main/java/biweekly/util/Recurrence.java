@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -91,7 +92,7 @@ public final class Recurrence {
 		bySetPos = Collections.unmodifiableList(builder.bySetPos);
 		byDay = Collections.unmodifiableList(builder.byDay);
 		workweekStarts = builder.workweekStarts;
-		xrules = builder.xrules.asMap();
+		xrules = Collections.unmodifiableMap(builder.xrules.getMap());
 	}
 
 	/**
@@ -214,7 +215,7 @@ public final class Recurrence {
 	public Map<String, List<String>> getXRules() {
 		return xrules;
 	}
-	
+
 	/**
 	 * Creates an iterator that computes the dates defined by this recurrence.
 	 * @param startDate the date that the recurrence starts (typically, the
@@ -357,7 +358,9 @@ public final class Recurrence {
 			byMonth = new ArrayList<Integer>(recur.byMonth);
 			bySetPos = new ArrayList<Integer>(recur.bySetPos);
 			workweekStarts = recur.workweekStarts;
-			xrules = new ListMultimap<String, String>(recur.xrules);
+
+			Map<String, List<String>> map = new HashMap<String, List<String>>(recur.xrules);
+			xrules = new ListMultimap<String, String>(map);
 		}
 
 		/**

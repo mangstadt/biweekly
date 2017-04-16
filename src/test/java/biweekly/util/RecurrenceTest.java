@@ -162,4 +162,10 @@ public class RecurrenceTest {
 
 		assertIterator(expected, it);
 	}
+
+	@Test
+	public void copy_xrule_is_mutable() {
+		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).build();
+		new Recurrence.Builder(recur).xrule("NAME", "value").build();
+	}
 }
