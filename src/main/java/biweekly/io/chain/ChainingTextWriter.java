@@ -51,6 +51,7 @@ import biweekly.property.ICalProperty;
 public class ChainingTextWriter extends ChainingWriter<ChainingTextWriter> {
 	private ICalVersion version;
 	private boolean caretEncoding = false;
+	private boolean foldLines = true;
 
 	/**
 	 * @param icals the iCalendar objects to write
@@ -90,6 +91,25 @@ public class ChainingTextWriter extends ChainingWriter<ChainingTextWriter> {
 	 */
 	public ChainingTextWriter caretEncoding(boolean enable) {
 		this.caretEncoding = enable;
+		return this;
+	}
+
+	/**
+	 * <p>
+	 * Sets whether to fold long lines. Line folding is when long lines are
+	 * split up into multiple lines. No data is lost or changed when a line is
+	 * folded.
+	 * </p>
+	 * <p>
+	 * Line folding is enabled by default. If the iCalendar consumer is not
+	 * parsing your iCalendar objects properly, disabling line folding may help.
+	 * </p>
+	 * @param foldLines true to enable line folding, false to disable it
+	 * (defaults to true)
+	 * @return this
+	 */
+	public ChainingTextWriter foldLines(boolean foldLines) {
+		this.foldLines = foldLines;
 		return this;
 	}
 
@@ -169,6 +189,9 @@ public class ChainingTextWriter extends ChainingWriter<ChainingTextWriter> {
 
 	private void go(ICalWriter writer) throws IOException {
 		writer.setCaretEncodingEnabled(caretEncoding);
+		if (!foldLines) {
+			writer.getVObjectWriter().getFoldedLineWriter().setLineLength(null);
+		}
 		if (defaultTimeZone != null) {
 			writer.setGlobalTimezone(defaultTimeZone);
 		}

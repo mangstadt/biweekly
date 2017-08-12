@@ -226,7 +226,7 @@ public class BiweeklyTest {
 		ical = it.next();
 		assertEquals(V2_0, ical.getVersion());
 		assertEquals("two", ical.getProductId().getValue());
- 
+
 		assertEquals(2, warnings.size());
 		assertParseWarnings(warnings.get(0));
 		assertParseWarnings(warnings.get(1));
@@ -362,6 +362,45 @@ public class BiweeklyTest {
 		} catch (IllegalArgumentException e) {
 			//expected
 		}
+	}
+
+	@Test
+	public void write_foldLines() throws Exception {
+		ICalendar ical = new ICalendar();
+		ical.setProductId((String) null);
+		ical.setUid((String) null);
+		ical.setDescription("In the beginning God created the heavens and the earth. Now the earth was formless and empty, darkness was over the surface of the deep, and the Spirit of God was hovering over the waters.");
+
+		//default should be "true"
+		//@formatter:off
+		String expected =
+		"BEGIN:VCALENDAR\r\n" +
+		"VERSION:2.0\r\n" +
+		"DESCRIPTION:In the beginning God created the heavens and the earth. Now the \r\n earth was formless and empty\\, darkness was over the surface of the deep\\, \r\n and the Spirit of God was hovering over the waters.\r\n" + 
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+		String actual = Biweekly.write(ical).go();
+		assertEquals(expected, actual);
+
+		//@formatter:off
+		expected =
+		"BEGIN:VCALENDAR\r\n" +
+		"VERSION:2.0\r\n" +
+		"DESCRIPTION:In the beginning God created the heavens and the earth. Now the earth was formless and empty\\, darkness was over the surface of the deep\\, and the Spirit of God was hovering over the waters.\r\n" + 
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+		actual = Biweekly.write(ical).foldLines(false).go();
+		assertEquals(expected, actual);
+
+		//@formatter:off
+		expected =
+		"BEGIN:VCALENDAR\r\n" +
+		"VERSION:2.0\r\n" +
+		"DESCRIPTION:In the beginning God created the heavens and the earth. Now the \r\n earth was formless and empty\\, darkness was over the surface of the deep\\, \r\n and the Spirit of God was hovering over the waters.\r\n" + 
+		"END:VCALENDAR\r\n";
+		//@formatter:on
+		actual = Biweekly.write(ical).foldLines(true).go();
+		assertEquals(expected, actual);
 	}
 
 	@Test
