@@ -157,6 +157,10 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 	 */
 	public List<ICalendar> all() throws IOException {
 		StreamReader reader = constructReader();
+		if (index != null) {
+			reader.setScribeIndex(index);
+		}
+
 		try {
 			List<ICalendar> icals = new ArrayList<ICalendar>();
 			ICalendar ical;
