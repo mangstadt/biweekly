@@ -302,7 +302,7 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents>,
 	public String toString(boolean includeTime, boolean extended) {
 		NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
 		nf.setMinimumIntegerDigits(2);
-                nf.setMaximumIntegerDigits(2);
+		nf.setMaximumIntegerDigits(2);
 		String dash = extended ? "-" : "";
 		String colon = extended ? ":" : "";
 		String z = utc ? "Z" : "";
