@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 /*
  Copyright (c) 2013-2017, Michael Angstadt
  All rights reserved.
@@ -44,7 +45,10 @@ package biweekly.property;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-84">RFC 2445 p.84</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.32</a>
  */
-public class Location extends TextProperty {
+public class Location extends TextProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a location property.
 	 * @param location the location (e.g. "Room 101")

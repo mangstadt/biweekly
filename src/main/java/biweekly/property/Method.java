@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -57,7 +58,10 @@ import biweekly.ICalVersion;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-77">RFC 5545 p.77-8</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-74">RFC 2445 p.74-5</a>
  */
-public class Method extends EnumProperty {
+public class Method extends EnumProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	public static final String ADD = "ADD";
 	public static final String CANCEL = "CANCEL";
 	public static final String COUNTER = "COUNTER";

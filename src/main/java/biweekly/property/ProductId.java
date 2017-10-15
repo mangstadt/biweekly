@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import biweekly.Biweekly;
 
 /*
@@ -46,7 +47,10 @@ import biweekly.Biweekly;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-75">RFC 2445 p.75-6</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
  */
-public class ProductId extends TextProperty {
+public class ProductId extends TextProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new product identifier property.
 	 * @param value a unique string representing the application (e.g.

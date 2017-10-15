@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -74,7 +75,10 @@ import biweekly.util.Period;
  * p.115-7</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34</a>
  */
-public class RecurrenceDates extends ICalProperty {
+public class RecurrenceDates extends ICalProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	private final List<ICalDate> dates;
 	private final List<Period> periods;
 

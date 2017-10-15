@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.List;
 
 /*
@@ -47,7 +48,10 @@ import java.util.List;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-87">RFC 2445 p.87-8</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34-5</a>
  */
-public class Resources extends ListProperty<String> {
+public class Resources extends ListProperty<String> implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new resources property.
 	 */

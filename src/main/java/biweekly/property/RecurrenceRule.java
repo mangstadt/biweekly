@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import biweekly.util.Recurrence;
 
 /*
@@ -49,7 +50,10 @@ import biweekly.util.Recurrence;
  * p.117-25</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.34</a>
  */
-public class RecurrenceRule extends RecurrenceProperty {
+public class RecurrenceRule extends RecurrenceProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new recurrence rule property.
 	 * @param recur the recurrence rule

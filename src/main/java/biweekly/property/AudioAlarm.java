@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -37,7 +38,10 @@ import biweekly.component.VAlarm;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.27-8</a>
  * @see VAlarm#audio
  */
-public class AudioAlarm extends VCalAlarmProperty {
+public class AudioAlarm extends VCalAlarmProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	private String contentId, uri;
 	private byte[] data;
 

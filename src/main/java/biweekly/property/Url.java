@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import biweekly.ICalendar;
 
 /*
@@ -56,7 +57,10 @@ import biweekly.ICalendar;
  * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
  * p.6</a>
  */
-public class Url extends TextProperty {
+public class Url extends TextProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a URL property.
 	 * @param url the URL (e.g. "http://example.com/resource.ics")

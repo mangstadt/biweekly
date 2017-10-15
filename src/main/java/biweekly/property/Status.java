@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -72,7 +73,10 @@ import biweekly.component.VTodo;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-88">RFC 2445 p.88-9</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35-6</a>
  */
-public class Status extends EnumProperty {
+public class Status extends EnumProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	//2.0
 	public static final String CANCELLED = "CANCELLED";
 	public static final String DRAFT = "DRAFT";

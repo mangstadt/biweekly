@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.List;
 
 import biweekly.ICalVersion;
@@ -61,7 +62,10 @@ import biweekly.util.Period;
  * p.100-1</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-95">RFC 2445 p.95-6</a>
  */
-public class FreeBusy extends ListProperty<Period> {
+public class FreeBusy extends ListProperty<Period> implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	public FreeBusy() {
 		//empty
 	}

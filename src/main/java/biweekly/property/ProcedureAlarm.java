@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import biweekly.component.VAlarm;
@@ -36,7 +37,10 @@ import biweekly.component.VAlarm;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.33</a>
  * @see VAlarm#procedure
  */
-public class ProcedureAlarm extends VCalAlarmProperty {
+public class ProcedureAlarm extends VCalAlarmProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	private String path;
 
 	/**

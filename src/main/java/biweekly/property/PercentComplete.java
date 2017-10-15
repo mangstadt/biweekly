@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.List;
 
 import biweekly.ICalVersion;
@@ -49,7 +50,10 @@ import biweekly.component.ICalComponent;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-88">RFC 5545 p.88-9</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-85">RFC 2445 p.85</a>
  */
-public class PercentComplete extends IntegerProperty {
+public class PercentComplete extends IntegerProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a percent complete property.
 	 * @param percent the percentage (e.g. "50" for 50%)

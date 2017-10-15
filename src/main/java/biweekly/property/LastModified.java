@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /*
@@ -50,7 +51,10 @@ import java.util.Date;
  * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
  * p.7</a>
  */
-public class LastModified extends DateTimeProperty {
+public class LastModified extends DateTimeProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a last modified property.
 	 * @param date the date

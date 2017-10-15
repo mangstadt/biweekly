@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 /*
  Copyright (c) 2013-2017, Michael Angstadt
  All rights reserved.
@@ -43,7 +44,10 @@ package biweekly.property;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-83">RFC 5545 p.83-4</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-80">RFC 2445 p.80-1</a>
  */
-public class Comment extends TextProperty {
+public class Comment extends TextProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a comment property.
 	 * @param comment the comment

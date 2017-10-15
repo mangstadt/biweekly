@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 /*
  Copyright (c) 2013-2017, Michael Angstadt
  All rights reserved.
@@ -46,7 +47,10 @@ package biweekly.property;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-104">RFC 2445
  * p.104-6</a>
  */
-public class Contact extends TextProperty {
+public class Contact extends TextProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a contact property.
 	 * @param contact the contact information (e.g. "Acme Co: (212) 555-1234")

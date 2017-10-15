@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +71,10 @@ import biweekly.parameter.Role;
  * p.102-4</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25-7</a>
  */
-public class Attendee extends ICalProperty {
+public class Attendee extends ICalProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	private String name, email, uri;
 	private Role role;
 	private ParticipationLevel participationLevel;

@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import biweekly.parameter.RelationshipType;
 
 /*
@@ -49,7 +50,10 @@ import biweekly.parameter.RelationshipType;
  * p.109-10</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.33-4</a>
  */
-public class RelatedTo extends TextProperty {
+public class RelatedTo extends TextProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a related-to property.
 	 * @param uid the value of the {@link Uid} property of the component that

@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /*
@@ -48,7 +49,10 @@ import java.util.Date;
  * p.129-30</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.29</a>
  */
-public class Created extends DateTimeProperty {
+public class Created extends DateTimeProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a created property.
 	 * @param date the creation date

@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import biweekly.component.VAlarm;
 import biweekly.component.VEvent;
 import biweekly.component.VTodo;
@@ -57,7 +58,10 @@ import biweekly.util.Duration;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-99">RFC 5545 p.99</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-94">RFC 2445 p.94-5</a>
  */
-public class DurationProperty extends ValuedProperty<Duration> {
+public class DurationProperty extends ValuedProperty<Duration> implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a duration property.
 	 * @param duration the duration value (e.g. "2 hours and 30 minutes")

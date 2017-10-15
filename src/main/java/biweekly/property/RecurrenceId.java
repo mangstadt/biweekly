@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import biweekly.parameter.Range;
@@ -59,7 +60,10 @@ import biweekly.util.ICalDate;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-107">RFC 2445
  * p.107-9</a>
  */
-public class RecurrenceId extends DateOrDateTimeProperty {
+public class RecurrenceId extends DateOrDateTimeProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a recurrence ID property.
 	 * @param originalStartDate the original start date

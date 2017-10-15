@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,10 @@ import biweekly.component.ICalComponent;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-82">RFC 2445 p.82-3</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.23</a>
  */
-public class Geo extends ICalProperty {
+public class Geo extends ICalProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	private Double latitude;
 	private Double longitude;
 

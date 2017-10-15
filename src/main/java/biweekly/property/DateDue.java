@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import biweekly.util.ICalDate;
@@ -107,7 +108,10 @@ import biweekly.util.ICalDate;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-92">RFC 2445 p.92-3</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.30</a>
  */
-public class DateDue extends DateOrDateTimeProperty {
+public class DateDue extends DateOrDateTimeProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a due date property.
 	 * @param dueDate the due date

@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import biweekly.util.ICalDate;
@@ -106,7 +107,10 @@ import biweekly.util.ICalDate;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-93">RFC 2445 p.93-4</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35</a>
  */
-public class DateStart extends DateOrDateTimeProperty {
+public class DateStart extends DateOrDateTimeProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a start date property.
 	 * @param startDate the start date

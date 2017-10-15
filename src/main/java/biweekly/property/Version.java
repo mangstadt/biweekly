@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,10 @@ import biweekly.util.VersionNumber;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-76">RFC 2445 p.76-7</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.24</a>
  */
-public class Version extends ICalProperty {
+public class Version extends ICalProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	public static final VersionNumber VCAL = new VersionNumber(ICalVersion.V1_0.getVersion());
 	public static final VersionNumber ICAL = new VersionNumber(ICalVersion.V2_0.getVersion());
 

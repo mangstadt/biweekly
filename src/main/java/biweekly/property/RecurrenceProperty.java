@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -42,7 +43,10 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * Represents a property whose value is a recurrence rule.
  * @author Michael Angstadt
  */
-public class RecurrenceProperty extends ValuedProperty<Recurrence> {
+public class RecurrenceProperty extends ValuedProperty<Recurrence> implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new recurrence property.
 	 * @param recur the recurrence value

@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,10 @@ import com.github.mangstadt.vinnie.validate.VObjectValidator;
  * Represents a property that does not have a scribe associated with it.
  * @author Michael Angstadt
  */
-public class RawProperty extends ICalProperty {
+public class RawProperty extends ICalProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	private String name;
 	private ICalDataType dataType;
 	private String value;

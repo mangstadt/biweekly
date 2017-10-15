@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /*
@@ -58,7 +59,10 @@ import java.util.Date;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-130">RFC 2445
  * p.130-1</a>
  */
-public class DateTimeStamp extends DateTimeProperty {
+public class DateTimeStamp extends DateTimeProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a date time stamp property.
 	 * @param date the date

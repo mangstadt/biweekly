@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -41,7 +42,10 @@ import biweekly.component.ICalComponent;
  * @author Michael Angstadt
  * @param <T> the value type
  */
-public class ListProperty<T> extends ICalProperty {
+public class ListProperty<T> extends ICalProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	protected final List<T> values;
 
 	/**

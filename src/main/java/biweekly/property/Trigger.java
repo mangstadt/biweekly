@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -56,7 +57,10 @@ import biweekly.util.Duration;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-127">RFC 2445
  * p.127-9</a>
  */
-public class Trigger extends ICalProperty {
+public class Trigger extends ICalProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	private Duration duration;
 	private Date date;
 

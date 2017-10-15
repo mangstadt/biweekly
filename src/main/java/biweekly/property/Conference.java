@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.List;
 
 import biweekly.parameter.Feature;
@@ -51,7 +52,10 @@ import biweekly.parameter.Feature;
  * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-11">draft-ietf-calext-extensions-01
  * p.11</a>
  */
-public class Conference extends ICalProperty {
+public class Conference extends ICalProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	private String uri, text;
 
 	/**

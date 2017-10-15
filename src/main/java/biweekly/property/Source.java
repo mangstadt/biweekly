@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 /*
  Copyright (c) 2013-2017, Michael Angstadt
  All rights reserved.
@@ -44,7 +45,10 @@ package biweekly.property;
  * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-8">draft-ietf-calext-extensions-01
  * p.8</a>
  */
-public class Source extends TextProperty {
+public class Source extends TextProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a source property.
 	 * @param uri the URI (e.g. "http://example.com/holidays.ics")

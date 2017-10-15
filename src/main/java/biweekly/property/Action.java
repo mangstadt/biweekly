@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,7 +67,10 @@ import biweekly.ICalVersion;
  * p.132-3</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-126">RFC 2445 p.126</a>
  */
-public class Action extends EnumProperty {
+public class Action extends EnumProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	public static final String AUDIO = "AUDIO";
 	public static final String DISPLAY = "DISPLAY";
 	public static final String EMAIL = "EMAIL";

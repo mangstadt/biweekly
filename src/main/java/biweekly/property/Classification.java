@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -67,7 +68,10 @@ import biweekly.ICalVersion;
  * p.79-80</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.28-9</a>
  */
-public class Classification extends EnumProperty {
+public class Classification extends EnumProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	public static final String PUBLIC = "PUBLIC";
 	public static final String PRIVATE = "PRIVATE";
 	public static final String CONFIDENTIAL = "CONFIDENTIAL";

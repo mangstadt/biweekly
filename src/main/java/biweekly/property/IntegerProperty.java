@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 /*
  Copyright (c) 2013-2017, Michael Angstadt
  All rights reserved.
@@ -29,7 +30,10 @@ package biweekly.property;
  * Represents a property whose value is an integer.
  * @author Michael Angstadt
  */
-public class IntegerProperty extends ValuedProperty<Integer> {
+public class IntegerProperty extends ValuedProperty<Integer> implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new integer property.
 	 * @param value the property's value

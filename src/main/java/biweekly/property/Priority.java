@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 /*
  Copyright (c) 2013-2017, Michael Angstadt
  All rights reserved.
@@ -45,7 +46,10 @@ package biweekly.property;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-85">RFC 2445 p.85-7</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.33</a>
  */
-public class Priority extends IntegerProperty {
+public class Priority extends IntegerProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a priority property.
 	 * @param priority the priority ("0" is undefined, "1" is the highest, "9"

@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import biweekly.util.Duration;
 
 /*
@@ -48,7 +49,10 @@ import biweekly.util.Duration;
  * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
  * p.7</a>
  */
-public class RefreshInterval extends ValuedProperty<Duration> {
+public class RefreshInterval extends ValuedProperty<Duration> implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a refresh interval property.
 	 * @param duration the duration value (e.g. "2 hours and 30 minutes")

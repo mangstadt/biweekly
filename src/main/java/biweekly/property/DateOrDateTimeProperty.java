@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import biweekly.util.ICalDate;
@@ -33,7 +34,10 @@ import biweekly.util.ICalDate;
  * Represents a property whose value is a date or a date-time.
  * @author Michael Angstadt
  */
-public class DateOrDateTimeProperty extends ValuedProperty<ICalDate> {
+public class DateOrDateTimeProperty extends ValuedProperty<ICalDate> implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new property.
 	 * @param value the date-time value

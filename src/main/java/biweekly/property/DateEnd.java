@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import biweekly.util.ICalDate;
@@ -105,7 +106,10 @@ import biweekly.util.ICalDate;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-91">RFC 2445 p.91-2</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
  */
-public class DateEnd extends DateOrDateTimeProperty {
+public class DateEnd extends DateOrDateTimeProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates an end date property.
 	 * @param endDate the end date

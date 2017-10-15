@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import biweekly.component.VTimezone;
 
 /*
@@ -35,7 +36,10 @@ import biweekly.component.VTimezone;
  * p.102-3</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-97">RFC 2445 p.97-8</a>
  */
-public class TimezoneId extends TextProperty {
+public class TimezoneId extends TextProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a timezone identifier property.
 	 * @param timezone the timezone identifier

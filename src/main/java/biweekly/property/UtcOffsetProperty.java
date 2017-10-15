@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import biweekly.util.UtcOffset;
 
 /*
@@ -31,7 +32,10 @@ import biweekly.util.UtcOffset;
  * Represents a property whose value is a timezone offset.
  * @author Michael Angstadt
  */
-public class UtcOffsetProperty extends ValuedProperty<UtcOffset> {
+public class UtcOffsetProperty extends ValuedProperty<UtcOffset> implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	public UtcOffsetProperty(UtcOffset offset) {
 		super(offset);
 	}

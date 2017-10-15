@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -41,7 +42,10 @@ import biweekly.util.Gobble;
  * A property whose value is a binary resource (such as an image or document).
  * @author Michael Angstadt
  */
-public class BinaryProperty extends ICalProperty {
+public class BinaryProperty extends ICalProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	protected byte[] data;
 	protected String uri;
 

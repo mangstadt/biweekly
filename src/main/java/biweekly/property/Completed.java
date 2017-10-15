@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /*
@@ -47,7 +48,10 @@ import java.util.Date;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-90">RFC 2445 p.90-1</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.29</a>
  */
-public class Completed extends DateTimeProperty {
+public class Completed extends DateTimeProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a completed property.
 	 * @param completed the completion date

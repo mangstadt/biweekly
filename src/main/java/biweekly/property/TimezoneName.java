@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 /*
  Copyright (c) 2013-2017, Michael Angstadt
  All rights reserved.
@@ -48,7 +49,10 @@ package biweekly.property;
  * p.103-4</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-98">RFC 2445 p.98-9</a>
  */
-public class TimezoneName extends TextProperty {
+public class TimezoneName extends TextProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a timezone name property.
 	 * @param name the timezone name (e.g. "EST")

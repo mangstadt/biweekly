@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 /*
  Copyright (c) 2013-2017, Michael Angstadt
  All rights reserved.
@@ -47,7 +48,10 @@ package biweekly.property;
  * p.89-90</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.36</a>
  */
-public class Summary extends TextProperty {
+public class Summary extends TextProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new summary property.
 	 * @param summary the summary

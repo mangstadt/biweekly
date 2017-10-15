@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.List;
 
 /*
@@ -49,7 +50,10 @@ import java.util.List;
  * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-7">draft-ietf-calext-extensions-01
  * p.7</a>
  */
-public class Categories extends ListProperty<String> {
+public class Categories extends ListProperty<String> implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new categories property.
 	 */

@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import biweekly.util.UtcOffset;
 
 /*
@@ -48,7 +49,10 @@ import biweekly.util.UtcOffset;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-100">RFC 2445
  * p.100-1</a>
  */
-public class TimezoneOffsetTo extends UtcOffsetProperty {
+public class TimezoneOffsetTo extends UtcOffsetProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new timezone offset to property.
 	 * @param offset the UTC offset

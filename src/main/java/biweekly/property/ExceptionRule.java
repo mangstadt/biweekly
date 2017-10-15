@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.List;
 
 import biweekly.ICalVersion;
@@ -58,7 +59,10 @@ import biweekly.util.Recurrence;
  * p.114-15</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.31</a>
  */
-public class ExceptionRule extends RecurrenceProperty {
+public class ExceptionRule extends RecurrenceProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new exception rule property.
 	 * @param recur the recurrence rule

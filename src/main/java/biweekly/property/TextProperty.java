@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 /*
  Copyright (c) 2013-2017, Michael Angstadt
  All rights reserved.
@@ -30,7 +31,10 @@ package biweekly.property;
  * includes both text and URI values.
  * @author Michael Angstadt
  */
-public class TextProperty extends ValuedProperty<String> {
+public class TextProperty extends ValuedProperty<String> implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new text property.
 	 * @param value the property's value

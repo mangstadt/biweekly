@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +40,10 @@ import biweekly.component.ICalComponent;
  * example, the {@link Action} property).
  * @author Michael Angstadt
  */
-public abstract class EnumProperty extends TextProperty {
+public abstract class EnumProperty extends TextProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates an enum property.
 	 * @param value the property value

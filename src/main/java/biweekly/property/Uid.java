@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /*
@@ -52,7 +53,10 @@ import java.util.UUID;
  * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-6">draft-ietf-calext-extensions-01
  * p.6</a>
  */
-public class Uid extends TextProperty {
+public class Uid extends TextProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a UID property.
 	 * @param uid the UID (can be anything)

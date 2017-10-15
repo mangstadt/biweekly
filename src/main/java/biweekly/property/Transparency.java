@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -71,7 +72,10 @@ import biweekly.ICalVersion;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-96">RFC 2445 p.96-7</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.36-7</a>
  */
-public class Transparency extends EnumProperty {
+public class Transparency extends EnumProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	public static final String OPAQUE = "OPAQUE";
 	public static final String TRANSPARENT = "TRANSPARENT";
 

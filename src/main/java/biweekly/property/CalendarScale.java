@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -69,7 +70,10 @@ import biweekly.ICalVersion;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-76">RFC 5545 p.76-7</a>
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-73">RFC 2445 p.73-4</a>
  */
-public class CalendarScale extends EnumProperty {
+public class CalendarScale extends EnumProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	public static final String GREGORIAN = "GREGORIAN";
 
 	/**

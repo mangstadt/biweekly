@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -61,7 +62,10 @@ import biweekly.component.VTodo;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-106">RFC 2445
  * p.106-7</a>
  */
-public class Organizer extends ICalProperty {
+public class Organizer extends ICalProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	private String uri, email, name;
 
 	/**

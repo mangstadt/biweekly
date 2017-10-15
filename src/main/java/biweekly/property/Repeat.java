@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 /*
  Copyright (c) 2013-2017, Michael Angstadt
  All rights reserved.
@@ -45,7 +46,10 @@ package biweekly.property;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-126">RFC 2445
  * p.126-7</a>
  */
-public class Repeat extends IntegerProperty {
+public class Repeat extends IntegerProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a repeat property.
 	 * @param count the number of times to repeat the alarm (e.g. "2" to repeat

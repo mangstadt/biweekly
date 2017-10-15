@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,10 @@ import biweekly.util.XmlUtils;
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc6321#page-17">RFC 6321 p.17-8</a>
  */
-public class Xml extends ValuedProperty<Document> {
+public class Xml extends ValuedProperty<Document> implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates an XML property.
 	 * @param xml the XML to use as the property's value

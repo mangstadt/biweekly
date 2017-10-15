@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -66,7 +67,10 @@ import biweekly.component.ICalComponent;
  * @see <a href="http://tools.ietf.org/html/rfc2445#page-77">RFC 2445 p.77-8</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25</a>
  */
-public class Attachment extends BinaryProperty {
+public class Attachment extends BinaryProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	private String contentId;
 
 	/**

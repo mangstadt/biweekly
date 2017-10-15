@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 /*
  Copyright (c) 2013-2017, Michael Angstadt
  All rights reserved.
@@ -46,7 +47,10 @@ package biweekly.property;
  * p.131-3</a>
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.35</a>
  */
-public class Sequence extends IntegerProperty {
+public class Sequence extends IntegerProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a sequence property.
 	 * @param sequence the sequence number (e.g. "0" for the initial version,

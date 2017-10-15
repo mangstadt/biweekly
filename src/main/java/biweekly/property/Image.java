@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.io.Serializable;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -65,7 +66,10 @@ import biweekly.parameter.Display;
  * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-10">draft-ietf-calext-extensions-01
  * p.10</a>
  */
-public class Image extends BinaryProperty {
+public class Image extends BinaryProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * Creates a new attachment.
 	 * @param formatType the content-type of the data (e.g. "image/png")
