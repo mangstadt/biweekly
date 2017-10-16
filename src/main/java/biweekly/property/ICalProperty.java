@@ -44,7 +44,10 @@ import biweekly.parameter.ICalParameters;
  * Base class for all iCalendar property classes.
  * @author Michael Angstadt
  */
-public abstract class ICalProperty {
+public abstract class ICalProperty implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	/**
 	 * The property parameters.
 	 */

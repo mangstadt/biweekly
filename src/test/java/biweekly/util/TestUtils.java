@@ -284,7 +284,7 @@ public class TestUtils {
 	 * </p>
 	 * @param text the date string to parse
 	 * @return the parsed date
-	 * @throws IllegalArgumentExcpetion if it couldn't be parsed
+	 * @throws IllegalArgumentException if it couldn't be parsed
 	 */
 	public static Date date(String text) {
 		return date(text, TimeZone.getDefault());
@@ -306,7 +306,7 @@ public class TestUtils {
 	 * @param timezone the timezone the date string is in (ignored if the date
 	 * string contains a UTC offset)
 	 * @return the parsed date
-	 * @throws IllegalArgumentExcpetion if it couldn't be parsed
+	 * @throws IllegalArgumentException if it couldn't be parsed
 	 */
 	public static Date date(String text, TimeZone timezone) {
 		for (DateFormat df : dfs) {
@@ -333,7 +333,7 @@ public class TestUtils {
 	 * acceptable formats)
 	 * @return the parsed date in the UTC timezone or null if it couldn't be
 	 * parsed
-	 * @throws IllegalArgumentExcpetion if it couldn't be parsed
+	 * @throws IllegalArgumentException if it couldn't be parsed
 	 */
 	public static Date utc(String text) {
 		return date(text + " +0000");

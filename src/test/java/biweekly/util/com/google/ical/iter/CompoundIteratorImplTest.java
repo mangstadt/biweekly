@@ -43,11 +43,7 @@ import static biweekly.util.TestUtils.assertIterator;
 import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 import org.junit.Test;
 
@@ -395,7 +391,7 @@ public class CompoundIteratorImplTest {
 	public void infiniteExclusionsAndFiniteInclusions() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
-			.until(new ICalDate(date("2006-05-03"), false))
+			.until(new ICalDate(date("2006-05-03", PST), false))
 		.build();
 		Recurrence exrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.interval(2)
@@ -403,12 +399,12 @@ public class CompoundIteratorImplTest {
 		.build();
 		DateValue start = new DateValueImpl(2006, 4, 11);
 
-		Collection<RecurrenceIterator> inclusions = Arrays.asList(
-			RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
-		);
-		Collection<RecurrenceIterator> exclusions = Arrays.asList(
-			RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
-		);
+		Collection<RecurrenceIterator> inclusions = Collections.singletonList(
+        RecurrenceIteratorFactory.createRecurrenceIterator(rrule, start, PST)
+    );
+		Collection<RecurrenceIterator> exclusions = Collections.singletonList(
+        RecurrenceIteratorFactory.createRecurrenceIterator(exrule, start, PST)
+    );
 		
 		CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
 		assertIterator(Arrays.<DateValue>asList(
@@ -428,7 +424,8 @@ public class CompoundIteratorImplTest {
 			new DateValueImpl(2006, 4, 28),
 			
 			new DateValueImpl(2006, 5, 1),
-			new DateValueImpl(2006, 5, 2)
+			new DateValueImpl(2006, 5, 2),
+      new DateValueImpl(2006, 5, 3)
 		), it);
 	}
 	
@@ -436,7 +433,7 @@ public class CompoundIteratorImplTest {
 	public void infiniteExclusionsAndFiniteInclusions_advanceTo_on_date() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
-			.until(new ICalDate(date("2006-05-03"), false))
+			.until(new ICalDate(date("2006-05-03", PST), false))
 		.build();
 		Recurrence exrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.interval(2)
@@ -465,7 +462,8 @@ public class CompoundIteratorImplTest {
 				new DateValueImpl(2006, 4, 28),
 				
 				new DateValueImpl(2006, 5, 1),
-				new DateValueImpl(2006, 5, 2)
+				new DateValueImpl(2006, 5, 2),
+        new DateValueImpl(2006, 5, 3)
 		), it);
 	}
 	
@@ -473,7 +471,7 @@ public class CompoundIteratorImplTest {
 	public void infiniteExclusionsAndFiniteInclusions_advanceTo_after_date() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
-			.until(new ICalDate(date("2006-05-03"), false))
+			.until(new ICalDate(date("2006-05-03", PST), false))
 		.build();
 		Recurrence exrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.interval(2)
@@ -497,7 +495,8 @@ public class CompoundIteratorImplTest {
 				new DateValueImpl(2006, 4, 28),
 				
 				new DateValueImpl(2006, 5, 1),
-				new DateValueImpl(2006, 5, 2)
+				new DateValueImpl(2006, 5, 2),
+        new DateValueImpl(2006, 5, 3)
 		), it);
 	}
 	
