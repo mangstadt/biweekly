@@ -1,5 +1,6 @@
 package biweekly.parameter;
 
+import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,7 +55,9 @@ import biweekly.util.ListMultimap;
  * Stores the parameters that belong to a property.
  * @author Michael Angstadt
  */
-public class ICalParameters extends ListMultimap<String, String> {
+public class ICalParameters extends ListMultimap<String, String> implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
 	/**
 	 * Contains a URI that points to additional information about the entity
 	 * represented by the property.

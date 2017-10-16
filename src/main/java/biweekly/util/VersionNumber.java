@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -33,7 +34,10 @@ import java.util.List;
  * Represents a software version number (e.g. "1.8.14").
  * @author Michael Angstadt
  */
-public class VersionNumber implements Comparable<VersionNumber> {
+public class VersionNumber implements Comparable<VersionNumber>, Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	private final List<Integer> parts;
 
 	/**

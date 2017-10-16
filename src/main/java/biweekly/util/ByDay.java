@@ -25,6 +25,8 @@ package biweekly.util;
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+import java.io.Serializable;
+
 /**
  * <p>
  * Represents a specific day or all days in a month or year.
@@ -42,7 +44,10 @@ package biweekly.util;
  * </ul>
  * @author Michael Angstadt
  */
-public class ByDay {
+public class ByDay implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	private final Integer num;
 	private final DayOfWeek day;
 

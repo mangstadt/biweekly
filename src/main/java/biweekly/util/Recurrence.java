@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -60,7 +61,10 @@ import biweekly.util.com.google.ical.iter.RecurrenceIterator;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-38">RFC 5545
  * p.38-45</a>
  */
-public final class Recurrence {
+public final class Recurrence implements Serializable{
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	private final Frequency frequency;
 	private final Integer interval;
 	private final Integer count;

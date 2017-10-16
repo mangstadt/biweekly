@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import java.io.Serializable;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,7 +36,10 @@ import biweekly.Messages;
  * Represents a UTC offset.
  * @author Michael Angstadt
  */
-public final class UtcOffset {
+public final class UtcOffset implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
 	private final long millis;
 
 	/**

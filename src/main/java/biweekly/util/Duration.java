@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -53,8 +54,11 @@ import biweekly.Messages;
  * </pre>
  * @author Michael Angstadt
  */
-public final class Duration {
-	private final Integer weeks, days, hours, minutes, seconds;
+public final class Duration implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
+  private final Integer weeks, days, hours, minutes, seconds;
 	private final boolean prior;
 
 	private Duration(Builder b) {

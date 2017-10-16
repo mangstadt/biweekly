@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /*
@@ -31,8 +32,11 @@ import java.util.Date;
  * A period of time.
  * @author Michael Angstadt
  */
-public final class Period {
-	/*
+public final class Period implements Serializable {
+  /** A serial version uid for consistent serialization. */
+  private static final long serialVersionUID = 1L;
+
+  /*
 	 * Note: The getter methods must not make copies of the date objects they
 	 * return! The date objects in this class must be directly referenced in
 	 * order to support timezones.
