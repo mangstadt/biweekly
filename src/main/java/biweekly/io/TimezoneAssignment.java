@@ -71,8 +71,8 @@ public class TimezoneAssignment {
 	 * object, the client consuming the iCalendar object must know how to
 	 * interpret such an ID. The iCalendar specification does not specify a list
 	 * of such IDs, but suggests using the naming convention of an existing
-	 * timezone specification, such as the <a
-	 * href="http://www.twinsun.com/tz/tz-link.htm">public-domain TZ
+	 * timezone specification, such as the
+	 * <a href="http://www.twinsun.com/tz/tz-link.htm">public-domain TZ
 	 * database</a>.
 	 * </p>
 	 * @param timezone the Java timezone object
@@ -85,12 +85,14 @@ public class TimezoneAssignment {
 	}
 
 	/**
-	 * Creates a timezone whose VTIMEZONE component is downloaded from <a
-	 * href="http://www.tzurl.org">tzurl.org</a>.
+	 * Creates a timezone whose VTIMEZONE component is downloaded from
+	 * <a href="http://www.tzurl.org">tzurl.org</a>.
 	 * @param timezone the Java timezone object
 	 * @param outlookCompatible true to download a {@link VTimezone} component
 	 * that is tailored for Microsoft Outlook email clients, false to download a
-	 * standards-based one
+	 * standards-based one. Note that the website does not provide many
+	 * Outlook-compatible timezone definitions, so you may need to change this
+	 * parameter to false if your timezone cannot be found.
 	 * @return the timezone assignment
 	 * @throws IllegalArgumentException if an appropriate VTIMEZONE component
 	 * cannot be found on the website
