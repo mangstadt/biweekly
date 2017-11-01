@@ -1,11 +1,13 @@
 package biweekly.io;
 
+import static biweekly.util.TestUtils.utc;
 import static biweekly.util.TestUtils.vtimezoneNewYork;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
 
@@ -16,6 +18,7 @@ import biweekly.component.DaylightSavingsTime;
 import biweekly.component.Observance;
 import biweekly.component.StandardTime;
 import biweekly.component.VTimezone;
+import biweekly.io.ICalTimeZone.Boundary;
 import biweekly.property.TimezoneOffsetFrom;
 import biweekly.property.TimezoneOffsetTo;
 import biweekly.util.DateTimeComponents;
@@ -558,6 +561,35 @@ public class ICalTimeZoneTest {
 		//@formatter:on
 
 		assertFalse(observances.hasNext());
+	}
+
+	/**
+	 * If a DTSTART property in a VTIMEZONE component is missing its time
+	 * component, its time component should default to midnight.
+	 * @see <a href="https://github.com/mangstadt/biweekly/issues/77">Issue
+	 * 77</a>
+	 */
+	@Test
+	public void dtstart_missing_time_component() throws Throwable {
+		VTimezone component = new VTimezone("America/Chicago");
+		{
+			DaylightSavingsTime daylight = new DaylightSavingsTime();
+			daylight.setDateStart(new DateTimeComponents(1970, 3, 8, 2, 0, 0, false));
+			daylight.setTimezoneOffsetFrom(new UtcOffset(false, 6, 0));
+			daylight.setTimezoneOffsetTo(new UtcOffset(false, 5, 0));
+			component.addDaylightSavingsTime(daylight);
+
+			StandardTime standard = new StandardTime();
+			standard.setDateStart(new DateTimeComponents(1970, 11, 1)); //missing time
+			standard.setTimezoneOffsetFrom(new UtcOffset(false, 5, 0));
+			standard.setTimezoneOffsetTo(new UtcOffset(false, 6, 0));
+			component.addStandardTime(standard);
+		}
+
+		ICalTimeZone tz = new ICalTimeZone(component);
+		Date anyTimeAfterNov1 = utc("1970-12-01 00:00:00");
+		Boundary boundary = tz.getObservanceBoundary(anyTimeAfterNov1);
+		assertEquals(new DateTimeValueImpl(1970, 11, 1, 0, 0, 0), boundary.getObservanceInStart());
 	}
 
 	private static void assertIterator(ICalTimeZone tz, Observance observance, DateValue... values) {

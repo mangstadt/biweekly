@@ -34,6 +34,7 @@ import biweekly.util.Recurrence;
 import biweekly.util.UtcOffset;
 import biweekly.util.com.google.ical.iter.RecurrenceIterator;
 import biweekly.util.com.google.ical.iter.RecurrenceIteratorFactory;
+import biweekly.util.com.google.ical.util.DTBuilder;
 import biweekly.util.com.google.ical.values.DateTimeValue;
 import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
@@ -357,6 +358,18 @@ public class ICalTimeZone extends TimeZone {
 		if (closestIndex < sortedObservances.size() - 1) {
 			observanceAfter = sortedObservances.get(closestIndex + 1);
 			observanceAfterStart = getObservanceDateClosestToTheGivenDate(observanceAfter, givenTime, true);
+		}
+
+		/*
+		 * If any of the DTSTART properties are missing their time components,
+		 * then observanceInStart/observanceAfterStart could be a DateValue
+		 * object. If so, convert it to a DateTimeValue object (see Issue 77).
+		 */
+		if (observanceInStart != null && !(observanceInStart instanceof DateTimeValue)) {
+			observanceInStart = new DTBuilder(observanceInStart).toDateTime();
+		}
+		if (observanceAfterStart != null && !(observanceAfterStart instanceof DateTimeValue)) {
+			observanceAfterStart = new DTBuilder(observanceAfterStart).toDateTime();
 		}
 
 		return new Boundary((DateTimeValue) observanceInStart, observanceIn, (DateTimeValue) observanceAfterStart, observanceAfter);
@@ -692,6 +705,11 @@ public class ICalTimeZone extends TimeZone {
 		 */
 		public Observance getObservanceAfter() {
 			return observanceAfter;
+		}
+
+		@Override
+		public String toString() {
+			return "Boundary [observanceInStart=" + observanceInStart + ", observanceAfterStart=" + observanceAfterStart + ", observanceIn=" + observanceIn + ", observanceAfter=" + observanceAfter + "]";
 		}
 	}
 }
