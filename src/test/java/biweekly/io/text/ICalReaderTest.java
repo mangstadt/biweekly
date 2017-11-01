@@ -1746,6 +1746,41 @@ public class ICalReaderTest {
 		assertNull(reader.readNext());
 	}
 
+	@Test
+	public void missing_dtstart_timeinfo() throws Throwable {
+		//@formatter:off
+		String ical = 
+		"BEGIN:VCALENDAR\n" +
+            "VERSION:2.0\n" +
+            "CALSCALE:GREGORIAN\n" +
+            "BEGIN:VTIMEZONE\n" +
+            "TZID:America/Chicago\n" +
+            "BEGIN:DAYLIGHT\n" +
+            "TZOFFSETFROM:-0600\n" +
+            "TZOFFSETTO:-0500\n" +
+            "TZNAME:CDT\n" +
+            "DTSTART:19700308T020000\n" +
+            "END:DAYLIGHT\n" +
+            "BEGIN:STANDARD\n" +
+            "TZOFFSETFROM:-0500\n" +
+            "TZOFFSETTO:-0600\n" +
+            "TZNAME:CST\n" +
+            "DTSTART:19701101\n" +
+            "END:STANDARD\n" +
+            "END:VTIMEZONE\n" +
+            "BEGIN:VEVENT\n" +
+            "DTSTART:20150706T120000\n" +
+            "DTEND;TZID=America/Chicago:20150706T130000\n" +
+            "DTSTAMP:20150703T161144Z\n" +
+            "DESCRIPTION:Description\n" +
+            "END:VEVENT\n" +
+        "END:VCALENDAR";
+		//@formatter:on
+		ICalReader reader = new ICalReader(ical);
+		ICalendar icalendar = reader.readNext();
+		assertVersion(V2_0, icalendar);
+	}
+	
 	private ICalReader read(String file) {
 		return new ICalReader(getClass().getResourceAsStream(file));
 	}
