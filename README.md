@@ -6,7 +6,6 @@
 | Code Coverage: | [![codecov.io](http://codecov.io/github/mangstadt/biweekly/coverage.svg?branch=master)](http://codecov.io/github/mangstadt/biweekly?branch=master) |
 | Maven Central: | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.sf.biweekly/biweekly/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.sf.biweekly/biweekly) |
 | Chat Room: | [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mangstadt/biweekly?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) |
-| Q & A: | [![Codewake](https://www.codewake.com/badges/ask_question.svg)](https://www.codewake.com/p/biweekly) |
 | License: | [![FreeBSD License](https://img.shields.io/badge/License-FreeBSD-red.svg)](https://github.com/mangstadt/biweekly/blob/master/LICENSE) |
 
 biweekly is an iCalendar library written in Java. The project aims to provide a well documented, easy to use API for reading and writing iCalendar data.
