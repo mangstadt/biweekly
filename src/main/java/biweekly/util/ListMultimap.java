@@ -132,7 +132,7 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 * @param key the key
 	 * @param values the values to add
 	 */
-	public void putAll(K key, Collection<V> values) {
+	public void putAll(K key, Collection<? extends V> values) {
 		if (values.isEmpty()) {
 			return;
 		}
@@ -246,7 +246,7 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 * @param values the values with which to replace all existing values
 	 * @return the values that were replaced (this list is immutable)
 	 */
-	public List<V> replace(K key, Collection<V> values) {
+	public List<V> replace(K key, Collection<? extends V> values) {
 		List<V> replaced = removeAll(key);
 		putAll(key, values);
 		return replaced;
@@ -395,8 +395,8 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 
 	/**
 	 * Note: This class is a modified version of the
-	 * "AbstractMapBasedMultimap.WrappedList" class from the <a
-	 * href="https://github.com/google/guava">Guava</a>.
+	 * "AbstractMapBasedMultimap.WrappedList" class from the
+	 * <a href="https://github.com/google/guava">Guava</a>.
 	 * 
 	 * <p>
 	 * Collection decorator that stays in sync with the multimap values for a

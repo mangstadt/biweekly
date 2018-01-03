@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 import org.w3c.dom.Element;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.component.ICalComponent;
@@ -33,8 +35,6 @@ import biweekly.util.ICalDate;
 import biweekly.util.ListMultimap;
 import biweekly.util.Recurrence;
 import biweekly.util.XmlUtils;
-
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 /*
  Copyright (c) 2013-2017, Michael Angstadt
@@ -878,9 +878,9 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			components.put(INTERVAL, recur.getInterval());
 		}
 
-		addIntegerListComponent(components, BYSECOND, recur.getBySecond());
-		addIntegerListComponent(components, BYMINUTE, recur.getByMinute());
-		addIntegerListComponent(components, BYHOUR, recur.getByHour());
+		components.putAll(BYSECOND, recur.getBySecond());
+		components.putAll(BYMINUTE, recur.getByMinute());
+		components.putAll(BYHOUR, recur.getByHour());
 
 		for (ByDay byDay : recur.getByDay()) {
 			Integer prefix = byDay.getNum();
@@ -893,11 +893,11 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			components.put(BYDAY, value);
 		}
 
-		addIntegerListComponent(components, BYMONTHDAY, recur.getByMonthDay());
-		addIntegerListComponent(components, BYYEARDAY, recur.getByYearDay());
-		addIntegerListComponent(components, BYWEEKNO, recur.getByWeekNo());
-		addIntegerListComponent(components, BYMONTH, recur.getByMonth());
-		addIntegerListComponent(components, BYSETPOS, recur.getBySetPos());
+		components.putAll(BYMONTHDAY, recur.getByMonthDay());
+		components.putAll(BYYEARDAY, recur.getByYearDay());
+		components.putAll(BYWEEKNO, recur.getByWeekNo());
+		components.putAll(BYMONTH, recur.getByMonth());
+		components.putAll(BYSETPOS, recur.getBySetPos());
 
 		if (recur.getWorkweekStarts() != null) {
 			components.put(WKST, recur.getWorkweekStarts().getAbbr());
@@ -905,9 +905,8 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 		for (Map.Entry<String, List<String>> entry : recur.getXRules().entrySet()) {
 			String name = entry.getKey();
-			for (String value : entry.getValue()) {
-				components.put(name, value);
-			}
+			List<String> values = entry.getValue();
+			components.putAll(name, values);
 		}
 
 		return components;
@@ -974,12 +973,6 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		 * Otherwise, UNTIL should be UTC.
 		 */
 		return date(until).extended(extended).utc(true).write();
-	}
-
-	private void addIntegerListComponent(ListMultimap<String, Object> components, String name, List<Integer> values) {
-		for (Integer value : values) {
-			components.put(name, value);
-		}
 	}
 
 	private void parseFirst(ListMultimap<String, String> rules, String name, Handler<String> handler) {
