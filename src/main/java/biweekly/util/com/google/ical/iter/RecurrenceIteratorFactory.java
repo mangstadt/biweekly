@@ -132,6 +132,15 @@ public class RecurrenceIteratorFactory {
 	 */
 	public static RecurrenceIterator createRecurrenceIterator(Recurrence rrule, DateValue dtStart, TimeZone tzid) {
 		Frequency freq = rrule.getFrequency();
+
+		/*
+		 * If the given RRULE is malformed and does not have a frequency
+		 * specified, default to "yearly".
+		 */
+		if (freq == null) {
+			freq = Frequency.YEARLY;
+		}
+
 		DayOfWeek wkst = rrule.getWorkweekStarts();
 
 		ICalDate until = rrule.getUntil();
