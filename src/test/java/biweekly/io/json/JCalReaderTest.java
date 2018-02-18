@@ -138,7 +138,7 @@ public class JCalReaderTest {
 		assertSize(event, 0, 2);
 
 		assertEquals("Networld+Interop Conference", event.getSummary().getValue());
-		assertEquals("Networld+Interop Conference" + NEWLINE + "and Exhibit" + NEWLINE + "Atlanta World Congress Center" + NEWLINE + "Atlanta, Georgia", event.getDescription().getValue());
+		assertEquals("Networld+Interop Conference\nand Exhibit\nAtlanta World Congress Center\nAtlanta, Georgia", event.getDescription().getValue());
 
 		assertNull(reader.readNext());
 		assertParseWarnings(reader);
@@ -573,7 +573,7 @@ public class JCalReaderTest {
 			assertNull(rdate.getParameters().getTimezoneId());
 
 			assertEquals("Event #2", event.getSummary().getValue());
-			assertEquals("We are having a meeting all this week at 12 pm for one hour, with an additional meeting on the first day 2 hours long." + NEWLINE + "Please bring your own lunch for the 12 pm meetings.", event.getDescription().getValue());
+			assertEquals("We are having a meeting all this week at 12 pm for one hour, with an additional meeting on the first day 2 hours long.\nPlease bring your own lunch for the 12 pm meetings.", event.getDescription().getValue());
 			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
 		}
 		{

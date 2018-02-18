@@ -1508,7 +1508,7 @@ public class ICalReaderTest {
 			assertTrue(event.getStatus().isConfirmed());
 			assertEquals(Arrays.asList("CONFERENCE"), event.getCategories().get(0).getValues());
 			assertEquals("Networld+Interop Conference", event.getSummary().getValue());
-			assertEquals("Networld+Interop Conferenceand Exhibit\nAtlanta World Congress Center\nAtlanta, Georgia", event.getDescription().getValue());
+			assertEquals("Networld+Interop Conferenceand Exhibit" + NEWLINE + "Atlanta World Congress Center" + NEWLINE + "Atlanta, Georgia", event.getDescription().getValue());
 		}
 
 		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run();

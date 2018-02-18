@@ -105,7 +105,7 @@ public class JCalRawReaderTest {
 					assertEquals("description", name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
-					assertEquals("Networld+Interop Conference" + NEWLINE + "and Exhibit" + NEWLINE + "Atlanta World Congress Center" + NEWLINE + "Atlanta, Georgia", value.asSingle());
+					assertEquals("Networld+Interop Conference\nand Exhibit\nAtlanta World Congress Center\nAtlanta, Georgia", value.asSingle());
 					break;
 				}
 
