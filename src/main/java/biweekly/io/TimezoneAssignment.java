@@ -90,9 +90,7 @@ public class TimezoneAssignment {
 	 * @param timezone the Java timezone object
 	 * @param outlookCompatible true to download a {@link VTimezone} component
 	 * that is tailored for Microsoft Outlook email clients, false to download a
-	 * standards-based one. Note that the website does not provide many
-	 * Outlook-compatible timezone definitions, so you may need to change this
-	 * parameter to false if your timezone cannot be found.
+	 * standards-based one.
 	 * @return the timezone assignment
 	 * @throws IllegalArgumentException if an appropriate VTIMEZONE component
 	 * cannot be found on the website
