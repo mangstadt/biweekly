@@ -79,14 +79,14 @@ String str = Biweekly.write(ical).go();
 <dependency>
    <groupId>net.sf.biweekly</groupId>
    <artifactId>biweekly</artifactId>
-   <version>0.6.1</version>
+   <version>0.6.2</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```
-compile 'net.sf.biweekly:biweekly:0.6.1'
+compile 'net.sf.biweekly:biweekly:0.6.2'
 ```
 
 # Build Instructions
@@ -103,7 +103,6 @@ You have some options:
 
  * [Issue tracker](https://github.com/mangstadt/biweekly/issues)
  * [Gitter chat room](https://gitter.im/mangstadt/biweekly)
- * [codewake Q&A forum](https://www.codewake.com/p/biweekly)
  * [Post a question to StackOverflow](http://stackoverflow.com/questions/ask) with `ical` as a tag
  * Email me directly: [mike.angstadt@gmail.com](mailto:mike.angstadt@gmail.com)
 
