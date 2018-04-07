@@ -6,7 +6,7 @@ import biweekly.property.ICalProperty;
 import biweekly.util.DefaultTimezoneRule;
 
 /*
- Copyright (c) 2013-2017, Michael Angstadt
+ Copyright (c) 2013-2018, Michael Angstadt
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
