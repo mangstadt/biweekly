@@ -68,7 +68,7 @@ String str = Biweekly.write(ical).go();
  * Supports XML and JSON formats (see [Supported Specifications](https://github.com/mangstadt/biweekly/wiki/Supported-Specifications)).
  * Full timezone support (uses [tzurl.org](http://tzurl.org) for timezone definitions).
  * Extensive unit test coverage.
- * Low Java version requirement (1.5 or above, 1.6 for JSON support).
+ * Low Java version requirement (1.5 or above).
  * Few dependencies on external libraries.  Dependencies can be selectively excluded based on the functionality that is needed (see [Dependencies](https://github.com/mangstadt/biweekly/wiki/Dependencies)).
 
 # Maven/Gradle
