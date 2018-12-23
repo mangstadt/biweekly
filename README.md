@@ -79,14 +79,14 @@ String str = Biweekly.write(ical).go();
 <dependency>
    <groupId>net.sf.biweekly</groupId>
    <artifactId>biweekly</artifactId>
-   <version>0.6.2</version>
+   <version>0.6.3</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```
-compile 'net.sf.biweekly:biweekly:0.6.2'
+compile 'net.sf.biweekly:biweekly:0.6.3'
 ```
 
 # Build Instructions
