@@ -87,12 +87,8 @@ String str = Biweekly.write(ical).go();
 
 ```
 implementation 'net.sf.biweekly:biweekly:0.6.3'
+// or use the `api` keyword if you are exposing parts of biweekly in your API
 ```
-Or
-```
-api 'net.sf.biweekly:biweekly:0.6.3'
-```
-if you are exposing parts of `biweekly` as part of your API.
 
 # Build Instructions
 
