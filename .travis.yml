@@ -1,5 +1,10 @@
 language: java
-sudo: false # faster builds
+jdk: openjdk8
 
+#sudo must be set to "required" or else the build fails (see issue 92).
+#sudo: false #faster builds
+sudo: required
+
+script: "mvn cobertura:cobertura"
 after_success:
   - bash <(curl -s https://codecov.io/bash)
