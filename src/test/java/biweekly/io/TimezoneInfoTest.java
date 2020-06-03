@@ -3,6 +3,7 @@ package biweekly.io;
 import static biweekly.util.TestUtils.assertCollectionContains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.TimeZone;
@@ -102,8 +103,8 @@ public class TimezoneInfoTest {
 
 		assertEquals(timezone1, tzinfo.getTimezone(property1));
 		assertEquals(timezone1, tzinfo.getTimezone(property2));
-		assertEquals(null, tzinfo.getTimezone(property3));
-		assertEquals(null, tzinfo.getTimezone(property4));
+		assertNull(tzinfo.getTimezone(property3));
+		assertNull(tzinfo.getTimezone(property4));
 		assertEquals(timezone2, tzinfo.getTimezone(property5));
 
 		assertEquals(timezone1, tzinfo.getTimezoneToWriteIn(property1));
@@ -139,17 +140,17 @@ public class TimezoneInfoTest {
 		assertFalse(tzinfo.isFloating(property));
 
 		tzinfo.setTimezone(property, null);
-		assertEquals(null, tzinfo.getTimezone(property));
+		assertNull(tzinfo.getTimezone(property));
 		assertEquals(defaultTimezone, tzinfo.getTimezoneToWriteIn(property));
 		assertFalse(tzinfo.isFloating(property));
 
 		tzinfo.setFloating(property, true);
-		assertEquals(null, tzinfo.getTimezone(property));
+		assertNull(tzinfo.getTimezone(property));
 		assertEquals(defaultTimezone, tzinfo.getTimezoneToWriteIn(property));
 		assertTrue(tzinfo.isFloating(property));
 
 		tzinfo.setFloating(property, false);
-		assertEquals(null, tzinfo.getTimezone(property));
+		assertNull(tzinfo.getTimezone(property));
 		assertEquals(defaultTimezone, tzinfo.getTimezoneToWriteIn(property));
 		assertFalse(tzinfo.isFloating(property));
 
@@ -159,7 +160,7 @@ public class TimezoneInfoTest {
 		assertFalse(tzinfo.isFloating(property));
 
 		tzinfo.getTimezones().remove(timezone1);
-		assertEquals(null, tzinfo.getTimezone(property));
+		assertNull(tzinfo.getTimezone(property));
 		assertEquals(defaultTimezone, tzinfo.getTimezoneToWriteIn(property));
 		assertFalse(tzinfo.isFloating(property));
 	}

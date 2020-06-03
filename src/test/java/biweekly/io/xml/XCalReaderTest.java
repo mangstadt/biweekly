@@ -857,7 +857,7 @@ public class XCalReaderTest {
 			assertSize(ical, 0, 2);
 
 			RawProperty property = ical.getExperimentalProperty("x-foo");
-			assertEquals(null, property.getDataType());
+			assertNull(property.getDataType());
 			assertEquals("X-FOO", property.getName());
 			assertEquals("bar", property.getValue());
 

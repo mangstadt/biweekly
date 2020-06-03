@@ -43,7 +43,7 @@ public class DurationTest {
 	@Test
 	public void parse_all() {
 		Duration duration = Duration.parse("P1W2DT3H4M50S");
-		assertEquals(false, duration.isPrior());
+		assertFalse(duration.isPrior());
 		assertIntEquals(1, duration.getWeeks());
 		assertIntEquals(2, duration.getDays());
 		assertIntEquals(3, duration.getHours());
@@ -54,7 +54,7 @@ public class DurationTest {
 	@Test
 	public void parse_prior() {
 		Duration duration = Duration.parse("-P1W");
-		assertEquals(true, duration.isPrior());
+		assertTrue(duration.isPrior());
 		assertIntEquals(1, duration.getWeeks());
 		assertNull(duration.getDays());
 		assertNull(duration.getHours());
@@ -62,7 +62,7 @@ public class DurationTest {
 		assertNull(duration.getSeconds());
 
 		duration = Duration.parse("+P1W");
-		assertEquals(false, duration.isPrior());
+		assertFalse(duration.isPrior());
 		assertIntEquals(1, duration.getWeeks());
 		assertNull(duration.getDays());
 		assertNull(duration.getHours());
@@ -70,7 +70,7 @@ public class DurationTest {
 		assertNull(duration.getSeconds());
 
 		duration = Duration.parse("P1W");
-		assertEquals(false, duration.isPrior());
+		assertFalse(duration.isPrior());
 		assertIntEquals(1, duration.getWeeks());
 		assertNull(duration.getDays());
 		assertNull(duration.getHours());
@@ -139,7 +139,7 @@ public class DurationTest {
 	@Test
 	public void builder() {
 		Duration duration = Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
-		assertEquals(true, duration.isPrior());
+		assertTrue(duration.isPrior());
 		assertIntEquals(1, duration.getWeeks());
 		assertIntEquals(2, duration.getDays());
 		assertIntEquals(3, duration.getHours());
@@ -150,7 +150,7 @@ public class DurationTest {
 	@Test
 	public void builder_empty() {
 		Duration duration = Duration.builder().build();
-		assertEquals(false, duration.isPrior());
+		assertFalse(duration.isPrior());
 		assertNull(duration.getWeeks());
 		assertNull(duration.getDays());
 		assertNull(duration.getHours());
@@ -162,7 +162,7 @@ public class DurationTest {
 	public void builder_copy() {
 		Duration duration = Duration.builder().weeks(1).days(2).hours(3).build();
 		duration = new Duration.Builder(duration).weeks(1).days(5).minutes(4).build();
-		assertEquals(false, duration.isPrior());
+		assertFalse(duration.isPrior());
 		assertIntEquals(1, duration.getWeeks());
 		assertIntEquals(5, duration.getDays());
 		assertIntEquals(3, duration.getHours());
@@ -194,7 +194,7 @@ public class DurationTest {
 		Duration duration2 = Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
 		assertTrue(duration1.equals(duration2));
 		assertTrue(duration2.equals(duration1));
-		assertTrue(duration1.hashCode() == duration1.hashCode());
+		assertEquals(duration1.hashCode(), duration1.hashCode());
 
 		duration1 = Duration.builder().weeks(1).days(2).hours(3).minutes(4).seconds(50).prior(true).build();
 		duration2 = Duration.builder().weeks(2).days(2).hours(3).minutes(4).seconds(50).prior(true).build();

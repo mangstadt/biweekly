@@ -6,6 +6,7 @@ import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertNotEqualsBothWays;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -664,8 +665,8 @@ public class ListMultimapTest {
 		map.put("foo", "1");
 
 		assertEqualsMethodEssentials(list);
-		assertTrue(list.equals(Arrays.asList("1")));
-		assertFalse(list.equals(Arrays.asList("2")));
+		assertEquals(list, Arrays.asList("1"));
+		assertNotEquals(list, Arrays.asList("2"));
 	}
 
 	@Test
