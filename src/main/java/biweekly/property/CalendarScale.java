@@ -108,7 +108,7 @@ public class CalendarScale extends EnumProperty {
 
 	@Override
 	protected Collection<String> getStandardValues(ICalVersion version) {
-		return Arrays.asList(GREGORIAN);
+		return Collections.singletonList(GREGORIAN);
 	}
 
 	@Override

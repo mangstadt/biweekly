@@ -334,7 +334,7 @@ public class Status extends EnumProperty {
 			return Arrays.asList(ICalVersion.V2_0_DEPRECATED, ICalVersion.V2_0);
 		}
 		if (isAccepted() || isDeclined() || isDelegated() || isSent()) {
-			return Arrays.asList(ICalVersion.V1_0);
+			return Collections.singletonList(ICalVersion.V1_0);
 		}
 
 		return Collections.emptyList();

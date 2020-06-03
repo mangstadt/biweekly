@@ -1,6 +1,6 @@
 package biweekly.io.scribe.property;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import biweekly.ICalDataType;
@@ -47,11 +47,7 @@ public class ProcedureAlarmScribe extends VCalAlarmPropertyScribe<ProcedureAlarm
 	@Override
 	protected List<String> writeData(ProcedureAlarm property) {
 		String path = property.getPath();
-		if (path != null) {
-			return Arrays.asList(path);
-		}
-
-		return Arrays.asList();
+		return (path == null) ? Collections.<String>emptyList() : Collections.singletonList(path);
 	}
 
 	@Override

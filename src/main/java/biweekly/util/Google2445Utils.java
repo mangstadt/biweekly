@@ -272,7 +272,7 @@ public final class Google2445Utils {
 			if (start == null) {
 				return new EmptyDateIterator();
 			}
-			include.add(new ICalDateRecurrenceIterator(Arrays.asList(start)));
+			include.add(new ICalDateRecurrenceIterator(Collections.singletonList(start)));
 		}
 
 		/////////////EXCLUDE/////////////

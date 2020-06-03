@@ -178,7 +178,7 @@ public class Action extends EnumProperty {
 			return Arrays.asList(ICalVersion.values());
 		}
 		if (isProcedure()) {
-			return Arrays.asList(ICalVersion.V1_0);
+			return Collections.singletonList(ICalVersion.V1_0);
 		}
 
 		return Collections.emptyList();

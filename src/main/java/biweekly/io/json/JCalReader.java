@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -221,7 +221,7 @@ public class JCalReader extends StreamReader {
 				return null;
 			}
 
-			ICalComponent component = components.get(Arrays.asList(icalScribe.getComponentName().toLowerCase()));
+			ICalComponent component = components.get(Collections.singletonList(icalScribe.getComponentName().toLowerCase()));
 			if (component == null) {
 				//should never happen because the parser always looks for a "vcalendar" component
 				return null;

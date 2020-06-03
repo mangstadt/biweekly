@@ -91,7 +91,7 @@ public abstract class StreamWriter implements Closeable {
 	protected Collection<VTimezone> getTimezoneComponents() {
 		if (globalTimezone != null) {
 			VTimezone component = globalTimezone.getComponent();
-			return (component == null) ? Collections.<VTimezone> emptyList() : Arrays.asList(component);
+			return (component == null) ? Collections.<VTimezone> emptyList() : Collections.singletonList(component);
 		}
 
 		return tzinfo.getComponents();

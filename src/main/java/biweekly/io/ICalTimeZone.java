@@ -503,7 +503,7 @@ public class ICalTimeZone extends TimeZone {
 			DateValue dtstartValue = convertFromRawComponents(dtstart);
 
 			//add DTSTART property
-			inclusions.add(new DateValueRecurrenceIterator(Arrays.asList(dtstartValue)));
+			inclusions.add(new DateValueRecurrenceIterator(Collections.singletonList(dtstartValue)));
 
 			//add RRULE properties
 			for (RecurrenceRule rrule : observance.getProperties(RecurrenceRule.class)) {

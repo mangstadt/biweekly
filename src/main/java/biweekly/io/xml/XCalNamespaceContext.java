@@ -1,6 +1,6 @@
 package biweekly.io.xml;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 
 import javax.xml.namespace.NamespaceContext;
@@ -78,9 +78,6 @@ public class XCalNamespaceContext implements NamespaceContext {
 
 	//@Override
 	public Iterator<String> getPrefixes(String ns) {
-		if (XCAL_NS.equals(ns)) {
-			return Arrays.asList(prefix).iterator();
-		}
-		return null;
+		return XCAL_NS.equals(ns) ? Collections.singletonList(prefix).iterator() : null;
 	}
 }

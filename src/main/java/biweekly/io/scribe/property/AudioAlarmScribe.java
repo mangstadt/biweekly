@@ -1,6 +1,6 @@
 package biweekly.io.scribe.property;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import biweekly.ICalDataType;
@@ -65,21 +65,21 @@ public class AudioAlarmScribe extends VCalAlarmPropertyScribe<AudioAlarm> {
 	protected List<String> writeData(AudioAlarm property) {
 		String uri = property.getUri();
 		if (uri != null) {
-			return Arrays.asList(uri);
+			return Collections.singletonList(uri);
 		}
 
 		byte[] data = property.getData();
 		if (data != null) {
 			String base64Str = Base64.encodeBase64String(data);
-			return Arrays.asList(base64Str);
+			return Collections.singletonList(base64Str);
 		}
 
 		String contentId = property.getContentId();
 		if (contentId != null) {
-			return Arrays.asList(contentId);
+			return Collections.singletonList(contentId);
 		}
 
-		return Arrays.asList();
+		return Collections.emptyList();
 	}
 
 	@Override
