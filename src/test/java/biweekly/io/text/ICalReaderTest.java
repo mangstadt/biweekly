@@ -1579,7 +1579,7 @@ public class ICalReaderTest {
 				assertSize(daylight, 0, 4);
 
 				assertEquals(date("1999-04-04 02:00:00"), daylight.getDateStart().getValue());
-				assertEquals(new DateTimeComponents(1999, 04, 04, 2, 0, 0, false), daylight.getDateStart().getValue().getRawComponents());
+				assertEquals(new DateTimeComponents(1999, 4, 4, 2, 0, 0, false), daylight.getDateStart().getValue().getRawComponents());
 
 				assertEquals(new UtcOffset(false, 5, 0), daylight.getTimezoneOffsetFrom().getValue());
 				assertEquals(new UtcOffset(false, 4, 0), daylight.getTimezoneOffsetTo().getValue());
