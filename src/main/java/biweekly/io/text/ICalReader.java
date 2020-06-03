@@ -388,7 +388,7 @@ public class ICalReader extends StreamReader {
 		 * Assigns names to all nameless parameters. v2.0 requires all
 		 * parameters to have names, but v1.0 does not.
 		 * @param parameters the parameters
-		 * @param propertyName the property name
+		 * @param version the iCal version
 		 */
 		private void processNamelessParameters(ICalParameters parameters, ICalVersion version) {
 			List<String> namelessParamValues = parameters.removeAll(null);

@@ -339,7 +339,7 @@ public abstract class ICalProperty {
 	 * @param components the hierarchy of components that the property belongs
 	 * to
 	 * @param version the version to validate against
-	 * @see ICalendar#validate
+	 * @see ICalendar#validate(List, ICalVersion)
 	 * @return a list of warnings or an empty list if no problems were found
 	 */
 	public final List<ValidationWarning> validate(List<ICalComponent> components, ICalVersion version) {
