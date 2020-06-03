@@ -174,25 +174,25 @@ public final class Duration {
 
 		int seconds = (int) (milliseconds / 1000);
 
-		Integer weeks = seconds / (60 * 60 * 24 * 7);
+		int weeks = seconds / (60 * 60 * 24 * 7);
 		if (weeks > 0) {
 			builder.weeks(weeks);
 		}
 		seconds %= 60 * 60 * 24 * 7;
 
-		Integer days = seconds / (60 * 60 * 24);
+		int days = seconds / (60 * 60 * 24);
 		if (days > 0) {
 			builder.days(days);
 		}
 		seconds %= 60 * 60 * 24;
 
-		Integer hours = seconds / (60 * 60);
+		int hours = seconds / (60 * 60);
 		if (hours > 0) {
 			builder.hours(hours);
 		}
 		seconds %= 60 * 60;
 
-		Integer minutes = seconds / (60);
+		int minutes = seconds / (60);
 		if (minutes > 0) {
 			builder.minutes(minutes);
 		}

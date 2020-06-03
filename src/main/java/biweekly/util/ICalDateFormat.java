@@ -137,7 +137,7 @@ public enum ICalDateFormat {
 	 * @param formatStr the {@link SimpleDateFormat} format string used for
 	 * parsing dates.
 	 */
-	private ICalDateFormat(String formatStr) {
+	ICalDateFormat(String formatStr) {
 		this.formatStr = formatStr;
 	}
 

@@ -51,7 +51,7 @@ public enum DayOfWeek {
 	private final String abbr;
 	private final int calendarConstant;
 
-	private DayOfWeek(String abbr, int calendarConstant) {
+	DayOfWeek(String abbr, int calendarConstant) {
 		this.abbr = abbr;
 		this.calendarConstant = calendarConstant;
 	}

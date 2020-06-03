@@ -57,7 +57,7 @@ public enum ICalVersion {
 	/**
 	 * @param version the version number
 	 */
-	private ICalVersion(String version, SyntaxStyle syntaxStyle) {
+	ICalVersion(String version, SyntaxStyle syntaxStyle) {
 		this.version = version;
 		this.syntaxStyle = syntaxStyle;
 	}
