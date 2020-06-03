@@ -96,7 +96,7 @@ public abstract class IntegerPropertyScribe<T extends IntegerProperty> extends I
 	}
 
 	private T parse(String value) {
-		if (value == null || value.length() == 0) {
+		if (value == null || value.isEmpty()) {
 			return newInstance(null);
 		}
 

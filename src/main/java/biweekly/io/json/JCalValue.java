@@ -235,7 +235,7 @@ public class JCalValue {
 				Object obj = value.getValue();
 				if (obj != null) {
 					String s = obj.toString();
-					List<String> component = (s.length() == 0) ? Arrays.<String> asList() : Arrays.asList(s);
+					List<String> component = s.isEmpty() ? Arrays.<String> asList() : Arrays.asList(s);
 					components.add(component);
 					continue;
 				}
@@ -255,7 +255,7 @@ public class JCalValue {
 							continue;
 						}
 					}
-					if (component.size() == 1 && component.get(0).length() == 0) {
+					if (component.size() == 1 && component.get(0).isEmpty()) {
 						component.clear();
 					}
 					components.add(component);
@@ -270,7 +270,7 @@ public class JCalValue {
 		if (obj != null) {
 			List<List<String>> components = new ArrayList<List<String>>(1);
 			String s = obj.toString();
-			List<String> component = (s.length() == 0) ? Arrays.<String> asList() : Arrays.asList(s);
+			List<String> component = s.isEmpty() ? Arrays.<String> asList() : Arrays.asList(s);
 			components.add(component);
 			return components;
 		}

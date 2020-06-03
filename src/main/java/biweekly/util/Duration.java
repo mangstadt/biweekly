@@ -78,7 +78,7 @@ public final class Duration {
 		 * performance.
 		 */
 
-		if (value.length() == 0) {
+		if (value.isEmpty()) {
 			throw parseError(value);
 		}
 

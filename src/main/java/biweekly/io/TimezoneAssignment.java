@@ -51,7 +51,7 @@ public class TimezoneAssignment {
 	 */
 	public TimezoneAssignment(TimeZone timezone, VTimezone component) {
 		String id = ValuedProperty.getValue(component.getTimezoneId());
-		if (id == null || id.trim().length() == 0) {
+		if (id == null || id.trim().isEmpty()) {
 			throw Messages.INSTANCE.getIllegalArgumentException(14);
 		}
 

@@ -166,7 +166,7 @@ public abstract class StreamReader implements Closeable {
 
 			//make sure the component has an ID
 			String id = ValuedProperty.getValue(component.getTimezoneId());
-			if (id == null || id.trim().length() == 0) {
+			if (id == null || id.trim().isEmpty()) {
 				//note: do not remove invalid VTIMEZONE components from the ICalendar object
 				warnings.add(new ParseWarning.Builder().message(39).build());
 				continue;

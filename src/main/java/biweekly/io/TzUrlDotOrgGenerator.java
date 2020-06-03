@@ -127,7 +127,7 @@ public class TzUrlDotOrgGenerator {
 			component.setTimezoneId(timezone.getID());
 		} else {
 			String value = ValuedProperty.getValue(id);
-			if (value == null || value.trim().length() == 0) {
+			if (value == null || value.trim().isEmpty()) {
 				id.setValue(timezone.getID());
 			}
 		}

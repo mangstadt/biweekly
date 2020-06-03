@@ -202,7 +202,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 	@Override
 	protected T _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		if (value.length() == 0) {
+		if (value.isEmpty()) {
 			return newInstance(new Recurrence.Builder((Frequency) null).build());
 		}
 

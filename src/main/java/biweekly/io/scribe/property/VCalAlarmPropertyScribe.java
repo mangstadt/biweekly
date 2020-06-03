@@ -130,7 +130,7 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 		}
 
 		next = next.trim();
-		return (next.length() == 0) ? null : next;
+		return next.isEmpty() ? null : next;
 	}
 
 	/**

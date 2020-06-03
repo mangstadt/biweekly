@@ -113,7 +113,7 @@ public class RequestStatusScribe extends ICalPropertyScribe<RequestStatus> {
 	}
 
 	private static String s(String str) {
-		return (str == null || str.length() == 0) ? null : str;
+		return (str == null || str.isEmpty()) ? null : str;
 	}
 
 	@Override
