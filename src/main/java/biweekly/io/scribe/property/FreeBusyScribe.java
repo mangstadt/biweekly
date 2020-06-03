@@ -132,7 +132,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 				throw new CannotParseException(9);
 			}
 
-			ICalDate start = null;
+			ICalDate start;
 			try {
 				start = date(startStr).parse();
 			} catch (IllegalArgumentException e) {
@@ -217,7 +217,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 			}
 
 			String startStr = period.substring(0, slash);
-			ICalDate start = null;
+			ICalDate start;
 			try {
 				start = date(startStr).parse();
 			} catch (IllegalArgumentException e) {
@@ -225,7 +225,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 			}
 
 			String endStr = period.substring(slash + 1);
-			ICalDate end = null;
+			ICalDate end;
 			try {
 				end = date(endStr).parse();
 				property.getValues().add(new Period(start, end));

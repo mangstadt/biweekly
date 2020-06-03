@@ -340,7 +340,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 				}
 
 				String endStr = timePeriodStr.substring(slash + 1);
-				ICalDate end = null;
+				ICalDate end;
 				try {
 					end = date(endStr).parse();
 					property.getPeriods().add(new Period(start, end));
