@@ -311,7 +311,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		} else {
 			String lastToken = splitValues.get(splitValues.size() - 1);
 			if (lastToken.startsWith("#")) {
-				String countStr = lastToken.substring(1, lastToken.length());
+				String countStr = lastToken.substring(1);
 				count = integerValueOf(countStr);
 				if (count == 0) {
 					//infinite

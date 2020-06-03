@@ -62,7 +62,7 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 
 	private final DateOrDateTimePropertyImpl withDateTime = new DateOrDateTimePropertyImpl(datetime, true);
 	private final DateOrDateTimePropertyImpl withDate = new DateOrDateTimePropertyImpl(datetime, false);
-	private final DateOrDateTimePropertyImpl empty = new DateOrDateTimePropertyImpl((Date) null, false);
+	private final DateOrDateTimePropertyImpl empty = new DateOrDateTimePropertyImpl(null, false);
 
 	private final TimezoneInfo floatingGlobal = new TimezoneInfo();
 	{

@@ -424,7 +424,7 @@ public class RecurrenceIteratorFactory {
 			}
 			condition = Conditions.untilCondition(untilUtc);
 		} else {
-			condition = Predicates.<DateValue> alwaysTrue();
+			condition = Predicates.alwaysTrue();
 		}
 
 		//combine filters into a single function
@@ -480,7 +480,7 @@ public class RecurrenceIteratorFactory {
 	 * @return the resultant iterator
 	 */
 	public static RecurrenceIterator except(RecurrenceIterator included, RecurrenceIterator excluded) {
-		return new CompoundIteratorImpl(Collections.<RecurrenceIterator> singleton(included), Collections.<RecurrenceIterator> singleton(excluded));
+		return new CompoundIteratorImpl(Collections.singleton(included), Collections.singleton(excluded));
 	}
 
 	/**

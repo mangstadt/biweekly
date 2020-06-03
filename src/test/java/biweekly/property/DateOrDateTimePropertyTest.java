@@ -87,7 +87,7 @@ public class DateOrDateTimePropertyTest {
 
 	@Test
 	public void validate() {
-		DateOrDateTimeProperty property = new DateOrDateTimeProperty((Date) null, false);
+		DateOrDateTimeProperty property = new DateOrDateTimeProperty(null, false);
 		assertValidate(property).run(26);
 
 		property = new DateOrDateTimeProperty(new Date(), false);

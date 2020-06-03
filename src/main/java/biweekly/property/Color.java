@@ -110,6 +110,6 @@ public class Color extends TextProperty {
 
 	@Override
 	protected boolean valueEquals(String otherValue) {
-		return value.equalsIgnoreCase((String) otherValue);
+		return value.equalsIgnoreCase(otherValue);
 	}
 }
