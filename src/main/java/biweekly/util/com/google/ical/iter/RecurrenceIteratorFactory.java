@@ -41,6 +41,7 @@ package biweekly.util.com.google.ical.iter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -144,9 +145,6 @@ public class RecurrenceIteratorFactory {
 		DayOfWeek wkst = rrule.getWorkweekStarts();
 
 		ICalDate until = rrule.getUntil();
-
-		DateValue untilUtc = (until == null) ? null : Google2445Utils.convert(until, tzid);
-
 		int count = toInt(rrule.getCount());
 		int interval = toInt(rrule.getInterval());
 		ByDay[] byDay = rrule.getByDay().toArray(new ByDay[0]);
@@ -413,7 +411,22 @@ public class RecurrenceIteratorFactory {
 			 * condition.
 			 */
 			canShortcutAdvance = false;
-		} else if (untilUtc != null) {
+		} else if (until != null) {
+			DateValue untilUtc;
+			if (until.hasTime()) {
+				TimeZone utc = TimeZone.getTimeZone("UTC");
+				untilUtc = Google2445Utils.convert(until, utc);
+			} else {
+				//treat the ICalDate object as a timezone-less, calendar date
+				Calendar c = Calendar.getInstance();
+				c.setTime(until);
+				untilUtc = new DateValueImpl( //@formatter:off
+					c.get(Calendar.YEAR),
+					c.get(Calendar.MONTH) + 1,
+					c.get(Calendar.DAY_OF_MONTH)
+				); //@formatter:on
+			}
+
 			if ((untilUtc instanceof TimeValue) != (dtStart instanceof TimeValue)) {
 				// TODO(msamuel): warn
 				if (dtStart instanceof TimeValue) {

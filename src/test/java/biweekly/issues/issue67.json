@@ -1,0 +1,17 @@
+["vcalendar",
+ [
+   ["version", {}, "text", "2.0"]
+ ],
+ [
+   ["vevent",
+     [
+       ["summary", {}, "text", "Team Meeting"],
+       ["description",{},"text","Some things describing this event"],
+       ["dtstart", {"tzid": "/America/New_York"}, "date-time", "2017-03-22T12:00:00"],
+       ["dtend",{"tzid": "/America/New_York"}, "date-time","2017-03-22T15:00:00"],
+       ["rrule", {}, "recur", {"freq":"WEEKLY", "until":"2017-03-29T19:00:00Z", "wkst":"SU", "byday":["WE"]}]
+    ],
+    []
+   ]
+ ]
+]
