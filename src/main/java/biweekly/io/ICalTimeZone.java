@@ -4,7 +4,6 @@ import static biweekly.property.ValuedProperty.getValue;
 import static biweekly.util.Google2445Utils.convertFromRawComponents;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;

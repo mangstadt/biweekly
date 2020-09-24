@@ -1,7 +1,6 @@
 package biweekly.io.json;
 
 import static biweekly.ICalVersion.V2_0;
-import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertParseWarnings;
 import static biweekly.util.TestUtils.assertSize;
