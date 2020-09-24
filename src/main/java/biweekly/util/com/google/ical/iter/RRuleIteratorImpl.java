@@ -263,6 +263,10 @@ final class RRuleIteratorImpl implements RecurrenceIterator {
 						}
 					}
 				}
+				
+				if (builder.month < dateLocal.month()) {
+					builder.day = 1;
+				}
 
 				//skip months before date.year/date.month
 				while (builder.year == dateLocal.year() && builder.month < dateLocal.month()) {
