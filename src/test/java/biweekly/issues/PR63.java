@@ -60,7 +60,7 @@ public class PR63 {
 
 	@Test
 	public void pr63_original() throws Exception {
-		ICalendar ical = Biweekly.parse(PR63.class.getResourceAsStream("pr63.ical")).first();
+		ICalendar ical = Biweekly.parse(PR63.class.getResourceAsStream("pr63.ics")).first();
 		TimezoneInfo tzInfo = ical.getTimezoneInfo();
 		VEvent vEvent = ical.getEvents().get(0);
 
