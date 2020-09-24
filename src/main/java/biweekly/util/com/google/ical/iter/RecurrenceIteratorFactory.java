@@ -156,6 +156,7 @@ public class RecurrenceIteratorFactory {
 		int[] byHour = toIntArray(rrule.getByHour());
 		int[] byMinute = toIntArray(rrule.getByMinute());
 		int[] bySecond = toIntArray(rrule.getBySecond());
+		boolean canShortcutAdvance = true;
 
 		if (interval <= 0) {
 			interval = 1;
@@ -199,6 +200,8 @@ public class RecurrenceIteratorFactory {
 				break;
 			default:
 			}
+
+			canShortcutAdvance = false;
 		}
 
 		DateValue start = dtStart;
@@ -398,7 +401,6 @@ public class RecurrenceIteratorFactory {
 		 * exclusive, so the date that triggers it will not be included.
 		 */
 		Predicate<DateValue> condition;
-		boolean canShortcutAdvance = true;
 		if (count != 0) {
 			condition = Conditions.countCondition(count);
 
