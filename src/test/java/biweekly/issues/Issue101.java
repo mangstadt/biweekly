@@ -8,8 +8,6 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
