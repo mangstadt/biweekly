@@ -14,7 +14,7 @@ import biweekly.property.Importance;
 import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 /*
- Copyright (c) 2013-2018, Michael Angstadt
+ Copyright (c) 2013-2020, Michael Angstadt
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without

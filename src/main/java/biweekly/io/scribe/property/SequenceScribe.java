@@ -3,7 +3,7 @@ package biweekly.io.scribe.property;
 import biweekly.property.Sequence;
 
 /*
- Copyright (c) 2013-2018, Michael Angstadt
+ Copyright (c) 2013-2020, Michael Angstadt
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
