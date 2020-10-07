@@ -14,7 +14,7 @@
 <span class="sourceLineNo">006</span>import biweekly.Messages;<a name="line.6"></a>
 <span class="sourceLineNo">007</span><a name="line.7"></a>
 <span class="sourceLineNo">008</span>/*<a name="line.8"></a>
-<span class="sourceLineNo">009</span> Copyright (c) 2013-2018, Michael Angstadt<a name="line.9"></a>
+<span class="sourceLineNo">009</span> Copyright (c) 2013-2020, Michael Angstadt<a name="line.9"></a>
 <span class="sourceLineNo">010</span> All rights reserved.<a name="line.10"></a>
 <span class="sourceLineNo">011</span><a name="line.11"></a>
 <span class="sourceLineNo">012</span> Redistribution and use in source and binary forms, with or without<a name="line.12"></a>
@@ -86,7 +86,7 @@
 <span class="sourceLineNo">078</span>                 * performance.<a name="line.78"></a>
 <span class="sourceLineNo">079</span>                 */<a name="line.79"></a>
 <span class="sourceLineNo">080</span><a name="line.80"></a>
-<span class="sourceLineNo">081</span>                if (value.length() == 0) {<a name="line.81"></a>
+<span class="sourceLineNo">081</span>                if (value.isEmpty()) {<a name="line.81"></a>
 <span class="sourceLineNo">082</span>                        throw parseError(value);<a name="line.82"></a>
 <span class="sourceLineNo">083</span>                }<a name="line.83"></a>
 <span class="sourceLineNo">084</span><a name="line.84"></a>
@@ -182,25 +182,25 @@
 <span class="sourceLineNo">174</span><a name="line.174"></a>
 <span class="sourceLineNo">175</span>                int seconds = (int) (milliseconds / 1000);<a name="line.175"></a>
 <span class="sourceLineNo">176</span><a name="line.176"></a>
-<span class="sourceLineNo">177</span>                Integer weeks = seconds / (60 * 60 * 24 * 7);<a name="line.177"></a>
+<span class="sourceLineNo">177</span>                int weeks = seconds / (60 * 60 * 24 * 7);<a name="line.177"></a>
 <span class="sourceLineNo">178</span>                if (weeks &gt; 0) {<a name="line.178"></a>
 <span class="sourceLineNo">179</span>                        builder.weeks(weeks);<a name="line.179"></a>
 <span class="sourceLineNo">180</span>                }<a name="line.180"></a>
 <span class="sourceLineNo">181</span>                seconds %= 60 * 60 * 24 * 7;<a name="line.181"></a>
 <span class="sourceLineNo">182</span><a name="line.182"></a>
-<span class="sourceLineNo">183</span>                Integer days = seconds / (60 * 60 * 24);<a name="line.183"></a>
+<span class="sourceLineNo">183</span>                int days = seconds / (60 * 60 * 24);<a name="line.183"></a>
 <span class="sourceLineNo">184</span>                if (days &gt; 0) {<a name="line.184"></a>
 <span class="sourceLineNo">185</span>                        builder.days(days);<a name="line.185"></a>
 <span class="sourceLineNo">186</span>                }<a name="line.186"></a>
 <span class="sourceLineNo">187</span>                seconds %= 60 * 60 * 24;<a name="line.187"></a>
 <span class="sourceLineNo">188</span><a name="line.188"></a>
-<span class="sourceLineNo">189</span>                Integer hours = seconds / (60 * 60);<a name="line.189"></a>
+<span class="sourceLineNo">189</span>                int hours = seconds / (60 * 60);<a name="line.189"></a>
 <span class="sourceLineNo">190</span>                if (hours &gt; 0) {<a name="line.190"></a>
 <span class="sourceLineNo">191</span>                        builder.hours(hours);<a name="line.191"></a>
 <span class="sourceLineNo">192</span>                }<a name="line.192"></a>
 <span class="sourceLineNo">193</span>                seconds %= 60 * 60;<a name="line.193"></a>
 <span class="sourceLineNo">194</span><a name="line.194"></a>
-<span class="sourceLineNo">195</span>                Integer minutes = seconds / (60);<a name="line.195"></a>
+<span class="sourceLineNo">195</span>                int minutes = seconds / (60);<a name="line.195"></a>
 <span class="sourceLineNo">196</span>                if (minutes &gt; 0) {<a name="line.196"></a>
 <span class="sourceLineNo">197</span>                        builder.minutes(minutes);<a name="line.197"></a>
 <span class="sourceLineNo">198</span>                }<a name="line.198"></a>
