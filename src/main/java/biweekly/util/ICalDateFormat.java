@@ -5,6 +5,7 @@ import java.text.FieldPosition;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,7 +74,7 @@ public enum ICalDateFormat {
 	"yyyy-MM-dd'T'HH:mm:ssZ"){
 		@Override
 		public DateFormat getDateFormat(TimeZone timezone) {
-			DateFormat df = new SimpleDateFormat(formatStr){
+			DateFormat df = new SimpleDateFormat(formatStr, Locale.ROOT){
 				private static final long serialVersionUID = -297452842012115768L;
 				
 				@Override
@@ -158,7 +159,7 @@ public enum ICalDateFormat {
 	 * @return the {@link DateFormat} object
 	 */
 	public DateFormat getDateFormat(TimeZone timezone) {
-		DateFormat df = new SimpleDateFormat(formatStr);
+		DateFormat df = new SimpleDateFormat(formatStr, Locale.ROOT);
 		if (timezone != null) {
 			df.setTimeZone(timezone);
 		}

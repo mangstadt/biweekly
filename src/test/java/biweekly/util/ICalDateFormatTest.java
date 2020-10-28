@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.junit.ClassRule;
@@ -68,6 +69,34 @@ public class ICalDateFormatTest {
 		Date datetime = date("2006-01-02 10:20:30");
 
 		assertEquals("20060102T072030-0200", ICalDateFormat.DATE_TIME_BASIC.format(datetime, timezone));
+	}
+
+	@Test
+	public void format_different_locales() {
+		Date date = date("2020-10-28 12:00:00");
+
+		Locale defaultLocale = Locale.getDefault();
+		try {
+			for (Locale locale : Locale.getAvailableLocales()) {
+				Locale.setDefault(locale);
+				assertLocale(locale, ICalDateFormat.DATE_BASIC, date, "20201028");
+				assertLocale(locale, ICalDateFormat.DATE_EXTENDED, date, "2020-10-28");
+				assertLocale(locale, ICalDateFormat.DATE_TIME_BASIC, date, "20201028T120000+0100");
+				assertLocale(locale, ICalDateFormat.DATE_TIME_BASIC_WITHOUT_TZ, date, "20201028T120000");
+				assertLocale(locale, ICalDateFormat.DATE_TIME_EXTENDED, date, "2020-10-28T12:00:00+01:00");
+				assertLocale(locale, ICalDateFormat.DATE_TIME_EXTENDED_WITHOUT_TZ, date, "2020-10-28T12:00:00");
+				assertLocale(locale, ICalDateFormat.UTC_TIME_BASIC, date, "20201028T110000Z");
+				assertLocale(locale, ICalDateFormat.UTC_TIME_EXTENDED, date, "2020-10-28T11:00:00Z");
+			}
+		} finally {
+			Locale.setDefault(defaultLocale);
+		}
+	}
+
+	private static void assertLocale(Locale locale, ICalDateFormat df, Date date, String expected) {
+		String actual = df.format(date);
+		String message = "Test failed for " + df.name() + " with locale \"" + locale + "\".";
+		assertEquals(message, expected, actual);
 	}
 
 	@Test

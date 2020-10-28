@@ -1,7 +1,7 @@
 package biweekly.util;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /*
  Copyright (c) 2013-2020, Michael Angstadt
@@ -29,12 +29,18 @@ import java.text.DecimalFormatSymbols;
  */
 
 /**
- * Formats floating-point values for iCalendar objects. Notably, this ensures
- * that a "." is used as decimal separater, no matter the locale.
+ * <p>
+ * Formats floating-point values for iCalendar objects. This ensures that numbers
+ * are rendered the same, no matter the default locale.
+ * </p>
+ * <ul>
+ * <li>Decimal separator can differ by locale (e.g. Germany uses ",")</li>
+ * <li>Number characters can differ by locale (e.g. "1.0" is "۱٫۰" in Iran)</li>
+ * </ul>
  * @author Michael Angstadt
  */
-public class ICalFloatFormatter extends DecimalFormat {
-	private static final long serialVersionUID = 7755109373108919576L;
+public class ICalFloatFormatter {
+	private final NumberFormat nf = NumberFormat.getNumberInstance(Locale.ROOT);
 
 	/**
 	 * Creates a new formatter with a max of 6 decimals.
@@ -48,15 +54,18 @@ public class ICalFloatFormatter extends DecimalFormat {
 	 * @param decimals the max number of decimal places
 	 */
 	public ICalFloatFormatter(int decimals) {
-		setMaximumFractionDigits(decimals);
+		nf.setMaximumFractionDigits(decimals);
 		if (decimals > 0) {
-			setMinimumFractionDigits(1);
+			nf.setMinimumFractionDigits(1);
 		}
+	}
 
-		//decimal separator differs by locale (e.g. Germany uses ",")
-		DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-		symbols.setDecimalSeparator('.');
-		symbols.setMinusSign('-');
-		setDecimalFormatSymbols(symbols);
+	/**
+	 * Formats a number for inclusion in an iCalendar object.
+	 * @param number the number
+	 * @return the formatted number
+	 */
+	public String format(double number) {
+		return nf.format(number);
 	}
 }
