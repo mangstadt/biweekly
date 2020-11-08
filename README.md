@@ -79,14 +79,14 @@ String str = Biweekly.write(ical).go();
 <dependency>
    <groupId>net.sf.biweekly</groupId>
    <artifactId>biweekly</artifactId>
-   <version>0.6.4</version>
+   <version>0.6.5</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```
-implementation 'net.sf.biweekly:biweekly:0.6.4'
+implementation 'net.sf.biweekly:biweekly:0.6.5'
 // or use the `api` keyword if you are exposing parts of biweekly in your API
 ```
 
