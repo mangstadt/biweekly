@@ -1,6 +1,7 @@
 package biweekly.util;
 
 import java.io.Serializable;
+import java.sql.Time;
 import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -14,16 +15,13 @@ import biweekly.Messages;
 /*
  Copyright (c) 2013-2020, Michael Angstadt
  All rights reserved.
-
  Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions are met: 
-
+ modification, are permitted provided that the following conditions are met:
  1. Redistributions of source code must retain the above copyright notice, this
- list of conditions and the following disclaimer. 
+ list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright notice,
  this list of conditions and the following disclaimer in the documentation
- and/or other materials provided with the distribution. 
-
+ and/or other materials provided with the distribution.
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -43,22 +41,22 @@ import biweekly.Messages;
  * <p>
  * <b>Examples:</b>
  * </p>
- * 
+ *
  * <pre class="brush:java">
  * //July 22, 2013 at 17:25
  * DateTimeComponents components = new DateTimeComponents(2013, 07, 22, 17, 25, 0, false);
- * 
+ *
  * //parsing a date string (accepts basic and extended formats)
  * DateTimeComponents components = DateTimeComponents.parse("20130722T172500");
- * 
+ *
  * //converting to date string
  * DateTimeComponents components = new DateTimeComponents(2013, 07, 22, 17, 25, 0, false);
  * String str = components.toString(true); //"2013-07-22T17:25:00"
- * 
+ *
  * //converting to a Date object
  * DateTimeComponents components = new DateTimeComponents(2013, 07, 22, 17, 25, 0, false);
  * Date date = components.toDate();
- * 
+ *
  * </pre>
  * @author Michael Angstadt
  */
@@ -67,6 +65,32 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents>,
 	private static final Pattern regex = Pattern.compile("^(\\d{4})-?(\\d{2})-?(\\d{2})(T(\\d{2}):?(\\d{2}):?(\\d{2})(Z?))?.*");
 	private final int year, month, date, hour, minute, second;
 	private final boolean hasTime, utc;
+
+
+	private static final TimeZone builtInDefaultTimezone = TimeZone.getDefault();
+	private static final ThreadLocal<TimeZone> defaultTimeZoneTL = new ThreadLocal<TimeZone>();
+	static {
+		defaultTimeZoneTL.set(builtInDefaultTimezone);
+	}
+
+	/**
+	 * This methods allows to override the default timezone used to parse date components.
+	 * It is strongly recommended to use clearGlobalTimeZone, to reinitialize the treadlocal back to its default value (TimeZone.getDefault())
+	 * @param tz the replacement default timezone.
+	 */
+	public static void assignGlobally(TimeZone tz){
+		if (tz == null){
+			return;
+		}
+		defaultTimeZoneTL.set(tz);
+	}
+
+	/**
+	 * reset the fallback TimeZone back to its default value. has to be called to clear the current thread
+	 */
+	public static void clearGlobalTimeZone(){
+		defaultTimeZoneTL.set(builtInDefaultTimezone);
+	}
 
 	/**
 	 * Parses the components out of a date-time string.
@@ -146,13 +170,13 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents>,
 	public DateTimeComponents(DateTimeComponents original, Integer year, Integer month, Integer date, Integer hour, Integer minute, Integer second, Boolean utc) {
 		//@formatter:off
 		this(
-			(year == null) ? original.year : year,
-			(month == null) ? original.month : month,
-			(date == null) ? original.date : date,
-			(hour == null) ? original.hour : hour,
-			(minute == null) ? original.minute : minute,
-			(second == null) ? original.second : second,
-			(utc == null) ? original.utc : utc
+				(year == null) ? original.year : year,
+				(month == null) ? original.month : month,
+				(date == null) ? original.date : date,
+				(hour == null) ? original.hour : hour,
+				(minute == null) ? original.minute : minute,
+				(second == null) ? original.second : second,
+				(utc == null) ? original.utc : utc
 		);
 		//@formatter:on
 	}
@@ -198,7 +222,7 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents>,
 	 * @param date the date object
 	 */
 	public DateTimeComponents(Date date) {
-		this(date, TimeZone.getDefault());
+		this(date, defaultTimeZoneTL.get());
 	}
 
 	/**
@@ -320,7 +344,7 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents>,
 	 * @return the date object
 	 */
 	public Date toDate() {
-		TimeZone timezone = utc ? TimeZone.getTimeZone("UTC") : TimeZone.getDefault();
+		TimeZone timezone = utc ? TimeZone.getTimeZone("UTC") : defaultTimeZoneTL.get();
 		return toDate(timezone);
 	}
 
