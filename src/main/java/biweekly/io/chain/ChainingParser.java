@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
@@ -55,6 +56,7 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 
 	ScribeIndex index;
 	List<List<ParseWarning>> warnings;
+	TimeZone defaultTimezone;
 
 	@SuppressWarnings("unchecked")
 	final T this_ = (T) this;
@@ -127,6 +129,17 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 	}
 
 	/**
+	 * Sets the timezone that will be used for parsing date property values that
+	 * are floating or that have invalid timezone definitions assigned to them.
+	 * Defaults to {@link TimeZone#getDefault}.
+	 * @param defaultTimezone the default timezone
+	 */
+	public T defaultTimezone(TimeZone defaultTimezone) {
+		this.defaultTimezone = defaultTimezone;
+		return this_;
+	}
+
+	/**
 	 * Reads the first iCalendar object from the stream.
 	 * @return the iCalendar object or null if there are none
 	 * @throws IOException if there's an I/O problem
@@ -135,6 +148,9 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 		StreamReader reader = constructReader();
 		if (index != null) {
 			reader.setScribeIndex(index);
+		}
+		if (defaultTimezone != null) {
+			reader.setDefaultTimezone(defaultTimezone);
 		}
 
 		try {
@@ -159,6 +175,9 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 		StreamReader reader = constructReader();
 		if (index != null) {
 			reader.setScribeIndex(index);
+		}
+		if (defaultTimezone != null) {
+			reader.setDefaultTimezone(defaultTimezone);
 		}
 
 		try {

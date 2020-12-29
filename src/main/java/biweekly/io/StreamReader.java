@@ -59,6 +59,7 @@ public abstract class StreamReader implements Closeable {
 	protected final List<ParseWarning> warnings = new ArrayList<ParseWarning>();
 	protected ScribeIndex index = new ScribeIndex();
 	protected ParseContext context;
+	private TimeZone defaultTimezone = TimeZone.getDefault();
 
 	/**
 	 * <p>
@@ -112,6 +113,26 @@ public abstract class StreamReader implements Closeable {
 	 */
 	public List<ParseWarning> getWarnings() {
 		return new ArrayList<ParseWarning>(warnings);
+	}
+
+	/**
+	 * Gets the timezone that will be used for parsing date property values that
+	 * are floating or that have invalid timezone definitions assigned to them.
+	 * Defaults to {@link TimeZone#getDefault}.
+	 * @return the default timezone
+	 */
+	public TimeZone getDefaultTimezone() {
+		return defaultTimezone;
+	}
+
+	/**
+	 * Sets the timezone that will be used for parsing date property values that
+	 * are floating or that have invalid timezone definitions assigned to them.
+	 * Defaults to {@link TimeZone#getDefault}.
+	 * @param defaultTimezone the default timezone
+	 */
+	public void setDefaultTimezone(TimeZone defaultTimezone) {
+		this.defaultTimezone = defaultTimezone;
 	}
 
 	/**
@@ -179,77 +200,162 @@ public abstract class StreamReader implements Closeable {
 			it.remove();
 		}
 
+		boolean userChangedTheDefaultTimezone = !defaultTimezone.equals(TimeZone.getDefault());
+
 		if (vcalTimezone != null) {
 			//vCal: parse floating dates according to the DAYLIGHT and TZ properties (which were converted to a VTIMEZONE component)
+			Calendar cal = Calendar.getInstance(vcalTimezone.getTimeZone());
 			for (TimezonedDate timezonedDate : context.getFloatingDates()) {
-				ICalDate date = timezonedDate.getDate();
-
-				//parse its raw date components under its real timezone
-				Date realDate = date.getRawComponents().toDate(vcalTimezone.getTimeZone());
-
-				//update the ICalDate object with the new timestamp
-				date.setTime(realDate.getTime());
+				reparseDateUnderDifferentTimezone(timezonedDate, cal);
 			}
 		} else {
 			//iCal: treat floating dates as floating dates
 			for (TimezonedDate timezonedDate : context.getFloatingDates()) {
 				tzinfo.setFloating(timezonedDate.getProperty(), true);
 			}
+
+			//convert all floating dates to the default timezone
+			if (userChangedTheDefaultTimezone) {
+				Calendar cal = Calendar.getInstance(defaultTimezone);
+				for (TimezonedDate timezonedDate : context.getFloatingDates()) {
+					reparseDateUnderDifferentTimezone(timezonedDate, cal);
+				}
+			}
 		}
 
+		//convert all date values to their appropriate timezone
 		for (Map.Entry<String, List<TimezonedDate>> entry : context.getTimezonedDates()) {
 			String tzid = entry.getKey();
 
-			TimezoneAssignment assignment;
-			boolean solidus = tzid.startsWith("/");
-			if (solidus) {
-				//treat the TZID parameter value as an Olsen timezone ID
-				String globalId = tzid.substring(1);
-				TimeZone timezone = ICalDateFormat.parseTimeZoneId(globalId);
-				if (timezone == null) {
-					//timezone could not be determined
-					warnings.add(new ParseWarning.Builder().message(38, tzid).build());
-					continue;
-				}
-				assignment = new TimezoneAssignment(timezone, globalId);
-				tzinfo.getTimezones().add(assignment);
-			} else {
-				assignment = tzinfo.getTimezoneById(tzid);
-				if (assignment == null) {
-					//A VTIMEZONE component couldn't found
-					//so treat the TZID parameter value as an Olsen timezone ID
-					TimeZone timezone = ICalDateFormat.parseTimeZoneId(tzid);
-					if (timezone == null) {
-						//timezone could not be determined
-						warnings.add(new ParseWarning.Builder().message(38, tzid).build());
-						continue;
-					}
-					assignment = new TimezoneAssignment(timezone, tzid);
-					tzinfo.getTimezones().add(assignment);
+			//determine which timezone is associated with the given TZID
+			TimezoneAssignment assignment = determineTimezoneAssignment(tzid, tzinfo);
 
-					warnings.add(new ParseWarning.Builder().message(37, tzid).build());
-				}
+			/*
+			 * If a timezone assignment could not be found for the given TZID
+			 * and the user did not change the default timezone, then there is
+			 * no need to further process the properties that are assigned to
+			 * this TZID--the date value should remain unchanged (parsed under
+			 * the local machine's default timezone), and its TZID parameter
+			 * should also remain.
+			 */
+			if (assignment == null && !userChangedTheDefaultTimezone) {
+				continue;
 			}
 
-			Calendar cal = Calendar.getInstance(assignment.getTimeZone());
-			List<TimezonedDate> timezonedDates = entry.getValue();
-			for (TimezonedDate timezonedDate : timezonedDates) {
-				//assign the property to the timezone
+			//convert each property to the timezone
+			TimeZone tz = (assignment == null) ? defaultTimezone : assignment.getTimeZone();
+			Calendar cal = Calendar.getInstance(tz);
+			for (TimezonedDate timezonedDate : entry.getValue()) {
 				ICalProperty property = timezonedDate.getProperty();
-				tzinfo.setTimezone(property, assignment);
 
-				ICalDate date = timezonedDate.getDate();
+				if (assignment != null) {
+					tzinfo.setTimezone(property, assignment);
 
-				//parse its raw date components under its real timezone
-				Date realDate = date.getRawComponents().toDate(cal);
+					/*
+					 * Only remove the TZID parameter if the TZID is *valid*.
+					 * Invalid TZID parameters should remain so that user can
+					 * inspect the invalid information.
+					 */
+					property.getParameters().setTimezoneId(null);
+				}
 
-				//update the Date object with the new timestamp
-				date.setTime(realDate.getTime());
-
-				//remove the TZID parameter
-				property.getParameters().setTimezoneId(null);
+				reparseDateUnderDifferentTimezone(timezonedDate, cal);
 			}
 		}
+	}
+
+	private void reparseDateUnderDifferentTimezone(TimezonedDate timezonedDate, Calendar cal) {
+		ICalDate date = timezonedDate.getDate();
+
+		//parse its raw date components under its real timezone
+		Date realDate = date.getRawComponents().toDate(cal);
+
+		//update the Date object with the new timestamp
+		date.setTime(realDate.getTime());
+	}
+
+	/**
+	 * Determines the timezone definition that is associated with the given ID.
+	 * @param tzid the timezone ID
+	 * @param tzinfo the timezone settings of the iCalendar object
+	 * @return the timezone definition or null to use the default timezone
+	 */
+	private TimezoneAssignment determineTimezoneAssignment(String tzid, TimezoneInfo tzinfo) {
+		boolean isOlsenId = tzid.startsWith("/");
+
+		//HANDLE OLSEN IDS======================================================
+
+		if (isOlsenId) {
+			String globalId = tzid.substring(1);
+			TimeZone timezone = ICalDateFormat.parseTimeZoneId(globalId);
+			if (timezone != null) {
+				/*
+				 * Olsen ID is valid. Everything is Ok.
+				 */
+				TimezoneAssignment assignment = new TimezoneAssignment(timezone, globalId);
+				tzinfo.getTimezones().add(assignment);
+				return assignment;
+			}
+
+			/*
+			 * Even though the TZID is marked as an Olsen ID, and the timezone
+			 * isn't recognized by Java, try looking for a VTIMEZONE component
+			 * that matches it.
+			 *
+			 * This is done as a courtesy and is not required by the specs.
+			 */
+			TimezoneAssignment assignment = tzinfo.getTimezoneById(tzid);
+			int warning;
+			if (assignment == null) {
+				/*
+				 * TZID does not match any VTIMEZONE components, use the default
+				 * timezone.
+				 */
+				warning = 38;
+			} else {
+				warning = 43;
+			}
+
+			warnings.add(new ParseWarning.Builder().message(warning, tzid).build());
+			return assignment;
+		}
+
+		//HANDLE VTIMEZONE COMPONENT IDS========================================
+
+		TimezoneAssignment assignment = tzinfo.getTimezoneById(tzid);
+		if (assignment != null) {
+			/*
+			 * VTIMEZONE component with the given TZID was found.
+			 * Everything is Ok.
+			 */
+			return assignment;
+		}
+
+		/*
+		 * Try treating the TZID as an Olsen timezone ID.
+		 *
+		 * This is done as a courtesy for users who do not know they must prefix
+		 * Olsen IDs with a forward slash. It is not required by the specs.
+		 */
+		TimeZone timezone = ICalDateFormat.parseTimeZoneId(tzid);
+		int warning;
+		if (timezone == null) {
+			/*
+			 * TZID is not a valid Olsen ID, use the default timezone.
+			 */
+			warning = 38;
+			assignment = null;
+		} else {
+			/*
+			 * TZID was successfully parsed as an Olsen ID.
+			 */
+			warning = 37;
+			assignment = new TimezoneAssignment(timezone, tzid);
+			tzinfo.getTimezones().add(assignment);
+		}
+
+		warnings.add(new ParseWarning.Builder().message(warning, tzid).build());
+		return assignment;
 	}
 
 	private TimezoneAssignment extractVCalTimezone(ICalendar ical) {
