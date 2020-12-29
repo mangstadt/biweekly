@@ -91,15 +91,19 @@ public class TestUtils {
 	 * use "null" for warnings that do not have a code)
 	 */
 	public static void assertParseWarnings(List<ParseWarning> warnings, Integer... expectedCodes) {
-		List<Integer> expectedWarnings = new ArrayList<Integer>(Arrays.asList(expectedCodes));
 		List<Integer> actualWarnings = new ArrayList<Integer>(warnings.size());
 		for (ParseWarning warning : warnings) {
 			actualWarnings.add(warning.getCode());
 		}
 
+		if (actualWarnings.size() != expectedCodes.length) {
+			fail("Expected these warnings " + Arrays.toString(expectedCodes) + ", but was this: " + actualWarnings + ".  Actual warnings: " + warnings);
+		}
+
+		List<Integer> expectedWarnings = new ArrayList<Integer>(Arrays.asList(expectedCodes));
 		for (Integer actualWarning : actualWarnings) {
 			if (!expectedWarnings.remove(actualWarning)) {
-				fail("Expected these warnings " + expectedWarnings + ", but was this: " + actualWarnings + ".  Actual warnings: " + warnings);
+				fail("Expected these warnings " + Arrays.toString(expectedCodes) + ", but was this: " + actualWarnings + ".  Actual warnings: " + warnings);
 			}
 		}
 	}
