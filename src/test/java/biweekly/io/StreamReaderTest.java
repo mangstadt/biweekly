@@ -205,9 +205,75 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void date_with_olsen_id_that_is_missing_solidus() throws Exception {
+	public void date_with_olsen_id_with_mozilla_prefix() throws Exception {
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		property.getParameters().setTimezoneId("/mozilla.org/20050126_1/America/New_York");
+
+		StreamReader reader = new StreamReaderImpl() {
+			@Override
+			protected ICalendar _readNext() {
+				ICalendar ical = new ICalendar();
+
+				context.addTimezonedDate(property.getParameters().getTimezoneId(), property, property.date);
+				ical.addProperty(property);
+
+				return ical;
+			}
+		};
+
+		ICalendar ical = reader.readNext();
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
+
+		assertEquals(0, ical.getComponents(VTimezone.class).size());
+
+		TimezoneAssignment assignment = tzinfo.getTimezone(property);
+		assertFalse(tzinfo.isFloating(property));
+		assertNull(assignment.getComponent());
+		assertEquals("America/New_York", assignment.getGlobalId());
+		assertEquals("America/New_York", assignment.getTimeZone().getID());
+		assertNull(property.getParameters().getTimezoneId());
+		assertEquals(utc("2014-09-02 14:22:00"), property.date);
+
+		assertParseWarnings(reader);
+	}
+
+	@Test
+	public void date_with_olsen_id_missing_solidus() throws Exception {
 		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
 		property.getParameters().setTimezoneId("America/New_York");
+
+		StreamReader reader = new StreamReaderImpl() {
+			@Override
+			protected ICalendar _readNext() {
+				ICalendar ical = new ICalendar();
+
+				context.addTimezonedDate(property.getParameters().getTimezoneId(), property, property.date);
+				ical.addProperty(property);
+
+				return ical;
+			}
+		};
+
+		ICalendar ical = reader.readNext();
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
+
+		assertEquals(0, ical.getComponents(VTimezone.class).size());
+
+		TimezoneAssignment assignment = tzinfo.getTimezone(property);
+		assertFalse(tzinfo.isFloating(property));
+		assertNull(assignment.getComponent());
+		assertEquals("America/New_York", assignment.getGlobalId());
+		assertEquals("America/New_York", assignment.getTimeZone().getID());
+		assertNull(property.getParameters().getTimezoneId());
+		assertEquals(utc("2014-09-02 14:22:00"), property.date);
+
+		assertParseWarnings(reader, 37);
+	}
+
+	@Test
+	public void date_with_olsen_id_with_mozilla_prefix_missing_solidus() throws Exception {
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		property.getParameters().setTimezoneId("mozilla.org/20050126_1/America/New_York");
 
 		StreamReader reader = new StreamReaderImpl() {
 			@Override

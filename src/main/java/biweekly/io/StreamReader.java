@@ -286,7 +286,7 @@ public abstract class StreamReader implements Closeable {
 		//HANDLE OLSEN IDS======================================================
 
 		if (isOlsenId) {
-			String globalId = tzid.substring(1);
+			String globalId = removeMozillaPrefixIfPresent(tzid.substring(1));
 			TimeZone timezone = ICalDateFormat.parseTimeZoneId(globalId);
 			if (timezone != null) {
 				/*
@@ -332,12 +332,14 @@ public abstract class StreamReader implements Closeable {
 		}
 
 		/*
-		 * Try treating the TZID as an Olsen timezone ID.
+		 * Try treating the TZID as an Olsen timezone ID, even though it does
+		 * not start with a forward slash.
 		 *
 		 * This is done as a courtesy for users who do not know they must prefix
 		 * Olsen IDs with a forward slash. It is not required by the specs.
 		 */
-		TimeZone timezone = ICalDateFormat.parseTimeZoneId(tzid);
+		String globalId = removeMozillaPrefixIfPresent(tzid);
+		TimeZone timezone = ICalDateFormat.parseTimeZoneId(globalId);
 		int warning;
 		if (timezone == null) {
 			/*
@@ -350,12 +352,25 @@ public abstract class StreamReader implements Closeable {
 			 * TZID was successfully parsed as an Olsen ID.
 			 */
 			warning = 37;
-			assignment = new TimezoneAssignment(timezone, tzid);
+			assignment = new TimezoneAssignment(timezone, globalId);
 			tzinfo.getTimezones().add(assignment);
 		}
 
-		warnings.add(new ParseWarning.Builder().message(warning, tzid).build());
+		warnings.add(new ParseWarning.Builder().message(warning, globalId).build());
 		return assignment;
+	}
+
+	/**
+	 * Checks for, and removes, a global ID prefix that Mozilla software adds
+	 * to its iCal files. Googling this prefix returns many search results,
+	 * suggesting it is frequently encountered in the wild.
+	 * @param globalId the global ID (may or may not contain the Mozilla prefix)
+	 * @return the sanitized global ID, or the ID unchanged if it does not
+	 * contain the prefix
+	 */
+	private String removeMozillaPrefixIfPresent(String globalId) {
+		String prefix = "mozilla.org/20050126_1/";
+		return globalId.startsWith(prefix) ? globalId.substring(prefix.length()) : globalId;
 	}
 
 	private TimezoneAssignment extractVCalTimezone(ICalendar ical) {

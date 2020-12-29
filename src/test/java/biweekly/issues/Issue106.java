@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Michael Angstadt
@@ -41,28 +42,29 @@ public class Issue106 {
 		"END:VEVENT\n" +
 		"END:VCALENDAR\n";
 
+		TimeZone americaCancun = TimeZone.getTimeZone("America/Cancun");
 		TimeZone defaultTz = TimeZone.getTimeZone("Europe/Paris");
 		List<List<ParseWarning>> warnings = new ArrayList<List<ParseWarning>>();
 		ICalendar ical = Biweekly.parse(input).defaultTimezone(defaultTz).warnings(warnings).first();
 
-		assertParseWarnings(warnings.get(0), 17, 38);
+		assertParseWarnings(warnings.get(0), 17);
 
 		VEvent event = ical.getEvents().get(0);
 
 		{
 			DateStart property = event.getDateStart();
-			Date expected = date("2020-12-21 09:00:00", defaultTz);
+			Date expected = date("2020-12-21 09:00:00", americaCancun);
 			Date actual = property.getValue();
 			assertEquals(expected, actual);
-			assertEquals("/mozilla.org/20050126_1/America/Cancun", property.getParameters().getTimezoneId());
+			assertNull(property.getParameters().getTimezoneId());
 		}
 
 		{
 			DateEnd property = event.getDateEnd();
-			Date expected = date("2020-12-21 10:00:00", defaultTz);
+			Date expected = date("2020-12-21 10:00:00", americaCancun);
 			Date actual = property.getValue();
 			assertEquals(expected, actual);
-			assertEquals("/mozilla.org/20050126_1/America/Cancun", property.getParameters().getTimezoneId());
+			assertNull(property.getParameters().getTimezoneId());
 		}
 	}
 
