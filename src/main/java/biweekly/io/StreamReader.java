@@ -24,7 +24,6 @@ import biweekly.property.ICalProperty;
 import biweekly.property.Timezone;
 import biweekly.property.ValuedProperty;
 import biweekly.util.ICalDate;
-import biweekly.util.ICalDateFormat;
 
 /*
  Copyright (c) 2013-2020, Michael Angstadt
@@ -60,6 +59,7 @@ public abstract class StreamReader implements Closeable {
 	protected ScribeIndex index = new ScribeIndex();
 	protected ParseContext context;
 	private TimeZone defaultTimezone = TimeZone.getDefault();
+	private GlobalTimezoneIdResolver globalTimezoneIdResolver = new DefaultGlobalTimezoneIdResolver();
 
 	/**
 	 * <p>
@@ -133,6 +133,24 @@ public abstract class StreamReader implements Closeable {
 	 */
 	public void setDefaultTimezone(TimeZone defaultTimezone) {
 		this.defaultTimezone = defaultTimezone;
+	}
+
+	/**
+	 * Gets the resolver that maps global timezone IDs to Java {@link TimeZone}
+	 * objects. Defaults to {@link DefaultGlobalTimezoneIdResolver}.
+	 * @return the resolver
+	 */
+	public GlobalTimezoneIdResolver getGlobalTimezoneIdResolver() {
+		return globalTimezoneIdResolver;
+	}
+
+	/**
+	 * Sets the resolver that maps global timezone IDs to Java {@link TimeZone}
+	 * objects. Defaults to {@link DefaultGlobalTimezoneIdResolver}.
+	 * @param globalTimezoneIdResolver the resolver
+	 */
+	public void setGlobalTimezoneIdResolver(GlobalTimezoneIdResolver globalTimezoneIdResolver) {
+		this.globalTimezoneIdResolver = globalTimezoneIdResolver;
 	}
 
 	/**
@@ -286,8 +304,8 @@ public abstract class StreamReader implements Closeable {
 		//HANDLE OLSEN IDS======================================================
 
 		if (isOlsenId) {
-			String globalId = removeMozillaPrefixIfPresent(tzid.substring(1));
-			TimeZone timezone = ICalDateFormat.parseTimeZoneId(globalId);
+			String globalId = tzid.substring(1);
+			TimeZone timezone = globalTimezoneIdResolver.resolve(globalId);
 			if (timezone != null) {
 				/*
 				 * Olsen ID is valid. Everything is Ok.
@@ -338,8 +356,8 @@ public abstract class StreamReader implements Closeable {
 		 * This is done as a courtesy for users who do not know they must prefix
 		 * Olsen IDs with a forward slash. It is not required by the specs.
 		 */
-		String globalId = removeMozillaPrefixIfPresent(tzid);
-		TimeZone timezone = ICalDateFormat.parseTimeZoneId(globalId);
+		String globalId = tzid;
+		TimeZone timezone = globalTimezoneIdResolver.resolve(globalId);
 		int warning;
 		if (timezone == null) {
 			/*
@@ -358,19 +376,6 @@ public abstract class StreamReader implements Closeable {
 
 		warnings.add(new ParseWarning.Builder().message(warning, globalId).build());
 		return assignment;
-	}
-
-	/**
-	 * Checks for, and removes, a global ID prefix that Mozilla software adds
-	 * to its iCal files. Googling this prefix returns many search results,
-	 * suggesting it is frequently encountered in the wild.
-	 * @param globalId the global ID (may or may not contain the Mozilla prefix)
-	 * @return the sanitized global ID, or the ID unchanged if it does not
-	 * contain the prefix
-	 */
-	private String removeMozillaPrefixIfPresent(String globalId) {
-		String prefix = "mozilla.org/20050126_1/";
-		return globalId.startsWith(prefix) ? globalId.substring(prefix.length()) : globalId;
 	}
 
 	private TimezoneAssignment extractVCalTimezone(ICalendar ical) {

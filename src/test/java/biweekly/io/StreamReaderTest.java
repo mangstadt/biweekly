@@ -12,6 +12,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.TimeZone;
 
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -25,6 +26,9 @@ import biweekly.util.DateTimeComponents;
 import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.ICalDate;
 import biweekly.util.UtcOffset;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 /*
  Copyright (c) 2013-2020, Michael Angstadt
@@ -229,7 +233,7 @@ public class StreamReaderTest {
 		TimezoneAssignment assignment = tzinfo.getTimezone(property);
 		assertFalse(tzinfo.isFloating(property));
 		assertNull(assignment.getComponent());
-		assertEquals("America/New_York", assignment.getGlobalId());
+		assertEquals("mozilla.org/20050126_1/America/New_York", assignment.getGlobalId());
 		assertEquals("America/New_York", assignment.getTimeZone().getID());
 		assertNull(property.getParameters().getTimezoneId());
 		assertEquals(utc("2014-09-02 14:22:00"), property.date);
@@ -295,7 +299,7 @@ public class StreamReaderTest {
 		TimezoneAssignment assignment = tzinfo.getTimezone(property);
 		assertFalse(tzinfo.isFloating(property));
 		assertNull(assignment.getComponent());
-		assertEquals("America/New_York", assignment.getGlobalId());
+		assertEquals("mozilla.org/20050126_1/America/New_York", assignment.getGlobalId());
 		assertEquals("America/New_York", assignment.getTimeZone().getID());
 		assertNull(property.getParameters().getTimezoneId());
 		assertEquals(utc("2014-09-02 14:22:00"), property.date);
@@ -534,6 +538,78 @@ public class StreamReaderTest {
 		assertEquals(date("2014-09-02 08:22:00"), property.date);
 
 		assertParseWarnings(reader, 38);
+	}
+
+	@Test
+	public void date_with_global_id_using_custom_resolver() throws Exception {
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		property.getParameters().setTimezoneId("/New York City");
+
+		StreamReader reader = new StreamReaderImpl() {
+			@Override
+			protected ICalendar _readNext() {
+				ICalendar ical = new ICalendar();
+
+				context.addTimezonedDate(property.getParameters().getTimezoneId(), property, property.date);
+				ical.addProperty(property);
+
+				return ical;
+			}
+		};
+
+		GlobalTimezoneIdResolver resolver = mock(GlobalTimezoneIdResolver.class);
+		when(resolver.resolve("New York City")).thenReturn(TimeZone.getTimeZone("America/New_York"));
+		reader.setGlobalTimezoneIdResolver(resolver);
+
+		ICalendar ical = reader.readNext();
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
+
+		TimezoneAssignment assignment = tzinfo.getTimezone(property);
+		assertFalse(tzinfo.isFloating(property));
+		assertNull(assignment.getComponent());
+		assertEquals("New York City", assignment.getGlobalId());
+		assertEquals("America/New_York", assignment.getTimeZone().getID());
+		assertNull(property.getParameters().getTimezoneId());
+		assertEquals(utc("2014-09-02 14:22:00"), property.date);
+		verify(resolver).resolve("New York City");
+
+		assertParseWarnings(reader);
+	}
+
+	@Test
+	public void date_with_global_id_using_custom_resolver_missing_solidus() throws Exception {
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		property.getParameters().setTimezoneId("New York City");
+
+		StreamReader reader = new StreamReaderImpl() {
+			@Override
+			protected ICalendar _readNext() {
+				ICalendar ical = new ICalendar();
+
+				context.addTimezonedDate(property.getParameters().getTimezoneId(), property, property.date);
+				ical.addProperty(property);
+
+				return ical;
+			}
+		};
+
+		GlobalTimezoneIdResolver resolver = mock(GlobalTimezoneIdResolver.class);
+		when(resolver.resolve("New York City")).thenReturn(TimeZone.getTimeZone("America/New_York"));
+		reader.setGlobalTimezoneIdResolver(resolver);
+
+		ICalendar ical = reader.readNext();
+		TimezoneInfo tzinfo = ical.getTimezoneInfo();
+
+		TimezoneAssignment assignment = tzinfo.getTimezone(property);
+		assertFalse(tzinfo.isFloating(property));
+		assertNull(assignment.getComponent());
+		assertEquals("New York City", assignment.getGlobalId());
+		assertEquals("America/New_York", assignment.getTimeZone().getID());
+		assertNull(property.getParameters().getTimezoneId());
+		assertEquals(utc("2014-09-02 14:22:00"), property.date);
+		verify(resolver).resolve("New York City");
+
+		assertParseWarnings(reader, 37);
 	}
 
 	@Test
