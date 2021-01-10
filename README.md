@@ -86,7 +86,7 @@ String str = Biweekly.write(ical).go();
 **Gradle**
 
 ```
-implementation 'net.sf.biweekly:biweekly:0.6.5'
+implementation 'net.sf.biweekly:biweekly:0.6.6'
 // or use the `api` keyword if you are exposing parts of biweekly in your API
 ```
 
