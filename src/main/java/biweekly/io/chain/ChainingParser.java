@@ -133,6 +133,7 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 	 * are floating or that have invalid timezone definitions assigned to them.
 	 * Defaults to {@link TimeZone#getDefault}.
 	 * @param defaultTimezone the default timezone
+	 * @return this
 	 */
 	public T defaultTimezone(TimeZone defaultTimezone) {
 		this.defaultTimezone = defaultTimezone;
