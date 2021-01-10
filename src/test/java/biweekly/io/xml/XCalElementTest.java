@@ -20,7 +20,7 @@ import biweekly.io.xml.XCalElement.XCalValue;
 import biweekly.util.XmlUtils;
 
 /*
- Copyright (c) 2013-2020, Michael Angstadt
+ Copyright (c) 2013-2021, Michael Angstadt
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
