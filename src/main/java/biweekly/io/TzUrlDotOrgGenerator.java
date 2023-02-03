@@ -72,7 +72,7 @@ public class TzUrlDotOrgGenerator {
 	public VTimezone generate(TimeZone timezone) throws IllegalArgumentException {
 		URI uri;
 		try {
-			uri = new URI(baseUrl + timezone.getID());
+			uri = new URI(buildUrl(timezone));
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException(e);
 		}
@@ -134,6 +134,10 @@ public class TzUrlDotOrgGenerator {
 
 		cache.put(uri, component);
 		return component.copy();
+	}
+
+	private String buildUrl(TimeZone timezone) {
+		return baseUrl + timezone.getID();
 	}
 
 	//for unit testing
