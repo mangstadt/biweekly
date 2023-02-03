@@ -79,20 +79,20 @@ String str = Biweekly.write(ical).go();
 <dependency>
    <groupId>net.sf.biweekly</groupId>
    <artifactId>biweekly</artifactId>
-   <version>0.6.6</version>
+   <version>0.6.7</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```
-implementation 'net.sf.biweekly:biweekly:0.6.6'
-// or use the `api` keyword if you are exposing parts of biweekly in your API
+implementation 'net.sf.biweekly:biweekly:0.6.7'
+//use `api` if you are exposing parts of biweekly in your API
 ```
 
 # Build Instructions
 
-biweekly uses [Maven](http://maven.apache.org/) as its build tool, and adheres to its convensions.
+biweekly uses [Maven](http://maven.apache.org/) as its build tool, and adheres to its conventions.
 
 To build the project: `mvn compile`  
 To run the unit tests: `mvn test`  
