@@ -26,7 +26,7 @@ import biweekly.util.com.google.ical.values.DateValue;
 import biweekly.util.com.google.ical.values.DateValueImpl;
 
 /*
- Copyright (c) 2013-2021, Michael Angstadt
+ Copyright (c) 2013-2023, Michael Angstadt
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
