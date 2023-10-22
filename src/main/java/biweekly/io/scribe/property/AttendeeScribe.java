@@ -78,41 +78,52 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 
 		ICalParameters copy = new ICalParameters(property.getParameters());
 
-		//RSVP parameter
-		//1.0 - Uses the values "YES" and "NO"
-		//2.0 - Uses the values "TRUE" and "FALSE"
+		prepareRsvpParameter(property, copy, context);
+		prepareRoleAndExpectParameters(property, copy, context);
+		prepareParticipationStatusParameter(property, copy, context);
+		prepareCommonNameParameter(property, copy, context);
+		prepareEmailParameter(property, copy, context);
+
+		return copy;
+	}
+
+	private void prepareRsvpParameter(Attendee property, ICalParameters copy, WriteContext context) {
 		Boolean rsvp = property.getRsvp();
-		if (rsvp != null) {
-			String value;
-			switch (context.getVersion()) {
-			case V1_0:
-				value = rsvp ? "YES" : "NO";
-				break;
-
-			default:
-				value = rsvp ? "TRUE" : "FALSE";
-				break;
-			}
-
-			copy.put(ICalParameters.RSVP, value);
+		if (rsvp == null) {
+			return;
 		}
 
-		//ROLE and EXPECT parameters
-		//1.0 - Uses ROLE and EXPECT
-		//2.0 - Uses only ROLE
-		Role role = property.getRole();
-		ParticipationLevel level = property.getParticipationLevel();
+		String value;
 		switch (context.getVersion()) {
 		case V1_0:
+			value = rsvp ? "YES" : "NO";
+			break;
+
+		default:
+			value = rsvp ? "TRUE" : "FALSE";
+			break;
+		}
+
+		copy.put(ICalParameters.RSVP, value);
+	}
+
+	private void prepareRoleAndExpectParameters(Attendee property, ICalParameters copy, WriteContext context) {
+		Role role = property.getRole();
+		ParticipationLevel level = property.getParticipationLevel();
+
+		switch (context.getVersion()) {
+		case V1_0:
+			//1.0 - Uses ROLE and EXPECT
 			if (role != null) {
 				copy.put(ICalParameters.ROLE, role.getValue());
 			}
 			if (level != null) {
 				copy.put(ICalParameters.EXPECT, level.getValue(context.getVersion()));
 			}
-			break;
+			return;
 
 		default:
+			//2.0 - Uses only ROLE
 			String value = null;
 			if (role == Role.CHAIR) {
 				value = role.getValue();
@@ -125,178 +136,99 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			if (value != null) {
 				copy.put(ICalParameters.ROLE, value);
 			}
+			return;
+		}
+	}
+
+	private void prepareParticipationStatusParameter(Attendee property, ICalParameters copy, WriteContext context) {
+		ParticipationStatus partStat = property.getParticipationStatus();
+		if (partStat == null) {
+			return;
+		}
+
+		String name;
+		String value;
+		switch (context.getVersion()) {
+		case V1_0:
+			//1.0 - Calls the parameter "STATUS"
+			//1.0 - "NEEDS ACTION" value has no hyphen
+			name = ICalParameters.STATUS;
+			value = (partStat == ParticipationStatus.NEEDS_ACTION) ? "NEEDS ACTION" : partStat.getValue();
+			break;
+
+		default:
+			//2.0 - Calls the parameter "PARTSTAT"
+			name = ICalParameters.PARTSTAT;
+			value = partStat.getValue();
 			break;
 		}
 
-		//PARTSTAT vs STATUS
-		//1.0 - Calls the parameter "STATUS"
-		//2.0 - Calls the parameter "PARTSTAT"
-		ParticipationStatus partStat = property.getParticipationStatus();
-		if (partStat != null) {
-			String paramName;
-			String paramValue;
+		copy.put(name, value);
+	}
 
-			switch (context.getVersion()) {
-			case V1_0:
-				paramName = ICalParameters.STATUS;
-				paramValue = (partStat == ParticipationStatus.NEEDS_ACTION) ? "NEEDS ACTION" : partStat.getValue();
-				break;
-
-			default:
-				paramName = ICalParameters.PARTSTAT;
-				paramValue = partStat.getValue();
-				break;
-			}
-
-			copy.put(paramName, paramValue);
+	private void prepareCommonNameParameter(Attendee property, ICalParameters copy, WriteContext context) {
+		if (context.getVersion() == ICalVersion.V1_0) {
+			return;
 		}
 
-		//CN parameter
 		String name = property.getCommonName();
-		if (name != null && context.getVersion() != ICalVersion.V1_0) {
-			copy.put(ICalParameters.CN, name);
+		if (name == null) {
+			return;
 		}
 
-		//EMAIL parameter
+		copy.put(ICalParameters.CN, name);
+	}
+
+	private void prepareEmailParameter(Attendee property, ICalParameters copy, WriteContext context) {
+		if (context.getVersion() == ICalVersion.V1_0) {
+			return;
+		}
+
 		String uri = property.getUri();
 		String email = property.getEmail();
-		if (uri != null && email != null && context.getVersion() != ICalVersion.V1_0) {
-			copy.put(ICalParameters.EMAIL, email);
+		if (uri == null || email == null) {
+			return;
 		}
 
-		return copy;
+		copy.put(ICalParameters.EMAIL, email);
 	}
 
 	@Override
 	protected Attendee _parseText(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		String uri = null, name = null, email = null;
-		Boolean rsvp = null;
-		Role role = null;
-		ParticipationLevel participationLevel = null;
-		ParticipationStatus participationStatus = null;
-
 		switch (context.getVersion()) {
 		case V1_0:
-			Iterator<String> it = parameters.get(ICalParameters.RSVP).iterator();
-			while (it.hasNext()) {
-				String rsvpStr = it.next();
-
-				if ("YES".equalsIgnoreCase(rsvpStr)) {
-					rsvp = Boolean.TRUE;
-					it.remove();
-					break;
-				}
-
-				if ("NO".equalsIgnoreCase(rsvpStr)) {
-					rsvp = Boolean.FALSE;
-					it.remove();
-					break;
-				}
-			}
-
-			String roleStr = parameters.first(ICalParameters.ROLE);
-			if (roleStr != null) {
-				role = Role.get(roleStr);
-				parameters.remove(ICalParameters.ROLE, roleStr);
-			}
-
-			String expectStr = parameters.getExpect();
-			if (expectStr != null) {
-				participationLevel = ParticipationLevel.get(expectStr);
-				parameters.remove(ICalParameters.EXPECT, expectStr);
-			}
-
-			String statusStr = parameters.getStatus();
-			if (statusStr != null) {
-				participationStatus = ParticipationStatus.get(statusStr);
-				parameters.remove(ICalParameters.STATUS, statusStr);
-			}
-
-			int bracketStart = value.lastIndexOf('<');
-			int bracketEnd = value.lastIndexOf('>');
-			if (bracketStart >= 0 && bracketEnd >= 0 && bracketStart < bracketEnd) {
-				name = value.substring(0, bracketStart).trim();
-				email = value.substring(bracketStart + 1, bracketEnd).trim();
-			} else if (dataType == ICalDataType.URL) {
-				uri = value;
-			} else {
-				email = value;
-			}
-
-			break;
+			return parseTextV1(value, dataType, parameters);
 
 		default:
-			it = parameters.get(ICalParameters.RSVP).iterator();
-			while (it.hasNext()) {
-				String rsvpStr = it.next();
-
-				if ("TRUE".equalsIgnoreCase(rsvpStr)) {
-					rsvp = Boolean.TRUE;
-					it.remove();
-					break;
-				}
-
-				if ("FALSE".equalsIgnoreCase(rsvpStr)) {
-					rsvp = Boolean.FALSE;
-					it.remove();
-					break;
-				}
-			}
-
-			roleStr = parameters.first(ICalParameters.ROLE);
-			if (roleStr != null) {
-				if (roleStr.equalsIgnoreCase(Role.CHAIR.getValue())) {
-					role = Role.CHAIR;
-				} else {
-					ParticipationLevel l = ParticipationLevel.find(roleStr);
-					if (l == null) {
-						role = Role.get(roleStr);
-					} else {
-						participationLevel = l;
-					}
-				}
-				parameters.remove(ICalParameters.ROLE, roleStr);
-			}
-
-			String participationStatusStr = parameters.getParticipationStatus();
-			if (participationStatusStr != null) {
-				participationStatus = ParticipationStatus.get(participationStatusStr);
-				parameters.remove(ICalParameters.PARTSTAT, participationStatusStr);
-			}
-
-			name = parameters.getCommonName();
-			if (name != null) {
-				parameters.remove(ICalParameters.CN, name);
-			}
-
-			email = parameters.getEmail();
-			if (email == null) {
-				int colon = value.indexOf(':');
-				if (colon == 6) {
-					String scheme = value.substring(0, colon);
-					if (scheme.equalsIgnoreCase("mailto")) {
-						email = value.substring(colon + 1);
-					} else {
-						uri = value;
-					}
-				} else {
-					uri = value;
-				}
-			} else {
-				uri = value;
-				parameters.remove(ICalParameters.EMAIL, email);
-			}
-
-			break;
+			return parseTextV2(value, parameters);
 		}
+	}
 
-		Attendee attendee = new Attendee(name, email, uri);
-		attendee.setParticipationStatus(participationStatus);
-		attendee.setParticipationLevel(participationLevel);
-		attendee.setRole(role);
+	private Attendee parseTextV1(String value, ICalDataType dataType, ICalParameters parameters) {
+		Attendee attendee = parseValueV1(value, dataType);
+
+		Boolean rsvp = parseAndRemoveRsvpParameter(parameters, "YES", "NO");
 		attendee.setRsvp(rsvp);
 
-		if (context.getVersion() == ICalVersion.V1_0 && attendee.getRole() == Role.ORGANIZER) {
+		String roleStr = parameters.first(ICalParameters.ROLE);
+		if (roleStr != null) {
+			attendee.setRole(Role.get(roleStr));
+			parameters.remove(ICalParameters.ROLE, roleStr);
+		}
+
+		String expectStr = parameters.getExpect();
+		if (expectStr != null) {
+			attendee.setParticipationLevel(ParticipationLevel.get(expectStr));
+			parameters.remove(ICalParameters.EXPECT, expectStr);
+		}
+
+		String statusStr = parameters.getStatus();
+		if (statusStr != null) {
+			attendee.setParticipationStatus(ParticipationStatus.get(statusStr));
+			parameters.remove(ICalParameters.STATUS, statusStr);
+		}
+
+		if (attendee.getRole() == Role.ORGANIZER) {
 			Organizer organizer = new Organizer(attendee.getCommonName(), attendee.getEmail());
 			organizer.setUri(attendee.getUri());
 			organizer.setParameters(parameters);
@@ -308,6 +240,102 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 		}
 
 		return attendee;
+	}
+
+	private Attendee parseValueV1(String value, ICalDataType dataType) {
+		int bracketStart = value.lastIndexOf('<');
+		int bracketEnd = value.lastIndexOf('>');
+		if (bracketStart >= 0 && bracketEnd >= 0 && bracketStart < bracketEnd) {
+			String name = value.substring(0, bracketStart).trim();
+			String email = value.substring(bracketStart + 1, bracketEnd).trim();
+			return new Attendee(name, email);
+		}
+
+		if (dataType == ICalDataType.URL) {
+			return new Attendee(null, null, value);
+		}
+
+		return new Attendee(null, value);
+	}
+
+	private Attendee parseTextV2(String value, ICalParameters parameters) {
+		String name = parameters.getCommonName();
+		if (name != null) {
+			parameters.remove(ICalParameters.CN, name);
+		}
+
+		String email = parameters.getEmail();
+		if (email != null) {
+			parameters.remove(ICalParameters.EMAIL, email);
+		}
+
+		String uri = value;
+		if (email == null) {
+			email = parseEmailFromMailtoUri(value);
+			if (email != null) {
+				uri = null;
+			}
+		}
+
+		Attendee attendee = new Attendee(name, email, uri);
+
+		Boolean rsvp = parseAndRemoveRsvpParameter(parameters, "TRUE", "FALSE");
+		attendee.setRsvp(rsvp);
+
+		String roleStr = parameters.first(ICalParameters.ROLE);
+		if (roleStr != null) {
+			if (roleStr.equalsIgnoreCase(Role.CHAIR.getValue())) {
+				attendee.setRole(Role.CHAIR);
+			} else {
+				ParticipationLevel participationLevel = ParticipationLevel.find(roleStr);
+				if (participationLevel == null) {
+					attendee.setRole(Role.get(roleStr));
+				} else {
+					attendee.setParticipationLevel(participationLevel);
+				}
+			}
+			parameters.remove(ICalParameters.ROLE, roleStr);
+		}
+
+		String participationStatusStr = parameters.getParticipationStatus();
+		if (participationStatusStr != null) {
+			attendee.setParticipationStatus(ParticipationStatus.get(participationStatusStr));
+			parameters.remove(ICalParameters.PARTSTAT, participationStatusStr);
+		}
+
+		return attendee;
+	}
+
+	private String parseEmailFromMailtoUri(String value) {
+		String mailtoScheme = "mailto";
+		int colon = value.indexOf(':');
+		if (colon == mailtoScheme.length()) {
+			String scheme = value.substring(0, colon);
+			if (mailtoScheme.equalsIgnoreCase(scheme)) {
+				return value.substring(colon + 1);
+			}
+		}
+
+		return null;
+	}
+
+	private Boolean parseAndRemoveRsvpParameter(ICalParameters parameters, String trueValue, String falseValue) {
+		Iterator<String> it = parameters.get(ICalParameters.RSVP).iterator();
+		while (it.hasNext()) {
+			String rsvpStr = it.next();
+
+			if (trueValue.equalsIgnoreCase(rsvpStr)) {
+				it.remove();
+				return true;
+			}
+
+			if (falseValue.equalsIgnoreCase(rsvpStr)) {
+				it.remove();
+				return false;
+			}
+		}
+
+		return null;
 	}
 
 	@Override
