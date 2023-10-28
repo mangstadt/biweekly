@@ -1299,108 +1299,162 @@ public class ICalParameters extends ListMultimap<String, String> {
 	public List<ValidationWarning> validate(ICalVersion version) {
 		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>(0);
 
-		SyntaxStyle syntax;
-		switch (version) {
-		case V1_0:
-			syntax = SyntaxStyle.OLD;
-			break;
-		default:
-			syntax = SyntaxStyle.NEW;
-			break;
-		}
+		SyntaxStyle syntax = (version == ICalVersion.V1_0) ? SyntaxStyle.OLD : SyntaxStyle.NEW;
 
-		/*
-		 * Check for invalid characters in names and values.
-		 */
-		for (Map.Entry<String, List<String>> entry : this) {
-			String name = entry.getKey();
+		checkForInvalidChars(syntax, warnings);
 
-			//check the parameter name
-			if (!VObjectValidator.validateParameterName(name, syntax, true)) {
-				if (syntax == SyntaxStyle.OLD) {
-					AllowedCharacters notAllowed = VObjectValidator.allowedCharactersParameterName(syntax, true).flip();
-					warnings.add(new ValidationWarning(57, name, notAllowed.toString(true)));
-				} else {
-					warnings.add(new ValidationWarning(54, name));
-				}
-			}
-
-			//check the parameter value(s)
-			List<String> values = entry.getValue();
-			for (String value : values) {
-				if (!VObjectValidator.validateParameterValue(value, syntax, false, true)) {
-					AllowedCharacters notAllowed = VObjectValidator.allowedCharactersParameterValue(syntax, false, true).flip();
-					int code = (syntax == SyntaxStyle.OLD) ? 58 : 53;
-					warnings.add(new ValidationWarning(code, name, value, notAllowed.toString(true)));
-				}
-			}
-		}
-
-		final int nonStandardCode = 1, deprecated = 47;
-
-		String value = first(RSVP);
-		if (value != null) {
-			value = value.toLowerCase();
-			List<String> validValues = Arrays.asList("true", "false", "yes", "no");
-			if (!validValues.contains(value)) {
-				warnings.add(new ValidationWarning(nonStandardCode, RSVP, value, validValues));
-			}
-		}
-
-		value = first(CUTYPE);
-		if (value != null && CalendarUserType.find(value) == null) {
-			warnings.add(new ValidationWarning(nonStandardCode, CUTYPE, value, CalendarUserType.all()));
-		}
-
-		value = first(ENCODING);
-		if (value != null && Encoding.find(value) == null) {
-			warnings.add(new ValidationWarning(nonStandardCode, ENCODING, value, Encoding.all()));
-		}
-
-		value = first(FBTYPE);
-		if (value != null && FreeBusyType.find(value) == null) {
-			warnings.add(new ValidationWarning(nonStandardCode, FBTYPE, value, FreeBusyType.all()));
-		}
-
-		value = first(PARTSTAT);
-		if (value != null && ParticipationStatus.find(value) == null) {
-			warnings.add(new ValidationWarning(nonStandardCode, PARTSTAT, value, ParticipationStatus.all()));
-		}
-
-		value = first(RANGE);
-		if (value != null) {
-			Range range = Range.find(value);
-
-			if (range == null) {
-				warnings.add(new ValidationWarning(nonStandardCode, RANGE, value, Range.all()));
-			}
-
-			if (range == Range.THIS_AND_PRIOR && version == ICalVersion.V2_0) {
-				warnings.add(new ValidationWarning(deprecated, RANGE, value));
-			}
-		}
-
-		value = first(RELATED);
-		if (value != null && Related.find(value) == null) {
-			warnings.add(new ValidationWarning(nonStandardCode, RELATED, value, Related.all()));
-		}
-
-		value = first(RELTYPE);
-		if (value != null && RelationshipType.find(value) == null) {
-			warnings.add(new ValidationWarning(nonStandardCode, RELTYPE, value, RelationshipType.all()));
-		}
-
-		value = first(ROLE);
-		if (value != null && Role.find(value) == null) {
-			warnings.add(new ValidationWarning(nonStandardCode, ROLE, value, Role.all()));
-		}
-
-		value = first(VALUE);
-		if (value != null && ICalDataType.find(value) == null) {
-			warnings.add(new ValidationWarning(nonStandardCode, VALUE, value, ICalDataType.all()));
-		}
+		validateRsvpParameter(warnings);
+		validateCutypeParameter(warnings);
+		validateEncodingParameter(warnings);
+		validateFbtypeParameter(warnings);
+		validatePartstatParameter(warnings);
+		validateRangeParameter(warnings, version);
+		validateRelatedParameter(warnings);
+		validateReltypeParameter(warnings);
+		validateRoleParameter(warnings);
+		validateValueParameter(warnings);
 
 		return warnings;
+	}
+	
+	private void checkForInvalidChars(SyntaxStyle syntax, List<ValidationWarning> warnings) {
+		for (Map.Entry<String, List<String>> entry : this) {
+			String name = entry.getKey();
+			validateParameterName(name, syntax, warnings);
+
+			List<String> values = entry.getValue();
+			for (String value : values) {
+				validateParameterValue(name, value, syntax, warnings);
+			}
+		}
+	}
+
+	private void validateParameterName(String name, SyntaxStyle syntax, List<ValidationWarning> warnings) {
+		if (VObjectValidator.validateParameterName(name, syntax, true)) {
+			return;
+		}
+
+		ValidationWarning warning;
+		if (syntax == SyntaxStyle.OLD) {
+			AllowedCharacters notAllowed = VObjectValidator.allowedCharactersParameterName(syntax, true).flip();
+			warning = new ValidationWarning(57, name, notAllowed.toString(true));
+		} else {
+			warning = new ValidationWarning(54, name);
+		}
+
+		warnings.add(warning);
+	}
+
+	private void validateParameterValue(String name, String value, SyntaxStyle syntax, List<ValidationWarning> warnings) {
+		if (VObjectValidator.validateParameterValue(value, syntax, false, true)) {
+			return;
+		}
+
+		AllowedCharacters notAllowed = VObjectValidator.allowedCharactersParameterValue(syntax, false, true).flip();
+		int code = (syntax == SyntaxStyle.OLD) ? 58 : 53;
+		warnings.add(new ValidationWarning(code, name, value, notAllowed.toString(true)));
+	}
+
+	private void validateRsvpParameter(List<ValidationWarning> warnings) {
+		String value = first(RSVP);
+		if (value == null) {
+			return;
+		}
+
+		value = value.toLowerCase();
+		List<String> validValues = Arrays.asList("true", "false", "yes", "no");
+		if (!validValues.contains(value)) {
+			warnings.add(new ValidationWarning(1, RSVP, value, validValues));
+		}
+	}
+
+	private void validateCutypeParameter(List<ValidationWarning> warnings) {
+		String value = first(CUTYPE);
+		if (value == null || CalendarUserType.find(value) != null) {
+			return;
+		}
+
+		warnings.add(new ValidationWarning(1, CUTYPE, value, CalendarUserType.all()));
+	}
+
+	private void validateEncodingParameter(List<ValidationWarning> warnings) {
+		String value = first(ENCODING);
+		if (value == null || Encoding.find(value) != null) {
+			return;
+		}
+
+		warnings.add(new ValidationWarning(1, ENCODING, value, Encoding.all()));
+	}
+
+	private void validateFbtypeParameter(List<ValidationWarning> warnings) {
+		String value = first(FBTYPE);
+		if (value == null || FreeBusyType.find(value) != null) {
+			return;
+		}
+
+		warnings.add(new ValidationWarning(1, FBTYPE, value, FreeBusyType.all()));
+	}
+
+	private void validatePartstatParameter(List<ValidationWarning> warnings) {
+		String value = first(PARTSTAT);
+		if (value == null || ParticipationStatus.find(value) != null) {
+			return;
+		}
+
+		warnings.add(new ValidationWarning(1, PARTSTAT, value, ParticipationStatus.all()));
+	}
+
+	private void validateRangeParameter(List<ValidationWarning> warnings, ICalVersion version) {
+		String value = first(RANGE);
+		if (value == null) {
+			return;
+		}
+
+		Range range = Range.find(value);
+
+		if (range == null) {
+			warnings.add(new ValidationWarning(1, RANGE, value, Range.all()));
+		}
+
+		if (range == Range.THIS_AND_PRIOR && version == ICalVersion.V2_0) {
+			warnings.add(new ValidationWarning(47, RANGE, value));
+		}
+	}
+
+	private void validateRelatedParameter(List<ValidationWarning> warnings) {
+		String value = first(RELATED);
+		if (value == null || Related.find(value) != null) {
+			return;
+		}
+
+		warnings.add(new ValidationWarning(1, RELATED, value, Related.all()));
+	}
+
+	private void validateReltypeParameter(List<ValidationWarning> warnings) {
+		String value = first(RELTYPE);
+		if (value == null || RelationshipType.find(value) != null) {
+			return;
+		}
+
+		warnings.add(new ValidationWarning(1, RELTYPE, value, RelationshipType.all()));
+	}
+
+	private void validateRoleParameter(List<ValidationWarning> warnings) {
+		String value = first(ROLE);
+		if (value == null || Role.find(value) != null) {
+			return;
+		}
+
+		warnings.add(new ValidationWarning(1, ROLE, value, Role.all()));
+	}
+
+	private void validateValueParameter(List<ValidationWarning> warnings) {
+		String value = first(VALUE);
+		if (value == null || ICalDataType.find(value) != null) {
+			return;
+		}
+
+		warnings.add(new ValidationWarning(1, VALUE, value, ICalDataType.all()));
 	}
 
 	@Override

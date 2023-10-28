@@ -139,28 +139,20 @@ public class ICalTimeZone extends TimeZone {
 		while (it.hasPrevious()) {
 			Observance observance = it.previous();
 
-			if (daylight && observance instanceof DaylightSavingsTime) {
-				List<TimezoneName> names = observance.getTimezoneNames();
-				if (!names.isEmpty()) {
-					String name = names.get(0).getValue();
-					if (name != null) {
-						return name;
-					}
-				}
-			}
-
-			if (!daylight && observance instanceof StandardTime) {
-				List<TimezoneName> names = observance.getTimezoneNames();
-				if (!names.isEmpty()) {
-					String name = names.get(0).getValue();
-					if (name != null) {
-						return name;
-					}
+			if ((daylight && observance instanceof DaylightSavingsTime) || (!daylight && observance instanceof StandardTime)) {
+				String name = getDisplayName(observance);
+				if (name != null) {
+					return name;
 				}
 			}
 		}
 
 		return super.getDisplayName(daylight, style, locale);
+	}
+
+	private String getDisplayName(Observance observance) {
+		List<TimezoneName> names = observance.getTimezoneNames();
+		return names.isEmpty() ? null : names.get(0).getValue();
 	}
 
 	@Override
