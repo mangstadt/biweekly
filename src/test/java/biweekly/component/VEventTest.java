@@ -214,8 +214,8 @@ public class VEventTest {
 	public void validate_dateStart_before_dateEnd() {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
-		component.setDateStart(date("2000-01-10"));
-		component.setDateEnd(date("2000-01-01"));
+		component.setDateStart(date(2000, 1, 10));
+		component.setDateEnd(date(2000, 1, 1));
 		assertValidate(component).parents(parent).run(16);
 	}
 
@@ -223,15 +223,15 @@ public class VEventTest {
 	public void validate_different_date_datatypes() {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
-		component.setDateStart(new DateStart(date("2000-01-01"), false));
-		component.setDateEnd(new DateEnd(date("2000-01-10"), true));
+		component.setDateStart(new DateStart(date(2000, 1, 1), false));
+		component.setDateEnd(new DateEnd(date(2000, 1, 10), true));
 		assertValidate(component).parents(parent).run(17);
 
 		parent = new TestComponent();
 		component = new VEvent();
-		component.setDateStart(new DateStart(date("2000-01-01"), false));
-		component.setDateEnd(new DateEnd(date("2000-01-10"), false));
-		component.setRecurrenceId(new RecurrenceId(date("2000-01-01"), true));
+		component.setDateStart(new DateStart(date(2000, 1, 1), false));
+		component.setDateEnd(new DateEnd(date(2000, 1, 10), false));
+		component.setRecurrenceId(new RecurrenceId(date(2000, 1, 1), true));
 		assertValidate(component).parents(parent).run(19);
 	}
 
@@ -239,8 +239,8 @@ public class VEventTest {
 	public void validate_dateEnd_with_duration() {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
-		component.setDateStart(date("2000-01-01"));
-		component.setDateEnd(date("2000-01-10"));
+		component.setDateStart(date(2000, 1, 1));
+		component.setDateEnd(date(2000, 1, 10));
 		component.setDuration(new Duration.Builder().build());
 		assertValidate(component).parents(parent).run(18);
 	}
@@ -258,8 +258,8 @@ public class VEventTest {
 		//@formatter:on
 		for (Recurrence recurrence : recurrences) {
 			VEvent component = new VEvent();
-			component.setDateStart(new DateStart(date("2000-01-01"), false));
-			component.setDateEnd(new DateEnd(date("2000-01-10"), false));
+			component.setDateStart(new DateStart(date(2000, 1, 1), false));
+			component.setDateEnd(new DateEnd(date(2000, 1, 10), false));
 			component.setRecurrenceRule(recurrence);
 			assertValidate(component).parents(parent).run(5);
 		}
@@ -269,8 +269,8 @@ public class VEventTest {
 	public void validate_multiple_rrules() {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
-		component.setDateStart(new DateStart(date("2000-01-01"), false));
-		component.setDateEnd(new DateEnd(date("2000-01-10"), false));
+		component.setDateStart(new DateStart(date(2000, 1, 1), false));
+		component.setDateEnd(new DateEnd(date(2000, 1, 10), false));
 		component.addProperty(new RecurrenceRule(new Recurrence.Builder(Frequency.DAILY).build()));
 		component.addProperty(new RecurrenceRule(new Recurrence.Builder(Frequency.DAILY).build()));
 		assertValidate(component).parents(parent).run(6);

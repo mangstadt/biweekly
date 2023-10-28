@@ -182,30 +182,30 @@ public class VTodoTest {
 	@Test
 	public void validate_dateStart_before_dateDue() {
 		VTodo component = new VTodo();
-		component.setDateStart(date("2000-01-10"));
-		component.setDateDue(date("2000-01-01"));
+		component.setDateStart(date(2000, 1, 10));
+		component.setDateDue(date(2000, 1, 1));
 		assertValidate(component).run(22);
 	}
 
 	@Test
 	public void validate_different_date_datatypes() {
 		VTodo component = new VTodo();
-		component.setDateStart(new DateStart(date("2000-01-01"), false));
-		component.setDateDue(new DateDue(date("2000-01-10"), true));
+		component.setDateStart(new DateStart(date(2000, 1, 1), false));
+		component.setDateDue(new DateDue(date(2000, 1, 10), true));
 		assertValidate(component).run(23);
 
 		component = new VTodo();
-		component.setDateStart(new DateStart(date("2000-01-01"), false));
-		component.setDateDue(new DateDue(date("2000-01-10"), false));
-		component.setRecurrenceId(new RecurrenceId(date("2000-01-01"), true));
+		component.setDateStart(new DateStart(date(2000, 1, 1), false));
+		component.setDateDue(new DateDue(date(2000, 1, 10), false));
+		component.setRecurrenceId(new RecurrenceId(date(2000, 1, 1), true));
 		assertValidate(component).run(19);
 	}
 
 	@Test
 	public void validate_dateDue_with_duration() {
 		VTodo component = new VTodo();
-		component.setDateStart(date("2000-01-01"));
-		component.setDateDue(date("2000-01-10"));
+		component.setDateStart(date(2000, 1, 1));
+		component.setDateDue(date(2000, 1, 10));
 		component.setDuration(new Duration.Builder().build());
 		assertValidate(component).run(24);
 	}
@@ -228,8 +228,8 @@ public class VTodoTest {
 		//@formatter:on
 		for (Recurrence recurrence : recurrences) {
 			VTodo component = new VTodo();
-			component.setDateStart(new DateStart(date("2000-01-01"), false));
-			component.setDateDue(new DateDue(date("2000-01-10"), false));
+			component.setDateStart(new DateStart(date(2000, 1, 1), false));
+			component.setDateDue(new DateDue(date(2000, 1, 10), false));
 			component.setRecurrenceRule(recurrence);
 			assertValidate(component).run(5);
 		}
@@ -238,8 +238,8 @@ public class VTodoTest {
 	@Test
 	public void validate_multiple_rrules() {
 		VTodo component = new VTodo();
-		component.setDateStart(new DateStart(date("2000-01-01"), false));
-		component.setDateDue(new DateDue(date("2000-01-10"), false));
+		component.setDateStart(new DateStart(date(2000, 1, 1), false));
+		component.setDateDue(new DateDue(date(2000, 1, 10), false));
 		component.addProperty(new RecurrenceRule(new Recurrence.Builder(Frequency.DAILY).build()));
 		component.addProperty(new RecurrenceRule(new Recurrence.Builder(Frequency.DAILY).build()));
 		assertValidate(component).run(6);

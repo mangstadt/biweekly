@@ -963,8 +963,8 @@ public class XCalReaderTest {
 				VEvent event = ical.getEvents().get(0);
 				assertSize(event, 0, 4);
 
-				assertEquals(utc("2008-02-05 19:12:24"), event.getDateTimeStamp().getValue());
-				assertEquals(date("2008-10-06"), event.getDateStart().getValue());
+				assertEquals(utc(2008, 2, 5, 19, 12, 24), event.getDateTimeStamp().getValue());
+				assertEquals(date(2008, 10, 6), event.getDateStart().getValue());
 				assertEquals("Planning meeting", event.getSummary().getValue());
 				assertEquals("4088E990AD89CB3DBB484909", event.getUid().getValue());
 			}
@@ -988,8 +988,8 @@ public class XCalReaderTest {
 				VEvent event = ical.getEvents().get(0);
 				assertSize(event, 0, 8);
 
-				assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
-				assertEquals(utc("2006-01-02 17:00:00"), event.getDateStart().getValue());
+				assertEquals(utc(2006, 2, 6, 0, 11, 21), event.getDateTimeStamp().getValue());
+				assertEquals(utc(2006, 1, 2, 17, 0, 0), event.getDateStart().getValue());
 				assertNull(event.getDateStart().getParameters().getTimezoneId());
 				assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
 
@@ -1000,7 +1000,7 @@ public class XCalReaderTest {
 				RecurrenceDates rdate = event.getRecurrenceDates().get(0);
 				assertEquals(0, rdate.getDates().size());
 				assertEquals(1, rdate.getPeriods().size());
-				assertEquals(new Period(utc("2006-01-02 20:00:00"), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
+				assertEquals(new Period(utc(2006, 1, 2, 20, 0, 0), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
 				assertNull(rdate.getParameters().getTimezoneId());
 
 				assertEquals("Event #2", event.getSummary().getValue());
@@ -1011,12 +1011,12 @@ public class XCalReaderTest {
 				VEvent event = ical.getEvents().get(1);
 				assertSize(event, 0, 6);
 
-				assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
-				assertEquals(utc("2006-01-04 19:00:00"), event.getDateStart().getValue());
+				assertEquals(utc(2006, 2, 6, 0, 11, 21), event.getDateTimeStamp().getValue());
+				assertEquals(utc(2006, 1, 4, 19, 0, 0), event.getDateStart().getValue());
 				assertNull(event.getDateStart().getParameters().getTimezoneId());
 				assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
 
-				assertEquals(utc("2006-01-04 17:00:00"), event.getRecurrenceId().getValue());
+				assertEquals(utc(2006, 1, 4, 17, 0, 0), event.getRecurrenceId().getValue());
 				assertNull(event.getRecurrenceId().getParameters().getTimezoneId());
 				assertEquals("Event #2 bis", event.getSummary().getValue());
 				assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
@@ -1029,13 +1029,13 @@ public class XCalReaderTest {
 
 				assertSize(timezone, 2, 2);
 
-				assertEquals(utc("2004-01-10 03:28:45"), timezone.getLastModified().getValue());
+				assertEquals(utc(2004, 1, 10, 3, 28, 45), timezone.getLastModified().getValue());
 				assertEquals("US/Eastern", timezone.getTimezoneId().getValue());
 
 				{
 					DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
 					assertSize(daylight, 0, 5);
-					assertEquals(date("2000-04-04 02:00:00"), daylight.getDateStart().getValue());
+					assertEquals(date(2000, 4, 4, 2, 0, 0), daylight.getDateStart().getValue());
 					assertEquals(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false), daylight.getDateStart().getValue().getRawComponents());
 
 					Recurrence rrule = daylight.getRecurrenceRule().getValue();
@@ -1050,7 +1050,7 @@ public class XCalReaderTest {
 				{
 					StandardTime standard = timezone.getStandardTimes().get(0);
 					assertSize(standard, 0, 5);
-					assertEquals(date("2000-10-26 02:00:00"), standard.getDateStart().getValue());
+					assertEquals(date(2000, 10, 26, 2, 0, 0), standard.getDateStart().getValue());
 					assertEquals(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false), standard.getDateStart().getValue().getRawComponents());
 
 					Recurrence rrule = standard.getRecurrenceRule().getValue();

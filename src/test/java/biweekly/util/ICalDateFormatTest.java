@@ -50,7 +50,7 @@ public class ICalDateFormatTest {
 
 	@Test
 	public void format() {
-		Date datetime = date("2006-01-02 10:20:30");
+		Date datetime = date(2006, 1, 2, 10, 20, 30);
 
 		assertEquals("20060102", ICalDateFormat.DATE_BASIC.format(datetime));
 		assertEquals("2006-01-02", ICalDateFormat.DATE_EXTENDED.format(datetime));
@@ -66,14 +66,14 @@ public class ICalDateFormatTest {
 	public void format_timezone() {
 		TimeZone timezone = buildTimezone(-2, 0);
 
-		Date datetime = date("2006-01-02 10:20:30");
+		Date datetime = date(2006, 1, 2, 10, 20, 30);
 
 		assertEquals("20060102T072030-0200", ICalDateFormat.DATE_TIME_BASIC.format(datetime, timezone));
 	}
 
 	@Test
 	public void format_different_locales() {
-		Date date = date("2020-10-28 12:00:00");
+		Date date = date(2020, 10, 28, 12, 0, 0);
 
 		Locale defaultLocale = Locale.getDefault();
 		try {
@@ -101,8 +101,8 @@ public class ICalDateFormatTest {
 
 	@Test
 	public void parse() {
-		Date date = date("2012-07-01");
-		Date datetime = date("2012-07-01 08:01:30");
+		Date date = date(2012, 7, 1);
+		Date datetime = date(2012, 7, 1, 8, 1, 30);
 
 		//basic, date
 		assertEquals(date, ICalDateFormat.parse("20120701"));
@@ -146,7 +146,7 @@ public class ICalDateFormatTest {
 	public void parse_timezone() {
 		TimeZone timezone = buildTimezone(-2, 0);
 
-		Date expected = utc("2012-07-01 08:01:30");
+		Date expected = utc(2012, 7, 1, 8, 1, 30);
 
 		Date actual = ICalDateFormat.parse("20120701T060130", timezone);
 		assertEquals(actual, expected);

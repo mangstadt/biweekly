@@ -230,7 +230,7 @@ public class RRuleIteratorImplTest {
 			Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 				.byDay(1, DayOfWeek.SUNDAY)
 				.byMonth(4)
-				.until(date("1998-04-04 15:00:00", UTC))
+				.until(date(1998, 4, 4, 15, 0, 0, UTC))
 			.build();
 			DateValue start = new DateValueImpl(1997, 1, 5);
 			DateValue[] expected = {
@@ -267,7 +267,7 @@ public class RRuleIteratorImplTest {
 	@Test
 	public void dailyUntilDec4() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
-			.until(new ICalDate(date("1997-12-04"), false))
+			.until(new ICalDate(date(1997, 12, 4), false))
 		.build();
 		DateValue start = new DateValueImpl(1997, 11, 28);
 		DateValue[] expected = {
@@ -321,7 +321,7 @@ public class RRuleIteratorImplTest {
 	@Test
 	public void everyDayInJanuaryFor3Years() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
-			.until(date("2000-1-31 09:00:00", UTC))
+			.until(date(2000, 1, 31, 9, 0, 0, UTC))
 			.byMonth(1)
 			.byDay(DayOfWeek.values())
 		.build();
@@ -360,7 +360,7 @@ public class RRuleIteratorImplTest {
 	@Test
 	public void weeklyUntilDec24() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
-			.until(new ICalDate(date("1997-12-24"), false))
+			.until(new ICalDate(date(1997, 12, 24), false))
 		.build();
 		DateValue start = new DateValueImpl(1997, 9, 2);
 		DateValue[] expected = {
@@ -416,7 +416,7 @@ public class RRuleIteratorImplTest {
 		 */
 		{
 			Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
-				.until(new ICalDate(date("1997-10-07"), false))
+				.until(new ICalDate(date(1997, 10, 7), false))
 				.workweekStarts(DayOfWeek.SUNDAY)
 				.byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
 			.build();
@@ -439,7 +439,7 @@ public class RRuleIteratorImplTest {
 		
 		{
 			Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
-				.until(date("1997-10-07 00:00:00", UTC))
+				.until(date(1997, 10, 7, 0, 0, 0, UTC))
 				.workweekStarts(DayOfWeek.SUNDAY)
 				.byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
 			.build();
@@ -489,7 +489,7 @@ public class RRuleIteratorImplTest {
 		{
 			Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 				.interval(2)
-				.until(date("1997-12-24 00:00:00", UTC))
+				.until(date(1997, 12, 24, 0, 0, 0, UTC))
 				.workweekStarts(DayOfWeek.SUNDAY)
 				.byDay(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
 			.build();
@@ -531,7 +531,7 @@ public class RRuleIteratorImplTest {
 		{
 			Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 				.interval(2)
-				.until(date("1997-12-24 00:00:00", UTC))
+				.until(date(1997, 12, 24, 0, 0, 0, UTC))
 				.workweekStarts(DayOfWeek.SUNDAY)
 				.byDay(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
 			.build();
@@ -573,7 +573,7 @@ public class RRuleIteratorImplTest {
 		{
 			Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 				.interval(2)
-				.until(date("1997-12-24 09:00:00", UTC))
+				.until(date(1997, 12, 24, 9, 0, 0, UTC))
 				.workweekStarts(DayOfWeek.SUNDAY)
 				.byDay(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
 			.build();
@@ -658,7 +658,7 @@ public class RRuleIteratorImplTest {
 	@Test
 	public void monthlyOnThe1stFridayUntilDec24() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
-			.until(date("1997-12-24 00:00:00", UTC))
+			.until(date(1997, 12, 24, 0, 0, 0, UTC))
 			.byDay(1, DayOfWeek.FRIDAY)
 		.build();
 		DateValue start = new DateValueImpl(1997, 9, 5);
@@ -1118,7 +1118,7 @@ public class RRuleIteratorImplTest {
 	public void every3HoursFrom900AmTo500PmOnASpecificDay() {
 		Recurrence recur = new Recurrence.Builder(Frequency.HOURLY)
 			.interval(3)
-			.until(date("1997-09-03 09:00:00", UTC))
+			.until(date(1997, 9, 3, 9, 0, 0, UTC))
 		.build();
 		DateValue start = new DateTimeValueImpl(1997, 9, 2, 9, 0, 0);
 		DateValue[] expected = {
@@ -1435,7 +1435,7 @@ public class RRuleIteratorImplTest {
 	@Test
 	public void noInstancesGenerated() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
-			.until(new ICalDate(date("1999-01-01"), false))
+			.until(new ICalDate(date(1999, 1, 1), false))
 		.build();
 		DateValue start = new DateValueImpl(2000, 1, 1);
 		
@@ -1745,7 +1745,7 @@ public class RRuleIteratorImplTest {
 			.interval(2)
 			.workweekStarts(DayOfWeek.WEDNESDAY)
 			.byDay(DayOfWeek.SUNDAY, DayOfWeek.TUESDAY, DayOfWeek.THURSDAY, DayOfWeek.SATURDAY)
-			.until(date("2000-02-15 11:30:00", UTC))
+			.until(date(2000, 2, 15, 11, 30, 0, UTC))
 		.build();
 		DateValue start = new DateTimeValueImpl(2000, 1, 27, 3, 30, 0);
 		DateValue[] expected = {
@@ -1812,7 +1812,7 @@ public class RRuleIteratorImplTest {
 		{
 			Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 				.interval(3)
-				.until(new ICalDate(date("2009-01-01"), false))
+				.until(new ICalDate(date(2009, 1, 1), false))
 				.byYearDay(1, 100, 200)
 			.build();
 			DateValue start = new DateValueImpl(1997, 1, 1);
@@ -1887,7 +1887,7 @@ public class RRuleIteratorImplTest {
 		
 		{
 			Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
-				.until(new ICalDate(date("1997-12-24"), false))
+				.until(new ICalDate(date(1997, 12, 24), false))
 			.build();
 			DateValue start = new DateValueImpl(1997, 9, 2);
 			DateValue advanceTo = new DateValueImpl(1997, 9, 30);
@@ -1989,7 +1989,7 @@ public class RRuleIteratorImplTest {
 				.interval(100)
 				.byMonth(2)
 				.byMonthDay(29)
-				.until(new ICalDate(date("2100-01-01"), false))
+				.until(new ICalDate(date(2100, 1, 1), false))
 			.build();
 			DateValue start = new DateValueImpl(1900, 1, 1);
 			DateValue advanceTo = new DateValueImpl(2004, 1, 1);

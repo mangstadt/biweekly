@@ -587,7 +587,7 @@ public class ICalTimeZoneTest {
 		}
 
 		ICalTimeZone tz = new ICalTimeZone(component);
-		Date anyTimeAfterNov1 = utc("1970-12-01 00:00:00");
+		Date anyTimeAfterNov1 = utc(1970, 12, 1, 0, 0, 0);
 		Boundary boundary = tz.getObservanceBoundary(anyTimeAfterNov1);
 		assertEquals(new DateTimeValueImpl(1970, 11, 1, 0, 0, 0), boundary.getObservanceInStart());
 	}

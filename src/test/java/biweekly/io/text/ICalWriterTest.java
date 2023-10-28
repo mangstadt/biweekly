@@ -469,7 +469,7 @@ public class ICalWriterTest {
 	public void vcal_timezone_one_daylight_one_date() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
-		ical.addProperty(new DateStart(utc("2014-10-07 09:34:00")));
+		ical.addProperty(new DateStart(utc(2014, 10, 7, 9, 34, 0)));
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V1_0);
@@ -495,8 +495,8 @@ public class ICalWriterTest {
 	public void vcal_timezone_one_daylight_two_dates() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
-		ical.addProperty(new DateStart(utc("2014-10-07 09:34:00")));
-		ical.addProperty(new DateStart(utc("2014-10-08 09:34:00")));
+		ical.addProperty(new DateStart(utc(2014, 10, 7, 9, 34, 0)));
+		ical.addProperty(new DateStart(utc(2014, 10, 8, 9, 34, 0)));
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V1_0);
@@ -523,7 +523,7 @@ public class ICalWriterTest {
 	public void vcal_timezone_standard_one_date() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
-		ical.addProperty(new DateStart(utc("2014-01-07 09:34:00")));
+		ical.addProperty(new DateStart(utc(2014, 1, 7, 9, 34, 0)));
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V1_0);
@@ -549,8 +549,8 @@ public class ICalWriterTest {
 	public void vcal_timezone_standard_two_dates() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
-		ical.addProperty(new DateStart(utc("2014-01-07 09:34:00")));
-		ical.addProperty(new DateStart(utc("2014-02-07 09:34:00")));
+		ical.addProperty(new DateStart(utc(2014, 1, 7, 9, 34, 0)));
+		ical.addProperty(new DateStart(utc(2014, 2, 7, 9, 34, 0)));
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V1_0);
@@ -577,8 +577,8 @@ public class ICalWriterTest {
 	public void vcal_timezone_standard_and_daylight() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
-		ical.addProperty(new DateStart(utc("2014-01-07 09:34:00")));
-		ical.addProperty(new DateStart(utc("2014-10-07 09:34:00")));
+		ical.addProperty(new DateStart(utc(2014, 1, 7, 9, 34, 0)));
+		ical.addProperty(new DateStart(utc(2014, 10, 7, 9, 34, 0)));
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V1_0);
@@ -605,9 +605,9 @@ public class ICalWriterTest {
 	public void vcal_timezone_standard_and_two_daylights() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
-		ical.addProperty(new DateStart(utc("2014-01-07 09:34:00")));
-		ical.addProperty(new DateStart(utc("2014-10-07 09:34:00")));
-		ical.addProperty(new DateStart(utc("2015-10-07 09:34:00")));
+		ical.addProperty(new DateStart(utc(2014, 1, 7, 9, 34, 0)));
+		ical.addProperty(new DateStart(utc(2014, 10, 7, 9, 34, 0)));
+		ical.addProperty(new DateStart(utc(2015, 10, 7, 9, 34, 0)));
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V1_0);
@@ -637,8 +637,8 @@ public class ICalWriterTest {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 
-		ical.addProperty(new DateStart(utc("2014-01-07 09:34:00")));
-		ical.addProperty(new DateStart(utc("2014-10-07 09:34:00")));
+		ical.addProperty(new DateStart(utc(2014, 1, 7, 9, 34, 0)));
+		ical.addProperty(new DateStart(utc(2014, 10, 7, 9, 34, 0)));
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V1_0);
@@ -713,7 +713,7 @@ public class ICalWriterTest {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 
-		Created created = new Created(date("2014-01-01 01:00:00 +0000"));
+		Created created = new Created(utc(2014, 1, 1, 1, 0, 0));
 		ical.addProperty(created);
 
 		{
@@ -761,7 +761,7 @@ public class ICalWriterTest {
 
 		VEvent event = new VEvent();
 		event.getProperties().clear();
-		event.setDateStart(utc("1996-07-04 12:00:00"));
+		event.setDateStart(utc(1996, 7, 4, 12, 0, 0));
 		ical.addEvent(event);
 
 		TimeZone nyTimezone = TimeZone.getTimeZone("America/New_York");
@@ -812,11 +812,11 @@ public class ICalWriterTest {
 		{
 			VEvent event = new VEvent();
 			event.getProperties().clear();
-			event.setDateTimeStamp(utc("1996-07-04 12:00:00"));
+			event.setDateTimeStamp(utc(1996, 7, 4, 12, 0, 0));
 			event.setUid("uid1@example.com");
 			event.setOrganizer("jsmith@example.com");
-			event.setDateStart(utc("1996-09-18 14:30:00"));
-			event.setDateEnd(utc("1996-09-20 22:00:00"));
+			event.setDateStart(utc(1996, 9, 18, 14, 30, 0));
+			event.setDateEnd(utc(1996, 9, 20, 22, 0, 0));
 			event.setStatus(Status.confirmed());
 			event.addCategories("CONFERENCE");
 			event.setSummary("Networld+Interop Conference");
@@ -836,7 +836,7 @@ public class ICalWriterTest {
 		ical.setProductId("-//RDU Software//NONSGML HandCal//EN");
 		{
 			VEvent event = new VEvent();
-			event.setDateTimeStamp(utc("1998-03-09 23:10:00"));
+			event.setDateTimeStamp(utc(1998, 3, 9, 23, 10, 0));
 			event.setUid("guid-1.example.com");
 			event.setOrganizer("mrbig@example.com");
 
@@ -849,10 +849,10 @@ public class ICalWriterTest {
 			event.setDescription("Project XYZ Review Meeting");
 			event.addCategories("MEETING");
 			event.setClassification(Classification.public_());
-			event.setCreated(utc("1998-03-09 13:00:00"));
+			event.setCreated(utc(1998, 3, 9, 13, 0, 0));
 			event.setSummary("XYZ Project Review");
-			event.setDateStart(date("1998-03-12 08:30:00", eastern));
-			event.setDateEnd(date("1998-03-12 09:30:00", eastern));
+			event.setDateStart(date(1998, 3, 12, 8, 30, 0, eastern));
+			event.setDateEnd(date(1998, 3, 12, 9, 30, 0, eastern));
 			event.setLocation("1CP Conference Room 4350");
 			ical.addEvent(event);
 		}
@@ -894,7 +894,7 @@ public class ICalWriterTest {
 		{
 			VEvent event = new VEvent();
 			event.getProperties().clear();
-			event.setDateTimeStamp(utc("1997-03-24 12:00:00"));
+			event.setDateTimeStamp(utc(1997, 3, 24, 12, 0, 0));
 			event.setSequence(0);
 			event.setUid("uid3@example.com");
 			event.setOrganizer("jdoe@example.com");
@@ -903,8 +903,8 @@ public class ICalWriterTest {
 			attendee.setRsvp(true);
 			event.addAttendee(attendee);
 
-			event.setDateStart(utc("1997-03-24 12:30:00"));
-			event.setDateEnd(utc("1997-03-24 21:00:00"));
+			event.setDateStart(utc(1997, 3, 24, 12, 30, 0));
+			event.setDateEnd(utc(1997, 3, 24, 21, 0, 0));
 			event.addCategories("MEETING", "PROJECT");
 			event.setClassification(Classification.public_());
 			event.setSummary("Calendaring Interoperability Planning Meeting");
@@ -929,7 +929,7 @@ public class ICalWriterTest {
 		{
 			VTodo todo = new VTodo();
 			todo.getProperties().clear();
-			todo.setDateTimeStamp(utc("1998-01-30 13:45:00"));
+			todo.setDateTimeStamp(utc(1998, 1, 30, 13, 45, 0));
 			todo.setSequence(2);
 			todo.setUid("uid4@example.com");
 			todo.setOrganizer("unclesam@example.com");
@@ -938,11 +938,11 @@ public class ICalWriterTest {
 			attendee.setParticipationStatus(ParticipationStatus.ACCEPTED);
 			todo.addAttendee(attendee);
 
-			todo.setDateDue(date("1998-04-15"));
+			todo.setDateDue(date(1998, 4, 15));
 			todo.setStatus(Status.needsAction());
 			todo.setSummary("Submit Income Taxes");
 			{
-				Trigger trigger = new Trigger(utc("1998-04-03 12:00:00"));
+				Trigger trigger = new Trigger(utc(1998, 4, 3, 12, 0, 0));
 				Attachment attach = new Attachment("audio/basic", "http://example.com/pub/audio-files/ssbanner.aud");
 				VAlarm alarm = VAlarm.audio(trigger, attach);
 				alarm.setRepeat(4);
@@ -967,7 +967,7 @@ public class ICalWriterTest {
 		{
 			VJournal journal = new VJournal();
 			journal.getProperties().clear();
-			journal.setDateTimeStamp(utc("1997-03-24 12:00:00"));
+			journal.setDateTimeStamp(utc(1997, 3, 24, 12, 0, 0));
 			journal.setUid("uid5@example.com");
 			journal.setOrganizer("jsmith@example.com");
 			journal.setStatus(Status.draft());
@@ -990,19 +990,19 @@ public class ICalWriterTest {
 		{
 			freebusy.getProperties().clear();
 			freebusy.setOrganizer("jsmith@example.com");
-			freebusy.setDateStart(utc("1998-03-13 14:17:11"));
-			freebusy.setDateEnd(utc("1998-04-10 14:17:11"));
+			freebusy.setDateStart(utc(1998, 3, 13, 14, 17, 11));
+			freebusy.setDateEnd(utc(1998, 4, 10, 14, 17, 11));
 
 			FreeBusy fb = new FreeBusy();
-			fb.getValues().add(new Period(utc("1998-03-14 23:30:00"), utc("1998-03-15 00:30:00")));
+			fb.getValues().add(new Period(utc(1998, 3, 14, 23, 30, 0), utc(1998, 3, 15, 0, 30, 0)));
 			freebusy.addFreeBusy(fb);
 
 			fb = new FreeBusy();
-			fb.getValues().add(new Period(utc("1998-03-16 15:30:00"), utc("1998-03-16 16:30:00")));
+			fb.getValues().add(new Period(utc(1998, 3, 16, 15, 30, 0), utc(1998, 3, 16, 16, 30, 0)));
 			freebusy.addFreeBusy(fb);
 
 			fb = new FreeBusy();
-			fb.getValues().add(new Period(utc("1998-03-18 03:00:00"), utc("1998-03-18 04:00:00")));
+			fb.getValues().add(new Period(utc(1998, 3, 18, 3, 0, 0), utc(1998, 3, 18, 4, 0, 0)));
 			freebusy.addFreeBusy(fb);
 
 			freebusy.setUrl("http://www.example.com/calendar/busytime/jsmith.ifb");
@@ -1022,8 +1022,8 @@ public class ICalWriterTest {
 			event.getProperties().clear();
 			event.addCategories("MEETING");
 			event.setStatus(Status.tentative());
-			event.setDateStart(utc("1996-04-01 03:30:00"));
-			event.setDateEnd(utc("1996-04-01 04:30:00"));
+			event.setDateStart(utc(1996, 4, 1, 3, 30, 0));
+			event.setDateEnd(utc(1996, 4, 1, 4, 30, 0));
 			event.setSummary("Your Proposal Review");
 			event.setDescription("Steve and John to review newest proposal material");
 			event.setClassification(Classification.private_());
@@ -1043,7 +1043,7 @@ public class ICalWriterTest {
 			VTodo todo = new VTodo();
 			todo.getProperties().clear();
 			todo.setSummary("John to pay for lunch");
-			todo.setDateDue(utc("1996-04-01 08:30:00"));
+			todo.setDateDue(utc(1996, 4, 1, 8, 30, 0));
 			todo.setStatus(Status.needsAction());
 
 			ical.addTodo(todo);
@@ -1064,8 +1064,8 @@ public class ICalWriterTest {
 			event.getProperties().clear();
 			event.addCategories("MEETING");
 			event.setStatus(Status.needsAction());
-			event.setDateStart(utc("1996-04-01 07:30:00"));
-			event.setDateEnd(utc("1996-04-01 08:30:00"));
+			event.setDateStart(utc(1996, 4, 1, 7, 30, 0));
+			event.setDateEnd(utc(1996, 4, 1, 8, 30, 0));
 			event.setSummary("Steve's Proposal Review");
 			event.setDescription("Steve and John to review newest proposal material");
 			event.setClassification(Classification.private_());
@@ -1077,7 +1077,7 @@ public class ICalWriterTest {
 			VTodo todo = new VTodo();
 			todo.getProperties().clear();
 			todo.setSummary("John to pay for lunch");
-			todo.setDateDue(utc("1996-04-01 08:30:00"));
+			todo.setDateDue(utc(1996, 4, 1, 8, 30, 0));
 			todo.setStatus(Status.needsAction());
 
 			ical.addTodo(todo);

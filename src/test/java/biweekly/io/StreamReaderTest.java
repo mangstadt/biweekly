@@ -64,7 +64,7 @@ public class StreamReaderTest {
 
 	@Test
 	public void floating_date() throws Exception {
-		final ICalPropertyImpl floating = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		final ICalPropertyImpl floating = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 
 		StreamReader reader = new StreamReaderImpl() {
 			@Override
@@ -87,14 +87,14 @@ public class StreamReaderTest {
 		assertTrue(tzinfo.isFloating(floating));
 		assertNull(assignment);
 		assertNull(floating.getParameters().getTimezoneId());
-		assertEquals(date("2014-09-02 10:22:00"), floating.date); //should be parsed under default timezone
+		assertEquals(date(2014, 9, 2, 10, 22, 0), floating.date); //should be parsed under default timezone
 
 		assertParseWarnings(reader);
 	}
 
 	@Test
 	public void floating_date_different_default_timezone() throws Exception {
-		final ICalPropertyImpl floating = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		final ICalPropertyImpl floating = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 
 		StreamReader reader = new StreamReaderImpl() {
 			@Override
@@ -119,7 +119,7 @@ public class StreamReaderTest {
 		assertTrue(tzinfo.isFloating(floating));
 		assertNull(assignment);
 		assertNull(floating.getParameters().getTimezoneId());
-		assertEquals(date("2014-09-02 08:22:00"), floating.date);
+		assertEquals(date(2014, 9, 2, 8, 22, 0), floating.date);
 
 		assertParseWarnings(reader);
 	}
@@ -141,7 +141,7 @@ public class StreamReaderTest {
 			vtimezone.addDaylightSavingsTime(daylight);
 		}
 
-		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId(vtimezone.getTimezoneId().getValue());
 
 		StreamReader reader = new StreamReaderImpl() {
@@ -170,14 +170,14 @@ public class StreamReaderTest {
 		assertNull(assignment.getGlobalId());
 		assertTrue(assignment.getTimeZone() instanceof ICalTimeZone);
 		assertNull(property.getParameters().getTimezoneId());
-		assertEquals(utc("2014-09-02 01:22:00"), property.date);
+		assertEquals(utc(2014, 9, 2, 1, 22, 0), property.date);
 
 		assertParseWarnings(reader);
 	}
 
 	@Test
 	public void date_with_olsen_id() throws Exception {
-		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("/America/New_York");
 
 		StreamReader reader = new StreamReaderImpl() {
@@ -203,14 +203,14 @@ public class StreamReaderTest {
 		assertEquals("America/New_York", assignment.getGlobalId());
 		assertEquals("America/New_York", assignment.getTimeZone().getID());
 		assertNull(property.getParameters().getTimezoneId());
-		assertEquals(utc("2014-09-02 14:22:00"), property.date);
+		assertEquals(utc(2014, 9, 2, 14, 22, 0), property.date);
 
 		assertParseWarnings(reader);
 	}
 
 	@Test
 	public void date_with_olsen_id_with_mozilla_prefix() throws Exception {
-		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("/mozilla.org/20050126_1/America/New_York");
 
 		StreamReader reader = new StreamReaderImpl() {
@@ -236,14 +236,14 @@ public class StreamReaderTest {
 		assertEquals("mozilla.org/20050126_1/America/New_York", assignment.getGlobalId());
 		assertEquals("America/New_York", assignment.getTimeZone().getID());
 		assertNull(property.getParameters().getTimezoneId());
-		assertEquals(utc("2014-09-02 14:22:00"), property.date);
+		assertEquals(utc(2014, 9, 2, 14, 22, 0), property.date);
 
 		assertParseWarnings(reader);
 	}
 
 	@Test
 	public void date_with_olsen_id_missing_solidus() throws Exception {
-		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("America/New_York");
 
 		StreamReader reader = new StreamReaderImpl() {
@@ -269,14 +269,14 @@ public class StreamReaderTest {
 		assertEquals("America/New_York", assignment.getGlobalId());
 		assertEquals("America/New_York", assignment.getTimeZone().getID());
 		assertNull(property.getParameters().getTimezoneId());
-		assertEquals(utc("2014-09-02 14:22:00"), property.date);
+		assertEquals(utc(2014, 9, 2, 14, 22, 0), property.date);
 
 		assertParseWarnings(reader, 37);
 	}
 
 	@Test
 	public void date_with_olsen_id_with_mozilla_prefix_missing_solidus() throws Exception {
-		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("mozilla.org/20050126_1/America/New_York");
 
 		StreamReader reader = new StreamReaderImpl() {
@@ -302,7 +302,7 @@ public class StreamReaderTest {
 		assertEquals("mozilla.org/20050126_1/America/New_York", assignment.getGlobalId());
 		assertEquals("America/New_York", assignment.getTimeZone().getID());
 		assertNull(property.getParameters().getTimezoneId());
-		assertEquals(utc("2014-09-02 14:22:00"), property.date);
+		assertEquals(utc(2014, 9, 2, 14, 22, 0), property.date);
 
 		assertParseWarnings(reader, 37);
 	}
@@ -329,7 +329,7 @@ public class StreamReaderTest {
 			vtimezone.addDaylightSavingsTime(daylight);
 		}
 
-		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("/Europe/Paris");
 
 		StreamReader reader = new StreamReaderImpl() {
@@ -357,7 +357,7 @@ public class StreamReaderTest {
 		assertEquals("Europe/Paris", assignment.getGlobalId());
 		assertEquals("Europe/Paris", assignment.getTimeZone().getID());
 		assertNull(property.getParameters().getTimezoneId());
-		assertEquals(utc("2014-09-02 08:22:00"), property.date);
+		assertEquals(utc(2014, 9, 2, 8, 22, 0), property.date);
 
 		assertParseWarnings(reader);
 	}
@@ -379,7 +379,7 @@ public class StreamReaderTest {
 			vtimezone.addDaylightSavingsTime(daylight);
 		}
 
-		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("/Foo/Bar");
 
 		StreamReader reader = new StreamReaderImpl() {
@@ -407,14 +407,14 @@ public class StreamReaderTest {
 		assertNull(assignment.getGlobalId());
 		assertTrue(assignment.getTimeZone() instanceof ICalTimeZone);
 		assertNull(property.getParameters().getTimezoneId());
-		assertEquals(utc("2014-09-02 01:22:00"), property.date);
+		assertEquals(utc(2014, 9, 2, 1, 22, 0), property.date);
 
 		assertParseWarnings(reader, 43);
 	}
 
 	@Test
 	public void date_with_unrecognized_olsen_id_that_does_not_match_vtimezone_component() throws Exception {
-		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("/Invalid/TZID");
 
 		StreamReader reader = new StreamReaderImpl() {
@@ -438,14 +438,14 @@ public class StreamReaderTest {
 		assertFalse(tzinfo.isFloating(property));
 		assertNull(assignment);
 		assertEquals("/Invalid/TZID", property.getParameters().getTimezoneId());
-		assertEquals(date("2014-09-02 10:22:00"), property.date); //should be parsed under default timezone
+		assertEquals(date(2014, 9, 2, 10, 22, 0), property.date); //should be parsed under default timezone
 
 		assertParseWarnings(reader, 38);
 	}
 
 	@Test
 	public void date_with_unrecognized_olsen_id_that_does_not_match_vtimezone_component_different_default_timezone() throws Exception {
-		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("/Invalid/TZID");
 
 		StreamReader reader = new StreamReaderImpl() {
@@ -471,14 +471,14 @@ public class StreamReaderTest {
 		assertFalse(tzinfo.isFloating(property));
 		assertNull(assignment);
 		assertEquals("/Invalid/TZID", property.getParameters().getTimezoneId());
-		assertEquals(date("2014-09-02 08:22:00"), property.date); //should be parsed under default timezone
+		assertEquals(date(2014, 9, 2, 8, 22, 0), property.date); //should be parsed under default timezone
 
 		assertParseWarnings(reader, 38);
 	}
 
 	@Test
 	public void date_with_tzid_that_does_not_match_anything() throws Exception {
-		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("invalid");
 
 		StreamReader reader = new StreamReaderImpl() {
@@ -502,14 +502,14 @@ public class StreamReaderTest {
 		assertFalse(tzinfo.isFloating(property));
 		assertNull(assignment);
 		assertEquals("invalid", property.getParameters().getTimezoneId());
-		assertEquals(date("2014-09-02 10:22:00"), property.date); //should be parsed under default timezone
+		assertEquals(date(2014, 9, 2, 10, 22, 0), property.date); //should be parsed under default timezone
 
 		assertParseWarnings(reader, 38);
 	}
 
 	@Test
 	public void date_with_tzid_that_does_not_match_anything_different_default_timezone() throws Exception {
-		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("invalid");
 
 		StreamReader reader = new StreamReaderImpl() {
@@ -535,14 +535,14 @@ public class StreamReaderTest {
 		assertFalse(tzinfo.isFloating(property));
 		assertNull(assignment);
 		assertEquals("invalid", property.getParameters().getTimezoneId());
-		assertEquals(date("2014-09-02 08:22:00"), property.date);
+		assertEquals(date(2014, 9, 2, 8, 22, 0), property.date);
 
 		assertParseWarnings(reader, 38);
 	}
 
 	@Test
 	public void date_with_global_id_using_custom_resolver() throws Exception {
-		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("/New York City");
 
 		StreamReader reader = new StreamReaderImpl() {
@@ -570,7 +570,7 @@ public class StreamReaderTest {
 		assertEquals("New York City", assignment.getGlobalId());
 		assertEquals("America/New_York", assignment.getTimeZone().getID());
 		assertNull(property.getParameters().getTimezoneId());
-		assertEquals(utc("2014-09-02 14:22:00"), property.date);
+		assertEquals(utc(2014, 9, 2, 14, 22, 0), property.date);
 		verify(resolver).resolve("New York City");
 
 		assertParseWarnings(reader);
@@ -578,7 +578,7 @@ public class StreamReaderTest {
 
 	@Test
 	public void date_with_global_id_using_custom_resolver_missing_solidus() throws Exception {
-		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate("2014-09-02T10:22:00"));
+		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("New York City");
 
 		StreamReader reader = new StreamReaderImpl() {
@@ -606,7 +606,7 @@ public class StreamReaderTest {
 		assertEquals("New York City", assignment.getGlobalId());
 		assertEquals("America/New_York", assignment.getTimeZone().getID());
 		assertNull(property.getParameters().getTimezoneId());
-		assertEquals(utc("2014-09-02 14:22:00"), property.date);
+		assertEquals(utc(2014, 9, 2, 14, 22, 0), property.date);
 		verify(resolver).resolve("New York City");
 
 		assertParseWarnings(reader, 37);

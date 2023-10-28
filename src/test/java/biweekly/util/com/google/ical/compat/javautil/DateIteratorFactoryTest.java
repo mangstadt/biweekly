@@ -79,19 +79,19 @@ public class DateIteratorFactoryTest {
 
 		DateIterator it = iterable.iterator();
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-01", UTC), it.next());
+		assertEquals(date(2006, 1, 1, 0, 0, 0, UTC), it.next());
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-03", UTC), it.next());
+		assertEquals(date(2006, 1, 3, 0, 0, 0, UTC), it.next());
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-05", UTC), it.next());
+		assertEquals(date(2006, 1, 5, 0, 0, 0, UTC), it.next());
 		assertFalse(it.hasNext());
 
 		it = iterable.iterator();
-		it.advanceTo(date("2006-01-03", UTC));
+		it.advanceTo(date(2006, 1, 3, 0, 0, 0, UTC));
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-03", UTC), it.next());
+		assertEquals(date(2006, 1, 3, 0, 0, 0, UTC), it.next());
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-05", UTC), it.next());
+		assertEquals(date(2006, 1, 5, 0, 0, 0, UTC), it.next());
 		assertFalse(it.hasNext());
 	}
 
@@ -109,19 +109,19 @@ public class DateIteratorFactoryTest {
 
 		DateIterator it = iterable.iterator();
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-01 22:00:00", UTC), it.next());
+		assertEquals(date(2006, 1, 1, 22, 0, 0, UTC), it.next());
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-02 00:00:00", UTC), it.next());
+		assertEquals(date(2006, 1, 2, 0, 0, 0, UTC), it.next());
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-02 02:00:00", UTC), it.next());
+		assertEquals(date(2006, 1, 2, 2, 0, 0, UTC), it.next());
 		assertFalse(it.hasNext());
 
 		it = iterable.iterator();
-		it.advanceTo(date("2006-01-02", UTC));
+		it.advanceTo(date(2006, 1, 2, 0, 0, 0, UTC));
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-02 00:00:00", UTC), it.next());
+		assertEquals(date(2006, 1, 2, 0, 0, 0, UTC), it.next());
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-02 02:00:00", UTC), it.next());
+		assertEquals(date(2006, 1, 2, 2, 0, 0, UTC), it.next());
 		assertFalse(it.hasNext());
 	}
 
@@ -139,25 +139,25 @@ public class DateIteratorFactoryTest {
 
 		DateIterator it = iterable.iterator();
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-01 12:30:01", PST), it.next());
+		assertEquals(date(2006, 1, 1, 12, 30, 1, PST), it.next());
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-03 12:30:01", PST), it.next());
+		assertEquals(date(2006, 1, 3, 12, 30, 1, PST), it.next());
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-05 12:30:01", PST), it.next());
+		assertEquals(date(2006, 1, 5, 12, 30, 1, PST), it.next());
 		assertFalse(it.hasNext());
 
 		it = iterable.iterator();
-		it.advanceTo(date("2006-01-03", PST));
+		it.advanceTo(date(2006, 1, 3, 0, 0, 0, PST));
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-03 12:30:01", PST), it.next());
+		assertEquals(date(2006, 1, 3, 12, 30, 1, PST), it.next());
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-05 12:30:01", PST), it.next());
+		assertEquals(date(2006, 1, 5, 12, 30, 1, PST), it.next());
 		assertFalse(it.hasNext());
 
 		it = iterable.iterator();
-		it.advanceTo(date("2006-01-03 14:30:01", PST)); //advance past
+		it.advanceTo(date(2006, 1, 3, 14, 30, 1, PST)); //advance past
 		assertTrue(it.hasNext());
-		assertEquals(date("2006-01-05 12:30:01", PST), it.next());
+		assertEquals(date(2006, 1, 5, 12, 30, 1, PST), it.next());
 		assertFalse(it.hasNext());
 	}
 }

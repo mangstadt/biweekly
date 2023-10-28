@@ -53,7 +53,7 @@ public class Issue106 {
 
 		{
 			DateStart property = event.getDateStart();
-			Date expected = date("2020-12-21 09:00:00", americaCancun);
+			Date expected = date(2020, 12, 21, 9, 0, 0, americaCancun);
 			Date actual = property.getValue();
 			assertEquals(expected, actual);
 			assertNull(property.getParameters().getTimezoneId());
@@ -61,7 +61,7 @@ public class Issue106 {
 
 		{
 			DateEnd property = event.getDateEnd();
-			Date expected = date("2020-12-21 10:00:00", americaCancun);
+			Date expected = date(2020, 12, 21, 10, 0, 0, americaCancun);
 			Date actual = property.getValue();
 			assertEquals(expected, actual);
 			assertNull(property.getParameters().getTimezoneId());

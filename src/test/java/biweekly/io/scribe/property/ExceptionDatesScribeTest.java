@@ -53,19 +53,19 @@ import biweekly.util.ListMultimap;
  * @author Michael Angstadt
  */
 public class ExceptionDatesScribeTest extends ScribeTest<ExceptionDates> {
-	private final ICalDate date1 = new ICalDate(date("2013-06-11"), false);
+	private final ICalDate date1 = new ICalDate(date(2013, 6, 11), false);
 	private final String date1Str = "20130611";
 	private final String date1StrExt = "2013-06-11";
 
-	private final ICalDate datetime1 = new ICalDate(date("2013-06-11 13:43:02"), true);
+	private final ICalDate datetime1 = new ICalDate(date(2013, 6, 11, 13, 43, 2), true);
 	private final String datetime1Str = date1Str + "T124302Z";
 	private final String datetime1StrExt = date1StrExt + "T12:43:02Z";
 
-	private final ICalDate date2 = new ICalDate(date("2000-11-02"), false);
+	private final ICalDate date2 = new ICalDate(date(2000, 11, 2), false);
 	private final String date2Str = "20001102";
 	private final String date2StrExt = "2000-11-02";
 
-	private final ICalDate datetime2 = new ICalDate(date("2000-11-02 06:02:11"), true);
+	private final ICalDate datetime2 = new ICalDate(date(2000, 11, 2, 6, 2, 11), true);
 	private final String datetime2Str = date2Str + "T050211Z";
 	private final String datetime2StrExt = date2StrExt + "T05:02:11Z";
 
@@ -243,8 +243,8 @@ public class ExceptionDatesScribeTest extends ScribeTest<ExceptionDates> {
 				assertEquals(1, timezonedDates.keySet().size());
 				List<TimezonedDate> dates = context.getTimezonedDates().get("id");
 				assertEquals(2, dates.size());
-				assertTrue(dates.contains(new TimezonedDate(icalDate("2014-10-26T12:00:00"), property)));
-				assertTrue(dates.contains(new TimezonedDate(icalDate("2014-10-26T14:00:00"), property)));
+				assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
+				assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 14, 0, 0), property)));
 			}
 		};
 	}
@@ -254,8 +254,8 @@ public class ExceptionDatesScribeTest extends ScribeTest<ExceptionDates> {
 			public void check(ExceptionDates property, ParseContext context) {
 				Collection<TimezonedDate> floating = context.getFloatingDates();
 				assertEquals(2, floating.size());
-				assertTrue(floating.contains(new TimezonedDate(icalDate("2014-10-26T12:00:00"), property)));
-				assertTrue(floating.contains(new TimezonedDate(icalDate("2014-10-26T14:00:00"), property)));
+				assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
+				assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 14, 0, 0), property)));
 
 				assertEquals(0, context.getTimezonedDates().size());
 			}

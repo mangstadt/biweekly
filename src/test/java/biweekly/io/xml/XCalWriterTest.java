@@ -680,7 +680,7 @@ public class XCalWriterTest {
 	public void setGlobalTimezone() throws Throwable {
 		VEvent event = new VEvent();
 		event.getProperties().clear();
-		event.setDateStart(utc("1996-07-04 12:00:00"));
+		event.setDateStart(utc(1996, 7, 4, 12, 0, 0));
 		ical.addEvent(event);
 
 		TimeZone nyTimezone = TimeZone.getTimeZone("America/New_York");
@@ -755,8 +755,8 @@ public class XCalWriterTest {
 		{
 			VEvent event = new VEvent();
 			event.getProperties().clear();
-			event.setDateTimeStamp(utc("2008-02-05 19:12:24"));
-			event.setDateStart(new DateStart(date("2008-10-06"), false));
+			event.setDateTimeStamp(utc(2008, 2, 5, 19, 12, 24));
+			event.setDateStart(new DateStart(date(2008, 10, 6), false));
 			event.setSummary("Planning meeting");
 			event.setUid("4088E990AD89CB3DBB484909");
 			ical.addEvent(event);
@@ -774,15 +774,15 @@ public class XCalWriterTest {
 		ical.setProductId("-//Example Inc.//Example Client//EN");
 		{
 			VEvent event = new VEvent();
-			event.setDateTimeStamp(utc("2006-02-06 00:11:21"));
-			event.setDateStart(date("2006-01-02 12:00:00", eastern));
+			event.setDateTimeStamp(utc(2006, 2, 6, 0, 11, 21));
+			event.setDateStart(date(2006, 1, 2, 12, 0, 0, eastern));
 			event.setDuration(Duration.builder().hours(1).build());
 
 			Recurrence rrule = new Recurrence.Builder(Frequency.DAILY).count(5).build();
 			event.setRecurrenceRule(rrule);
 
 			RecurrenceDates rdate = new RecurrenceDates();
-			rdate.getPeriods().add(new Period(date("2006-01-02 15:00:00", eastern), Duration.builder().hours(2).build()));
+			rdate.getPeriods().add(new Period(date(2006, 1, 2, 15, 0, 0, eastern), Duration.builder().hours(2).build()));
 			event.addRecurrenceDates(rdate);
 
 			event.setSummary("Event #2");
@@ -792,11 +792,11 @@ public class XCalWriterTest {
 		}
 		{
 			VEvent event = new VEvent();
-			event.setDateTimeStamp(utc("2006-02-06 00:11:21"));
-			event.setDateStart(date("2006-01-04 14:00:00", eastern));
+			event.setDateTimeStamp(utc(2006, 2, 6, 0, 11, 21));
+			event.setDateStart(date(2006, 1, 4, 14, 0, 0, eastern));
 			event.setDuration(Duration.builder().hours(1).build());
 
-			event.setRecurrenceId(date("2006-01-04 12:00:00", eastern));
+			event.setRecurrenceId(date(2006, 1, 4, 12, 0, 0, eastern));
 
 			event.setSummary("Event #2 bis");
 			event.setUid("00959BC664CA650E933C892C@example.com");
@@ -806,7 +806,7 @@ public class XCalWriterTest {
 		assertValidate(ical).versions(V2_0).run();
 
 		usEasternTz = new VTimezone("US/Eastern");
-		usEasternTz.setLastModified(utc("2004-01-10 03:28:45"));
+		usEasternTz.setLastModified(utc(2004, 1, 10, 3, 28, 45));
 		{
 			DaylightSavingsTime daylight = new DaylightSavingsTime();
 			daylight.setDateStart(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false));

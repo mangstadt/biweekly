@@ -136,8 +136,8 @@ public class TriggerTest {
 		//@formatter:off
 		assertNothingIsEqual(
 			new Trigger((Date)null),
-			new Trigger(date("2016-01-21")),
-			new Trigger(date("2016-01-22")),
+			new Trigger(date(2016, 1, 21)),
+			new Trigger(date(2016, 1, 22)),
 			new Trigger(new Duration.Builder().hours(1).build(), null),
 			new Trigger(new Duration.Builder().hours(1).build(), Related.START),
 			new Trigger(new Duration.Builder().hours(1).build(), Related.END),

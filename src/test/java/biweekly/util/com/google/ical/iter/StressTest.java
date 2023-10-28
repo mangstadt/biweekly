@@ -88,22 +88,22 @@ public class StressTest {
 			.build(),
 		new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
-			.until(new ICalDate(date("2006-08-01"), false))
+			.until(new ICalDate(date(2006, 8, 1), false))
 			.build(),
 		new Recurrence.Builder(Frequency.MONTHLY)
 			.interval(2)
 			.byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
-			.until(new ICalDate(date("2006-08-01"), false))
+			.until(new ICalDate(date(2006, 8, 1), false))
 			.build(),
 		new Recurrence.Builder(Frequency.MONTHLY)
 			.byMonthDay(13)
 			.byDay(DayOfWeek.FRIDAY)
-			.until(new ICalDate(date("2006-08-01"), false))
+			.until(new ICalDate(date(2006, 8, 1), false))
 			.build(),
 		new Recurrence.Builder(Frequency.YEARLY)
 			.byMonth(6)
 			.byMonthDay(15)
-			.until(new ICalDate(date("2020-06-15"), false))
+			.until(new ICalDate(date(2020, 6, 15), false))
 			.build()
 	};
 	//@formatter:on

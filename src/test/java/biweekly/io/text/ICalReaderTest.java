@@ -933,7 +933,7 @@ public class ICalReaderTest {
 			VAlarm valarm = icalendar.getComponent(VAlarm.class);
 			assertSize(valarm, 0, 5);
 			assertTrue(valarm.getAction().isAudio());
-			assertEquals(date("2014-01-01 01:00:00"), valarm.getTrigger().getDate());
+			assertEquals(date(2014, 1, 1, 1, 0, 0), valarm.getTrigger().getDate());
 			assertEquals(new Duration.Builder().minutes(10).build(), valarm.getDuration().getValue());
 			assertIntEquals(5, valarm.getRepeat().getValue());
 			assertEquals("http://example.com", valarm.getAttachments().get(0).getUri());
@@ -975,7 +975,7 @@ public class ICalReaderTest {
 			VAlarm valarm = icalendar.getComponent(VAlarm.class);
 			assertSize(valarm, 0, 5);
 			assertTrue(valarm.getAction().isDisplay());
-			assertEquals(date("2014-01-01 01:00:00"), valarm.getTrigger().getDate());
+			assertEquals(date(2014, 1, 1, 1, 0, 0), valarm.getTrigger().getDate());
 			assertEquals(new Duration.Builder().minutes(10).build(), valarm.getDuration().getValue());
 			assertIntEquals(5, valarm.getRepeat().getValue());
 			assertEquals("display-text", valarm.getDescription().getValue());
@@ -1017,7 +1017,7 @@ public class ICalReaderTest {
 			VAlarm valarm = icalendar.getComponent(VAlarm.class);
 			assertSize(valarm, 0, 6);
 			assertTrue(valarm.getAction().isEmail());
-			assertEquals(date("2014-01-01 01:00:00"), valarm.getTrigger().getDate());
+			assertEquals(date(2014, 1, 1, 1, 0, 0), valarm.getTrigger().getDate());
 			assertEquals(new Duration.Builder().minutes(10).build(), valarm.getDuration().getValue());
 			assertIntEquals(5, valarm.getRepeat().getValue());
 			assertEquals("note", valarm.getDescription().getValue());
@@ -1060,7 +1060,7 @@ public class ICalReaderTest {
 			VAlarm valarm = icalendar.getComponent(VAlarm.class);
 			assertSize(valarm, 0, 5);
 			assertTrue(valarm.getAction().isProcedure());
-			assertEquals(date("2014-01-01 01:00:00"), valarm.getTrigger().getDate());
+			assertEquals(date(2014, 1, 1, 1, 0, 0), valarm.getTrigger().getDate());
 			assertEquals(new Duration.Builder().minutes(10).build(), valarm.getDuration().getValue());
 			assertIntEquals(5, valarm.getRepeat().getValue());
 			assertEquals("file:///bin/ls", valarm.getDescription().getValue());
@@ -1101,7 +1101,7 @@ public class ICalReaderTest {
 		Iterator<RecurrenceRule> rrules = icalendar.getProperties(RecurrenceRule.class).iterator();
 		Recurrence expected = new Recurrence.Builder(Frequency.MONTHLY).interval(1).byMonthDay(1).count(1).build();
 		assertEquals(expected, rrules.next().getValue());
-		expected = new Recurrence.Builder(Frequency.DAILY).interval(2).until(new ICalDate(utc("2000-01-01 00:00:00"))).build();
+		expected = new Recurrence.Builder(Frequency.DAILY).interval(2).until(new ICalDate(utc(2000, 1, 1, 0, 0, 0))).build();
 		assertEquals(expected, rrules.next().getValue());
 		expected = new Recurrence.Builder(Frequency.MINUTELY).interval(3).count(2).build();
 		assertEquals(expected, rrules.next().getValue());
@@ -1131,10 +1131,10 @@ public class ICalReaderTest {
 		assertVersion(V1_0, icalendar);
 
 		Iterator<DateStart> dtstart = icalendar.getProperties(DateStart.class).iterator();
-		assertEquals(utc("2014-09-28 12:00:00"), dtstart.next().getValue());
-		assertEquals(utc("2014-03-08 17:00:00"), dtstart.next().getValue());
-		assertEquals(utc("2014-09-28 16:00:00"), dtstart.next().getValue());
-		assertEquals(utc("2014-11-03 17:00:00"), dtstart.next().getValue());
+		assertEquals(utc(2014, 9, 28, 12, 0, 0), dtstart.next().getValue());
+		assertEquals(utc(2014, 3, 8, 17, 0, 0), dtstart.next().getValue());
+		assertEquals(utc(2014, 9, 28, 16, 0, 0), dtstart.next().getValue());
+		assertEquals(utc(2014, 11, 3, 17, 0, 0), dtstart.next().getValue());
 
 		TimezoneInfo tzinfo = icalendar.getTimezoneInfo();
 		assertEquals(1, tzinfo.getComponents().size());
@@ -1188,10 +1188,10 @@ public class ICalReaderTest {
 		assertVersion(V1_0, icalendar);
 
 		Iterator<DateStart> dtstart = icalendar.getProperties(DateStart.class).iterator();
-		assertEquals(utc("2014-09-28 12:00:00"), dtstart.next().getValue());
-		assertEquals(date("2014-03-08 12:00:00"), dtstart.next().getValue());
-		assertEquals(date("2014-09-28 12:00:00"), dtstart.next().getValue());
-		assertEquals(date("2014-11-03 12:00:00"), dtstart.next().getValue());
+		assertEquals(utc(2014, 9, 28, 12, 0, 0), dtstart.next().getValue());
+		assertEquals(date(2014, 3, 8, 12, 0, 0), dtstart.next().getValue());
+		assertEquals(date(2014, 9, 28, 12, 0, 0), dtstart.next().getValue());
+		assertEquals(date(2014, 11, 3, 12, 0, 0), dtstart.next().getValue());
 
 		TimezoneInfo tzinfo = icalendar.getTimezoneInfo();
 		assertEquals(0, tzinfo.getComponents().size());
@@ -1220,10 +1220,10 @@ public class ICalReaderTest {
 		assertVersion(V1_0, icalendar);
 
 		Iterator<DateStart> dtstart = icalendar.getProperties(DateStart.class).iterator();
-		assertEquals(utc("2014-09-28 12:00:00"), dtstart.next().getValue());
-		assertEquals(utc("2014-03-08 17:00:00"), dtstart.next().getValue());
-		assertEquals(utc("2014-09-28 17:00:00"), dtstart.next().getValue());
-		assertEquals(utc("2014-11-03 17:00:00"), dtstart.next().getValue());
+		assertEquals(utc(2014, 9, 28, 12, 0, 0), dtstart.next().getValue());
+		assertEquals(utc(2014, 3, 8, 17, 0, 0), dtstart.next().getValue());
+		assertEquals(utc(2014, 9, 28, 17, 0, 0), dtstart.next().getValue());
+		assertEquals(utc(2014, 11, 3, 17, 0, 0), dtstart.next().getValue());
 
 		TimezoneInfo tzinfo = icalendar.getTimezoneInfo();
 		assertEquals(1, tzinfo.getComponents().size());
@@ -1262,7 +1262,7 @@ public class ICalReaderTest {
 			ICalendar icalendar = reader.readNext();
 			assertSize(icalendar, 0, 1);
 			assertVersion(V1_0, icalendar);
-			assertEquals(date("2014-01-01 01:00:00"), icalendar.getProperty(Created.class).getValue());
+			assertEquals(date(2014, 1, 1, 1, 0, 0), icalendar.getProperty(Created.class).getValue());
 
 			assertParseWarnings(reader);
 			assertNull(reader.readNext());
@@ -1377,18 +1377,18 @@ public class ICalReaderTest {
 			assertEquals("janedoe@example.com", attendee.getEmail());
 
 			assertEquals("PUBLIC", event.getClassification().getValue());
-			assertEquals(utc("2013-06-08 20:04:10"), event.getCreated().getValue());
+			assertEquals(utc(2013, 6, 8, 20, 4, 10), event.getCreated().getValue());
 			assertEquals("Meeting will discuss objectives for next project." + NEWLINE + "Will include a presentation and food.", event.getDescription().getValue());
 
-			assertEquals(utc("2013-06-10 17:00:00"), event.getDateEnd().getValue());
+			assertEquals(utc(2013, 6, 10, 17, 0, 0), event.getDateEnd().getValue());
 			assertNull(event.getDateEnd().getParameters().getTimezoneId());
 
-			assertEquals(utc("2013-04-25 15:58:07"), event.getDateTimeStamp().getValue());
+			assertEquals(utc(2013, 4, 25, 15, 58, 7), event.getDateTimeStamp().getValue());
 
-			assertEquals(utc("2013-06-10 16:00:00"), event.getDateStart().getValue());
+			assertEquals(utc(2013, 6, 10, 16, 0, 0), event.getDateStart().getValue());
 			assertNull(event.getDateStart().getParameters().getTimezoneId());
 
-			assertEquals(utc("2013-06-08 20:04:10"), event.getLastModified().getValue());
+			assertEquals(utc(2013, 6, 8, 20, 4, 10), event.getLastModified().getValue());
 
 			assertEquals("Auditorium 16", event.getLocation().getValue());
 
@@ -1442,7 +1442,7 @@ public class ICalReaderTest {
 				StandardTime standard = timezone.getStandardTimes().get(0);
 				assertSize(standard, 0, 4);
 
-				assertEquals(date("1601-11-04 02:00:00"), standard.getDateStart().getValue());
+				assertEquals(date(1601, 11, 4, 2, 0, 0), standard.getDateStart().getValue());
 
 				Recurrence rrule = standard.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
@@ -1456,7 +1456,7 @@ public class ICalReaderTest {
 				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
 				assertSize(daylight, 0, 4);
 
-				assertEquals(date("1601-03-11 02:00:00"), daylight.getDateStart().getValue());
+				assertEquals(date(1601, 3, 11, 2, 0, 0), daylight.getDateStart().getValue());
 
 				Recurrence rrule = daylight.getRecurrenceRule().getValue();
 				assertEquals(Frequency.YEARLY, rrule.getFrequency());
@@ -1500,11 +1500,11 @@ public class ICalReaderTest {
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 9);
 
-			assertEquals(utc("1996-07-04 12:00:00"), event.getDateTimeStamp().getValue());
+			assertEquals(utc(1996, 7, 4, 12, 0, 0), event.getDateTimeStamp().getValue());
 			assertEquals("uid1@example.com", event.getUid().getValue());
 			assertEquals("jsmith@example.com", event.getOrganizer().getEmail());
-			assertEquals(utc("1996-09-18 14:30:00"), event.getDateStart().getValue());
-			assertEquals(utc("1996-09-20 22:00:00"), event.getDateEnd().getValue());
+			assertEquals(utc(1996, 9, 18, 14, 30, 0), event.getDateStart().getValue());
+			assertEquals(utc(1996, 9, 20, 22, 0, 0), event.getDateEnd().getValue());
 			assertTrue(event.getStatus().isConfirmed());
 			assertEquals(Arrays.asList("CONFERENCE"), event.getCategories().get(0).getValues());
 			assertEquals("Networld+Interop Conference", event.getSummary().getValue());
@@ -1528,7 +1528,7 @@ public class ICalReaderTest {
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 12);
 
-			assertEquals(utc("1998-03-09 23:10:00"), event.getDateTimeStamp().getValue());
+			assertEquals(utc(1998, 3, 9, 23, 10, 0), event.getDateTimeStamp().getValue());
 			assertEquals("guid-1.example.com", event.getUid().getValue());
 			assertEquals("mrbig@example.com", event.getOrganizer().getEmail());
 
@@ -1541,13 +1541,13 @@ public class ICalReaderTest {
 			assertEquals("Project XYZ Review Meeting", event.getDescription().getValue());
 			assertEquals(Arrays.asList("MEETING"), event.getCategories().get(0).getValues());
 			assertTrue(event.getClassification().isPublic());
-			assertEquals(utc("1998-03-09 13:00:00"), event.getCreated().getValue());
+			assertEquals(utc(1998, 3, 9, 13, 0, 0), event.getCreated().getValue());
 			assertEquals("XYZ Project Review", event.getSummary().getValue());
 
-			assertEquals(utc("1998-03-12 13:30:00"), event.getDateStart().getValue());
+			assertEquals(utc(1998, 3, 12, 13, 30, 0), event.getDateStart().getValue());
 			assertNull(event.getDateStart().getParameters().getTimezoneId());
 
-			assertEquals(utc("1998-03-12 14:30:00"), event.getDateEnd().getValue());
+			assertEquals(utc(1998, 3, 12, 14, 30, 0), event.getDateEnd().getValue());
 			assertNull(event.getDateEnd().getParameters().getTimezoneId());
 
 			assertEquals("1CP Conference Room 4350", event.getLocation().getValue());
@@ -1566,7 +1566,7 @@ public class ICalReaderTest {
 				StandardTime standard = timezone.getStandardTimes().get(0);
 				assertSize(standard, 0, 4);
 
-				assertEquals(date("1998-10-25 02:00:00"), standard.getDateStart().getValue());
+				assertEquals(date(1998, 10, 25, 2, 0, 0), standard.getDateStart().getValue());
 				assertEquals(new DateTimeComponents(1998, 10, 25, 2, 0, 0, false), standard.getDateStart().getValue().getRawComponents());
 
 				assertEquals(new UtcOffset(false, 4, 0), standard.getTimezoneOffsetFrom().getValue());
@@ -1578,7 +1578,7 @@ public class ICalReaderTest {
 				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
 				assertSize(daylight, 0, 4);
 
-				assertEquals(date("1999-04-04 02:00:00"), daylight.getDateStart().getValue());
+				assertEquals(date(1999, 4, 4, 2, 0, 0), daylight.getDateStart().getValue());
 				assertEquals(new DateTimeComponents(1999, 4, 4, 2, 0, 0, false), daylight.getDateStart().getValue().getRawComponents());
 
 				assertEquals(new UtcOffset(false, 5, 0), daylight.getTimezoneOffsetFrom().getValue());
@@ -1622,12 +1622,12 @@ public class ICalReaderTest {
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 13);
 
-			assertEquals(utc("1997-03-24 12:00:00"), event.getDateTimeStamp().getValue());
+			assertEquals(utc(1997, 3, 24, 12, 0, 0), event.getDateTimeStamp().getValue());
 			assertIntEquals(0, event.getSequence().getValue());
 			assertEquals("uid3@example.com", event.getUid().getValue());
 			assertEquals("jdoe@example.com", event.getOrganizer().getEmail());
-			assertEquals(utc("1997-03-24 12:30:00"), event.getDateStart().getValue());
-			assertEquals(utc("1997-03-24 21:00:00"), event.getDateEnd().getValue());
+			assertEquals(utc(1997, 3, 24, 12, 30, 0), event.getDateStart().getValue());
+			assertEquals(utc(1997, 3, 24, 21, 0, 0), event.getDateEnd().getValue());
 			assertEquals(Arrays.asList("MEETING", "PROJECT"), event.getCategories().get(0).getValues());
 			assertTrue(event.getClassification().isPublic());
 			assertEquals("Calendaring Interoperability Planning Meeting", event.getSummary().getValue());
@@ -1657,7 +1657,7 @@ public class ICalReaderTest {
 			VTodo todo = ical.getTodos().get(0);
 			assertSize(todo, 1, 8);
 
-			assertEquals(utc("1998-01-30 13:45:00"), todo.getDateTimeStamp().getValue());
+			assertEquals(utc(1998, 1, 30, 13, 45, 0), todo.getDateTimeStamp().getValue());
 			assertIntEquals(2, todo.getSequence().getValue());
 			assertEquals("uid4@example.com", todo.getUid().getValue());
 			assertEquals("unclesam@example.com", todo.getOrganizer().getEmail());
@@ -1666,7 +1666,7 @@ public class ICalReaderTest {
 			assertEquals("jqpublic@example.com", attendee.getEmail());
 			assertEquals(ParticipationStatus.ACCEPTED, attendee.getParticipationStatus());
 
-			assertEquals(date("1998-04-15"), todo.getDateDue().getValue());
+			assertEquals(date(1998, 4, 15), todo.getDateDue().getValue());
 			assertTrue(todo.getStatus().isNeedsAction());
 			assertEquals("Submit Income Taxes", todo.getSummary().getValue());
 
@@ -1675,7 +1675,7 @@ public class ICalReaderTest {
 				assertSize(alarm, 0, 5);
 
 				assertTrue(alarm.getAction().isAudio());
-				assertEquals(utc("1998-04-03 12:00:00"), alarm.getTrigger().getDate());
+				assertEquals(utc(1998, 4, 3, 12, 0, 0), alarm.getTrigger().getDate());
 
 				Attachment attach = alarm.getAttachments().get(0);
 				assertEquals("http://example.com/pub/audio-files/ssbanner.aud", attach.getUri());
@@ -1704,7 +1704,7 @@ public class ICalReaderTest {
 			VJournal journal = ical.getJournals().get(0);
 			assertSize(journal, 0, 7);
 
-			assertEquals(utc("1997-03-24 12:00:00"), journal.getDateTimeStamp().getValue());
+			assertEquals(utc(1997, 3, 24, 12, 0, 0), journal.getDateTimeStamp().getValue());
 			assertEquals("uid5@example.com", journal.getUid().getValue());
 			assertEquals("jsmith@example.com", journal.getOrganizer().getEmail());
 			assertTrue(journal.getStatus().isDraft());
@@ -1732,11 +1732,11 @@ public class ICalReaderTest {
 			assertSize(freebusy, 0, 7);
 
 			assertEquals("jsmith@example.com", freebusy.getOrganizer().getEmail());
-			assertEquals(utc("1998-03-13 14:17:11"), freebusy.getDateStart().getValue());
-			assertEquals(utc("1998-04-10 14:17:11"), freebusy.getDateEnd().getValue());
-			assertEquals(Arrays.asList(new Period(utc("1998-03-14 23:30:00"), utc("1998-03-15 00:30:00"))), freebusy.getFreeBusy().get(0).getValues());
-			assertEquals(Arrays.asList(new Period(utc("1998-03-16 15:30:00"), utc("1998-03-16 16:30:00"))), freebusy.getFreeBusy().get(1).getValues());
-			assertEquals(Arrays.asList(new Period(utc("1998-03-18 03:00:00"), utc("1998-03-18 04:00:00"))), freebusy.getFreeBusy().get(2).getValues());
+			assertEquals(utc(1998, 3, 13, 14, 17, 11), freebusy.getDateStart().getValue());
+			assertEquals(utc(1998, 4, 10, 14, 17, 11), freebusy.getDateEnd().getValue());
+			assertEquals(Arrays.asList(new Period(utc(1998, 3, 14, 23, 30, 0), utc(1998, 3, 15, 0, 30, 0))), freebusy.getFreeBusy().get(0).getValues());
+			assertEquals(Arrays.asList(new Period(utc(1998, 3, 16, 15, 30, 0), utc(1998, 3, 16, 16, 30, 0))), freebusy.getFreeBusy().get(1).getValues());
+			assertEquals(Arrays.asList(new Period(utc(1998, 3, 18, 3, 0, 0), utc(1998, 3, 18, 4, 0, 0))), freebusy.getFreeBusy().get(2).getValues());
 			assertEquals("http://www.example.com/calendar/busytime/jsmith.ifb", freebusy.getUrl().getValue());
 		}
 

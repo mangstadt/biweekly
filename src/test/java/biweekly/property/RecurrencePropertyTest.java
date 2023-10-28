@@ -52,7 +52,7 @@ public class RecurrencePropertyTest {
 	@Test
 	public void getDateIterator_empty() {
 		RecurrenceProperty property = new RecurrenceProperty((Recurrence) null);
-		Date start = date("2014-11-22 10:00:00");
+		Date start = date(2014, 11, 22, 10, 0, 0);
 		DateIterator it = property.getDateIterator(start, TimeZone.getDefault());
 		assertFalse(it.hasNext());
 	}
@@ -61,15 +61,15 @@ public class RecurrencePropertyTest {
 	public void getDateIterator() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).count(5).build();
 		RecurrenceProperty property = new RecurrenceProperty(recur);
-		Date start = date("2014-11-22 10:00:00");
+		Date start = date(2014, 11, 22, 10, 0, 0);
 
 		//@formatter:off
 		List<Date> expected = Arrays.asList(
-			date("2014-11-22 10:00:00"),
-			date("2014-11-23 10:00:00"),
-			date("2014-11-24 10:00:00"),
-			date("2014-11-25 10:00:00"),
-			date("2014-11-26 10:00:00")
+			date(2014, 11, 22, 10, 0, 0),
+			date(2014, 11, 23, 10, 0, 0),
+			date(2014, 11, 24, 10, 0, 0),
+			date(2014, 11, 25, 10, 0, 0),
+			date(2014, 11, 26, 10, 0, 0)
 		);
 		//@formatter:on
 

@@ -55,8 +55,8 @@ public class DaylightTest {
 		assertNull(property.getDaylightName());
 
 		UtcOffset offset = new UtcOffset(true, 1, 0);
-		ICalDate start = new ICalDate(date("2016-01-17"));
-		ICalDate end = new ICalDate(date("2016-01-18"));
+		ICalDate start = new ICalDate(date(2016, 1, 17));
+		ICalDate end = new ICalDate(date(2016, 1, 18));
 		property = new Daylight(true, offset, start, end, "s", "d");
 		assertTrue(property.isDaylight());
 		assertEquals(offset, property.getOffset());
@@ -69,8 +69,8 @@ public class DaylightTest {
 	@Test
 	public void set_value() {
 		UtcOffset offset = new UtcOffset(true, 1, 0);
-		ICalDate start = new ICalDate(date("2016-01-17"));
-		ICalDate end = new ICalDate(date("2016-01-18"));
+		ICalDate start = new ICalDate(date(2016, 1, 17));
+		ICalDate end = new ICalDate(date(2016, 1, 18));
 		Daylight property = new Daylight(true, offset, start, end, "s", "d");
 
 		property.setDaylight(false);
@@ -182,8 +182,8 @@ public class DaylightTest {
 	@Test
 	public void toStringValues() {
 		UtcOffset offset = new UtcOffset(true, 1, 0);
-		ICalDate start = new ICalDate(date("2016-01-17"));
-		ICalDate end = new ICalDate(date("2016-01-18"));
+		ICalDate start = new ICalDate(date(2016, 1, 17));
+		ICalDate end = new ICalDate(date(2016, 1, 18));
 		Daylight property = new Daylight(true, offset, start, end, "s", "d");
 		assertFalse(property.toStringValues().isEmpty());
 	}
@@ -191,8 +191,8 @@ public class DaylightTest {
 	@Test
 	public void copy() {
 		UtcOffset offset = new UtcOffset(true, 1, 0);
-		ICalDate start = new ICalDate(date("2016-01-17"));
-		ICalDate end = new ICalDate(date("2016-01-18"));
+		ICalDate start = new ICalDate(date(2016, 1, 17));
+		ICalDate end = new ICalDate(date(2016, 1, 18));
 		Daylight original = new Daylight(true, offset, start, end, "s", "d");
 		assertCopy(original).notSame("getStart").notSame("getEnd");
 
@@ -203,8 +203,8 @@ public class DaylightTest {
 	@Test
 	public void equals() {
 		UtcOffset offset = new UtcOffset(true, 1, 0);
-		ICalDate start = new ICalDate(date("2016-01-17"));
-		ICalDate end = new ICalDate(date("2016-01-18"));
+		ICalDate start = new ICalDate(date(2016, 1, 17));
+		ICalDate end = new ICalDate(date(2016, 1, 18));
 
 		//@formatter:off
 		assertNothingIsEqual(

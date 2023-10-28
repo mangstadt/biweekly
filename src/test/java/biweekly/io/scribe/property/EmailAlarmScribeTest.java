@@ -1,6 +1,6 @@
 package biweekly.io.scribe.property;
 
-import static biweekly.util.TestUtils.date;
+import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -46,7 +46,7 @@ import biweekly.util.Duration;
  * @author Michael Angstadt
  */
 public class EmailAlarmScribeTest extends ScribeTest<EmailAlarm> {
-	private final Date start = date("2014-01-01 01:00:00 +0000");
+	private final Date start = utc(2014, 1, 1, 1, 0, 0);
 
 	private final EmailAlarm empty = new EmailAlarm((String) null);
 

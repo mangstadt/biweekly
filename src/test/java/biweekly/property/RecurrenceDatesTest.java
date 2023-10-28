@@ -127,29 +127,29 @@ public class RecurrenceDatesTest {
 		properties.add(property);
 
 		property = new RecurrenceDates();
-		property.getDates().add(icalDate("2016-01-21"));
+		property.getDates().add(icalDate(2016, 1, 21));
 		properties.add(property);
 
 		property = new RecurrenceDates();
-		property.getDates().add(icalDate("2016-01-22"));
+		property.getDates().add(icalDate(2016, 1, 22));
 		properties.add(property);
 
 		property = new RecurrenceDates();
-		property.getDates().add(icalDate("2016-01-21"));
-		property.getDates().add(icalDate("2016-01-22"));
+		property.getDates().add(icalDate(2016, 1, 21));
+		property.getDates().add(icalDate(2016, 1, 22));
 		properties.add(property);
 
 		property = new RecurrenceDates();
-		property.getPeriods().add(new Period(date("2016-01-21"), new Date()));
+		property.getPeriods().add(new Period(date(2016, 1, 21), new Date()));
 		properties.add(property);
 
 		property = new RecurrenceDates();
-		property.getPeriods().add(new Period(date("2016-01-22"), new Date()));
+		property.getPeriods().add(new Period(date(2016, 1, 22), new Date()));
 		properties.add(property);
 
 		property = new RecurrenceDates();
-		property.getPeriods().add(new Period(date("2016-01-21"), new Date()));
-		property.getPeriods().add(new Period(date("2016-01-22"), new Date()));
+		property.getPeriods().add(new Period(date(2016, 1, 21), new Date()));
+		property.getPeriods().add(new Period(date(2016, 1, 22), new Date()));
 		properties.add(property);
 
 		assertNothingIsEqual(properties);

@@ -40,7 +40,7 @@ import biweekly.property.DateTimeStamp;
  * @author Michael Angstadt
  */
 public class DateTimeStampScribeTest extends ScribeTest<DateTimeStamp> {
-	private final Date datetime = date("2013-06-11 13:43:02");
+	private final Date datetime = date(2013, 6, 11, 13, 43, 2);
 	private final String datetimeStr = "20130611T124302Z";
 
 	private final DateTimeStamp withDateTime = new DateTimeStamp(datetime);

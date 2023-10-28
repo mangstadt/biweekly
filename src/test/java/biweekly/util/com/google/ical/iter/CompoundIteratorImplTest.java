@@ -395,7 +395,7 @@ public class CompoundIteratorImplTest {
 	public void infiniteExclusionsAndFiniteInclusions() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
-			.until(new ICalDate(date("2006-05-03"), false))
+			.until(new ICalDate(date(2006, 5, 3), false))
 		.build();
 		Recurrence exrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.interval(2)
@@ -437,7 +437,7 @@ public class CompoundIteratorImplTest {
 	public void infiniteExclusionsAndFiniteInclusions_advanceTo_on_date() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
-			.until(new ICalDate(date("2006-05-03"), false))
+			.until(new ICalDate(date(2006, 5, 3), false))
 		.build();
 		Recurrence exrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.interval(2)
@@ -475,7 +475,7 @@ public class CompoundIteratorImplTest {
 	public void infiniteExclusionsAndFiniteInclusions_advanceTo_after_date() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
-			.until(new ICalDate(date("2006-05-03"), false))
+			.until(new ICalDate(date(2006, 5, 3), false))
 		.build();
 		Recurrence exrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.interval(2)
@@ -673,7 +673,7 @@ public class CompoundIteratorImplTest {
 	@Test
 	public void monkey6() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.MONTHLY)
-			.until(date("2006-05-10 15:10:44", UTC))
+			.until(date(2006, 5, 10, 15, 10, 44, UTC))
 			.interval(1)
 			.bySecond(48)
 		.build();
@@ -952,7 +952,7 @@ public class CompoundIteratorImplTest {
 	@Test
 	public void excludedStart() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY)
-			.until(date("2007-04-14", PST))
+			.until(date(2007, 4, 14, 0, 0 ,0, PST))
 			.interval(1)
 			.byDay(3, DayOfWeek.SUNDAY)
 			.byMonth(4)

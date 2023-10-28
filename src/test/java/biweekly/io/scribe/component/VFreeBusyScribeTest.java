@@ -48,16 +48,16 @@ public class VFreeBusyScribeTest {
 		VFreeBusy freebusy = new VFreeBusy();
 
 		FreeBusy fb1 = new FreeBusy();
-		fb1.getValues().add(new Period(date("2013-06-05 00:00:00"), date("2013-06-05 01:00:00")));
+		fb1.getValues().add(new Period(date(2013, 6, 5, 0, 0, 0), date(2013, 6, 5, 1, 0, 0)));
 		freebusy.addFreeBusy(fb1);
 
 		FreeBusy fb2 = new FreeBusy();
-		fb2.getValues().add(new Period(date("2013-06-10 00:00:00"), date("2013-06-10 01:00:00")));
-		fb2.getValues().add(new Period(date("2013-06-01 00:00:00"), date("2013-06-01 01:00:00")));
+		fb2.getValues().add(new Period(date(2013, 6, 10, 0, 0, 0), date(2013, 6, 10, 1, 0, 0)));
+		fb2.getValues().add(new Period(date(2013, 6, 1, 0, 0, 0), date(2013, 6, 1, 1, 0, 0)));
 		freebusy.addFreeBusy(fb2);
 
 		FreeBusy fb3 = new FreeBusy();
-		fb3.getValues().add(new Period(date("2013-07-01 00:00:00"), date("2013-07-01 01:00:00")));
+		fb3.getValues().add(new Period(date(2013, 7, 1, 0, 0, 0), date(2013, 7, 1, 1, 0, 0)));
 		freebusy.addFreeBusy(fb3);
 
 		Comment comment = freebusy.addComment("comment");

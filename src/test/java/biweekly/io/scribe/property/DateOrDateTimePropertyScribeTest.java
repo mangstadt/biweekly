@@ -52,11 +52,11 @@ import biweekly.util.ICalDate;
  * @author Michael Angstadt
  */
 public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimePropertyImpl> {
-	private final Date date = date("2013-06-11");
+	private final Date date = date(2013, 6, 11);
 	private final String dateStr = "20130611";
 	private final String dateStrExt = "2013-06-11";
 
-	private final Date datetime = date("2013-06-11 13:43:02");
+	private final Date datetime = date(2013, 6, 11, 13, 43, 2);
 	private final String datetimeStr = "20130611T124302Z";
 	private final String datetimeStrExt = "2013-06-11T12:43:02Z";
 

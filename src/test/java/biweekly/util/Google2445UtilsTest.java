@@ -57,11 +57,11 @@ public class Google2445UtilsTest {
 	@Test
 	public void getDateIterator_start_date_only() {
 		VEvent event = new VEvent();
-		event.setDateStart(date("2016-03-25 14:00:00"));
+		event.setDateStart(date(2016, 3, 25, 14, 0, 0));
 
 		//@formatter:off
 		List<Date> expectedList = Arrays.asList(
-			date("2016-03-25 14:00:00")
+			date(2016, 3, 25, 14, 0, 0)
 		);
 		//@formatter:on
 
@@ -72,14 +72,14 @@ public class Google2445UtilsTest {
 	public void getDateIterator_start_date_has_no_time() {
 		VEvent event = new VEvent();
 
-		event.setDateStart(date("2016-03-25"), false);
+		event.setDateStart(date(2016, 3, 25), false);
 		event.setRecurrenceRule(new Recurrence.Builder(Frequency.DAILY).count(3).build());
 
 		//@formatter:off
 		List<Date> expectedList = Arrays.asList(
-			date("2016-03-25 00:00:00"),
-			date("2016-03-26 00:00:00"),
-			date("2016-03-27 00:00:00")
+			date(2016, 3, 25, 0, 0, 0),
+			date(2016, 3, 26, 0, 0, 0),
+			date(2016, 3, 27, 0, 0, 0)
 		);
 		//@formatter:on
 
@@ -92,17 +92,17 @@ public class Google2445UtilsTest {
 
 		VEvent event = new VEvent();
 
-		event.setDateStart(date("2016-03-25 14:00:00", tz));
+		event.setDateStart(date(2016, 3, 25, 14, 0, 0, tz));
 
 		event.setRecurrenceRule(new Recurrence.Builder(Frequency.DAILY).count(10).build());
 
 		RecurrenceDates rdate = new RecurrenceDates();
-		rdate.getDates().add(new ICalDate(date("2016-03-26 20:00:00", tz)));
-		rdate.getDates().add(new ICalDate(date("2016-03-27 20:00:00", tz)));
+		rdate.getDates().add(new ICalDate(date(2016, 3, 26, 20, 0, 0, tz)));
+		rdate.getDates().add(new ICalDate(date(2016, 3, 27, 20, 0, 0, tz)));
 		event.addRecurrenceDates(rdate);
 
 		ExceptionDates exdate = new ExceptionDates();
-		exdate.getValues().add(new ICalDate(date("2016-03-27 14:00:00", tz)));
+		exdate.getValues().add(new ICalDate(date(2016, 3, 27, 14, 0, 0, tz)));
 		event.addExceptionDates(exdate);
 
 		ExceptionRule exrule = new ExceptionRule(new Recurrence.Builder(Frequency.WEEKLY).count(2).build());
@@ -110,15 +110,15 @@ public class Google2445UtilsTest {
 
 		//@formatter:off
 		List<Date> expectedList = Arrays.asList(
-			date("2016-03-26 14:00:00", tz),
-			date("2016-03-26 20:00:00", tz),
-			date("2016-03-27 20:00:00", tz),
-			date("2016-03-28 14:00:00", tz),
-			date("2016-03-29 14:00:00", tz),
-			date("2016-03-30 14:00:00", tz),
-			date("2016-03-31 14:00:00", tz),
-			date("2016-04-02 14:00:00", tz),
-			date("2016-04-03 14:00:00", tz)
+			date(2016, 3, 26, 14, 0, 0, tz),
+			date(2016, 3, 26, 20, 0, 0, tz),
+			date(2016, 3, 27, 20, 0, 0, tz),
+			date(2016, 3, 28, 14, 0, 0, tz),
+			date(2016, 3, 29, 14, 0, 0, tz),
+			date(2016, 3, 30, 14, 0, 0, tz),
+			date(2016, 3, 31, 14, 0, 0, tz),
+			date(2016, 4, 2, 14, 0, 0, tz),
+			date(2016, 4, 3, 14, 0, 0, tz)
 		);
 		//@formatter:on
 

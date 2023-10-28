@@ -39,52 +39,52 @@ import org.junit.Test;
 public class ICalDateTest {
 	@Test
 	public void equals_() {
-		ICalDate date1 = new ICalDate(date("2014-10-01 12:00:00"), true);
-		ICalDate date2 = new ICalDate(date("2014-10-01 12:00:00"), true);
+		ICalDate date1 = new ICalDate(date(2014, 10, 1, 12, 0, 0), true);
+		ICalDate date2 = new ICalDate(date(2014, 10, 1, 12, 0, 0), true);
 		assertEquals(date1, date2);
 
-		date1 = new ICalDate(date("2014-10-01 12:00:00"), false);
-		date2 = new ICalDate(date("2014-10-01 12:00:00"), false);
+		date1 = new ICalDate(date(2014, 10, 1, 12, 0, 0), false);
+		date2 = new ICalDate(date(2014, 10, 1, 12, 0, 0), false);
 		assertEquals(date1, date2);
 	}
 
 	@Test
 	public void equals_hasTime() {
-		ICalDate date1 = new ICalDate(date("2014-10-01 12:00:00"), true);
-		ICalDate date2 = new ICalDate(date("2014-10-01 12:00:00"), false);
+		ICalDate date1 = new ICalDate(date(2014, 10, 1, 12, 0, 0), true);
+		ICalDate date2 = new ICalDate(date(2014, 10, 1, 12, 0, 0), false);
 		assertNotEquals(date1, date2);
 	}
 
 	@Test
 	public void equals_ignore_components() {
-		ICalDate date1 = new ICalDate(date("2014-10-01 12:00:00"), new DateTimeComponents(2014, 10, 1, 12, 0, 0, false), true);
-		ICalDate date2 = new ICalDate(date("2014-10-01 12:00:00"), new DateTimeComponents(1990, 10, 1, 12, 0, 0, false), true);
+		ICalDate date1 = new ICalDate(date(2014, 10, 1, 12, 0, 0), new DateTimeComponents(2014, 10, 1, 12, 0, 0, false), true);
+		ICalDate date2 = new ICalDate(date(2014, 10, 1, 12, 0, 0), new DateTimeComponents(1990, 10, 1, 12, 0, 0, false), true);
 		assertEquals(date1, date2);
 	}
 
 	@Test
 	public void equals_java_date() {
-		ICalDate date1 = new ICalDate(date("2014-10-01 12:00:00"), true);
-		Date date2 = date("2014-10-01 12:00:00");
+		ICalDate date1 = new ICalDate(date(2014, 10, 1, 12, 0, 0), true);
+		Date date2 = date(2014, 10, 1, 12, 0, 0);
 		assertEquals(date1, date2);
 		assertEquals(date2, date1);
 
-		date1 = new ICalDate(date("2014-10-01 12:00:00"), false);
-		date2 = date("2014-10-01 00:00:00");
+		date1 = new ICalDate(date(2014, 10, 1, 12, 0, 0), false);
+		date2 = date(2014, 10, 1, 0, 0, 0);
 		assertEquals(date1, date2);
 		assertEquals(date2, date1);
 	}
 
 	@Test
 	public void equals_other_object() {
-		ICalDate date1 = new ICalDate(date("2014-10-01 12:00:00"), true);
+		ICalDate date1 = new ICalDate(date(2014, 10, 1, 12, 0, 0), true);
 		String date2 = "string";
 		assertNotEquals(date1, date2);
 	}
 
 	@Test
 	public void truncate_time_for_dates() {
-		ICalDate date = new ICalDate(date("2014-10-01 12:00:00"), false);
-		assertEquals(date("2014-10-01 00:00:00"), date);
+		ICalDate date = new ICalDate(date(2014, 10, 1, 12, 0, 0), false);
+		assertEquals(date(2014, 10, 1, 0, 0, 0), date);
 	}
 }

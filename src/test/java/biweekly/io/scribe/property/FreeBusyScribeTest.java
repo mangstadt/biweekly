@@ -45,7 +45,7 @@ import biweekly.util.Period;
  * @author Michael Angstadt
  */
 public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
-	private final Date start = date("2013-06-11 13:43:02");
+	private final Date start = date(2013, 6, 11, 13, 43, 2);
 	private final String startStr = "20130611T124302Z";
 	private final String startStrExt = "2013-06-11T12:43:02Z";
 

@@ -44,15 +44,15 @@ public class RecurrenceTest {
 	@Test
 	public void getDateIterator() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).count(5).build();
-		Date start = date("2014-11-22 10:00:00");
+		Date start = date(2014, 11, 22, 10, 0, 0);
 
 		//@formatter:off
 		List<Date> expected = Arrays.asList(
-			date("2014-11-22 10:00:00"),
-			date("2014-11-23 10:00:00"),
-			date("2014-11-24 10:00:00"),
-			date("2014-11-25 10:00:00"),
-			date("2014-11-26 10:00:00")
+			date(2014, 11, 22, 10, 0, 0),
+			date(2014, 11, 23, 10, 0, 0),
+			date(2014, 11, 24, 10, 0, 0),
+			date(2014, 11, 25, 10, 0, 0),
+			date(2014, 11, 26, 10, 0, 0)
 		);
 		//@formatter:on
 
@@ -64,13 +64,13 @@ public class RecurrenceTest {
 	public void getDateIterator_gap_hour() {
 		TimeZone pacificTimeZone = TimeZone.getTimeZone("America/Los_Angeles");
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).interval(1).count(3).build();
-		Date start = date("2016-03-06 02:30:00", pacificTimeZone);
+		Date start = date(2016, 3, 6, 2, 30, 0, pacificTimeZone);
 
 		//@formatter:off
 		List<Date> expected = Arrays.asList(
-			date("2016-03-06 02:30:00", pacificTimeZone),
-			date("2016-03-13 03:30:00", pacificTimeZone),
-			date("2016-03-20 02:30:00", pacificTimeZone)
+			date(2016, 3, 6, 2, 30, 0, pacificTimeZone),
+			date(2016, 3, 13, 3, 30, 0, pacificTimeZone),
+			date(2016, 3, 20, 2, 30, 0, pacificTimeZone)
 		);
 		//@formatter:on
 
@@ -82,14 +82,14 @@ public class RecurrenceTest {
 	public void getDateIterator_overlap_hour() {
 		TimeZone pacificTimeZone = TimeZone.getTimeZone("America/Los_Angeles");
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).interval(1).count(3).build();
-		Date start = date("2016-10-30 01:30:00", pacificTimeZone);
+		Date start = date(2016, 10, 30, 1, 30, 0, pacificTimeZone);
 
 		//@formatter:off
 		//first date will be in PDT while the second and third are PST
 		List<Date> expected = Arrays.asList(
-			date("2016-10-30 01:30:00", pacificTimeZone),
-			date("2016-11-06 01:30:00", pacificTimeZone),
-			date("2016-11-13 01:30:00", pacificTimeZone)
+			date(2016, 10, 30, 1, 30, 0, pacificTimeZone),
+			date(2016, 11, 6, 1, 30, 0, pacificTimeZone),
+			date(2016, 11, 13, 1, 30, 0, pacificTimeZone)
 		);
 		//@formatter:on
 
@@ -99,8 +99,8 @@ public class RecurrenceTest {
 
 	@Test
 	public void advanceDateIterator() {
-		Date start = date("2014-11-22 10:00:00");
-		Date advanceTo = date("2014-11-24 10:00:00");
+		Date start = date(2014, 11, 22, 10, 0, 0);
+		Date advanceTo = date(2014, 11, 24, 10, 0, 0);
 
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).count(5).build();
 		DateIterator it = recur.getDateIterator(start, TimeZone.getDefault());
@@ -108,9 +108,9 @@ public class RecurrenceTest {
 
 		//@formatter:off
 		List<Date> expected = Arrays.asList(
-			date("2014-11-24 10:00:00"),
-			date("2014-11-25 10:00:00"),
-			date("2014-11-26 10:00:00")
+			date(2014, 11, 24, 10, 0, 0),
+			date(2014, 11, 25, 10, 0, 0),
+			date(2014, 11, 26, 10, 0, 0)
 		);
 		//@formatter:on
 
@@ -120,8 +120,8 @@ public class RecurrenceTest {
 	@Test
 	public void advanceDateIterator_negativeTimeZoneOffset() {
 		TimeZone pacificTimeZone = TimeZone.getTimeZone("America/Los_Angeles");
-		Date start = date("2016-07-01 00:01:00", pacificTimeZone);
-		Date advanceTo = date("2016-07-01 06:59:00", pacificTimeZone); //advance iterator to time 1-minute less than the time zone offset
+		Date start = date(2016, 7, 1, 0, 1, 0, pacificTimeZone);
+		Date advanceTo = date(2016, 7, 1, 6, 59, 0, pacificTimeZone); //advance iterator to time 1-minute less than the time zone offset
 
 		//Note: date-time used for advancement must first be converted to UTC
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).count(4).build();
@@ -131,9 +131,9 @@ public class RecurrenceTest {
 		//@formatter:off
 		//first occurrence is skipped; the last three should be returned
 		List<Date> expected = Arrays.asList(
-			date("2016-07-02 00:01:00", pacificTimeZone),
-			date("2016-07-03 00:01:00", pacificTimeZone),
-			date("2016-07-04 00:01:00", pacificTimeZone)
+			date(2016, 7, 2, 0, 1, 0, pacificTimeZone),
+			date(2016, 7, 3, 0, 1, 0, pacificTimeZone),
+			date(2016, 7, 4, 0, 1, 0, pacificTimeZone)
 		);
 		//@formatter:on
 
@@ -143,8 +143,8 @@ public class RecurrenceTest {
 	@Test
 	public void advanceDateIterator_positiveTimeZoneOffset() {
 		TimeZone singapore = TimeZone.getTimeZone("Asia/Singapore");
-		Date start = date("2016-07-01 00:01:00", singapore);
-		Date advanceTo = date("2016-07-01 00:05:00", singapore); //advance iterator 5-minutes from start time
+		Date start = date(2016, 7, 1, 0, 1, 0, singapore);
+		Date advanceTo = date(2016, 7, 1, 0, 5, 0, singapore); //advance iterator 5-minutes from start time
 
 		//Note: date-time used for advancement must first be converted to UTC
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).count(4).build();
@@ -154,9 +154,9 @@ public class RecurrenceTest {
 		//@formatter:off
 		//first occurrence is skipped; the last three should be returned
 		List<Date> expected = Arrays.asList(
-			date("2016-07-02 00:01:00", singapore),
-			date("2016-07-03 00:01:00", singapore),
-			date("2016-07-04 00:01:00", singapore)
+			date(2016, 7, 2, 0, 1, 0, singapore),
+			date(2016, 7, 3, 0, 1, 0, singapore),
+			date(2016, 7, 4, 0, 1, 0, singapore)
 		);
 		//@formatter:on
 

@@ -168,8 +168,8 @@ public class VJournalTest {
 	@Test
 	public void validate_different_date_datatypes() {
 		VJournal component = new VJournal();
-		component.setDateStart(new DateStart(date("2000-01-01"), false));
-		component.setRecurrenceId(new RecurrenceId(date("2000-01-01"), true));
+		component.setDateStart(new DateStart(date(2000, 1, 1), false));
+		component.setRecurrenceId(new RecurrenceId(date(2000, 1, 1), true));
 		assertValidate(component).versions(V1_0).run(48, 19);
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(19);
 	}
@@ -185,7 +185,7 @@ public class VJournalTest {
 		//@formatter:on
 		for (Recurrence recurrence : recurrences) {
 			VJournal component = new VJournal();
-			component.setDateStart(new DateStart(date("2000-01-01"), false));
+			component.setDateStart(new DateStart(date(2000, 1, 1), false));
 			component.setRecurrenceRule(recurrence);
 			assertValidate(component).versions(V1_0).run(48, 5);
 			assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(5);
@@ -195,7 +195,7 @@ public class VJournalTest {
 	@Test
 	public void validate_multiple_rrules() {
 		VJournal component = new VJournal();
-		component.setDateStart(new DateStart(date("2000-01-01"), false));
+		component.setDateStart(new DateStart(date(2000, 1, 1), false));
 		component.addProperty(new RecurrenceRule(new Recurrence.Builder(Frequency.DAILY).build()));
 		component.addProperty(new RecurrenceRule(new Recurrence.Builder(Frequency.DAILY).build()));
 		assertValidate(component).versions(V1_0).run(48, 6);

@@ -57,7 +57,7 @@ import biweekly.util.ListMultimap;
  * @author Michael Angstadt
  */
 public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
-	private final Date datetime = date("2013-06-11 14:43:02");
+	private final Date datetime = date(2013, 6, 11, 14, 43, 2);
 
 	public ICalPropertyScribeTest() {
 		super(new ICalPropertyMarshallerImpl());

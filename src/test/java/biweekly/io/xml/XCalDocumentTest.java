@@ -1067,8 +1067,8 @@ public class XCalDocumentTest {
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 4);
 
-			assertEquals(utc("2008-02-05 19:12:24"), event.getDateTimeStamp().getValue());
-			assertEquals(date("2008-10-06"), event.getDateStart().getValue());
+			assertEquals(utc(2008, 2, 5, 19, 12, 24), event.getDateTimeStamp().getValue());
+			assertEquals(date(2008, 10, 6), event.getDateStart().getValue());
 			assertEquals("Planning meeting", event.getSummary().getValue());
 			assertEquals("4088E990AD89CB3DBB484909", event.getUid().getValue());
 		}
@@ -1087,8 +1087,8 @@ public class XCalDocumentTest {
 		{
 			VEvent event = new VEvent();
 			event.getProperties().clear();
-			event.setDateTimeStamp(utc("2008-02-05 19:12:24"));
-			event.setDateStart(new DateStart(date("2008-10-06"), false));
+			event.setDateTimeStamp(utc(2008, 2, 5, 19, 12, 24));
+			event.setDateStart(new DateStart(date(2008, 10, 6), false));
 			event.setSummary("Planning meeting");
 			event.setUid("4088E990AD89CB3DBB484909");
 			ical.addEvent(event);
@@ -1112,8 +1112,8 @@ public class XCalDocumentTest {
 			VEvent event = ical.getEvents().get(0);
 			assertSize(event, 0, 8);
 
-			assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
-			assertEquals(utc("2006-01-02 17:00:00"), event.getDateStart().getValue());
+			assertEquals(utc(2006, 2, 6, 0, 11, 21), event.getDateTimeStamp().getValue());
+			assertEquals(utc(2006, 1, 2, 17, 0, 0), event.getDateStart().getValue());
 			assertNull(event.getDateStart().getParameters().getTimezoneId());
 			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
 
@@ -1124,7 +1124,7 @@ public class XCalDocumentTest {
 			RecurrenceDates rdate = event.getRecurrenceDates().get(0);
 			assertEquals(0, rdate.getDates().size());
 			assertEquals(1, rdate.getPeriods().size());
-			assertEquals(new Period(utc("2006-01-02 20:00:00"), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
+			assertEquals(new Period(utc(2006, 1, 2, 20, 0, 0), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
 			assertNull(rdate.getParameters().getTimezoneId());
 
 			assertEquals("Event #2", event.getSummary().getValue());
@@ -1135,12 +1135,12 @@ public class XCalDocumentTest {
 			VEvent event = ical.getEvents().get(1);
 			assertSize(event, 0, 6);
 
-			assertEquals(utc("2006-02-06 00:11:21"), event.getDateTimeStamp().getValue());
-			assertEquals(utc("2006-01-04 19:00:00"), event.getDateStart().getValue());
+			assertEquals(utc(2006, 2, 6, 0, 11, 21), event.getDateTimeStamp().getValue());
+			assertEquals(utc(2006, 1, 4, 19, 0, 0), event.getDateStart().getValue());
 			assertNull(event.getDateStart().getParameters().getTimezoneId());
 			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
 
-			assertEquals(utc("2006-01-04 17:00:00"), event.getRecurrenceId().getValue());
+			assertEquals(utc(2006, 1, 4, 17, 0, 0), event.getRecurrenceId().getValue());
 			assertNull(event.getRecurrenceId().getParameters().getTimezoneId());
 			assertEquals("Event #2 bis", event.getSummary().getValue());
 			assertEquals("00959BC664CA650E933C892C@example.com", event.getUid().getValue());
@@ -1154,13 +1154,13 @@ public class XCalDocumentTest {
 			VTimezone timezone = it.next();
 			assertSize(timezone, 2, 2);
 
-			assertEquals(utc("2004-01-10 03:28:45"), timezone.getLastModified().getValue());
+			assertEquals(utc(2004, 1, 10, 3, 28, 45), timezone.getLastModified().getValue());
 			assertEquals("US/Eastern", timezone.getTimezoneId().getValue());
 
 			{
 				DaylightSavingsTime daylight = timezone.getDaylightSavingsTime().get(0);
 				assertSize(daylight, 0, 5);
-				assertEquals(date("2000-04-04 02:00:00"), daylight.getDateStart().getValue());
+				assertEquals(date(2000, 4, 4, 2, 0, 0), daylight.getDateStart().getValue());
 				assertEquals(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false), daylight.getDateStart().getValue().getRawComponents());
 
 				Recurrence rrule = daylight.getRecurrenceRule().getValue();
@@ -1175,7 +1175,7 @@ public class XCalDocumentTest {
 			{
 				StandardTime standard = timezone.getStandardTimes().get(0);
 				assertSize(standard, 0, 5);
-				assertEquals(date("2000-10-26 02:00:00"), standard.getDateStart().getValue());
+				assertEquals(date(2000, 10, 26, 2, 0, 0), standard.getDateStart().getValue());
 				assertEquals(new DateTimeComponents(2000, 10, 26, 2, 0, 0, false), standard.getDateStart().getValue().getRawComponents());
 
 				Recurrence rrule = standard.getRecurrenceRule().getValue();
@@ -1229,15 +1229,15 @@ public class XCalDocumentTest {
 		ical.setProductId("-//Example Inc.//Example Client//EN");
 		{
 			VEvent event = new VEvent();
-			event.setDateTimeStamp(utc("2006-02-06 00:11:21"));
-			event.setDateStart(date("2006-01-02 12:00:00", eastern));
+			event.setDateTimeStamp(utc(2006, 2, 6, 0, 11, 21));
+			event.setDateStart(date(2006, 1, 2, 12, 0, 0, eastern));
 			event.setDuration(Duration.builder().hours(1).build());
 
 			Recurrence rrule = new Recurrence.Builder(Frequency.DAILY).count(5).build();
 			event.setRecurrenceRule(rrule);
 
 			RecurrenceDates rdate = new RecurrenceDates();
-			rdate.getPeriods().add(new Period(date("2006-01-02 15:00:00", eastern), Duration.builder().hours(2).build()));
+			rdate.getPeriods().add(new Period(date(2006, 1, 2, 15, 0, 0, eastern), Duration.builder().hours(2).build()));
 			event.addRecurrenceDates(rdate);
 
 			event.setSummary("Event #2");
@@ -1247,11 +1247,11 @@ public class XCalDocumentTest {
 		}
 		{
 			VEvent event = new VEvent();
-			event.setDateTimeStamp(utc("2006-02-06 00:11:21"));
-			event.setDateStart(date("2006-01-04 14:00:00", eastern));
+			event.setDateTimeStamp(utc(2006, 2, 6, 0, 11, 21));
+			event.setDateStart(date(2006, 1, 4, 14, 0, 0, eastern));
 			event.setDuration(Duration.builder().hours(1).build());
 
-			event.setRecurrenceId(date("2006-01-04 12:00:00", eastern));
+			event.setRecurrenceId(date(2006, 1, 4, 12, 0, 0, eastern));
 
 			event.setSummary("Event #2 bis");
 			event.setUid("00959BC664CA650E933C892C@example.com");
@@ -1261,7 +1261,7 @@ public class XCalDocumentTest {
 		assertValidate(ical).versions(V2_0).run();
 
 		VTimezone usEasternTz = new VTimezone("US/Eastern");
-		usEasternTz.setLastModified(utc("2004-01-10 03:28:45"));
+		usEasternTz.setLastModified(utc(2004, 1, 10, 3, 28, 45));
 		{
 			DaylightSavingsTime daylight = new DaylightSavingsTime();
 			daylight.setDateStart(new DateTimeComponents(2000, 4, 4, 2, 0, 0, false));

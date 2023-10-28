@@ -9,11 +9,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.IdentityHashMap;
@@ -32,8 +30,8 @@ import org.xml.sax.SAXException;
 
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
-import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.ValidationWarning;
+import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.component.ICalComponent;
 import biweekly.component.VTimezone;
 import biweekly.io.ParseWarning;
@@ -263,84 +261,110 @@ public class TestUtils {
 		return values;
 	}
 
-	//@formatter:off
-	private static DateFormat dfs[] = new DateFormat[]{
-		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z"),
-		new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"),
-		new SimpleDateFormat("yyyy-MM-dd")
-	};
-	//@formatter:on
-
 	/**
-	 * <p>
-	 * Creates a {@link Date} object.
-	 * </p>
-	 * <p>
-	 * The following date string formats are accepted.
-	 * </p>
-	 * <ul>
-	 * <li>yyyy-MM-dd</li>
-	 * <li>yyyy-MM-dd HH:mm:ss</li>
-	 * <li>yyyy-MM-dd HH:mm:ss Z</li>
-	 * </ul>
-	 * <p>
-	 * If no UTC offset is specified, the default timezone will be used.
-	 * </p>
-	 * @param text the date string to parse
-	 * @return the parsed date
-	 * @throws IllegalArgumentException if it couldn't be parsed
+	 * Creates a date object.
+	 * @param year the year
+	 * @param month the month (e.g. "1" for January)
+	 * @param day the date
+	 * @param hour the hour
+	 * @param minute the minute
+	 * @param second the second
+	 * @param tz the timezone
+	 * @return the date
 	 */
-	public static Date date(String text) {
-		return date(text, TimeZone.getDefault());
+	public static Date date(int year, int month, int day, int hour, int minute, int second, TimeZone tz) {
+		Calendar c = Calendar.getInstance(tz);
+		c.clear();
+		c.set(year, month - 1, day, hour, minute, second);
+		return c.getTime();
 	}
 
 	/**
-	 * <p>
-	 * Creates a {@link Date} object.
-	 * </p>
-	 * <p>
-	 * The following date string formats are accepted.
-	 * </p>
-	 * <ul>
-	 * <li>yyyy-MM-dd</li>
-	 * <li>yyyy-MM-dd HH:mm:ss</li>
-	 * <li>yyyy-MM-dd HH:mm:ss Z</li>
-	 * </ul>
-	 * @param text the date string
-	 * @param timezone the timezone the date string is in (ignored if the date
-	 * string contains a UTC offset)
-	 * @return the parsed date
-	 * @throws IllegalArgumentException if it couldn't be parsed
+	 * Creates a date object under the given UTC offset.
+	 * @param year the year
+	 * @param month the month (e.g. "1" for January)
+	 * @param day the date
+	 * @param hour the hour
+	 * @param minute the minute
+	 * @param second the second
+	 * @param offset the offset (e.g. "+01:00")
+	 * @return the date
 	 */
-	public static Date date(String text, TimeZone timezone) {
-		for (DateFormat df : dfs) {
-			try {
-				df.setTimeZone(timezone);
-				return df.parse(text);
-			} catch (ParseException e) {
-				//try the next date formatter
-			}
-		}
-		throw new IllegalArgumentException("Invalid date string: " + text);
+	public static Date date(int year, int month, int day, int hour, int minute, int second, String offset) {
+		TimeZone tz = TimeZone.getTimeZone("GMT" + offset);
+		return date(year, month, day, hour, minute, second, tz);
 	}
 
-	public static ICalDate icalDate(String text) {
-		DateTimeComponents components = DateTimeComponents.parse(text);
+	/**
+	 * Creates a date object under the UTC timezone.
+	 * @param year the year
+	 * @param month the month (e.g. "1" for January)
+	 * @param day the date
+	 * @param hour the hour
+	 * @param minute the minute
+	 * @param second the second
+	 * @return the date
+	 */
+	public static Date utc(int year, int month, int day, int hour, int minute, int second) {
+		TimeZone tz = TimeZone.getTimeZone("GMT");
+		return date(year, month, day, hour, minute, second, tz);
+	}
+
+	/**
+	 * Creates a date object under the default timezone.
+	 * @param year the year
+	 * @param month the month (e.g. "1" for January)
+	 * @param day the date
+	 * @param hour the hour
+	 * @param minute the minute
+	 * @param second the second
+	 * @return the date
+	 */
+	public static Date date(int year, int month, int day, int hour, int minute, int second) {
+		TimeZone tz = TimeZone.getDefault();
+		return date(year, month, day, hour, minute, second, tz);
+	}
+
+	/**
+	 * Creates a date object.
+	 * @param year the year
+	 * @param month the month (e.g. "1" for January)
+	 * @param day the date
+	 * @return the date
+	 */
+	public static Date date(int year, int month, int day) {
+		return date(year, month, day, 0, 0, 0);
+	}
+
+	/**
+	 * Creates an {@link ICalDate} object.
+	 * @param year the year
+	 * @param month the month (e.g. "1" for January)
+	 * @param day the date
+	 * @return the date
+	 */
+	public static ICalDate icalDate(int year, int month, int day) {
+		DateTimeComponents components = new DateTimeComponents(year, month, day);
 		Date date = components.toDate();
 		boolean hasTime = components.hasTime();
 		return new ICalDate(date, components, hasTime);
 	}
 
 	/**
-	 * Creates a {@link Date} object.
-	 * @param text the date string (e.g. "2000-01-30 02:21:00", see code for
-	 * acceptable formats)
-	 * @return the parsed date in the UTC timezone or null if it couldn't be
-	 * parsed
-	 * @throws IllegalArgumentException if it couldn't be parsed
+	 * Creates an {@link ICalDate} object.
+	 * @param year the year
+	 * @param month the month (e.g. "1" for January)
+	 * @param day the date
+	 * @param hour the hour
+	 * @param minute the minute
+	 * @param second the second
+	 * @return the date
 	 */
-	public static Date utc(String text) {
-		return date(text + " +0000");
+	public static ICalDate icalDate(int year, int month, int day, int hour, int minute, int second) {
+		DateTimeComponents components = new DateTimeComponents(year, month, day, hour, minute, second, false);
+		Date date = components.toDate();
+		boolean hasTime = components.hasTime();
+		return new ICalDate(date, components, hasTime);
 	}
 
 	/**

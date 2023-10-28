@@ -50,13 +50,13 @@ public class DateOrDateTimePropertyTest {
 		DateOrDateTimeProperty property = new DateOrDateTimeProperty((Date) null);
 		assertNull(property.getValue());
 
-		property = new DateOrDateTimeProperty(date("2016-01-17"));
-		assertEquals(new ICalDate(date("2016-01-17"), true), property.getValue());
+		property = new DateOrDateTimeProperty(date(2016, 1, 17));
+		assertEquals(new ICalDate(date(2016, 1, 17), true), property.getValue());
 
-		property = new DateOrDateTimeProperty(date("2016-01-17"), false);
-		assertEquals(new ICalDate(date("2016-01-17"), false), property.getValue());
+		property = new DateOrDateTimeProperty(date(2016, 1, 17), false);
+		assertEquals(new ICalDate(date(2016, 1, 17), false), property.getValue());
 
-		ICalDate icalDate = new ICalDate(date("2016-01-17"));
+		ICalDate icalDate = new ICalDate(date(2016, 1, 17));
 		property = new DateOrDateTimeProperty(icalDate);
 		assertSame(icalDate, property.getValue());
 
@@ -67,19 +67,19 @@ public class DateOrDateTimePropertyTest {
 
 	@Test
 	public void set_value() {
-		DateOrDateTimeProperty property = new DateOrDateTimeProperty(date("2016-01-17"));
+		DateOrDateTimeProperty property = new DateOrDateTimeProperty(date(2016, 1, 17));
 
-		property.setValue(date("2016-01-18"), false);
-		assertEquals(new ICalDate(date("2016-01-18"), false), property.getValue());
+		property.setValue(date(2016, 1, 18), false);
+		assertEquals(new ICalDate(date(2016, 1, 18), false), property.getValue());
 
-		property.setValue(date("2016-01-18"), true);
-		assertEquals(new ICalDate(date("2016-01-18"), true), property.getValue());
+		property.setValue(date(2016, 1, 18), true);
+		assertEquals(new ICalDate(date(2016, 1, 18), true), property.getValue());
 
 		property.setValue(null, true);
 		assertNull(property.getValue());
 
-		property.setValue(new ICalDate(date("2016-01-18"), false));
-		assertEquals(new ICalDate(date("2016-01-18"), false), property.getValue());
+		property.setValue(new ICalDate(date(2016, 1, 18), false));
+		assertEquals(new ICalDate(date(2016, 1, 18), false), property.getValue());
 
 		property.setValue(null);
 		assertNull(property.getValue());
@@ -99,7 +99,7 @@ public class DateOrDateTimePropertyTest {
 		DateOrDateTimeProperty property = new DateOrDateTimeProperty((ICalDate) null);
 		assertFalse(property.toStringValues().isEmpty());
 
-		property = new DateOrDateTimeProperty(new ICalDate(date("2016-01-17")));
+		property = new DateOrDateTimeProperty(new ICalDate(date(2016, 1, 17)));
 		assertFalse(property.toStringValues().isEmpty());
 	}
 
@@ -117,9 +117,9 @@ public class DateOrDateTimePropertyTest {
 		//@formatter:off
 		assertNothingIsEqual(
 			new DateOrDateTimeProperty((ICalDate)null),
-			new DateOrDateTimeProperty(date("2016-01-17"), false),
-			new DateOrDateTimeProperty(date("2016-01-18"), false),
-			new DateOrDateTimeProperty(date("2016-01-17"), true)
+			new DateOrDateTimeProperty(date(2016, 1, 17), false),
+			new DateOrDateTimeProperty(date(2016, 1, 18), false),
+			new DateOrDateTimeProperty(date(2016, 1, 17), true)
 		);
 
 		assertEqualsMethod(DateOrDateTimeProperty.class, new ICalDate())
