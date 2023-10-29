@@ -364,7 +364,7 @@ public final class Recurrence {
 		}
 
 		/**
-		 * Sets the frequency
+		 * Sets the frequency.
 		 * @param frequency the frequency
 		 * @return this
 		 */
@@ -376,7 +376,7 @@ public final class Recurrence {
 		/**
 		 * Sets the date that the recurrence stops. Note that the UNTIL and
 		 * COUNT fields cannot both be defined within the same rule.
-		 * @param until the date
+		 * @param until the date that the recurrence stops
 		 * @return this
 		 */
 		public Builder until(ICalDate until) {
@@ -408,7 +408,7 @@ public final class Recurrence {
 		}
 
 		/**
-		 * Gets the number of times the rule will be repeated. Note that the
+		 * Sets the number of times the rule will be repeated. Note that the
 		 * UNTIL and COUNT fields cannot both be defined within the same rule.
 		 * @param count the number of times to repeat the rule
 		 * @return this
@@ -419,7 +419,7 @@ public final class Recurrence {
 		}
 
 		/**
-		 * Gets how often the rule repeats, in relation to the frequency.
+		 * Sets how often the rule repeats in relation to the frequency.
 		 * @param interval the repetition interval
 		 * @return this
 		 */
