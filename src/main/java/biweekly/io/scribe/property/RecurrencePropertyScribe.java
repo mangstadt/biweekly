@@ -1,7 +1,5 @@
 package biweekly.io.scribe.property;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -108,91 +106,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	}
 
 	private String writeTextV1(T property, WriteContext context) {
-		Recurrence recur = property.getValue();
-		Frequency frequency = recur.getFrequency();
-		if (frequency == null) {
-			return "";
-		}
-
-		StringBuilder sb = new StringBuilder();
-
-		Integer interval = recur.getInterval();
-		if (interval == null) {
-			interval = 1;
-		}
-
-		switch (frequency) {
-		case YEARLY:
-			if (!recur.getByMonth().isEmpty()) {
-				sb.append("YM").append(interval);
-				for (Integer month : recur.getByMonth()) {
-					sb.append(' ').append(month);
-				}
-			} else {
-				sb.append("YD").append(interval);
-				for (Integer day : recur.getByYearDay()) {
-					sb.append(' ').append(day);
-				}
-			}
-			break;
-
-		case MONTHLY:
-			if (!recur.getByMonthDay().isEmpty()) {
-				sb.append("MD").append(interval);
-				for (Integer day : recur.getByMonthDay()) {
-					sb.append(' ').append(writeVCalInt(day));
-				}
-			} else {
-				sb.append("MP").append(interval);
-				for (ByDay byDay : recur.getByDay()) {
-					DayOfWeek day = byDay.getDay();
-					Integer prefix = byDay.getNum();
-					if (prefix == null) {
-						prefix = 1;
-					}
-
-					sb.append(' ').append(writeVCalInt(prefix)).append(' ').append(day.getAbbr());
-				}
-			}
-			break;
-
-		case WEEKLY:
-			sb.append("W").append(interval);
-			for (ByDay byDay : recur.getByDay()) {
-				sb.append(' ').append(byDay.getDay().getAbbr());
-			}
-			break;
-
-		case DAILY:
-			sb.append("D").append(interval);
-			break;
-
-		case HOURLY:
-			sb.append("M").append(interval * 60);
-			break;
-
-		case MINUTELY:
-			sb.append("M").append(interval);
-			break;
-
-		default:
-			return "";
-		}
-
-		Integer count = recur.getCount();
-		ICalDate until = recur.getUntil();
-		sb.append(' ');
-
-		if (count != null) {
-			sb.append('#').append(count);
-		} else if (until != null) {
-			String dateStr = date(until, property, context).extended(false).write();
-			sb.append(dateStr);
-		} else {
-			sb.append("#0");
-		}
-
-		return sb.toString();
+		return new RecurrenceWriterV1(property, context).write();
 	}
 
 	private String writeTextV2(T property, WriteContext context) {
@@ -208,7 +122,6 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 		switch (context.getVersion()) {
 		case V1_0:
-			handleVersion1Multivalued(value, dataType, parameters, context);
 			return parseTextV1(value, dataType, parameters, context);
 		default:
 			return parseTextV2(value, dataType, parameters, context);
@@ -216,29 +129,36 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	}
 
 	/**
-	 * Version 1.0 allows multiple RRULE values to be defined inside of the same
-	 * property. This method checks for this and, if multiple values are found,
-	 * parses them and throws a {@link DataModelConversionException}.
 	 * @param value the property value
 	 * @param dataType the property data type
 	 * @param parameters the property parameters
 	 * @param context the parse context
+	 * @return the parsed property
 	 * @throws DataModelConversionException if the property contains multiple
 	 * RRULE values
 	 */
-	private void handleVersion1Multivalued(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		List<String> rrules = splitRRULEValues(value);
+	private T parseTextV1(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
+		RecurrenceParserV1 parser = new RecurrenceParserV1(context);
+
+		List<String> rrules = RecurrenceParserV1.splitPropertyValue(value);
 		if (rrules.size() == 1) {
-			return;
+			Recurrence recur = parser.parse(value);
+			return newInstance(recur, context, parameters);
 		}
 
+		/*
+		 * Version 1.0 allows multiple RRULE values to be defined inside of the
+		 * same property. If there are multiple values, parse them and throw a
+		 * DataModelConversionException.
+		 */
 		DataModelConversionException conversionException = new DataModelConversionException(null);
 		for (String rrule : rrules) {
 			ICalParameters parametersCopy = new ICalParameters(parameters);
 
 			ICalProperty property;
 			try {
-				property = parseTextV1(rrule, dataType, parametersCopy, context);
+				Recurrence recur = parser.parse(rrule);
+				property = newInstance(recur, context, parameters);
 			} catch (CannotParseException e) {
 				//@formatter:off
 				context.getWarnings().add(new ParseWarning.Builder(context)
@@ -253,241 +173,6 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		}
 
 		throw conversionException;
-	}
-
-	/**
-	 * Version 1.0 allows multiple RRULE values to be defined inside of the same
-	 * property. This method extracts each RRULE value from the property value.
-	 * @param value the property value
-	 * @return the RRULE values
-	 */
-	private List<String> splitRRULEValues(String value) {
-		List<String> values = new ArrayList<String>();
-		Pattern p = Pattern.compile("#\\d+|\\d{8}T\\d{6}Z?");
-		Matcher m = p.matcher(value);
-
-		int prevIndex = 0;
-		while (m.find()) {
-			int end = m.end();
-			String subValue = value.substring(prevIndex, end).trim();
-			values.add(subValue);
-			prevIndex = end;
-		}
-		String subValue = value.substring(prevIndex).trim();
-		if (subValue.length() > 0) {
-			values.add(subValue);
-		}
-
-		return values;
-	}
-
-	private T parseTextV1(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
-		final Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
-
-		List<String> splitValues = Arrays.asList(value.toUpperCase().split("\\s+"));
-
-		//parse the frequency and interval from the first token (e.g. "W2")
-		String frequencyStr;
-		Integer interval;
-		{
-			String firstToken = splitValues.get(0);
-			Pattern p = Pattern.compile("^([A-Z]+)(\\d+)$");
-			Matcher m = p.matcher(firstToken);
-			if (!m.find()) {
-				throw new CannotParseException(40, firstToken);
-			}
-
-			frequencyStr = m.group(1);
-			interval = integerValueOf(m.group(2));
-
-			splitValues = splitValues.subList(1, splitValues.size());
-		}
-		builder.interval(interval);
-
-		Integer count = null;
-		ICalDate until = null;
-		if (splitValues.isEmpty()) {
-			count = 2;
-		} else {
-			String lastToken = splitValues.get(splitValues.size() - 1);
-			if (lastToken.startsWith("#")) {
-				String countStr = lastToken.substring(1);
-				count = integerValueOf(countStr);
-				if (count == 0) {
-					//infinite
-					count = null;
-				}
-
-				splitValues = splitValues.subList(0, splitValues.size() - 1);
-			} else {
-				try {
-					//see if the value is an "until" date
-					until = date(lastToken).parse();
-					splitValues = splitValues.subList(0, splitValues.size() - 1);
-				} catch (IllegalArgumentException e) {
-					//last token is a regular value
-					count = 2;
-				}
-			}
-		}
-		builder.count(count);
-		builder.until(until);
-
-		//determine what frequency enum to use and how to treat each tokenized value
-		Frequency frequency;
-		Handler<String> handler;
-		if ("YD".equals(frequencyStr)) {
-			frequency = Frequency.YEARLY;
-			handler = new Handler<String>() {
-				public void handle(String value) {
-					if (value == null) {
-						return;
-					}
-
-					Integer dayOfYear = integerValueOf(value);
-					builder.byYearDay(dayOfYear);
-				}
-			};
-		} else if ("YM".equals(frequencyStr)) {
-			frequency = Frequency.YEARLY;
-			handler = new Handler<String>() {
-				public void handle(String value) {
-					if (value == null) {
-						return;
-					}
-
-					Integer month = integerValueOf(value);
-					builder.byMonth(month);
-				}
-			};
-		} else if ("MD".equals(frequencyStr)) {
-			frequency = Frequency.MONTHLY;
-			handler = new Handler<String>() {
-				public void handle(String value) {
-					if (value == null) {
-						return;
-					}
-
-					try {
-						Integer date = "LD".equals(value) ? -1 : parseVCalInt(value);
-						builder.byMonthDay(date);
-					} catch (NumberFormatException e) {
-						throw new CannotParseException(40, value);
-					}
-				}
-			};
-		} else if ("MP".equals(frequencyStr)) {
-			frequency = Frequency.MONTHLY;
-			handler = new Handler<String>() {
-				private final List<Integer> nums = new ArrayList<Integer>();
-				private final List<DayOfWeek> days = new ArrayList<DayOfWeek>();
-				private boolean readNum = false;
-
-				public void handle(String value) {
-					if (value == null) {
-						//end of list
-						for (Integer num : nums) {
-							for (DayOfWeek day : days) {
-								builder.byDay(num, day);
-							}
-						}
-						return;
-					}
-
-					if (value.matches("\\d{4}")) {
-						readNum = false;
-
-						Integer hour = integerValueOf(value.substring(0, 2));
-						builder.byHour(hour);
-
-						Integer minute = integerValueOf(value.substring(2, 4));
-						builder.byMinute(minute);
-						return;
-					}
-
-					try {
-						Integer curNum = parseVCalInt(value);
-
-						if (!readNum) {
-							//reset lists, new segment
-							for (Integer num : nums) {
-								for (DayOfWeek day : days) {
-									builder.byDay(num, day);
-								}
-							}
-							nums.clear();
-							days.clear();
-
-							readNum = true;
-						}
-
-						nums.add(curNum);
-					} catch (NumberFormatException e) {
-						readNum = false;
-
-						DayOfWeek day = parseDay(value);
-						days.add(day);
-					}
-				}
-			};
-		} else if ("W".equals(frequencyStr)) {
-			frequency = Frequency.WEEKLY;
-			handler = new Handler<String>() {
-				public void handle(String value) {
-					if (value == null) {
-						return;
-					}
-
-					DayOfWeek day = parseDay(value);
-					builder.byDay(day);
-				}
-			};
-		} else if ("D".equals(frequencyStr)) {
-			frequency = Frequency.DAILY;
-			handler = new Handler<String>() {
-				public void handle(String value) {
-					if (value == null) {
-						return;
-					}
-
-					Integer hour = integerValueOf(value.substring(0, 2));
-					builder.byHour(hour);
-
-					Integer minute = integerValueOf(value.substring(2, 4));
-					builder.byMinute(minute);
-				}
-			};
-		} else if ("M".equals(frequencyStr)) {
-			frequency = Frequency.MINUTELY;
-			handler = new Handler<String>() {
-				public void handle(String value) {
-					//TODO can this ever have values?
-				}
-			};
-		} else {
-			throw new CannotParseException(41, frequencyStr);
-		}
-
-		builder.frequency(frequency);
-
-		//parse the rest of the tokens
-		for (String splitValue : splitValues) {
-			//TODO not sure how to handle the "$" symbol, ignore it
-			if (splitValue.endsWith("$")) {
-				context.addWarning(36, splitValue);
-				splitValue = splitValue.substring(0, splitValue.length() - 1);
-			}
-
-			handler.handle(splitValue);
-		}
-		handler.handle(null);
-
-		T property = newInstance(builder.build());
-		if (until != null) {
-			context.addDate(until, property, parameters);
-		}
-
-		return property;
 	}
 
 	private T parseTextV2(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
@@ -510,70 +195,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		parseWkst(rules, builder, context);
 		parseXRules(rules, builder); //must be called last
 
-		T property = newInstance(builder.build());
-
-		ICalDate until = property.getValue().getUntil();
-		if (until != null) {
-			context.addDate(until, property, parameters);
-		}
-
-		return property;
-	}
-
-	/**
-	 * Parses an integer string, where the sign is at the end of the string
-	 * instead of at the beginning (for example, "5-").
-	 * @param value the string
-	 * @return the value
-	 * @throws NumberFormatException if the string cannot be parsed as an
-	 * integer
-	 */
-	private static int parseVCalInt(String value) {
-		int negate = 1;
-		if (value.endsWith("+")) {
-			value = value.substring(0, value.length() - 1);
-		} else if (value.endsWith("-")) {
-			value = value.substring(0, value.length() - 1);
-			negate = -1;
-		}
-
-		return Integer.parseInt(value) * negate;
-	}
-
-	/**
-	 * Same as {@link Integer#valueOf(String)}, but throws a
-	 * {@link CannotParseException} when it fails.
-	 * @param value the string to parse
-	 * @return the parse integer
-	 * @throws CannotParseException if the string cannot be parsed
-	 */
-	private static Integer integerValueOf(String value) {
-		try {
-			return Integer.valueOf(value);
-		} catch (NumberFormatException e) {
-			throw new CannotParseException(40, value);
-		}
-	}
-
-	private static String writeVCalInt(Integer value) {
-		if (value > 0) {
-			return value + "+";
-		}
-
-		if (value < 0) {
-			return Math.abs(value) + "-";
-		}
-
-		return value.toString();
-	}
-
-	private DayOfWeek parseDay(String value) {
-		DayOfWeek day = DayOfWeek.valueOfAbbr(value);
-		if (day == null) {
-			throw new CannotParseException(42, value);
-		}
-
-		return day;
+		return newInstance(builder.build(), context, parameters);
 	}
 
 	@Override
@@ -704,6 +326,16 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	 * @return the new instance
 	 */
 	protected abstract T newInstance(Recurrence recur);
+
+	private T newInstance(Recurrence recur, ParseContext context, ICalParameters parameters) {
+		T property = newInstance(recur);
+
+		if (recur.getUntil() != null) {
+			context.addDate(recur.getUntil(), property, parameters);
+		}
+
+		return property;
+	}
 
 	private void parseFreq(ListMultimap<String, String> rules, final Recurrence.Builder builder, final ParseContext context) {
 		parseFirst(rules, FREQ, new Handler<String>() {
