@@ -202,12 +202,17 @@ public final class XmlUtils {
 	 * @see <a href=
 	 * "https://www.owasp.org/index.php/XML_External_Entity_%28XXE%29_Prevention_Cheat_Sheet#Java">
 	 * XXE Cheat Sheet</a>
+	 * @see <a href="https://rules.sonarsource.com/java/RSPEC-2755/">SonarLint
+	 * 2755</a>
 	 */
 	public static void applyXXEProtection(TransformerFactory factory) {
 		//@formatter:off
 		String[] attributes = {
 			//XMLConstants.ACCESS_EXTERNAL_DTD (Java 7 only)
 			"http://javax.xml.XMLConstants/property/accessExternalDTD",
+
+			//XMLConstants.ACCESS_EXTERNAL_SCHEMA (Java 7 only)
+			"http://javax.xml.XMLConstants/property/accessExternalSchema", 
 
 			//XMLConstants.ACCESS_EXTERNAL_STYLESHEET (Java 7 only)
 			"http://javax.xml.XMLConstants/property/accessExternalStylesheet"
@@ -283,7 +288,10 @@ public final class XmlUtils {
 	 */
 	public static void toWriter(Node node, Writer writer, Map<String, String> outputProperties) throws TransformerException {
 		try {
-			Transformer transformer = TransformerFactory.newInstance().newTransformer();
+			TransformerFactory factory = TransformerFactory.newInstance();
+			applyXXEProtection(factory);
+
+			Transformer transformer = factory.newTransformer();
 			for (Map.Entry<String, String> property : outputProperties.entrySet()) {
 				try {
 					transformer.setOutputProperty(property.getKey(), property.getValue());
