@@ -41,6 +41,7 @@ import biweekly.util.org.apache.commons.codec.binary.Base64;
  * @author Michael Angstadt
  */
 public final class DataUri {
+	private static final String SCHEME = "data:";
 	private final byte[] data;
 	private final String text;
 	private final String contentType;
@@ -95,8 +96,7 @@ public final class DataUri {
 	public static DataUri parse(String uri) {
 		//Syntax: data:[<media type>][;charset=<character set>][;base64],<data>
 
-		String scheme = "data:";
-		if (uri.length() < scheme.length() || !uri.substring(0, scheme.length()).equalsIgnoreCase(scheme)) {
+		if (!StringUtils.startsWithIgnoreCase(uri, SCHEME)) {
 			//not a data URI
 			throw Messages.INSTANCE.getIllegalArgumentException(22);
 		}
@@ -105,8 +105,8 @@ public final class DataUri {
 		String charset = null;
 		boolean base64 = false;
 		String dataStr = null;
-		int tokenStart = scheme.length();
-		for (int i = scheme.length(); i < uri.length(); i++) {
+		int tokenStart = SCHEME.length();
+		for (int i = SCHEME.length(); i < uri.length(); i++) {
 			char c = uri.charAt(i);
 
 			if (c == ';') {
@@ -211,7 +211,7 @@ public final class DataUri {
 	 */
 	public String toString(String charset) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("data:");
+		sb.append(SCHEME);
 		sb.append(contentType);
 
 		if (data != null) {

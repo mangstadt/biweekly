@@ -1,7 +1,9 @@
 package biweekly.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -64,6 +66,13 @@ public class StringUtilsTest {
 
 		expected = StringUtils.afterPrefixIgnoreCase("m", "mailto:");
 		assertNull(expected);
+	}
+	
+	@Test
+	public void startsWithIgnoreCase() {
+		assertTrue(StringUtils.startsWithIgnoreCase("MAILTO:email@example.com", "mailto:"));
+		assertFalse(StringUtils.startsWithIgnoreCase("http://www.google.com", "mailto:"));
+		assertFalse(StringUtils.startsWithIgnoreCase("m", "mailto:"));
 	}
 
 	@Test

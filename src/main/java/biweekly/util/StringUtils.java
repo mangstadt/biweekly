@@ -87,6 +87,22 @@ public final class StringUtils {
 	}
 
 	/**
+	 * Like {@link String#startsWith()}, but using case-insensitive
+	 * comparison.
+	 * @param str the string
+	 * @param prefix the prefix
+	 * @return true if the string begins with the given prefix using
+	 * case-insensitive comparison, false if not
+	 */
+	public static boolean startsWithIgnoreCase(String str, String prefix) {
+		if (str.length() < prefix.length()) {
+			return false;
+		}
+
+		return str.substring(0, prefix.length()).equalsIgnoreCase(prefix);
+	}
+
+	/**
 	 * Joins a collection of values into a delimited list.
 	 * @param collection the collection of values
 	 * @param delimiter the delimiter (e.g. ",")
