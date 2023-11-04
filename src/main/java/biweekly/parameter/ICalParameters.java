@@ -1557,7 +1557,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @param <T> the enum parameter class
 	 */
 	public abstract class EnumParameterList<T extends EnumParameterValue> extends ICalParameterList<T> {
-		public EnumParameterList(String parameterName) {
+		protected EnumParameterList(String parameterName) {
 			super(parameterName);
 		}
 
@@ -1589,7 +1589,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 		/**
 		 * @param parameterName the name of the parameter (case insensitive)
 		 */
-		public ICalParameterList(String parameterName) {
+		protected ICalParameterList(String parameterName) {
 			this.parameterName = parameterName;
 			parameterValues = ICalParameters.this.get(parameterName);
 		}

@@ -42,7 +42,7 @@ import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
  * @author Michael Angstadt
  */
 public abstract class IntegerPropertyScribe<T extends IntegerProperty> extends ICalPropertyScribe<T> {
-	public IntegerPropertyScribe(Class<T> clazz, String propertyName) {
+	protected IntegerPropertyScribe(Class<T> clazz, String propertyName) {
 		super(clazz, propertyName, ICalDataType.INTEGER);
 	}
 

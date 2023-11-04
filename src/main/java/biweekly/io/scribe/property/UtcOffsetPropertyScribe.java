@@ -43,7 +43,7 @@ import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
  * @author Michael Angstadt
  */
 public abstract class UtcOffsetPropertyScribe<T extends UtcOffsetProperty> extends ICalPropertyScribe<T> {
-	public UtcOffsetPropertyScribe(Class<T> clazz, String propertyName) {
+	protected UtcOffsetPropertyScribe(Class<T> clazz, String propertyName) {
 		super(clazz, propertyName, ICalDataType.UTC_OFFSET);
 	}
 

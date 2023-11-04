@@ -49,7 +49,7 @@ public abstract class ICalProperty {
 	 */
 	protected ICalParameters parameters;
 
-	public ICalProperty() {
+	protected ICalProperty() {
 		parameters = new ICalParameters();
 	}
 

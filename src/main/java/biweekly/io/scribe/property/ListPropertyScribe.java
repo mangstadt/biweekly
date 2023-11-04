@@ -45,11 +45,11 @@ import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
  * @author Michael Angstadt
  */
 public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends ICalPropertyScribe<T> {
-	public ListPropertyScribe(Class<T> clazz, String propertyName) {
+	protected ListPropertyScribe(Class<T> clazz, String propertyName) {
 		this(clazz, propertyName, ICalDataType.TEXT);
 	}
 
-	public ListPropertyScribe(Class<T> clazz, String propertyName, ICalDataType dataType) {
+	protected ListPropertyScribe(Class<T> clazz, String propertyName, ICalDataType dataType) {
 		super(clazz, propertyName, dataType);
 	}
 

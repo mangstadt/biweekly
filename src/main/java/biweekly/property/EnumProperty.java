@@ -44,7 +44,7 @@ public abstract class EnumProperty extends TextProperty {
 	 * Creates an enum property.
 	 * @param value the property value
 	 */
-	public EnumProperty(String value) {
+	protected EnumProperty(String value) {
 		super(value);
 	}
 
@@ -52,7 +52,7 @@ public abstract class EnumProperty extends TextProperty {
 	 * Copy constructor.
 	 * @param original the property to make a copy of
 	 */
-	public EnumProperty(EnumProperty original) {
+	protected EnumProperty(EnumProperty original) {
 		super(original);
 	}
 

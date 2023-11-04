@@ -44,7 +44,7 @@ import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
  * @author Michael Angstadt
  */
 public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimeProperty> extends ICalPropertyScribe<T> {
-	public DateOrDateTimePropertyScribe(Class<T> clazz, String propertyName) {
+	protected DateOrDateTimePropertyScribe(Class<T> clazz, String propertyName) {
 		super(clazz, propertyName, ICalDataType.DATE_TIME);
 	}
 

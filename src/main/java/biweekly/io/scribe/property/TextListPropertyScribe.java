@@ -38,7 +38,7 @@ import biweekly.property.ListProperty;
  * @author Michael Angstadt
  */
 public abstract class TextListPropertyScribe<T extends ListProperty<String>> extends ListPropertyScribe<T, String> {
-	public TextListPropertyScribe(Class<T> clazz, String propertyName) {
+	protected TextListPropertyScribe(Class<T> clazz, String propertyName) {
 		super(clazz, propertyName);
 	}
 

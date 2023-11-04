@@ -42,11 +42,11 @@ import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
  * @author Michael Angstadt
  */
 public abstract class TextPropertyScribe<T extends TextProperty> extends ICalPropertyScribe<T> {
-	public TextPropertyScribe(Class<T> clazz, String propertyName) {
+	protected TextPropertyScribe(Class<T> clazz, String propertyName) {
 		this(clazz, propertyName, ICalDataType.TEXT);
 	}
 
-	public TextPropertyScribe(Class<T> clazz, String propertyName, ICalDataType dataType) {
+	protected TextPropertyScribe(Class<T> clazz, String propertyName, ICalDataType dataType) {
 		super(clazz, propertyName, dataType);
 	}
 

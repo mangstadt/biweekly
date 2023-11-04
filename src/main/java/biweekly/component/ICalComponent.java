@@ -52,7 +52,7 @@ public abstract class ICalComponent {
 	protected final ListMultimap<Class<? extends ICalComponent>, ICalComponent> components;
 	protected final ListMultimap<Class<? extends ICalProperty>, ICalProperty> properties;
 
-	public ICalComponent() {
+	protected ICalComponent() {
 		components = new ListMultimap<Class<? extends ICalComponent>, ICalComponent>();
 		properties = new ListMultimap<Class<? extends ICalProperty>, ICalProperty>();
 	}

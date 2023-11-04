@@ -52,7 +52,7 @@ public abstract class ICalComponentScribe<T extends ICalComponent> {
 	 * @param clazz the component's class
 	 * @param componentName the component's name (e.g. "VEVENT")
 	 */
-	public ICalComponentScribe(Class<T> clazz, String componentName) {
+	protected ICalComponentScribe(Class<T> clazz, String componentName) {
 		this.clazz = clazz;
 		this.componentName = componentName;
 	}

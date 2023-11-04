@@ -84,7 +84,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param clazz the property class
 	 * @param propertyName the property name (e.g. "VERSION")
 	 */
-	public ICalPropertyScribe(Class<T> clazz, String propertyName) {
+	protected ICalPropertyScribe(Class<T> clazz, String propertyName) {
 		this(clazz, propertyName, null);
 	}
 
@@ -95,7 +95,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param defaultDataType the property's default data type (e.g. "text") or
 	 * null if unknown
 	 */
-	public ICalPropertyScribe(Class<T> clazz, String propertyName, ICalDataType defaultDataType) {
+	protected ICalPropertyScribe(Class<T> clazz, String propertyName, ICalDataType defaultDataType) {
 		this(clazz, propertyName, defaultDataType, new QName(XCAL_NS, propertyName.toLowerCase()));
 	}
 
@@ -109,7 +109,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * (by default, the XML element name is set to the lower-cased property
 	 * name, and the element namespace is set to the xCal namespace)
 	 */
-	public ICalPropertyScribe(Class<T> clazz, String propertyName, ICalDataType defaultDataType, QName qname) {
+	protected ICalPropertyScribe(Class<T> clazz, String propertyName, ICalDataType defaultDataType, QName qname) {
 		this.clazz = clazz;
 		this.propertyName = propertyName;
 		this.defaultDataType = defaultDataType;

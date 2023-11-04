@@ -43,7 +43,7 @@ import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
  * @author Michael Angstadt
  */
 public abstract class BinaryPropertyScribe<T extends BinaryProperty> extends ICalPropertyScribe<T> {
-	public BinaryPropertyScribe(Class<T> clazz, String propertyName) {
+	protected BinaryPropertyScribe(Class<T> clazz, String propertyName) {
 		super(clazz, propertyName, ICalDataType.URI);
 	}
 

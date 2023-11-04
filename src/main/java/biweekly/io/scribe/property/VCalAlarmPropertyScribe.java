@@ -52,11 +52,11 @@ import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueI
  * @author Michael Angstadt
  */
 public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> extends ICalPropertyScribe<T> {
-	public VCalAlarmPropertyScribe(Class<T> clazz, String propertyName) {
+	protected VCalAlarmPropertyScribe(Class<T> clazz, String propertyName) {
 		super(clazz, propertyName);
 	}
 
-	public VCalAlarmPropertyScribe(Class<T> clazz, String propertyName, ICalDataType defaultDataType) {
+	protected VCalAlarmPropertyScribe(Class<T> clazz, String propertyName, ICalDataType defaultDataType) {
 		super(clazz, propertyName, defaultDataType);
 	}
 

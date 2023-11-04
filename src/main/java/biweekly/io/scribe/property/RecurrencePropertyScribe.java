@@ -80,7 +80,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	private static final String BYSETPOS = "BYSETPOS";
 	private static final String WKST = "WKST";
 
-	public RecurrencePropertyScribe(Class<T> clazz, String propertyName) {
+	protected RecurrencePropertyScribe(Class<T> clazz, String propertyName) {
 		super(clazz, propertyName);
 	}
 
