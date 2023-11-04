@@ -87,7 +87,7 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Like {@link String#startsWith()}, but using case-insensitive
+	 * Like {@link String#startsWith}, but using case-insensitive
 	 * comparison.
 	 * @param str the string
 	 * @param prefix the prefix
