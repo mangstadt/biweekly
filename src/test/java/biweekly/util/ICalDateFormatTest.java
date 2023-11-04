@@ -180,10 +180,10 @@ public class ICalDateFormatTest {
 	@Test
 	public void parseTimezoneId() {
 		TimeZone tz = ICalDateFormat.parseTimeZoneId("America/New_York");
-		assertEquals(tz.getID(), "America/New_York");
+		assertEquals("America/New_York", tz.getID());
 
 		tz = ICalDateFormat.parseTimeZoneId("GMT");
-		assertEquals(tz.getID(), "GMT");
+		assertEquals("GMT", tz.getID());
 
 		tz = ICalDateFormat.parseTimeZoneId("Bogus/Timezone");
 		assertNull(tz);

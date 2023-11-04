@@ -665,8 +665,8 @@ public class ListMultimapTest {
 		map.put("foo", "1");
 
 		assertEqualsMethodEssentials(list);
-		assertEquals(list, Arrays.asList("1"));
-		assertNotEquals(list, Arrays.asList("2"));
+		assertEquals(Arrays.asList("1"), list);
+		assertNotEquals(Arrays.asList("2"), list);
 	}
 
 	@Test
