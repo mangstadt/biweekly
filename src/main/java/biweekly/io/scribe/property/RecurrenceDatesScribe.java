@@ -93,15 +93,9 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	protected String _writeText(final RecurrenceDates property, final WriteContext context) {
 		List<ICalDate> dates = property.getDates();
 		if (!dates.isEmpty()) {
-			boolean inObservance = isInObservance(context);
 			List<String> values = new ArrayList<String>(dates.size());
 			for (ICalDate date : dates) {
-				String value;
-				if (inObservance) {
-					value = date(date).observance(true).extended(false).write();
-				} else {
-					value = date(date, property, context).extended(false).write();
-				}
+				String value = writeDateListDate(date, property, context, false);
 				values.add(value);
 			}
 			return VObjectPropertyValues.writeList(values);
@@ -112,26 +106,8 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		if (!periods.isEmpty()) {
 			List<String> values = new ArrayList<String>(periods.size());
 			for (Period period : periods) {
-				StringBuilder sb = new StringBuilder();
-
-				Date start = period.getStartDate();
-				if (start != null) {
-					String date = date(start, property, context).extended(false).write();
-					sb.append(date);
-				}
-
-				sb.append('/');
-
-				Date end = period.getEndDate();
-				Duration duration = period.getDuration();
-				if (end != null) {
-					String date = date(end, property, context).extended(false).write();
-					sb.append(date);
-				} else if (duration != null) {
-					sb.append(duration);
-				}
-
-				values.add(sb.toString());
+				String periodStr = writePeriod(period, property, context, false);
+				values.add(periodStr);
 			}
 			return VObjectPropertyValues.writeList(values);
 		}
@@ -149,15 +125,8 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		ICalDataType dataType = dataType(property, context.getVersion());
 		List<ICalDate> dates = property.getDates();
 		if (!dates.isEmpty()) {
-			boolean inObservance = isInObservance(context);
 			for (ICalDate date : dates) {
-				String dateStr;
-				if (inObservance) {
-					dateStr = date(date).observance(true).extended(true).write();
-				} else {
-					dateStr = date(date, property, context).extended(true).write();
-				}
-
+				String dateStr = writeDateListDate(date, property, context, true);
 				element.append(dataType, dateStr);
 			}
 			return;
@@ -204,44 +173,13 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 		//parse periods
 		for (XCalElement periodElement : periodElements) {
-			String startStr = periodElement.first("start");
-			if (startStr == null) {
-				throw new CannotParseException(9);
-			}
+			Period period = parsePeriod(periodElement);
+			property.getPeriods().add(period);
 
-			ICalDate start;
-			try {
-				start = date(startStr).parse();
-			} catch (IllegalArgumentException e) {
-				throw new CannotParseException(10, startStr);
+			context.addDate(period.getStartDate(), property, parameters);
+			if (period.getEndDate() != null) {
+				context.addDate(period.getEndDate(), property, parameters);
 			}
-
-			String endStr = periodElement.first("end");
-			if (endStr != null) {
-				try {
-					ICalDate end = date(endStr).parse();
-					property.getPeriods().add(new Period(start, end));
-					context.addDate(start, property, parameters);
-					context.addDate(end, property, parameters);
-				} catch (IllegalArgumentException e) {
-					throw new CannotParseException(11, endStr);
-				}
-				continue;
-			}
-
-			String durationStr = periodElement.first("duration");
-			if (durationStr != null) {
-				try {
-					Duration duration = Duration.parse(durationStr);
-					property.getPeriods().add(new Period(start, duration));
-					context.addDate(start, property, parameters);
-				} catch (IllegalArgumentException e) {
-					throw new CannotParseException(12, durationStr);
-				}
-				continue;
-			}
-
-			throw new CannotParseException(13);
 		}
 
 		//parse date-times
@@ -274,38 +212,14 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		List<ICalDate> dates = property.getDates();
 		List<Period> periods = property.getPeriods();
 		if (!dates.isEmpty()) {
-			boolean inObservance = isInObservance(context);
 			for (ICalDate date : dates) {
-				String dateStr;
-				if (inObservance) {
-					dateStr = date(date).observance(true).extended(true).write();
-				} else {
-					dateStr = date(date, property, context).extended(true).write();
-				}
-
+				String dateStr = writeDateListDate(date, property, context, true);
 				values.add(dateStr);
 			}
 		} else if (!periods.isEmpty()) {
 			for (Period period : property.getPeriods()) {
-				StringBuilder sb = new StringBuilder();
-				Date start = period.getStartDate();
-				if (start != null) {
-					String dateStr = date(start, property, context).extended(true).write();
-					sb.append(dateStr);
-				}
-
-				sb.append('/');
-
-				Date end = period.getEndDate();
-				Duration duration = period.getDuration();
-				if (end != null) {
-					String dateStr = date(end, property, context).extended(true).write();
-					sb.append(dateStr);
-				} else if (duration != null) {
-					sb.append(duration);
-				}
-
-				values.add(sb.toString());
+				String periodStr = writePeriod(period, property, context, true);
+				values.add(periodStr);
 			}
 		}
 
@@ -326,35 +240,12 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		if (dataType == PERIOD) {
 			//parse as periods
 			for (String timePeriodStr : valueStrs) {
-				int slash = timePeriodStr.indexOf('/');
-				if (slash < 0) {
-					throw new CannotParseException(13);
-				}
+				Period period = parsePeriod(timePeriodStr);
+				property.getPeriods().add(period);
 
-				String startStr = timePeriodStr.substring(0, slash);
-				ICalDate start;
-				try {
-					start = date(startStr).parse();
-				} catch (IllegalArgumentException e) {
-					throw new CannotParseException(10, startStr);
-				}
-
-				String endStr = timePeriodStr.substring(slash + 1);
-				ICalDate end;
-				try {
-					end = date(endStr).parse();
-					property.getPeriods().add(new Period(start, end));
-					context.addDate(start, property, parameters);
-					context.addDate(end, property, parameters);
-				} catch (IllegalArgumentException e) {
-					//must be a duration
-					try {
-						Duration duration = Duration.parse(endStr);
-						property.getPeriods().add(new Period(start, duration));
-						context.addDate(start, property, parameters);
-					} catch (IllegalArgumentException e2) {
-						throw new CannotParseException(14, endStr);
-					}
+				context.addDate(period.getStartDate(), property, parameters);
+				if (period.getEndDate() != null) {
+					context.addDate(period.getEndDate(), property, parameters);
 				}
 			}
 			return property;
@@ -373,5 +264,97 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 			context.addDate(date, property, parameters);
 		}
 		return property;
+	}
+
+	private Period parsePeriod(String str) {
+		int slash = str.indexOf('/');
+		if (slash < 0) {
+			throw new CannotParseException(13);
+		}
+
+		String beforeSlash = str.substring(0, slash);
+		ICalDate start;
+		try {
+			start = date(beforeSlash).parse();
+		} catch (IllegalArgumentException e) {
+			throw new CannotParseException(10, beforeSlash);
+		}
+
+		String afterSlash = str.substring(slash + 1);
+		try {
+			ICalDate end = date(afterSlash).parse();
+			return new Period(start, end);
+		} catch (IllegalArgumentException e) {
+			//must be a duration
+		}
+
+		try {
+			Duration duration = Duration.parse(afterSlash);
+			return new Period(start, duration);
+		} catch (IllegalArgumentException e) {
+			throw new CannotParseException(14, afterSlash);
+		}
+	}
+
+	private Period parsePeriod(XCalElement element) {
+		String startStr = element.first("start");
+		if (startStr == null) {
+			throw new CannotParseException(9);
+		}
+
+		ICalDate start;
+		try {
+			start = date(startStr).parse();
+		} catch (IllegalArgumentException e) {
+			throw new CannotParseException(10, startStr);
+		}
+
+		String endStr = element.first("end");
+		if (endStr != null) {
+			try {
+				ICalDate end = date(endStr).parse();
+				return new Period(start, end);
+			} catch (IllegalArgumentException e) {
+				throw new CannotParseException(11, endStr);
+			}
+		}
+
+		String durationStr = element.first("duration");
+		if (durationStr != null) {
+			try {
+				Duration duration = Duration.parse(durationStr);
+				return new Period(start, duration);
+			} catch (IllegalArgumentException e) {
+				throw new CannotParseException(12, durationStr);
+			}
+		}
+
+		throw new CannotParseException(13);
+	}
+
+	private String writeDateListDate(ICalDate date, RecurrenceDates property, WriteContext context, boolean extended) {
+		//@formatter:off
+		return isInObservance(context) ?
+			date(date).observance(true).extended(extended).write() :
+			date(date, property, context).extended(extended).write();
+		//@formatter:on
+	}
+
+	private String writePeriod(Period period, RecurrenceDates property, WriteContext context, boolean extended) {
+		Date start = period.getStartDate();
+		String beforeSlash = (start == null) ? "" : date(start, property, context).extended(extended).write();
+
+		String afterSlash;
+		Date end = period.getEndDate();
+		Duration duration = period.getDuration();
+		if (end != null) {
+			afterSlash = date(end, property, context).extended(extended).write();
+		} else if (duration != null) {
+			afterSlash = duration.toString();
+		} else {
+			afterSlash = "";
+		}
+
+		return beforeSlash + "/" + afterSlash;
 	}
 }

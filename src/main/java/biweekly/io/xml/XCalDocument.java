@@ -609,34 +609,42 @@ public class XCalDocument {
 		private ICalParameters parseParameters(Element propertyElement) {
 			ICalParameters parameters = new ICalParameters();
 
-			for (Element parametersElement : getChildElements(propertyElement, PARAMETERS)) { //there should be only one <parameters> element, but parse them all incase there are more
-				List<Element> paramElements = XmlUtils.toElementList(parametersElement.getChildNodes());
-				for (Element paramElement : paramElements) {
-					if (!XCAL_NS.equals(paramElement.getNamespaceURI())) {
-						continue;
-					}
-
-					String name = paramElement.getLocalName().toUpperCase();
-					List<Element> valueElements = XmlUtils.toElementList(paramElement.getChildNodes());
-					if (valueElements.isEmpty()) {
-						//this should never be true if the xCal follows the specs
-						String value = paramElement.getTextContent();
-						parameters.put(name, value);
-						continue;
-					}
-
-					for (Element valueElement : valueElements) {
-						if (!XCAL_NS.equals(valueElement.getNamespaceURI())) {
-							continue;
-						}
-
-						String value = valueElement.getTextContent();
-						parameters.put(name, value);
-					}
+			/*
+			 * There should only be a single <parameters> element, but parse
+			 * them all in case there are more.
+			 */
+			for (Element parametersWrapperElement : getChildElements(propertyElement, PARAMETERS)) {
+				List<Element> parameterElements = XmlUtils.toElementList(parametersWrapperElement.getChildNodes());
+				for (Element parameterElement : parameterElements) {
+					parseParameter(parameterElement, parameters);
 				}
 			}
 
 			return parameters;
+		}
+
+		private void parseParameter(Element parameterElement, ICalParameters parameters) {
+			if (!XCAL_NS.equals(parameterElement.getNamespaceURI())) {
+				return;
+			}
+
+			String name = parameterElement.getLocalName().toUpperCase();
+			List<Element> valueElements = XmlUtils.toElementList(parameterElement.getChildNodes());
+			if (valueElements.isEmpty()) {
+				//this should never be true if the xCal is properly formed
+				String value = parameterElement.getTextContent();
+				parameters.put(name, value);
+				return;
+			}
+
+			for (Element valueElement : valueElements) {
+				if (!XCAL_NS.equals(valueElement.getNamespaceURI())) {
+					continue;
+				}
+
+				String value = valueElement.getTextContent();
+				parameters.put(name, value);
+			}
 		}
 
 		private List<Element> getVCalendarElements() {
@@ -690,16 +698,55 @@ public class XCalDocument {
 			ICalComponentScribe componentScribe = index.getComponentScribe(component);
 			Element componentElement = buildElement(componentScribe.getComponentName().toLowerCase());
 
-			Element propertiesWrapperElement = buildElement(PROPERTIES);
-			List propertyObjs = componentScribe.getProperties(component);
-			if (component instanceof ICalendar && component.getProperty(Version.class) == null) {
-				//add a version property
-				propertyObjs.add(0, new Version(targetVersion));
+			List<ICalProperty> properties = componentScribe.getProperties(component);
+			addVersionPropertyIfMissing(properties, component);
+
+			Element propertiesWrapperElement = buildPropertiesElement(properties, component);
+			if (propertiesWrapperElement.hasChildNodes()) {
+				componentElement.appendChild(propertiesWrapperElement);
 			}
 
-			for (Object propertyObj : propertyObjs) {
-				context.setParent(component); //set parent here incase a scribe resets the parent
-				ICalProperty property = (ICalProperty) propertyObj;
+			List<ICalComponent> subComponents = componentScribe.getComponents(component);
+			addVTimezoneComponents(component, subComponents);
+
+			Element componentsWrapperElement = buildComponentsElement(subComponents);
+			if (componentsWrapperElement.hasChildNodes()) {
+				componentElement.appendChild(componentsWrapperElement);
+			}
+
+			return componentElement;
+		}
+
+		private void addVersionPropertyIfMissing(List<ICalProperty> propertyObjs, ICalComponent parent) {
+			if (!(parent instanceof ICalendar)) {
+				return;
+			}
+
+			if (parent.getProperty(Version.class) != null) {
+				return;
+			}
+
+			propertyObjs.add(0, new Version(targetVersion));
+		}
+
+		private void addVTimezoneComponents(ICalComponent parent, List<ICalComponent> subComponents) {
+			if (!(parent instanceof ICalendar)) {
+				return;
+			}
+
+			Collection<VTimezone> tzs = getTimezoneComponents();
+			for (VTimezone tz : tzs) {
+				if (!subComponents.contains(tz)) {
+					subComponents.add(0, tz);
+				}
+			}
+		}
+
+		private Element buildPropertiesElement(List<ICalProperty> properties, ICalComponent parent) {
+			Element propertiesWrapperElement = buildElement(PROPERTIES);
+
+			for (ICalProperty property : properties) {
+				context.setParent(parent); //set parent here incase a scribe resets the parent
 
 				//create property element
 				Element propertyElement = buildPropertyElement(property);
@@ -707,33 +754,21 @@ public class XCalDocument {
 					propertiesWrapperElement.appendChild(propertyElement);
 				}
 			}
-			if (propertiesWrapperElement.hasChildNodes()) {
-				componentElement.appendChild(propertiesWrapperElement);
-			}
 
-			List subComponents = componentScribe.getComponents(component);
-			if (component instanceof ICalendar) {
-				//add the VTIMEZONE components that were auto-generated by TimezoneOptions
-				Collection<VTimezone> tzs = getTimezoneComponents();
-				for (VTimezone tz : tzs) {
-					if (!subComponents.contains(tz)) {
-						subComponents.add(0, tz);
-					}
-				}
-			}
+			return propertiesWrapperElement;
+		}
+
+		private Element buildComponentsElement(List<ICalComponent> subComponents) {
 			Element componentsWrapperElement = buildElement(COMPONENTS);
-			for (Object subComponentObj : subComponents) {
-				ICalComponent subComponent = (ICalComponent) subComponentObj;
+
+			for (ICalComponent subComponent : subComponents) {
 				Element subComponentElement = buildComponentElement(subComponent);
 				if (subComponentElement != null) {
 					componentsWrapperElement.appendChild(subComponentElement);
 				}
 			}
-			if (componentsWrapperElement.hasChildNodes()) {
-				componentElement.appendChild(componentsWrapperElement);
-			}
 
-			return componentElement;
+			return componentsWrapperElement;
 		}
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })

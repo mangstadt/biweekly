@@ -127,40 +127,20 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 
 		FreeBusy property = new FreeBusy();
 		for (XCalElement periodElement : periodElements) {
-			String startStr = periodElement.first("start");
-			if (startStr == null) {
-				throw new CannotParseException(9);
-			}
+			ICalDate start = parseStart(periodElement);
 
-			ICalDate start;
-			try {
-				start = date(startStr).parse();
-			} catch (IllegalArgumentException e) {
-				throw new CannotParseException(10, startStr);
-			}
-
-			String endStr = periodElement.first("end");
-			if (endStr != null) {
-				try {
-					ICalDate end = date(endStr).parse();
-					property.getValues().add(new Period(start, end));
-					context.addDate(start, property, parameters);
-					context.addDate(end, property, parameters);
-				} catch (IllegalArgumentException e) {
-					throw new CannotParseException(11, endStr);
-				}
+			ICalDate end = parseEnd(periodElement);
+			if (end != null) {
+				property.getValues().add(new Period(start, end));
+				context.addDate(start, property, parameters);
+				context.addDate(end, property, parameters);
 				continue;
 			}
 
-			String durationStr = periodElement.first("duration");
-			if (durationStr != null) {
-				try {
-					Duration duration = Duration.parse(durationStr);
-					property.getValues().add(new Period(start, duration));
-					context.addDate(start, property, parameters);
-				} catch (IllegalArgumentException e) {
-					throw new CannotParseException(12, durationStr);
-				}
+			Duration duration = parseDuration(periodElement);
+			if (duration != null) {
+				property.getValues().add(new Period(start, duration));
+				context.addDate(start, property, parameters);
 				continue;
 			}
 
@@ -168,6 +148,46 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 		}
 
 		return property;
+	}
+
+	private ICalDate parseStart(XCalElement periodElement) {
+		String startStr = periodElement.first("start");
+		if (startStr == null) {
+			//start is required
+			throw new CannotParseException(9);
+		}
+
+		try {
+			return date(startStr).parse();
+		} catch (IllegalArgumentException e) {
+			throw new CannotParseException(10, startStr);
+		}
+	}
+
+	private ICalDate parseEnd(XCalElement periodElement) {
+		String endStr = periodElement.first("end");
+		if (endStr == null) {
+			return null;
+		}
+
+		try {
+			return date(endStr).parse();
+		} catch (IllegalArgumentException e) {
+			throw new CannotParseException(11, endStr);
+		}
+	}
+
+	private Duration parseDuration(XCalElement periodElement) {
+		String durationStr = periodElement.first("duration");
+		if (durationStr == null) {
+			return null;
+		}
+
+		try {
+			return Duration.parse(durationStr);
+		} catch (IllegalArgumentException e) {
+			throw new CannotParseException(12, durationStr);
+		}
 	}
 
 	@Override
