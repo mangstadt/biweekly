@@ -228,37 +228,20 @@ public class JCalValue {
 			List<List<String>> components = new ArrayList<List<String>>(array.size());
 			for (JsonValue value : array) {
 				if (value.isNull()) {
-					components.add(Collections.<String>emptyList());
+					components.add(asStructuredNull());
 					continue;
 				}
 
 				Object obj = value.getValue();
 				if (obj != null) {
-					String s = obj.toString();
-					List<String> component = s.isEmpty() ? Collections.<String>emptyList() : Collections.singletonList(s);
-					components.add(component);
+					components.add(asStructuredValue(obj));
 					continue;
 				}
 
 				List<JsonValue> subArray = value.getArray();
 				if (subArray != null) {
-					List<String> component = new ArrayList<String>(subArray.size());
-					for (JsonValue subArrayValue : subArray) {
-						if (subArrayValue.isNull()) {
-							component.add("");
-							continue;
-						}
-
-						obj = subArrayValue.getValue();
-						if (obj != null) {
-							component.add(obj.toString());
-							continue;
-						}
-					}
-					if (component.size() == 1 && component.get(0).isEmpty()) {
-						component.clear();
-					}
-					components.add(component);
+					components.add(asStructuredSubArray(subArray));
+					continue;
 				}
 			}
 			return components;
@@ -269,19 +252,57 @@ public class JCalValue {
 		Object obj = first.getValue();
 		if (obj != null) {
 			List<List<String>> components = new ArrayList<List<String>>(1);
-			String s = obj.toString();
-			List<String> component = s.isEmpty() ? Collections.<String>emptyList() : Collections.singletonList(s);
-			components.add(component);
+			components.add(asStructuredValue(obj));
 			return components;
 		}
 
 		//["request-status", {}, "text", null]
 		if (first.isNull()) {
 			List<List<String>> components = new ArrayList<List<String>>(1);
-			components.add(Collections.<String>emptyList());
+			components.add(asStructuredNull());
 			return components;
 		}
 
+		/*
+		 * JSON objects are ignored.
+		 */
+
+		return Collections.emptyList();
+	}
+
+	private List<String> asStructuredSubArray(List<JsonValue> subArray) {
+		List<String> component = new ArrayList<String>(subArray.size());
+
+		for (JsonValue subArrayValue : subArray) {
+			if (subArrayValue.isNull()) {
+				component.add("");
+				continue;
+			}
+
+			Object obj = subArrayValue.getValue();
+			if (obj != null) {
+				component.add(obj.toString());
+				continue;
+			}
+
+			/*
+			 * JSON objects and arrays inside of sub-arrays are ignored.
+			 */
+		}
+
+		if (component.size() == 1 && component.get(0).isEmpty()) {
+			component.clear();
+		}
+
+		return component;
+	}
+
+	private List<String> asStructuredValue(Object obj) {
+		String s = obj.toString();
+		return s.isEmpty() ? Collections.<String> emptyList() : Collections.singletonList(s);
+	}
+
+	private List<String> asStructuredNull() {
 		return Collections.emptyList();
 	}
 

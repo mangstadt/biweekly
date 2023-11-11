@@ -203,15 +203,13 @@ public abstract class StreamReader implements Closeable {
 		while (it.hasNext()) {
 			VTimezone component = it.next();
 
-			//make sure the component has an ID
-			String id = ValuedProperty.getValue(component.getTimezoneId());
-			if (id == null || id.trim().isEmpty()) {
-				//note: do not remove invalid VTIMEZONE components from the ICalendar object
+			TimeZone timezone = buildTimeZone(component);
+			if (timezone == null) {
+				//do not remove invalid VTIMEZONE components from the ICalendar object
 				warnings.add(new ParseWarning.Builder().message(39).build());
 				continue;
 			}
 
-			TimeZone timezone = new ICalTimeZone(component);
 			tzinfo.getTimezones().add(new TimezoneAssignment(timezone, component));
 
 			//remove the component from the ICalendar object
@@ -280,6 +278,13 @@ public abstract class StreamReader implements Closeable {
 				reparseDateUnderDifferentTimezone(timezonedDate, cal);
 			}
 		}
+	}
+
+	private TimeZone buildTimeZone(VTimezone component) {
+		String id = ValuedProperty.getValue(component.getTimezoneId());
+		boolean idMissing = (id == null || id.trim().isEmpty());
+
+		return idMissing ? null : new ICalTimeZone(component);
 	}
 
 	private void reparseDateUnderDifferentTimezone(TimezonedDate timezonedDate, Calendar cal) {

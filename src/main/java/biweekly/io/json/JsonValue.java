@@ -72,6 +72,14 @@ public class JsonValue {
 	}
 
 	/**
+	 * Creates a null JSON value.
+	 * @return the JSON value
+	 */
+	public static JsonValue nullValue() {
+		return new JsonValue((Object) null);
+	}
+
+	/**
 	 * Gets the JSON value.
 	 * @return the value or null if it's not a JSON value
 	 */

@@ -161,8 +161,48 @@ public class JCalValueTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void asStructured() {
-		JCalValue value = new JCalValue(new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue(false), new JsonValue((Object) null))));
-		assertEquals(Arrays.asList(Arrays.asList("value1"), Arrays.asList("false"), Arrays.asList()), value.asStructured());
+		//@formatter:off
+		JCalValue value = new JCalValue(
+			new JsonValue(Arrays.asList(
+				new JsonValue("value1"), new JsonValue(false), JsonValue.nullValue()
+			))
+		);
+
+		assertEquals(Arrays.asList(
+			Arrays.asList("value1"),
+			Arrays.asList("false"),
+			Arrays.asList()),
+		value.asStructured());
+		//@formatter:on
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void asStructured_sub_array() {
+		//@formatter:off
+		JCalValue value = new JCalValue(
+			new JsonValue(Arrays.asList(
+				new JsonValue(Arrays.asList(
+					new JsonValue("value1"),
+					new JsonValue("value2"),
+					JsonValue.nullValue(),
+					new JsonValue(Arrays.asList(new JsonValue("value3"))) //ignore arrays that are nested this deep
+				)),
+				new JsonValue(Arrays.asList( //sub arrays that only contain a single empty element are converted to empty sub-arrays
+					new JsonValue("")
+				)),
+				new JsonValue(Arrays.asList( //sub arrays that only contain a single null element are converted to empty sub-arrays
+					JsonValue.nullValue()
+				))
+			))
+		);
+
+		assertEquals(Arrays.asList(
+			Arrays.asList("value1", "value2", ""),
+			Arrays.asList(),
+			Arrays.asList()),
+		value.asStructured());
+		//@formatter:on
 	}
 
 	@SuppressWarnings("unchecked")
@@ -174,9 +214,26 @@ public class JCalValueTest {
 
 	@Test
 	public void asStructured_object() {
-		Map<String, JsonValue> object = new HashMap<String, JsonValue>();
-		object.put("a", new JsonValue("one"));
-		JCalValue value = new JCalValue(new JsonValue(object));
+		Map<String, JsonValue> jsonObject = new HashMap<String, JsonValue>();
+		jsonObject.put("a", new JsonValue("one"));
+
+		JCalValue value = new JCalValue(new JsonValue(jsonObject));
+		assertEquals(Arrays.asList(), value.asStructured()); //JSON objects are ignored
+
+		value = new JCalValue(new JsonValue(Arrays.asList(new JsonValue(jsonObject))));
+		assertEquals(Arrays.asList(), value.asStructured()); //JSON objects are ignored
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void asStructured_null() {
+		JCalValue value = new JCalValue(JsonValue.nullValue());
+		assertEquals(Arrays.asList(Arrays.asList()), value.asStructured());
+	}
+
+	@Test
+	public void asStructured_empty() {
+		JCalValue value = new JCalValue();
 		assertEquals(Arrays.asList(), value.asStructured());
 	}
 
@@ -192,7 +249,7 @@ public class JCalValueTest {
 		//@formatter:off
 		Map<String, JsonValue> expectedMap = new HashMap<String, JsonValue>();
 		expectedMap.put("a", new JsonValue("one"));
-		expectedMap.put("b", new JsonValue(Arrays.asList(new JsonValue(2), new JsonValue(3.0), new JsonValue((Object)null))));
+		expectedMap.put("b", new JsonValue(Arrays.asList(new JsonValue(2), new JsonValue(3.0), JsonValue.nullValue())));
 		List<JsonValue> expected = Arrays.asList(
 			new JsonValue(expectedMap)
 		);
@@ -205,7 +262,7 @@ public class JCalValueTest {
 	public void asObject() {
 		Map<String, JsonValue> object = new LinkedHashMap<String, JsonValue>();
 		object.put("a", new JsonValue("one"));
-		object.put("b", new JsonValue(Arrays.asList(new JsonValue(2), new JsonValue(3.0), new JsonValue((Object) null))));
+		object.put("b", new JsonValue(Arrays.asList(new JsonValue(2), new JsonValue(3.0), JsonValue.nullValue())));
 		object.put("c", new JsonValue((Object) null));
 		JCalValue value = new JCalValue(new JsonValue(object));
 

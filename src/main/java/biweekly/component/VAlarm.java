@@ -520,65 +520,79 @@ public class VAlarm extends ICalComponent {
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		checkRequiredCardinality(warnings, Action.class, Trigger.class);
 
+		validateAction(warnings);
+		validateTrigger(components, warnings);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void validateAction(List<ValidationWarning> warnings) {
 		Action action = getAction();
-		if (action != null) {
-			//AUDIO alarms should not have more than 1 attachment
-			if (action.isAudio()) {
-				if (getAttachments().size() > 1) {
-					warnings.add(new ValidationWarning(7));
-				}
-			}
+		if (action == null) {
+			return;
+		}
 
-			//DESCRIPTION is required for DISPLAY alarms 
-			if (action.isDisplay()) {
-				checkRequiredCardinality(warnings, Description.class);
-			}
-
-			if (action.isEmail()) {
-				//SUMMARY and DESCRIPTION is required for EMAIL alarms
-				checkRequiredCardinality(warnings, Summary.class, Description.class);
-
-				//EMAIL alarms must have at least 1 ATTENDEE
-				if (getAttendees().isEmpty()) {
-					warnings.add(new ValidationWarning(8));
-				}
-			} else {
-				//only EMAIL alarms can have ATTENDEEs
-				if (!getAttendees().isEmpty()) {
-					warnings.add(new ValidationWarning(9));
-				}
-			}
-
-			if (action.isProcedure()) {
-				checkRequiredCardinality(warnings, Description.class);
+		//AUDIO alarms should not have more than 1 attachment
+		if (action.isAudio()) {
+			if (getAttachments().size() > 1) {
+				warnings.add(new ValidationWarning(7));
 			}
 		}
 
+		//DESCRIPTION is required for DISPLAY alarms 
+		if (action.isDisplay()) {
+			checkRequiredCardinality(warnings, Description.class);
+		}
+
+		if (action.isEmail()) {
+			//SUMMARY and DESCRIPTION is required for EMAIL alarms
+			checkRequiredCardinality(warnings, Summary.class, Description.class);
+
+			//EMAIL alarms must have at least 1 ATTENDEE
+			if (getAttendees().isEmpty()) {
+				warnings.add(new ValidationWarning(8));
+			}
+		} else {
+			//only EMAIL alarms can have ATTENDEEs
+			if (!getAttendees().isEmpty()) {
+				warnings.add(new ValidationWarning(9));
+			}
+		}
+
+		if (action.isProcedure()) {
+			checkRequiredCardinality(warnings, Description.class);
+		}
+	}
+
+	private void validateTrigger(List<ICalComponent> components, List<ValidationWarning> warnings) {
 		Trigger trigger = getTrigger();
-		if (trigger != null) {
-			Related related = trigger.getRelated();
-			if (related != null) {
-				ICalComponent parent = components.get(components.size() - 1);
+		if (trigger == null) {
+			return;
+		}
 
-				//if the TRIGGER is relative to DTSTART, confirm that DTSTART exists
-				if (related == Related.START && parent.getProperty(DateStart.class) == null) {
-					warnings.add(new ValidationWarning(11));
-				}
+		Related related = trigger.getRelated();
+		if (related == null) {
+			return;
+		}
 
-				//if the TRIGGER is relative to DTEND, confirm that DTEND (or DUE) exists
-				if (related == Related.END) {
-					boolean noEndDate = false;
+		ICalComponent parent = components.get(components.size() - 1);
 
-					if (parent instanceof VEvent) {
-						noEndDate = (parent.getProperty(DateEnd.class) == null && (parent.getProperty(DateStart.class) == null || parent.getProperty(DurationProperty.class) == null));
-					} else if (parent instanceof VTodo) {
-						noEndDate = (parent.getProperty(DateDue.class) == null && (parent.getProperty(DateStart.class) == null || parent.getProperty(DurationProperty.class) == null));
-					}
+		//if the TRIGGER is relative to DTSTART, confirm that DTSTART exists
+		if (related == Related.START && parent.getProperty(DateStart.class) == null) {
+			warnings.add(new ValidationWarning(11));
+		}
 
-					if (noEndDate) {
-						warnings.add(new ValidationWarning(12));
-					}
-				}
+		//if the TRIGGER is relative to DTEND, confirm that DTEND (or DUE) exists
+		if (related == Related.END) {
+			boolean noEndDate = false;
+
+			if (parent instanceof VEvent) {
+				noEndDate = (parent.getProperty(DateEnd.class) == null && (parent.getProperty(DateStart.class) == null || parent.getProperty(DurationProperty.class) == null));
+			} else if (parent instanceof VTodo) {
+				noEndDate = (parent.getProperty(DateDue.class) == null && (parent.getProperty(DateStart.class) == null || parent.getProperty(DurationProperty.class) == null));
+			}
+
+			if (noEndDate) {
+				warnings.add(new ValidationWarning(12));
 			}
 		}
 	}

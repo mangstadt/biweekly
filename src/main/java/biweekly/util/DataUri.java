@@ -147,24 +147,23 @@ public final class DataUri {
 			throw Messages.INSTANCE.getIllegalArgumentException(23);
 		}
 
-		String text = null;
-		byte[] data = null;
 		if (base64) {
 			dataStr = dataStr.replaceAll("\\s", "");
-			data = Base64.decodeBase64(dataStr);
-			if (charset != null) {
-				try {
-					text = new String(data, charset);
-				} catch (UnsupportedEncodingException e) {
-					throw new IllegalArgumentException(Messages.INSTANCE.getExceptionMessage(24, charset), e);
-				}
-				data = null;
+			byte[] data = Base64.decodeBase64(dataStr);
+
+			if (charset == null) {
+				return new DataUri(contentType, data);
 			}
-		} else {
-			text = dataStr;
+
+			try {
+				String text = new String(data, charset);
+				return new DataUri(contentType, text);
+			} catch (UnsupportedEncodingException e) {
+				throw new IllegalArgumentException(Messages.INSTANCE.getExceptionMessage(24, charset), e);
+			}
 		}
 
-		return new DataUri(contentType, data, text);
+		return new DataUri(contentType, dataStr);
 	}
 
 	/**

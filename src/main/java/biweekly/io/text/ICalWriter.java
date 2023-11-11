@@ -240,8 +240,8 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		writer.writeBeginComponent(componentScribe.getComponentName());
 
 		List propertyObjs = componentScribe.getProperties(component);
-		if (inICalendar && component.getProperty(Version.class) == null) {
-			propertyObjs.add(0, new Version(getTargetVersion()));
+		if (inICalendar) {
+			addVersionIfMissing(component, propertyObjs);
 		}
 
 		for (Object propertyObj : propertyObjs) {
@@ -252,13 +252,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 
 		List subComponents = componentScribe.getComponents(component);
 		if (inICalRoot) {
-			//add the VTIMEZONE components
-			Collection<VTimezone> timezones = getTimezoneComponents();
-			for (VTimezone timezone : timezones) {
-				if (!subComponents.contains(timezone)) {
-					subComponents.add(0, timezone);
-				}
-			}
+			addTimezonesIfMissing(subComponents);
 		}
 
 		for (Object subComponentObj : subComponents) {
@@ -267,22 +261,47 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		}
 
 		if (inVCalRoot) {
-			Collection<VTimezone> timezones = getTimezoneComponents();
-			if (!timezones.isEmpty()) {
-				VTimezone timezone = timezones.iterator().next();
-				VCalTimezoneProperties props = convert(timezone, context.getDates());
-
-				Timezone tz = props.getTz();
-				if (tz != null) {
-					writeProperty(tz);
-				}
-				for (Daylight daylight : props.getDaylights()) {
-					writeProperty(daylight);
-				}
-			}
+			writeVCalTimezones();
 		}
 
 		writer.writeEndComponent(componentScribe.getComponentName());
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void addVersionIfMissing(ICalComponent component, List propertyObjs) {
+		if (component.getProperty(Version.class) != null) {
+			return;
+		}
+
+		propertyObjs.add(0, new Version(getTargetVersion()));
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void addTimezonesIfMissing(List subComponents) {
+		Collection<VTimezone> timezones = getTimezoneComponents();
+		for (VTimezone timezone : timezones) {
+			if (!subComponents.contains(timezone)) {
+				subComponents.add(0, timezone);
+			}
+		}
+	}
+
+	private void writeVCalTimezones() throws IOException {
+		Collection<VTimezone> timezones = getTimezoneComponents();
+		if (timezones.isEmpty()) {
+			return;
+		}
+
+		VTimezone timezone = timezones.iterator().next();
+		VCalTimezoneProperties props = convert(timezone, context.getDates());
+
+		Timezone tz = props.getTz();
+		if (tz != null) {
+			writeProperty(tz);
+		}
+		for (Daylight daylight : props.getDaylights()) {
+			writeProperty(daylight);
+		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
