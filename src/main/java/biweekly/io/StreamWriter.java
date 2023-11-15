@@ -22,6 +22,7 @@ import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
+import biweekly.property.Version;
 
 /*
  Copyright (c) 2013-2023, Michael Angstadt
@@ -212,5 +213,48 @@ public abstract class StreamWriter implements Closeable {
 		}
 
 		return unregistered;
+	}
+
+	/**
+	 * Adds a VERSION property to the given component if the component is the
+	 * root ICalendar component and the component does not have a VERSION
+	 * property.
+	 * @param component the component
+	 * @param propertyObjs the component's properties (VERSION will be prepended
+	 * to this list)
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	protected void addVersionPropertyIfMissing(ICalComponent component, List propertyObjs) {
+		if (!(component instanceof ICalendar)) {
+			return;
+		}
+
+		if (component.getProperty(Version.class) != null) {
+			return;
+		}
+
+		propertyObjs.add(0, new Version(getTargetVersion()));
+	}
+
+	/**
+	 * Adds the VTIMEZONE components to the given component if the component is
+	 * the root ICalendar component and the component does not already have the
+	 * VTIMEZONE components.
+	 * @param component the component
+	 * @param subComponents the component's sub-components (the VTIMEZONEs will
+	 * be prepended to this list)
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected void addTimezoneComponentsIfMissing(ICalComponent component, List subComponents) {
+		if (!(component instanceof ICalendar)) {
+			return;
+		}
+
+		Collection<VTimezone> timezones = getTimezoneComponents();
+		for (VTimezone timezone : timezones) {
+			if (!subComponents.contains(timezone)) {
+				subComponents.add(0, timezone);
+			}
+		}
 	}
 }

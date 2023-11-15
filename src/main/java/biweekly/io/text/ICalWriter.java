@@ -27,7 +27,6 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.property.Timezone;
-import biweekly.property.Version;
 import biweekly.util.Utf8Writer;
 
 import com.github.mangstadt.vinnie.VObjectParameters;
@@ -220,10 +219,6 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void writeComponent(ICalComponent component, ICalComponent parent) throws IOException {
-		boolean inICalendar = component instanceof ICalendar;
-		boolean inVCalRoot = inICalendar && getTargetVersion() == ICalVersion.V1_0;
-		boolean inICalRoot = inICalendar && getTargetVersion() != ICalVersion.V1_0;
-
 		ICalComponentScribe componentScribe = index.getComponentScribe(component);
 		try {
 			componentScribe.checkForDataModelConversions(component, parent, getTargetVersion());
@@ -240,9 +235,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		writer.writeBeginComponent(componentScribe.getComponentName());
 
 		List propertyObjs = componentScribe.getProperties(component);
-		if (inICalendar) {
-			addVersionIfMissing(component, propertyObjs);
-		}
+		addVersionPropertyIfMissing(component, propertyObjs);
 
 		for (Object propertyObj : propertyObjs) {
 			context.setParent(component); //set parent here incase a scribe resets the parent
@@ -251,8 +244,8 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		}
 
 		List subComponents = componentScribe.getComponents(component);
-		if (inICalRoot) {
-			addTimezonesIfMissing(subComponents);
+		if (getTargetVersion() != ICalVersion.V1_0) {
+			addTimezoneComponentsIfMissing(component, subComponents);
 		}
 
 		for (Object subComponentObj : subComponents) {
@@ -260,30 +253,12 @@ public class ICalWriter extends StreamWriter implements Flushable {
 			writeComponent(subComponent, component);
 		}
 
+		boolean inVCalRoot = (component instanceof ICalendar) && (getTargetVersion() == ICalVersion.V1_0);
 		if (inVCalRoot) {
 			writeVCalTimezones();
 		}
 
 		writer.writeEndComponent(componentScribe.getComponentName());
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void addVersionIfMissing(ICalComponent component, List propertyObjs) {
-		if (component.getProperty(Version.class) != null) {
-			return;
-		}
-
-		propertyObjs.add(0, new Version(getTargetVersion()));
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void addTimezonesIfMissing(List subComponents) {
-		Collection<VTimezone> timezones = getTimezoneComponents();
-		for (VTimezone timezone : timezones) {
-			if (!subComponents.contains(timezone)) {
-				subComponents.add(0, timezone);
-			}
-		}
 	}
 
 	private void writeVCalTimezones() throws IOException {

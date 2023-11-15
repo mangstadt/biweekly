@@ -15,7 +15,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -42,7 +41,6 @@ import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
-import biweekly.component.VTimezone;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseWarning;
 import biweekly.io.SkipMeException;
@@ -699,7 +697,7 @@ public class XCalDocument {
 			Element componentElement = buildElement(componentScribe.getComponentName().toLowerCase());
 
 			List<ICalProperty> properties = componentScribe.getProperties(component);
-			addVersionPropertyIfMissing(properties, component);
+			addVersionPropertyIfMissing(component, properties);
 
 			Element propertiesWrapperElement = buildPropertiesElement(properties, component);
 			if (propertiesWrapperElement.hasChildNodes()) {
@@ -707,7 +705,7 @@ public class XCalDocument {
 			}
 
 			List<ICalComponent> subComponents = componentScribe.getComponents(component);
-			addVTimezoneComponents(component, subComponents);
+			addTimezoneComponentsIfMissing(component, subComponents);
 
 			Element componentsWrapperElement = buildComponentsElement(subComponents);
 			if (componentsWrapperElement.hasChildNodes()) {
@@ -715,31 +713,6 @@ public class XCalDocument {
 			}
 
 			return componentElement;
-		}
-
-		private void addVersionPropertyIfMissing(List<ICalProperty> propertyObjs, ICalComponent parent) {
-			if (!(parent instanceof ICalendar)) {
-				return;
-			}
-
-			if (parent.getProperty(Version.class) != null) {
-				return;
-			}
-
-			propertyObjs.add(0, new Version(targetVersion));
-		}
-
-		private void addVTimezoneComponents(ICalComponent parent, List<ICalComponent> subComponents) {
-			if (!(parent instanceof ICalendar)) {
-				return;
-			}
-
-			Collection<VTimezone> tzs = getTimezoneComponents();
-			for (VTimezone tz : tzs) {
-				if (!subComponents.contains(tz)) {
-					subComponents.add(0, tz);
-				}
-			}
 		}
 
 		private Element buildPropertiesElement(List<ICalProperty> properties, ICalComponent parent) {
