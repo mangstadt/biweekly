@@ -128,59 +128,75 @@ public class VAlarmScribe extends ICalComponentScribe<VAlarm> {
 		}
 
 		if (action.isAudio()) {
-			AudioAlarm aalarm = new AudioAlarm();
-
-			List<Attachment> attaches = valarm.getAttachments();
-			if (!attaches.isEmpty()) {
-				Attachment attach = attaches.get(0);
-
-				String formatType = attach.getFormatType();
-				aalarm.setParameter("TYPE", formatType);
-
-				byte[] data = attach.getData();
-				if (data != null) {
-					aalarm.setData(data);
-				}
-
-				String uri = attach.getUri();
-				if (uri != null) {
-					String contentId = StringUtils.afterPrefixIgnoreCase(uri, "cid:");
-					if (contentId == null) {
-						aalarm.setUri(uri);
-					} else {
-						aalarm.setContentId(contentId);
-					}
-				}
-			}
-
-			return aalarm;
+			return createAudioAlarm(valarm);
 		}
 
 		if (action.isDisplay()) {
-			Description description = valarm.getDescription();
-			String text = ValuedProperty.getValue(description);
-			return new DisplayAlarm(text);
+			createDisplayAlarm(valarm);
 		}
 
 		if (action.isEmail()) {
-			List<Attendee> attendees = valarm.getAttendees();
-			String email = attendees.isEmpty() ? null : attendees.get(0).getEmail();
-			EmailAlarm malarm = new EmailAlarm(email);
-
-			Description description = valarm.getDescription();
-			String note = ValuedProperty.getValue(description);
-			malarm.setNote(note);
-
-			return malarm;
+			return createEmailAlarm(valarm);
 		}
 
 		if (action.isProcedure()) {
-			Description description = valarm.getDescription();
-			String path = ValuedProperty.getValue(description);
-			return new ProcedureAlarm(path);
+			return createProcedureAlarm(valarm);
 		}
 
 		return null;
+	}
+
+	private static AudioAlarm createAudioAlarm(VAlarm valarm) {
+		AudioAlarm aalarm = new AudioAlarm();
+
+		List<Attachment> attachments = valarm.getAttachments();
+		if (!attachments.isEmpty()) {
+			Attachment firstAttachment = attachments.get(0);
+
+			String formatType = firstAttachment.getFormatType();
+			aalarm.setParameter("TYPE", formatType);
+
+			byte[] data = firstAttachment.getData();
+			if (data != null) {
+				aalarm.setData(data);
+			}
+
+			String uri = firstAttachment.getUri();
+			if (uri != null) {
+				String contentId = StringUtils.afterPrefixIgnoreCase(uri, "cid:");
+				if (contentId == null) {
+					aalarm.setUri(uri);
+				} else {
+					aalarm.setContentId(contentId);
+				}
+			}
+		}
+
+		return aalarm;
+	}
+
+	private static DisplayAlarm createDisplayAlarm(VAlarm valarm) {
+		Description description = valarm.getDescription();
+		String text = ValuedProperty.getValue(description);
+		return new DisplayAlarm(text);
+	}
+
+	private static EmailAlarm createEmailAlarm(VAlarm valarm) {
+		List<Attendee> attendees = valarm.getAttendees();
+		String email = attendees.isEmpty() ? null : attendees.get(0).getEmail();
+		EmailAlarm malarm = new EmailAlarm(email);
+
+		Description description = valarm.getDescription();
+		String note = ValuedProperty.getValue(description);
+		malarm.setNote(note);
+
+		return malarm;
+	}
+
+	private static ProcedureAlarm createProcedureAlarm(VAlarm valarm) {
+		Description description = valarm.getDescription();
+		String path = ValuedProperty.getValue(description);
+		return new ProcedureAlarm(path);
 	}
 
 	/**

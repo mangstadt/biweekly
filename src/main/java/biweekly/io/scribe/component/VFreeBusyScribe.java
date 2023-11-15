@@ -12,6 +12,7 @@ import biweekly.ICalVersion;
 import biweekly.component.VFreeBusy;
 import biweekly.property.FreeBusy;
 import biweekly.property.ICalProperty;
+import biweekly.util.ICalDate;
 import biweekly.util.Period;
 
 /*
@@ -57,35 +58,7 @@ public class VFreeBusyScribe extends ICalComponentScribe<VFreeBusy> {
 		}
 
 		//sort FREEBUSY properties by start date (p.100)
-		Collections.sort(fb, new Comparator<FreeBusy>() {
-			public int compare(FreeBusy one, FreeBusy two) {
-				Date oneStart = getEarliestStartDate(one);
-				Date twoStart = getEarliestStartDate(two);
-				if (oneStart == null && twoStart == null) {
-					return 0;
-				}
-				if (oneStart == null) {
-					return 1;
-				}
-				if (twoStart == null) {
-					return -1;
-				}
-				return oneStart.compareTo(twoStart);
-			}
-
-			private Date getEarliestStartDate(FreeBusy fb) {
-				Date date = null;
-				for (Period tp : fb.getValues()) {
-					if (tp.getStartDate() == null) {
-						continue;
-					}
-					if (date == null || date.compareTo(tp.getStartDate()) > 0) {
-						date = tp.getStartDate();
-					}
-				}
-				return date;
-			}
-		});
+		Collections.sort(fb, new FreeBusyStartDateComparator());
 
 		//find index of first FREEBUSY instance
 		int index = 0;
@@ -104,6 +77,40 @@ public class VFreeBusyScribe extends ICalComponentScribe<VFreeBusy> {
 		}
 
 		return properties;
+	}
+
+	private class FreeBusyStartDateComparator implements Comparator<FreeBusy> {
+		@Override
+		public int compare(FreeBusy one, FreeBusy two) {
+			Date oneStart = getEarliestStartDate(one);
+			Date twoStart = getEarliestStartDate(two);
+
+			if (oneStart == null && twoStart == null) {
+				return 0;
+			}
+			if (oneStart == null) {
+				return 1;
+			}
+			if (twoStart == null) {
+				return -1;
+			}
+			return oneStart.compareTo(twoStart);
+		}
+
+		private Date getEarliestStartDate(FreeBusy fb) {
+			Date earliestDate = null;
+			for (Period period : fb.getValues()) {
+				ICalDate startDate = period.getStartDate();
+				if (startDate == null) {
+					continue;
+				}
+
+				if (earliestDate == null || earliestDate.compareTo(startDate) > 0) {
+					earliestDate = startDate;
+				}
+			}
+			return earliestDate;
+		}
 	}
 
 	@Override

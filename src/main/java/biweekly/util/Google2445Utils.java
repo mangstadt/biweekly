@@ -234,8 +234,8 @@ public final class Google2445Utils {
 	 * @return the iterator
 	 */
 	public static DateIterator getDateIterator(ICalComponent component, TimeZone timezone) {
-		DateStart dtstart = component.getProperty(DateStart.class);
-		ICalDate start = ValuedProperty.getValue(dtstart);
+		DateStart startProperty = component.getProperty(DateStart.class);
+		ICalDate start = ValuedProperty.getValue(startProperty);
 
 		/*
 		 * If the start date is just a date and does not have a time component,
@@ -246,8 +246,24 @@ public final class Google2445Utils {
 			timezone = TimeZone.getDefault();
 		}
 
-		/////////////INCLUDE/////////////
+		List<RecurrenceIterator> include = buildIncludeIterators(component, start, timezone);
+		if (include.isEmpty()) {
+			return new EmptyDateIterator();
+		}
 
+		List<RecurrenceIterator> exclude = buildExcludeIterators(component, start, timezone);
+
+		RecurrenceIterator includeJoined = join(include);
+		if (exclude.isEmpty()) {
+			return DateIteratorFactory.createDateIterator(includeJoined);
+		}
+
+		RecurrenceIterator excludeJoined = join(exclude);
+		RecurrenceIterator iterator = RecurrenceIteratorFactory.except(includeJoined, excludeJoined);
+		return DateIteratorFactory.createDateIterator(iterator);
+	}
+
+	private static List<RecurrenceIterator> buildIncludeIterators(ICalComponent component, ICalDate start, TimeZone timezone) {
 		List<RecurrenceIterator> include = new ArrayList<RecurrenceIterator>();
 
 		if (start != null) {
@@ -267,15 +283,14 @@ public final class Google2445Utils {
 			include.add(new ICalDateRecurrenceIterator(allDates));
 		}
 
-		if (include.isEmpty()) {
-			if (start == null) {
-				return new EmptyDateIterator();
-			}
+		if (include.isEmpty() && start != null) {
 			include.add(new ICalDateRecurrenceIterator(Collections.singletonList(start)));
 		}
 
-		/////////////EXCLUDE/////////////
+		return include;
+	}
 
+	private static List<RecurrenceIterator> buildExcludeIterators(ICalComponent component, ICalDate start, TimeZone timezone) {
 		List<RecurrenceIterator> exclude = new ArrayList<RecurrenceIterator>();
 
 		if (start != null) {
@@ -287,7 +302,7 @@ public final class Google2445Utils {
 			}
 		}
 
-		allDates = new ArrayList<ICalDate>();
+		List<ICalDate> allDates = new ArrayList<ICalDate>();
 		for (ExceptionDates exdate : component.getProperties(ExceptionDates.class)) {
 			allDates.addAll(exdate.getValues());
 		}
@@ -295,16 +310,7 @@ public final class Google2445Utils {
 			exclude.add(new ICalDateRecurrenceIterator(allDates));
 		}
 
-		/////////////JOIN/////////////
-
-		RecurrenceIterator includeJoined = join(include);
-		if (exclude.isEmpty()) {
-			return DateIteratorFactory.createDateIterator(includeJoined);
-		}
-
-		RecurrenceIterator excludeJoined = join(exclude);
-		RecurrenceIterator iterator = RecurrenceIteratorFactory.except(includeJoined, excludeJoined);
-		return DateIteratorFactory.createDateIterator(iterator);
+		return exclude;
 	}
 
 	/**

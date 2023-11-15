@@ -1689,15 +1689,7 @@ public class VTodo extends ICalComponent {
 
 		checkOptionalCardinality(warnings, Color.class);
 
-		Status[] validStatuses;
-		switch (version) {
-		case V1_0:
-			validStatuses = new Status[] { Status.needsAction(), Status.completed(), Status.accepted(), Status.declined(), Status.delegated(), Status.sent() };
-			break;
-		default:
-			validStatuses = new Status[] { Status.needsAction(), Status.completed(), Status.inProgress(), Status.cancelled() };
-			break;
-		}
+		Status[] validStatuses = getValidStatuses(version);
 		checkStatus(warnings, validStatuses);
 
 		ICalDate dateStart = getValue(getDateStart());
@@ -1745,6 +1737,14 @@ public class VTodo extends ICalComponent {
 		if (getProperties(RecurrenceRule.class).size() > 1) {
 			warnings.add(new ValidationWarning(6));
 		}
+	}
+
+	private Status[] getValidStatuses(ICalVersion version) {
+		//@formatter:off
+		return (version == ICalVersion.V1_0) ? 
+			new Status[] { Status.needsAction(), Status.completed(), Status.accepted(), Status.declined(), Status.delegated(), Status.sent() } :
+			new Status[] { Status.needsAction(), Status.completed(), Status.inProgress(), Status.cancelled() };
+		//@formatter:on
 	}
 
 	@Override

@@ -730,34 +730,45 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 			}
 
 			if (observance) {
-				DateTimeComponents components = date.getRawComponents();
-				if (components == null) {
-					ICalDateFormat format = extended ? ICalDateFormat.DATE_TIME_EXTENDED_WITHOUT_TZ : ICalDateFormat.DATE_TIME_BASIC_WITHOUT_TZ;
-					return format.format(date);
-				}
-
-				return components.toString(true, extended);
+				return writeObservance();
 			}
 
 			if (utc) {
-				ICalDateFormat format = extended ? ICalDateFormat.UTC_TIME_EXTENDED : ICalDateFormat.UTC_TIME_BASIC;
+				return writeUtc();
+			}
+
+			return date.hasTime() ? writeDateTime() : writeDate();
+		}
+
+		private String writeObservance() {
+			DateTimeComponents components = date.getRawComponents();
+			if (components == null) {
+				ICalDateFormat format = extended ? ICalDateFormat.DATE_TIME_EXTENDED_WITHOUT_TZ : ICalDateFormat.DATE_TIME_BASIC_WITHOUT_TZ;
 				return format.format(date);
 			}
 
+			return components.toString(true, extended);
+		}
+
+		private String writeUtc() {
+			ICalDateFormat format = extended ? ICalDateFormat.UTC_TIME_EXTENDED : ICalDateFormat.UTC_TIME_BASIC;
+			return format.format(date);
+		}
+
+		private String writeDateTime() {
 			ICalDateFormat format;
-			TimeZone timezone = this.timezone;
-			if (date.hasTime()) {
-				if (timezone == null) {
-					format = extended ? ICalDateFormat.UTC_TIME_EXTENDED : ICalDateFormat.UTC_TIME_BASIC;
-				} else {
-					format = extended ? ICalDateFormat.DATE_TIME_EXTENDED_WITHOUT_TZ : ICalDateFormat.DATE_TIME_BASIC_WITHOUT_TZ;
-				}
+			if (timezone == null) {
+				format = extended ? ICalDateFormat.UTC_TIME_EXTENDED : ICalDateFormat.UTC_TIME_BASIC;
 			} else {
-				format = extended ? ICalDateFormat.DATE_EXTENDED : ICalDateFormat.DATE_BASIC;
-				timezone = null;
+				format = extended ? ICalDateFormat.DATE_TIME_EXTENDED_WITHOUT_TZ : ICalDateFormat.DATE_TIME_BASIC_WITHOUT_TZ;
 			}
 
 			return format.format(date, timezone);
+		}
+
+		private String writeDate() {
+			ICalDateFormat format = extended ? ICalDateFormat.DATE_EXTENDED : ICalDateFormat.DATE_BASIC;
+			return format.format(date);
 		}
 	}
 

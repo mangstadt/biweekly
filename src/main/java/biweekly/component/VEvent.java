@@ -1655,15 +1655,7 @@ public class VEvent extends ICalComponent {
 
 		checkOptionalCardinality(warnings, Color.class);
 
-		Status[] validStatuses;
-		switch (version) {
-		case V1_0:
-			validStatuses = new Status[] { Status.tentative(), Status.confirmed(), Status.declined(), Status.needsAction(), Status.sent(), Status.delegated() };
-			break;
-		default:
-			validStatuses = new Status[] { Status.tentative(), Status.confirmed(), Status.cancelled() };
-			break;
-		}
+		Status[] validStatuses = getValidStatuses(version);
 		checkStatus(warnings, validStatuses);
 
 		ICalDate dateStart = getValue(getDateStart());
@@ -1717,6 +1709,14 @@ public class VEvent extends ICalComponent {
 		if (getProperties(RecurrenceRule.class).size() > 1) {
 			warnings.add(new ValidationWarning(6));
 		}
+	}
+
+	private Status[] getValidStatuses(ICalVersion version) {
+		//@formatter:off
+		return (version == ICalVersion.V1_0) ? 
+			new Status[] { Status.tentative(), Status.confirmed(), Status.declined(), Status.needsAction(), Status.sent(), Status.delegated() } :
+			new Status[] { Status.tentative(), Status.confirmed(), Status.cancelled() };
+		//@formatter:on
 	}
 
 	@Override
