@@ -99,6 +99,16 @@ public class DurationTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
+	public void parse_single_hyphen() {
+		Duration.parse("-");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void parse_single_plus() {
+		Duration.parse("+");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
 	public void parse_empty_string() {
 		Duration.parse("");
 	}

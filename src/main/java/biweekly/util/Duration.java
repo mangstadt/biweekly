@@ -89,7 +89,7 @@ public final class Duration {
 			index++;
 		}
 
-		if (value.charAt(index) != 'P') {
+		if (index >= value.length() || value.charAt(index) != 'P') {
 			throw parseError(value);
 		}
 
