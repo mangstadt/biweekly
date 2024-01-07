@@ -18,7 +18,7 @@ import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.core.PrettyPrinter;
 
 /*
- Copyright (c) 2013-2023, Michael Angstadt
+ Copyright (c) 2013-2024, Michael Angstadt
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without

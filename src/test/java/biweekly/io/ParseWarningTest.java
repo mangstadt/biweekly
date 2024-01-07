@@ -9,7 +9,7 @@ import org.junit.Test;
 import biweekly.Messages;
 
 /*
-Copyright (c) 2013-2023, Michael Angstadt
+Copyright (c) 2013-2024, Michael Angstadt
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
