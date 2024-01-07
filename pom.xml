@@ -68,12 +68,12 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
-			<version>2.14.2</version>
+			<version>2.16.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.14.2</version>
+			<version>2.16.1</version>
 			
 			<!--
 			The only classes that refer to objects from jackson-databind are JCalModule, JCalSerializer, and JCalDeserializer, all of which
@@ -209,7 +209,7 @@
 					<linksource>true</linksource>
 					<links>
 						<link>https://mangstadt.github.io/vinnie/javadocs/latest/</link>
-						<link>http://fasterxml.github.io/jackson-core/javadoc/2.6/</link>
+						<link>https://www.javadoc.io/doc/com.fasterxml.jackson.core/jackson-core/latest/</link>
 					</links>
 					<quiet>true</quiet>
 					
