@@ -24,7 +24,7 @@
 <span class="sourceLineNo">016</span>import biweekly.util.com.google.ical.iter.RecurrenceIterator;<a name="line.16"></a>
 <span class="sourceLineNo">017</span><a name="line.17"></a>
 <span class="sourceLineNo">018</span>/*<a name="line.18"></a>
-<span class="sourceLineNo">019</span> Copyright (c) 2013-2023, Michael Angstadt<a name="line.19"></a>
+<span class="sourceLineNo">019</span> Copyright (c) 2013-2024, Michael Angstadt<a name="line.19"></a>
 <span class="sourceLineNo">020</span> All rights reserved.<a name="line.20"></a>
 <span class="sourceLineNo">021</span><a name="line.21"></a>
 <span class="sourceLineNo">022</span> Redistribution and use in source and binary forms, with or without<a name="line.22"></a>
@@ -372,7 +372,7 @@
 <span class="sourceLineNo">364</span>                }<a name="line.364"></a>
 <span class="sourceLineNo">365</span><a name="line.365"></a>
 <span class="sourceLineNo">366</span>                /**<a name="line.366"></a>
-<span class="sourceLineNo">367</span>                 * Sets the frequency<a name="line.367"></a>
+<span class="sourceLineNo">367</span>                 * Sets the frequency.<a name="line.367"></a>
 <span class="sourceLineNo">368</span>                 * @param frequency the frequency<a name="line.368"></a>
 <span class="sourceLineNo">369</span>                 * @return this<a name="line.369"></a>
 <span class="sourceLineNo">370</span>                 */<a name="line.370"></a>
@@ -384,7 +384,7 @@
 <span class="sourceLineNo">376</span>                /**<a name="line.376"></a>
 <span class="sourceLineNo">377</span>                 * Sets the date that the recurrence stops. Note that the UNTIL and<a name="line.377"></a>
 <span class="sourceLineNo">378</span>                 * COUNT fields cannot both be defined within the same rule.<a name="line.378"></a>
-<span class="sourceLineNo">379</span>                 * @param until the date<a name="line.379"></a>
+<span class="sourceLineNo">379</span>                 * @param until the date that the recurrence stops<a name="line.379"></a>
 <span class="sourceLineNo">380</span>                 * @return this<a name="line.380"></a>
 <span class="sourceLineNo">381</span>                 */<a name="line.381"></a>
 <span class="sourceLineNo">382</span>                public Builder until(ICalDate until) {<a name="line.382"></a>
@@ -416,7 +416,7 @@
 <span class="sourceLineNo">408</span>                }<a name="line.408"></a>
 <span class="sourceLineNo">409</span><a name="line.409"></a>
 <span class="sourceLineNo">410</span>                /**<a name="line.410"></a>
-<span class="sourceLineNo">411</span>                 * Gets the number of times the rule will be repeated. Note that the<a name="line.411"></a>
+<span class="sourceLineNo">411</span>                 * Sets the number of times the rule will be repeated. Note that the<a name="line.411"></a>
 <span class="sourceLineNo">412</span>                 * UNTIL and COUNT fields cannot both be defined within the same rule.<a name="line.412"></a>
 <span class="sourceLineNo">413</span>                 * @param count the number of times to repeat the rule<a name="line.413"></a>
 <span class="sourceLineNo">414</span>                 * @return this<a name="line.414"></a>
@@ -427,7 +427,7 @@
 <span class="sourceLineNo">419</span>                }<a name="line.419"></a>
 <span class="sourceLineNo">420</span><a name="line.420"></a>
 <span class="sourceLineNo">421</span>                /**<a name="line.421"></a>
-<span class="sourceLineNo">422</span>                 * Gets how often the rule repeats, in relation to the frequency.<a name="line.422"></a>
+<span class="sourceLineNo">422</span>                 * Sets how often the rule repeats in relation to the frequency.<a name="line.422"></a>
 <span class="sourceLineNo">423</span>                 * @param interval the repetition interval<a name="line.423"></a>
 <span class="sourceLineNo">424</span>                 * @return this<a name="line.424"></a>
 <span class="sourceLineNo">425</span>                 */<a name="line.425"></a>

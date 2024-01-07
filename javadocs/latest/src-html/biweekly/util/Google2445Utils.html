@@ -34,7 +34,7 @@
 <span class="sourceLineNo">026</span>import biweekly.util.com.google.ical.values.DateValueImpl;<a name="line.26"></a>
 <span class="sourceLineNo">027</span><a name="line.27"></a>
 <span class="sourceLineNo">028</span>/*<a name="line.28"></a>
-<span class="sourceLineNo">029</span> Copyright (c) 2013-2023, Michael Angstadt<a name="line.29"></a>
+<span class="sourceLineNo">029</span> Copyright (c) 2013-2024, Michael Angstadt<a name="line.29"></a>
 <span class="sourceLineNo">030</span> All rights reserved.<a name="line.30"></a>
 <span class="sourceLineNo">031</span><a name="line.31"></a>
 <span class="sourceLineNo">032</span> Redistribution and use in source and binary forms, with or without<a name="line.32"></a>
@@ -242,8 +242,8 @@
 <span class="sourceLineNo">234</span>         * @return the iterator<a name="line.234"></a>
 <span class="sourceLineNo">235</span>         */<a name="line.235"></a>
 <span class="sourceLineNo">236</span>        public static DateIterator getDateIterator(ICalComponent component, TimeZone timezone) {<a name="line.236"></a>
-<span class="sourceLineNo">237</span>                DateStart dtstart = component.getProperty(DateStart.class);<a name="line.237"></a>
-<span class="sourceLineNo">238</span>                ICalDate start = ValuedProperty.getValue(dtstart);<a name="line.238"></a>
+<span class="sourceLineNo">237</span>                DateStart startProperty = component.getProperty(DateStart.class);<a name="line.237"></a>
+<span class="sourceLineNo">238</span>                ICalDate start = ValuedProperty.getValue(startProperty);<a name="line.238"></a>
 <span class="sourceLineNo">239</span><a name="line.239"></a>
 <span class="sourceLineNo">240</span>                /*<a name="line.240"></a>
 <span class="sourceLineNo">241</span>                 * If the start date is just a date and does not have a time component,<a name="line.241"></a>
@@ -254,151 +254,157 @@
 <span class="sourceLineNo">246</span>                        timezone = TimeZone.getDefault();<a name="line.246"></a>
 <span class="sourceLineNo">247</span>                }<a name="line.247"></a>
 <span class="sourceLineNo">248</span><a name="line.248"></a>
-<span class="sourceLineNo">249</span>                /////////////INCLUDE/////////////<a name="line.249"></a>
-<span class="sourceLineNo">250</span><a name="line.250"></a>
-<span class="sourceLineNo">251</span>                List&lt;RecurrenceIterator&gt; include = new ArrayList&lt;RecurrenceIterator&gt;();<a name="line.251"></a>
-<span class="sourceLineNo">252</span><a name="line.252"></a>
-<span class="sourceLineNo">253</span>                if (start != null) {<a name="line.253"></a>
-<span class="sourceLineNo">254</span>                        for (RecurrenceRule rrule : component.getProperties(RecurrenceRule.class)) {<a name="line.254"></a>
-<span class="sourceLineNo">255</span>                                Recurrence recurrence = ValuedProperty.getValue(rrule);<a name="line.255"></a>
-<span class="sourceLineNo">256</span>                                if (recurrence != null) {<a name="line.256"></a>
-<span class="sourceLineNo">257</span>                                        include.add(createRecurrenceIterator(recurrence, start, timezone));<a name="line.257"></a>
-<span class="sourceLineNo">258</span>                                }<a name="line.258"></a>
-<span class="sourceLineNo">259</span>                        }<a name="line.259"></a>
-<span class="sourceLineNo">260</span>                }<a name="line.260"></a>
-<span class="sourceLineNo">261</span><a name="line.261"></a>
-<span class="sourceLineNo">262</span>                List&lt;ICalDate&gt; allDates = new ArrayList&lt;ICalDate&gt;();<a name="line.262"></a>
-<span class="sourceLineNo">263</span>                for (RecurrenceDates rdate : component.getProperties(RecurrenceDates.class)) {<a name="line.263"></a>
-<span class="sourceLineNo">264</span>                        allDates.addAll(rdate.getDates());<a name="line.264"></a>
-<span class="sourceLineNo">265</span>                }<a name="line.265"></a>
-<span class="sourceLineNo">266</span>                if (!allDates.isEmpty()) {<a name="line.266"></a>
-<span class="sourceLineNo">267</span>                        include.add(new ICalDateRecurrenceIterator(allDates));<a name="line.267"></a>
-<span class="sourceLineNo">268</span>                }<a name="line.268"></a>
-<span class="sourceLineNo">269</span><a name="line.269"></a>
-<span class="sourceLineNo">270</span>                if (include.isEmpty()) {<a name="line.270"></a>
-<span class="sourceLineNo">271</span>                        if (start == null) {<a name="line.271"></a>
-<span class="sourceLineNo">272</span>                                return new EmptyDateIterator();<a name="line.272"></a>
-<span class="sourceLineNo">273</span>                        }<a name="line.273"></a>
-<span class="sourceLineNo">274</span>                        include.add(new ICalDateRecurrenceIterator(Collections.singletonList(start)));<a name="line.274"></a>
-<span class="sourceLineNo">275</span>                }<a name="line.275"></a>
-<span class="sourceLineNo">276</span><a name="line.276"></a>
-<span class="sourceLineNo">277</span>                /////////////EXCLUDE/////////////<a name="line.277"></a>
-<span class="sourceLineNo">278</span><a name="line.278"></a>
-<span class="sourceLineNo">279</span>                List&lt;RecurrenceIterator&gt; exclude = new ArrayList&lt;RecurrenceIterator&gt;();<a name="line.279"></a>
-<span class="sourceLineNo">280</span><a name="line.280"></a>
-<span class="sourceLineNo">281</span>                if (start != null) {<a name="line.281"></a>
-<span class="sourceLineNo">282</span>                        for (ExceptionRule exrule : component.getProperties(ExceptionRule.class)) {<a name="line.282"></a>
-<span class="sourceLineNo">283</span>                                Recurrence recurrence = ValuedProperty.getValue(exrule);<a name="line.283"></a>
-<span class="sourceLineNo">284</span>                                if (recurrence != null) {<a name="line.284"></a>
-<span class="sourceLineNo">285</span>                                        exclude.add(createRecurrenceIterator(recurrence, start, timezone));<a name="line.285"></a>
-<span class="sourceLineNo">286</span>                                }<a name="line.286"></a>
-<span class="sourceLineNo">287</span>                        }<a name="line.287"></a>
+<span class="sourceLineNo">249</span>                List&lt;RecurrenceIterator&gt; include = buildIncludeIterators(component, start, timezone);<a name="line.249"></a>
+<span class="sourceLineNo">250</span>                if (include.isEmpty()) {<a name="line.250"></a>
+<span class="sourceLineNo">251</span>                        return new EmptyDateIterator();<a name="line.251"></a>
+<span class="sourceLineNo">252</span>                }<a name="line.252"></a>
+<span class="sourceLineNo">253</span><a name="line.253"></a>
+<span class="sourceLineNo">254</span>                List&lt;RecurrenceIterator&gt; exclude = buildExcludeIterators(component, start, timezone);<a name="line.254"></a>
+<span class="sourceLineNo">255</span><a name="line.255"></a>
+<span class="sourceLineNo">256</span>                RecurrenceIterator includeJoined = join(include);<a name="line.256"></a>
+<span class="sourceLineNo">257</span>                if (exclude.isEmpty()) {<a name="line.257"></a>
+<span class="sourceLineNo">258</span>                        return DateIteratorFactory.createDateIterator(includeJoined);<a name="line.258"></a>
+<span class="sourceLineNo">259</span>                }<a name="line.259"></a>
+<span class="sourceLineNo">260</span><a name="line.260"></a>
+<span class="sourceLineNo">261</span>                RecurrenceIterator excludeJoined = join(exclude);<a name="line.261"></a>
+<span class="sourceLineNo">262</span>                RecurrenceIterator iterator = RecurrenceIteratorFactory.except(includeJoined, excludeJoined);<a name="line.262"></a>
+<span class="sourceLineNo">263</span>                return DateIteratorFactory.createDateIterator(iterator);<a name="line.263"></a>
+<span class="sourceLineNo">264</span>        }<a name="line.264"></a>
+<span class="sourceLineNo">265</span><a name="line.265"></a>
+<span class="sourceLineNo">266</span>        private static List&lt;RecurrenceIterator&gt; buildIncludeIterators(ICalComponent component, ICalDate start, TimeZone timezone) {<a name="line.266"></a>
+<span class="sourceLineNo">267</span>                List&lt;RecurrenceIterator&gt; include = new ArrayList&lt;RecurrenceIterator&gt;();<a name="line.267"></a>
+<span class="sourceLineNo">268</span><a name="line.268"></a>
+<span class="sourceLineNo">269</span>                if (start != null) {<a name="line.269"></a>
+<span class="sourceLineNo">270</span>                        for (RecurrenceRule rrule : component.getProperties(RecurrenceRule.class)) {<a name="line.270"></a>
+<span class="sourceLineNo">271</span>                                Recurrence recurrence = ValuedProperty.getValue(rrule);<a name="line.271"></a>
+<span class="sourceLineNo">272</span>                                if (recurrence != null) {<a name="line.272"></a>
+<span class="sourceLineNo">273</span>                                        include.add(createRecurrenceIterator(recurrence, start, timezone));<a name="line.273"></a>
+<span class="sourceLineNo">274</span>                                }<a name="line.274"></a>
+<span class="sourceLineNo">275</span>                        }<a name="line.275"></a>
+<span class="sourceLineNo">276</span>                }<a name="line.276"></a>
+<span class="sourceLineNo">277</span><a name="line.277"></a>
+<span class="sourceLineNo">278</span>                List&lt;ICalDate&gt; allDates = new ArrayList&lt;ICalDate&gt;();<a name="line.278"></a>
+<span class="sourceLineNo">279</span>                for (RecurrenceDates rdate : component.getProperties(RecurrenceDates.class)) {<a name="line.279"></a>
+<span class="sourceLineNo">280</span>                        allDates.addAll(rdate.getDates());<a name="line.280"></a>
+<span class="sourceLineNo">281</span>                }<a name="line.281"></a>
+<span class="sourceLineNo">282</span>                if (!allDates.isEmpty()) {<a name="line.282"></a>
+<span class="sourceLineNo">283</span>                        include.add(new ICalDateRecurrenceIterator(allDates));<a name="line.283"></a>
+<span class="sourceLineNo">284</span>                }<a name="line.284"></a>
+<span class="sourceLineNo">285</span><a name="line.285"></a>
+<span class="sourceLineNo">286</span>                if (include.isEmpty() &amp;&amp; start != null) {<a name="line.286"></a>
+<span class="sourceLineNo">287</span>                        include.add(new ICalDateRecurrenceIterator(Collections.singletonList(start)));<a name="line.287"></a>
 <span class="sourceLineNo">288</span>                }<a name="line.288"></a>
 <span class="sourceLineNo">289</span><a name="line.289"></a>
-<span class="sourceLineNo">290</span>                allDates = new ArrayList&lt;ICalDate&gt;();<a name="line.290"></a>
-<span class="sourceLineNo">291</span>                for (ExceptionDates exdate : component.getProperties(ExceptionDates.class)) {<a name="line.291"></a>
-<span class="sourceLineNo">292</span>                        allDates.addAll(exdate.getValues());<a name="line.292"></a>
-<span class="sourceLineNo">293</span>                }<a name="line.293"></a>
-<span class="sourceLineNo">294</span>                if (!allDates.isEmpty()) {<a name="line.294"></a>
-<span class="sourceLineNo">295</span>                        exclude.add(new ICalDateRecurrenceIterator(allDates));<a name="line.295"></a>
-<span class="sourceLineNo">296</span>                }<a name="line.296"></a>
-<span class="sourceLineNo">297</span><a name="line.297"></a>
-<span class="sourceLineNo">298</span>                /////////////JOIN/////////////<a name="line.298"></a>
-<span class="sourceLineNo">299</span><a name="line.299"></a>
-<span class="sourceLineNo">300</span>                RecurrenceIterator includeJoined = join(include);<a name="line.300"></a>
-<span class="sourceLineNo">301</span>                if (exclude.isEmpty()) {<a name="line.301"></a>
-<span class="sourceLineNo">302</span>                        return DateIteratorFactory.createDateIterator(includeJoined);<a name="line.302"></a>
+<span class="sourceLineNo">290</span>                return include;<a name="line.290"></a>
+<span class="sourceLineNo">291</span>        }<a name="line.291"></a>
+<span class="sourceLineNo">292</span><a name="line.292"></a>
+<span class="sourceLineNo">293</span>        private static List&lt;RecurrenceIterator&gt; buildExcludeIterators(ICalComponent component, ICalDate start, TimeZone timezone) {<a name="line.293"></a>
+<span class="sourceLineNo">294</span>                List&lt;RecurrenceIterator&gt; exclude = new ArrayList&lt;RecurrenceIterator&gt;();<a name="line.294"></a>
+<span class="sourceLineNo">295</span><a name="line.295"></a>
+<span class="sourceLineNo">296</span>                if (start != null) {<a name="line.296"></a>
+<span class="sourceLineNo">297</span>                        for (ExceptionRule exrule : component.getProperties(ExceptionRule.class)) {<a name="line.297"></a>
+<span class="sourceLineNo">298</span>                                Recurrence recurrence = ValuedProperty.getValue(exrule);<a name="line.298"></a>
+<span class="sourceLineNo">299</span>                                if (recurrence != null) {<a name="line.299"></a>
+<span class="sourceLineNo">300</span>                                        exclude.add(createRecurrenceIterator(recurrence, start, timezone));<a name="line.300"></a>
+<span class="sourceLineNo">301</span>                                }<a name="line.301"></a>
+<span class="sourceLineNo">302</span>                        }<a name="line.302"></a>
 <span class="sourceLineNo">303</span>                }<a name="line.303"></a>
 <span class="sourceLineNo">304</span><a name="line.304"></a>
-<span class="sourceLineNo">305</span>                RecurrenceIterator excludeJoined = join(exclude);<a name="line.305"></a>
-<span class="sourceLineNo">306</span>                RecurrenceIterator iterator = RecurrenceIteratorFactory.except(includeJoined, excludeJoined);<a name="line.306"></a>
-<span class="sourceLineNo">307</span>                return DateIteratorFactory.createDateIterator(iterator);<a name="line.307"></a>
-<span class="sourceLineNo">308</span>        }<a name="line.308"></a>
-<span class="sourceLineNo">309</span><a name="line.309"></a>
-<span class="sourceLineNo">310</span>        /**<a name="line.310"></a>
-<span class="sourceLineNo">311</span>         * Creates a single {@link RecurrenceIterator} that is a union of the given<a name="line.311"></a>
-<span class="sourceLineNo">312</span>         * iterators.<a name="line.312"></a>
-<span class="sourceLineNo">313</span>         * @param iterators the iterators<a name="line.313"></a>
-<span class="sourceLineNo">314</span>         * @return the union of the given iterators<a name="line.314"></a>
-<span class="sourceLineNo">315</span>         * @see RecurrenceIteratorFactory#join<a name="line.315"></a>
-<span class="sourceLineNo">316</span>         */<a name="line.316"></a>
-<span class="sourceLineNo">317</span>        private static RecurrenceIterator join(List&lt;RecurrenceIterator&gt; iterators) {<a name="line.317"></a>
-<span class="sourceLineNo">318</span>                if (iterators.size() == 1) {<a name="line.318"></a>
-<span class="sourceLineNo">319</span>                        return iterators.get(0);<a name="line.319"></a>
-<span class="sourceLineNo">320</span>                }<a name="line.320"></a>
-<span class="sourceLineNo">321</span>                RecurrenceIterator first = iterators.get(0);<a name="line.321"></a>
-<span class="sourceLineNo">322</span>                List&lt;RecurrenceIterator&gt; rest = iterators.subList(1, iterators.size());<a name="line.322"></a>
-<span class="sourceLineNo">323</span>                return RecurrenceIteratorFactory.join(first, rest.toArray(new RecurrenceIterator[0]));<a name="line.323"></a>
-<span class="sourceLineNo">324</span>        }<a name="line.324"></a>
-<span class="sourceLineNo">325</span><a name="line.325"></a>
-<span class="sourceLineNo">326</span>        /**<a name="line.326"></a>
-<span class="sourceLineNo">327</span>         * Returns a UTC timezone object.<a name="line.327"></a>
-<span class="sourceLineNo">328</span>         * @return the timezone object<a name="line.328"></a>
-<span class="sourceLineNo">329</span>         */<a name="line.329"></a>
-<span class="sourceLineNo">330</span>        private static TimeZone utc() {<a name="line.330"></a>
-<span class="sourceLineNo">331</span>                return TimeZone.getTimeZone("UTC");<a name="line.331"></a>
-<span class="sourceLineNo">332</span>        }<a name="line.332"></a>
-<span class="sourceLineNo">333</span><a name="line.333"></a>
-<span class="sourceLineNo">334</span>        /**<a name="line.334"></a>
-<span class="sourceLineNo">335</span>         * A {@link DateIterator} with nothing in it.<a name="line.335"></a>
-<span class="sourceLineNo">336</span>         */<a name="line.336"></a>
-<span class="sourceLineNo">337</span>        public static class EmptyDateIterator implements DateIterator {<a name="line.337"></a>
-<span class="sourceLineNo">338</span>                public boolean hasNext() {<a name="line.338"></a>
-<span class="sourceLineNo">339</span>                        return false;<a name="line.339"></a>
-<span class="sourceLineNo">340</span>                }<a name="line.340"></a>
-<span class="sourceLineNo">341</span><a name="line.341"></a>
-<span class="sourceLineNo">342</span>                public Date next() {<a name="line.342"></a>
-<span class="sourceLineNo">343</span>                        throw new NoSuchElementException();<a name="line.343"></a>
-<span class="sourceLineNo">344</span>                }<a name="line.344"></a>
-<span class="sourceLineNo">345</span><a name="line.345"></a>
-<span class="sourceLineNo">346</span>                public void remove() {<a name="line.346"></a>
-<span class="sourceLineNo">347</span>                        throw new UnsupportedOperationException();<a name="line.347"></a>
-<span class="sourceLineNo">348</span>                }<a name="line.348"></a>
-<span class="sourceLineNo">349</span><a name="line.349"></a>
-<span class="sourceLineNo">350</span>                public void advanceTo(Date newStartUtc) {<a name="line.350"></a>
-<span class="sourceLineNo">351</span>                        //empty<a name="line.351"></a>
-<span class="sourceLineNo">352</span>                }<a name="line.352"></a>
-<span class="sourceLineNo">353</span>        }<a name="line.353"></a>
-<span class="sourceLineNo">354</span><a name="line.354"></a>
-<span class="sourceLineNo">355</span>        private static class ICalDateRecurrenceIterator implements RecurrenceIterator {<a name="line.355"></a>
-<span class="sourceLineNo">356</span>                private final List&lt;ICalDate&gt; dates;<a name="line.356"></a>
-<span class="sourceLineNo">357</span>                private int index = 0;<a name="line.357"></a>
-<span class="sourceLineNo">358</span><a name="line.358"></a>
-<span class="sourceLineNo">359</span>                /*<a name="line.359"></a>
-<span class="sourceLineNo">360</span>                 * Note: I don't think a timezone needs to be passed in here, because it<a name="line.360"></a>
-<span class="sourceLineNo">361</span>                 * appears that the DateValue objects are expected to be in UTC (judging<a name="line.361"></a>
-<span class="sourceLineNo">362</span>                 * by the parameter name in the "advanceTo" method).<a name="line.362"></a>
-<span class="sourceLineNo">363</span>                 */<a name="line.363"></a>
-<span class="sourceLineNo">364</span>                public ICalDateRecurrenceIterator(List&lt;ICalDate&gt; dates) {<a name="line.364"></a>
-<span class="sourceLineNo">365</span>                        this.dates = new ArrayList&lt;ICalDate&gt;(dates);<a name="line.365"></a>
-<span class="sourceLineNo">366</span>                        Collections.sort(this.dates);<a name="line.366"></a>
-<span class="sourceLineNo">367</span>                }<a name="line.367"></a>
-<span class="sourceLineNo">368</span><a name="line.368"></a>
-<span class="sourceLineNo">369</span>                public boolean hasNext() {<a name="line.369"></a>
-<span class="sourceLineNo">370</span>                        return index &lt; dates.size();<a name="line.370"></a>
-<span class="sourceLineNo">371</span>                }<a name="line.371"></a>
-<span class="sourceLineNo">372</span><a name="line.372"></a>
-<span class="sourceLineNo">373</span>                public DateValue next() {<a name="line.373"></a>
-<span class="sourceLineNo">374</span>                        ICalDate next = dates.get(index++);<a name="line.374"></a>
-<span class="sourceLineNo">375</span>                        return convertUtc(next);<a name="line.375"></a>
-<span class="sourceLineNo">376</span>                }<a name="line.376"></a>
-<span class="sourceLineNo">377</span><a name="line.377"></a>
-<span class="sourceLineNo">378</span>                public void advanceTo(DateValue newStartUtc) {<a name="line.378"></a>
-<span class="sourceLineNo">379</span>                        ICalDate newStart = convertUtc(newStartUtc);<a name="line.379"></a>
-<span class="sourceLineNo">380</span>                        while (index &lt; dates.size() &amp;&amp; newStart.compareTo(dates.get(index)) &gt; 0) {<a name="line.380"></a>
-<span class="sourceLineNo">381</span>                                index++;<a name="line.381"></a>
-<span class="sourceLineNo">382</span>                        }<a name="line.382"></a>
-<span class="sourceLineNo">383</span>                }<a name="line.383"></a>
-<span class="sourceLineNo">384</span><a name="line.384"></a>
-<span class="sourceLineNo">385</span>                public void remove() {<a name="line.385"></a>
-<span class="sourceLineNo">386</span>                        throw new UnsupportedOperationException();<a name="line.386"></a>
-<span class="sourceLineNo">387</span>                }<a name="line.387"></a>
-<span class="sourceLineNo">388</span>        }<a name="line.388"></a>
-<span class="sourceLineNo">389</span><a name="line.389"></a>
-<span class="sourceLineNo">390</span>        private Google2445Utils() {<a name="line.390"></a>
-<span class="sourceLineNo">391</span>                //hide<a name="line.391"></a>
-<span class="sourceLineNo">392</span>        }<a name="line.392"></a>
-<span class="sourceLineNo">393</span>}<a name="line.393"></a>
+<span class="sourceLineNo">305</span>                List&lt;ICalDate&gt; allDates = new ArrayList&lt;ICalDate&gt;();<a name="line.305"></a>
+<span class="sourceLineNo">306</span>                for (ExceptionDates exdate : component.getProperties(ExceptionDates.class)) {<a name="line.306"></a>
+<span class="sourceLineNo">307</span>                        allDates.addAll(exdate.getValues());<a name="line.307"></a>
+<span class="sourceLineNo">308</span>                }<a name="line.308"></a>
+<span class="sourceLineNo">309</span>                if (!allDates.isEmpty()) {<a name="line.309"></a>
+<span class="sourceLineNo">310</span>                        exclude.add(new ICalDateRecurrenceIterator(allDates));<a name="line.310"></a>
+<span class="sourceLineNo">311</span>                }<a name="line.311"></a>
+<span class="sourceLineNo">312</span><a name="line.312"></a>
+<span class="sourceLineNo">313</span>                return exclude;<a name="line.313"></a>
+<span class="sourceLineNo">314</span>        }<a name="line.314"></a>
+<span class="sourceLineNo">315</span><a name="line.315"></a>
+<span class="sourceLineNo">316</span>        /**<a name="line.316"></a>
+<span class="sourceLineNo">317</span>         * Creates a single {@link RecurrenceIterator} that is a union of the given<a name="line.317"></a>
+<span class="sourceLineNo">318</span>         * iterators.<a name="line.318"></a>
+<span class="sourceLineNo">319</span>         * @param iterators the iterators<a name="line.319"></a>
+<span class="sourceLineNo">320</span>         * @return the union of the given iterators<a name="line.320"></a>
+<span class="sourceLineNo">321</span>         * @see RecurrenceIteratorFactory#join<a name="line.321"></a>
+<span class="sourceLineNo">322</span>         */<a name="line.322"></a>
+<span class="sourceLineNo">323</span>        private static RecurrenceIterator join(List&lt;RecurrenceIterator&gt; iterators) {<a name="line.323"></a>
+<span class="sourceLineNo">324</span>                if (iterators.size() == 1) {<a name="line.324"></a>
+<span class="sourceLineNo">325</span>                        return iterators.get(0);<a name="line.325"></a>
+<span class="sourceLineNo">326</span>                }<a name="line.326"></a>
+<span class="sourceLineNo">327</span>                RecurrenceIterator first = iterators.get(0);<a name="line.327"></a>
+<span class="sourceLineNo">328</span>                List&lt;RecurrenceIterator&gt; rest = iterators.subList(1, iterators.size());<a name="line.328"></a>
+<span class="sourceLineNo">329</span>                return RecurrenceIteratorFactory.join(first, rest.toArray(new RecurrenceIterator[0]));<a name="line.329"></a>
+<span class="sourceLineNo">330</span>        }<a name="line.330"></a>
+<span class="sourceLineNo">331</span><a name="line.331"></a>
+<span class="sourceLineNo">332</span>        /**<a name="line.332"></a>
+<span class="sourceLineNo">333</span>         * Returns a UTC timezone object.<a name="line.333"></a>
+<span class="sourceLineNo">334</span>         * @return the timezone object<a name="line.334"></a>
+<span class="sourceLineNo">335</span>         */<a name="line.335"></a>
+<span class="sourceLineNo">336</span>        private static TimeZone utc() {<a name="line.336"></a>
+<span class="sourceLineNo">337</span>                return TimeZone.getTimeZone("UTC");<a name="line.337"></a>
+<span class="sourceLineNo">338</span>        }<a name="line.338"></a>
+<span class="sourceLineNo">339</span><a name="line.339"></a>
+<span class="sourceLineNo">340</span>        /**<a name="line.340"></a>
+<span class="sourceLineNo">341</span>         * A {@link DateIterator} with nothing in it.<a name="line.341"></a>
+<span class="sourceLineNo">342</span>         */<a name="line.342"></a>
+<span class="sourceLineNo">343</span>        public static class EmptyDateIterator implements DateIterator {<a name="line.343"></a>
+<span class="sourceLineNo">344</span>                public boolean hasNext() {<a name="line.344"></a>
+<span class="sourceLineNo">345</span>                        return false;<a name="line.345"></a>
+<span class="sourceLineNo">346</span>                }<a name="line.346"></a>
+<span class="sourceLineNo">347</span><a name="line.347"></a>
+<span class="sourceLineNo">348</span>                public Date next() {<a name="line.348"></a>
+<span class="sourceLineNo">349</span>                        throw new NoSuchElementException();<a name="line.349"></a>
+<span class="sourceLineNo">350</span>                }<a name="line.350"></a>
+<span class="sourceLineNo">351</span><a name="line.351"></a>
+<span class="sourceLineNo">352</span>                public void remove() {<a name="line.352"></a>
+<span class="sourceLineNo">353</span>                        throw new UnsupportedOperationException();<a name="line.353"></a>
+<span class="sourceLineNo">354</span>                }<a name="line.354"></a>
+<span class="sourceLineNo">355</span><a name="line.355"></a>
+<span class="sourceLineNo">356</span>                public void advanceTo(Date newStartUtc) {<a name="line.356"></a>
+<span class="sourceLineNo">357</span>                        //empty<a name="line.357"></a>
+<span class="sourceLineNo">358</span>                }<a name="line.358"></a>
+<span class="sourceLineNo">359</span>        }<a name="line.359"></a>
+<span class="sourceLineNo">360</span><a name="line.360"></a>
+<span class="sourceLineNo">361</span>        private static class ICalDateRecurrenceIterator implements RecurrenceIterator {<a name="line.361"></a>
+<span class="sourceLineNo">362</span>                private final List&lt;ICalDate&gt; dates;<a name="line.362"></a>
+<span class="sourceLineNo">363</span>                private int index = 0;<a name="line.363"></a>
+<span class="sourceLineNo">364</span><a name="line.364"></a>
+<span class="sourceLineNo">365</span>                /*<a name="line.365"></a>
+<span class="sourceLineNo">366</span>                 * Note: I don't think a timezone needs to be passed in here, because it<a name="line.366"></a>
+<span class="sourceLineNo">367</span>                 * appears that the DateValue objects are expected to be in UTC (judging<a name="line.367"></a>
+<span class="sourceLineNo">368</span>                 * by the parameter name in the "advanceTo" method).<a name="line.368"></a>
+<span class="sourceLineNo">369</span>                 */<a name="line.369"></a>
+<span class="sourceLineNo">370</span>                public ICalDateRecurrenceIterator(List&lt;ICalDate&gt; dates) {<a name="line.370"></a>
+<span class="sourceLineNo">371</span>                        this.dates = new ArrayList&lt;ICalDate&gt;(dates);<a name="line.371"></a>
+<span class="sourceLineNo">372</span>                        Collections.sort(this.dates);<a name="line.372"></a>
+<span class="sourceLineNo">373</span>                }<a name="line.373"></a>
+<span class="sourceLineNo">374</span><a name="line.374"></a>
+<span class="sourceLineNo">375</span>                public boolean hasNext() {<a name="line.375"></a>
+<span class="sourceLineNo">376</span>                        return index &lt; dates.size();<a name="line.376"></a>
+<span class="sourceLineNo">377</span>                }<a name="line.377"></a>
+<span class="sourceLineNo">378</span><a name="line.378"></a>
+<span class="sourceLineNo">379</span>                public DateValue next() {<a name="line.379"></a>
+<span class="sourceLineNo">380</span>                        ICalDate next = dates.get(index++);<a name="line.380"></a>
+<span class="sourceLineNo">381</span>                        return convertUtc(next);<a name="line.381"></a>
+<span class="sourceLineNo">382</span>                }<a name="line.382"></a>
+<span class="sourceLineNo">383</span><a name="line.383"></a>
+<span class="sourceLineNo">384</span>                public void advanceTo(DateValue newStartUtc) {<a name="line.384"></a>
+<span class="sourceLineNo">385</span>                        ICalDate newStart = convertUtc(newStartUtc);<a name="line.385"></a>
+<span class="sourceLineNo">386</span>                        while (index &lt; dates.size() &amp;&amp; newStart.compareTo(dates.get(index)) &gt; 0) {<a name="line.386"></a>
+<span class="sourceLineNo">387</span>                                index++;<a name="line.387"></a>
+<span class="sourceLineNo">388</span>                        }<a name="line.388"></a>
+<span class="sourceLineNo">389</span>                }<a name="line.389"></a>
+<span class="sourceLineNo">390</span><a name="line.390"></a>
+<span class="sourceLineNo">391</span>                public void remove() {<a name="line.391"></a>
+<span class="sourceLineNo">392</span>                        throw new UnsupportedOperationException();<a name="line.392"></a>
+<span class="sourceLineNo">393</span>                }<a name="line.393"></a>
+<span class="sourceLineNo">394</span>        }<a name="line.394"></a>
+<span class="sourceLineNo">395</span><a name="line.395"></a>
+<span class="sourceLineNo">396</span>        private Google2445Utils() {<a name="line.396"></a>
+<span class="sourceLineNo">397</span>                //hide<a name="line.397"></a>
+<span class="sourceLineNo">398</span>        }<a name="line.398"></a>
+<span class="sourceLineNo">399</span>}<a name="line.399"></a>
 
 
 
