@@ -361,6 +361,16 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 						return Collections.unmodifiableList(next.getValue());
 					}
 
+					@Override
+					public boolean equals(Object obj) {
+						return next.equals(obj);
+					}
+
+					@Override
+					public int hashCode() {
+						return next.hashCode();
+					}
+
 					public List<V> setValue(List<V> value) {
 						throw new UnsupportedOperationException();
 					}
