@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -60,7 +61,7 @@ public class ICalPropertyTest {
 		ICalPropertyImpl property = spy(new ICalPropertyImpl());
 		property.addParameter("PARAM", "value,");
 		assertValidate(property).versions(ICalVersion.V1_0).run(58);
-		verify(property).validate(anyList(), eq(ICalVersion.V1_0), anyList());
+		verify(property).validate(any(List.class), eq(ICalVersion.V1_0), any(List.class));
 	}
 
 	@Test
