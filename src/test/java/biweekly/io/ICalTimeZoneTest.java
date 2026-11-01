@@ -333,6 +333,20 @@ public class ICalTimeZoneTest {
 	}
 
 	@Test
+	public void getOffset_at_noon_on_daylight_start() {
+		ICalTimeZone tz = new ICalTimeZone(vtimezoneNewYork());
+		assertEquals(ms(-4, 0, 0), tz.getOffset(utc(2014, 3, 9, 12, 0, 0).getTime()));
+		assertEquals(ms(-4, 0, 0), tz.getOffset(utc(2014, 3, 9, 13, 0, 0).getTime()));
+	}
+
+	@Test
+	public void getOffset_at_noon_on_daylight_end() {
+		ICalTimeZone tz = new ICalTimeZone(vtimezoneNewYork());
+		assertEquals(ms(-5, 0, 0), tz.getOffset(utc(2014, 11, 2, 12, 0, 0).getTime()));
+		assertEquals(ms(-5, 0, 0), tz.getOffset(utc(2014, 11, 2, 13, 0, 0).getTime()));
+	}
+
+	@Test
 	public void createIterator() {
 		VTimezone component = vtimezoneNewYork();
 		ICalTimeZone tz = new ICalTimeZone(component);
