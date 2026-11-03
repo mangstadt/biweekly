@@ -256,7 +256,7 @@ public class ICalTimeZone extends TimeZone {
 		int year = utcCalendar.get(Calendar.YEAR);
 		int month = utcCalendar.get(Calendar.MONTH) + 1;
 		int day = utcCalendar.get(Calendar.DATE);
-		int hour = utcCalendar.get(Calendar.HOUR);
+		int hour = utcCalendar.get(Calendar.HOUR_OF_DAY);
 		int minute = utcCalendar.get(Calendar.MINUTE);
 		int second = utcCalendar.get(Calendar.SECOND);
 
