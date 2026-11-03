@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -351,6 +352,24 @@ public class ListMultimapTest {
 			fail();
 		} catch (UnsupportedOperationException e) {
 			//expected
+		}
+	}
+
+	@Test
+	public void iterator_entry_equals_and_hashCode() {
+		for (String key : Arrays.asList("foo", (String) null)) {
+			ListMultimap<String, String> map = new ListMultimap<String, String>();
+			map.put(key, "1");
+			map.put(key, null);
+			Map.Entry<String, List<String>> entry = map.iterator().next();
+			Map.Entry<String, List<String>> expected = new AbstractMap.SimpleEntry<String, List<String>>(key, Arrays.asList("1", (String) null));
+
+			assertEqualsAndHash(expected, entry);
+			assertEqualsAndHash(entry, map.iterator().next());
+			assertNotEqualsBothWays(new AbstractMap.SimpleEntry<String, List<String>>("other", expected.getValue()), entry);
+			assertNotEqualsBothWays(new AbstractMap.SimpleEntry<String, List<String>>(key, Arrays.asList("other")), entry);
+			assertFalse(entry.equals(null));
+			assertFalse(entry.equals("not an entry"));
 		}
 	}
 
