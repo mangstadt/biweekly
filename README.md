@@ -5,7 +5,6 @@
 | Continuous Integration: | [![](https://travis-ci.org/mangstadt/biweekly.svg?branch=master)](https://travis-ci.org/mangstadt/biweekly) |
 | Code Coverage: | [![codecov.io](http://codecov.io/github/mangstadt/biweekly/coverage.svg?branch=master)](http://codecov.io/github/mangstadt/biweekly?branch=master) |
 | Maven Central: | [![Maven Central](https://maven-badges.herokuapp.com/maven-central/net.sf.biweekly/biweekly/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.sf.biweekly/biweekly) |
-| Chat Room: | [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mangstadt/biweekly?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge) |
 | License: | [![FreeBSD License](https://img.shields.io/badge/License-FreeBSD-red.svg)](https://github.com/mangstadt/biweekly/blob/master/LICENSE) |
 
 biweekly is an iCalendar library written in Java. The project aims to provide a well documented, easy to use API for reading and writing iCalendar data.
@@ -100,12 +99,9 @@ To build a JAR: `mvn package`
 
 # Questions / Feedback
 
-You have some options:
-
  * [Issue tracker](https://github.com/mangstadt/biweekly/issues)
- * [Gitter chat room](https://gitter.im/mangstadt/biweekly)
+ * Start a [discussion](https://github.com/mangstadt/biweekly/discussions)
  * [Post a question to StackOverflow](http://stackoverflow.com/questions/ask) with `ical` as a tag
- * Email me directly: [mike.angstadt@gmail.com](mailto:mike.angstadt@gmail.com)
 
 Please submit bug reports and feature requests to the [issue tracker](https://github.com/mangstadt/biweekly/issues).
 
