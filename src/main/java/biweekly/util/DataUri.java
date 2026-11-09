@@ -2,6 +2,7 @@ package biweekly.util;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.Locale;
 
 import biweekly.Messages;
 import biweekly.util.org.apache.commons.codec.binary.Base64;
@@ -81,7 +82,7 @@ public final class DataUri {
 	}
 
 	private DataUri(String contentType, byte[] data, String text) {
-		this.contentType = (contentType == null) ? "" : contentType.toLowerCase();
+		this.contentType = (contentType == null) ? "" : contentType.toLowerCase(Locale.ROOT);
 		this.data = data;
 		this.text = text;
 	}
@@ -112,7 +113,7 @@ public final class DataUri {
 			if (c == ';') {
 				String token = uri.substring(tokenStart, i);
 				if (contentType == null) {
-					contentType = token.toLowerCase();
+					contentType = token.toLowerCase(Locale.ROOT);
 				} else {
 					String cs = StringUtils.afterPrefixIgnoreCase(token, "charset=");
 					if (cs != null) {
@@ -128,7 +129,7 @@ public final class DataUri {
 			if (c == ',') {
 				String token = uri.substring(tokenStart, i);
 				if (contentType == null) {
-					contentType = token.toLowerCase();
+					contentType = token.toLowerCase(Locale.ROOT);
 				} else {
 					String cs = StringUtils.afterPrefixIgnoreCase(token, "charset=");
 					if (cs != null) {

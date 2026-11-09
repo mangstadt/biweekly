@@ -12,6 +12,11 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.List;
 
+import com.github.mangstadt.vinnie.LaciToken;
+import com.github.mangstadt.vinnie.VObjectParameters;
+import com.github.mangstadt.vinnie.io.FoldedLineWriter;
+import com.github.mangstadt.vinnie.io.VObjectWriter;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
@@ -28,9 +33,6 @@ import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.property.Timezone;
 import biweekly.util.Utf8Writer;
-
-import com.github.mangstadt.vinnie.VObjectParameters;
-import com.github.mangstadt.vinnie.io.VObjectWriter;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -84,17 +86,13 @@ import com.github.mangstadt.vinnie.io.VObjectWriter;
  * </p>
  * 
  * <pre class="brush:java">
- * ICalWriter writer = new ICalWriter(...);
- * 
  * //disable line folding
- * writer.getVObjectWriter().getFoldedLineWriter().setLineLength(null);
+ * ICalWriter writer = ICalWriter.withoutLineFolding(...);
  * 
- * //set line length (defaults to 75)
- * writer.getVObjectWriter().getFoldedLineWriter().setLineLength(50);
- * 
- * //change folded line indent string (defaults to one space character)
- * writer.getVObjectWriter().getFoldedLineWriter().setIndent("\t");
- *
+ * //set custom line folding settings
+ * Writer w = ...
+ * FoldedLineWriter flw = new FoldedLineWriter(w, 50, "\t");
+ * ICalWriter writer = new ICalWriter(flw, ...);
  * </pre>
  * @author Michael Angstadt
  * @see <a href="http://www.imc.org/pdi/pdiproddev.html">1.0 specs</a>
@@ -127,13 +125,13 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	/**
 	 * Creates a new iCalendar writer.
 	 * @param file the file to write to
-	 * @param targetVersion the iCalendar version to adhere to
 	 * @param append true to append to the end of the file, false to overwrite
 	 * it
+	 * @param targetVersion the iCalendar version to adhere to
 	 * @throws IOException if the file cannot be written to
 	 */
 	public ICalWriter(File file, boolean append, ICalVersion targetVersion) throws IOException {
-		this((targetVersion == ICalVersion.V1_0) ? new FileWriter(file, append) : new Utf8Writer(file, append), targetVersion);
+		this(writerFromFile(file, append, targetVersion), targetVersion);
 	}
 
 	/**
@@ -142,7 +140,57 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	 * @param targetVersion the iCalendar version to adhere to
 	 */
 	public ICalWriter(Writer writer, ICalVersion targetVersion) {
-		this.writer = new VObjectWriter(writer, targetVersion.getSyntaxStyle());
+		this(writer, targetVersion, true);
+	}
+
+	/**
+	 * Creates a new iCalendar writer with custom line folding settings.
+	 * @param writer the folded line writer
+	 * @param targetVersion the iCalendar version to adhere to
+	 */
+	public ICalWriter(FoldedLineWriter writer, ICalVersion targetVersion) {
+		this((Writer) writer, targetVersion);
+	}
+
+	/**
+	 * Creates a new iCalendar writer that doesn't use line folding.
+	 * @param file the file to write to
+	 * @param append true to append to the end of the file, false to overwrite
+	 * it
+	 * @param targetVersion the iCalendar version to adhere to
+	 * @return the writer
+	 * @throws IOException if the file cannot be written to
+	 */
+	public static ICalWriter withoutLineFolding(File file, boolean append, ICalVersion targetVersion) throws IOException {
+		Writer writer = writerFromFile(file, append, targetVersion);
+		return withoutLineFolding(writer, targetVersion);
+	}
+
+	/**
+	 * Creates a iCalendar writer that doesn't use line folding.
+	 * @param writer the writer to write to
+	 * @param targetVersion the iCalendar version to adhere to
+	 * @return the writer
+	 */
+	public static ICalWriter withoutLineFolding(Writer writer, ICalVersion targetVersion) {
+		return new ICalWriter(writer, targetVersion, false);
+	}
+
+	private static Writer writerFromFile(File file, boolean append, ICalVersion targetVersion) throws IOException {
+		return (targetVersion == ICalVersion.V1_0) ? new FileWriter(file, append) : new Utf8Writer(file, append);
+	}
+
+	/**
+	 * @param writer the writer to write to
+	 * @param targetVersion the iCalendar version to adhere to
+	 */
+	private ICalWriter(Writer writer, ICalVersion targetVersion, boolean useLineFolding) {
+		if (useLineFolding) {
+			this.writer = new VObjectWriter(writer, targetVersion.getSyntaxStyle());
+		} else {
+			this.writer = VObjectWriter.withoutLineFolding(writer, targetVersion.getSyntaxStyle());
+		}
+
 		this.targetVersion = targetVersion;
 	}
 
@@ -232,7 +280,8 @@ public class ICalWriter extends StreamWriter implements Flushable {
 			return;
 		}
 
-		writer.writeBeginComponent(componentScribe.getComponentName());
+		String componentNameUpper = componentScribe.getComponentName().toUpperCase();
+		writer.writeBeginComponent(componentNameUpper);
 
 		List propertyObjs = componentScribe.getProperties(component);
 		addVersionPropertyIfMissing(component, propertyObjs);
@@ -258,7 +307,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 			writeVCalTimezones();
 		}
 
-		writer.writeEndComponent(componentScribe.getComponentName());
+		writer.writeEndComponent(componentNameUpper);
 	}
 
 	private void writeVCalTimezones() throws IOException {
@@ -315,10 +364,10 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		}
 
 		//get the property name
-		String propertyName = scribe.getPropertyName(getTargetVersion());
+		LaciToken propertyName = scribe.getPropertyName(getTargetVersion());
 
 		//write property to data stream
-		writer.writeProperty(null, propertyName, new VObjectParameters(parameters.getMap()), value);
+		writer.writeProperty(null, propertyName.toUpperCase(), new VObjectParameters(parameters.getMap()), value);
 	}
 
 	/**

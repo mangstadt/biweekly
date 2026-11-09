@@ -14,6 +14,8 @@ import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.Biweekly;
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
@@ -58,7 +60,7 @@ import biweekly.property.ICalProperty;
  */
 public class ChainingXmlWriter extends ChainingWriter<ChainingXmlWriter> {
 	private final XCalOutputProperties outputProperties = new XCalOutputProperties();
-	private final Map<String, ICalDataType> parameterDataTypes = new HashMap<String, ICalDataType>(0);
+	private final Map<LaciToken, ICalDataType> parameterDataTypes = new HashMap<LaciToken, ICalDataType>(0);
 
 	/**
 	 * @param icals the iCValendar objects to write
@@ -138,7 +140,7 @@ public class ChainingXmlWriter extends ChainingWriter<ChainingXmlWriter> {
 	 * @return this
 	 */
 	public ChainingXmlWriter register(String parameterName, ICalDataType dataType) {
-		parameterDataTypes.put(parameterName, dataType);
+		parameterDataTypes.put(new LaciToken(parameterName), dataType);
 		return this;
 	}
 
@@ -195,8 +197,8 @@ public class ChainingXmlWriter extends ChainingWriter<ChainingXmlWriter> {
 		if (defaultTimeZone != null) {
 			writer.setGlobalTimezone(defaultTimeZone);
 		}
-		for (Map.Entry<String, ICalDataType> entry : parameterDataTypes.entrySet()) {
-			String parameterName = entry.getKey();
+		for (Map.Entry<LaciToken, ICalDataType> entry : parameterDataTypes.entrySet()) {
+			LaciToken parameterName = entry.getKey();
 			ICalDataType dataType = entry.getValue();
 			writer.registerParameterDataType(parameterName, dataType);
 		}

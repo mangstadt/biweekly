@@ -22,6 +22,8 @@ import java.util.TimeZone;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.component.StandardTime;
@@ -526,8 +528,8 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 				assertEquals(Arrays.asList(), recur.getByWeekNo());
 				assertNull(recur.getWorkweekStarts());
 
-				ListMultimap<String, String> expected = new ListMultimap<String, String>();
-				expected.put("NO EQUALS", "");
+				ListMultimap<LaciToken, String> expected = new ListMultimap<LaciToken, String>();
+				expected.put(new LaciToken("NO EQUALS"), "");
 				assertEquals(expected.asMap(), recur.getXRules());
 			}
 		});
@@ -1025,9 +1027,9 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 			assertEquals(Arrays.asList(1, 2), recur.getByWeekNo());
 			assertEquals(DayOfWeek.TUESDAY, recur.getWorkweekStarts());
 
-			Map<String, List<String>> expected = new HashMap<String, List<String>>();
-			expected.put("X-NAME", Arrays.asList("one", "two"));
-			expected.put("X-RULE", Arrays.asList("three"));
+			Map<LaciToken, List<String>> expected = new HashMap<LaciToken, List<String>>();
+			expected.put(new LaciToken("X-NAME"), Arrays.asList("one", "two"));
+			expected.put(new LaciToken("X-RULE"), Arrays.asList("three"));
 			assertEquals(expected, recur.getXRules());
 		}
 	};

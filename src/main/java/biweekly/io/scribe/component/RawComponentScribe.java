@@ -1,5 +1,7 @@
 package biweekly.io.scribe.component;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.component.RawComponent;
 
 /*
@@ -35,7 +37,7 @@ public class RawComponentScribe extends ICalComponentScribe<RawComponent> {
 	 * Creates a new raw component scribe.
 	 * @param componentName the component's name (e.g. "X-PARTY")
 	 */
-	public RawComponentScribe(String componentName) {
+	public RawComponentScribe(LaciToken componentName) {
 		super(RawComponent.class, componentName);
 	}
 

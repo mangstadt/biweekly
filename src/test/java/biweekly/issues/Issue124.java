@@ -10,6 +10,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.RecurrenceRuleScribe;
@@ -27,10 +29,10 @@ public class Issue124 {
 		String input = "INVALID";
 		Recurrence recur = parseRecurrence(input);
 
-		Map<String, List<String>> expectedXRules = new HashMap<String, List<String>>();
+		Map<LaciToken, List<String>> expectedXRules = new HashMap<LaciToken, List<String>>();
 		List<String> values = new ArrayList<String>();
 		values.add("");
-		expectedXRules.put(input, values);
+		expectedXRules.put(new LaciToken(input), values);
 
 		assertNull(recur.getFrequency());
 		assertEquals(expectedXRules, recur.getXRules());

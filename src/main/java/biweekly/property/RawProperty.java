@@ -4,14 +4,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.mangstadt.vinnie.LaciToken;
+import com.github.mangstadt.vinnie.SyntaxStyle;
+import com.github.mangstadt.vinnie.validate.AllowedCharacters;
+import com.github.mangstadt.vinnie.validate.VObjectValidator;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
-
-import com.github.mangstadt.vinnie.SyntaxStyle;
-import com.github.mangstadt.vinnie.validate.AllowedCharacters;
-import com.github.mangstadt.vinnie.validate.VObjectValidator;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -43,7 +44,7 @@ import com.github.mangstadt.vinnie.validate.VObjectValidator;
  * @author Michael Angstadt
  */
 public class RawProperty extends ICalProperty {
-	private String name;
+	private LaciToken name;
 	private ICalDataType dataType;
 	private String value;
 
@@ -59,10 +60,29 @@ public class RawProperty extends ICalProperty {
 	/**
 	 * Creates a raw property.
 	 * @param name the property name (e.g. "X-MS-ANNIVERSARY")
+	 * @param value the property value
+	 */
+	public RawProperty(LaciToken name, String value) {
+		this(name, null, value);
+	}
+
+	/**
+	 * Creates a raw property.
+	 * @param name the property name (e.g. "X-MS-ANNIVERSARY")
 	 * @param dataType the property value's data type
 	 * @param value the property value
 	 */
 	public RawProperty(String name, ICalDataType dataType, String value) {
+		this(LaciToken.create(name), dataType, value);
+	}
+
+	/**
+	 * Creates a raw property.
+	 * @param name the property name (e.g. "X-MS-ANNIVERSARY")
+	 * @param dataType the property value's data type
+	 * @param value the property value
+	 */
+	public RawProperty(LaciToken name, ICalDataType dataType, String value) {
 		this.name = name;
 		this.dataType = dataType;
 		this.value = value;
@@ -115,7 +135,7 @@ public class RawProperty extends ICalProperty {
 	 * Gets the property name.
 	 * @return the property name (e.g. "X-MS-ANNIVERSARY")
 	 */
-	public String getName() {
+	public LaciToken getName() {
 		return name;
 	}
 
@@ -124,6 +144,14 @@ public class RawProperty extends ICalProperty {
 	 * @param name the property name (e.g. "X-MS-ANNIVERSARY")
 	 */
 	public void setName(String name) {
+		setName(LaciToken.create(name));
+	}
+
+	/**
+	 * Sets the property name.
+	 * @param name the property name (e.g. "X-MS-ANNIVERSARY")
+	 */
+	public void setName(LaciToken name) {
 		this.name = name;
 	}
 
@@ -131,8 +159,8 @@ public class RawProperty extends ICalProperty {
 	protected void validate(List<ICalComponent> components, ICalVersion version, List<ValidationWarning> warnings) {
 		SyntaxStyle syntax = version.getSyntaxStyle();
 		AllowedCharacters allowed = VObjectValidator.allowedCharactersParameterName(syntax, true);
-		if (!allowed.check(name)) {
-			if (syntax == SyntaxStyle.OLD) {
+		if (!allowed.check(name.toUpperCase())) {
+			if (syntax == SyntaxStyle.LEGACY) {
 				AllowedCharacters notAllowed = allowed.flip();
 				warnings.add(new ValidationWarning(59, name, notAllowed.toString(true)));
 			} else {
@@ -160,7 +188,7 @@ public class RawProperty extends ICalProperty {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + ((dataType == null) ? 0 : dataType.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.toLowerCase().hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
@@ -173,7 +201,7 @@ public class RawProperty extends ICalProperty {
 		if (dataType != other.dataType) return false;
 		if (name == null) {
 			if (other.name != null) return false;
-		} else if (!name.equalsIgnoreCase(other.name)) return false;
+		} else if (!name.equals(other.name)) return false;
 		if (value == null) {
 			if (other.value != null) return false;
 		} else if (!value.equals(other.value)) return false;

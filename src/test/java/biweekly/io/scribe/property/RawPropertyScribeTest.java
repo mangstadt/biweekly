@@ -6,6 +6,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.ICalDataType;
 import biweekly.io.ParseContext;
 import biweekly.io.json.JCalValue;
@@ -86,7 +88,7 @@ public class RawPropertyScribeTest extends ScribeTest<RawProperty> {
 	private Check<RawProperty> has(final String name, final String value, final ICalDataType dataType) {
 		return new Check<RawProperty>() {
 			public void check(RawProperty property, ParseContext context) {
-				assertEquals(name, property.getName());
+				assertEquals(new LaciToken(name), property.getName());
 				assertEquals(value, property.getValue());
 				assertEquals(dataType, property.getDataType());
 			}

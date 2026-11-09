@@ -24,6 +24,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
@@ -438,7 +440,7 @@ public class JCalReaderTest {
 
 		RawProperty property = ical.getExperimentalProperty("x-foo");
 		assertEquals(ICalDataType.TEXT, property.getDataType());
-		assertEquals("X-FOO", property.getName());
+		assertEquals(new LaciToken("X-FOO"), property.getName());
 		assertEquals("bar", property.getValue());
 
 		assertParseWarnings(reader, 0);
@@ -467,12 +469,12 @@ public class JCalReaderTest {
 
 		RawProperty property = ical.getExperimentalProperty("cannotparse");
 		assertEquals(ICalDataType.TEXT, property.getDataType());
-		assertEquals("cannotparse", property.getName());
+		assertEquals(new LaciToken("cannotparse"), property.getName());
 		assertEquals("value", property.getValue());
 
 		property = ical.getExperimentalProperty("x-foo");
 		assertEquals(ICalDataType.TEXT, property.getDataType());
-		assertEquals("X-FOO", property.getName());
+		assertEquals(new LaciToken("X-FOO"), property.getName());
 		assertEquals("bar", property.getValue());
 
 		assertParseWarnings(reader, 1);

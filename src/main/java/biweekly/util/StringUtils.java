@@ -1,6 +1,7 @@
 package biweekly.util;
 
 import java.util.Collection;
+import java.util.Locale;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -63,15 +64,11 @@ public final class StringUtils {
 			return null;
 		}
 
-		for (int i = 0; i < prefix.length(); i++) {
-			char a = Character.toUpperCase(prefix.charAt(i));
-			char b = Character.toUpperCase(string.charAt(i));
-			if (a != b) {
-				return null;
-			}
+		if (string.toUpperCase(Locale.ROOT).startsWith(prefix.toUpperCase(Locale.ROOT))) {
+			return string.substring(prefix.length());
 		}
 
-		return string.substring(prefix.length());
+		return null;
 	}
 
 	/**
@@ -87,8 +84,7 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Like {@link String#startsWith}, but using case-insensitive
-	 * comparison.
+	 * Like {@link String#startsWith}, but using case-insensitive comparison.
 	 * @param str the string
 	 * @param prefix the prefix
 	 * @return true if the string begins with the given prefix using

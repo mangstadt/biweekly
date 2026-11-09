@@ -1,5 +1,7 @@
 package biweekly.io;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.Messages;
 
 /*
@@ -32,10 +34,12 @@ import biweekly.Messages;
  * @author Michael Angstadt
  */
 public class ParseWarning {
-	private final Integer code, lineNumber;
-	private final String propertyName, message;
+	private final Integer code;
+	private final Integer lineNumber;
+	private final LaciToken propertyName;
+	private final String message;
 
-	private ParseWarning(Integer lineNumber, String propertyName, Integer code, String message) {
+	private ParseWarning(Integer lineNumber, LaciToken propertyName, Integer code, String message) {
 		this.lineNumber = lineNumber;
 		this.propertyName = propertyName;
 		this.code = code;
@@ -70,7 +74,7 @@ public class ParseWarning {
 	 * Gets the name of the property that the warning occurred on.
 	 * @return the property name (e.g. "DTSTART") or null if not applicable
 	 */
-	public String getPropertyName() {
+	public LaciToken getPropertyName() {
 		return propertyName;
 	}
 
@@ -102,8 +106,10 @@ public class ParseWarning {
 	 * @author Michael Angstadt
 	 */
 	public static class Builder {
-		private Integer lineNumber, code;
-		private String propertyName, message;
+		private Integer lineNumber;
+		private Integer code;
+		private LaciToken propertyName;
+		private String message;
 
 		/**
 		 * Creates an empty builder.
@@ -128,6 +134,16 @@ public class ParseWarning {
 		 * @return this
 		 */
 		public Builder propertyName(String propertyName) {
+			return propertyName(LaciToken.create(propertyName));
+		}
+
+		/**
+		 * Sets the name of the property that the warning occurred on.
+		 * @param propertyName the property name (e.g. "DTSTART") or null if not
+		 * applicable
+		 * @return this
+		 */
+		public Builder propertyName(LaciToken propertyName) {
 			this.propertyName = propertyName;
 			return this;
 		}

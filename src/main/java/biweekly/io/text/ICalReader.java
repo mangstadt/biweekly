@@ -11,6 +11,13 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.mangstadt.vinnie.LaciToken;
+import com.github.mangstadt.vinnie.VObjectProperty;
+import com.github.mangstadt.vinnie.io.Context;
+import com.github.mangstadt.vinnie.io.SyntaxRules;
+import com.github.mangstadt.vinnie.io.VObjectDataListener;
+import com.github.mangstadt.vinnie.io.VObjectReader;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
@@ -28,12 +35,6 @@ import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.util.Utf8Reader;
-
-import com.github.mangstadt.vinnie.VObjectProperty;
-import com.github.mangstadt.vinnie.io.Context;
-import com.github.mangstadt.vinnie.io.SyntaxRules;
-import com.github.mangstadt.vinnie.io.VObjectDataListener;
-import com.github.mangstadt.vinnie.io.VObjectReader;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -87,7 +88,7 @@ import com.github.mangstadt.vinnie.io.VObjectReader;
  * @see <a href="http://tools.ietf.org/html/rfc5545">RFC 5545</a>
  */
 public class ICalReader extends StreamReader {
-	private static final String VCALENDAR_COMPONENT_NAME = ScribeIndex.getICalendarScribe().getComponentName(); //"VCALENDAR"
+	private static final LaciToken VCALENDAR_COMPONENT_NAME = ScribeIndex.getICalendarScribe().getComponentName(); //"VCALENDAR"
 
 	private final VObjectReader reader;
 	private final ICalVersion defaultVersion;
@@ -256,7 +257,7 @@ public class ICalReader extends StreamReader {
 		private ICalVersion version = defaultVersion;
 		private ComponentStack stack = new ComponentStack();
 
-		public void onComponentBegin(String name, Context vobjectContext) {
+		public void onComponentBegin(LaciToken name, Context vobjectContext) {
 			//ignore everything until a VCALENDAR component is read
 			if (ical == null && !isVCalendarComponent(name)) {
 				return;
@@ -276,7 +277,7 @@ public class ICalReader extends StreamReader {
 			}
 		}
 
-		public void onComponentEnd(String name, Context vobjectContext) {
+		public void onComponentEnd(LaciToken name, Context vobjectContext) {
 			//VCALENDAR component not read yet, ignore
 			if (ical == null) {
 				return;
@@ -301,10 +302,10 @@ public class ICalReader extends StreamReader {
 				return;
 			}
 
-			String propertyName = vobjectProperty.getName();
+			LaciToken propertyName = new LaciToken(vobjectProperty.getName());
 			ICalParameters parameters = new ICalParameters(vobjectProperty.getParameters().getMap());
 			String value = vobjectProperty.getValue();
-			
+
 			context.getWarnings().clear();
 			context.setLineNumber(vobjectContext.getLineNumber());
 			context.setPropertyName(propertyName);
@@ -373,14 +374,14 @@ public class ICalReader extends StreamReader {
 			//@formatter:off
 			warnings.add(new ParseWarning.Builder()
 				.lineNumber(vobjectContext.getLineNumber())
-				.propertyName((property == null) ? null : property.getName())
+				.propertyName((property == null) ? null : new LaciToken(property.getName()))
 				.message(warning.getMessage())
 				.build()
 			);
 			//@formatter:on
 		}
 
-		private boolean isVCalendarComponent(String componentName) {
+		private boolean isVCalendarComponent(LaciToken componentName) {
 			return VCALENDAR_COMPONENT_NAME.equals(componentName);
 		}
 
@@ -391,7 +392,7 @@ public class ICalReader extends StreamReader {
 		 * @param version the iCal version
 		 */
 		private void processNamelessParameters(ICalParameters parameters, ICalVersion version) {
-			List<String> namelessParamValues = parameters.removeAll(null);
+			List<String> namelessParamValues = parameters.removeAll((String) null);
 			if (namelessParamValues.isEmpty()) {
 				return;
 			}
@@ -406,7 +407,7 @@ public class ICalReader extends StreamReader {
 			}
 
 			for (String paramValue : namelessParamValues) {
-				String paramName = guessParameterName(paramValue);
+				LaciToken paramName = guessParameterName(paramValue);
 				parameters.put(paramName, paramValue);
 			}
 		}
@@ -416,7 +417,7 @@ public class ICalReader extends StreamReader {
 		 * @param value the parameter value
 		 * @return the guessed name
 		 */
-		private String guessParameterName(String value) {
+		private LaciToken guessParameterName(String value) {
 			if (ICalDataType.find(value) != null) {
 				return ICalParameters.VALUE;
 			}

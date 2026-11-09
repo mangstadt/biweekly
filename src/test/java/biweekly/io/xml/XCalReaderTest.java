@@ -37,6 +37,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
@@ -826,7 +828,7 @@ public class XCalReaderTest {
 
 			RawProperty property = ical.getExperimentalProperty("X-FOO");
 			assertNull(property.getDataType());
-			assertEquals("X-FOO", property.getName());
+			assertEquals(new LaciToken("X-FOO"), property.getName());
 			assertEquals("bar", property.getValue());
 			assertParseWarnings(reader, 0);
 		}
@@ -858,7 +860,7 @@ public class XCalReaderTest {
 
 			RawProperty property = ical.getExperimentalProperty("x-foo");
 			assertNull(property.getDataType());
-			assertEquals("X-FOO", property.getName());
+			assertEquals(new LaciToken("X-FOO"), property.getName());
 			assertEquals("bar", property.getValue());
 
 			Xml prop = ical.getProperty(Xml.class);

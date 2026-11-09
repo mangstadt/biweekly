@@ -14,6 +14,9 @@ import javax.xml.namespace.QName;
 
 import org.w3c.dom.Element;
 
+import com.github.mangstadt.vinnie.LaciToken;
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
@@ -38,8 +41,6 @@ import biweekly.util.DateTimeComponents;
 import biweekly.util.ICalDate;
 import biweekly.util.ICalDateFormat;
 import biweekly.util.ListMultimap;
-
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -75,7 +76,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	private static final Set<ICalVersion> allVersions = Collections.unmodifiableSet(EnumSet.allOf(ICalVersion.class));
 
 	protected final Class<T> clazz;
-	protected final String propertyName;
+	protected final LaciToken propertyName;
 	private final ICalDataType defaultDataType;
 	protected final QName qname;
 
@@ -85,7 +86,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param propertyName the property name (e.g. "VERSION")
 	 */
 	protected ICalPropertyScribe(Class<T> clazz, String propertyName) {
-		this(clazz, propertyName, null);
+		this(clazz, new LaciToken(propertyName), null);
 	}
 
 	/**
@@ -96,6 +97,17 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * null if unknown
 	 */
 	protected ICalPropertyScribe(Class<T> clazz, String propertyName, ICalDataType defaultDataType) {
+		this(clazz, new LaciToken(propertyName), defaultDataType);
+	}
+
+	/**
+	 * Creates a new scribe.
+	 * @param clazz the property class
+	 * @param propertyName the property name (e.g. "VERSION")
+	 * @param defaultDataType the property's default data type (e.g. "text") or
+	 * null if unknown
+	 */
+	protected ICalPropertyScribe(Class<T> clazz, LaciToken propertyName, ICalDataType defaultDataType) {
 		this(clazz, propertyName, defaultDataType, new QName(XCAL_NS, propertyName.toLowerCase()));
 	}
 
@@ -110,6 +122,20 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * name, and the element namespace is set to the xCal namespace)
 	 */
 	protected ICalPropertyScribe(Class<T> clazz, String propertyName, ICalDataType defaultDataType, QName qname) {
+		this(clazz, new LaciToken(propertyName), defaultDataType, qname);
+	}
+
+	/**
+	 * Creates a new scribe.
+	 * @param clazz the property class
+	 * @param propertyName the property name (e.g. "VERSION")
+	 * @param defaultDataType the property's default data type (e.g. "text") or
+	 * null if unknown
+	 * @param qname the XML element name and namespace to use for xCal documents
+	 * (by default, the XML element name is set to the lower-cased property
+	 * name, and the element namespace is set to the xCal namespace)
+	 */
+	protected ICalPropertyScribe(Class<T> clazz, LaciToken propertyName, ICalDataType defaultDataType, QName qname) {
 		this.clazz = clazz;
 		this.propertyName = propertyName;
 		this.defaultDataType = defaultDataType;
@@ -140,7 +166,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * names under different versions)
 	 * @return the property name (e.g. "DTSTART")
 	 */
-	public String getPropertyName(ICalVersion version) {
+	public LaciToken getPropertyName(ICalVersion version) {
 		return propertyName;
 	}
 
@@ -548,7 +574,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		}
 
 		if (values.get(0).getObject() != null) {
-			ListMultimap<String, String> object = value.asObject();
+			ListMultimap<LaciToken, String> object = value.asObject();
 			if (!object.isEmpty()) {
 				return VObjectPropertyValues.writeMultimap(object.getMap());
 			}

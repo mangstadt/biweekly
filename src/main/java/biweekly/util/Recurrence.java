@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.property.DateStart;
 import biweekly.util.com.google.ical.compat.javautil.DateIterator;
 import biweekly.util.com.google.ical.compat.javautil.DateIteratorFactory;
@@ -75,7 +77,7 @@ public final class Recurrence {
 	private final List<Integer> bySetPos;
 	private final List<ByDay> byDay;
 	private final DayOfWeek workweekStarts;
-	private final Map<String, List<String>> xrules;
+	private final Map<LaciToken, List<String>> xrules;
 
 	private Recurrence(Builder builder) {
 		frequency = builder.frequency;
@@ -212,7 +214,7 @@ public final class Recurrence {
 	 * Gets the non-standard rule parts.
 	 * @return the non-standard rule parts
 	 */
-	public Map<String, List<String>> getXRules() {
+	public Map<LaciToken, List<String>> getXRules() {
 		return xrules;
 	}
 
@@ -319,7 +321,7 @@ public final class Recurrence {
 		private List<Integer> byMonth;
 		private List<Integer> bySetPos;
 		private DayOfWeek workweekStarts;
-		private ListMultimap<String, String> xrules;
+		private ListMultimap<LaciToken, String> xrules;
 
 		/**
 		 * Constructs a new builder.
@@ -336,7 +338,7 @@ public final class Recurrence {
 			byWeekNo = new ArrayList<Integer>(0);
 			byMonth = new ArrayList<Integer>(0);
 			bySetPos = new ArrayList<Integer>(0);
-			xrules = new ListMultimap<String, String>(0);
+			xrules = new ListMultimap<LaciToken, String>(0);
 		}
 
 		/**
@@ -359,8 +361,8 @@ public final class Recurrence {
 			bySetPos = new ArrayList<Integer>(recur.bySetPos);
 			workweekStarts = recur.workweekStarts;
 
-			Map<String, List<String>> map = new HashMap<String, List<String>>(recur.xrules);
-			xrules = new ListMultimap<String, String>(map);
+			Map<LaciToken, List<String>> map = new HashMap<LaciToken, List<String>>(recur.xrules);
+			xrules = new ListMultimap<LaciToken, String>(map);
 		}
 
 		/**
@@ -629,8 +631,16 @@ public final class Recurrence {
 		 * @return this
 		 */
 		public Builder xrule(String name, String value) {
-			name = name.toUpperCase();
+			return xrule(new LaciToken(name), value);
+		}
 
+		/**
+		 * Adds a non-standard rule part.
+		 * @param name the name
+		 * @param value the value or null to remove the rule part
+		 * @return this
+		 */
+		public Builder xrule(LaciToken name, String value) {
 			if (value == null) {
 				xrules.removeAll(name);
 			} else {

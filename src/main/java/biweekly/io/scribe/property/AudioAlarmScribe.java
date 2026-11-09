@@ -2,6 +2,9 @@ package biweekly.io.scribe.property;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -10,8 +13,6 @@ import biweekly.property.Action;
 import biweekly.property.Attachment;
 import biweekly.property.AudioAlarm;
 import biweekly.util.org.apache.commons.codec.binary.Base64;
-
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -114,7 +115,7 @@ public class AudioAlarmScribe extends VCalAlarmPropertyScribe<AudioAlarm> {
 
 	private static Attachment buildAttachment(AudioAlarm aalarm) {
 		String type = aalarm.getType();
-		String contentType = (type == null) ? null : "audio/" + type.toLowerCase();
+		String contentType = (type == null) ? null : "audio/" + type.toLowerCase(Locale.ROOT);
 		Attachment attach = new Attachment(contentType, (String) null);
 
 		byte[] data = aalarm.getData();

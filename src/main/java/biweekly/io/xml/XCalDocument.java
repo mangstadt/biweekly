@@ -37,6 +37,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
@@ -529,7 +531,8 @@ public class XCalDocument {
 
 		private ICalComponent parseComponent(Element componentElement) {
 			//create the component object
-			ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(componentElement.getLocalName(), ICalVersion.V2_0);
+			LaciToken name = new LaciToken(componentElement.getLocalName());
+			ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(name, ICalVersion.V2_0);
 			ICalComponent component = scribe.emptyInstance();
 			boolean isICalendar = component instanceof ICalendar;
 
@@ -626,7 +629,7 @@ public class XCalDocument {
 				return;
 			}
 
-			String name = parameterElement.getLocalName().toUpperCase();
+			LaciToken name = new LaciToken(parameterElement.getLocalName());
 			List<Element> valueElements = XmlUtils.toElementList(parameterElement.getChildNodes());
 			if (valueElements.isEmpty()) {
 				//this should never be true if the xCal is properly formed
@@ -784,12 +787,12 @@ public class XCalDocument {
 		private Element buildParametersElement(ICalParameters parameters) {
 			Element parametersWrapperElement = buildElement(PARAMETERS);
 
-			for (Map.Entry<String, List<String>> parameter : parameters) {
-				String name = parameter.getKey().toLowerCase();
+			for (Map.Entry<LaciToken, List<String>> parameter : parameters) {
+				LaciToken name = parameter.getKey();
 				ICalDataType dataType = parameterDataTypes.get(name);
 				String dataTypeStr = (dataType == null) ? "unknown" : dataType.getName().toLowerCase();
 
-				Element parameterElement = buildAndAppendElement(name, parametersWrapperElement);
+				Element parameterElement = buildAndAppendElement(name.toLowerCase(), parametersWrapperElement);
 				for (String parameterValue : parameter.getValue()) {
 					Element parameterValueElement = buildAndAppendElement(dataTypeStr, parameterElement);
 					parameterValueElement.setTextContent(parameterValue);

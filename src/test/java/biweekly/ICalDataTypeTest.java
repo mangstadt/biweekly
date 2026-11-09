@@ -9,6 +9,8 @@ import java.util.Collection;
 
 import org.junit.Test;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 /*
  Copyright (c) 2013-2024, Michael Angstadt
  All rights reserved.
@@ -44,7 +46,7 @@ public class ICalDataTypeTest {
 
 		ICalDataType test = ICalDataType.get("test");
 		ICalDataType test2 = ICalDataType.get("tEsT");
-		assertEquals("test", test2.getName());
+		assertEquals(new LaciToken("test"), test2.getName());
 		assertSame(test, test2);
 	}
 

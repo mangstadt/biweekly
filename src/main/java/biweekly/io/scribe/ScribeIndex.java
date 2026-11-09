@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
@@ -146,11 +148,12 @@ import biweekly.property.Xml;
  *   writer.write(ical);
  * }
  * </pre>
+ * 
  * @author Michael Angstadt
  */
 public class ScribeIndex {
 	//define standard component scribes
-	private static final Map<String, ICalComponentScribe<? extends ICalComponent>> standardCompByName = new HashMap<String, ICalComponentScribe<? extends ICalComponent>>();
+	private static final Map<LaciToken, ICalComponentScribe<? extends ICalComponent>> standardCompByName = new HashMap<LaciToken, ICalComponentScribe<? extends ICalComponent>>();
 	private static final Map<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>> standardCompByClass = new HashMap<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>>();
 	static {
 		registerStandard(new ICalendarScribe());
@@ -165,7 +168,7 @@ public class ScribeIndex {
 	}
 
 	//define standard property scribes
-	private static final Map<String, ICalPropertyScribe<? extends ICalProperty>> standardPropByName = new HashMap<String, ICalPropertyScribe<? extends ICalProperty>>();
+	private static final Map<PropertyNameKey, ICalPropertyScribe<? extends ICalProperty>> standardPropByName = new HashMap<PropertyNameKey, ICalPropertyScribe<? extends ICalProperty>>();
 	private static final Map<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>> standardPropByClass = new HashMap<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>>();
 	private static final Map<QName, ICalPropertyScribe<? extends ICalProperty>> standardPropByQName = new HashMap<QName, ICalPropertyScribe<? extends ICalProperty>>();
 	static {
@@ -240,10 +243,10 @@ public class ScribeIndex {
 		registerStandard(new RefreshIntervalScribe());
 	}
 
-	private final Map<String, ICalComponentScribe<? extends ICalComponent>> experimentalCompByName = new HashMap<String, ICalComponentScribe<? extends ICalComponent>>(0);
+	private final Map<LaciToken, ICalComponentScribe<? extends ICalComponent>> experimentalCompByName = new HashMap<LaciToken, ICalComponentScribe<? extends ICalComponent>>(0);
 	private final Map<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>> experimentalCompByClass = new HashMap<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>>(0);
 
-	private final Map<String, ICalPropertyScribe<? extends ICalProperty>> experimentalPropByName = new HashMap<String, ICalPropertyScribe<? extends ICalProperty>>(0);
+	private final Map<PropertyNameKey, ICalPropertyScribe<? extends ICalProperty>> experimentalPropByName = new HashMap<PropertyNameKey, ICalPropertyScribe<? extends ICalProperty>>(0);
 	private final Map<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>> experimentalPropByClass = new HashMap<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>>(0);
 	private final Map<QName, ICalPropertyScribe<? extends ICalProperty>> experimentalPropByQName = new HashMap<QName, ICalPropertyScribe<? extends ICalProperty>>(0);
 
@@ -254,8 +257,16 @@ public class ScribeIndex {
 	 * @return the component scribe or a {@link RawComponentScribe} if not found
 	 */
 	public ICalComponentScribe<? extends ICalComponent> getComponentScribe(String componentName, ICalVersion version) {
-		componentName = componentName.toUpperCase();
+		return getComponentScribe(new LaciToken(componentName), version);
+	}
 
+	/**
+	 * Gets a component scribe by name.
+	 * @param componentName the component name (e.g. "VEVENT")
+	 * @param version the version of the iCalendar object being parsed
+	 * @return the component scribe or a {@link RawComponentScribe} if not found
+	 */
+	public ICalComponentScribe<? extends ICalComponent> getComponentScribe(LaciToken componentName, ICalVersion version) {
 		ICalComponentScribe<? extends ICalComponent> scribe = experimentalCompByName.get(componentName);
 		if (scribe == null) {
 			scribe = standardCompByName.get(componentName);
@@ -280,9 +291,17 @@ public class ScribeIndex {
 	 * @return the property scribe or a {@link RawPropertyScribe} if not found
 	 */
 	public ICalPropertyScribe<? extends ICalProperty> getPropertyScribe(String propertyName, ICalVersion version) {
-		propertyName = propertyName.toUpperCase();
+		return getPropertyScribe(new LaciToken(propertyName), version);
+	}
 
-		String key = propertyNameKey(propertyName, version);
+	/**
+	 * Gets a property scribe by name.
+	 * @param propertyName the property name (e.g. "UID")
+	 * @param version the version of the iCalendar object being parsed
+	 * @return the property scribe or a {@link RawPropertyScribe} if not found
+	 */
+	public ICalPropertyScribe<? extends ICalProperty> getPropertyScribe(LaciToken propertyName, ICalVersion version) {
+		PropertyNameKey key = new PropertyNameKey(propertyName, version);
 		ICalPropertyScribe<? extends ICalProperty> scribe = experimentalPropByName.get(key);
 		if (scribe == null) {
 			scribe = standardPropByName.get(key);
@@ -369,7 +388,7 @@ public class ScribeIndex {
 
 		if (scribe == null || !scribe.getSupportedVersions().contains(ICalVersion.V2_0)) {
 			if (XCalNamespaceContext.XCAL_NS.equals(qname.getNamespaceURI())) {
-				return new RawPropertyScribe(qname.getLocalPart().toUpperCase());
+				return new RawPropertyScribe(qname.getLocalPart());
 			}
 			return getPropertyScribe(Xml.class);
 		}
@@ -382,7 +401,7 @@ public class ScribeIndex {
 	 * @param scribe the scribe to register
 	 */
 	public void register(ICalComponentScribe<? extends ICalComponent> scribe) {
-		experimentalCompByName.put(scribe.getComponentName().toUpperCase(), scribe);
+		experimentalCompByName.put(scribe.getComponentName(), scribe);
 		experimentalCompByClass.put(scribe.getComponentClass(), scribe);
 	}
 
@@ -392,7 +411,7 @@ public class ScribeIndex {
 	 */
 	public void register(ICalPropertyScribe<? extends ICalProperty> scribe) {
 		for (ICalVersion version : ICalVersion.values()) {
-			experimentalPropByName.put(propertyNameKey(scribe, version), scribe);
+			experimentalPropByName.put(new PropertyNameKey(scribe, version), scribe);
 		}
 		experimentalPropByClass.put(scribe.getPropertyClass(), scribe);
 		experimentalPropByQName.put(scribe.getQName(), scribe);
@@ -403,7 +422,7 @@ public class ScribeIndex {
 	 * @param scribe the scribe to unregister
 	 */
 	public void unregister(ICalComponentScribe<? extends ICalComponent> scribe) {
-		experimentalCompByName.remove(scribe.getComponentName().toUpperCase());
+		experimentalCompByName.remove(scribe.getComponentName());
 		experimentalCompByClass.remove(scribe.getComponentClass());
 	}
 
@@ -413,7 +432,7 @@ public class ScribeIndex {
 	 */
 	public void unregister(ICalPropertyScribe<? extends ICalProperty> scribe) {
 		for (ICalVersion version : ICalVersion.values()) {
-			experimentalPropByName.remove(propertyNameKey(scribe, version));
+			experimentalPropByName.remove(new PropertyNameKey(scribe, version));
 		}
 		experimentalPropByClass.remove(scribe.getPropertyClass());
 		experimentalPropByQName.remove(scribe.getQName());
@@ -429,23 +448,47 @@ public class ScribeIndex {
 	}
 
 	private static void registerStandard(ICalComponentScribe<? extends ICalComponent> scribe) {
-		standardCompByName.put(scribe.getComponentName().toUpperCase(), scribe);
+		standardCompByName.put(scribe.getComponentName(), scribe);
 		standardCompByClass.put(scribe.getComponentClass(), scribe);
 	}
 
 	private static void registerStandard(ICalPropertyScribe<? extends ICalProperty> scribe) {
 		for (ICalVersion version : ICalVersion.values()) {
-			standardPropByName.put(propertyNameKey(scribe, version), scribe);
+			standardPropByName.put(new PropertyNameKey(scribe, version), scribe);
 		}
 		standardPropByClass.put(scribe.getPropertyClass(), scribe);
 		standardPropByQName.put(scribe.getQName(), scribe);
 	}
 
-	private static String propertyNameKey(ICalPropertyScribe<? extends ICalProperty> scribe, ICalVersion version) {
-		return propertyNameKey(scribe.getPropertyName(version), version);
-	}
+	private static class PropertyNameKey {
+		private final LaciToken name;
+		private final ICalVersion version;
 
-	private static String propertyNameKey(String propertyName, ICalVersion version) {
-		return version.ordinal() + propertyName.toUpperCase();
+		public PropertyNameKey(LaciToken name, ICalVersion version) {
+			this.name = name;
+			this.version = version;
+		}
+
+		public PropertyNameKey(ICalPropertyScribe<? extends ICalProperty> scribe, ICalVersion version) {
+			this(scribe.getPropertyName(version), version);
+		}
+
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + version.hashCode();
+			result = prime * result + name.hashCode();
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) return true;
+			if (obj == null) return false;
+			if (getClass() != obj.getClass()) return false;
+			PropertyNameKey other = (PropertyNameKey) obj;
+			return version == other.version && name.equals(other.name);
+		}
 	}
 }

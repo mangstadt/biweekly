@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.ICalDataType;
 import biweekly.ValidationWarning;
 import biweekly.property.Description;
@@ -171,13 +173,13 @@ public class ICalComponentTest {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		RawProperty property = component.addExperimentalProperty("NAME", "value");
-		assertEquals("NAME", property.getName());
+		assertEquals(new LaciToken("NAME"), property.getName());
 		assertEquals("value", property.getValue());
 		assertNull(property.getDataType());
 		assertSame(property, component.getExperimentalProperty("NAME"));
 
 		RawProperty property2 = component.addExperimentalProperty("NAME2", ICalDataType.TEXT, "value2");
-		assertEquals("NAME2", property2.getName());
+		assertEquals(new LaciToken("NAME2"), property2.getName());
 		assertEquals("value2", property2.getValue());
 		assertEquals(ICalDataType.TEXT, property2.getDataType());
 		assertSame(property2, component.getExperimentalProperty("NAME2"));
@@ -234,13 +236,13 @@ public class ICalComponentTest {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		RawProperty property = component.setExperimentalProperty("NAME", "value");
-		assertEquals("NAME", property.getName());
+		assertEquals(new LaciToken("NAME"), property.getName());
 		assertEquals("value", property.getValue());
 		assertNull(property.getDataType());
 		assertEquals(asList(property), component.getExperimentalProperties("NAME"));
 
 		RawProperty property2 = component.setExperimentalProperty("NAME", ICalDataType.TEXT, "value2");
-		assertEquals("NAME", property2.getName());
+		assertEquals(new LaciToken("NAME"), property2.getName());
 		assertEquals("value2", property2.getValue());
 		assertEquals(ICalDataType.TEXT, property2.getDataType());
 		assertEquals(asList(property2), component.getExperimentalProperties("NAME"));
@@ -362,7 +364,7 @@ public class ICalComponentTest {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		RawComponent subComponent = component.addExperimentalComponent("NAME");
-		assertEquals("NAME", subComponent.getName());
+		assertEquals(new LaciToken("NAME"), subComponent.getName());
 		assertSize(subComponent, 0, 0);
 		assertSame(subComponent, component.getExperimentalComponent("NAME"));
 	}
@@ -419,11 +421,11 @@ public class ICalComponentTest {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		RawComponent subComponent = component.setExperimentalComponent("NAME");
-		assertEquals("NAME", subComponent.getName());
+		assertEquals(new LaciToken("NAME"), subComponent.getName());
 		assertEquals(asList(subComponent), component.getExperimentalComponents("NAME"));
 
 		RawComponent subComponent2 = component.setExperimentalComponent("NAME");
-		assertEquals("NAME", subComponent2.getName());
+		assertEquals(new LaciToken("NAME"), subComponent2.getName());
 		assertEquals(asList(subComponent2), component.getExperimentalComponents("NAME"));
 	}
 

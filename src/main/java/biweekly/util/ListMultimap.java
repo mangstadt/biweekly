@@ -118,7 +118,6 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 * @param value the value to add
 	 */
 	public void put(K key, V value) {
-		key = sanitizeKey(key);
 		List<V> list = map.get(key);
 		if (list == null) {
 			list = new ArrayList<V>();
@@ -137,7 +136,6 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 			return;
 		}
 
-		key = sanitizeKey(key);
 		List<V> list = map.get(key);
 		if (list == null) {
 			list = new ArrayList<V>();
@@ -153,7 +151,6 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 * @return the list of values or empty list if the key doesn't exist
 	 */
 	public List<V> get(K key) {
-		key = sanitizeKey(key);
 		List<V> value = map.get(key);
 		if (value == null) {
 			value = new ArrayList<V>(0);
@@ -167,7 +164,6 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 * @return the first value or null if the key doesn't exist
 	 */
 	public V first(K key) {
-		key = sanitizeKey(key);
 		List<V> values = map.get(key);
 
 		/*
@@ -183,7 +179,6 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 * @return true if the key exists, false if not
 	 */
 	public boolean containsKey(K key) {
-		key = sanitizeKey(key);
 		return map.containsKey(key);
 	}
 
@@ -194,7 +189,6 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 * @return true if the multimap contained the value, false if not
 	 */
 	public boolean remove(K key, V value) {
-		key = sanitizeKey(key);
 		List<V> values = map.get(key);
 		if (values == null) {
 			return false;
@@ -214,7 +208,6 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 * (this list is immutable)
 	 */
 	public List<V> removeAll(K key) {
-		key = sanitizeKey(key);
 		List<V> removed = map.remove(key);
 		if (removed == null) {
 			return Collections.emptyList();
@@ -325,16 +318,6 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 */
 	public Map<K, List<V>> getMap() {
 		return map;
-	}
-
-	/**
-	 * Modifies a given key before it is used to interact with the internal map.
-	 * This method is meant to be overridden by child classes if necessary.
-	 * @param key the key
-	 * @return the modified key (by default, the key is returned as-is)
-	 */
-	protected K sanitizeKey(K key) {
-		return key;
 	}
 
 	/**

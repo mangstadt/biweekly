@@ -35,6 +35,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
@@ -405,9 +407,10 @@ public class XCalWriter extends XCalWriterBase {
 
 		start(PARAMETERS);
 
-		for (Map.Entry<String, List<String>> parameter : parameters) {
-			String parameterName = parameter.getKey().toLowerCase();
-			start(parameterName);
+		for (Map.Entry<LaciToken, List<String>> parameter : parameters) {
+			LaciToken parameterName = parameter.getKey();
+			String parameterElementName = parameterName.toLowerCase();
+			start(parameterElementName);
 
 			for (String parameterValue : parameter.getValue()) {
 				ICalDataType dataType = parameterDataTypes.get(parameterName);
@@ -418,7 +421,7 @@ public class XCalWriter extends XCalWriterBase {
 				end(dataTypeElementName);
 			}
 
-			end(parameterName);
+			end(parameterElementName);
 		}
 
 		end(PARAMETERS);

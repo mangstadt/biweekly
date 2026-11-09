@@ -36,20 +36,20 @@ public enum ICalVersion {
 	 * The original vCalendar specification.
 	 * @see <a href="http://www.imc.org/pdi/pdiproddev.html">1.0 specs</a>
 	 */
-	V1_0("1.0", SyntaxStyle.OLD),
+	V1_0("1.0", SyntaxStyle.LEGACY),
 
 	/**
 	 * An older, deprecated version of the iCalendar specification (very similar
 	 * to {@link #V2_0}).
 	 * @see <a href="https://tools.ietf.org/html/rfc2445">RFC 2445</a>
 	 */
-	V2_0_DEPRECATED("2.0", SyntaxStyle.NEW),
+	V2_0_DEPRECATED("2.0", SyntaxStyle.MODERN),
 
 	/**
 	 * The latest iCalendar specification.
 	 * @see <a href="https://tools.ietf.org/html/rfc5545">RFC 5545</a>
 	 */
-	V2_0("2.0", SyntaxStyle.NEW);
+	V2_0("2.0", SyntaxStyle.MODERN);
 
 	private final String version;
 	private final SyntaxStyle syntaxStyle;

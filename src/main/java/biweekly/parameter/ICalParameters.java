@@ -3,10 +3,13 @@ package biweekly.parameter;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
+import com.github.mangstadt.vinnie.LaciToken;
 import com.github.mangstadt.vinnie.SyntaxStyle;
 import com.github.mangstadt.vinnie.validate.AllowedCharacters;
 import com.github.mangstadt.vinnie.validate.VObjectValidator;
@@ -54,14 +57,14 @@ import biweekly.util.ListMultimap;
  * Stores the parameters that belong to a property.
  * @author Michael Angstadt
  */
-public class ICalParameters extends ListMultimap<String, String> {
+public class ICalParameters extends ListMultimap<LaciToken, String> {
 	/**
 	 * Contains a URI that points to additional information about the entity
 	 * represented by the property.
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-14">RFC 5545
 	 * p.14-5</a>
 	 */
-	public static final String ALTREP = "ALTREP";
+	public static final LaciToken ALTREP = new LaciToken("ALTREP");
 
 	/**
 	 * Defines the character set that the property value is encoded in (for
@@ -70,7 +73,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * encoding.
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.16</a>
 	 */
-	public static final String CHARSET = "CHARSET";
+	public static final LaciToken CHARSET = new LaciToken("CHARSET");
 
 	/**
 	 * Contains a human-readable, display name of the entity represented by this
@@ -79,7 +82,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-15">RFC 5545
 	 * p.15-6</a>
 	 */
-	public static final String CN = "CN";
+	public static final LaciToken CN = new LaciToken("CN");
 
 	/**
 	 * Used by the {@link Attendee} property. It defines the type of object that
@@ -87,7 +90,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-16">RFC 5545
 	 * p.16</a>
 	 */
-	public static final String CUTYPE = "CUTYPE";
+	public static final LaciToken CUTYPE = new LaciToken("CUTYPE");
 
 	/**
 	 * Used by the {@link Attendee} property. It stores a list of people who
@@ -97,7 +100,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
 	 * p.17</a>
 	 */
-	public static final String DELEGATED_FROM = "DELEGATED-FROM";
+	public static final LaciToken DELEGATED_FROM = new LaciToken("DELEGATED-FROM");
 
 	/**
 	 * Used by the {@link Attendee} property. It stores a list of people to
@@ -107,7 +110,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-17">RFC 5545
 	 * p.17-8</a>
 	 */
-	public static final String DELEGATED_TO = "DELEGATED-TO";
+	public static final LaciToken DELEGATED_TO = new LaciToken("DELEGATED-TO");
 
 	/**
 	 * Contains a URI (such as an LDAP URI) which points to additional
@@ -116,7 +119,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545
 	 * p.18</a>
 	 */
-	public static final String DIR = "DIR";
+	public static final LaciToken DIR = new LaciToken("DIR");
 
 	/**
 	 * Used by the {@link Image} property. It defines the ways in which the
@@ -126,7 +129,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-13" >
 	 * draft-ietf-calext-extensions p.13</a>
 	 */
-	public static final String DISPLAY = "DISPLAY";
+	public static final LaciToken DISPLAY = new LaciToken("DISPLAY");
 
 	/**
 	 * Used by the {@link Attendee} property. Normally, this property's value
@@ -137,7 +140,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-14" >
 	 * draft-ietf-calext-extensions p.14</a>
 	 */
-	public static final String EMAIL = "EMAIL";
+	public static final LaciToken EMAIL = new LaciToken("EMAIL");
 
 	/**
 	 * Defines how the property value is encoded (for example, "base64" for a
@@ -145,7 +148,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545
 	 * p.18-9</a>
 	 */
-	public static final String ENCODING = "ENCODING";
+	public static final LaciToken ENCODING = new LaciToken("ENCODING");
 
 	/**
 	 * Used by the {@link Attendee} property. It defines whether the event
@@ -153,7 +156,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * vCal 1.0 standard.
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25</a>
 	 */
-	public static final String EXPECT = "EXPECT";
+	public static final LaciToken EXPECT = new LaciToken("EXPECT");
 
 	/**
 	 * Used by the {@link Conference} property. It defines the features that the
@@ -162,7 +165,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * "https://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-15" >
 	 * draft-ietf-calext-extensions p.15</a>
 	 */
-	public static final String FEATURE = "FEATURE";
+	public static final LaciToken FEATURE = new LaciToken("FEATURE");
 
 	/**
 	 * Defines the content type of the property value (for example, "image/jpg"
@@ -170,7 +173,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-19">RFC 5545
 	 * p.19-20</a>
 	 */
-	public static final String FMTTYPE = "FMTTYPE";
+	public static final LaciToken FMTTYPE = new LaciToken("FMTTYPE");
 
 	/**
 	 * Used by the {@link FreeBusy} property. It defines whether the person is
@@ -180,7 +183,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-20">RFC 5545
 	 * p.20</a>
 	 */
-	public static final String FBTYPE = "FBTYPE";
+	public static final LaciToken FBTYPE = new LaciToken("FBTYPE");
 
 	/**
 	 * Defines a human-readable label for the property.
@@ -188,7 +191,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * "http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16">
 	 * draft-ietf-calext-extensions-01 p.16</a>
 	 */
-	public static final String LABEL = "LABEL";
+	public static final LaciToken LABEL = new LaciToken("LABEL");
 
 	/**
 	 * Defines the language that the property value is written in (for example,
@@ -196,7 +199,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
 	 * p.21</a>
 	 */
-	public static final String LANGUAGE = "LANGUAGE";
+	public static final LaciToken LANGUAGE = new LaciToken("LANGUAGE");
 
 	/**
 	 * Used by the {@link Attendee} property. It defines the groups that the
@@ -205,7 +208,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-21">RFC 5545
 	 * p.21-2</a>
 	 */
-	public static final String MEMBER = "MEMBER";
+	public static final LaciToken MEMBER = new LaciToken("MEMBER");
 
 	/**
 	 * Used by the {@link Attendee} property. It defines the participation
@@ -215,7 +218,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-22">RFC 5545
 	 * p.22</a>
 	 */
-	public static final String PARTSTAT = "PARTSTAT";
+	public static final LaciToken PARTSTAT = new LaciToken("PARTSTAT");
 
 	/**
 	 * Used by the {@link RecurrenceId} property. It defines the effective range
@@ -223,7 +226,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-23">RFC 5545
 	 * p.23-4</a>
 	 */
-	public static final String RANGE = "RANGE";
+	public static final LaciToken RANGE = new LaciToken("RANGE");
 
 	/**
 	 * Used by the {@link Trigger} property. It defines the date-time field that
@@ -232,7 +235,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-24">RFC 5545
 	 * p.24</a>
 	 */
-	public static final String RELATED = "RELATED";
+	public static final LaciToken RELATED = new LaciToken("RELATED");
 
 	/**
 	 * Used by the {@link RelatedTo} property. It defines the kind of
@@ -241,7 +244,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545
 	 * p.25</a>
 	 */
-	public static final String RELTYPE = "RELTYPE";
+	public static final LaciToken RELTYPE = new LaciToken("RELTYPE");
 
 	/**
 	 * Used by the {@link Attendee} property. It defines the attendee's role
@@ -253,7 +256,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * p.25</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25</a>
 	 */
-	public static final String ROLE = "ROLE";
+	public static final LaciToken ROLE = new LaciToken("ROLE");
 
 	/**
 	 * Used by the {@link Attendee} property. It defines whether the event
@@ -265,7 +268,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * p.26</a>
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25</a>
 	 */
-	public static final String RSVP = "RSVP";
+	public static final LaciToken RSVP = new LaciToken("RSVP");
 
 	/**
 	 * Defines a URI which represents a person who is acting on behalf of the
@@ -275,7 +278,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
 	 * p.27</a>
 	 */
-	public static final String SENT_BY = "SENT-BY";
+	public static final LaciToken SENT_BY = new LaciToken("SENT-BY");
 
 	/**
 	 * Used by the {@link Attendee} property. It defines the status of the
@@ -283,14 +286,14 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * may not attend). It is only used in the vCal 1.0 standard.
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25</a>
 	 */
-	public static final String STATUS = "STATUS";
+	public static final LaciToken STATUS = new LaciToken("STATUS");
 
 	/**
 	 * Defines the content type of the property value (for example, "WAVE" for
 	 * an audio file). It is only used in the vCal 1.0 standard.
 	 * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.27</a>
 	 */
-	public static final String TYPE = "TYPE";
+	public static final LaciToken TYPE = new LaciToken("TYPE");
 
 	/**
 	 * Used by properties that contain date-time values. It defines the timezone
@@ -301,7 +304,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-27">RFC 5545
 	 * p.27-8</a>
 	 */
-	public static final String TZID = "TZID";
+	public static final LaciToken TZID = new LaciToken("TZID");
 
 	/**
 	 * Defines the data type of the property value (for example, "date" if the
@@ -310,7 +313,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * @see <a href="http://tools.ietf.org/html/rfc5545#page-29">RFC 5545
 	 * p.29-50</a>
 	 */
-	public static final String VALUE = "VALUE";
+	public static final LaciToken VALUE = new LaciToken("VALUE");
 
 	/**
 	 * Creates a parameters list.
@@ -337,17 +340,13 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * made to the given map will effect the parameter list and vice versa.
 	 * </p>
 	 * <p>
-	 * Care must be taken to ensure that the given map's keys are all in
-	 * uppercase.
-	 * </p>
-	 * <p>
 	 * To avoid problems, it is highly recommended that the given map NOT be
 	 * modified by anything other than this {@link ICalParameters} class after
 	 * being passed into this constructor.
 	 * </p>
 	 * @param map the map
 	 */
-	public ICalParameters(Map<String, List<String>> map) {
+	public ICalParameters(Map<LaciToken, List<String>> map) {
 		super(map);
 	}
 
@@ -1273,7 +1272,85 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * p.29-50</a>
 	 */
 	public void setValue(ICalDataType dataType) {
-		replace(VALUE, (dataType == null) ? null : dataType.getName());
+		replace(VALUE, (dataType == null) ? null : dataType.getName().toUpperCase());
+	}
+
+	/**
+	 * Gets the first value that's associated with a parameter.
+	 * @param name the parameter name
+	 * @return the first value or null if the key doesn't exist
+	 */
+	public String first(String name) {
+		return first(LaciToken.create(name));
+	}
+
+	/**
+	 * Gets the values associated with a parameter. Changes to the returned list
+	 * will update the underlying multimap, and vice versa.
+	 * @param name the parameter name
+	 * @return the list of values or empty list if the key doesn't exist
+	 */
+	public List<String> get(String name) {
+		return get(LaciToken.create(name));
+	}
+
+	/**
+	 * Adds a value to the multimap.
+	 * @param name the parameter name
+	 * @param value the value to add
+	 */
+	public void put(String name, String value) {
+		put(LaciToken.create(name), value);
+	}
+
+	/**
+	 * Adds multiple values to the multimap.
+	 * @param name the parameter name
+	 * @param values the values to add
+	 */
+	public void putAll(String name, Collection<String> values) {
+		putAll(LaciToken.create(name), values);
+	}
+
+	/**
+	 * Replaces all values with the given value.
+	 * @param name the parameter name
+	 * @param value the value with which to replace all existing values, or null
+	 * to remove all values
+	 * @return the values that were replaced (this list is immutable)
+	 */
+	public List<String> replace(String name, String value) {
+		return replace(LaciToken.create(name), value);
+	}
+
+	/**
+	 * Replaces all values with the given values.
+	 * @param name the parameter name
+	 * @param values the values with which to replace all existing values
+	 * @return the values that were replaced (this list is immutable)
+	 */
+	public List<String> replace(String name, Collection<String> values) {
+		return replace(LaciToken.create(name), values);
+	}
+
+	/**
+	 * Removes a particular value.
+	 * @param name the parameter name
+	 * @param value the value to remove
+	 * @return true if the multimap contained the value, false if not
+	 */
+	public boolean remove(String name, String value) {
+		return remove(LaciToken.create(name), value);
+	}
+
+	/**
+	 * Removes all the values associated with a parameter.
+	 * @param name the parameter name
+	 * @return the removed values or an empty list if the key doesn't exist
+	 * (this list is immutable)
+	 */
+	public List<String> removeAll(String name) {
+		return removeAll(LaciToken.create(name));
 	}
 
 	/**
@@ -1299,7 +1376,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 	public List<ValidationWarning> validate(ICalVersion version) {
 		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>(0);
 
-		SyntaxStyle syntax = (version == ICalVersion.V1_0) ? SyntaxStyle.OLD : SyntaxStyle.NEW;
+		SyntaxStyle syntax = (version == ICalVersion.V1_0) ? SyntaxStyle.LEGACY : SyntaxStyle.MODERN;
 
 		checkForInvalidChars(syntax, warnings);
 
@@ -1316,11 +1393,11 @@ public class ICalParameters extends ListMultimap<String, String> {
 
 		return warnings;
 	}
-	
+
 	private void checkForInvalidChars(SyntaxStyle syntax, List<ValidationWarning> warnings) {
-		for (Map.Entry<String, List<String>> entry : this) {
-			String name = entry.getKey();
-			validateParameterName(name, syntax, warnings);
+		for (Map.Entry<LaciToken, List<String>> entry : this) {
+			LaciToken name = entry.getKey();
+			validateParameterName(name.toUpperCase(), syntax, warnings);
 
 			List<String> values = entry.getValue();
 			for (String value : values) {
@@ -1335,7 +1412,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 		}
 
 		ValidationWarning warning;
-		if (syntax == SyntaxStyle.OLD) {
+		if (syntax == SyntaxStyle.LEGACY) {
 			AllowedCharacters notAllowed = VObjectValidator.allowedCharactersParameterName(syntax, true).flip();
 			warning = new ValidationWarning(57, name, notAllowed.toString(true));
 		} else {
@@ -1345,13 +1422,13 @@ public class ICalParameters extends ListMultimap<String, String> {
 		warnings.add(warning);
 	}
 
-	private void validateParameterValue(String name, String value, SyntaxStyle syntax, List<ValidationWarning> warnings) {
+	private void validateParameterValue(LaciToken name, String value, SyntaxStyle syntax, List<ValidationWarning> warnings) {
 		if (VObjectValidator.validateParameterValue(value, syntax, false, true)) {
 			return;
 		}
 
 		AllowedCharacters notAllowed = VObjectValidator.allowedCharactersParameterValue(syntax, false, true).flip();
-		int code = (syntax == SyntaxStyle.OLD) ? 58 : 53;
+		int code = (syntax == SyntaxStyle.LEGACY) ? 58 : 53;
 		warnings.add(new ValidationWarning(code, name, value, notAllowed.toString(true)));
 	}
 
@@ -1361,7 +1438,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 			return;
 		}
 
-		value = value.toLowerCase();
+		value = value.toLowerCase(Locale.ROOT);
 		List<String> validValues = Arrays.asList("true", "false", "yes", "no");
 		if (!validValues.contains(value)) {
 			warnings.add(new ValidationWarning(1, RSVP, value, validValues));
@@ -1458,11 +1535,6 @@ public class ICalParameters extends ListMultimap<String, String> {
 	}
 
 	@Override
-	protected String sanitizeKey(String key) {
-		return (key == null) ? null : key.toUpperCase();
-	}
-
-	@Override
 	public int hashCode() {
 		/*
 		 * Remember: Keys are case-insensitive, key order does not matter, and
@@ -1471,8 +1543,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 		final int prime = 31;
 		int result = 1;
 
-		for (Map.Entry<String, List<String>> entry : this) {
-			String key = entry.getKey();
+		for (Map.Entry<LaciToken, List<String>> entry : this) {
+			LaciToken key = entry.getKey();
 			List<String> value = entry.getValue();
 
 			int valueHash = 1;
@@ -1481,7 +1553,7 @@ public class ICalParameters extends ListMultimap<String, String> {
 			}
 
 			int entryHash = 1;
-			entryHash += prime * entryHash + ((key == null) ? 0 : key.toLowerCase().hashCode());
+			entryHash += prime * entryHash + ((key == null) ? 0 : key.hashCode());
 			entryHash += prime * entryHash + valueHash;
 
 			result += entryHash;
@@ -1515,8 +1587,8 @@ public class ICalParameters extends ListMultimap<String, String> {
 		ICalParameters other = (ICalParameters) obj;
 		if (size() != other.size()) return false;
 
-		for (Map.Entry<String, List<String>> entry : this) {
-			String key = entry.getKey();
+		for (Map.Entry<LaciToken, List<String>> entry : this) {
+			LaciToken key = entry.getKey();
 			List<String> value = entry.getValue();
 			List<String> otherValue = other.get(key);
 
@@ -1561,6 +1633,10 @@ public class ICalParameters extends ListMultimap<String, String> {
 			super(parameterName);
 		}
 
+		protected EnumParameterList(LaciToken parameterName) {
+			super(parameterName);
+		}
+
 		@Override
 		protected String _asString(T value) {
 			return value.getValue();
@@ -1583,13 +1659,20 @@ public class ICalParameters extends ListMultimap<String, String> {
 	 * </p>
 	 */
 	public abstract class ICalParameterList<T> extends AbstractList<T> {
-		protected final String parameterName;
+		protected final LaciToken parameterName;
 		protected final List<String> parameterValues;
 
 		/**
 		 * @param parameterName the name of the parameter (case insensitive)
 		 */
 		protected ICalParameterList(String parameterName) {
+			this(LaciToken.create(parameterName));
+		}
+
+		/**
+		 * @param parameterName the name of the parameter
+		 */
+		protected ICalParameterList(LaciToken parameterName) {
 			this.parameterName = parameterName;
 			parameterValues = ICalParameters.this.get(parameterName);
 		}

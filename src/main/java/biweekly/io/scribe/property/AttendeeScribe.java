@@ -2,6 +2,9 @@ package biweekly.io.scribe.property;
 
 import java.util.Iterator;
 
+import com.github.mangstadt.vinnie.LaciToken;
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.DataModelConversionException;
@@ -13,8 +16,6 @@ import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
 import biweekly.property.Attendee;
 import biweekly.property.Organizer;
-
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -146,7 +147,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			return;
 		}
 
-		String name;
+		LaciToken name;
 		String value;
 		switch (context.getVersion()) {
 		case V1_0:

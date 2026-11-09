@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.github.mangstadt.vinnie.LaciToken;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -136,12 +137,12 @@ public class JCalRawReader implements Closeable {
 			return;
 		}
 
-		parseComponent(new ArrayList<String>());
+		parseComponent(new ArrayList<LaciToken>());
 	}
 
-	private void parseComponent(List<String> components) throws IOException {
+	private void parseComponent(List<LaciToken> components) throws IOException {
 		checkCurrent(JsonToken.VALUE_STRING);
-		String componentName = parser.getValueAsString();
+		LaciToken componentName = new LaciToken(parser.getValueAsString());
 		listener.readComponent(components, componentName);
 		components.add(componentName);
 
@@ -162,17 +163,17 @@ public class JCalRawReader implements Closeable {
 		while (parser.nextToken() != JsonToken.END_ARRAY) { //until we reach the end sub-components array
 			checkCurrent(JsonToken.START_ARRAY);
 			parser.nextToken();
-			parseComponent(new ArrayList<String>(components));
+			parseComponent(new ArrayList<LaciToken>(components));
 		}
 
 		//read the end of the component array (e.g. the last bracket in this example: ["comp", [ /* props */ ], [ /* comps */] ])
 		checkNext(JsonToken.END_ARRAY);
 	}
 
-	private void parseProperty(List<String> components) throws IOException {
+	private void parseProperty(List<LaciToken> components) throws IOException {
 		//get property name
 		checkCurrent(JsonToken.VALUE_STRING);
-		String propertyName = parser.getValueAsString().toLowerCase();
+		LaciToken propertyName = new LaciToken(parser.getValueAsString());
 
 		ICalParameters parameters = parseParameters();
 
@@ -307,7 +308,7 @@ public class JCalRawReader implements Closeable {
 		 * @param parentHierarchy the component's parent components
 		 * @param componentName the component name (e.g. "vevent")
 		 */
-		void readComponent(List<String> parentHierarchy, String componentName);
+		void readComponent(List<LaciToken> parentHierarchy, LaciToken componentName);
 
 		/**
 		 * Called when a property is read.
@@ -318,7 +319,7 @@ public class JCalRawReader implements Closeable {
 		 * @param dataType the data type (e.g. "text")
 		 * @param value the property value
 		 */
-		void readProperty(List<String> componentHierarchy, String propertyName, ICalParameters parameters, ICalDataType dataType, JCalValue value);
+		void readProperty(List<LaciToken> componentHierarchy, LaciToken propertyName, ICalParameters parameters, ICalDataType dataType, JCalValue value);
 	}
 
 	/**

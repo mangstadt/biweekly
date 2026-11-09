@@ -7,12 +7,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
 import biweekly.Messages;
-import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.ValidationWarning;
+import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.Status;
@@ -553,15 +555,16 @@ public abstract class ICalComponent {
 			return;
 		}
 
-		List<String> allowedValues = new ArrayList<String>(allowed.length);
+		LaciToken actualValue = LaciToken.create(actual.getValue());
+
+		List<LaciToken> allowedValues = new ArrayList<LaciToken>(allowed.length);
 		for (Status status : allowed) {
-			String value = status.getValue().toLowerCase();
+			LaciToken value = LaciToken.create(status.getValue());
 			allowedValues.add(value);
 		}
 
-		String actualValue = actual.getValue().toLowerCase();
 		if (!allowedValues.contains(actualValue)) {
-			warnings.add(new ValidationWarning(13, actual.getValue(), allowedValues));
+			warnings.add(new ValidationWarning(13, actual, allowedValues));
 		}
 	}
 

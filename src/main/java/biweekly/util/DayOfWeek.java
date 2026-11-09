@@ -2,6 +2,8 @@ package biweekly.util;
 
 import java.util.Calendar;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 /*
  Copyright (c) 2013-2024, Michael Angstadt
  All rights reserved.
@@ -48,11 +50,11 @@ public enum DayOfWeek {
 	SATURDAY("SA", Calendar.SATURDAY);
 	//@formatter:on
 
-	private final String abbr;
+	private final LaciToken abbr;
 	private final int calendarConstant;
 
 	DayOfWeek(String abbr, int calendarConstant) {
-		this.abbr = abbr;
+		this.abbr = new LaciToken(abbr);
 		this.calendarConstant = calendarConstant;
 	}
 
@@ -61,7 +63,7 @@ public enum DayOfWeek {
 	 * @return the abbreviation (e.g. "MO" for Monday)
 	 */
 	public String getAbbr() {
-		return abbr;
+		return abbr.toUpperCase();
 	}
 
 	/**
@@ -78,8 +80,9 @@ public enum DayOfWeek {
 	 * @return the day or null if not found
 	 */
 	public static DayOfWeek valueOfAbbr(String abbr) {
+		LaciToken abbr2 = LaciToken.create(abbr);
 		for (DayOfWeek day : values()) {
-			if (day.abbr.equalsIgnoreCase(abbr)) {
+			if (day.abbr.equals(abbr2)) {
 				return day;
 			}
 		}

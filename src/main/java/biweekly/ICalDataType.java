@@ -2,6 +2,8 @@ package biweekly;
 
 import java.util.Collection;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.util.CaseClasses;
 
 /*
@@ -36,15 +38,15 @@ import biweekly.util.CaseClasses;
  * p.29-50</a>
  */
 public class ICalDataType {
-	private static final CaseClasses<ICalDataType, String> enums = new CaseClasses<ICalDataType, String>(ICalDataType.class) {
+	private static final CaseClasses<ICalDataType, LaciToken> enums = new CaseClasses<ICalDataType, LaciToken>(ICalDataType.class) {
 		@Override
-		protected ICalDataType create(String value) {
+		protected ICalDataType create(LaciToken value) {
 			return new ICalDataType(value);
 		}
 
 		@Override
-		protected boolean matches(ICalDataType dataType, String value) {
-			return dataType.name.equalsIgnoreCase(value);
+		protected boolean matches(ICalDataType dataType, LaciToken value) {
+			return dataType.name.equals(value);
 		}
 	};
 
@@ -163,9 +165,15 @@ public class ICalDataType {
 	 */
 	public static final ICalDataType UTC_OFFSET = new ICalDataType("UTC-OFFSET");
 
-	private final String name;
+	private static final LaciToken CID = new LaciToken("CID");
+
+	private final LaciToken name;
 
 	private ICalDataType(String name) {
+		this(new LaciToken(name));
+	}
+
+	private ICalDataType(LaciToken name) {
 		this.name = name;
 	}
 
@@ -173,13 +181,13 @@ public class ICalDataType {
 	 * Gets the name of the data type.
 	 * @return the name of the data type (e.g. "TEXT")
 	 */
-	public String getName() {
+	public LaciToken getName() {
 		return name;
 	}
 
 	@Override
 	public String toString() {
-		return name;
+		return name.toString();
 	}
 
 	/**
@@ -189,11 +197,8 @@ public class ICalDataType {
 	 * @return the object or null if not found
 	 */
 	public static ICalDataType find(String value) {
-		if ("CID".equalsIgnoreCase(value)) {
-			//"CID" is an alias for "CONTENT-ID" (vCal 1.0, p.17)
-			return CONTENT_ID;
-		}
-		return enums.find(value);
+		LaciToken token = new LaciToken(value);
+		return isContentIdAlias(token) ? CONTENT_ID : enums.find(token);
 	}
 
 	/**
@@ -204,11 +209,13 @@ public class ICalDataType {
 	 * @return the object
 	 */
 	public static ICalDataType get(String value) {
-		if ("CID".equalsIgnoreCase(value)) {
-			//"CID" is an alias for "CONTENT-ID" (vCal 1.0, p.17)
-			return CONTENT_ID;
-		}
-		return enums.get(value);
+		LaciToken token = new LaciToken(value);
+		return isContentIdAlias(token) ? CONTENT_ID : enums.get(token);
+	}
+
+	private static boolean isContentIdAlias(LaciToken token) {
+		//"CID" is an alias for "CONTENT-ID" (vCal 1.0, p.17)
+		return CID.equals(token);
 	}
 
 	/**

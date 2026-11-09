@@ -11,6 +11,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.util.ListMultimap;
 
 /*
@@ -266,12 +268,12 @@ public class JCalValueTest {
 		object.put("c", new JsonValue((Object) null));
 		JCalValue value = new JCalValue(new JsonValue(object));
 
-		ListMultimap<String, Object> expected = new ListMultimap<String, Object>();
-		expected.put("a", "one");
-		expected.put("b", "2");
-		expected.put("b", "3.0");
-		expected.put("b", "");
-		expected.put("c", "");
+		ListMultimap<LaciToken, Object> expected = new ListMultimap<LaciToken, Object>();
+		expected.put(new LaciToken("a"), "one");
+		expected.put(new LaciToken("b"), "2");
+		expected.put(new LaciToken("b"), "3.0");
+		expected.put(new LaciToken("b"), "");
+		expected.put(new LaciToken("c"), "");
 		assertEquals(expected, value.asObject());
 	}
 

@@ -184,14 +184,13 @@ public class ChainingTextWriter extends ChainingWriter<ChainingTextWriter> {
 	 * @throws IOException if there's a problem writing to the writer
 	 */
 	public void go(Writer writer) throws IOException {
-		go(new ICalWriter(writer, getICalWriterConstructorVersion()));
+		ICalVersion ver = getICalWriterConstructorVersion();
+		ICalWriter icalWriter = foldLines ? new ICalWriter(writer, ver) : ICalWriter.withoutLineFolding(writer, ver);
+		go(icalWriter);
 	}
 
 	private void go(ICalWriter writer) throws IOException {
 		writer.setCaretEncodingEnabled(caretEncoding);
-		if (!foldLines) {
-			writer.getVObjectWriter().getFoldedLineWriter().setLineLength(null);
-		}
 		if (defaultTimeZone != null) {
 			writer.setGlobalTimezone(defaultTimeZone);
 		}

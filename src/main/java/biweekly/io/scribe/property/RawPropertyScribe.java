@@ -2,6 +2,9 @@ package biweekly.io.scribe.property;
 
 import java.util.List;
 
+import com.github.mangstadt.vinnie.LaciToken;
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
@@ -12,8 +15,6 @@ import biweekly.io.xml.XCalElement;
 import biweekly.io.xml.XCalElement.XCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RawProperty;
-
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -57,6 +58,10 @@ import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
  */
 public class RawPropertyScribe extends ICalPropertyScribe<RawProperty> {
 	public RawPropertyScribe(String propertyName) {
+		super(RawProperty.class, propertyName, null);
+	}
+	
+	public RawPropertyScribe(LaciToken propertyName) {
 		super(RawProperty.class, propertyName, null);
 	}
 

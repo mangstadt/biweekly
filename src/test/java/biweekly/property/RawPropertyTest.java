@@ -13,6 +13,8 @@ import static org.junit.Assert.assertNull;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.ICalDataType;
 
 /*
@@ -47,12 +49,12 @@ public class RawPropertyTest {
 	@Test
 	public void constructors() throws Exception {
 		RawProperty property = new RawProperty("name", "value");
-		assertEquals("name", property.getName());
+		assertEquals(new LaciToken("name"), property.getName());
 		assertEquals("value", property.getValue());
 		assertNull(property.getDataType());
 
 		property = new RawProperty("name", ICalDataType.TEXT, "value");
-		assertEquals("name", property.getName());
+		assertEquals(new LaciToken("name"), property.getName());
 		assertEquals("value", property.getValue());
 		assertEquals(ICalDataType.TEXT, property.getDataType());
 	}
@@ -62,17 +64,17 @@ public class RawPropertyTest {
 		RawProperty property = new RawProperty("name", "value");
 
 		property.setName("name2");
-		assertEquals("name2", property.getName());
+		assertEquals(new LaciToken("name2"), property.getName());
 		assertEquals("value", property.getValue());
 		assertNull(property.getDataType());
 
 		property.setValue("value2");
-		assertEquals("name2", property.getName());
+		assertEquals(new LaciToken("name2"), property.getName());
 		assertEquals("value2", property.getValue());
 		assertNull(property.getDataType());
 
 		property.setDataType(ICalDataType.TEXT);
-		assertEquals("name2", property.getName());
+		assertEquals(new LaciToken("name2"), property.getName());
 		assertEquals("value2", property.getValue());
 		assertEquals(ICalDataType.TEXT, property.getDataType());
 	}
@@ -103,12 +105,12 @@ public class RawPropertyTest {
 	public void equals() {
 		//@formatter:off
 		assertNothingIsEqual(
-			new RawProperty(null, null),
+			new RawProperty((String) null, null),
 			new RawProperty("name", null),
-			new RawProperty(null, "value"),
-			new RawProperty(null, ICalDataType.TEXT, null),
+			new RawProperty((String) null, "value"),
+			new RawProperty((String) null, ICalDataType.TEXT, null),
 			new RawProperty("name", ICalDataType.TEXT, null),
-			new RawProperty(null, ICalDataType.TEXT, "value"),
+			new RawProperty((String) null, ICalDataType.TEXT, "value"),
 			new RawProperty("name", "value"),
 			new RawProperty("name2", "value"),
 			new RawProperty("name", "value2"),

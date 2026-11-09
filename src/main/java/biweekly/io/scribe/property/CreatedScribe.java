@@ -2,6 +2,8 @@ package biweekly.io.scribe.property;
 
 import java.util.Date;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.ICalVersion;
 import biweekly.property.Created;
 
@@ -40,8 +42,8 @@ public class CreatedScribe extends DateTimePropertyScribe<Created> {
 	}
 
 	@Override
-	public String getPropertyName(ICalVersion version) {
-		return (version == ICalVersion.V1_0) ? "DCREATED" : super.getPropertyName(version);
+	public LaciToken getPropertyName(ICalVersion version) {
+		return (version == ICalVersion.V1_0) ? new LaciToken("DCREATED") : super.getPropertyName(version);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -127,7 +128,7 @@ class RecurrenceParserV1 {
 	}
 
 	private LinkedList<String> splitTokens(String value) {
-		String valueUpper = value.toUpperCase();
+		String valueUpper = value.toUpperCase(Locale.ROOT);
 		String[] split = valueUpper.split("\\s+");
 		return new LinkedList<String>(Arrays.asList(split));
 	}

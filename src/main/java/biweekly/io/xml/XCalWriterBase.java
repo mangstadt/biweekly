@@ -3,6 +3,8 @@ package biweekly.io.xml;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.io.StreamWriter;
@@ -38,13 +40,11 @@ import biweekly.parameter.ICalParameters;
  * @author Michael Angstadt
  */
 abstract class XCalWriterBase extends StreamWriter {
-	protected final ICalVersion targetVersion = ICalVersion.V2_0; //xCal only supports 2.0
-
 	/**
 	 * Defines the names of the XML elements that are used to hold each
 	 * parameter's value.
 	 */
-	protected final Map<String, ICalDataType> parameterDataTypes = new HashMap<String, ICalDataType>();
+	protected final Map<LaciToken, ICalDataType> parameterDataTypes = new HashMap<LaciToken, ICalDataType>();
 	{
 		registerParameterDataType(ICalParameters.ALTREP, ICalDataType.URI);
 		//registerParameterDataType(ICalParameters.CHARSET, ICalDataType.TEXT); //not used by 2.0
@@ -78,7 +78,8 @@ abstract class XCalWriterBase extends StreamWriter {
 
 	@Override
 	protected ICalVersion getTargetVersion() {
-		return targetVersion;
+		//xCal only supports 2.0
+		return ICalVersion.V2_0;
 	}
 
 	/**
@@ -88,7 +89,16 @@ abstract class XCalWriterBase extends StreamWriter {
 	 * @param dataType the data type or null to remove
 	 */
 	public void registerParameterDataType(String parameterName, ICalDataType dataType) {
-		parameterName = parameterName.toLowerCase();
+		registerParameterDataType(new LaciToken(parameterName), dataType);
+	}
+
+	/**
+	 * Registers the data type of an experimental parameter. Experimental
+	 * parameters use the "unknown" data type by default.
+	 * @param parameterName the parameter name (e.g. "x-foo")
+	 * @param dataType the data type or null to remove
+	 */
+	public void registerParameterDataType(LaciToken parameterName, ICalDataType dataType) {
 		if (dataType == null) {
 			parameterDataTypes.remove(parameterName);
 		} else {

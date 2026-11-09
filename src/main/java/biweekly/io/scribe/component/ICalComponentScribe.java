@@ -6,6 +6,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.ICalVersion;
 import biweekly.component.ICalComponent;
 import biweekly.io.DataModelConversionException;
@@ -45,7 +47,7 @@ public abstract class ICalComponentScribe<T extends ICalComponent> {
 	private static final Set<ICalVersion> allVersions = Collections.unmodifiableSet(EnumSet.allOf(ICalVersion.class));
 
 	protected final Class<T> clazz;
-	protected final String componentName;
+	protected final LaciToken componentName;
 
 	/**
 	 * Creates a new component scribe.
@@ -53,6 +55,15 @@ public abstract class ICalComponentScribe<T extends ICalComponent> {
 	 * @param componentName the component's name (e.g. "VEVENT")
 	 */
 	protected ICalComponentScribe(Class<T> clazz, String componentName) {
+		this(clazz, new LaciToken(componentName));
+	}
+	
+	/**
+	 * Creates a new component scribe.
+	 * @param clazz the component's class
+	 * @param componentName the component's name (e.g. "VEVENT")
+	 */
+	protected ICalComponentScribe(Class<T> clazz, LaciToken componentName) {
 		this.clazz = clazz;
 		this.componentName = componentName;
 	}
@@ -78,7 +89,7 @@ public abstract class ICalComponentScribe<T extends ICalComponent> {
 	 * Gets the component's name.
 	 * @return the compent's name (e.g. "VEVENT")
 	 */
-	public String getComponentName() {
+	public LaciToken getComponentName() {
 		return componentName;
 	}
 

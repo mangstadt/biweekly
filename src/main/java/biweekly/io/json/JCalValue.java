@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 import biweekly.util.ListMultimap;
 
 /*
@@ -335,19 +337,19 @@ public class JCalValue {
 	 * Parses this jCal value as an object property value.
 	 * @return the object or an empty map if not found
 	 */
-	public ListMultimap<String, String> asObject() {
+	public ListMultimap<LaciToken, String> asObject() {
 		if (values.isEmpty()) {
-			return new ListMultimap<String, String>(0);
+			return new ListMultimap<LaciToken, String>(0);
 		}
 
 		Map<String, JsonValue> map = values.get(0).getObject();
 		if (map == null) {
-			return new ListMultimap<String, String>(0);
+			return new ListMultimap<LaciToken, String>(0);
 		}
 
-		ListMultimap<String, String> values = new ListMultimap<String, String>();
+		ListMultimap<LaciToken, String> values = new ListMultimap<LaciToken, String>();
 		for (Map.Entry<String, JsonValue> entry : map.entrySet()) {
-			String key = entry.getKey();
+			LaciToken key = new LaciToken(entry.getKey());
 			JsonValue value = entry.getValue();
 
 			if (value.isNull()) {

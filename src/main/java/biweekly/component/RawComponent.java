@@ -1,5 +1,7 @@
 package biweekly.component;
 
+import com.github.mangstadt.vinnie.LaciToken;
+
 /*
  Copyright (c) 2013-2024, Michael Angstadt
  All rights reserved.
@@ -30,9 +32,13 @@ package biweekly.component;
  * @author Michael Angstadt
  */
 public class RawComponent extends ICalComponent {
-	private final String name;
+	private final LaciToken name;
 
 	public RawComponent(String name) {
+		this(new LaciToken(name));
+	}
+
+	public RawComponent(LaciToken name) {
 		this.name = name;
 	}
 
@@ -45,7 +51,7 @@ public class RawComponent extends ICalComponent {
 		this.name = original.name;
 	}
 
-	public String getName() {
+	public LaciToken getName() {
 		return name;
 	}
 

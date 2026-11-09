@@ -105,7 +105,7 @@ public class ICalParametersTest {
 		params.put(ICalParameters.RELATED, Related.END.getValue());
 		params.put(ICalParameters.RELTYPE, RelationshipType.CHILD.getValue());
 		params.put(ICalParameters.ROLE, Role.CHAIR.getValue());
-		params.put(ICalParameters.VALUE, ICalDataType.BINARY.getName());
+		params.put(ICalParameters.VALUE, ICalDataType.BINARY.getName().toString());
 
 		assertListSize(0, params.validate(V2_0));
 	}
@@ -236,14 +236,14 @@ public class ICalParametersTest {
 		one.put("super", "man");
 		one.put("super", "bad");
 		one.put("hello", "world");
-		one.put(null, "null");
+		one.put((String) null, "null");
 
 		ICalParameters two = new ICalParameters();
 		two.put("hello", "world");
 		two.put("super", "MAN");
 		two.put("foo", "bar");
 		two.put("super", "bad");
-		two.put(null, "null");
+		two.put((String) null, "null");
 
 		assertEqualsAndHash(one, two);
 	}
