@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.util.StringUtils.encodeBase64;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -10,7 +11,6 @@ import biweekly.ICalDataType;
 import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Image;
-import biweekly.util.org.apache.commons.codec.binary.Base64;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -43,7 +43,8 @@ import biweekly.util.org.apache.commons.codec.binary.Base64;
 public class ImageScribeTest extends ScribeTest<Image> {
 	private final String url = "http://example.com/image.png";
 	private final byte[] data = "data".getBytes();
-	private final String base64Data = Base64.encodeBase64String(data);
+	private final String base64Data = encodeBase64(data);
+	private final String base64DataInvalid = base64Data + "a";
 
 	public ImageScribeTest() {
 		super(new ImageScribe());
@@ -53,12 +54,14 @@ public class ImageScribeTest extends ScribeTest<Image> {
 	public void parseText() {
 		sensei.assertParseText(url).dataType(ICalDataType.URI).run(hasUri(url));
 		sensei.assertParseText(base64Data).dataType(ICalDataType.BINARY).param("ENCODING", "BASE64").run(has(data));
+		sensei.assertParseText(base64DataInvalid).dataType(ICalDataType.BINARY).param("ENCODING", "BASE64").cannotParse(44);
 	}
 
 	@Test
 	public void parseXml() {
 		sensei.assertParseXml("<uri>" + url + "</uri>").run(hasUri(url));
 		sensei.assertParseXml("<binary>" + base64Data + "</binary>").run(has(data));
+		sensei.assertParseXml("<binary>" + base64DataInvalid + "</binary>").cannotParse(44);
 		sensei.assertParseXml("").cannotParse(23);
 	}
 
@@ -66,6 +69,7 @@ public class ImageScribeTest extends ScribeTest<Image> {
 	public void parseJson() {
 		sensei.assertParseJson(url).dataType(ICalDataType.URI).run(hasUri(url));
 		sensei.assertParseJson(base64Data).dataType(ICalDataType.BINARY).run(has(data));
+		sensei.assertParseJson(base64DataInvalid).dataType(ICalDataType.BINARY).cannotParse(44);
 	}
 
 	private Check<Image> hasUri(final String url) {

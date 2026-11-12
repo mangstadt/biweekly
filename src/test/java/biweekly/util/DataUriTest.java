@@ -1,18 +1,19 @@
 package biweekly.util;
 
+import static biweekly.util.StringUtils.encodeBase64;
 import static biweekly.util.TestUtils.assertEqualsAndHash;
 import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertNothingIsEqual;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
-
-import biweekly.util.org.apache.commons.codec.binary.Base64;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -44,15 +45,8 @@ import biweekly.util.org.apache.commons.codec.binary.Base64;
  */
 public class DataUriTest {
 	private final String dataString = "test-data";
-	private final byte[] dataBytes;
-	{
-		try {
-			dataBytes = dataString.getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	private final String dataBase64 = Base64.encodeBase64String(dataBytes);
+	private final byte[] dataBytes = dataString.getBytes(StandardCharsets.UTF_8);
+	private final String dataBase64 = encodeBase64(dataBytes);
 
 	@Test
 	public void constructor() {
@@ -166,27 +160,30 @@ public class DataUriTest {
 	}
 
 	@Test
+	public void hasDataScheme() {
+		assertTrue(DataUri.hasDataScheme("data:foo"));
+		assertTrue(DataUri.hasDataScheme("data:"));
+		assertTrue(DataUri.hasDataScheme("DATA:foo"));
+		assertFalse(DataUri.hasDataScheme("https://www.google.com"));
+		assertFalse(DataUri.hasDataScheme("data"));
+	}
+
+	@Test
 	public void toString_() {
 		DataUri uri = new DataUri("text/plain", dataBytes);
 		assertEquals("data:text/plain;base64," + dataBase64, uri.toString());
 
 		uri = new DataUri("text/plain", dataBytes);
-		assertEquals("data:text/plain;base64," + dataBase64, uri.toString("UTF-8"));
+		assertEquals("data:text/plain;base64," + dataBase64, uri.toString(StandardCharsets.UTF_8));
 
 		uri = new DataUri("text/plain", dataString);
 		assertEquals("data:text/plain," + dataString, uri.toString());
 
 		uri = new DataUri("text/plain", dataString);
-		assertEquals("data:text/plain;charset=UTF-8;base64," + dataBase64, uri.toString("UTF-8"));
+		assertEquals("data:text/plain;charset=UTF-8;base64," + dataBase64, uri.toString(StandardCharsets.UTF_8));
 
 		uri = new DataUri("text/plain", (String) null);
 		assertEquals("data:text/plain,", uri.toString());
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void toString_bad_charset() {
-		DataUri uri = new DataUri("text/plain", dataString);
-		uri.toString("foobar");
 	}
 
 	@Test

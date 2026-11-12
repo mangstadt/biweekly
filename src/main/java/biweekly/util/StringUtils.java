@@ -1,7 +1,7 @@
 package biweekly.util;
 
+import java.util.Base64;
 import java.util.Collection;
-import java.util.Locale;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -60,15 +60,7 @@ public final class StringUtils {
 	 * @return the string or null if the prefix was not found
 	 */
 	public static String afterPrefixIgnoreCase(String string, String prefix) {
-		if (string.length() < prefix.length()) {
-			return null;
-		}
-
-		if (string.toUpperCase(Locale.ROOT).startsWith(prefix.toUpperCase(Locale.ROOT))) {
-			return string.substring(prefix.length());
-		}
-
-		return null;
+		return startsWithIgnoreCase(string, prefix) ? string.substring(prefix.length()) : null;
 	}
 
 	/**
@@ -96,6 +88,43 @@ public final class StringUtils {
 		}
 
 		return str.substring(0, prefix.length()).equalsIgnoreCase(prefix);
+	}
+
+	/**
+	 * <p>
+	 * Decodes a base64 string, silently ignoring all invalid characters.
+	 * </p>
+	 * <p>
+	 * Some iCal producers use multiple whitespace characters to indent folded
+	 * base64 values. According to the 2.0 specs, these extra characters are to
+	 * be considered part of the property value, so whitespace characters could
+	 * be scattered throughout the string.
+	 * </p>
+	 * <p>
+	 * Whitespace characters are not valid base64 characters.
+	 * {@link Base64#getMimeDecoder} returns a decoder that silently ignores all
+	 * invalid characters. It can still throw an exception for other reasons
+	 * though.
+	 * </p>
+	 * <p>
+	 * See the {@link Base64} class javadoc for descriptions of the different
+	 * decoders.
+	 * </p>
+	 * @param encoded the base64-encoded value
+	 * @return the decoded data
+	 * @throws IllegalArgumentException if there is a problem decoding the value
+	 */
+	public static byte[] decodeBase64Lenient(String encoded) throws IllegalArgumentException {
+		return Base64.getMimeDecoder().decode(encoded);
+	}
+
+	/**
+	 * Encodes the given data in base64.
+	 * @param data the data
+	 * @return the base64 string
+	 */
+	public static String encodeBase64(byte[] data) {
+		return Base64.getEncoder().encodeToString(data);
 	}
 
 	/**

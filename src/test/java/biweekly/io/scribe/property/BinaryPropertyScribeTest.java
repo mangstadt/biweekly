@@ -3,6 +3,7 @@ package biweekly.io.scribe.property;
 import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
+import static biweekly.util.StringUtils.encodeBase64;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -13,7 +14,6 @@ import biweekly.ICalDataType;
 import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.BinaryProperty;
-import biweekly.util.org.apache.commons.codec.binary.Base64;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -47,7 +47,7 @@ public class BinaryPropertyScribeTest extends ScribeTest<BinaryProperty> {
 	private final String formatType = "image/png";
 	private final String url = "http://example.com/image.png";
 	private final byte[] data = "data".getBytes();
-	private final String base64Data = Base64.encodeBase64String(data);
+	private final String base64Data = encodeBase64(data);
 
 	private final BinaryProperty withUrl = new BinaryProperty(url);
 	{

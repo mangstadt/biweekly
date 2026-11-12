@@ -1,5 +1,6 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.util.StringUtils.encodeBase64;
 import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -17,7 +18,6 @@ import biweekly.property.Attachment;
 import biweekly.property.AudioAlarm;
 import biweekly.property.Trigger;
 import biweekly.util.Duration;
-import biweekly.util.org.apache.commons.codec.binary.Base64;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -78,7 +78,8 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 	}
 
 	private final byte[] data = "data".getBytes();
-	private final String dataBase64 = Base64.encodeBase64String(data);
+	private final String dataBase64 = encodeBase64(data);
+	private final String dataBase64Invalid = dataBase64 + "a";
 	private final AudioAlarm withData = new AudioAlarm();
 	{
 		withData.setRepeat(5);
@@ -175,6 +176,8 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 			assertEquals(Arrays.asList(expected), e.getComponents());
 			assertEquals(Arrays.asList(), e.getProperties());
 		}
+
+		sensei.assertParseText("20140101T010000Z;PT10M;5;" + dataBase64Invalid).dataType(ICalDataType.BINARY).cannotParse(44);
 
 		try {
 			sensei.assertParseText("20140101T010000Z;PT10M;5;" + uri).run();

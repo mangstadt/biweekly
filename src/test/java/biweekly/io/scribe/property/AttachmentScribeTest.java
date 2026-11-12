@@ -3,6 +3,7 @@ package biweekly.io.scribe.property;
 import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
+import static biweekly.util.StringUtils.encodeBase64;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -13,7 +14,6 @@ import biweekly.ICalDataType;
 import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Attachment;
-import biweekly.util.org.apache.commons.codec.binary.Base64;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -47,7 +47,8 @@ public class AttachmentScribeTest extends ScribeTest<Attachment> {
 	private final String formatType = "image/png";
 	private final String url = "http://example.com/image.png";
 	private final byte[] data = "data".getBytes();
-	private final String base64Data = Base64.encodeBase64String(data);
+	private final String base64Data = encodeBase64(data);
+	private final String base64DataInvalid = base64Data + "a";
 	private final String contentId = "content-id";
 
 	private final Attachment withUrl = new Attachment(formatType, url);
@@ -97,6 +98,7 @@ public class AttachmentScribeTest extends ScribeTest<Attachment> {
 	public void parseText() {
 		sensei.assertParseText(url).dataType(ICalDataType.URI).run(hasUri(url));
 		sensei.assertParseText(base64Data).dataType(ICalDataType.BINARY).param("ENCODING", "BASE64").run(has(data));
+		sensei.assertParseText(base64DataInvalid).dataType(ICalDataType.BINARY).param("ENCODING", "BASE64").cannotParse(44);
 
 		sensei.assertParseText(contentId).dataType(ICalDataType.CONTENT_ID).run(hasCid(contentId));
 		sensei.assertParseText('<' + contentId + '>').dataType(ICalDataType.CONTENT_ID).run(hasCid(contentId));
@@ -123,6 +125,7 @@ public class AttachmentScribeTest extends ScribeTest<Attachment> {
 	public void parseXml() {
 		sensei.assertParseXml("<uri>" + url + "</uri>").run(hasUri(url));
 		sensei.assertParseXml("<binary>" + base64Data + "</binary>").run(has(data));
+		sensei.assertParseXml("<binary>" + base64DataInvalid + "</binary>").cannotParse(44);
 
 		sensei.assertParseXml("<uri>cid:" + contentId + "</uri>").run(hasCid(contentId));
 		sensei.assertParseXml("<uri>CID:" + contentId + "</uri>").run(hasCid(contentId));
@@ -144,6 +147,7 @@ public class AttachmentScribeTest extends ScribeTest<Attachment> {
 	public void parseJson() {
 		sensei.assertParseJson(url).dataType(ICalDataType.URI).run(hasUri(url));
 		sensei.assertParseJson(base64Data).dataType(ICalDataType.BINARY).run(has(data));
+		sensei.assertParseJson(base64DataInvalid).dataType(ICalDataType.BINARY).cannotParse(44);
 		sensei.assertParseJson("cid:" + contentId).dataType(ICalDataType.URI).run(hasCid(contentId));
 		sensei.assertParseJson("CID:" + contentId).dataType(ICalDataType.URI).run(hasCid(contentId));
 		sensei.assertParseJson("aaa:" + contentId).dataType(ICalDataType.URI).run(hasUri("aaa:" + contentId));

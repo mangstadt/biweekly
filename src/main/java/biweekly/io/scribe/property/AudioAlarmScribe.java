@@ -1,5 +1,8 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.util.StringUtils.decodeBase64Lenient;
+import static biweekly.util.StringUtils.encodeBase64;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -9,10 +12,10 @@ import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueI
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
 import biweekly.component.VAlarm;
+import biweekly.io.CannotParseException;
 import biweekly.property.Action;
 import biweekly.property.Attachment;
 import biweekly.property.AudioAlarm;
-import biweekly.util.org.apache.commons.codec.binary.Base64;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -71,7 +74,7 @@ public class AudioAlarmScribe extends VCalAlarmPropertyScribe<AudioAlarm> {
 
 		byte[] data = property.getData();
 		if (data != null) {
-			String base64Str = Base64.encodeBase64String(data);
+			String base64Str = encodeBase64(data);
 			return Collections.singletonList(base64Str);
 		}
 
@@ -92,7 +95,12 @@ public class AudioAlarmScribe extends VCalAlarmPropertyScribe<AudioAlarm> {
 		}
 
 		if (dataType == ICalDataType.BINARY) {
-			byte[] data = Base64.decodeBase64(next);
+			byte[] data;
+			try {
+				data = decodeBase64Lenient(next);
+			} catch (IllegalArgumentException e) {
+				throw new CannotParseException(44, e.getMessage());
+			}
 			aalarm.setData(data);
 		} else if (dataType == ICalDataType.URL) {
 			aalarm.setUri(next);

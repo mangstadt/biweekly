@@ -1,11 +1,15 @@
 package biweekly.util;
 
+import static biweekly.util.StringUtils.decodeBase64Lenient;
+import static biweekly.util.StringUtils.encodeBase64;
+import static biweekly.util.StringUtils.startsWithIgnoreCase;
+
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Locale;
 
 import biweekly.Messages;
-import biweekly.util.org.apache.commons.codec.binary.Base64;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -43,6 +47,7 @@ import biweekly.util.org.apache.commons.codec.binary.Base64;
  */
 public final class DataUri {
 	private static final String SCHEME = "data:";
+
 	private final byte[] data;
 	private final String text;
 	private final String contentType;
@@ -95,76 +100,106 @@ public final class DataUri {
 	 * it cannot be parsed
 	 */
 	public static DataUri parse(String uri) {
-		//Syntax: data:[<media type>][;charset=<character set>][;base64],<data>
+		return new Parser(uri).parse();
+	}
 
-		if (!StringUtils.startsWithIgnoreCase(uri, SCHEME)) {
-			//not a data URI
-			throw Messages.INSTANCE.getIllegalArgumentException(22);
+	/**
+	 * Determines if the given string starts with the "data:" URI scheme. This
+	 * method does NOT determine whether the string is a fully parseable data
+	 * URI.
+	 * @param uri the URI
+	 * @return true if the URI begins with "data:", false if not
+	 */
+	public static boolean hasDataScheme(String uri) {
+		return startsWithIgnoreCase(uri, SCHEME);
+	}
+
+	private static class Parser {
+		private final String uri;
+		private final CharIterator it;
+
+		private String contentType;
+		private String charset;
+		private boolean base64;
+		private String dataStr;
+		private int tokenStart;
+
+		public Parser(String uri) {
+			this.uri = uri;
+			if (!hasDataScheme(uri)) {
+				throw Messages.INSTANCE.getIllegalArgumentException(22);
+			}
+
+			tokenStart = SCHEME.length();
+			it = new CharIterator(uri, tokenStart);
 		}
 
-		String contentType = null;
-		String charset = null;
-		boolean base64 = false;
-		String dataStr = null;
-		int tokenStart = SCHEME.length();
-		for (int i = SCHEME.length(); i < uri.length(); i++) {
-			char c = uri.charAt(i);
+		public DataUri parse() {
+			//Syntax: data:[<media type>][;charset=<character set>][;base64],<data>
+			while (it.hasNext()) {
+				char c = it.next();
 
-			if (c == ';') {
-				String token = uri.substring(tokenStart, i);
-				if (contentType == null) {
-					contentType = token.toLowerCase(Locale.ROOT);
-				} else {
-					String cs = StringUtils.afterPrefixIgnoreCase(token, "charset=");
-					if (cs != null) {
-						charset = cs;
-					} else if ("base64".equalsIgnoreCase(token)) {
-						base64 = true;
-					}
+				if (c == ',') {
+					handleComma();
+					break;
 				}
-				tokenStart = i + 1;
-				continue;
-			}
 
-			if (c == ',') {
-				String token = uri.substring(tokenStart, i);
-				if (contentType == null) {
-					contentType = token.toLowerCase(Locale.ROOT);
-				} else {
-					String cs = StringUtils.afterPrefixIgnoreCase(token, "charset=");
-					if (cs != null) {
-						charset = cs;
-					} else if ("base64".equalsIgnoreCase(token)) {
-						base64 = true;
-					}
+				if (c == ';') {
+					handleSemicolon();
 				}
+			}
 
-				dataStr = uri.substring(i + 1);
-				break;
+			if (dataStr == null) {
+				throw Messages.INSTANCE.getIllegalArgumentException(20);
+			}
+
+			return build();
+		}
+
+		private void handleComma() {
+			handleEndOfToken();
+			dataStr = uri.substring(it.index() + 1);
+		}
+
+		private void handleSemicolon() {
+			handleEndOfToken();
+			tokenStart = it.index() + 1;
+		}
+
+		private void handleEndOfToken() {
+			String token = uri.substring(tokenStart, it.index());
+			if (contentType == null) {
+				contentType = token.toLowerCase(Locale.ROOT);
+			} else {
+				if (startsWithIgnoreCase(token, "charset=")) {
+					int equals = token.indexOf('=');
+					charset = token.substring(equals + 1);
+				} else if ("base64".equalsIgnoreCase(token)) {
+					base64 = true;
+				}
 			}
 		}
 
-		if (dataStr == null) {
-			throw Messages.INSTANCE.getIllegalArgumentException(23);
-		}
+		private DataUri build() {
+			String text = null;
+			byte[] data = null;
 
-		if (base64) {
-			dataStr = dataStr.replaceAll("\\s", "");
-			byte[] data = Base64.decodeBase64(dataStr);
-
-			if (charset == null) {
-				return new DataUri(contentType, data);
+			if (base64) {
+				data = decodeBase64Lenient(dataStr);
+				if (charset != null) {
+					try {
+						text = new String(data, charset);
+					} catch (UnsupportedEncodingException e) {
+						throw new IllegalArgumentException(Messages.INSTANCE.getExceptionMessage(43, charset), e);
+					}
+					data = null;
+				}
+			} else {
+				text = dataStr;
 			}
 
-			try {
-				String text = new String(data, charset);
-				return new DataUri(contentType, text);
-			} catch (UnsupportedEncodingException e) {
-				throw new IllegalArgumentException(Messages.INSTANCE.getExceptionMessage(24, charset), e);
-			}
+			return new DataUri(contentType, data, text);
 		}
-
-		return new DataUri(contentType, dataStr);
 	}
 
 	/**
@@ -203,34 +238,27 @@ public final class DataUri {
 	/**
 	 * Creates a data URI string.
 	 * @param charset only applicable if the data URI's value is text. Defines
-	 * the character set to encode the text in, or null not to specify a
-	 * character set
+	 * what character set to use when encoding text value in base64. Setting
+	 * this to "null" will insert the text in the data URI as-is without
+	 * base64-encoding it.
 	 * @return the data URI (e.g. "data:image/jpeg;base64,[base64 string]")
-	 * @throws IllegalArgumentException if the given character set is not
-	 * supported by this JVM
 	 */
-	public String toString(String charset) {
+	public String toString(Charset charset) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(SCHEME);
 		sb.append(contentType);
 
 		if (data != null) {
 			sb.append(";base64,");
-			sb.append(Base64.encodeBase64String(data));
+			sb.append(encodeBase64(data));
 		} else if (text != null) {
 			if (charset == null) {
 				sb.append(',').append(text);
 			} else {
-				byte[] data;
-				try {
-					data = text.getBytes(charset);
-				} catch (UnsupportedEncodingException e) {
-					throw new IllegalArgumentException(Messages.INSTANCE.getExceptionMessage(25, charset), e);
-				}
-
-				sb.append(";charset=").append(charset);
+				byte[] textBytes = text.getBytes(charset);
+				sb.append(";charset=").append(charset.name());
 				sb.append(";base64,");
-				sb.append(Base64.encodeBase64String(data));
+				sb.append(encodeBase64(textBytes));
 			}
 		} else {
 			sb.append(',');

@@ -1,6 +1,9 @@
 package biweekly.io.scribe.property;
 
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 import biweekly.ICalDataType;
+import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
@@ -8,8 +11,6 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Conference;
 import biweekly.util.DataUri;
-
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -97,16 +98,20 @@ public class ConferenceScribe extends ICalPropertyScribe<Conference> {
 	}
 
 	private static Conference parse(String value) {
-		try {
-			DataUri uri = DataUri.parse(value);
+		if (DataUri.hasDataScheme(value)) {
+			DataUri uri;
+			try {
+				uri = DataUri.parse(value);
+			} catch (IllegalArgumentException e) {
+				throw new CannotParseException(45, e.getMessage());
+			}
+
 			String text = uri.getText();
 			if (text != null) {
 				Conference property = new Conference((String) null);
 				property.setText(text);
 				return property;
 			}
-		} catch (IllegalArgumentException e) {
-			//not a data URI
 		}
 
 		return new Conference(value);

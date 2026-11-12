@@ -46,15 +46,6 @@
 	</properties>
 
 	<dependencies>
-		<!--
-		Selected portions of this library's source code have been incorporated into the biweekly code base to improve Android compatibility.
-		See: https://groups.google.com/forum/?fromgroups=#!topic/ez-vcard-discuss/w2TK7yetwr8
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.10</version>
-		</dependency>
-		-->
 		<dependency>
 			<groupId>com.github.mangstadt</groupId>
 			<artifactId>vinnie</artifactId>
@@ -230,10 +221,7 @@
 					<additionalOptions>
 						<additionalOption>--allow-script-in-comments</additionalOption>
 					</additionalOptions>
-					
-					<!-- exclude commons-codec -->
-					<excludePackageNames>biweekly.util.org.*</excludePackageNames>
-					
+
 					<!-- Add Javascript syntax highlighter -->
 					<top><![CDATA[
 						<script src="doc-files/shCore.js" type="text/javascript"></script>
@@ -297,10 +285,6 @@
 					<targetClasses>
 						<param>biweekly.*</param>
 					</targetClasses>
-					<excludedClasses>
-						<!-- exclude commons-codec -->
-						<param>biweekly.util.org.*</param>
-					</excludedClasses>
 					<targetTests>
 						<param>biweekly.*</param>
 					</targetTests>

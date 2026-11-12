@@ -1,7 +1,13 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.util.StringUtils.decodeBase64Lenient;
+import static biweekly.util.StringUtils.encodeBase64;
+
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
+import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
@@ -9,9 +15,6 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.BinaryProperty;
-import biweekly.util.org.apache.commons.codec.binary.Base64;
-
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -80,7 +83,7 @@ public abstract class BinaryPropertyScribe<T extends BinaryProperty> extends ICa
 
 		byte[] data = property.getData();
 		if (data != null) {
-			return Base64.encodeBase64String(data);
+			return encodeBase64(data);
 		}
 
 		return "";
@@ -91,8 +94,7 @@ public abstract class BinaryPropertyScribe<T extends BinaryProperty> extends ICa
 		value = VObjectPropertyValues.unescape(value);
 
 		if (dataType == ICalDataType.BINARY || parameters.getEncoding() == Encoding.BASE64) {
-			byte[] data = Base64.decodeBase64(value);
-			return newInstance(data);
+			return newInstanceFromBase64(value);
 		}
 
 		return newInstance(value, dataType);
@@ -108,7 +110,7 @@ public abstract class BinaryPropertyScribe<T extends BinaryProperty> extends ICa
 
 		byte[] data = property.getData();
 		if (data != null) {
-			element.append(ICalDataType.BINARY, Base64.encodeBase64String(data));
+			element.append(ICalDataType.BINARY, encodeBase64(data));
 			return;
 		}
 
@@ -124,8 +126,7 @@ public abstract class BinaryPropertyScribe<T extends BinaryProperty> extends ICa
 
 		String base64Data = element.first(ICalDataType.BINARY);
 		if (base64Data != null) {
-			byte[] data = Base64.decodeBase64(base64Data);
-			return newInstance(data);
+			return newInstanceFromBase64(base64Data);
 		}
 
 		throw missingXmlElements(ICalDataType.URI, ICalDataType.BINARY);
@@ -140,7 +141,7 @@ public abstract class BinaryPropertyScribe<T extends BinaryProperty> extends ICa
 
 		byte[] data = property.getData();
 		if (data != null) {
-			return JCalValue.single(Base64.encodeBase64String(data));
+			return JCalValue.single(encodeBase64(data));
 		}
 
 		return JCalValue.single("");
@@ -151,11 +152,28 @@ public abstract class BinaryPropertyScribe<T extends BinaryProperty> extends ICa
 		String valueStr = value.asSingle();
 
 		if (dataType == ICalDataType.BINARY) {
-			byte[] data = Base64.decodeBase64(valueStr);
-			return newInstance(data);
+			return newInstanceFromBase64(valueStr);
 		}
 
 		return newInstance(valueStr, dataType);
+	}
+
+	/**
+	 * Attempts to create a new property instance from a base64 value.
+	 * @param encoded the base64 value
+	 * @return the property instance
+	 * @throws CannotParseException if there was a problem parsing the base64
+	 * value
+	 */
+	private T newInstanceFromBase64(String encoded) {
+		byte[] data;
+		try {
+			data = decodeBase64Lenient(encoded);
+		} catch (IllegalArgumentException e) {
+			throw new CannotParseException(44, e.getMessage());
+		}
+
+		return newInstance(data);
 	}
 
 	/**
