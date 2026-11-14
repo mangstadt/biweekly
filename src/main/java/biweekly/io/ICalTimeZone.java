@@ -190,6 +190,65 @@ public class ICalTimeZone extends TimeZone {
 	}
 
 	@Override
+	public int getOffset(long date) {
+		Observance closest = null;
+		long closestStart = Long.MIN_VALUE;
+		for (Observance observance : sortedObservances) {
+			UtcOffset offsetFrom = getValue(observance.getTimezoneOffsetFrom());
+			long offset = (offsetFrom == null) ? 0 : offsetFrom.getMillis();
+
+			// DTSTART and recurrence dates are local times before the transition.
+			utcCalendar.setTimeInMillis(date + offset);
+			DateValue local = new DateTimeValueImpl(utcCalendar.get(Calendar.YEAR), utcCalendar.get(Calendar.MONTH) + 1,
+				utcCalendar.get(Calendar.DAY_OF_MONTH), utcCalendar.get(Calendar.HOUR_OF_DAY),
+				utcCalendar.get(Calendar.MINUTE), utcCalendar.get(Calendar.SECOND));
+			DateValue start = getObservanceDateClosestToTheGivenDate(observance, local, false);
+			if (start == null) {
+				continue;
+			}
+
+			utcCalendar.clear();
+			utcCalendar.set(start.year(), start.month() - 1, start.day(), 0, 0, 0);
+			if (start instanceof DateTimeValue) {
+				DateTimeValue time = (DateTimeValue) start;
+				utcCalendar.set(Calendar.HOUR_OF_DAY, time.hour());
+				utcCalendar.set(Calendar.MINUTE, time.minute());
+				utcCalendar.set(Calendar.SECOND, time.second());
+			}
+			long utcStart = utcCalendar.getTimeInMillis() - offset;
+			if (closest == null || utcStart > closestStart) {
+				closest = observance;
+				closestStart = utcStart;
+			}
+		}
+
+		if (closest != null) {
+			UtcOffset offsetTo = getValue(closest.getTimezoneOffsetTo());
+			return (offsetTo == null) ? 0 : (int) offsetTo.getMillis();
+		}
+
+		// Preserve the standard-time fallback used by existing calendars whose
+		// dates precede all transitions (including vCalendar's undated TZ).
+		for (Observance observance : sortedObservances) {
+			if (observance instanceof StandardTime) {
+				return rawOffset;
+			}
+		}
+
+		// A daylight-only definition still specifies its initial offset.
+		for (Observance observance : sortedObservances) {
+			if (getValue(observance.getDateStart()) == null) {
+				continue;
+			}
+			UtcOffset offsetFrom = getValue(observance.getTimezoneOffsetFrom());
+			if (offsetFrom != null) {
+				return (int) offsetFrom.getMillis();
+			}
+		}
+		return 0;
+	}
+
+	@Override
 	public int getRawOffset() {
 		return rawOffset;
 	}

@@ -6,10 +6,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import biweekly.Messages;
+import biweekly.io.ICalTimeZone;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -347,6 +349,20 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents>,
 		c.set(Calendar.HOUR_OF_DAY, hour);
 		c.set(Calendar.MINUTE, minute);
 		c.set(Calendar.SECOND, second);
+		TimeZone timezone = c.getTimeZone();
+		if (timezone instanceof ICalTimeZone) {
+			// Calendar otherwise assumes a fixed raw offset and one-hour DST.
+			int millis = ((hour * 60 + minute) * 60 + second) * 1000;
+			int offset = timezone.getOffset(1, year, month - 1, date, 0, millis);
+			c.set(Calendar.ZONE_OFFSET, offset);
+			c.set(Calendar.DST_OFFSET, 0);
+			long instant = c.getTimeInMillis();
+			// In a forward gap, use the offset before the transition (RFC 5545).
+			int actualOffset = timezone.getOffset(instant);
+			if (actualOffset != offset) {
+				c.setTimeInMillis(instant + offset - actualOffset);
+			}
+		}
 		return c.getTime();
 	}
 

@@ -10,6 +10,8 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import biweekly.io.ICalTimeZone;
+
 /*
  Copyright (c) 2013-2024, Michael Angstadt
  All rights reserved.
@@ -218,6 +220,15 @@ public enum ICalDateFormat {
 			timezone = TimeZone.getTimeZone("UTC");
 		} else if (timezone == null) {
 			timezone = TimeZone.getDefault();
+		}
+
+		if (timezone instanceof ICalTimeZone) {
+			DateTimeComponents components = p.hasTime()
+				? new DateTimeComponents(p.year(), p.month(), p.date(), p.hour(), p.minute(), p.second(), false)
+				: new DateTimeComponents(p.year(), p.month(), p.date());
+			Date date = components.toDate(timezone);
+			date.setTime(date.getTime() + p.millisecond());
+			return date;
 		}
 
 		Calendar c = Calendar.getInstance(timezone);
