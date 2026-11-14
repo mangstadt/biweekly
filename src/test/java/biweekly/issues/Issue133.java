@@ -2,11 +2,7 @@ package biweekly.issues;
 
 import static org.junit.Assert.assertEquals;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.TimeZone;
 
 import org.junit.Test;
@@ -21,28 +17,11 @@ import biweekly.property.DateStart;
  * @see "https://github.com/mangstadt/biweekly/issues/133"
  */
 public class Issue133 {
-	private final boolean disableTest;
-	{
-		Date cutOff;
-		try {
-			cutOff = new SimpleDateFormat("yyyyMMdd").parse("20260518");
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
-		}
-
-		Date now = new Date();
-		disableTest = now.after(cutOff);
-	}
-
 	/*
 	 * DTSTART property of VTIMEZONE component is in the past.
 	 */
 	@Test
-	public void past() throws Exception {
-		if (disableTest) {
-			return;
-		}
-
+	public void past() {
 		//@formatter:off
 		String text = 
 		"BEGIN:VCALENDAR\r\n" + 
@@ -63,38 +42,14 @@ public class Issue133 {
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
-		ICalendar ical = Biweekly.parse(text).first();
-
-		VEvent event = ical.getEvents().get(0);
-		DateStart start = event.getDateStart();
-		DateFormat df = DateFormat.getDateTimeInstance();
-
-		System.out.println("PAST");
-
-		System.out.println("JVM timezone: " + df.format(start.getValue()) + " (" + TimeZone.getDefault().getDisplayName() + ")");
-
-		TimeZone tz = ical.getTimezoneInfo().getTimezone(start).getTimeZone();
-		df.setTimeZone(tz);
-		System.out.println("VTIMEZONE:    " + df.format(start.getValue()));
-
-		TimeZone utc = TimeZone.getTimeZone("UTC");
-		df.setTimeZone(utc);
-		System.out.println("UTC:          " + df.format(start.getValue()));
-
-		Calendar cal = Calendar.getInstance(utc);
-		cal.setTime(start.getValue());
-		assertEquals(13, cal.get(Calendar.HOUR_OF_DAY));
+		assertEventStartTime(text);
 	}
 
 	/*
 	 * DTSTART property of VTIMEZONE component is in the future.
 	 */
 	@Test
-	public void future() throws Exception {
-		if (disableTest) {
-			return;
-		}
-
+	public void future() {
 		//@formatter:off
 		String text = 
 		"BEGIN:VCALENDAR\r\n" + 
@@ -106,7 +61,7 @@ public class Issue133 {
 		"BEGIN:VTIMEZONE\r\n" + 
 		"TZID:Europe/Berlin\r\n" + 
 		"BEGIN:DAYLIGHT\r\n" + 
-		"DTSTART:20260519T150000\r\n" + 
+		"DTSTART:" + (currentYear() + 1) +"0519T150000\r\n" + 
 		"TZNAME:CEST\r\n" + 
 		"TZOFFSETTO:+0200\r\n" + 
 		"TZOFFSETFROM:+0200\r\n" + 
@@ -115,40 +70,14 @@ public class Issue133 {
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
-		ICalendar ical = Biweekly.parse(text).first();
-
-		VEvent event = ical.getEvents().get(0);
-		DateStart start = event.getDateStart();
-		DateFormat df = DateFormat.getDateTimeInstance();
-
-		System.out.println("FUTURE");
-
-		System.out.println("JVM timezone: " + df.format(start.getValue()) + " (" + TimeZone.getDefault().getDisplayName() + ")");
-
-		TimeZone tz = ical.getTimezoneInfo().getTimezone(start).getTimeZone();
-		df.setTimeZone(tz);
-		System.out.println("VTIMEZONE:    " + df.format(start.getValue()));
-
-		TimeZone utc = TimeZone.getTimeZone("UTC");
-		df.setTimeZone(utc);
-		System.out.println("UTC:          " + df.format(start.getValue()));
-
-		Calendar cal = Calendar.getInstance(utc);
-		cal.setTime(start.getValue());
-
-		//FAILS, value is 15
-		//assertEquals(13, cal.get(Calendar.HOUR_OF_DAY));
+		assertEventStartTime(text);
 	}
 
 	/*
 	 * VTIMEZONE component is removed. Global ID is used.
 	 */
 	@Test
-	public void global() throws Exception {
-		if (disableTest) {
-			return;
-		}
-
+	public void global() {
 		//@formatter:off
 		String text = 
 		"BEGIN:VCALENDAR\r\n" + 
@@ -160,26 +89,40 @@ public class Issue133 {
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
+		assertEventStartTime(text);
+	}
+
+	private static void assertEventStartTime(String text) {
 		ICalendar ical = Biweekly.parse(text).first();
 
 		VEvent event = ical.getEvents().get(0);
 		DateStart start = event.getDateStart();
-		DateFormat df = DateFormat.getDateTimeInstance();
 
-		System.out.println("GLOBAL ID");
-
-		System.out.println("JVM timezone: " + df.format(start.getValue()) + " (" + TimeZone.getDefault().getDisplayName() + ")");
+		//assertHour(9, start, TimeZone.getDefault());
 
 		TimeZone tz = ical.getTimezoneInfo().getTimezone(start).getTimeZone();
-		df.setTimeZone(tz);
-		System.out.println("VTIMEZONE:    " + df.format(start.getValue()));
+		assertHour(15, start, tz);
 
 		TimeZone utc = TimeZone.getTimeZone("UTC");
-		df.setTimeZone(utc);
-		System.out.println("UTC:          " + df.format(start.getValue()));
+		assertHour(13, start, utc);
 
-		Calendar cal = Calendar.getInstance(utc);
+		//DateFormat df = DateFormat.getDateTimeInstance();
+		//System.out.println("JVM timezone: " + df.format(start.getValue()) + " (" + TimeZone.getDefault().getDisplayName() + ")");
+		//df.setTimeZone(tz);
+		//System.out.println("VTIMEZONE:    " + df.format(start.getValue()));
+		//df.setTimeZone(utc);
+		//System.out.println("UTC:          " + df.format(start.getValue()));
+	}
+
+	private static void assertHour(int expected, DateStart start, TimeZone tz) {
+		Calendar cal = Calendar.getInstance(tz);
 		cal.setTime(start.getValue());
-		assertEquals(13, cal.get(Calendar.HOUR_OF_DAY)); //FAILS
+		int actual = cal.get(Calendar.HOUR_OF_DAY);
+		assertEquals(expected, actual);
+	}
+
+	private static int currentYear() {
+		Calendar cal = Calendar.getInstance();
+		return cal.get(Calendar.YEAR);
 	}
 }
