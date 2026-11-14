@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import com.github.mangstadt.vinnie.LaciToken;
@@ -251,24 +252,7 @@ public final class Recurrence {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + byDay.hashCode();
-		result = prime * result + byHour.hashCode();
-		result = prime * result + byMinute.hashCode();
-		result = prime * result + byMonth.hashCode();
-		result = prime * result + byMonthDay.hashCode();
-		result = prime * result + bySecond.hashCode();
-		result = prime * result + bySetPos.hashCode();
-		result = prime * result + byWeekNo.hashCode();
-		result = prime * result + byYearDay.hashCode();
-		result = prime * result + ((count == null) ? 0 : count.hashCode());
-		result = prime * result + xrules.hashCode();
-		result = prime * result + ((frequency == null) ? 0 : frequency.hashCode());
-		result = prime * result + ((interval == null) ? 0 : interval.hashCode());
-		result = prime * result + ((until == null) ? 0 : until.hashCode());
-		result = prime * result + ((workweekStarts == null) ? 0 : workweekStarts.hashCode());
-		return result;
+		return Objects.hash(byDay, byHour, byMinute, byMonth, byMonthDay, bySecond, bySetPos, byWeekNo, byYearDay, count, frequency, interval, until, workweekStarts, xrules);
 	}
 
 	@Override
@@ -276,30 +260,8 @@ public final class Recurrence {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
-
 		Recurrence other = (Recurrence) obj;
-		if (!byDay.equals(other.byDay)) return false;
-		if (!byHour.equals(other.byHour)) return false;
-		if (!byMinute.equals(other.byMinute)) return false;
-		if (!byMonth.equals(other.byMonth)) return false;
-		if (!byMonthDay.equals(other.byMonthDay)) return false;
-		if (!bySecond.equals(other.bySecond)) return false;
-		if (!bySetPos.equals(other.bySetPos)) return false;
-		if (!byWeekNo.equals(other.byWeekNo)) return false;
-		if (!byYearDay.equals(other.byYearDay)) return false;
-		if (count == null) {
-			if (other.count != null) return false;
-		} else if (!count.equals(other.count)) return false;
-		if (!xrules.equals(other.xrules)) return false;
-		if (frequency != other.frequency) return false;
-		if (interval == null) {
-			if (other.interval != null) return false;
-		} else if (!interval.equals(other.interval)) return false;
-		if (until == null) {
-			if (other.until != null) return false;
-		} else if (!until.equals(other.until)) return false;
-		if (workweekStarts != other.workweekStarts) return false;
-		return true;
+		return Objects.equals(byDay, other.byDay) && Objects.equals(byHour, other.byHour) && Objects.equals(byMinute, other.byMinute) && Objects.equals(byMonth, other.byMonth) && Objects.equals(byMonthDay, other.byMonthDay) && Objects.equals(bySecond, other.bySecond) && Objects.equals(bySetPos, other.bySetPos) && Objects.equals(byWeekNo, other.byWeekNo) && Objects.equals(byYearDay, other.byYearDay) && Objects.equals(count, other.count) && frequency == other.frequency && Objects.equals(interval, other.interval) && Objects.equals(until, other.until) && workweekStarts == other.workweekStarts && Objects.equals(xrules, other.xrules);
 	}
 
 	/**

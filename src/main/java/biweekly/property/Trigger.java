@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import biweekly.ICalVersion;
 import biweekly.ValidationWarning;
@@ -173,22 +174,17 @@ public class Trigger extends ICalProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((date == null) ? 0 : date.hashCode());
-		result = prime * result + ((duration == null) ? 0 : duration.hashCode());
+		result = prime * result + Objects.hash(date, duration);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
+		if (obj == null) return false;
 		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
 		Trigger other = (Trigger) obj;
-		if (date == null) {
-			if (other.date != null) return false;
-		} else if (!date.equals(other.date)) return false;
-		if (duration == null) {
-			if (other.duration != null) return false;
-		} else if (!duration.equals(other.duration)) return false;
-		return true;
+		return Objects.equals(date, other.date) && Objects.equals(duration, other.duration);
 	}
 }

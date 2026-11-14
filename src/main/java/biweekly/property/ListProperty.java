@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import biweekly.ICalVersion;
 import biweekly.Messages;
@@ -105,16 +106,17 @@ public class ListProperty<T> extends ICalProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + values.hashCode();
+		result = prime * result + Objects.hash(values);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
+		if (obj == null) return false;
 		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
 		ListProperty<?> other = (ListProperty<?>) obj;
-		if (!values.equals(other.values)) return false;
-		return true;
+		return Objects.equals(values, other.values);
 	}
 }

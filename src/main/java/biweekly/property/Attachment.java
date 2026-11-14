@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import biweekly.ICalVersion;
 import biweekly.ValidationWarning;
@@ -163,18 +164,17 @@ public class Attachment extends BinaryProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((contentId == null) ? 0 : contentId.hashCode());
+		result = prime * result + Objects.hash(contentId);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
+		if (obj == null) return false;
 		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
 		Attachment other = (Attachment) obj;
-		if (contentId == null) {
-			if (other.contentId != null) return false;
-		} else if (!contentId.equals(other.contentId)) return false;
-		return true;
+		return Objects.equals(contentId, other.contentId);
 	}
 }

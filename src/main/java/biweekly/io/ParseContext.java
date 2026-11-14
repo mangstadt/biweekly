@@ -2,6 +2,7 @@ package biweekly.io;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.github.mangstadt.vinnie.LaciToken;
 
@@ -243,11 +244,7 @@ public class ParseContext {
 
 		@Override
 		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((date == null) ? 0 : date.hashCode());
-			result = prime * result + ((property == null) ? 0 : property.hashCode());
-			return result;
+			return Objects.hash(date, property);
 		}
 
 		@Override
@@ -256,13 +253,7 @@ public class ParseContext {
 			if (obj == null) return false;
 			if (getClass() != obj.getClass()) return false;
 			TimezonedDate other = (TimezonedDate) obj;
-			if (date == null) {
-				if (other.date != null) return false;
-			} else if (!date.equals(other.date)) return false;
-			if (property == null) {
-				if (other.property != null) return false;
-			} else if (!property.equals(other.property)) return false;
-			return true;
+			return Objects.equals(date, other.date) && Objects.equals(property, other.property);
 		}
 	}
 }

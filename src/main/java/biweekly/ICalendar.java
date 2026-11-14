@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.xml.transform.TransformerException;
@@ -1249,15 +1250,17 @@ public class ICalendar extends ICalComponent {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((version == null) ? 0 : version.hashCode());
+		result = prime * result + Objects.hash(version);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
 		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
 		ICalendar other = (ICalendar) obj;
-		if (version != other.version) return false;
-		return true;
+		return version == other.version;
 	}
 }

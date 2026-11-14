@@ -5,6 +5,7 @@ import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import java.util.regex.Matcher;
@@ -368,17 +369,7 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents>,
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + date;
-		result = prime * result + (hasTime ? 1231 : 1237);
-		result = prime * result + hour;
-		result = prime * result + minute;
-		result = prime * result + month;
-		result = prime * result + second;
-		result = prime * result + (utc ? 1231 : 1237);
-		result = prime * result + year;
-		return result;
+		return Objects.hash(Integer.valueOf(date), Boolean.valueOf(hasTime), Integer.valueOf(hour), Integer.valueOf(minute), Integer.valueOf(month), Integer.valueOf(second), Boolean.valueOf(utc), Integer.valueOf(year));
 	}
 
 	@Override
@@ -387,15 +378,7 @@ public final class DateTimeComponents implements Comparable<DateTimeComponents>,
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		DateTimeComponents other = (DateTimeComponents) obj;
-		if (date != other.date) return false;
-		if (hasTime != other.hasTime) return false;
-		if (hour != other.hour) return false;
-		if (minute != other.minute) return false;
-		if (month != other.month) return false;
-		if (second != other.second) return false;
-		if (utc != other.utc) return false;
-		if (year != other.year) return false;
-		return true;
+		return date == other.date && hasTime == other.hasTime && hour == other.hour && minute == other.minute && month == other.month && second == other.second && utc == other.utc && year == other.year;
 	}
 
 	public int compareTo(DateTimeComponents that) {

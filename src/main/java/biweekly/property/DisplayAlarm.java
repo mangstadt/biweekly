@@ -1,6 +1,7 @@
 package biweekly.property;
 
 import java.util.Map;
+import java.util.Objects;
 
 import biweekly.component.VAlarm;
 
@@ -84,18 +85,17 @@ public class DisplayAlarm extends VCalAlarmProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((text == null) ? 0 : text.hashCode());
+		result = prime * result + Objects.hash(text);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
+		if (obj == null) return false;
 		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
 		DisplayAlarm other = (DisplayAlarm) obj;
-		if (text == null) {
-			if (other.text != null) return false;
-		} else if (!text.equals(other.text)) return false;
-		return true;
+		return Objects.equals(text, other.text);
 	}
 }

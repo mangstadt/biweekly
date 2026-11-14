@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import biweekly.ICalVersion;
 import biweekly.ValidationWarning;
@@ -163,18 +164,17 @@ public class RecurrenceDates extends ICalProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + dates.hashCode();
-		result = prime * result + periods.hashCode();
+		result = prime * result + Objects.hash(dates, periods);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
+		if (obj == null) return false;
 		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
 		RecurrenceDates other = (RecurrenceDates) obj;
-		if (!dates.equals(other.dates)) return false;
-		if (!periods.equals(other.periods)) return false;
-		return true;
+		return Objects.equals(dates, other.dates) && Objects.equals(periods, other.periods);
 	}
 }

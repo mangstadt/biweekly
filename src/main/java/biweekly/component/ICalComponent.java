@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.github.mangstadt.vinnie.LaciToken;
 
@@ -671,16 +672,14 @@ public abstract class ICalComponent {
 		final int prime = 31;
 		int result = 1;
 
-		int propertiesHash = 1;
-		for (ICalProperty property : properties.values()) {
-			propertiesHash += property.hashCode();
-		}
+		/*
+		 * Property/component order does not matter.
+		 */
+
+		int propertiesHash = 1 + properties.values().stream().mapToInt(ICalProperty::hashCode).sum();
 		result = prime * result + propertiesHash;
 
-		int componentsHash = 1;
-		for (ICalComponent component : components.values()) {
-			componentsHash += component.hashCode();
-		}
+		int componentsHash = 1 + components.values().stream().mapToInt(ICalComponent::hashCode).sum();
 		result = prime * result + componentsHash;
 
 		return result;

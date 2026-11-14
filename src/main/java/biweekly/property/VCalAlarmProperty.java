@@ -3,6 +3,7 @@ package biweekly.property;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import biweekly.component.VAlarm;
 import biweekly.util.Duration;
@@ -103,26 +104,17 @@ public class VCalAlarmProperty extends ICalProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((repeat == null) ? 0 : repeat.hashCode());
-		result = prime * result + ((snooze == null) ? 0 : snooze.hashCode());
-		result = prime * result + ((start == null) ? 0 : start.hashCode());
+		result = prime * result + Objects.hash(repeat, snooze, start);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
+		if (obj == null) return false;
 		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
 		VCalAlarmProperty other = (VCalAlarmProperty) obj;
-		if (repeat == null) {
-			if (other.repeat != null) return false;
-		} else if (!repeat.equals(other.repeat)) return false;
-		if (snooze == null) {
-			if (other.snooze != null) return false;
-		} else if (!snooze.equals(other.snooze)) return false;
-		if (start == null) {
-			if (other.start != null) return false;
-		} else if (!start.equals(other.start)) return false;
-		return true;
+		return Objects.equals(repeat, other.repeat) && Objects.equals(snooze, other.snooze) && Objects.equals(start, other.start);
 	}
 }

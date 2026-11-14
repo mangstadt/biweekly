@@ -1,6 +1,7 @@
 package biweekly.property;
 
 import java.util.Map;
+import java.util.Objects;
 
 import biweekly.component.VAlarm;
 
@@ -102,22 +103,17 @@ public class EmailAlarm extends VCalAlarmProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + ((note == null) ? 0 : note.hashCode());
+		result = prime * result + Objects.hash(email, note);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
+		if (obj == null) return false;
 		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
 		EmailAlarm other = (EmailAlarm) obj;
-		if (email == null) {
-			if (other.email != null) return false;
-		} else if (!email.equals(other.email)) return false;
-		if (note == null) {
-			if (other.note != null) return false;
-		} else if (!note.equals(other.note)) return false;
-		return true;
+		return Objects.equals(email, other.email) && Objects.equals(note, other.note);
 	}
 }

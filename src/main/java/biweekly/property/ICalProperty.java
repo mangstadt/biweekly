@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
@@ -440,10 +441,7 @@ public abstract class ICalProperty {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + parameters.hashCode();
-		return result;
+		return Objects.hash(parameters);
 	}
 
 	@Override
@@ -452,7 +450,6 @@ public abstract class ICalProperty {
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		ICalProperty other = (ICalProperty) obj;
-		if (!parameters.equals(other.parameters)) return false;
-		return true;
+		return Objects.equals(parameters, other.parameters);
 	}
 }

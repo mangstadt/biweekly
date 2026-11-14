@@ -3,6 +3,7 @@ package biweekly.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -80,10 +81,7 @@ public class VersionNumber implements Comparable<VersionNumber> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + parts.hashCode();
-		return result;
+		return Objects.hash(parts);
 	}
 
 	@Override
@@ -92,8 +90,7 @@ public class VersionNumber implements Comparable<VersionNumber> {
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		VersionNumber other = (VersionNumber) obj;
-		if (!parts.equals(other.parts)) return false;
-		return true;
+		return Objects.equals(parts, other.parts);
 	}
 
 	@Override

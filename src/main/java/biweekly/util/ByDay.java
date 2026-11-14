@@ -1,5 +1,7 @@
 package biweekly.util;
 
+import java.util.Objects;
+
 /*
  Copyright (c) 2013-2024, Michael Angstadt
  All rights reserved.
@@ -82,11 +84,7 @@ public class ByDay {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((day == null) ? 0 : day.hashCode());
-		result = prime * result + ((num == null) ? 0 : num.hashCode());
-		return result;
+		return Objects.hash(day, num);
 	}
 
 	@Override
@@ -95,10 +93,6 @@ public class ByDay {
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		ByDay other = (ByDay) obj;
-		if (day != other.day) return false;
-		if (num == null) {
-			if (other.num != null) return false;
-		} else if (!num.equals(other.num)) return false;
-		return true;
+		return day == other.day && Objects.equals(num, other.num);
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import biweekly.ICalVersion;
 import biweekly.ValidationWarning;
@@ -145,19 +146,17 @@ public class BinaryProperty extends ICalProperty {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + Arrays.hashCode(data);
-		result = prime * result + ((uri == null) ? 0 : uri.hashCode());
+		result = prime * result + Objects.hash(uri);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
+		if (obj == null) return false;
 		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
 		BinaryProperty other = (BinaryProperty) obj;
-		if (uri == null) {
-			if (other.uri != null) return false;
-		} else if (!uri.equals(other.uri)) return false;
-		if (!Arrays.equals(data, other.data)) return false;
-		return true;
+		return Arrays.equals(data, other.data) && Objects.equals(uri, other.uri);
 	}
 }

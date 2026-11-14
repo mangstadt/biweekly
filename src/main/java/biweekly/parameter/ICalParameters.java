@@ -4,10 +4,11 @@ import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.github.mangstadt.vinnie.LaciToken;
 import com.github.mangstadt.vinnie.SyntaxStyle;
@@ -1537,8 +1538,8 @@ public class ICalParameters extends ListMultimap<LaciToken, String> {
 	@Override
 	public int hashCode() {
 		/*
-		 * Remember: Keys are case-insensitive, key order does not matter, and
-		 * value order does not matter
+		 * Key order does not matter, value order does not matter, value case
+		 * does not matter.
 		 */
 		final int prime = 31;
 		int result = 1;
@@ -1547,13 +1548,10 @@ public class ICalParameters extends ListMultimap<LaciToken, String> {
 			LaciToken key = entry.getKey();
 			List<String> value = entry.getValue();
 
-			int valueHash = 1;
-			for (String v : value) {
-				valueHash += v.toLowerCase().hashCode();
-			}
+			int valueHash = 1 + value.stream().map(String::toLowerCase).mapToInt(String::hashCode).sum();
 
 			int entryHash = 1;
-			entryHash += prime * entryHash + ((key == null) ? 0 : key.hashCode());
+			entryHash += prime * entryHash + Objects.hash(key);
 			entryHash += prime * entryHash + valueHash;
 
 			result += entryHash;
@@ -1577,8 +1575,8 @@ public class ICalParameters extends ListMultimap<LaciToken, String> {
 	@Override
 	public boolean equals(Object obj) {
 		/*
-		 * Remember: Keys are case-insensitive, key order does not matter, and
-		 * value order does not matter
+		 * Key order does not matter, value order does not matter, value case
+		 * does not matter.
 		 */
 		if (this == obj) return true;
 		if (obj == null) return false;
@@ -1596,24 +1594,18 @@ public class ICalParameters extends ListMultimap<LaciToken, String> {
 				return false;
 			}
 
-			List<String> valueLower = new ArrayList<>(value.size());
-			for (String v : value) {
-				valueLower.add(v.toLowerCase());
-			}
-			Collections.sort(valueLower);
-
-			List<String> otherValueLower = new ArrayList<>(otherValue.size());
-			for (String v : otherValue) {
-				otherValueLower.add(v.toLowerCase());
-			}
-			Collections.sort(otherValueLower);
-
+			List<String> valueLower = toLowerSorted(value);
+			List<String> otherValueLower = toLowerSorted(otherValue);
 			if (!valueLower.equals(otherValueLower)) {
 				return false;
 			}
 		}
 
 		return true;
+	}
+
+	private static List<String> toLowerSorted(List<String> list) {
+		return list.stream().map(String::toLowerCase).sorted().collect(Collectors.toList());
 	}
 
 	/**

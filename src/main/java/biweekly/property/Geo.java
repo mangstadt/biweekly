@@ -3,6 +3,7 @@ package biweekly.property;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import biweekly.ICalVersion;
 import biweekly.ValidationWarning;
@@ -147,22 +148,17 @@ public class Geo extends ICalProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((latitude == null) ? 0 : latitude.hashCode());
-		result = prime * result + ((longitude == null) ? 0 : longitude.hashCode());
+		result = prime * result + Objects.hash(latitude, longitude);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
+		if (obj == null) return false;
 		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
 		Geo other = (Geo) obj;
-		if (latitude == null) {
-			if (other.latitude != null) return false;
-		} else if (!latitude.equals(other.latitude)) return false;
-		if (longitude == null) {
-			if (other.longitude != null) return false;
-		} else if (!longitude.equals(other.longitude)) return false;
-		return true;
+		return Objects.equals(latitude, other.latitude) && Objects.equals(longitude, other.longitude);
 	}
 }

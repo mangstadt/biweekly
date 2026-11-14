@@ -3,6 +3,7 @@ package biweekly.property;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import biweekly.ICalVersion;
 import biweekly.ValidationWarning;
@@ -217,22 +218,17 @@ public class Version extends ICalProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((maxVersion == null) ? 0 : maxVersion.hashCode());
-		result = prime * result + ((minVersion == null) ? 0 : minVersion.hashCode());
+		result = prime * result + Objects.hash(maxVersion, minVersion);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
+		if (obj == null) return false;
 		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
 		Version other = (Version) obj;
-		if (maxVersion == null) {
-			if (other.maxVersion != null) return false;
-		} else if (!maxVersion.equals(other.maxVersion)) return false;
-		if (minVersion == null) {
-			if (other.minVersion != null) return false;
-		} else if (!minVersion.equals(other.minVersion)) return false;
-		return true;
+		return Objects.equals(maxVersion, other.maxVersion) && Objects.equals(minVersion, other.minVersion);
 	}
 }

@@ -1,6 +1,7 @@
 package biweekly.property;
 
 import java.util.Map;
+import java.util.Objects;
 
 import biweekly.component.VAlarm;
 
@@ -90,18 +91,17 @@ public class ProcedureAlarm extends VCalAlarmProperty {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((path == null) ? 0 : path.hashCode());
+		result = prime * result + Objects.hash(path);
 		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
+		if (obj == null) return false;
 		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
 		ProcedureAlarm other = (ProcedureAlarm) obj;
-		if (path == null) {
-			if (other.path != null) return false;
-		} else if (!path.equals(other.path)) return false;
-		return true;
+		return Objects.equals(path, other.path);
 	}
 }
