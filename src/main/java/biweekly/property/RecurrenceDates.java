@@ -79,8 +79,8 @@ public class RecurrenceDates extends ICalProperty {
 	private final List<Period> periods;
 
 	public RecurrenceDates() {
-		dates = new ArrayList<ICalDate>();
-		periods = new ArrayList<Period>();
+		dates = new ArrayList<>();
+		periods = new ArrayList<>();
 	}
 
 	/**
@@ -90,12 +90,12 @@ public class RecurrenceDates extends ICalProperty {
 	public RecurrenceDates(RecurrenceDates original) {
 		super(original);
 
-		dates = new ArrayList<ICalDate>(original.dates.size());
+		dates = new ArrayList<>(original.dates.size());
 		for (ICalDate date : original.dates) {
 			dates.add(new ICalDate(date));
 		}
 
-		periods = new ArrayList<Period>(original.periods.size());
+		periods = new ArrayList<>(original.periods.size());
 		for (Period period : original.periods) {
 			periods.add(new Period(period));
 		}
@@ -148,7 +148,7 @@ public class RecurrenceDates extends ICalProperty {
 
 	@Override
 	protected Map<String, Object> toStringValues() {
-		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		Map<String, Object> values = new LinkedHashMap<>();
 		values.put("dates", dates);
 		values.put("periods", periods);
 		return values;

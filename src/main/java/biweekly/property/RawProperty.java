@@ -171,7 +171,7 @@ public class RawProperty extends ICalProperty {
 
 	@Override
 	protected Map<String, Object> toStringValues() {
-		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		Map<String, Object> values = new LinkedHashMap<>();
 		values.put("name", name);
 		values.put("value", value);
 		values.put("dataType", dataType);

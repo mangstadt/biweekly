@@ -58,7 +58,7 @@ public class DaylightScribe extends ICalPropertyScribe<Daylight> {
 			return "FALSE";
 		}
 
-		List<String> values = new ArrayList<String>();
+		List<String> values = new ArrayList<>();
 		values.add("TRUE");
 
 		UtcOffset offset = property.getOffset();

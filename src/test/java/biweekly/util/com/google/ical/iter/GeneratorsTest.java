@@ -1203,7 +1203,7 @@ public class GeneratorsTest {
 	 * @throws IteratorShortCircuitingException
 	 */
 	private static void run(Generator generator, DTBuilder builder, DateValue[] expected, boolean terminating) throws IteratorShortCircuitingException {
-		List<DateValue> actual = new ArrayList<DateValue>();
+		List<DateValue> actual = new ArrayList<>();
 		while (generator.generate(builder) && (terminating || actual.size() < expected.length)) {
 			actual.add(builder.toDate());
 		}
@@ -1235,7 +1235,7 @@ public class GeneratorsTest {
 	 * @return the date values
 	 */
 	private static DateValue[] daysInMonth(DateValue start, int interval) {
-		List<DateValue> dates = new ArrayList<DateValue>();
+		List<DateValue> dates = new ArrayList<>();
 		DTBuilder builder = new DTBuilder(start);
 		DateValue d = builder.toDate();
 		while (d.month() == start.month()) {
@@ -1272,7 +1272,7 @@ public class GeneratorsTest {
 	 * @return the date values
 	 */
 	private static DateValue[] monthsInYear(DateValue start, int interval) {
-		List<DateValue> dates = new ArrayList<DateValue>();
+		List<DateValue> dates = new ArrayList<>();
 		DTBuilder builder = new DTBuilder(start);
 		DateValue d = builder.toDate();
 		while (d.year() == start.year()) {

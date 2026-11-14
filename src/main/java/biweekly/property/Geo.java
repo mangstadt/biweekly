@@ -132,7 +132,7 @@ public class Geo extends ICalProperty {
 
 	@Override
 	protected Map<String, Object> toStringValues() {
-		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		Map<String, Object> values = new LinkedHashMap<>();
 		values.put("latitude", latitude);
 		values.put("longitude", longitude);
 		return values;

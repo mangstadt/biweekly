@@ -1374,7 +1374,7 @@ public class ICalParameters extends ListMultimap<LaciToken, String> {
 	 * @return a list of warnings or an empty list if no problems were found
 	 */
 	public List<ValidationWarning> validate(ICalVersion version) {
-		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>(0);
+		List<ValidationWarning> warnings = new ArrayList<>(0);
 
 		SyntaxStyle syntax = (version == ICalVersion.V1_0) ? SyntaxStyle.LEGACY : SyntaxStyle.MODERN;
 
@@ -1596,13 +1596,13 @@ public class ICalParameters extends ListMultimap<LaciToken, String> {
 				return false;
 			}
 
-			List<String> valueLower = new ArrayList<String>(value.size());
+			List<String> valueLower = new ArrayList<>(value.size());
 			for (String v : value) {
 				valueLower.add(v.toLowerCase());
 			}
 			Collections.sort(valueLower);
 
-			List<String> otherValueLower = new ArrayList<String>(otherValue.size());
+			List<String> otherValueLower = new ArrayList<>(otherValue.size());
 			for (String v : otherValue) {
 				otherValueLower.add(v.toLowerCase());
 			}

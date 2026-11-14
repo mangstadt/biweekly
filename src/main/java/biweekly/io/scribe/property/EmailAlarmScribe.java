@@ -60,7 +60,7 @@ public class EmailAlarmScribe extends VCalAlarmPropertyScribe<EmailAlarm> {
 			return Collections.emptyList();
 		}
 
-		List<String> dataValues = new ArrayList<String>(2);
+		List<String> dataValues = new ArrayList<>(2);
 		dataValues.add((email == null) ? "" : email);
 		dataValues.add((note == null) ? "" : note);
 		return dataValues;

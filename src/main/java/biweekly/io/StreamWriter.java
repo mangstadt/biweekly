@@ -71,7 +71,7 @@ public abstract class StreamWriter implements Closeable {
 	public void write(ICalendar ical) throws IOException {
 		Collection<Class<?>> unregistered = findScribeless(ical);
 		if (!unregistered.isEmpty()) {
-			List<String> classNames = new ArrayList<String>(unregistered.size());
+			List<String> classNames = new ArrayList<>(unregistered.size());
 			for (Class<?> clazz : unregistered) {
 				classNames.add(clazz.getName());
 			}
@@ -185,8 +185,8 @@ public abstract class StreamWriter implements Closeable {
 	 * @return the component/property classes
 	 */
 	private Collection<Class<?>> findScribeless(ICalendar ical) {
-		Set<Class<?>> unregistered = new HashSet<Class<?>>();
-		LinkedList<ICalComponent> components = new LinkedList<ICalComponent>();
+		Set<Class<?>> unregistered = new HashSet<>();
+		LinkedList<ICalComponent> components = new LinkedList<>();
 		components.add(ical);
 
 		while (!components.isEmpty()) {

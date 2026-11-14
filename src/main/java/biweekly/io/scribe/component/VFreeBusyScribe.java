@@ -52,7 +52,7 @@ public class VFreeBusyScribe extends ICalComponentScribe<VFreeBusy> {
 	public List<ICalProperty> getProperties(VFreeBusy component) {
 		List<ICalProperty> properties = super.getProperties(component);
 
-		List<FreeBusy> fb = new ArrayList<FreeBusy>(component.getFreeBusy());
+		List<FreeBusy> fb = new ArrayList<>(component.getFreeBusy());
 		if (fb.isEmpty()) {
 			return properties;
 		}
@@ -70,7 +70,7 @@ public class VFreeBusyScribe extends ICalComponentScribe<VFreeBusy> {
 		}
 
 		//remove and re-add the FREEBUSY instances in sorted order
-		properties = new ArrayList<ICalProperty>(properties);
+		properties = new ArrayList<>(properties);
 		for (FreeBusy f : fb) {
 			properties.remove(f);
 			properties.add(index++, f);

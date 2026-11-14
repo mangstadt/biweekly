@@ -41,7 +41,7 @@ public class PR63 {
 		Date start = df.parse("2016-12-19T09:00:00");
 		DateIterator it = recur.getDateIterator(start, TimeZone.getDefault());
 
-		List<Date> actual = new ArrayList<Date>();
+		List<Date> actual = new ArrayList<>();
 		while (it.hasNext()) {
 			Date startDate = it.next();
 			actual.add(startDate);
@@ -77,7 +77,7 @@ public class PR63 {
 			}
 			DateIterator iterator = vEvent.getDateIterator(timezone);
 
-			List<Date> actual = new ArrayList<Date>();
+			List<Date> actual = new ArrayList<>();
 			while (iterator.hasNext()) {
 				Date startDate = iterator.next();
 				actual.add(startDate);

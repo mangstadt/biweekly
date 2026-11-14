@@ -94,7 +94,7 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 	 * @return the validation warnings
 	 */
 	public List<WarningsGroup> getByProperty(Class<? extends ICalProperty> propertyClass) {
-		List<WarningsGroup> warnings = new ArrayList<WarningsGroup>();
+		List<WarningsGroup> warnings = new ArrayList<>();
 		for (WarningsGroup group : this.warnings) {
 			ICalProperty property = group.getProperty();
 			if (property == null) {
@@ -114,7 +114,7 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 	 * @return the validation warnings
 	 */
 	public List<WarningsGroup> getByComponent(Class<? extends ICalComponent> componentClass) {
-		List<WarningsGroup> warnings = new ArrayList<WarningsGroup>();
+		List<WarningsGroup> warnings = new ArrayList<>();
 		for (WarningsGroup group : this.warnings) {
 			ICalComponent component = group.getComponent();
 			if (component == null) {

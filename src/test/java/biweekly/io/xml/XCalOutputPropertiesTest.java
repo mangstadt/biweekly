@@ -45,7 +45,7 @@ public class XCalOutputPropertiesTest {
 	public void constructor_empty() {
 		XCalOutputProperties properties = new XCalOutputProperties();
 
-		Map<String, String> expected = new HashMap<String, String>();
+		Map<String, String> expected = new HashMap<>();
 		expected.put(OutputKeys.METHOD, "xml");
 
 		assertEquals(expected, properties);
@@ -55,7 +55,7 @@ public class XCalOutputPropertiesTest {
 	public void constructor() {
 		XCalOutputProperties properties = new XCalOutputProperties(1, "1.1");
 
-		Map<String, String> expected = new HashMap<String, String>();
+		Map<String, String> expected = new HashMap<>();
 		expected.put(OutputKeys.METHOD, "xml");
 		expected.put(OutputKeys.INDENT, "yes");
 		expected.put(INDENT_AMT, "1");
@@ -74,7 +74,7 @@ public class XCalOutputPropertiesTest {
 		XCalOutputProperties properties = new XCalOutputProperties();
 		properties.setIndent(1);
 
-		Map<String, String> expected = new HashMap<String, String>();
+		Map<String, String> expected = new HashMap<>();
 		expected.put(OutputKeys.METHOD, "xml");
 		expected.put(OutputKeys.INDENT, "yes");
 		expected.put(INDENT_AMT, "1");
@@ -88,7 +88,7 @@ public class XCalOutputPropertiesTest {
 		properties.setIndent(1);
 		properties.setIndent(null);
 
-		Map<String, String> expected = new HashMap<String, String>();
+		Map<String, String> expected = new HashMap<>();
 		expected.put(OutputKeys.METHOD, "xml");
 
 		assertEquals(expected, properties);
@@ -138,7 +138,7 @@ public class XCalOutputPropertiesTest {
 		XCalOutputProperties properties = new XCalOutputProperties();
 		properties.setXmlVersion("1.1");
 
-		Map<String, String> expected = new HashMap<String, String>();
+		Map<String, String> expected = new HashMap<>();
 		expected.put(OutputKeys.METHOD, "xml");
 		expected.put(OutputKeys.VERSION, "1.1");
 
@@ -151,7 +151,7 @@ public class XCalOutputPropertiesTest {
 		properties.setXmlVersion("1.1");
 		properties.setXmlVersion(null);
 
-		Map<String, String> expected = new HashMap<String, String>();
+		Map<String, String> expected = new HashMap<>();
 		expected.put(OutputKeys.METHOD, "xml");
 
 		assertEquals(expected, properties);

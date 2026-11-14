@@ -55,8 +55,8 @@ public abstract class ICalComponent {
 	protected final ListMultimap<Class<? extends ICalProperty>, ICalProperty> properties;
 
 	protected ICalComponent() {
-		components = new ListMultimap<Class<? extends ICalComponent>, ICalComponent>();
-		properties = new ListMultimap<Class<? extends ICalProperty>, ICalProperty>();
+		components = new ListMultimap<>();
+		properties = new ListMultimap<>();
 	}
 
 	/**
@@ -92,7 +92,7 @@ public abstract class ICalComponent {
 	 * @return the properties
 	 */
 	public <T extends ICalProperty> List<T> getProperties(Class<T> clazz) {
-		return new ICalPropertyList<T>(clazz);
+		return new ICalPropertyList<>(clazz);
 	}
 
 	/**
@@ -204,7 +204,7 @@ public abstract class ICalComponent {
 		 * this would allow RawProperty objects without the specified name to be
 		 * added to the list.
 		 */
-		List<RawProperty> toReturn = new ArrayList<RawProperty>();
+		List<RawProperty> toReturn = new ArrayList<>();
 		for (RawProperty property : getExperimentalProperties()) {
 			if (property.getName().equalsIgnoreCase(name)) {
 				toReturn.add(property);
@@ -277,7 +277,7 @@ public abstract class ICalComponent {
 	 */
 	public List<RawProperty> removeExperimentalProperties(String name) {
 		List<RawProperty> all = getExperimentalProperties();
-		List<RawProperty> toRemove = new ArrayList<RawProperty>();
+		List<RawProperty> toRemove = new ArrayList<>();
 		for (RawProperty property : all) {
 			if (property.getName().equalsIgnoreCase(name)) {
 				toRemove.add(property);
@@ -306,7 +306,7 @@ public abstract class ICalComponent {
 	 * @return the sub-components
 	 */
 	public <T extends ICalComponent> List<T> getComponents(Class<T> clazz) {
-		return new ICalComponentList<T>(clazz);
+		return new ICalComponentList<>(clazz);
 	}
 
 	/**
@@ -374,7 +374,7 @@ public abstract class ICalComponent {
 		 * this would allow RawComponent objects without the specified name to
 		 * be added to the list.
 		 */
-		List<RawComponent> toReturn = new ArrayList<RawComponent>();
+		List<RawComponent> toReturn = new ArrayList<>();
 		for (RawComponent component : getExperimentalComponents()) {
 			if (component.getName().equalsIgnoreCase(name)) {
 				toReturn.add(component);
@@ -422,7 +422,7 @@ public abstract class ICalComponent {
 	 */
 	public List<RawComponent> removeExperimentalComponents(String name) {
 		List<RawComponent> all = getExperimentalComponents();
-		List<RawComponent> toRemove = new ArrayList<RawComponent>();
+		List<RawComponent> toRemove = new ArrayList<>();
 		for (RawComponent property : all) {
 			if (property.getName().equalsIgnoreCase(name)) {
 				toRemove.add(property);
@@ -457,10 +457,10 @@ public abstract class ICalComponent {
 	 * @return a list of warnings or an empty list if no problems were found
 	 */
 	public final List<WarningsGroup> validate(List<ICalComponent> hierarchy, ICalVersion version) {
-		List<WarningsGroup> warnings = new ArrayList<WarningsGroup>();
+		List<WarningsGroup> warnings = new ArrayList<>();
 
 		//validate this component
-		List<ValidationWarning> warningsBuf = new ArrayList<ValidationWarning>(0);
+		List<ValidationWarning> warningsBuf = new ArrayList<>(0);
 		validate(hierarchy, version, warningsBuf);
 		if (!warningsBuf.isEmpty()) {
 			warnings.add(new WarningsGroup(this, hierarchy, warningsBuf));
@@ -468,7 +468,7 @@ public abstract class ICalComponent {
 
 		//add this component to the hierarchy list
 		//copy the list so other validate() calls aren't effected
-		hierarchy = new ArrayList<ICalComponent>(hierarchy);
+		hierarchy = new ArrayList<>(hierarchy);
 		hierarchy.add(this);
 
 		//validate properties
@@ -557,7 +557,7 @@ public abstract class ICalComponent {
 
 		LaciToken actualValue = LaciToken.create(actual.getValue());
 
-		List<LaciToken> allowedValues = new ArrayList<LaciToken>(allowed.length);
+		List<LaciToken> allowedValues = new ArrayList<>(allowed.length);
 		for (Status status : allowed) {
 			LaciToken value = LaciToken.create(status.getValue());
 			allowedValues.add(value);
@@ -659,7 +659,7 @@ public abstract class ICalComponent {
 	 * @return the new list (immutable)
 	 */
 	private static <T> List<T> castList(List<?> list, Class<T> castTo) {
-		List<T> casted = new ArrayList<T>(list.size());
+		List<T> casted = new ArrayList<>(list.size());
 		for (Object object : list) {
 			casted.add(castTo.cast(object));
 		}
@@ -712,7 +712,7 @@ public abstract class ICalComponent {
 				return false;
 			}
 
-			List<V> otherValueCopy = new ArrayList<V>(otherValue);
+			List<V> otherValueCopy = new ArrayList<>(otherValue);
 			for (V property : value) {
 				if (!otherValueCopy.remove(property)) {
 					return false;

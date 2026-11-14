@@ -42,7 +42,7 @@ public class VersionNumber implements Comparable<VersionNumber> {
 	 * @throws IllegalArgumentException if the version string is invalid
 	 */
 	public VersionNumber(String version) {
-		parts = new ArrayList<Integer>();
+		parts = new ArrayList<>();
 
 		int start = 0;
 		for (int i = 0; i < version.length(); i++) {

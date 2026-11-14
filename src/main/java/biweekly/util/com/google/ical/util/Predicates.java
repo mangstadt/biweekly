@@ -35,8 +35,8 @@ import java.util.Collection;
  * @author Michael Angstadt
  */
 public class Predicates {
-	private static final Predicate<?> ALWAYS_TRUE = new AlwaysTruePredicate<Object>();
-	private static final Predicate<?> ALWAYS_FALSE = new AlwaysFalsePredicate<Object>();
+	private static final Predicate<?> ALWAYS_TRUE = new AlwaysTruePredicate<>();
+	private static final Predicate<?> ALWAYS_FALSE = new AlwaysFalsePredicate<>();
 
 	/**
 	 * Returns a predicate that always evaluates to true.
@@ -66,7 +66,7 @@ public class Predicates {
 	 * @return the resultant predicate
 	 */
 	public static <T> Predicate<T> not(Predicate<? super T> predicate) {
-		return new NotPredicate<T>(predicate);
+		return new NotPredicate<>(predicate);
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class Predicates {
 			System.arraycopy(newComponents, 0, components, 0, n);
 			components = newComponents;
 		}
-		return new AndPredicate<T>(components);
+		return new AndPredicate<>(components);
 	}
 
 	/**
@@ -147,7 +147,7 @@ public class Predicates {
 			System.arraycopy(newComponents, 0, components, 0, n);
 			components = newComponents;
 		}
-		return new OrPredicate<T>(components);
+		return new OrPredicate<>(components);
 	}
 
 	private static class AlwaysTruePredicate<T> implements Predicate<T> {

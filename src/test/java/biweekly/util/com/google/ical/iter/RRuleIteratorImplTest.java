@@ -327,7 +327,7 @@ public class RRuleIteratorImplTest {
 		.build();
 		DateValue start = new DateValueImpl(1998, 1, 1);
 		
-		List<DateValue> expected = new ArrayList<DateValue>();
+		List<DateValue> expected = new ArrayList<>();
 		expected.addAll(dateRange(new DateValueImpl(1998, 1, 1), new DateValueImpl(1998, 1, 31)));
 		expected.addAll(dateRange(new DateValueImpl(1999, 1, 1), new DateValueImpl(1999, 1, 31)));
 		expected.addAll(dateRange(new DateValueImpl(2000, 1, 1), new DateValueImpl(2000, 1, 31)));
@@ -1382,7 +1382,7 @@ public class RRuleIteratorImplTest {
 		/*
 		 * Figure out which of the answers from the above test fall on even weeks.
 		 */
-		List<DateValue> expected = new ArrayList<DateValue>();
+		List<DateValue> expected = new ArrayList<>();
 		for (DateValue candidate : new DateValue[] {
 			new DateValueImpl(1994, 7, 1),
 			new DateValueImpl(1994, 9, 30),
@@ -2402,7 +2402,7 @@ public class RRuleIteratorImplTest {
 	 */
 	private static List<DateValue> dateRange(DateValue start, DateValue end) {
 		DTBuilder b = new DTBuilder(start);
-		List<DateValue> list = new ArrayList<DateValue>();
+		List<DateValue> list = new ArrayList<>();
 		while (true) {
 			DateValue d = b.toDate();
 			if (d.compareTo(end) > 0) { break; }

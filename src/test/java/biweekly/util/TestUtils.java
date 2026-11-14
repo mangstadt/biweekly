@@ -89,7 +89,7 @@ public class TestUtils {
 	 * use "null" for warnings that do not have a code)
 	 */
 	public static void assertParseWarnings(List<ParseWarning> warnings, Integer... expectedCodes) {
-		List<Integer> actualWarnings = new ArrayList<Integer>(warnings.size());
+		List<Integer> actualWarnings = new ArrayList<>(warnings.size());
 		for (ParseWarning warning : warnings) {
 			actualWarnings.add(warning.getCode());
 		}
@@ -98,7 +98,7 @@ public class TestUtils {
 			fail("Expected these warnings " + Arrays.toString(expectedCodes) + ", but was this: " + actualWarnings + ".  Actual warnings: " + warnings);
 		}
 
-		List<Integer> expectedWarnings = new ArrayList<Integer>(Arrays.asList(expectedCodes));
+		List<Integer> expectedWarnings = new ArrayList<>(Arrays.asList(expectedCodes));
 		for (Integer actualWarning : actualWarnings) {
 			if (!expectedWarnings.remove(actualWarning)) {
 				fail("Expected these warnings " + Arrays.toString(expectedCodes) + ", but was this: " + actualWarnings + ".  Actual warnings: " + warnings);
@@ -154,7 +154,7 @@ public class TestUtils {
 	public static <T> void assertCollectionContains(Collection<T> actual, T... expectedElements) {
 		assertEquals(expectedElements.length, actual.size());
 
-		Collection<T> actualCopy = new ArrayList<T>(actual);
+		Collection<T> actualCopy = new ArrayList<>(actual);
 		for (T expectedElement : expectedElements) {
 			assertTrue("Collection did not contain: " + expectedElement, actualCopy.remove(expectedElement));
 		}
@@ -190,7 +190,7 @@ public class TestUtils {
 	 * number of items retrieved equals the length of the expected list
 	 */
 	public static <T> void assertIterator(List<T> expected, Iterator<T> it, boolean terminating) {
-		List<T> actual = new ArrayList<T>();
+		List<T> actual = new ArrayList<>();
 		while (it.hasNext() && (terminating || actual.size() < expected.size())) {
 			actual.add(it.next());
 		}
@@ -378,7 +378,7 @@ public class TestUtils {
 
 	public static class PropValidateChecker {
 		private final ICalProperty property;
-		private List<ICalComponent> components = new ArrayList<ICalComponent>();
+		private List<ICalComponent> components = new ArrayList<>();
 		private ICalVersion[] versions = ICalVersion.values();
 
 		public PropValidateChecker(ICalProperty property) {
@@ -427,9 +427,9 @@ public class TestUtils {
 
 	public static class CompValidateChecker {
 		private final ICalComponent component;
-		private List<ICalComponent> components = new ArrayList<ICalComponent>();
-		private Map<ICalProperty, Integer[]> propertyWarnings = new IntegerArrayMap<ICalProperty>();
-		private Map<ICalComponent, Integer[]> componentWarnings = new IntegerArrayMap<ICalComponent>();
+		private List<ICalComponent> components = new ArrayList<>();
+		private Map<ICalProperty, Integer[]> propertyWarnings = new IntegerArrayMap<>();
+		private Map<ICalComponent, Integer[]> componentWarnings = new IntegerArrayMap<>();
 		private ICalVersion versions[] = ICalVersion.values();
 
 		public CompValidateChecker(ICalComponent component) {
@@ -557,7 +557,7 @@ public class TestUtils {
 			return false;
 		}
 
-		List<Integer> actualCodes = new ArrayList<Integer>(); //don't use a Set because there can be multiple warnings with the same code
+		List<Integer> actualCodes = new ArrayList<>(); //don't use a Set because there can be multiple warnings with the same code
 		for (ValidationWarning warning : warnings) {
 			actualCodes.add(warning.getCode());
 		}

@@ -46,7 +46,7 @@ import biweekly.property.ICalProperty;
 public class ValidationWarningsTest {
 	@Test
 	public void isEmpty() {
-		List<WarningsGroup> groups = new ArrayList<WarningsGroup>();
+		List<WarningsGroup> groups = new ArrayList<>();
 		ValidationWarnings warnings = new ValidationWarnings(groups);
 		assertTrue(warnings.isEmpty());
 
@@ -56,7 +56,7 @@ public class ValidationWarningsTest {
 
 	@Test
 	public void getByProperty() {
-		List<WarningsGroup> groups = new ArrayList<WarningsGroup>();
+		List<WarningsGroup> groups = new ArrayList<>();
 		WarningsGroup group1 = new WarningsGroup(new TestProperty1(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new ValidationWarning("one"), new ValidationWarning("two")));
 		groups.add(group1);
 		WarningsGroup group2 = new WarningsGroup(new TestProperty1(), Arrays.<ICalComponent> asList(new Parent()), Arrays.asList(new ValidationWarning("three")));
@@ -68,7 +68,7 @@ public class ValidationWarningsTest {
 
 	@Test
 	public void getByProperty_empty() {
-		List<WarningsGroup> groups = new ArrayList<WarningsGroup>();
+		List<WarningsGroup> groups = new ArrayList<>();
 		groups.add(new WarningsGroup(new TestProperty1(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new ValidationWarning("one"), new ValidationWarning("two"))));
 		groups.add(new WarningsGroup(new TestProperty1(), Arrays.<ICalComponent> asList(new Parent()), Arrays.asList(new ValidationWarning("three"))));
 		ValidationWarnings warnings = new ValidationWarnings(groups);
@@ -77,7 +77,7 @@ public class ValidationWarningsTest {
 
 	@Test
 	public void getByComponent() {
-		List<WarningsGroup> groups = new ArrayList<WarningsGroup>();
+		List<WarningsGroup> groups = new ArrayList<>();
 		WarningsGroup group1 = new WarningsGroup(new TestComponent1(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new ValidationWarning("one"), new ValidationWarning("two")));
 		groups.add(group1);
 		WarningsGroup group2 = new WarningsGroup(new TestComponent1(), Arrays.<ICalComponent> asList(new Parent()), Arrays.asList(new ValidationWarning("three")));
@@ -89,7 +89,7 @@ public class ValidationWarningsTest {
 
 	@Test
 	public void getByComponent_empty() {
-		List<WarningsGroup> groups = new ArrayList<WarningsGroup>();
+		List<WarningsGroup> groups = new ArrayList<>();
 		groups.add(new WarningsGroup(new TestComponent1(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new ValidationWarning("one"), new ValidationWarning("two"))));
 		groups.add(new WarningsGroup(new TestComponent1(), Arrays.<ICalComponent> asList(new Parent()), Arrays.asList(new ValidationWarning("three"))));
 		ValidationWarnings warnings = new ValidationWarnings(groups);
@@ -98,7 +98,7 @@ public class ValidationWarningsTest {
 
 	@Test
 	public void toString_() {
-		List<WarningsGroup> groups = new ArrayList<WarningsGroup>();
+		List<WarningsGroup> groups = new ArrayList<>();
 		groups.add(new WarningsGroup(new TestProperty1(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new ValidationWarning("one"), new ValidationWarning("two"))));
 		groups.add(new WarningsGroup(new TestProperty1(), Arrays.<ICalComponent> asList(), Arrays.asList(new ValidationWarning("three"))));
 		groups.add(new WarningsGroup(new TestComponent1(), Arrays.asList(new Grandparent(), new Parent()), Arrays.asList(new ValidationWarning("four"), new ValidationWarning("five"))));

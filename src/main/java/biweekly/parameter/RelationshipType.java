@@ -34,7 +34,7 @@ import java.util.Collection;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-25">RFC 5545 p.25</a>
  */
 public class RelationshipType extends EnumParameterValue {
-	private static final ICalParameterCaseClasses<RelationshipType> enums = new ICalParameterCaseClasses<RelationshipType>(RelationshipType.class);
+	private static final ICalParameterCaseClasses<RelationshipType> enums = new ICalParameterCaseClasses<>(RelationshipType.class);
 
 	public static final RelationshipType PARENT = new RelationshipType("PARENT");
 

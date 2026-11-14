@@ -121,7 +121,7 @@ public abstract class ICalComponentScribe<T extends ICalComponent> {
 	 * @return the sub-components to marshal
 	 */
 	public List<ICalComponent> getComponents(T component) {
-		return new ArrayList<ICalComponent>(component.getComponents().values());
+		return new ArrayList<>(component.getComponents().values());
 	}
 
 	/**
@@ -131,7 +131,7 @@ public abstract class ICalComponentScribe<T extends ICalComponent> {
 	 * @return the properties to marshal
 	 */
 	public List<ICalProperty> getProperties(T component) {
-		return new ArrayList<ICalProperty>(component.getProperties().values());
+		return new ArrayList<>(component.getProperties().values());
 	}
 
 	/**

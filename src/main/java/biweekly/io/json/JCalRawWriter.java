@@ -51,7 +51,7 @@ import com.github.mangstadt.vinnie.LaciToken;
 public class JCalRawWriter implements Closeable, Flushable {
 	private final Writer writer;
 	private final boolean wrapInArray;
-	private final LinkedList<Info> stack = new LinkedList<Info>();
+	private final LinkedList<Info> stack = new LinkedList<>();
 	private JsonGenerator generator;
 	private boolean prettyPrint = false;
 	private boolean componentEnded = false;

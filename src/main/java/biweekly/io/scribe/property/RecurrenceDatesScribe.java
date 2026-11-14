@@ -93,7 +93,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	protected String _writeText(final RecurrenceDates property, final WriteContext context) {
 		List<ICalDate> dates = property.getDates();
 		if (!dates.isEmpty()) {
-			List<String> values = new ArrayList<String>(dates.size());
+			List<String> values = new ArrayList<>(dates.size());
 			for (ICalDate date : dates) {
 				String value = writeDateListDate(date, property, context, false);
 				values.add(value);
@@ -104,7 +104,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		//TODO vCal does not support periods
 		List<Period> periods = property.getPeriods();
 		if (!periods.isEmpty()) {
-			List<String> values = new ArrayList<String>(periods.size());
+			List<String> values = new ArrayList<>(periods.size());
 			for (Period period : periods) {
 				String periodStr = writePeriod(period, property, context, false);
 				values.add(periodStr);
@@ -208,7 +208,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 	@Override
 	protected JCalValue _writeJson(RecurrenceDates property, WriteContext context) {
-		List<String> values = new ArrayList<String>();
+		List<String> values = new ArrayList<>();
 		List<ICalDate> dates = property.getDates();
 		List<Period> periods = property.getPeriods();
 		if (!dates.isEmpty()) {

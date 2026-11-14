@@ -121,7 +121,7 @@ public class RecurrenceDatesTest {
 
 	@Test
 	public void equals() {
-		List<ICalProperty> properties = new ArrayList<ICalProperty>();
+		List<ICalProperty> properties = new ArrayList<>();
 
 		RecurrenceDates property = new RecurrenceDates();
 		properties.add(property);

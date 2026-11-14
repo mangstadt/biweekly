@@ -29,8 +29,8 @@ public class Issue124 {
 		String input = "INVALID";
 		Recurrence recur = parseRecurrence(input);
 
-		Map<LaciToken, List<String>> expectedXRules = new HashMap<LaciToken, List<String>>();
-		List<String> values = new ArrayList<String>();
+		Map<LaciToken, List<String>> expectedXRules = new HashMap<>();
+		List<String> values = new ArrayList<>();
 		values.add("");
 		expectedXRules.put(new LaciToken(input), values);
 

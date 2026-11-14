@@ -37,7 +37,7 @@ import biweekly.property.Image;
  * p.13</a>
  */
 public class Display extends EnumParameterValue {
-	private static final ICalParameterCaseClasses<Display> enums = new ICalParameterCaseClasses<Display>(Display.class);
+	private static final ICalParameterCaseClasses<Display> enums = new ICalParameterCaseClasses<>(Display.class);
 
 	/**
 	 * The image should be displayed in-line with the component title.

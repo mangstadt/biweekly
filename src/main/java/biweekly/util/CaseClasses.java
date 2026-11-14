@@ -133,7 +133,7 @@ public abstract class CaseClasses<T, V> {
 	}
 
 	private void init() {
-		Collection<T> preDefined = new ArrayList<T>();
+		Collection<T> preDefined = new ArrayList<>();
 		for (Field field : clazz.getFields()) {
 			int modifiers = field.getModifiers();
 			//@formatter:off
@@ -156,7 +156,7 @@ public abstract class CaseClasses<T, V> {
 			}
 		}
 
-		runtimeDefined = new ArrayList<T>(0);
+		runtimeDefined = new ArrayList<>(0);
 		this.preDefined = Collections.unmodifiableCollection(preDefined);
 	}
 }

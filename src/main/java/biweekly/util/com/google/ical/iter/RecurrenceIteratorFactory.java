@@ -257,7 +257,7 @@ public class RecurrenceIteratorFactory {
 		 * reimplement some of the more prolific generators as filters.
 		 */
 		// TODO(msamuel): don't need a list here
-		List<Predicate<? super DateValue>> filters = new ArrayList<Predicate<? super DateValue>>();
+		List<Predicate<? super DateValue>> filters = new ArrayList<>();
 
 		switch (freq) {
 		case SECONDLY:
@@ -484,7 +484,7 @@ public class RecurrenceIteratorFactory {
 	 * @return the union iterator
 	 */
 	public static RecurrenceIterator join(RecurrenceIterator first, RecurrenceIterator... rest) {
-		List<RecurrenceIterator> all = new ArrayList<RecurrenceIterator>();
+		List<RecurrenceIterator> all = new ArrayList<>();
 		all.add(first);
 		all.addAll(Arrays.asList(rest));
 		return new CompoundIteratorImpl(all, Collections.<RecurrenceIterator> emptyList());

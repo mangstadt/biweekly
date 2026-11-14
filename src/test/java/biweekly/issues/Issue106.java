@@ -44,7 +44,7 @@ public class Issue106 {
 
 		TimeZone americaCancun = TimeZone.getTimeZone("America/Cancun");
 		TimeZone defaultTz = TimeZone.getTimeZone("Europe/Paris");
-		List<List<ParseWarning>> warnings = new ArrayList<List<ParseWarning>>();
+		List<List<ParseWarning>> warnings = new ArrayList<>();
 		ICalendar ical = Biweekly.parse(input).defaultTimezone(defaultTz).warnings(warnings).first();
 
 		assertParseWarnings(warnings.get(0), 17);
@@ -104,7 +104,7 @@ public class Issue106 {
 		"END:VCALENDAR\n";
 		assertEquals(expected, actual);
 
-		List<List<ParseWarning>> warnings = new ArrayList<List<ParseWarning>>();
+		List<List<ParseWarning>> warnings = new ArrayList<>();
 		Biweekly.parse(actual).warnings(warnings).first();
 		assertParseWarnings(warnings.get(0), 17); //there should only be 1 warning (for CREATED property)
 	}

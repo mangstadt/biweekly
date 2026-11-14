@@ -70,7 +70,7 @@ public class TextPropertyScribeTest extends ScribeTest<TextPropertyImpl> {
 	@Test
 	public void writeXml_data_type() {
 		TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl(ICalDataType.CAL_ADDRESS);
-		Sensei<TextPropertyImpl> sensei = new Sensei<TextPropertyImpl>(marshaller);
+		Sensei<TextPropertyImpl> sensei = new Sensei<>(marshaller);
 
 		sensei.assertWriteXml(withValue).run("<cal-address>" + value + "</cal-address>");
 		sensei.assertWriteXml(empty).run("<cal-address/>");
@@ -85,7 +85,7 @@ public class TextPropertyScribeTest extends ScribeTest<TextPropertyImpl> {
 	@Test
 	public void parseXml_data_type() {
 		TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl(ICalDataType.CAL_ADDRESS);
-		Sensei<TextPropertyImpl> sensei = new Sensei<TextPropertyImpl>(marshaller);
+		Sensei<TextPropertyImpl> sensei = new Sensei<>(marshaller);
 
 		sensei.assertParseXml("<cal-address>" + value + "</cal-address>").run(has(value));
 	}

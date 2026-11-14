@@ -37,7 +37,7 @@ import biweekly.property.Conference;
  * p.15</a>
  */
 public class Feature extends EnumParameterValue {
-	private static final ICalParameterCaseClasses<Feature> enums = new ICalParameterCaseClasses<Feature>(Feature.class);
+	private static final ICalParameterCaseClasses<Feature> enums = new ICalParameterCaseClasses<>(Feature.class);
 
 	/**
 	 * The conference has audio.

@@ -56,7 +56,7 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 	@Override
 	protected String _writeText(final T property, WriteContext context) {
 		List<V> values = property.getValues();
-		List<String> valuesStr = new ArrayList<String>(values.size());
+		List<String> valuesStr = new ArrayList<>(values.size());
 		for (V value : values) {
 			String valueStr = writeValue(property, value, context);
 			valuesStr.add(valueStr);

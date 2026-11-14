@@ -64,7 +64,7 @@ public class ParticipationLevel {
 	 */
 	public static final ParticipationLevel REQUIRED;
 	static {
-		Map<ICalVersion, String> values = new EnumMap<ICalVersion, String>(ICalVersion.class);
+		Map<ICalVersion, String> values = new EnumMap<>(ICalVersion.class);
 		values.put(ICalVersion.V1_0, "REQUIRE");
 		values.put(ICalVersion.V2_0_DEPRECATED, "REQ-PARTICIPANT");
 		values.put(ICalVersion.V2_0, values.get(ICalVersion.V2_0_DEPRECATED));
@@ -76,7 +76,7 @@ public class ParticipationLevel {
 	 */
 	public static final ParticipationLevel OPTIONAL;
 	static {
-		Map<ICalVersion, String> values = new EnumMap<ICalVersion, String>(ICalVersion.class);
+		Map<ICalVersion, String> values = new EnumMap<>(ICalVersion.class);
 		values.put(ICalVersion.V1_0, "REQUEST");
 		values.put(ICalVersion.V2_0_DEPRECATED, "OPT-PARTICIPANT");
 		values.put(ICalVersion.V2_0, values.get(ICalVersion.V2_0_DEPRECATED));
@@ -89,7 +89,7 @@ public class ParticipationLevel {
 	 */
 	public static final ParticipationLevel FYI;
 	static {
-		Map<ICalVersion, String> values = new EnumMap<ICalVersion, String>(ICalVersion.class);
+		Map<ICalVersion, String> values = new EnumMap<>(ICalVersion.class);
 		values.put(ICalVersion.V1_0, "FYI");
 		values.put(ICalVersion.V2_0_DEPRECATED, "NON-PARTICIPANT");
 		values.put(ICalVersion.V2_0, values.get(ICalVersion.V2_0_DEPRECATED));
@@ -103,7 +103,7 @@ public class ParticipationLevel {
 	}
 
 	private ParticipationLevel(String value) {
-		Map<ICalVersion, String> values = new EnumMap<ICalVersion, String>(ICalVersion.class);
+		Map<ICalVersion, String> values = new EnumMap<>(ICalVersion.class);
 		for (ICalVersion version : ICalVersion.values()) {
 			values.put(version, value);
 		}

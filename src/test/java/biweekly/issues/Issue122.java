@@ -54,7 +54,7 @@ public class Issue122 {
 
 		VEvent vEvent = Biweekly.parse(iCalString).first().getEvents().get(0);
 		DateIterator iterator = vEvent.getRecurrenceRule().getDateIterator(vEvent.getDateStart().getValue(), tz);
-		List<Date> actual = new ArrayList<Date>();
+		List<Date> actual = new ArrayList<>();
 		while (iterator.hasNext()) {
 			actual.add(iterator.next());
 		}
@@ -94,7 +94,7 @@ public class Issue122 {
 
 		VEvent vEvent = Biweekly.parse(iCalString).first().getEvents().get(0);
 		DateIterator iterator = vEvent.getRecurrenceRule().getDateIterator(vEvent.getDateStart().getValue(), tz);
-		List<Date> actual = new ArrayList<Date>();
+		List<Date> actual = new ArrayList<>();
 		for (int i = 0; i < expected.size(); i++) {
 			actual.add(iterator.next());
 		}

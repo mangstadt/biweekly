@@ -154,7 +154,7 @@ public class JCalReader extends StreamReader {
 	}
 
 	private class JCalDataStreamListenerImpl implements JCalDataStreamListener {
-		private final Map<List<LaciToken>, ICalComponent> components = new HashMap<List<LaciToken>, ICalComponent>();
+		private final Map<List<LaciToken>, ICalComponent> components = new HashMap<>();
 
 		public void readProperty(List<LaciToken> componentHierarchy, LaciToken propertyName, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 			context.getWarnings().clear();
@@ -211,7 +211,7 @@ public class JCalReader extends StreamReader {
 				parent.addComponent(component);
 			}
 
-			List<LaciToken> hierarchy = new ArrayList<LaciToken>(parentHierarchy);
+			List<LaciToken> hierarchy = new ArrayList<>(parentHierarchy);
 			hierarchy.add(componentName);
 			components.put(hierarchy, component);
 		}

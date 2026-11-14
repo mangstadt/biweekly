@@ -270,7 +270,7 @@ public final class Biweekly {
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ChainingTextParser<ChainingTextParser<?>> parse(File file) {
-		return new ChainingTextParser<ChainingTextParser<?>>(file);
+		return new ChainingTextParser<>(file);
 	}
 
 	/**
@@ -279,7 +279,7 @@ public final class Biweekly {
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ChainingTextParser<ChainingTextParser<?>> parse(InputStream in) {
-		return new ChainingTextParser<ChainingTextParser<?>>(in);
+		return new ChainingTextParser<>(in);
 	}
 
 	/**
@@ -288,7 +288,7 @@ public final class Biweekly {
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ChainingTextParser<ChainingTextParser<?>> parse(Reader reader) {
-		return new ChainingTextParser<ChainingTextParser<?>>(reader);
+		return new ChainingTextParser<>(reader);
 	}
 
 	/**
@@ -324,7 +324,7 @@ public final class Biweekly {
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ChainingXmlParser<ChainingXmlParser<?>> parseXml(File file) {
-		return new ChainingXmlParser<ChainingXmlParser<?>>(file);
+		return new ChainingXmlParser<>(file);
 	}
 
 	/**
@@ -334,7 +334,7 @@ public final class Biweekly {
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ChainingXmlParser<ChainingXmlParser<?>> parseXml(InputStream in) {
-		return new ChainingXmlParser<ChainingXmlParser<?>>(in);
+		return new ChainingXmlParser<>(in);
 	}
 
 	/**
@@ -353,7 +353,7 @@ public final class Biweekly {
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ChainingXmlParser<ChainingXmlParser<?>> parseXml(Reader reader) {
-		return new ChainingXmlParser<ChainingXmlParser<?>>(reader);
+		return new ChainingXmlParser<>(reader);
 	}
 
 	/**
@@ -398,7 +398,7 @@ public final class Biweekly {
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ChainingJsonParser<ChainingJsonParser<?>> parseJson(File file) {
-		return new ChainingJsonParser<ChainingJsonParser<?>>(file);
+		return new ChainingJsonParser<>(file);
 	}
 
 	/**
@@ -407,7 +407,7 @@ public final class Biweekly {
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ChainingJsonParser<ChainingJsonParser<?>> parseJson(InputStream in) {
-		return new ChainingJsonParser<ChainingJsonParser<?>>(in);
+		return new ChainingJsonParser<>(in);
 	}
 
 	/**
@@ -416,7 +416,7 @@ public final class Biweekly {
 	 * @return chainer object for completing the parse operation
 	 */
 	public static ChainingJsonParser<ChainingJsonParser<?>> parseJson(Reader reader) {
-		return new ChainingJsonParser<ChainingJsonParser<?>>(reader);
+		return new ChainingJsonParser<>(reader);
 	}
 
 	/**

@@ -148,7 +148,7 @@ public class FreeBusyTest {
 		Date end = new Date();
 		Duration duration = new Duration.Builder().hours(1).build();
 
-		List<ICalProperty> properties = new ArrayList<ICalProperty>();
+		List<ICalProperty> properties = new ArrayList<>();
 
 		FreeBusy property = new FreeBusy();
 		properties.add(property);

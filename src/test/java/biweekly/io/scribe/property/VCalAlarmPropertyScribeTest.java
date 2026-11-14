@@ -133,7 +133,7 @@ public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImp
 
 		@Override
 		protected VCalAlarmPropertyImpl create(ICalDataType dataType, SemiStructuredValueIterator it) {
-			List<String> dataValues = new ArrayList<String>();
+			List<String> dataValues = new ArrayList<>();
 			while (it.hasNext()) {
 				dataValues.add(it.next());
 			}

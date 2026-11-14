@@ -653,7 +653,7 @@ public class XCalDocument {
 		}
 
 		private List<Element> getChildElements(Element parent, QName qname) {
-			List<Element> elements = new ArrayList<Element>();
+			List<Element> elements = new ArrayList<>();
 			for (Element child : XmlUtils.toElementList(parent.getChildNodes())) {
 				QName childQName = new QName(child.getNamespaceURI(), child.getLocalName());
 				if (qname.equals(childQName)) {

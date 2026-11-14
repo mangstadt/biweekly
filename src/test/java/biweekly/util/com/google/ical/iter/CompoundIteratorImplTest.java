@@ -84,7 +84,7 @@ public class CompoundIteratorImplTest {
 			new DateValueImpl(2006, 4, 27)
 		);
 
-		List<DateValue> actual = new ArrayList<DateValue>();
+		List<DateValue> actual = new ArrayList<>();
 		while (ri.hasNext() && ri.hasNext()) {
 			actual.add(ri.next());
 		}
@@ -104,7 +104,7 @@ public class CompoundIteratorImplTest {
 				new DateValueImpl(2006, 4, 12)
 			))
 		);
-		Collection<RecurrenceIterator> exclusions = new ArrayList<RecurrenceIterator>();
+		Collection<RecurrenceIterator> exclusions = new ArrayList<>();
 		
 		CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
 		assertIterator(Arrays.<DateValue>asList(
@@ -129,7 +129,7 @@ public class CompoundIteratorImplTest {
 				new DateValueImpl(2006, 4, 12)
 			))
 		);
-		Collection<RecurrenceIterator> exclusions = new ArrayList<RecurrenceIterator>();
+		Collection<RecurrenceIterator> exclusions = new ArrayList<>();
 		
 		CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
 		it.advanceTo(new DateValueImpl(2006, 4, 17));
@@ -154,7 +154,7 @@ public class CompoundIteratorImplTest {
 				new DateValueImpl(2006, 4, 12)
 			))
 		);
-		Collection<RecurrenceIterator> exclusions = new ArrayList<RecurrenceIterator>();
+		Collection<RecurrenceIterator> exclusions = new ArrayList<>();
 		
 		CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
 		it.advanceTo(new DateValueImpl(2006, 4, 20));
@@ -177,7 +177,7 @@ public class CompoundIteratorImplTest {
 				new DateValueImpl(2006, 4, 12)
 			))
 		);
-		Collection<RecurrenceIterator> exclusions = new ArrayList<RecurrenceIterator>();
+		Collection<RecurrenceIterator> exclusions = new ArrayList<>();
 		
 		CompoundIteratorImpl it = new CompoundIteratorImpl(inclusions, exclusions);
 		it.advanceTo(new DateValueImpl(2007, 1, 2));

@@ -158,7 +158,7 @@ public class Trigger extends ICalProperty {
 
 	@Override
 	protected Map<String, Object> toStringValues() {
-		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		Map<String, Object> values = new LinkedHashMap<>();
 		values.put("duration", duration);
 		values.put("date", date);
 		return values;

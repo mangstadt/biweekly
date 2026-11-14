@@ -33,7 +33,7 @@ import java.util.Collection;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-20">RFC 5545 p.20-1</a>
  */
 public class FreeBusyType extends EnumParameterValue {
-	private static final ICalParameterCaseClasses<FreeBusyType> enums = new ICalParameterCaseClasses<FreeBusyType>(FreeBusyType.class);
+	private static final ICalParameterCaseClasses<FreeBusyType> enums = new ICalParameterCaseClasses<>(FreeBusyType.class);
 
 	public static final FreeBusyType FREE = new FreeBusyType("FREE");
 	public static final FreeBusyType BUSY = new FreeBusyType("BUSY");

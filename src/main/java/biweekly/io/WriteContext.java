@@ -43,7 +43,7 @@ public class WriteContext {
 	private final ICalVersion version;
 	private final TimezoneInfo timezoneOptions;
 	private final TimezoneAssignment globalTimezone;
-	private final List<Date> dates = new ArrayList<Date>();
+	private final List<Date> dates = new ArrayList<>();
 	private ICalComponent parent;
 
 	public WriteContext(ICalVersion version, TimezoneInfo timezoneOptions, TimezoneAssignment globalTimezone) {

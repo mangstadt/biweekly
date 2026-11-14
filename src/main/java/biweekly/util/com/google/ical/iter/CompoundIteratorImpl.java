@@ -75,7 +75,7 @@ final class CompoundIteratorImpl implements RecurrenceIterator {
 	 * @param exclusions iterators whose elements should not be included
 	 */
 	CompoundIteratorImpl(Collection<RecurrenceIterator> inclusions, Collection<RecurrenceIterator> exclusions) {
-		queue = new PriorityQueue<HeapElement>(inclusions.size() + exclusions.size(), HeapElement.CMP);
+		queue = new PriorityQueue<>(inclusions.size() + exclusions.size(), HeapElement.CMP);
 		for (RecurrenceIterator it : inclusions) {
 			HeapElement el = new HeapElement(true, it);
 			if (el.shift()) {

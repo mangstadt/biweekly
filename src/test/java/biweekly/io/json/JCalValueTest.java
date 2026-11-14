@@ -96,7 +96,7 @@ public class JCalValueTest {
 
 	@Test
 	public void asSingle_object() {
-		Map<String, JsonValue> object = new HashMap<String, JsonValue>();
+		Map<String, JsonValue> object = new HashMap<>();
 		object.put("a", new JsonValue("one"));
 		JCalValue value = new JCalValue(new JsonValue(object));
 		assertEquals("", value.asSingle());
@@ -132,7 +132,7 @@ public class JCalValueTest {
 
 	@Test
 	public void asMulti_object() {
-		Map<String, JsonValue> object = new HashMap<String, JsonValue>();
+		Map<String, JsonValue> object = new HashMap<>();
 		object.put("a", new JsonValue("one"));
 		JCalValue value = new JCalValue(new JsonValue(object));
 		assertEquals(Arrays.asList(), value.asMulti());
@@ -216,7 +216,7 @@ public class JCalValueTest {
 
 	@Test
 	public void asStructured_object() {
-		Map<String, JsonValue> jsonObject = new HashMap<String, JsonValue>();
+		Map<String, JsonValue> jsonObject = new HashMap<>();
 		jsonObject.put("a", new JsonValue("one"));
 
 		JCalValue value = new JCalValue(new JsonValue(jsonObject));
@@ -241,7 +241,7 @@ public class JCalValueTest {
 
 	@Test
 	public void object() {
-		ListMultimap<String, Object> object = new ListMultimap<String, Object>();
+		ListMultimap<String, Object> object = new ListMultimap<>();
 		object.put("a", "one");
 		object.put("b", 2);
 		object.put("b", 3.0);
@@ -249,7 +249,7 @@ public class JCalValueTest {
 		JCalValue value = JCalValue.object(object);
 
 		//@formatter:off
-		Map<String, JsonValue> expectedMap = new HashMap<String, JsonValue>();
+		Map<String, JsonValue> expectedMap = new HashMap<>();
 		expectedMap.put("a", new JsonValue("one"));
 		expectedMap.put("b", new JsonValue(Arrays.asList(new JsonValue(2), new JsonValue(3.0), JsonValue.nullValue())));
 		List<JsonValue> expected = Arrays.asList(
@@ -262,13 +262,13 @@ public class JCalValueTest {
 
 	@Test
 	public void asObject() {
-		Map<String, JsonValue> object = new LinkedHashMap<String, JsonValue>();
+		Map<String, JsonValue> object = new LinkedHashMap<>();
 		object.put("a", new JsonValue("one"));
 		object.put("b", new JsonValue(Arrays.asList(new JsonValue(2), new JsonValue(3.0), JsonValue.nullValue())));
 		object.put("c", new JsonValue((Object) null));
 		JCalValue value = new JCalValue(new JsonValue(object));
 
-		ListMultimap<LaciToken, Object> expected = new ListMultimap<LaciToken, Object>();
+		ListMultimap<LaciToken, Object> expected = new ListMultimap<>();
 		expected.put(new LaciToken("a"), "one");
 		expected.put(new LaciToken("b"), "2");
 		expected.put(new LaciToken("b"), "3.0");

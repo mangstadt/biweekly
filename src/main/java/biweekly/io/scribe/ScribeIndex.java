@@ -153,8 +153,8 @@ import biweekly.property.Xml;
  */
 public class ScribeIndex {
 	//define standard component scribes
-	private static final Map<LaciToken, ICalComponentScribe<? extends ICalComponent>> standardCompByName = new HashMap<LaciToken, ICalComponentScribe<? extends ICalComponent>>();
-	private static final Map<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>> standardCompByClass = new HashMap<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>>();
+	private static final Map<LaciToken, ICalComponentScribe<? extends ICalComponent>> standardCompByName = new HashMap<>();
+	private static final Map<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>> standardCompByClass = new HashMap<>();
 	static {
 		registerStandard(new ICalendarScribe());
 		registerStandard(new VAlarmScribe());
@@ -168,9 +168,9 @@ public class ScribeIndex {
 	}
 
 	//define standard property scribes
-	private static final Map<PropertyNameKey, ICalPropertyScribe<? extends ICalProperty>> standardPropByName = new HashMap<PropertyNameKey, ICalPropertyScribe<? extends ICalProperty>>();
-	private static final Map<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>> standardPropByClass = new HashMap<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>>();
-	private static final Map<QName, ICalPropertyScribe<? extends ICalProperty>> standardPropByQName = new HashMap<QName, ICalPropertyScribe<? extends ICalProperty>>();
+	private static final Map<PropertyNameKey, ICalPropertyScribe<? extends ICalProperty>> standardPropByName = new HashMap<>();
+	private static final Map<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>> standardPropByClass = new HashMap<>();
+	private static final Map<QName, ICalPropertyScribe<? extends ICalProperty>> standardPropByQName = new HashMap<>();
 	static {
 		//RFC 5545
 		registerStandard(new ActionScribe());
@@ -243,12 +243,12 @@ public class ScribeIndex {
 		registerStandard(new RefreshIntervalScribe());
 	}
 
-	private final Map<LaciToken, ICalComponentScribe<? extends ICalComponent>> experimentalCompByName = new HashMap<LaciToken, ICalComponentScribe<? extends ICalComponent>>(0);
-	private final Map<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>> experimentalCompByClass = new HashMap<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>>(0);
+	private final Map<LaciToken, ICalComponentScribe<? extends ICalComponent>> experimentalCompByName = new HashMap<>(0);
+	private final Map<Class<? extends ICalComponent>, ICalComponentScribe<? extends ICalComponent>> experimentalCompByClass = new HashMap<>(0);
 
-	private final Map<PropertyNameKey, ICalPropertyScribe<? extends ICalProperty>> experimentalPropByName = new HashMap<PropertyNameKey, ICalPropertyScribe<? extends ICalProperty>>(0);
-	private final Map<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>> experimentalPropByClass = new HashMap<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>>(0);
-	private final Map<QName, ICalPropertyScribe<? extends ICalProperty>> experimentalPropByQName = new HashMap<QName, ICalPropertyScribe<? extends ICalProperty>>(0);
+	private final Map<PropertyNameKey, ICalPropertyScribe<? extends ICalProperty>> experimentalPropByName = new HashMap<>(0);
+	private final Map<Class<? extends ICalProperty>, ICalPropertyScribe<? extends ICalProperty>> experimentalPropByClass = new HashMap<>(0);
+	private final Map<QName, ICalPropertyScribe<? extends ICalProperty>> experimentalPropByQName = new HashMap<>(0);
 
 	/**
 	 * Gets a component scribe by name.

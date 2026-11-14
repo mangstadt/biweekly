@@ -36,7 +36,7 @@ import biweekly.property.RecurrenceId;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-23">RFC 5545 p.23-4</a>
  */
 public class Range extends EnumParameterValue {
-	private static final ICalParameterCaseClasses<Range> enums = new ICalParameterCaseClasses<Range>(Range.class);
+	private static final ICalParameterCaseClasses<Range> enums = new ICalParameterCaseClasses<>(Range.class);
 
 	public static final Range THIS_AND_FUTURE = new Range("THISANDFUTURE");
 

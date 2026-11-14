@@ -449,7 +449,7 @@ public class ICalComponentTest {
 		component.addProperty(new Description(""));
 		component.addProperty(new Description(""));
 
-		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>();
+		List<ValidationWarning> warnings = new ArrayList<>();
 		component.checkRequiredCardinality(warnings, Summary.class, Description.class, Location.class);
 
 		//too many instances of Description and no instances of Location
@@ -464,7 +464,7 @@ public class ICalComponentTest {
 		component.addProperty(new Description(""));
 		component.addProperty(new Description(""));
 
-		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>();
+		List<ValidationWarning> warnings = new ArrayList<>();
 		component.checkOptionalCardinality(warnings, Summary.class, Description.class, Location.class);
 
 		//too many instances of Description
@@ -476,7 +476,7 @@ public class ICalComponentTest {
 		ICalComponentImpl component = new ICalComponentImpl();
 		component.addProperty(Status.cancelled());
 
-		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>();
+		List<ValidationWarning> warnings = new ArrayList<>();
 		component.checkStatus(warnings, Status.cancelled());
 
 		assertListSize(0, warnings);
@@ -487,7 +487,7 @@ public class ICalComponentTest {
 		ICalComponentImpl component = new ICalComponentImpl();
 		component.addProperty(Status.cancelled());
 
-		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>();
+		List<ValidationWarning> warnings = new ArrayList<>();
 		component.checkStatus(warnings, Status.completed());
 
 		assertListSize(1, warnings);
@@ -497,7 +497,7 @@ public class ICalComponentTest {
 	public void checkStatus_null() {
 		ICalComponentImpl component = new ICalComponentImpl();
 
-		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>();
+		List<ValidationWarning> warnings = new ArrayList<>();
 		component.checkStatus(warnings, Status.cancelled());
 
 		assertListSize(0, warnings);

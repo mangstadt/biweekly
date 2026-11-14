@@ -134,7 +134,7 @@ public class BinaryProperty extends ICalProperty {
 
 	@Override
 	protected Map<String, Object> toStringValues() {
-		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		Map<String, Object> values = new LinkedHashMap<>();
 		values.put("data", (data == null) ? "null" : "length: " + data.length);
 		values.put("uri", uri);
 		return values;

@@ -707,7 +707,7 @@ public class JCalRawReaderTest {
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
 
-					List<List<String>> expected = new ArrayList<List<String>>();
+					List<List<String>> expected = new ArrayList<>();
 					expected.add(Arrays.asList("3.7"));
 					expected.add(Arrays.asList("Invalid Calendar User"));
 					expected.add(Arrays.asList("ATTENDEE:mailto:jsmith@example.org"));
@@ -820,7 +820,7 @@ public class JCalRawReaderTest {
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
 
-					ListMultimap<LaciToken, String> expected = new ListMultimap<LaciToken, String>();
+					ListMultimap<LaciToken, String> expected = new ListMultimap<>();
 					expected.put(new LaciToken("freq"), "WEEKLY");
 					expected.put(new LaciToken("count"), "5");
 					expected.put(new LaciToken("byday"), "-1SU");
@@ -833,7 +833,7 @@ public class JCalRawReaderTest {
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
 
-					expected = new ListMultimap<LaciToken, String>();
+					expected = new ListMultimap<>();
 					assertEquals(expected, value.asObject());
 					break;
 				}
@@ -881,7 +881,7 @@ public class JCalRawReaderTest {
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
 
-					List<JsonValue> expected = new ArrayList<JsonValue>();
+					List<JsonValue> expected = new ArrayList<>();
 					expected.add(new JsonValue(false));
 					expected.add(new JsonValue(true));
 					expected.add(new JsonValue(1.1));
@@ -941,12 +941,12 @@ public class JCalRawReaderTest {
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
 
-					List<JsonValue> expected = new ArrayList<JsonValue>();
-					Map<String, JsonValue> m = new HashMap<String, JsonValue>();
+					List<JsonValue> expected = new ArrayList<>();
+					Map<String, JsonValue> m = new HashMap<>();
 					m.put("a", new JsonValue(Arrays.asList(new JsonValue("one"), new JsonValue("two"))));
-					Map<String, JsonValue> m2 = new HashMap<String, JsonValue>();
+					Map<String, JsonValue> m2 = new HashMap<>();
 					m2.put("c", new JsonValue(Arrays.asList(new JsonValue("three"))));
-					m2.put("d", new JsonValue(new HashMap<String, JsonValue>()));
+					m2.put("d", new JsonValue(new HashMap<>()));
 					m.put("b", new JsonValue(m2));
 					expected.add(new JsonValue(m));
 					expected.add(new JsonValue("four"));

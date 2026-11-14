@@ -92,7 +92,7 @@ public class VCalAlarmProperty extends ICalProperty {
 
 	@Override
 	protected Map<String, Object> toStringValues() {
-		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		Map<String, Object> values = new LinkedHashMap<>();
 		values.put("start", start);
 		values.put("snooze", snooze);
 		values.put("repeat", repeat);

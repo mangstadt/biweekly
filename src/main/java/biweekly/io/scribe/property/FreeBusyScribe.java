@@ -63,7 +63,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 	@Override
 	protected String _writeText(final FreeBusy property, final WriteContext context) {
 		List<Period> values = property.getValues();
-		List<String> strValues = new ArrayList<String>(values.size());
+		List<String> strValues = new ArrayList<>(values.size());
 		for (Period period : values) {
 			StringBuilder sb = new StringBuilder();
 
@@ -197,7 +197,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 			return JCalValue.single("");
 		}
 
-		List<String> valuesStr = new ArrayList<String>();
+		List<String> valuesStr = new ArrayList<>();
 		for (Period period : values) {
 			StringBuilder sb = new StringBuilder();
 			Date start = period.getStartDate();

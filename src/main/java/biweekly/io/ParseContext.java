@@ -42,9 +42,9 @@ import biweekly.util.ListMultimap;
  */
 public class ParseContext {
 	private ICalVersion version;
-	private List<ParseWarning> warnings = new ArrayList<ParseWarning>();
-	private ListMultimap<String, TimezonedDate> timezonedDates = new ListMultimap<String, TimezonedDate>();
-	private List<TimezonedDate> floatingDates = new ArrayList<TimezonedDate>();
+	private List<ParseWarning> warnings = new ArrayList<>();
+	private ListMultimap<String, TimezonedDate> timezonedDates = new ListMultimap<>();
+	private List<TimezonedDate> floatingDates = new ArrayList<>();
 	private Integer lineNumber;
 	private LaciToken propertyName;
 

@@ -33,7 +33,7 @@ import java.util.Collection;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-16">RFC 5545 p.16</a>
  */
 public class CalendarUserType extends EnumParameterValue {
-	private static final ICalParameterCaseClasses<CalendarUserType> enums = new ICalParameterCaseClasses<CalendarUserType>(CalendarUserType.class);
+	private static final ICalParameterCaseClasses<CalendarUserType> enums = new ICalParameterCaseClasses<>(CalendarUserType.class);
 
 	public static final CalendarUserType INDIVIDUAL = new CalendarUserType("INDIVIDUAL");
 	public static final CalendarUserType GROUP = new CalendarUserType("GROUP");

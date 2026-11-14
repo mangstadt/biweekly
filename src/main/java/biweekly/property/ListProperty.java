@@ -48,7 +48,7 @@ public class ListProperty<T> extends ICalProperty {
 	 * Creates a new list property.
 	 */
 	public ListProperty() {
-		values = new ArrayList<T>();
+		values = new ArrayList<>();
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class ListProperty<T> extends ICalProperty {
 	 * @param values the values to initialize the property with
 	 */
 	public ListProperty(T... values) {
-		this.values = new ArrayList<T>(Arrays.asList(values));
+		this.values = new ArrayList<>(Arrays.asList(values));
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class ListProperty<T> extends ICalProperty {
 	 */
 	public ListProperty(ListProperty<T> original) {
 		super(original);
-		values = new ArrayList<T>(original.values);
+		values = new ArrayList<>(original.values);
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class ListProperty<T> extends ICalProperty {
 
 	@Override
 	protected Map<String, Object> toStringValues() {
-		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		Map<String, Object> values = new LinkedHashMap<>();
 		values.put("values", this.values);
 		return values;
 	}

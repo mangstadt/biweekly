@@ -41,7 +41,7 @@ import biweekly.property.Attendee;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25-6</a>
  */
 public class ParticipationStatus extends VersionedEnumParameterValue {
-	private static final ICalParameterCaseClasses<ParticipationStatus> enums = new ICalParameterCaseClasses<ParticipationStatus>(ParticipationStatus.class);
+	private static final ICalParameterCaseClasses<ParticipationStatus> enums = new ICalParameterCaseClasses<>(ParticipationStatus.class);
 
 	/**
 	 * Indicates that the user needs to make a decision about the item. Valid

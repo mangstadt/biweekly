@@ -44,6 +44,6 @@ public class ScribeTest<P extends ICalProperty> {
 
 	protected ScribeTest(ICalPropertyScribe<P> scribe) {
 		this.scribe = scribe;
-		sensei = new Sensei<P>(scribe);
+		sensei = new Sensei<>(scribe);
 	}
 }

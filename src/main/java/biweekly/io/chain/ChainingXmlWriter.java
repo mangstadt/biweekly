@@ -60,7 +60,7 @@ import biweekly.property.ICalProperty;
  */
 public class ChainingXmlWriter extends ChainingWriter<ChainingXmlWriter> {
 	private final XCalOutputProperties outputProperties = new XCalOutputProperties();
-	private final Map<LaciToken, ICalDataType> parameterDataTypes = new HashMap<LaciToken, ICalDataType>(0);
+	private final Map<LaciToken, ICalDataType> parameterDataTypes = new HashMap<>(0);
 
 	/**
 	 * @param icals the iCValendar objects to write

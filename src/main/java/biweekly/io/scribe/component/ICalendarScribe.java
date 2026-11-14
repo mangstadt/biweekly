@@ -48,7 +48,7 @@ public class ICalendarScribe extends ICalComponentScribe<ICalendar> {
 
 	@Override
 	public List<ICalProperty> getProperties(ICalendar component) {
-		List<ICalProperty> properties = new ArrayList<ICalProperty>(component.getProperties().values());
+		List<ICalProperty> properties = new ArrayList<>(component.getProperties().values());
 
 		/*
 		 * Move VERSION properties to the front (if any are present), followed

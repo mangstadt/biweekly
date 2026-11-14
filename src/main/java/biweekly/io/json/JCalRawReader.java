@@ -137,7 +137,7 @@ public class JCalRawReader implements Closeable {
 			return;
 		}
 
-		parseComponent(new ArrayList<LaciToken>());
+		parseComponent(new ArrayList<>());
 	}
 
 	private void parseComponent(List<LaciToken> components) throws IOException {
@@ -163,7 +163,7 @@ public class JCalRawReader implements Closeable {
 		while (parser.nextToken() != JsonToken.END_ARRAY) { //until we reach the end sub-components array
 			checkCurrent(JsonToken.START_ARRAY);
 			parser.nextToken();
-			parseComponent(new ArrayList<LaciToken>(components));
+			parseComponent(new ArrayList<>(components));
 		}
 
 		//read the end of the component array (e.g. the last bracket in this example: ["comp", [ /* props */ ], [ /* comps */] ])
@@ -210,7 +210,7 @@ public class JCalRawReader implements Closeable {
 	}
 
 	private List<JsonValue> parseValues() throws IOException {
-		List<JsonValue> values = new ArrayList<JsonValue>();
+		List<JsonValue> values = new ArrayList<>();
 		while (parser.nextToken() != JsonToken.END_ARRAY) { //until we reach the end of the property array
 			JsonValue value = parseValue();
 			values.add(value);
@@ -235,7 +235,7 @@ public class JCalRawReader implements Closeable {
 	}
 
 	private List<JsonValue> parseValueArray() throws IOException {
-		List<JsonValue> array = new ArrayList<JsonValue>();
+		List<JsonValue> array = new ArrayList<>();
 
 		while (parser.nextToken() != JsonToken.END_ARRAY) {
 			JsonValue value = parseValue();
@@ -246,7 +246,7 @@ public class JCalRawReader implements Closeable {
 	}
 
 	private Map<String, JsonValue> parseValueObject() throws IOException {
-		Map<String, JsonValue> object = new HashMap<String, JsonValue>();
+		Map<String, JsonValue> object = new HashMap<>();
 
 		parser.nextToken();
 		while (parser.getCurrentToken() != JsonToken.END_OBJECT) {

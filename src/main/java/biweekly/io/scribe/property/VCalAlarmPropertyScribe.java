@@ -62,7 +62,7 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 
 	@Override
 	protected String _writeText(T property, WriteContext context) {
-		List<String> values = new ArrayList<String>();
+		List<String> values = new ArrayList<>();
 
 		Date start = property.getStart();
 		String value = date(start, property, context).extended(false).write();

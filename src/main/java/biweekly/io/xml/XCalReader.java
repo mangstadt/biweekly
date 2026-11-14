@@ -118,8 +118,8 @@ public class XCalReader extends StreamReader {
 
 	private final ReadThread thread = new ReadThread();
 	private final Object lock = new Object();
-	private final BlockingQueue<Object> readerBlock = new ArrayBlockingQueue<Object>(1);
-	private final BlockingQueue<Object> threadBlock = new ArrayBlockingQueue<Object>(1);
+	private final BlockingQueue<Object> readerBlock = new ArrayBlockingQueue<>(1);
+	private final BlockingQueue<Object> threadBlock = new ArrayBlockingQueue<>(1);
 
 	/**
 	 * @param str the string to read from
@@ -245,7 +245,7 @@ public class XCalReader extends StreamReader {
 		private final Document DOC = XmlUtils.createDocument();
 		private final XCalStructure structure = new XCalStructure();
 		private final StringBuilder characterBuffer = new StringBuilder();
-		private final LinkedList<ICalComponent> componentStack = new LinkedList<ICalComponent>();
+		private final LinkedList<ICalComponent> componentStack = new LinkedList<>();
 
 		private Element propertyElement, parent;
 		private QName paramName;
@@ -528,7 +528,7 @@ public class XCalReader extends StreamReader {
 	 * </p>
 	 */
 	private static class XCalStructure {
-		private final List<ElementType> stack = new ArrayList<ElementType>();
+		private final List<ElementType> stack = new ArrayList<>();
 
 		/**
 		 * Pops the top element type off the stack.

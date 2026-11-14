@@ -33,7 +33,7 @@ import java.util.Collection;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-18">RFC 5545 p.18-9</a>
  */
 public class Encoding extends EnumParameterValue {
-	private static final ICalParameterCaseClasses<Encoding> enums = new ICalParameterCaseClasses<Encoding>(Encoding.class);
+	private static final ICalParameterCaseClasses<Encoding> enums = new ICalParameterCaseClasses<>(Encoding.class);
 
 	public static final Encoding BASE64 = new Encoding("BASE64");
 

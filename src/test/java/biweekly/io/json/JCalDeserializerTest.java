@@ -101,7 +101,7 @@ public class JCalDeserializerTest {
 
 		mapper.registerModule(new JCalModule());
 
-		List<ICalendar> expected = new ArrayList<ICalendar>();
+		List<ICalendar> expected = new ArrayList<>();
 
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();

@@ -236,7 +236,7 @@ public class XCalWriter extends XCalWriterBase {
 	 * @param parent the DOM node to add child elements to
 	 */
 	public XCalWriter(Node parent) {
-		this(null, parent, new HashMap<String, String>());
+		this(null, parent, new HashMap<>());
 	}
 
 	private XCalWriter(Writer writer, Node parent, Map<String, String> outputProperties) {

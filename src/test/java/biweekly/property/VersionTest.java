@@ -159,7 +159,7 @@ public class VersionTest {
 
 	@Test
 	public void equals() {
-		List<ICalProperty> properties = new ArrayList<ICalProperty>();
+		List<ICalProperty> properties = new ArrayList<>();
 
 		Version property = new Version((String) null);
 		properties.add(property);

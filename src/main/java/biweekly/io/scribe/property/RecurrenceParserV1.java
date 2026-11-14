@@ -130,7 +130,7 @@ class RecurrenceParserV1 {
 	private LinkedList<String> splitTokens(String value) {
 		String valueUpper = value.toUpperCase(Locale.ROOT);
 		String[] split = valueUpper.split("\\s+");
-		return new LinkedList<String>(Arrays.asList(split));
+		return new LinkedList<>(Arrays.asList(split));
 	}
 
 	private interface TokenHandler {
@@ -200,8 +200,8 @@ class RecurrenceParserV1 {
 	}
 
 	private class MPHandler implements TokenHandler {
-		private final List<Integer> nums = new ArrayList<Integer>();
-		private final List<DayOfWeek> days = new ArrayList<DayOfWeek>();
+		private final List<Integer> nums = new ArrayList<>();
+		private final List<DayOfWeek> days = new ArrayList<>();
 		private boolean readNum = false;
 
 		@Override
@@ -369,7 +369,7 @@ class RecurrenceParserV1 {
 	 * @return the RRULE values
 	 */
 	public static List<String> splitPropertyValue(String value) {
-		List<String> values = new ArrayList<String>();
+		List<String> values = new ArrayList<>();
 		Pattern p = Pattern.compile("#\\d+|\\d{8}T\\d{6}Z?");
 		Matcher m = p.matcher(value);
 

@@ -43,8 +43,8 @@ import biweekly.property.ICalProperty;
 public class DataModelConversionException extends RuntimeException {
 	private static final long serialVersionUID = -4789186852509057375L;
 	private final ICalProperty originalProperty;
-	private final List<ICalComponent> components = new ArrayList<ICalComponent>();
-	private final List<ICalProperty> properties = new ArrayList<ICalProperty>();
+	private final List<ICalComponent> components = new ArrayList<>();
+	private final List<ICalProperty> properties = new ArrayList<>();
 
 	/**
 	 * Creates a conversion exception.

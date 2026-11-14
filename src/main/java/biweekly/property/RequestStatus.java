@@ -176,7 +176,7 @@ public class RequestStatus extends ICalProperty {
 
 	@Override
 	protected Map<String, Object> toStringValues() {
-		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		Map<String, Object> values = new LinkedHashMap<>();
 		values.put("statusCode", statusCode);
 		values.put("description", description);
 		values.put("exceptionText", exceptionText);

@@ -179,7 +179,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 
 	private T parseTextV2(String value, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
-		ListMultimap<LaciToken, String> rules = new ListMultimap<LaciToken, String>(VObjectPropertyValues.parseMultimap(value));
+		ListMultimap<LaciToken, String> rules = new ListMultimap<>(VObjectPropertyValues.parseMultimap(value));
 
 		parseFreq(rules, builder, context);
 		parseUntil(rules, builder, context);
@@ -226,7 +226,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			throw missingXmlElements(dataType);
 		}
 
-		ListMultimap<LaciToken, String> rules = new ListMultimap<LaciToken, String>();
+		ListMultimap<LaciToken, String> rules = new ListMultimap<>();
 		for (Element child : XmlUtils.toElementList(value.getElement().getChildNodes())) {
 			if (!XCalNamespaceContext.XCAL_NS.equals(child.getNamespaceURI())) {
 				continue;
@@ -269,13 +269,13 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	protected JCalValue _writeJson(T property, WriteContext context) {
 		Recurrence recur = property.getValue();
 		if (recur == null) {
-			return JCalValue.object(new ListMultimap<String, Object>(0));
+			return JCalValue.object(new ListMultimap<>(0));
 		}
 
 		ListMultimap<LaciToken, Object> components = buildComponents(property, context, true);
 
 		//lower-case all the keys
-		ListMultimap<String, Object> object = new ListMultimap<String, Object>(components.keySet().size());
+		ListMultimap<String, Object> object = new ListMultimap<>(components.keySet().size());
 		for (Map.Entry<LaciToken, List<Object>> entry : components) {
 			String key = entry.getKey().toLowerCase();
 			object.putAll(key, entry.getValue());
@@ -494,7 +494,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 	}
 
 	private ListMultimap<LaciToken, Object> buildComponents(T property, WriteContext context, boolean extended) {
-		ListMultimap<LaciToken, Object> components = new ListMultimap<LaciToken, Object>();
+		ListMultimap<LaciToken, Object> components = new ListMultimap<>();
 		Recurrence recur = property.getValue();
 
 		//FREQ must come first

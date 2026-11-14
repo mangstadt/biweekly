@@ -103,7 +103,7 @@ public class RequestStatusTest {
 
 	@Test
 	public void equals() {
-		List<ICalProperty> properties = new ArrayList<ICalProperty>();
+		List<ICalProperty> properties = new ArrayList<>();
 
 		RequestStatus property = new RequestStatus((String) null);
 		properties.add(property);

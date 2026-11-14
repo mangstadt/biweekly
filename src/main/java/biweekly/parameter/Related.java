@@ -33,7 +33,7 @@ import java.util.Collection;
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-24">RFC 5545 p.24</a>
  */
 public class Related extends EnumParameterValue {
-	private static final ICalParameterCaseClasses<Related> enums = new ICalParameterCaseClasses<Related>(Related.class);
+	private static final ICalParameterCaseClasses<Related> enums = new ICalParameterCaseClasses<>(Related.class);
 
 	public static final Related START = new Related("START");
 

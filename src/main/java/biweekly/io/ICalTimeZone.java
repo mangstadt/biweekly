@@ -85,7 +85,7 @@ public class ICalTimeZone extends TimeZone {
 		this.component = component;
 
 		int numObservances = component.getStandardTimes().size() + component.getDaylightSavingsTime().size();
-		observanceDateCache = new IdentityHashMap<Observance, List<DateValue>>(numObservances);
+		observanceDateCache = new IdentityHashMap<>(numObservances);
 
 		sortedObservances = calculateSortedObservances();
 
@@ -107,7 +107,7 @@ public class ICalTimeZone extends TimeZone {
 		List<StandardTime> standards = component.getStandardTimes();
 
 		int numObservances = standards.size() + daylights.size();
-		List<Observance> sortedObservances = new ArrayList<Observance>(numObservances);
+		List<Observance> sortedObservances = new ArrayList<>(numObservances);
 
 		sortedObservances.addAll(standards);
 		sortedObservances.addAll(daylights);
@@ -438,7 +438,7 @@ public class ICalTimeZone extends TimeZone {
 	private DateValue getObservanceDateClosestToTheGivenDate(Observance observance, DateValue givenDate, boolean after) {
 		List<DateValue> dateCache = observanceDateCache.get(observance);
 		if (dateCache == null) {
-			dateCache = new ArrayList<DateValue>();
+			dateCache = new ArrayList<>();
 			observanceDateCache.put(observance, dateCache);
 		}
 
@@ -551,8 +551,8 @@ public class ICalTimeZone extends TimeZone {
 	 * @return the iterator
 	 */
 	RecurrenceIterator createIterator(Observance observance) {
-		List<RecurrenceIterator> inclusions = new ArrayList<RecurrenceIterator>();
-		List<RecurrenceIterator> exclusions = new ArrayList<RecurrenceIterator>();
+		List<RecurrenceIterator> inclusions = new ArrayList<>();
+		List<RecurrenceIterator> exclusions = new ArrayList<>();
 
 		ICalDate dtstart = getValue(observance.getDateStart());
 		if (dtstart != null) {
@@ -579,7 +579,7 @@ public class ICalTimeZone extends TimeZone {
 		}
 
 		//add RDATE properties
-		List<ICalDate> rdates = new ArrayList<ICalDate>();
+		List<ICalDate> rdates = new ArrayList<>();
 		for (RecurrenceDates rdate : observance.getRecurrenceDates()) {
 			rdates.addAll(rdate.getDates());
 		}
@@ -587,7 +587,7 @@ public class ICalTimeZone extends TimeZone {
 		inclusions.add(new DateRecurrenceIterator(rdates));
 
 		//add EXDATE properties
-		List<ICalDate> exdates = new ArrayList<ICalDate>();
+		List<ICalDate> exdates = new ArrayList<>();
 		for (ExceptionDates exdate : observance.getProperties(ExceptionDates.class)) {
 			exdates.addAll(exdate.getValues());
 		}

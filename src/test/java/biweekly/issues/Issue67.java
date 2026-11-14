@@ -36,7 +36,7 @@ public class Issue67 {
 		TimeZone eventTimezone = TimeZone.getTimeZone("America/New_York");
 		DateIterator iterator = vEvent.getDateIterator(eventTimezone);
 
-		List<Date> actual = new ArrayList<Date>();
+		List<Date> actual = new ArrayList<>();
 		while (iterator.hasNext()) {
 			Date startDate = iterator.next();
 			actual.add(startDate);

@@ -435,7 +435,7 @@ public class ICalReader extends StreamReader {
 	 * Keeps track of the hierarchy of nested components.
 	 */
 	private static class ComponentStack {
-		private final List<ICalComponent> components = new ArrayList<ICalComponent>();
+		private final List<ICalComponent> components = new ArrayList<>();
 
 		/**
 		 * Gets the top component from the stack.

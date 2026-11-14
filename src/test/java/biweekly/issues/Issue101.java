@@ -31,7 +31,7 @@ public class Issue101 {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		ICalendar calendar = Biweekly.parse(getClass().getResourceAsStream("issue101.ics")).first();
 
-		List<Date> actual = new ArrayList<Date>();
+		List<Date> actual = new ArrayList<>();
 		for (VEvent evt: calendar.getEvents()) {
 			DateIterator it = evt.getDateIterator(TimeZone.getDefault());
 			while (it.hasNext()) {

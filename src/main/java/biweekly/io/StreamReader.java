@@ -55,7 +55,7 @@ import biweekly.util.ICalDate;
  * @author Michael Angstadt
  */
 public abstract class StreamReader implements Closeable {
-	protected final List<ParseWarning> warnings = new ArrayList<ParseWarning>();
+	protected final List<ParseWarning> warnings = new ArrayList<>();
 	protected ScribeIndex index = new ScribeIndex();
 	protected ParseContext context;
 	private TimeZone defaultTimezone = TimeZone.getDefault();
@@ -112,7 +112,7 @@ public abstract class StreamReader implements Closeable {
 	 * @return the warnings or empty list if there were no warnings
 	 */
 	public List<ParseWarning> getWarnings() {
-		return new ArrayList<ParseWarning>(warnings);
+		return new ArrayList<>(warnings);
 	}
 
 	/**
@@ -159,7 +159,7 @@ public abstract class StreamReader implements Closeable {
 	 * @throws IOException if there's a problem reading from the stream
 	 */
 	public List<ICalendar> readAll() throws IOException {
-		List<ICalendar> icals = new ArrayList<ICalendar>();
+		List<ICalendar> icals = new ArrayList<>();
 		ICalendar ical;
 		while ((ical = readNext()) != null) {
 			icals.add(ical);

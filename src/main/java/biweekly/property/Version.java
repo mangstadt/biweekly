@@ -202,7 +202,7 @@ public class Version extends ICalProperty {
 
 	@Override
 	protected Map<String, Object> toStringValues() {
-		Map<String, Object> values = new LinkedHashMap<String, Object>();
+		Map<String, Object> values = new LinkedHashMap<>();
 		values.put("minVersion", minVersion);
 		values.put("maxVersion", maxVersion);
 		return values;

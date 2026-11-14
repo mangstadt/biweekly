@@ -191,8 +191,8 @@ public class PropertySensei {
 		private final Class<? extends ICalProperty> clazz;
 		private Constructor<? extends ICalProperty> constructor;
 		private Object[] constructorValues;
-		private List<Method> methods = new ArrayList<Method>();
-		private List<Object[]> methodValues = new ArrayList<Object[]>();
+		private List<Method> methods = new ArrayList<>();
+		private List<Object[]> methodValues = new ArrayList<>();
 
 		public EqualsMethodAsserter(Class<? extends ICalProperty> clazz, Object... constructorValues) {
 			this(clazz, toTypes(constructorValues), constructorValues);

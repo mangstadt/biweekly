@@ -110,7 +110,7 @@ public final class DataModelConverter {
 	 * @return the vCalendar properties
 	 */
 	public static VCalTimezoneProperties convert(VTimezone timezone, List<Date> dates) {
-		List<Daylight> daylights = new ArrayList<Daylight>();
+		List<Daylight> daylights = new ArrayList<>();
 		Timezone tz = null;
 		if (dates.isEmpty()) {
 			return new VCalTimezoneProperties(daylights, tz);
@@ -118,7 +118,7 @@ public final class DataModelConverter {
 
 		ICalTimeZone icalTz = new ICalTimeZone(timezone);
 		Collections.sort(dates);
-		Set<DateTimeValue> daylightStartDates = new HashSet<DateTimeValue>();
+		Set<DateTimeValue> daylightStartDates = new HashSet<>();
 		boolean zeroObservanceUsed = false;
 		for (Date date : dates) {
 			Boundary boundary = icalTz.getObservanceBoundary(date);

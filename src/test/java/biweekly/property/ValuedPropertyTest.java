@@ -41,16 +41,16 @@ import org.junit.Test;
 public class ValuedPropertyTest {
 	@Test
 	public void constructors() throws Exception {
-		ValuedProperty<String> property = new ValuedProperty<String>((String) null);
+		ValuedProperty<String> property = new ValuedProperty<>((String) null);
 		assertNull(property.getValue());
 
-		property = new ValuedProperty<String>("value");
+		property = new ValuedProperty<>("value");
 		assertEquals("value", property.getValue());
 	}
 
 	@Test
 	public void set_value() {
-		ValuedProperty<String> property = new ValuedProperty<String>((String) null);
+		ValuedProperty<String> property = new ValuedProperty<>((String) null);
 
 		property.setValue("value");
 		assertEquals("value", property.getValue());
@@ -58,10 +58,10 @@ public class ValuedPropertyTest {
 
 	@Test
 	public void getValue() {
-		ValuedProperty<String> property = new ValuedProperty<String>("value");
+		ValuedProperty<String> property = new ValuedProperty<>("value");
 		assertEquals("value", ValuedProperty.getValue(property));
 
-		property = new ValuedProperty<String>((String) null);
+		property = new ValuedProperty<>((String) null);
 		assertNull(ValuedProperty.getValue(property));
 
 		assertNull(ValuedProperty.getValue(null));
@@ -69,25 +69,25 @@ public class ValuedPropertyTest {
 
 	@Test
 	public void validate() {
-		ValuedProperty<String> property = new ValuedProperty<String>((String) null);
+		ValuedProperty<String> property = new ValuedProperty<>((String) null);
 		assertValidate(property).run(26);
 
-		property = new ValuedProperty<String>("value");
+		property = new ValuedProperty<>("value");
 		assertValidate(property).run();
 	}
 
 	@Test
 	public void toStringValues() {
-		ValuedProperty<String> property = new ValuedProperty<String>("value");
+		ValuedProperty<String> property = new ValuedProperty<>("value");
 		assertFalse(property.toStringValues().isEmpty());
 	}
 
 	@Test
 	public void copy() {
-		ValuedProperty<String> original = new ValuedProperty<String>((String) null);
+		ValuedProperty<String> original = new ValuedProperty<>((String) null);
 		assertCopy(original);
 
-		original = new ValuedProperty<String>("value");
+		original = new ValuedProperty<>("value");
 		assertCopy(original);
 	}
 
@@ -95,10 +95,10 @@ public class ValuedPropertyTest {
 	public void equals() {
 		//@formatter:off
 		assertNothingIsEqual(
-			new ValuedProperty<String>((String) null),
-			new ValuedProperty<String>("value"),
-			new ValuedProperty<String>("value2"),
-			new ValuedProperty<Integer>(1)
+			new ValuedProperty<>((String) null),
+			new ValuedProperty<>("value"),
+			new ValuedProperty<>("value2"),
+			new ValuedProperty<>(1)
 		);
 
 		Class<?> parameterTypes[] = new Class<?>[]{Object.class};

@@ -264,7 +264,7 @@ public final class Google2445Utils {
 	}
 
 	private static List<RecurrenceIterator> buildIncludeIterators(ICalComponent component, ICalDate start, TimeZone timezone) {
-		List<RecurrenceIterator> include = new ArrayList<RecurrenceIterator>();
+		List<RecurrenceIterator> include = new ArrayList<>();
 
 		if (start != null) {
 			for (RecurrenceRule rrule : component.getProperties(RecurrenceRule.class)) {
@@ -275,7 +275,7 @@ public final class Google2445Utils {
 			}
 		}
 
-		List<ICalDate> allDates = new ArrayList<ICalDate>();
+		List<ICalDate> allDates = new ArrayList<>();
 		for (RecurrenceDates rdate : component.getProperties(RecurrenceDates.class)) {
 			allDates.addAll(rdate.getDates());
 		}
@@ -291,7 +291,7 @@ public final class Google2445Utils {
 	}
 
 	private static List<RecurrenceIterator> buildExcludeIterators(ICalComponent component, ICalDate start, TimeZone timezone) {
-		List<RecurrenceIterator> exclude = new ArrayList<RecurrenceIterator>();
+		List<RecurrenceIterator> exclude = new ArrayList<>();
 
 		if (start != null) {
 			for (ExceptionRule exrule : component.getProperties(ExceptionRule.class)) {
@@ -302,7 +302,7 @@ public final class Google2445Utils {
 			}
 		}
 
-		List<ICalDate> allDates = new ArrayList<ICalDate>();
+		List<ICalDate> allDates = new ArrayList<>();
 		for (ExceptionDates exdate : component.getProperties(ExceptionDates.class)) {
 			allDates.addAll(exdate.getValues());
 		}
@@ -368,7 +368,7 @@ public final class Google2445Utils {
 		 * by the parameter name in the "advanceTo" method).
 		 */
 		public ICalDateRecurrenceIterator(List<ICalDate> dates) {
-			this.dates = new ArrayList<ICalDate>(dates);
+			this.dates = new ArrayList<>(dates);
 			Collections.sort(this.dates);
 		}
 

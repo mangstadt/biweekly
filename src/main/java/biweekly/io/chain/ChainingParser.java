@@ -182,7 +182,7 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 		}
 
 		try {
-			List<ICalendar> icals = new ArrayList<ICalendar>();
+			List<ICalendar> icals = new ArrayList<>();
 			ICalendar ical;
 			while ((ical = reader.readNext()) != null) {
 				if (warnings != null) {

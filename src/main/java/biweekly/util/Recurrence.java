@@ -329,16 +329,16 @@ public final class Recurrence {
 		 */
 		public Builder(Frequency frequency) {
 			this.frequency = frequency;
-			bySecond = new ArrayList<Integer>(0);
-			byMinute = new ArrayList<Integer>(0);
-			byHour = new ArrayList<Integer>(0);
-			byDay = new ArrayList<ByDay>(0);
-			byMonthDay = new ArrayList<Integer>(0);
-			byYearDay = new ArrayList<Integer>(0);
-			byWeekNo = new ArrayList<Integer>(0);
-			byMonth = new ArrayList<Integer>(0);
-			bySetPos = new ArrayList<Integer>(0);
-			xrules = new ListMultimap<LaciToken, String>(0);
+			bySecond = new ArrayList<>(0);
+			byMinute = new ArrayList<>(0);
+			byHour = new ArrayList<>(0);
+			byDay = new ArrayList<>(0);
+			byMonthDay = new ArrayList<>(0);
+			byYearDay = new ArrayList<>(0);
+			byWeekNo = new ArrayList<>(0);
+			byMonth = new ArrayList<>(0);
+			bySetPos = new ArrayList<>(0);
+			xrules = new ListMultimap<>(0);
 		}
 
 		/**
@@ -350,19 +350,19 @@ public final class Recurrence {
 			interval = recur.interval;
 			count = recur.count;
 			until = recur.until;
-			bySecond = new ArrayList<Integer>(recur.bySecond);
-			byMinute = new ArrayList<Integer>(recur.byMinute);
-			byHour = new ArrayList<Integer>(recur.byHour);
-			byDay = new ArrayList<ByDay>(recur.byDay);
-			byMonthDay = new ArrayList<Integer>(recur.byMonthDay);
-			byYearDay = new ArrayList<Integer>(recur.byYearDay);
-			byWeekNo = new ArrayList<Integer>(recur.byWeekNo);
-			byMonth = new ArrayList<Integer>(recur.byMonth);
-			bySetPos = new ArrayList<Integer>(recur.bySetPos);
+			bySecond = new ArrayList<>(recur.bySecond);
+			byMinute = new ArrayList<>(recur.byMinute);
+			byHour = new ArrayList<>(recur.byHour);
+			byDay = new ArrayList<>(recur.byDay);
+			byMonthDay = new ArrayList<>(recur.byMonthDay);
+			byYearDay = new ArrayList<>(recur.byYearDay);
+			byWeekNo = new ArrayList<>(recur.byWeekNo);
+			byMonth = new ArrayList<>(recur.byMonth);
+			bySetPos = new ArrayList<>(recur.bySetPos);
 			workweekStarts = recur.workweekStarts;
 
-			Map<LaciToken, List<String>> map = new HashMap<LaciToken, List<String>>(recur.xrules);
-			xrules = new ListMultimap<LaciToken, String>(map);
+			Map<LaciToken, List<String>> map = new HashMap<>(recur.xrules);
+			xrules = new ListMultimap<>(map);
 		}
 
 		/**

@@ -344,7 +344,7 @@ public abstract class ICalProperty {
 	 */
 	public final List<ValidationWarning> validate(List<ICalComponent> components, ICalVersion version) {
 		//validate property value
-		List<ValidationWarning> warnings = new ArrayList<ValidationWarning>(0);
+		List<ValidationWarning> warnings = new ArrayList<>(0);
 		validate(components, version, warnings);
 
 		//validate parameters

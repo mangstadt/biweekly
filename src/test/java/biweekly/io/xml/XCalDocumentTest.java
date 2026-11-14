@@ -1309,7 +1309,7 @@ public class XCalDocumentTest {
 			Document expected = XmlUtils.toDocument(getClass().getResourceAsStream(exampleFileName));
 			Document actual = xcal.getDocument();
 
-			Map<String, String> properties = new HashMap<String, String>();
+			Map<String, String> properties = new HashMap<>();
 			properties.put(OutputKeys.INDENT, "yes");
 			properties.put("{http://xml.apache.org/xslt}indent-amount", "3");
 			String expectedStr = XmlUtils.toString(expected, properties);

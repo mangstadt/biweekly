@@ -214,7 +214,7 @@ class InstanceGenerators {
 					 * (2) Build a set of the dates in the year/month/week that
 					 * match the other rule.
 					 */
-					List<DateValue> dates = new ArrayList<DateValue>();
+					List<DateValue> dates = new ArrayList<>();
 					if (d0 != null) {
 						dates.add(d0);
 					}
@@ -313,7 +313,7 @@ class InstanceGenerators {
 						absSetPos = uAbsSetPos.toIntArray();
 					}
 
-					candidates = new ArrayList<DateValue>();
+					candidates = new ArrayList<>();
 					for (int p : absSetPos) {
 						if (p >= 1 && p <= dates.size()) { // p is 1-indexed
 							candidates.add(dates.get(p - 1));

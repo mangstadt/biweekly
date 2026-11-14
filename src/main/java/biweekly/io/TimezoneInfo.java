@@ -57,8 +57,8 @@ public class TimezoneInfo {
 			return super.remove(assignment);
 		}
 	};
-	private final Map<ICalProperty, TimezoneAssignment> propertyTimezones = new IdentityHashMap<ICalProperty, TimezoneAssignment>();
-	private final List<ICalProperty> floatingProperties = new ArrayList<ICalProperty>();
+	private final Map<ICalProperty, TimezoneAssignment> propertyTimezones = new IdentityHashMap<>();
+	private final List<ICalProperty> floatingProperties = new ArrayList<>();
 
 	private TimezoneAssignment defaultTimezone;
 	private boolean globalFloatingTime = false;
@@ -264,7 +264,7 @@ public class TimezoneInfo {
 	 * @return the components (this collection is immutable)
 	 */
 	public Collection<VTimezone> getComponents() {
-		List<VTimezone> components = new ArrayList<VTimezone>(assignments.size());
+		List<VTimezone> components = new ArrayList<>(assignments.size());
 		for (TimezoneAssignment assignment : assignments) {
 			VTimezone component = assignment.getComponent();
 			if (component != null) {

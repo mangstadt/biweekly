@@ -49,7 +49,7 @@ import biweekly.util.IOUtils;
  * @author Michael Angstadt
  */
 public class TzUrlDotOrgGenerator {
-	private static final Map<URI, VTimezone> cache = Collections.synchronizedMap(new HashMap<URI, VTimezone>());
+	private static final Map<URI, VTimezone> cache = Collections.synchronizedMap(new HashMap<>());
 	private final String baseUrl;
 
 	/**

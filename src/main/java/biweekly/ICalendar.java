@@ -966,7 +966,7 @@ public class ICalendar extends ICalComponent {
 	 * @return the validation warnings
 	 */
 	public ValidationWarnings validate(ICalVersion version) {
-		List<WarningsGroup> warnings = validate(new ArrayList<ICalComponent>(0), version);
+		List<WarningsGroup> warnings = validate(new ArrayList<>(0), version);
 		return new ValidationWarnings(warnings);
 	}
 
@@ -996,7 +996,7 @@ public class ICalendar extends ICalComponent {
 			return;
 		}
 
-		Set<String> languages = new HashSet<String>(properties.size());
+		Set<String> languages = new HashSet<>(properties.size());
 		for (ICalProperty property : properties) {
 			String language = property.getParameters().getLanguage();
 			if (language != null) {
@@ -1240,7 +1240,7 @@ public class ICalendar extends ICalComponent {
 
 	@Override
 	protected Map<String, Object> toStringValues() {
-		Map<String, Object> fields = new HashMap<String, Object>();
+		Map<String, Object> fields = new HashMap<>();
 		fields.put("version", version);
 		return fields;
 	}

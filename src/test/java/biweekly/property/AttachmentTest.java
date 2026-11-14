@@ -144,7 +144,7 @@ public class AttachmentTest {
 
 	@Test
 	public void equals() {
-		List<ICalProperty> properties = new ArrayList<ICalProperty>();
+		List<ICalProperty> properties = new ArrayList<>();
 
 		Attachment property = new Attachment(null, (String) null);
 		properties.add(property);

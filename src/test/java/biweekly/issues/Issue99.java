@@ -37,7 +37,7 @@ public class Issue99 {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).until(until).build();
 		event.setRecurrenceRule(recur);
 
-		List<Date> actual = new ArrayList<Date>();
+		List<Date> actual = new ArrayList<>();
 		DateIterator iterator = event.getDateIterator(timezone);
 		while (iterator.hasNext()) {
 			Date date = iterator.next();

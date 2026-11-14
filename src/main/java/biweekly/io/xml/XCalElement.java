@@ -96,7 +96,7 @@ public class XCalElement {
 	 * @return the values of the child elements
 	 */
 	public List<String> all(String localName) {
-		List<String> childrenText = new ArrayList<String>();
+		List<String> childrenText = new ArrayList<>();
 		for (Element child : children()) {
 			if (localName.equals(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {
 				String text = child.getTextContent();
@@ -155,7 +155,7 @@ public class XCalElement {
 	 * @return the created elements
 	 */
 	public List<Element> append(String name, Collection<String> values) {
-		List<Element> elements = new ArrayList<Element>(values.size());
+		List<Element> elements = new ArrayList<>(values.size());
 		for (String value : values) {
 			elements.add(append(name, value));
 		}
@@ -193,7 +193,7 @@ public class XCalElement {
 	 */
 	public List<XCalElement> children(ICalDataType dataType) {
 		String localName = dataType.getName().toLowerCase();
-		List<XCalElement> children = new ArrayList<XCalElement>();
+		List<XCalElement> children = new ArrayList<>();
 		for (Element child : children()) {
 			if (localName.equals(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {
 				children.add(new XCalElement(child));

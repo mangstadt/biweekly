@@ -83,7 +83,7 @@ public class JCalValue {
 	 * @return the jCal value
 	 */
 	public static JCalValue multi(List<?> values) {
-		List<JsonValue> multiValues = new ArrayList<JsonValue>(values.size());
+		List<JsonValue> multiValues = new ArrayList<>(values.size());
 		for (Object value : values) {
 			multiValues.add(new JsonValue(value));
 		}
@@ -103,7 +103,7 @@ public class JCalValue {
 	 * @return the jCal value
 	 */
 	public static JCalValue structured(Object... values) {
-		List<List<?>> valuesList = new ArrayList<List<?>>(values.length);
+		List<List<?>> valuesList = new ArrayList<>(values.length);
 		for (Object value : values) {
 			List<?> list = (value instanceof List) ? (List<?>) value : Collections.singletonList(value);
 			valuesList.add(list);
@@ -117,7 +117,7 @@ public class JCalValue {
 	 * @return the jCal value
 	 */
 	public static JCalValue structured(List<List<?>> values) {
-		List<JsonValue> array = new ArrayList<JsonValue>(values.size());
+		List<JsonValue> array = new ArrayList<>(values.size());
 
 		for (List<?> list : values) {
 			if (list.isEmpty()) {
@@ -134,7 +134,7 @@ public class JCalValue {
 				continue;
 			}
 
-			List<JsonValue> subArray = new ArrayList<JsonValue>(list.size());
+			List<JsonValue> subArray = new ArrayList<>(list.size());
 			for (Object value : list) {
 				if (value == null) {
 					value = "";
@@ -153,7 +153,7 @@ public class JCalValue {
 	 * @return the jCal value
 	 */
 	public static JCalValue object(ListMultimap<String, Object> value) {
-		Map<String, JsonValue> object = new LinkedHashMap<String, JsonValue>();
+		Map<String, JsonValue> object = new LinkedHashMap<>();
 		for (Map.Entry<String, List<Object>> entry : value) {
 			String key = entry.getKey();
 			List<Object> list = entry.getValue();
@@ -162,7 +162,7 @@ public class JCalValue {
 			if (list.size() == 1) {
 				v = new JsonValue(list.get(0));
 			} else {
-				List<JsonValue> array = new ArrayList<JsonValue>(list.size());
+				List<JsonValue> array = new ArrayList<>(list.size());
 				for (Object element : list) {
 					array.add(new JsonValue(element));
 				}
@@ -227,7 +227,7 @@ public class JCalValue {
 		//["request-status", {}, "text", ["2.0", "Success"] ]
 		List<JsonValue> array = first.getArray();
 		if (array != null) {
-			List<List<String>> components = new ArrayList<List<String>>(array.size());
+			List<List<String>> components = new ArrayList<>(array.size());
 			for (JsonValue value : array) {
 				if (value.isNull()) {
 					components.add(asStructuredNull());
@@ -253,14 +253,14 @@ public class JCalValue {
 		//["request-status", {}, "text", "2.0"]
 		Object obj = first.getValue();
 		if (obj != null) {
-			List<List<String>> components = new ArrayList<List<String>>(1);
+			List<List<String>> components = new ArrayList<>(1);
 			components.add(asStructuredValue(obj));
 			return components;
 		}
 
 		//["request-status", {}, "text", null]
 		if (first.isNull()) {
-			List<List<String>> components = new ArrayList<List<String>>(1);
+			List<List<String>> components = new ArrayList<>(1);
 			components.add(asStructuredNull());
 			return components;
 		}
@@ -273,7 +273,7 @@ public class JCalValue {
 	}
 
 	private List<String> asStructuredSubArray(List<JsonValue> subArray) {
-		List<String> component = new ArrayList<String>(subArray.size());
+		List<String> component = new ArrayList<>(subArray.size());
 
 		for (JsonValue subArrayValue : subArray) {
 			if (subArrayValue.isNull()) {
@@ -317,7 +317,7 @@ public class JCalValue {
 			return Collections.emptyList();
 		}
 
-		List<String> multi = new ArrayList<String>(values.size());
+		List<String> multi = new ArrayList<>(values.size());
 		for (JsonValue value : values) {
 			if (value.isNull()) {
 				multi.add("");
@@ -339,15 +339,15 @@ public class JCalValue {
 	 */
 	public ListMultimap<LaciToken, String> asObject() {
 		if (values.isEmpty()) {
-			return new ListMultimap<LaciToken, String>(0);
+			return new ListMultimap<>(0);
 		}
 
 		Map<String, JsonValue> map = values.get(0).getObject();
 		if (map == null) {
-			return new ListMultimap<LaciToken, String>(0);
+			return new ListMultimap<>(0);
 		}
 
-		ListMultimap<LaciToken, String> values = new ListMultimap<LaciToken, String>();
+		ListMultimap<LaciToken, String> values = new ListMultimap<>();
 		for (Map.Entry<String, JsonValue> entry : map.entrySet()) {
 			LaciToken key = new LaciToken(entry.getKey());
 			JsonValue value = entry.getValue();

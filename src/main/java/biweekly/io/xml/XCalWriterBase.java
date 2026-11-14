@@ -44,7 +44,7 @@ abstract class XCalWriterBase extends StreamWriter {
 	 * Defines the names of the XML elements that are used to hold each
 	 * parameter's value.
 	 */
-	protected final Map<LaciToken, ICalDataType> parameterDataTypes = new HashMap<LaciToken, ICalDataType>();
+	protected final Map<LaciToken, ICalDataType> parameterDataTypes = new HashMap<>();
 	{
 		registerParameterDataType(ICalParameters.ALTREP, ICalDataType.URI);
 		//registerParameterDataType(ICalParameters.CHARSET, ICalDataType.TEXT); //not used by 2.0

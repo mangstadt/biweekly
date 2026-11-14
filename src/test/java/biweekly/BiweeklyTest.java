@@ -77,7 +77,7 @@ public class BiweeklyTest {
 		"PRODID:prodid\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
-		List<List<ParseWarning>> warnings = new ArrayList<List<ParseWarning>>();
+		List<List<ParseWarning>> warnings = new ArrayList<>();
 
 		ICalendar ical = Biweekly.parse(icalStr).warnings(warnings).first();
 
@@ -101,7 +101,7 @@ public class BiweeklyTest {
 		"PRODID:two\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
-		List<List<ParseWarning>> warnings = new ArrayList<List<ParseWarning>>();
+		List<List<ParseWarning>> warnings = new ArrayList<>();
 
 		List<ICalendar> icals = Biweekly.parse(icalStr).warnings(warnings).all();
 		Iterator<ICalendar> it = icals.iterator();
@@ -183,7 +183,7 @@ public class BiweeklyTest {
 		  "</vcalendar>" +
 		"</icalendar>";
 		//@formatter:on
-		List<List<ParseWarning>> warnings = new ArrayList<List<ParseWarning>>();
+		List<List<ParseWarning>> warnings = new ArrayList<>();
 
 		ICalendar ical = Biweekly.parseXml(xml).warnings(warnings).first();
 
@@ -214,7 +214,7 @@ public class BiweeklyTest {
 		  "</vcalendar>" +
 		"</icalendar>";
 		//@formatter:on
-		List<List<ParseWarning>> warnings = new ArrayList<List<ParseWarning>>();
+		List<List<ParseWarning>> warnings = new ArrayList<>();
 
 		List<ICalendar> icals = Biweekly.parseXml(xml).warnings(warnings).all();
 		Iterator<ICalendar> it = icals.iterator();

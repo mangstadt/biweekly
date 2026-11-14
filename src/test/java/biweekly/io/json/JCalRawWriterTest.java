@@ -137,12 +137,12 @@ public class JCalRawWriterTest {
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
 
 		writer.writeStartComponent("comp");
-		List<JsonValue> jsonValues = new ArrayList<JsonValue>();
-		Map<String, JsonValue> m = new LinkedHashMap<String, JsonValue>();
+		List<JsonValue> jsonValues = new ArrayList<>();
+		Map<String, JsonValue> m = new LinkedHashMap<>();
 		m.put("a", new JsonValue(Arrays.asList(new JsonValue("one"), new JsonValue("two"))));
-		Map<String, JsonValue> m2 = new LinkedHashMap<String, JsonValue>();
+		Map<String, JsonValue> m2 = new LinkedHashMap<>();
 		m2.put("c", new JsonValue(Arrays.asList(new JsonValue("three"))));
-		m2.put("d", new JsonValue(new LinkedHashMap<String, JsonValue>()));
+		m2.put("d", new JsonValue(new LinkedHashMap<>()));
 		m.put("b", new JsonValue(m2));
 		jsonValues.add(new JsonValue(m));
 		jsonValues.add(new JsonValue("four"));

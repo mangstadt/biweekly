@@ -160,7 +160,7 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICa
 			return JCalValue.single("");
 		}
 
-		List<String> valuesStr = new ArrayList<String>();
+		List<String> valuesStr = new ArrayList<>();
 		if (isInObservance(context)) {
 			for (ICalDate value : values) {
 				String valueStr = date(value).observance(true).extended(true).write();
