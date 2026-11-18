@@ -75,10 +75,7 @@ public abstract class ICalProperty {
 	 * @param parameters the parameters (cannot be null)
 	 */
 	public void setParameters(ICalParameters parameters) {
-		if (parameters == null) {
-			throw new NullPointerException(Messages.INSTANCE.getExceptionMessage(16));
-		}
-		this.parameters = parameters;
+		this.parameters = Objects.requireNonNull(parameters, () -> Messages.INSTANCE.getExceptionMessage(16));
 	}
 
 	/**
@@ -186,8 +183,8 @@ public abstract class ICalProperty {
 	/**
 	 * Gets the human-readable label for this property.
 	 * @return the label or null if not set
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16">draft-ietf-calext-extensions-01
+	 * @see <a href=
+	 * "http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16">draft-ietf-calext-extensions-01
 	 * p.16</a>
 	 */
 	String getLabel() {
@@ -197,8 +194,8 @@ public abstract class ICalProperty {
 	/**
 	 * Sets the human-readable label for this property.
 	 * @param label the label or null to remove
-	 * @see <a
-	 * href="http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16">draft-ietf-calext-extensions-01
+	 * @see <a href=
+	 * "http://tools.ietf.org/html/draft-ietf-calext-extensions-01#page-16">draft-ietf-calext-extensions-01
 	 * p.16</a>
 	 */
 	void setLabel(String label) {

@@ -243,10 +243,7 @@ public class ICalendar extends ICalComponent {
 	 * @throws NullPointerException if the timezone info object is null
 	 */
 	public void setTimezoneInfo(TimezoneInfo tzinfo) {
-		if (tzinfo == null) {
-			throw new NullPointerException();
-		}
-		this.tzinfo = tzinfo;
+		this.tzinfo = Objects.requireNonNull(tzinfo);
 	}
 
 	/**

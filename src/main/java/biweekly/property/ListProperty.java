@@ -65,10 +65,7 @@ public class ListProperty<T> extends ICalProperty {
 	 * @param values the values to initialize the property with (cannot be null)
 	 */
 	public ListProperty(List<T> values) {
-		if (values == null) {
-			throw new NullPointerException(Messages.INSTANCE.getExceptionMessage(18));
-		}
-		this.values = values;
+		this.values = Objects.requireNonNull(values, () -> Messages.INSTANCE.getExceptionMessage(18));
 	}
 
 	/**
