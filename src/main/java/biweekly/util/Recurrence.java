@@ -618,11 +618,11 @@ public final class Recurrence {
 		 * @param values the values or null to remove the rule part
 		 * @return this
 		 */
-		public Builder xrule(LaciToken name, List<String> value) {
-			if (value == null) {
+		public Builder xrule(LaciToken name, List<String> values) {
+			if (values == null) {
 				xrules.removeAll(name);
 			} else {
-				xrules.putAll(name, value);
+				xrules.putAll(name, values);
 			}
 
 			return this;
