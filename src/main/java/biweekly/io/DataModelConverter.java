@@ -75,11 +75,7 @@ public final class DataModelConverter {
 			return timezone;
 		}
 
-		for (Daylight daylight : daylights) {
-			if (!daylight.isDaylight()) {
-				continue;
-			}
-
+		daylights.stream().filter(Daylight::isDaylight).forEach(daylight -> {
 			UtcOffset daylightOffset = daylight.getOffset();
 			UtcOffset standardOffset = new UtcOffset(daylightOffset.getMillis() - (1000 * 60 * 60));
 
@@ -96,7 +92,7 @@ public final class DataModelConverter {
 			st.setTimezoneOffsetTo(standardOffset);
 			st.addTimezoneName(daylight.getStandardName());
 			timezone.addStandardTime(st);
-		}
+		});
 
 		return timezone.getComponents().isEmpty() ? null : timezone;
 	}

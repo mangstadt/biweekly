@@ -3,6 +3,7 @@ package biweekly.io.scribe;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import javax.xml.namespace.QName;
 
@@ -411,9 +412,7 @@ public class ScribeIndex {
 	 * @param scribe the scribe to register
 	 */
 	public void register(ICalPropertyScribe<? extends ICalProperty> scribe) {
-		for (ICalVersion version : ICalVersion.values()) {
-			experimentalPropByName.put(new PropertyNameKey(scribe, version), scribe);
-		}
+		forEachVersion(scribe, key -> experimentalPropByName.put(key, scribe));
 		experimentalPropByClass.put(scribe.getPropertyClass(), scribe);
 		experimentalPropByQName.put(scribe.getQName(), scribe);
 	}
@@ -432,9 +431,7 @@ public class ScribeIndex {
 	 * @param scribe the scribe to unregister
 	 */
 	public void unregister(ICalPropertyScribe<? extends ICalProperty> scribe) {
-		for (ICalVersion version : ICalVersion.values()) {
-			experimentalPropByName.remove(new PropertyNameKey(scribe, version));
-		}
+		forEachVersion(scribe, experimentalPropByName::remove);
 		experimentalPropByClass.remove(scribe.getPropertyClass());
 		experimentalPropByQName.remove(scribe.getQName());
 	}
@@ -454,11 +451,13 @@ public class ScribeIndex {
 	}
 
 	private static void registerStandard(ICalPropertyScribe<? extends ICalProperty> scribe) {
-		for (ICalVersion version : ICalVersion.values()) {
-			standardPropByName.put(new PropertyNameKey(scribe, version), scribe);
-		}
+		forEachVersion(scribe, key -> standardPropByName.put(key, scribe));
 		standardPropByClass.put(scribe.getPropertyClass(), scribe);
 		standardPropByQName.put(scribe.getQName(), scribe);
+	}
+
+	private static void forEachVersion(ICalPropertyScribe<? extends ICalProperty> scribe, Consumer<PropertyNameKey> action) {
+		ICalVersion.stream().map(version -> new PropertyNameKey(scribe, version)).forEach(action);
 	}
 
 	private static class PropertyNameKey {

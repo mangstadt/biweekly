@@ -208,12 +208,12 @@ public class JCalRawWriter implements Closeable, Flushable {
 		//write parameters
 		generator.writeStartObject();
 		for (Map.Entry<LaciToken, List<String>> entry : parameters) {
-			String name = entry.getKey().toLowerCase();
 			List<String> values = entry.getValue();
 			if (values.isEmpty()) {
 				continue;
 			}
 
+			String name = entry.getKey().toLowerCase();
 			if (values.size() == 1) {
 				generator.writeStringField(name, values.get(0));
 			} else {
@@ -291,7 +291,7 @@ public class JCalRawWriter implements Closeable, Flushable {
 		}
 		generator.writeEndArray();
 	}
-	
+
 	private void writeObject(Map<String, JsonValue> object) throws IOException {
 		generator.writeStartObject();
 		for (Map.Entry<String, JsonValue> entry : object.entrySet()) {

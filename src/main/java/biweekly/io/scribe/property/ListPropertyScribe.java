@@ -1,7 +1,9 @@
 package biweekly.io.scribe.property;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 import biweekly.ICalDataType;
 import biweekly.io.ParseContext;
@@ -10,8 +12,6 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ListProperty;
-
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -54,13 +54,12 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 	}
 
 	@Override
-	protected String _writeText(final T property, WriteContext context) {
-		List<V> values = property.getValues();
-		List<String> valuesStr = new ArrayList<>(values.size());
-		for (V value : values) {
-			String valueStr = writeValue(property, value, context);
-			valuesStr.add(valueStr);
-		}
+	protected String _writeText(T property, WriteContext context) {
+		//@formatter:off
+		List<String> valuesStr = property.getValues().stream()
+			.map(value -> writeValue(property, value, context))
+		.collect(Collectors.toList());
+		//@formatter:on
 
 		switch (context.getVersion()) {
 		case V1_0:
@@ -88,8 +87,9 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 	@Override
 	protected void _writeXml(T property, XCalElement element, WriteContext context) {
 		for (V value : property.getValues()) {
+			ICalDataType dataType = dataType(property, null);
 			String valueStr = writeValue(property, value, null);
-			element.append(dataType(property, null), valueStr);
+			element.append(dataType, valueStr);
 		}
 	}
 
@@ -121,12 +121,13 @@ public abstract class ListPropertyScribe<T extends ListProperty<V>, V> extends I
 
 	private T parse(List<String> valueStrs, ICalDataType dataType, ICalParameters parameters, ParseContext context) {
 		T property = newInstance(dataType, parameters);
-
 		List<V> values = property.getValues();
-		for (String valueStr : valueStrs) {
-			V value = readValue(property, valueStr, dataType, parameters, context);
-			values.add(value);
-		}
+
+		//@formatter:off
+		valueStrs.stream()
+			.map(value -> readValue(property, value, dataType, parameters, context))
+		.forEach(values::add);
+		//@formatter:on
 
 		return property;
 	}

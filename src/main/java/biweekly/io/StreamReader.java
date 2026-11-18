@@ -9,7 +9,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 import biweekly.ICalendar;
@@ -240,10 +239,10 @@ public abstract class StreamReader implements Closeable {
 		}
 
 		//convert all date values to their appropriate timezone
-		for (Map.Entry<String, List<TimezonedDate>> entry : context.getTimezonedDates()) {
-			String tzid = entry.getKey();
-
-			//determine which timezone is associated with the given TZID
+		context.getTimezonedDates().getMap().forEach((tzid, values) -> {
+			/*
+			 * Determine which timezone is associated with the given TZID.
+			 */
 			TimezoneAssignment assignment = determineTimezoneAssignment(tzid, tzinfo);
 
 			/*
@@ -255,13 +254,13 @@ public abstract class StreamReader implements Closeable {
 			 * should also remain.
 			 */
 			if (assignment == null && !userChangedTheDefaultTimezone) {
-				continue;
+				return;
 			}
 
 			//convert each property to the timezone
 			TimeZone tz = (assignment == null) ? defaultTimezone : assignment.getTimeZone();
 			Calendar cal = Calendar.getInstance(tz);
-			for (TimezonedDate timezonedDate : entry.getValue()) {
+			for (TimezonedDate timezonedDate : values) {
 				ICalProperty property = timezonedDate.getProperty();
 
 				if (assignment != null) {
@@ -277,7 +276,7 @@ public abstract class StreamReader implements Closeable {
 
 				reparseDateUnderDifferentTimezone(timezonedDate, cal);
 			}
-		}
+		});
 	}
 
 	private TimeZone buildTimeZone(VTimezone component) {
@@ -349,6 +348,7 @@ public abstract class StreamReader implements Closeable {
 		if (assignment != null) {
 			/*
 			 * VTIMEZONE component with the given TZID was found.
+			 * 
 			 * Everything is Ok.
 			 */
 			return assignment;

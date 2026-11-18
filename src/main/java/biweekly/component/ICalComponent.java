@@ -3,10 +3,12 @@ package biweekly.component;
 import java.lang.reflect.Constructor;
 import java.util.AbstractList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.mangstadt.vinnie.LaciToken;
 
@@ -67,12 +69,8 @@ public abstract class ICalComponent {
 	 */
 	protected ICalComponent(ICalComponent original) {
 		this();
-		for (ICalProperty property : original.properties.values()) {
-			addProperty(property.copy());
-		}
-		for (ICalComponent component : original.components.values()) {
-			addComponent(component.copy());
-		}
+		original.properties.values().stream().map(ICalProperty::copy).forEach(this::addProperty);
+		original.components.values().stream().map(ICalComponent::copy).forEach(this::addComponent);
 	}
 
 	/**
@@ -186,12 +184,7 @@ public abstract class ICalComponent {
 	 * @return the experimental property or null if none were found
 	 */
 	public RawProperty getExperimentalProperty(String name) {
-		for (RawProperty raw : getExperimentalProperties()) {
-			if (raw.getName().equalsIgnoreCase(name)) {
-				return raw;
-			}
-		}
-		return null;
+		return streamExperiementalPropertiesByName(name).findFirst().orElse(null);
 	}
 
 	/**
@@ -205,13 +198,11 @@ public abstract class ICalComponent {
 		 * this would allow RawProperty objects without the specified name to be
 		 * added to the list.
 		 */
-		List<RawProperty> toReturn = new ArrayList<>();
-		for (RawProperty property : getExperimentalProperties()) {
-			if (property.getName().equalsIgnoreCase(name)) {
-				toReturn.add(property);
-			}
-		}
-		return Collections.unmodifiableList(toReturn);
+		return Collections.unmodifiableList(streamExperiementalPropertiesByName(name).collect(Collectors.toList()));
+	}
+
+	private Stream<RawProperty> streamExperiementalPropertiesByName(String name) {
+		return getExperimentalProperties().stream().filter(property -> property.getName().equalsIgnoreCase(name));
 	}
 
 	/**
@@ -278,15 +269,9 @@ public abstract class ICalComponent {
 	 */
 	public List<RawProperty> removeExperimentalProperties(String name) {
 		List<RawProperty> all = getExperimentalProperties();
-		List<RawProperty> toRemove = new ArrayList<>();
-		for (RawProperty property : all) {
-			if (property.getName().equalsIgnoreCase(name)) {
-				toRemove.add(property);
-			}
-		}
-
+		List<RawProperty> toRemove = getExperimentalProperties(name);
 		all.removeAll(toRemove);
-		return Collections.unmodifiableList(toRemove);
+		return toRemove;
 	}
 
 	/**
@@ -356,12 +341,7 @@ public abstract class ICalComponent {
 	 * @return the experimental component or null if none were found
 	 */
 	public RawComponent getExperimentalComponent(String name) {
-		for (RawComponent component : getExperimentalComponents()) {
-			if (component.getName().equalsIgnoreCase(name)) {
-				return component;
-			}
-		}
-		return null;
+		return streamExperiementalComponentsByName(name).findFirst().orElse(null);
 	}
 
 	/**
@@ -375,13 +355,11 @@ public abstract class ICalComponent {
 		 * this would allow RawComponent objects without the specified name to
 		 * be added to the list.
 		 */
-		List<RawComponent> toReturn = new ArrayList<>();
-		for (RawComponent component : getExperimentalComponents()) {
-			if (component.getName().equalsIgnoreCase(name)) {
-				toReturn.add(component);
-			}
-		}
-		return Collections.unmodifiableList(toReturn);
+		return Collections.unmodifiableList(streamExperiementalComponentsByName(name).collect(Collectors.toList()));
+	}
+
+	private Stream<RawComponent> streamExperiementalComponentsByName(String name) {
+		return getExperimentalComponents().stream().filter(component -> component.getName().equalsIgnoreCase(name));
 	}
 
 	/**
@@ -423,15 +401,9 @@ public abstract class ICalComponent {
 	 */
 	public List<RawComponent> removeExperimentalComponents(String name) {
 		List<RawComponent> all = getExperimentalComponents();
-		List<RawComponent> toRemove = new ArrayList<>();
-		for (RawComponent property : all) {
-			if (property.getName().equalsIgnoreCase(name)) {
-				toRemove.add(property);
-			}
-		}
-
+		List<RawComponent> toRemove = getExperimentalComponents(name);
 		all.removeAll(toRemove);
-		return Collections.unmodifiableList(toRemove);
+		return toRemove;
 	}
 
 	/**
@@ -469,21 +441,23 @@ public abstract class ICalComponent {
 
 		//add this component to the hierarchy list
 		//copy the list so other validate() calls aren't effected
-		hierarchy = new ArrayList<>(hierarchy);
-		hierarchy.add(this);
+		List<ICalComponent> hierarchyCopy = new ArrayList<>(hierarchy);
+		hierarchyCopy.add(this);
 
 		//validate properties
 		for (ICalProperty property : properties.values()) {
-			List<ValidationWarning> propWarnings = property.validate(hierarchy, version);
+			List<ValidationWarning> propWarnings = property.validate(hierarchyCopy, version);
 			if (!propWarnings.isEmpty()) {
-				warnings.add(new WarningsGroup(property, hierarchy, propWarnings));
+				warnings.add(new WarningsGroup(property, hierarchyCopy, propWarnings));
 			}
 		}
 
 		//validate sub-components
-		for (ICalComponent component : components.values()) {
-			warnings.addAll(component.validate(hierarchy, version));
-		}
+		//@formatter:off
+		components.values().stream()
+			.map(component -> component.validate(hierarchyCopy, version))
+		.forEach(warnings::addAll);
+		//@formatter:on
 
 		return warnings;
 	}
@@ -558,11 +532,12 @@ public abstract class ICalComponent {
 
 		LaciToken actualValue = LaciToken.create(actual.getValue());
 
-		List<LaciToken> allowedValues = new ArrayList<>(allowed.length);
-		for (Status status : allowed) {
-			LaciToken value = LaciToken.create(status.getValue());
-			allowedValues.add(value);
-		}
+		//@formatter:off
+		List<LaciToken> allowedValues = Arrays.stream(allowed)
+			.map(s -> s.getValue())
+			.map(LaciToken::create)
+		.collect(Collectors.toList());
+		//@formatter:on
 
 		if (!allowedValues.contains(actualValue)) {
 			warnings.add(new ValidationWarning(13, actual, allowedValues));
@@ -660,11 +635,7 @@ public abstract class ICalComponent {
 	 * @return the new list (immutable)
 	 */
 	private static <T> List<T> castList(List<?> list, Class<T> castTo) {
-		List<T> casted = new ArrayList<>(list.size());
-		for (Object object : list) {
-			casted.add(castTo.cast(object));
-		}
-		return Collections.unmodifiableList(casted);
+		return Collections.unmodifiableList(list.stream().map(castTo::cast).collect(Collectors.toList()));
 	}
 
 	@Override
@@ -702,9 +673,8 @@ public abstract class ICalComponent {
 	}
 
 	private static <K, V> boolean compareMultimaps(ListMultimap<K, V> map1, ListMultimap<K, V> map2) {
-		for (Map.Entry<K, List<V>> entry : map1) {
-			K key = entry.getKey();
-			List<V> value = entry.getValue();
+		return map1.getMap().keySet().stream().allMatch(key -> {
+			List<V> value = map1.get(key);
 			List<V> otherValue = map2.get(key);
 
 			if (value.size() != otherValue.size()) {
@@ -712,13 +682,8 @@ public abstract class ICalComponent {
 			}
 
 			List<V> otherValueCopy = new ArrayList<>(otherValue);
-			for (V property : value) {
-				if (!otherValueCopy.remove(property)) {
-					return false;
-				}
-			}
-		}
-		return true;
+			return value.stream().allMatch(otherValueCopy::remove);
+		});
 	}
 
 	/**

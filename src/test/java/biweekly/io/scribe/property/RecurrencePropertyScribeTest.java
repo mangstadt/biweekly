@@ -117,9 +117,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 		.xrule("X-RULE", "three");
 		//@formatter:on
 
-		for (DayOfWeek dow : DayOfWeek.values()) {
-			builder.byDay(dow);
-		}
+		Arrays.stream(DayOfWeek.values()).forEach(builder::byDay);
 		builder.byDay(5, DayOfWeek.FRIDAY);
 
 		withMultiple = new RecurrenceProperty(builder.build());

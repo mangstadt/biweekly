@@ -12,6 +12,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -89,10 +90,10 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 
 	private static <K, V> Map<K, List<V>> copy(Map<K, List<V>> orig) {
 		Map<K, List<V>> map = new LinkedHashMap<>(orig.size());
-		for (Map.Entry<K, List<V>> entry : orig.entrySet()) {
-			List<V> values = new ArrayList<>(entry.getValue());
-			map.put(entry.getKey(), values);
-		}
+		orig.forEach((key, values) -> {
+			List<V> valuesCopy = new ArrayList<>(values);
+			map.put(key, valuesCopy);
+		});
 		return map;
 	}
 
@@ -250,9 +251,7 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 */
 	public void clear() {
 		//clear each collection to make previously returned lists empty
-		for (List<V> value : map.values()) {
-			value.clear();
-		}
+		map.values().forEach(List::clear);
 		map.clear();
 	}
 
@@ -269,11 +268,11 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 * @return the values (this list is immutable)
 	 */
 	public List<V> values() {
-		List<V> list = new ArrayList<>();
-		for (List<V> value : map.values()) {
-			list.addAll(value);
-		}
-		return Collections.unmodifiableList(list);
+		//@formatter:off
+		return Collections.unmodifiableList(map.values().stream().
+			flatMap(List::stream)
+		.collect(Collectors.toList()));
+		//@formatter:;on
 	}
 
 	/**
@@ -289,11 +288,7 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 * @return the number of values
 	 */
 	public int size() {
-		int size = 0;
-		for (List<V> value : map.values()) {
-			size += value.size();
-		}
-		return size;
+		return map.values().stream().mapToInt(List::size).sum();
 	}
 
 	/**
@@ -302,11 +297,9 @@ public class ListMultimap<K, V> implements Iterable<Map.Entry<K, List<V>>> {
 	 */
 	public Map<K, List<V>> asMap() {
 		Map<K, List<V>> view = new LinkedHashMap<>(map.size());
-		for (Map.Entry<K, List<V>> entry : map.entrySet()) {
-			K key = entry.getKey();
-			List<V> value = entry.getValue();
-			view.put(key, Collections.unmodifiableList(value));
-		}
+		map.forEach((key, values) -> {
+			view.put(key, Collections.unmodifiableList(values));
+		});
 		return Collections.unmodifiableMap(view);
 	}
 

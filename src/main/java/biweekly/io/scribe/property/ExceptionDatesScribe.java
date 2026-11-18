@@ -3,8 +3,8 @@ package biweekly.io.scribe.property;
 import static biweekly.ICalDataType.DATE;
 import static biweekly.ICalDataType.DATE_TIME;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -118,10 +118,11 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICa
 		}
 
 		if (isInObservance(context)) {
-			for (ICalDate value : values) {
-				String valueStr = date(value).observance(true).extended(true).write();
-				element.append(DATE_TIME, valueStr);
-			}
+			//@formatter:off
+			values.stream()
+				.map(value -> date(value).observance(true).extended(true).write())
+			.forEach(value -> element.append(DATE_TIME, value));
+			//@formatter:on
 			return;
 		}
 
@@ -142,14 +143,14 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICa
 
 		ExceptionDates property = new ExceptionDates();
 		List<ICalDate> values = property.getValues();
-		for (String value : dateTimeElements) {
-			ICalDate datetime = readValue(property, value, DATE_TIME, parameters, context);
-			values.add(datetime);
-		}
-		for (String value : dateElements) {
-			ICalDate date = readValue(property, value, DATE, parameters, context);
-			values.add(date);
-		}
+		//@formatter:off
+		dateTimeElements.stream()
+			.map(value -> readValue(property, value, DATE_TIME, parameters, context))
+		.forEach(values::add);
+		dateElements.stream()
+			.map(value -> readValue(property, value, DATE, parameters, context))
+		.forEach(values::add);
+		//@formatter:on
 		return property;
 	}
 
@@ -160,20 +161,13 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICa
 			return JCalValue.single("");
 		}
 
-		List<String> valuesStr = new ArrayList<>();
-		if (isInObservance(context)) {
-			for (ICalDate value : values) {
-				String valueStr = date(value).observance(true).extended(true).write();
-				valuesStr.add(valueStr);
-			}
-			return JCalValue.multi(valuesStr);
-		}
-
-		for (ICalDate value : values) {
-			String dateStr = date(value, property, context).extended(true).write();
-			valuesStr.add(dateStr);
-		}
-		return JCalValue.multi(valuesStr);
+		//@formatter:off
+		return JCalValue.multi(values.stream()
+			.map(isInObservance(context)
+				? value -> date(value).observance(true).extended(true).write()
+				: value -> date(value, property, context).extended(true).write())
+		.collect(Collectors.toList()));
+		//@formatter:on
 	}
 
 	@Override
@@ -182,10 +176,13 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICa
 
 		ExceptionDates property = new ExceptionDates();
 		List<ICalDate> values = property.getValues();
-		for (String valueStr : valueStrs) {
-			ICalDate date = readValue(property, valueStr, dataType, parameters, context);
-			values.add(date);
-		}
+
+		//@formatter:off
+		valueStrs.stream()
+			.map(valueStr -> readValue(property, valueStr, dataType, parameters, context))
+		.forEach(values::add);
+		//@formatter:on
+
 		return property;
 	}
 }

@@ -2,7 +2,6 @@ package biweekly.io;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -10,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
@@ -71,10 +71,7 @@ public abstract class StreamWriter implements Closeable {
 	public void write(ICalendar ical) throws IOException {
 		Collection<Class<?>> unregistered = findScribeless(ical);
 		if (!unregistered.isEmpty()) {
-			List<String> classNames = new ArrayList<>(unregistered.size());
-			for (Class<?> clazz : unregistered) {
-				classNames.add(clazz.getName());
-			}
+			List<String> classNames = unregistered.stream().map(Class::getName).collect(Collectors.toList());
 			throw Messages.INSTANCE.getIllegalArgumentException(13, classNames);
 		}
 
@@ -197,17 +194,14 @@ public abstract class StreamWriter implements Closeable {
 				unregistered.add(componentClass);
 			}
 
-			for (Map.Entry<Class<? extends ICalProperty>, List<ICalProperty>> entry : component.getProperties()) {
-				List<ICalProperty> properties = entry.getValue();
-				if (properties.isEmpty()) {
-					continue;
-				}
-
-				Class<? extends ICalProperty> clazz = entry.getKey();
-				if (clazz != RawProperty.class && index.getPropertyScribe(clazz) == null) {
-					unregistered.add(clazz);
-				}
-			}
+			//@formatter:off
+			component.getProperties().getMap().entrySet().stream()
+				.filter(entry -> !entry.getValue().isEmpty())
+				.map(Map.Entry::getKey)
+				.filter(clazz -> clazz != RawProperty.class)
+				.filter(clazz -> index.getPropertyScribe(clazz) == null)
+			.forEach(unregistered::add);
+			//@formatter:on
 
 			components.addAll(component.getComponents().values());
 		}
@@ -250,11 +244,10 @@ public abstract class StreamWriter implements Closeable {
 			return;
 		}
 
-		Collection<VTimezone> timezones = getTimezoneComponents();
-		for (VTimezone timezone : timezones) {
-			if (!subComponents.contains(timezone)) {
-				subComponents.add(0, timezone);
-			}
-		}
+		//@formatter:off
+		getTimezoneComponents().stream()
+			.filter(timezone -> !subComponents.contains(timezone))
+		.forEach(timezone -> subComponents.add(0, timezone));
+		//@formatter:on
 	}
 }

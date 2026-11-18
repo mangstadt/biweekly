@@ -50,12 +50,7 @@ public class ParticipationLevel {
 
 		@Override
 		protected boolean matches(ParticipationLevel object, String value) {
-			for (String v : object.values.values()) {
-				if (v.equalsIgnoreCase(value)) {
-					return true;
-				}
-			}
-			return false;
+			return object.values.values().stream().anyMatch(v -> v.equalsIgnoreCase(value));
 		}
 	};
 

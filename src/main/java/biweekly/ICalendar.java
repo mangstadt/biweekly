@@ -998,17 +998,16 @@ public class ICalendar extends ICalComponent {
 		}
 
 		Set<String> languages = new HashSet<>(properties.size());
-		for (ICalProperty property : properties) {
-			String language = property.getParameters().getLanguage();
-			if (language != null) {
-				language = language.toLowerCase();
-			}
 
-			boolean added = languages.add(language);
-			if (!added) {
-				warnings.add(new ValidationWarning(55, clazz.getSimpleName()));
-				break;
-			}
+		//@formatter:off
+		boolean allUnique = properties.stream()
+			.map(property -> property.getParameters().getLanguage())
+			.map(language -> (language == null) ? null : language.toLowerCase())
+		.allMatch(languages::add);
+		//@formatter:on
+
+		if (!allUnique) {
+			warnings.add(new ValidationWarning(55, clazz.getSimpleName()));
 		}
 	}
 

@@ -418,7 +418,7 @@ public class XCalElementTest {
 		} catch (SAXException e) {
 			throw new RuntimeException(e);
 		}
-		Element element = XmlUtils.getFirstChildElement(document.getDocumentElement());
+		Element element = XmlUtils.firstChild(document.getDocumentElement());
 		return new XCalElement(element);
 	}
 }

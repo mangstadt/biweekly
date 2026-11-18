@@ -611,6 +611,22 @@ public final class Recurrence {
 
 			return this;
 		}
+		
+		/**
+		 * Adds non-standard rule parts.
+		 * @param name the name
+		 * @param values the values or null to remove the rule part
+		 * @return this
+		 */
+		public Builder xrule(LaciToken name, List<String> value) {
+			if (value == null) {
+				xrules.removeAll(name);
+			} else {
+				xrules.putAll(name, value);
+			}
+
+			return this;
+		}
 
 		/**
 		 * Builds the final {@link Recurrence} object.

@@ -197,18 +197,12 @@ public class ChainingXmlWriter extends ChainingWriter<ChainingXmlWriter> {
 		if (defaultTimeZone != null) {
 			writer.setGlobalTimezone(defaultTimeZone);
 		}
-		for (Map.Entry<LaciToken, ICalDataType> entry : parameterDataTypes.entrySet()) {
-			LaciToken parameterName = entry.getKey();
-			ICalDataType dataType = entry.getValue();
-			writer.registerParameterDataType(parameterName, dataType);
-		}
+		parameterDataTypes.forEach(writer::registerParameterDataType);
 		if (index != null) {
 			writer.setScribeIndex(index);
 		}
 
-		for (ICalendar ical : icals) {
-			writer.write(ical);
-		}
+		icals.forEach(writer::write);
 
 		return document;
 	}

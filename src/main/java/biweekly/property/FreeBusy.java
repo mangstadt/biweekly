@@ -73,9 +73,7 @@ public class FreeBusy extends ListProperty<Period> {
 	public FreeBusy(FreeBusy original) {
 		super(original);
 		values.clear();
-		for (Period period : original.values) {
-			values.add(new Period(period));
-		}
+		original.values.stream().map(Period::new).forEach(values::add);
 	}
 
 	/**
@@ -109,19 +107,21 @@ public class FreeBusy extends ListProperty<Period> {
 			return;
 		}
 
-		for (Period timePeriod : values) {
-			if (timePeriod.getStartDate() == null) {
-				warnings.add(new ValidationWarning(39));
-				break;
-			}
+		if (values.stream().anyMatch(this::missingStart)) {
+			warnings.add(new ValidationWarning(39));
 		}
 
-		for (Period timePeriod : values) {
-			if (timePeriod.getEndDate() == null && timePeriod.getDuration() == null) {
-				warnings.add(new ValidationWarning(40));
-				break;
-			}
+		if (values.stream().anyMatch(this::missingEnd)) {
+			warnings.add(new ValidationWarning(40));
 		}
+	}
+
+	private boolean missingStart(Period period) {
+		return period.getStartDate() == null;
+	}
+
+	private boolean missingEnd(Period period) {
+		return period.getEndDate() == null && period.getDuration() == null;
 	}
 
 	@Override

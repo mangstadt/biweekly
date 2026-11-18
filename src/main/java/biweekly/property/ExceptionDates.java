@@ -75,9 +75,7 @@ public class ExceptionDates extends ListProperty<ICalDate> {
 	public ExceptionDates(ExceptionDates original) {
 		super(original);
 		values.clear();
-		for (ICalDate date : original.getValues()) {
-			values.add(new ICalDate(date));
-		}
+		original.getValues().stream().map(ICalDate::new).forEach(values::add);
 	}
 
 	@Override
@@ -91,11 +89,9 @@ public class ExceptionDates extends ListProperty<ICalDate> {
 
 		//can't mix date and date-time values
 		boolean hasTime = dates.get(0).hasTime();
-		for (ICalDate date : dates.subList(1, dates.size())) {
-			if (date.hasTime() != hasTime) {
-				warnings.add(new ValidationWarning(50));
-				break;
-			}
+		boolean valuesMismatched = dates.subList(1, dates.size()).stream().anyMatch(date -> date.hasTime() != hasTime);
+		if (valuesMismatched) {
+			warnings.add(new ValidationWarning(50));
 		}
 	}
 

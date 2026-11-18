@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import biweekly.ICalVersion;
 import biweekly.ValidationWarning;
@@ -68,6 +69,7 @@ import biweekly.util.Period;
  * rdate.getPeriods().add(period);
  * event.addRecurrenceDates(rdate);
  * </pre>
+ * 
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-120">RFC 5545
  * p.120-2</a>
@@ -90,16 +92,8 @@ public class RecurrenceDates extends ICalProperty {
 	 */
 	public RecurrenceDates(RecurrenceDates original) {
 		super(original);
-
-		dates = new ArrayList<>(original.dates.size());
-		for (ICalDate date : original.dates) {
-			dates.add(new ICalDate(date));
-		}
-
-		periods = new ArrayList<>(original.periods.size());
-		for (Period period : original.periods) {
-			periods.add(new Period(period));
-		}
+		dates = original.dates.stream().map(ICalDate::new).collect(Collectors.toCollection(ArrayList::new)); //mutable
+		periods = original.periods.stream().map(Period::new).collect(Collectors.toCollection(ArrayList::new)); //mutable
 	}
 
 	/**
@@ -138,11 +132,9 @@ public class RecurrenceDates extends ICalProperty {
 		if (!dates.isEmpty()) {
 			//can't mix date and date-time values
 			boolean hasTime = dates.get(0).hasTime();
-			for (ICalDate date : dates.subList(1, dates.size())) {
-				if (date.hasTime() != hasTime) {
-					warnings.add(new ValidationWarning(50));
-					break;
-				}
+			boolean valuesMismatched = dates.subList(1, dates.size()).stream().anyMatch(date -> date.hasTime() != hasTime);
+			if (valuesMismatched) {
+				warnings.add(new ValidationWarning(50));
 			}
 		}
 	}

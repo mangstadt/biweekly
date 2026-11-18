@@ -1,5 +1,7 @@
 package biweekly.io;
 
+import static biweekly.property.ValuedProperty.getValue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,11 +10,12 @@ import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import biweekly.component.VTimezone;
 import biweekly.property.ICalProperty;
 import biweekly.property.TimezoneId;
-import biweekly.property.ValuedProperty;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -161,18 +164,15 @@ public class TimezoneInfo {
 	 * @return the timezone or null if not found
 	 */
 	public TimezoneAssignment getTimezoneById(String tzid) {
-		for (TimezoneAssignment assignment : assignments) {
-			VTimezone component = assignment.getComponent();
-			if (component == null) {
-				continue;
-			}
-
-			String componentId = ValuedProperty.getValue(component.getTimezoneId());
-			if (tzid.equals(componentId)) {
-				return assignment;
-			}
-		}
-		return null;
+		//@formatter:off
+		return assignments.stream()
+			.filter(assignment -> Objects.nonNull(assignment.getComponent()))
+			.filter(assignment -> {
+				String componentId = getValue(assignment.getComponent().getTimezoneId());
+				return tzid.equals(componentId);
+			})
+		.findFirst().orElse(null);
+		//@formatter:on
 	}
 
 	/**
@@ -264,14 +264,12 @@ public class TimezoneInfo {
 	 * @return the components (this collection is immutable)
 	 */
 	public Collection<VTimezone> getComponents() {
-		List<VTimezone> components = new ArrayList<>(assignments.size());
-		for (TimezoneAssignment assignment : assignments) {
-			VTimezone component = assignment.getComponent();
-			if (component != null) {
-				components.add(component);
-			}
-		}
-		return Collections.unmodifiableList(components);
+		//@formatter:off
+		return Collections.unmodifiableList(assignments.stream()
+			.map(TimezoneAssignment::getComponent)
+			.filter(Objects::nonNull)
+		.collect(Collectors.toList()));
+		//@formatter:on
 	}
 
 	/**
@@ -295,11 +293,6 @@ public class TimezoneInfo {
 	 * @return true if the object was found, false if not
 	 */
 	private static <T> boolean containsIdentity(List<T> list, T object) {
-		for (T item : list) {
-			if (item == object) {
-				return true;
-			}
-		}
-		return false;
+		return list.stream().anyMatch(item -> item == object);
 	}
 }

@@ -1,5 +1,7 @@
 package biweekly.parameter;
 
+import java.util.Arrays;
+
 import biweekly.ICalVersion;
 
 /*
@@ -52,11 +54,6 @@ public class VersionedEnumParameterValue extends EnumParameterValue {
 	 * @return true if it is supported, false if not
 	 */
 	public boolean isSupported(ICalVersion version) {
-		for (ICalVersion supportedVersion : supportedVersions) {
-			if (supportedVersion == version) {
-				return true;
-			}
-		}
-		return false;
+		return Arrays.stream(supportedVersions).anyMatch(supportedVersion -> supportedVersion == version);
 	}
 }

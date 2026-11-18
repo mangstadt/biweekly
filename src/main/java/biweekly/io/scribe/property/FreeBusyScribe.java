@@ -1,10 +1,14 @@
 package biweekly.io.scribe.property;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -18,8 +22,6 @@ import biweekly.property.FreeBusy;
 import biweekly.util.Duration;
 import biweekly.util.ICalDate;
 import biweekly.util.Period;
-
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -61,32 +63,12 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 	}
 
 	@Override
-	protected String _writeText(final FreeBusy property, final WriteContext context) {
-		List<Period> values = property.getValues();
-		List<String> strValues = new ArrayList<>(values.size());
-		for (Period period : values) {
-			StringBuilder sb = new StringBuilder();
-
-			Date start = period.getStartDate();
-			if (start != null) {
-				String dateStr = date(start, property, context).extended(false).write();
-				sb.append(dateStr);
-			}
-
-			sb.append('/');
-
-			Date end = period.getEndDate();
-			if (end != null) {
-				String dateStr = date(end, property, context).extended(false).write();
-				sb.append(dateStr);
-			} else if (period.getDuration() != null) {
-				sb.append(period.getDuration());
-			}
-
-			strValues.add(sb.toString());
-		}
-
-		return VObjectPropertyValues.writeList(strValues);
+	protected String _writeText(FreeBusy property, WriteContext context) {
+		//@formatter:off
+		return VObjectPropertyValues.writeList(property.getValues().stream()
+			.map(period -> periodStringBasic(period, property, context))
+		.collect(Collectors.toList()));
+		//@formatter:on
 	}
 
 	@Override
@@ -113,7 +95,8 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 
 			Duration duration = period.getDuration();
 			if (duration != null) {
-				periodElement.append("duration", duration.toString());
+				String durationStr = duration.toString();
+				periodElement.append("duration", durationStr);
 			}
 		}
 	}
@@ -197,29 +180,40 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 			return JCalValue.single("");
 		}
 
-		List<String> valuesStr = new ArrayList<>();
-		for (Period period : values) {
-			StringBuilder sb = new StringBuilder();
-			Date start = period.getStartDate();
-			if (start != null) {
-				String dateStr = date(start, property, context).extended(true).write();
-				sb.append(dateStr);
-			}
+		//@formatter:off
+		return JCalValue.multi(values.stream()
+			.map(value -> periodStringExtended(value, property, context))
+		.collect(Collectors.toList()));
+		//@formatter:on
+	}
 
-			sb.append('/');
+	private String periodStringBasic(Period period, FreeBusy property, WriteContext context) {
+		return periodString(period, property, context, false);
+	}
 
-			Date end = period.getEndDate();
-			if (end != null) {
-				String dateStr = date(end, property, context).extended(true).write();
-				sb.append(dateStr);
-			} else if (period.getDuration() != null) {
-				sb.append(period.getDuration());
-			}
+	private String periodStringExtended(Period period, FreeBusy property, WriteContext context) {
+		return periodString(period, property, context, true);
+	}
 
-			valuesStr.add(sb.toString());
+	private String periodString(Period period, FreeBusy property, WriteContext context, boolean extended) {
+		StringBuilder sb = new StringBuilder();
+		Date start = period.getStartDate();
+		if (start != null) {
+			String dateStr = date(start, property, context).extended(extended).write();
+			sb.append(dateStr);
 		}
 
-		return JCalValue.multi(valuesStr);
+		sb.append('/');
+
+		Date end = period.getEndDate();
+		if (end != null) {
+			String dateStr = date(end, property, context).extended(extended).write();
+			sb.append(dateStr);
+		} else if (period.getDuration() != null) {
+			sb.append(period.getDuration());
+		}
+
+		return sb.toString();
 	}
 
 	@Override
@@ -229,41 +223,48 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 
 	private FreeBusy parse(List<String> periods, ICalParameters parameters, ParseContext context) {
 		FreeBusy property = new FreeBusy();
+		List<Period> values = property.getValues();
 
-		for (String period : periods) {
-			int slash = period.indexOf('/');
-			if (slash < 0) {
-				throw new CannotParseException(13);
-			}
+		periods.stream().map(this::parsePeriodString).forEach(values::add);
 
-			String startStr = period.substring(0, slash);
-			ICalDate start;
-			try {
-				start = date(startStr).parse();
-			} catch (IllegalArgumentException e) {
-				throw new CannotParseException(10, startStr);
-			}
-
-			String endStr = period.substring(slash + 1);
-			ICalDate end;
-			try {
-				end = date(endStr).parse();
-				property.getValues().add(new Period(start, end));
-				context.addDate(start, property, parameters);
-				context.addDate(end, property, parameters);
-			} catch (IllegalArgumentException e) {
-				//must be a duration
-				try {
-					Duration duration = Duration.parse(endStr);
-					property.getValues().add(new Period(start, duration));
-					context.addDate(start, property, parameters);
-				} catch (IllegalArgumentException e2) {
-					throw new CannotParseException(14, endStr);
-				}
-			}
-		}
+		//register dates with context
+		//@formatter:off
+		Stream.concat(
+			values.stream().map(Period::getStartDate),
+			values.stream().map(Period::getEndDate).filter(Objects::nonNull)
+		).forEach(date -> context.addDate(date, property, parameters));
+		//@formatter:on
 
 		return property;
+	}
+
+	private Period parsePeriodString(String value) {
+		int slash = value.indexOf('/');
+		if (slash < 0) {
+			throw new CannotParseException(13);
+		}
+
+		String startStr = value.substring(0, slash);
+		ICalDate start;
+		try {
+			start = date(startStr).parse();
+		} catch (IllegalArgumentException e) {
+			throw new CannotParseException(10, startStr);
+		}
+
+		String endStr = value.substring(slash + 1);
+		try {
+			ICalDate end = date(endStr).parse();
+			return new Period(start, end);
+		} catch (IllegalArgumentException e) {
+			//try to parse as a duration
+			try {
+				Duration duration = Duration.parse(endStr);
+				return new Period(start, duration);
+			} catch (IllegalArgumentException e2) {
+				throw new CannotParseException(14, endStr);
+			}
+		}
 	}
 
 	@Override

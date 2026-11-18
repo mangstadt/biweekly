@@ -8,11 +8,14 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -29,6 +32,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -74,12 +78,11 @@ public final class XmlUtils {
 	 */
 	public static Document createDocument() {
 		try {
-			DocumentBuilderFactory fact = DocumentBuilderFactory.newInstance();
-			fact.setNamespaceAware(true);
-			DocumentBuilder db = fact.newDocumentBuilder();
-			return db.newDocument();
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			return builder.newDocument();
 		} catch (ParserConfigurationException e) {
-			//will probably never be thrown because we're not doing anything fancy with the configuration
+			//should never be thrown because we're not doing anything fancy with the configuration
 			throw new RuntimeException(e);
 		}
 	}
@@ -94,8 +97,8 @@ public final class XmlUtils {
 		try {
 			return toDocument(new StringReader(xml));
 		} catch (IOException e) {
-			//reading from string
-			throw new RuntimeException(e);
+			//should never be thrown because we're reading from a string
+			throw new UncheckedIOException(e);
 		}
 	}
 
@@ -175,24 +178,21 @@ public final class XmlUtils {
 	 * XXE Cheat Sheet</a>
 	 */
 	public static void applyXXEProtection(DocumentBuilderFactory factory) {
-		Map<String, Boolean> features = new HashMap<>();
-		features.put("http://apache.org/xml/features/disallow-doctype-decl", true);
-		features.put("http://xml.org/sax/features/external-general-entities", false);
-		features.put("http://xml.org/sax/features/external-parameter-entities", false);
-		features.put("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-
-		for (Map.Entry<String, Boolean> entry : features.entrySet()) {
-			String feature = entry.getKey();
-			Boolean value = entry.getValue();
-			try {
-				factory.setFeature(feature, value);
-			} catch (ParserConfigurationException e) {
-				//feature is not supported by the local XML engine, skip it
-			}
-		}
+		setFeature(factory, "http://apache.org/xml/features/disallow-doctype-decl", true);
+		setFeature(factory, "http://xml.org/sax/features/external-general-entities", false);
+		setFeature(factory, "http://xml.org/sax/features/external-parameter-entities", false);
+		setFeature(factory, "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 
 		factory.setXIncludeAware(false);
 		factory.setExpandEntityReferences(false);
+	}
+
+	private static void setFeature(DocumentBuilderFactory factory, String feature, Boolean value) {
+		try {
+			factory.setFeature(feature, value);
+		} catch (ParserConfigurationException ignore) {
+			//feature is not supported by the local XML engine, skip it
+		}
 	}
 
 	/**
@@ -202,29 +202,23 @@ public final class XmlUtils {
 	 * @see <a href=
 	 * "https://www.owasp.org/index.php/XML_External_Entity_%28XXE%29_Prevention_Cheat_Sheet#Java">
 	 * XXE Cheat Sheet</a>
-	 * @see <a href="https://rules.sonarsource.com/java/RSPEC-2755/">SonarLint
-	 * 2755</a>
 	 */
 	public static void applyXXEProtection(TransformerFactory factory) {
-		//@formatter:off
-		String[] attributes = {
-			//XMLConstants.ACCESS_EXTERNAL_DTD (Java 7 only)
-			"http://javax.xml.XMLConstants/property/accessExternalDTD",
+		//XMLConstants.ACCESS_EXTERNAL_DTD (Java 7 only)
+		setAttribute(factory, "http://javax.xml.XMLConstants/property/accessExternalDTD");
 
-			//XMLConstants.ACCESS_EXTERNAL_SCHEMA (Java 7 only)
-			"http://javax.xml.XMLConstants/property/accessExternalSchema", 
+		//XMLConstants.ACCESS_EXTERNAL_SCHEMA (Java 7 only)
+		setAttribute(factory, "http://javax.xml.XMLConstants/property/accessExternalSchema");
 
-			//XMLConstants.ACCESS_EXTERNAL_STYLESHEET (Java 7 only)
-			"http://javax.xml.XMLConstants/property/accessExternalStylesheet"
-		};
-		//@formatter:on
+		//XMLConstants.ACCESS_EXTERNAL_STYLESHEET (Java 7 only)
+		setAttribute(factory, "http://javax.xml.XMLConstants/property/accessExternalStylesheet");
+	}
 
-		for (String attribute : attributes) {
-			try {
-				factory.setAttribute(attribute, "");
-			} catch (IllegalArgumentException e) {
-				//attribute is not supported by the local XML engine, skip it
-			}
+	private static void setAttribute(TransformerFactory factory, String name) {
+		try {
+			factory.setAttribute(name, "");
+		} catch (IllegalArgumentException ignore) {
+			//attribute is not supported by the local XML engine, skip it
 		}
 	}
 
@@ -264,7 +258,7 @@ public final class XmlUtils {
 			toWriter(node, writer, outputProperties);
 			return writer.toString();
 		} catch (TransformerException e) {
-			//should never be thrown because we're writing to string
+			//should never be thrown because we're writing to a string
 			throw new RuntimeException(e);
 		}
 	}
@@ -287,27 +281,37 @@ public final class XmlUtils {
 	 * @throws TransformerException if there's a problem writing to the writer
 	 */
 	public static void toWriter(Node node, Writer writer, Map<String, String> outputProperties) throws TransformerException {
+		Transformer transformer;
 		try {
 			TransformerFactory factory = TransformerFactory.newInstance();
 			applyXXEProtection(factory);
-
-			Transformer transformer = factory.newTransformer();
-			for (Map.Entry<String, String> property : outputProperties.entrySet()) {
-				try {
-					transformer.setOutputProperty(property.getKey(), property.getValue());
-				} catch (IllegalArgumentException e) {
-					//ignore invalid output properties
-				}
-			}
-
-			DOMSource source = new DOMSource(node);
-			StreamResult result = new StreamResult(writer);
-			transformer.transform(source, result);
-		} catch (TransformerConfigurationException e) {
-			//no complex configurations
-		} catch (TransformerFactoryConfigurationError e) {
-			//no complex configurations
+			transformer = factory.newTransformer();
+		} catch (TransformerConfigurationException | TransformerFactoryConfigurationError e) {
+			//should never be thrown because we're not doing anything fancy with the configuration
+			throw new RuntimeException(e);
 		}
+
+		assignOutputProperties(transformer, outputProperties);
+
+		DOMSource source = new DOMSource(node);
+		StreamResult result = new StreamResult(writer);
+		transformer.transform(source, result);
+	}
+
+	/**
+	 * Assigns the given output properties to the given transformer, ignoring
+	 * invalid output properties.
+	 * @param transformer the transformer
+	 * @param outputProperties the output properties
+	 */
+	public static void assignOutputProperties(Transformer transformer, Map<String, String> outputProperties) {
+		outputProperties.forEach((name, value) -> {
+			try {
+				transformer.setOutputProperty(name, value);
+			} catch (IllegalArgumentException e) {
+				//ignore invalid output properties
+			}
+		});
 	}
 
 	/**
@@ -316,14 +320,82 @@ public final class XmlUtils {
 	 * @return the elements
 	 */
 	public static List<Element> toElementList(NodeList nodeList) {
-		List<Element> elements = new ArrayList<>();
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			Node node = nodeList.item(i);
-			if (node instanceof Element) {
-				elements.add((Element) node);
-			}
-		}
-		return elements;
+		return toElementStream(nodeList).collect(Collectors.toList());
+	}
+
+	/**
+	 * Generates a stream of just the elements in a {@link NodeList}.
+	 * @param nodeList the node list
+	 * @return the stream
+	 */
+	public static Stream<Element> toElementStream(NodeList nodeList) {
+		//@formatter:off
+		return IntStream.range(0, nodeList.getLength())
+			.mapToObj(nodeList::item)
+			.filter(Element.class::isInstance)
+			.map(Element.class::cast);
+		//@formatter:on
+	}
+
+	/**
+	 * Generates a stream of the element's child elements.
+	 * @param element the element
+	 * @return the stream
+	 */
+	public static Stream<Element> children(Element element) {
+		return toElementStream(element.getChildNodes());
+	}
+
+	/**
+	 * Generates a stream of the given element's child elements which are part
+	 * of the given namespace.
+	 * @param parent the parent element
+	 * @param namespaceUri the namespace URI
+	 * @return the stream
+	 */
+	public static Stream<Element> children(Element parent, String namespaceUri) {
+		return children(parent).filter(child -> child.getNamespaceURI().equals(namespaceUri));
+	}
+
+	/**
+	 * Generates a stream of the element's child elements that match the given
+	 * qualified name.
+	 * @param element the element
+	 * @param namespaceUri the namespace URI
+	 * @param localName the local name
+	 * @return the stream
+	 */
+	public static Stream<Element> children(Element element, String namespaceUri, String localName) {
+		return children(element, namespaceUri).filter(child -> child.getLocalName().equals(localName));
+	}
+
+	/**
+	 * Generates a stream of the element's child elements that match the given
+	 * qualified name.
+	 * @param element the element
+	 * @param qname the qualified name
+	 * @return the stream
+	 */
+	public static Stream<Element> children(Element element, QName qname) {
+		return children(element, qname.getNamespaceURI(), qname.getLocalPart());
+	}
+
+	/**
+	 * Allows a {@link NodeList} to be used in a for-each loop.
+	 * @param nodeList the node list
+	 * @return the iterable object
+	 */
+	public static Iterable<Node> iterable(NodeList nodeList) {
+		return () -> IntStream.range(0, nodeList.getLength()).mapToObj(nodeList::item).iterator();
+	}
+
+	/**
+	 * Creates a stream from a {@link NamedNodeMap}.
+	 * @param namedNodeMap the named node map
+	 * @return the stream
+	 */
+	public static Stream<Node> stream(NamedNodeMap namedNodeMap) {
+		return IntStream.range(0, namedNodeMap.getLength()).mapToObj(namedNodeMap::item);
 	}
 
 	/**
@@ -331,24 +403,8 @@ public final class XmlUtils {
 	 * @param parent the parent element
 	 * @return the first child element or null if there are no child elements
 	 */
-	public static Element getFirstChildElement(Element parent) {
-		return getFirstChildElement((Node) parent);
-	}
-
-	/**
-	 * Gets the first child element of a node.
-	 * @param parent the node
-	 * @return the first child element or null if there are no child elements
-	 */
-	private static Element getFirstChildElement(Node parent) {
-		NodeList nodeList = parent.getChildNodes();
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			Node node = nodeList.item(i);
-			if (node instanceof Element) {
-				return (Element) node;
-			}
-		}
-		return null;
+	public static Element firstChild(Element parent) {
+		return children(parent).findFirst().orElse(null);
 	}
 
 	/**
@@ -358,7 +414,18 @@ public final class XmlUtils {
 	 * @return true if the node has the given qualified name, false if not
 	 */
 	public static boolean hasQName(Node node, QName qname) {
-		return qname.getNamespaceURI().equals(node.getNamespaceURI()) && qname.getLocalPart().equals(node.getLocalName());
+		return hasQName(node, qname.getNamespaceURI(), qname.getLocalPart());
+	}
+
+	/**
+	 * Determines if a node has a particular qualified name.
+	 * @param node the node
+	 * @param namespaceUri the namespace URI
+	 * @param localName the local name
+	 * @return true if the node has the given qualified name, false if not
+	 */
+	public static boolean hasQName(Node node, String namespaceUri, String localName) {
+		return namespaceUri.equals(node.getNamespaceURI()) && localName.equals(node.getLocalName());
 	}
 
 	private XmlUtils() {

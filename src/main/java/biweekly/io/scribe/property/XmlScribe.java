@@ -93,16 +93,13 @@ public class XmlScribe extends ICalPropertyScribe<Xml> {
 	@Override
 	protected Xml _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
 		Xml xml = new Xml(element.getElement());
-
-		//remove the <parameters> element
-		Element root = xml.getValue().getDocumentElement();
-		for (Element child : XmlUtils.toElementList(root.getChildNodes())) {
-			if ("parameters".equals(child.getLocalName()) && XCalNamespaceContext.XCAL_NS.equals(child.getNamespaceURI())) {
-				root.removeChild(child);
-			}
-		}
-
+		removeParametersElement(xml);
 		return xml;
+	}
+
+	private void removeParametersElement(Xml xml) {
+		Element root = xml.getValue().getDocumentElement();
+		XmlUtils.children(root, XCalNamespaceContext.XCAL_NS, "parameters").forEach(root::removeChild);
 	}
 
 	@Override

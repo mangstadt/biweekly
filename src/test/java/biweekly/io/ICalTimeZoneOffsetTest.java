@@ -1,5 +1,6 @@
 package biweekly.io;
 
+import static biweekly.util.TestUtils.each;
 import static biweekly.util.TestUtils.utc;
 import static biweekly.util.TestUtils.vtimezoneNewYork;
 import static org.junit.Assert.assertEquals;
@@ -11,12 +12,12 @@ import org.junit.Test;
 
 import biweekly.Biweekly;
 import biweekly.ICalendar;
-import biweekly.property.DateStart;
 import biweekly.component.StandardTime;
 import biweekly.component.VTimezone;
-import biweekly.util.UtcOffset;
+import biweekly.property.DateStart;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.ICalDateFormat;
+import biweekly.util.UtcOffset;
 
 /*
 Copyright (c) 2013-2024, Michael Angstadt
@@ -49,8 +50,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 public class ICalTimeZoneOffsetTest {
 	@Test
 	public void constant_daylight_offset_before_and_after_onset() {
-		for (String onset : new String[] { "20000519T150000", "21000519T150000" }) {
-			for (String event : new String[] { "20010519T150000", "21010519T150000" }) {
+		for (String onset : each("20000519T150000", "21000519T150000")) {
+			for (String event : each("20010519T150000", "21010519T150000")) {
 				assertParsed(onset, event, "+0200", "+0200", event.substring(0, 8) + "T130000Z");
 			}
 		}

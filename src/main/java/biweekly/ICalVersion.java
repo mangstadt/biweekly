@@ -1,5 +1,8 @@
 package biweekly;
 
+import java.util.Arrays;
+import java.util.stream.Stream;
+
 import com.github.mangstadt.vinnie.SyntaxStyle;
 
 /*
@@ -92,6 +95,14 @@ public enum ICalVersion {
 			return V2_0;
 		}
 		return null;
+	}
+
+	/**
+	 * Creates a stream of this enum's values.
+	 * @return the stream
+	 */
+	public static Stream<ICalVersion> stream() {
+		return Arrays.stream(ICalVersion.values());
 	}
 
 	@Override

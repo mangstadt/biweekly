@@ -14,11 +14,11 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Transformer;
@@ -475,10 +475,7 @@ public class XCalDocument {
 			XmlUtils.applyXXEProtection(factory);
 
 			transformer = factory.newTransformer();
-		} catch (TransformerConfigurationException e) {
-			//should never be thrown because we're not doing anything fancy with the configuration
-			throw new RuntimeException(e);
-		} catch (TransformerFactoryConfigurationError e) {
+		} catch (TransformerConfigurationException | TransformerFactoryConfigurationError e) {
 			//should never be thrown because we're not doing anything fancy with the configuration
 			throw new RuntimeException(e);
 		}
@@ -487,11 +484,7 @@ public class XCalDocument {
 		 * Using Transformer#setOutputProperties(Properties) doesn't work for
 		 * some reason for setting the number of indentation spaces.
 		 */
-		for (Map.Entry<String, String> entry : outputProperties.entrySet()) {
-			String key = entry.getKey();
-			String value = entry.getValue();
-			transformer.setOutputProperty(key, value);
-		}
+		outputProperties.forEach(transformer::setOutputProperty);
 
 		DOMSource source = new DOMSource(document);
 		StreamResult result = new StreamResult(writer);
@@ -537,41 +530,47 @@ public class XCalDocument {
 			boolean isICalendar = component instanceof ICalendar;
 
 			//parse properties
-			for (Element propertyWrapperElement : getChildElements(componentElement, PROPERTIES)) { //there should be only one <properties> element, but parse them all incase there are more
-				for (Element propertyElement : XmlUtils.toElementList(propertyWrapperElement.getChildNodes())) {
-					ICalProperty property = parseProperty(propertyElement);
-					if (property == null) {
-						continue;
-					}
+			//@formatter:off
+			Stream<ICalProperty> stream = XmlUtils.children(componentElement, PROPERTIES) //there should be only one <properties> element, but parse them all in case there are more
+				.flatMap(XmlUtils::children)
+				.map(this::parseProperty)
+				.filter(Objects::nonNull);
+			//@formatter:on
 
-					//set "ICalendar.version" if the value of the VERSION property is recognized
-					//otherwise, unmarshal VERSION like a normal property
-					if (isICalendar && property instanceof Version) {
-						Version version = (Version) property;
-						ICalVersion icalVersion = version.toICalVersion();
-						if (icalVersion != null) {
-							context.setVersion(icalVersion);
-							continue;
-						}
-					}
-
-					component.addProperty(property);
-				}
+			if (isICalendar) {
+				stream = stream.filter(this::filterOutTheVersionProperty);
 			}
+
+			stream.forEach(component::addProperty);
 
 			//parse sub-components
-			for (Element componentWrapperElement : getChildElements(componentElement, COMPONENTS)) { //there should be only one <components> element, but parse them all incase there are more
-				for (Element subComponentElement : XmlUtils.toElementList(componentWrapperElement.getChildNodes())) {
-					if (!XCAL_NS.equals(subComponentElement.getNamespaceURI())) {
-						continue;
-					}
-
-					ICalComponent subComponent = parseComponent(subComponentElement);
-					component.addComponent(subComponent);
-				}
-			}
+			//@formatter:off
+			XmlUtils.children(componentElement, COMPONENTS) //there should be only one <components> element, but parse them all in case there are more
+				.flatMap(subComponentElement -> XmlUtils.children(subComponentElement, XCAL_NS))
+				.map(this::parseComponent)
+			.forEach(component::addComponent);
+			//@formatter:on
 
 			return component;
+		}
+
+		/**
+		 * Set "ICalendar.version" if the value of the VERSION property is
+		 * recognized. Otherwise, unmarshal VERSION like a normal property.
+		 * @param property the property
+		 * @return false if it's a VERSION property with a recognizable value,
+		 * true otherwise
+		 */
+		private boolean filterOutTheVersionProperty(ICalProperty property) {
+			if (property instanceof Version) {
+				Version version = (Version) property;
+				ICalVersion icalVersion = version.toICalVersion();
+				if (icalVersion != null) {
+					context.setVersion(icalVersion);
+					return false;
+				}
+			}
+			return true;
 		}
 
 		private ICalProperty parseProperty(Element propertyElement) {
@@ -610,57 +609,35 @@ public class XCalDocument {
 		private ICalParameters parseParameters(Element propertyElement) {
 			ICalParameters parameters = new ICalParameters();
 
-			/*
-			 * There should only be a single <parameters> element, but parse
-			 * them all in case there are more.
-			 */
-			for (Element parametersWrapperElement : getChildElements(propertyElement, PARAMETERS)) {
-				List<Element> parameterElements = XmlUtils.toElementList(parametersWrapperElement.getChildNodes());
-				for (Element parameterElement : parameterElements) {
-					parseParameter(parameterElement, parameters);
-				}
-			}
+			//@formatter:off
+			XmlUtils.children(propertyElement, PARAMETERS) //there should only be a single <parameters> element, but parse them all in case there are more
+				.flatMap(parameterElement -> XmlUtils.children(parameterElement, XCAL_NS))
+			.forEach(parameterElement -> parseParameter(parameterElement, parameters));
+			//@formatter:on
 
 			return parameters;
 		}
 
 		private void parseParameter(Element parameterElement, ICalParameters parameters) {
-			if (!XCAL_NS.equals(parameterElement.getNamespaceURI())) {
-				return;
-			}
-
 			LaciToken name = new LaciToken(parameterElement.getLocalName());
-			List<Element> valueElements = XmlUtils.toElementList(parameterElement.getChildNodes());
-			if (valueElements.isEmpty()) {
+			int sizeBefore = parameters.size();
+
+			//@formatter:off
+			XmlUtils.children(parameterElement, XCAL_NS)
+				.map(Element::getTextContent)
+			.forEach(value -> parameters.put(name, value));
+			//@formatter:on
+
+			int sizeAfter = parameters.size();
+			if (sizeBefore == sizeAfter) {
 				//this should never be true if the xCal is properly formed
 				String value = parameterElement.getTextContent();
 				parameters.put(name, value);
-				return;
-			}
-
-			for (Element valueElement : valueElements) {
-				if (!XCAL_NS.equals(valueElement.getNamespaceURI())) {
-					continue;
-				}
-
-				String value = valueElement.getTextContent();
-				parameters.put(name, value);
 			}
 		}
 
-		private List<Element> getVCalendarElements() {
-			return (icalendarRootElement == null) ? Collections.<Element> emptyList() : getChildElements(icalendarRootElement, VCALENDAR);
-		}
-
-		private List<Element> getChildElements(Element parent, QName qname) {
-			List<Element> elements = new ArrayList<>();
-			for (Element child : XmlUtils.toElementList(parent.getChildNodes())) {
-				QName childQName = new QName(child.getNamespaceURI(), child.getLocalName());
-				if (qname.equals(childQName)) {
-					elements.add(child);
-				}
-			}
-			return elements;
+		private Stream<Element> getVCalendarElements() {
+			return (icalendarRootElement == null) ? Stream.empty() : XmlUtils.children(icalendarRootElement, VCALENDAR);
 		}
 
 		public void close() {
@@ -721,15 +698,15 @@ public class XCalDocument {
 		private Element buildPropertiesElement(List<ICalProperty> properties, ICalComponent parent) {
 			Element propertiesWrapperElement = buildElement(PROPERTIES);
 
-			for (ICalProperty property : properties) {
-				context.setParent(parent); //set parent here incase a scribe resets the parent
-
-				//create property element
-				Element propertyElement = buildPropertyElement(property);
-				if (propertyElement != null) {
-					propertiesWrapperElement.appendChild(propertyElement);
-				}
-			}
+			//@formatter:off
+			properties.stream()
+				.map(property -> {
+					context.setParent(parent); //set parent here in case a scribe resets the parent
+					return buildPropertyElement(property);
+				})
+				.filter(Objects::nonNull)
+			.forEach(propertiesWrapperElement::appendChild);
+			//@formatter:on
 
 			return propertiesWrapperElement;
 		}
@@ -737,12 +714,12 @@ public class XCalDocument {
 		private Element buildComponentsElement(List<ICalComponent> subComponents) {
 			Element componentsWrapperElement = buildElement(COMPONENTS);
 
-			for (ICalComponent subComponent : subComponents) {
-				Element subComponentElement = buildComponentElement(subComponent);
-				if (subComponentElement != null) {
-					componentsWrapperElement.appendChild(subComponentElement);
-				}
-			}
+			//@formatter:off
+			subComponents.stream()
+				.map(this::buildComponentElement)
+				.filter(Objects::nonNull)
+			.forEach(componentsWrapperElement::appendChild);
+			//@formatter:on
 
 			return componentsWrapperElement;
 		}
@@ -787,19 +764,22 @@ public class XCalDocument {
 		private Element buildParametersElement(ICalParameters parameters) {
 			Element parametersWrapperElement = buildElement(PARAMETERS);
 
-			for (Map.Entry<LaciToken, List<String>> parameter : parameters) {
-				LaciToken name = parameter.getKey();
-				ICalDataType dataType = parameterDataTypes.get(name);
-				String dataTypeStr = (dataType == null) ? "unknown" : dataType.getName().toLowerCase();
-
+			parameters.getMap().forEach((name, values) -> {
+				String dataTypeStr = getParameterDataTypeElementName(name);
 				Element parameterElement = buildAndAppendElement(name.toLowerCase(), parametersWrapperElement);
-				for (String parameterValue : parameter.getValue()) {
+
+				for (String value : values) {
 					Element parameterValueElement = buildAndAppendElement(dataTypeStr, parameterElement);
-					parameterValueElement.setTextContent(parameterValue);
+					parameterValueElement.setTextContent(value);
 				}
-			}
+			});
 
 			return parametersWrapperElement;
+		}
+
+		private String getParameterDataTypeElementName(LaciToken name) {
+			ICalDataType dataType = parameterDataTypes.get(name);
+			return (dataType == null) ? "unknown" : dataType.getName().toLowerCase();
 		}
 
 		private Element buildElement(String localName) {

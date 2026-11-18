@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.stream.IntStream;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.ErrorListener;
@@ -490,16 +491,15 @@ public class XCalReader extends StreamReader {
 		}
 
 		private void applyAttributesTo(Element element, Attributes attributes) {
-			for (int i = 0; i < attributes.getLength(); i++) {
-				String qname = attributes.getQName(i);
-				if (qname.startsWith("xmlns:")) {
-					continue;
-				}
-
+			//@formatter:off
+			IntStream.range(0, attributes.getLength())
+				.filter(i -> !attributes.getQName(i).startsWith("xmlns:"))
+			.forEach(i -> {
 				String name = attributes.getLocalName(i);
 				String value = attributes.getValue(i);
 				element.setAttribute(name, value);
-			}
+			});
+			//@formatter:on
 		}
 	}
 

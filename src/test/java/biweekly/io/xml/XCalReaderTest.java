@@ -1128,7 +1128,7 @@ public class XCalReaderTest {
 
 		@Override
 		protected Company _parseXml(XCalElement element, ICalParameters parameters, ParseContext context) {
-			String boss = XmlUtils.getFirstChildElement(element.getElement()).getTextContent();
+			String boss = XmlUtils.firstChild(element.getElement()).getTextContent();
 			if (boss.equals("skip-me")) {
 				throw new SkipMeException("");
 			}

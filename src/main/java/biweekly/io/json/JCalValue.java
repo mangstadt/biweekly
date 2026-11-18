@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.github.mangstadt.vinnie.LaciToken;
 
@@ -83,11 +84,11 @@ public class JCalValue {
 	 * @return the jCal value
 	 */
 	public static JCalValue multi(List<?> values) {
-		List<JsonValue> multiValues = new ArrayList<>(values.size());
-		for (Object value : values) {
-			multiValues.add(new JsonValue(value));
-		}
-		return new JCalValue(multiValues);
+		//@formatter:off
+		return new JCalValue(values.stream()
+			.map(JsonValue::new)
+		.collect(Collectors.toList()));
+		//@formatter:on
 	}
 
 	/**
@@ -103,12 +104,11 @@ public class JCalValue {
 	 * @return the jCal value
 	 */
 	public static JCalValue structured(Object... values) {
-		List<List<?>> valuesList = new ArrayList<>(values.length);
-		for (Object value : values) {
-			List<?> list = (value instanceof List) ? (List<?>) value : Collections.singletonList(value);
-			valuesList.add(list);
-		}
-		return structured(valuesList);
+		//@formatter:off
+		return structured(Arrays.stream(values)
+			.map(value -> (value instanceof List) ? (List<?>) value : Collections.singletonList(value))
+		.collect(Collectors.toList()));
+		//@formatter:on
 	}
 
 	/**
@@ -117,34 +117,29 @@ public class JCalValue {
 	 * @return the jCal value
 	 */
 	public static JCalValue structured(List<List<?>> values) {
-		List<JsonValue> array = new ArrayList<>(values.size());
-
-		for (List<?> list : values) {
+		List<JsonValue> array = values.stream().map(list -> {
 			if (list.isEmpty()) {
-				array.add(new JsonValue(""));
-				continue;
+				return new JsonValue("");
 			}
 
 			if (list.size() == 1) {
-				Object value = list.get(0);
-				if (value == null) {
-					value = "";
-				}
-				array.add(new JsonValue(value));
-				continue;
+				Object value = nullToEmptyString(list.get(0));
+				return new JsonValue(value);
 			}
 
-			List<JsonValue> subArray = new ArrayList<>(list.size());
-			for (Object value : list) {
-				if (value == null) {
-					value = "";
-				}
-				subArray.add(new JsonValue(value));
-			}
-			array.add(new JsonValue(subArray));
-		}
+			//@formatter:off
+			return new JsonValue(list.stream()
+				.map(JCalValue::nullToEmptyString)
+				.map(JsonValue::new)
+			.collect(Collectors.toList()));
+			//@formatter:on
+		}).collect(Collectors.toList());
 
 		return new JCalValue(new JsonValue(array));
+	}
+	
+	private static Object nullToEmptyString(Object o) {
+		return (o == null) ? "" : o;
 	}
 
 	/**
@@ -218,94 +213,84 @@ public class JCalValue {
 	 * @return the structured values or empty list if not found
 	 */
 	public List<List<String>> asStructured() {
-		if (values.isEmpty()) {
+		return new StructuredValueConverter().convert();
+	}
+
+	private class StructuredValueConverter {
+		public List<List<String>> convert() {
+			if (values.isEmpty()) {
+				return Collections.emptyList();
+			}
+
+			JsonValue first = values.get(0);
+
+			//["request-status", {}, "text", ["2.0", "Success"] ]
+			List<JsonValue> array = first.getArray();
+			if (array != null) {
+				return fromArray(array);
+			}
+
+			//get the first value if it's not enclosed in an array
+			//["request-status", {}, "text", "2.0"]
+			Object obj = first.getValue();
+			if (obj != null) {
+				return Collections.singletonList(fromValue(obj));
+			}
+
+			//["request-status", {}, "text", null]
+			if (first.isNull()) {
+				return Collections.singletonList(fromNull());
+			}
+
 			return Collections.emptyList();
 		}
 
-		JsonValue first = values.get(0);
-
-		//["request-status", {}, "text", ["2.0", "Success"] ]
-		List<JsonValue> array = first.getArray();
-		if (array != null) {
-			List<List<String>> components = new ArrayList<>(array.size());
-			for (JsonValue value : array) {
-				if (value.isNull()) {
-					components.add(asStructuredNull());
-					continue;
-				}
-
-				Object obj = value.getValue();
-				if (obj != null) {
-					components.add(asStructuredValue(obj));
-					continue;
-				}
-
-				List<JsonValue> subArray = value.getArray();
-				if (subArray != null) {
-					components.add(asStructuredSubArray(subArray));
-					continue;
-				}
-			}
-			return components;
+		private List<List<String>> fromArray(List<JsonValue> array) {
+			//@formatter:off
+			return array.stream()
+				.map(this::fromArrayValue)
+				.filter(v -> v != null)
+			.collect(Collectors.toList());
+			//@formatter:on
 		}
 
-		//get the first value if it's not enclosed in an array
-		//["request-status", {}, "text", "2.0"]
-		Object obj = first.getValue();
-		if (obj != null) {
-			List<List<String>> components = new ArrayList<>(1);
-			components.add(asStructuredValue(obj));
-			return components;
-		}
-
-		//["request-status", {}, "text", null]
-		if (first.isNull()) {
-			List<List<String>> components = new ArrayList<>(1);
-			components.add(asStructuredNull());
-			return components;
-		}
-
-		/*
-		 * JSON objects are ignored.
-		 */
-
-		return Collections.emptyList();
-	}
-
-	private List<String> asStructuredSubArray(List<JsonValue> subArray) {
-		List<String> component = new ArrayList<>(subArray.size());
-
-		for (JsonValue subArrayValue : subArray) {
-			if (subArrayValue.isNull()) {
-				component.add("");
-				continue;
+		private List<String> fromArrayValue(JsonValue value) {
+			if (value.isNull()) {
+				return fromNull();
 			}
 
-			Object obj = subArrayValue.getValue();
+			Object obj = value.getValue();
 			if (obj != null) {
-				component.add(obj.toString());
-				continue;
+				return fromValue(obj);
 			}
 
-			/*
-			 * JSON objects and arrays inside of sub-arrays are ignored.
-			 */
+			List<JsonValue> subArray = value.getArray();
+			if (subArray != null) {
+				//@formatter:off
+				List<String> component = subArray.stream()
+					.map(jsonValue -> jsonValue.isNull() ? "" : jsonValue.getValue())
+					.filter(o -> o != null)
+					.map(Object::toString)
+				.collect(Collectors.toList());
+				//@formatter:on
+
+				if (component.size() == 1 && component.get(0).isEmpty()) {
+					return Collections.emptyList();
+				}
+				return component;
+			}
+
+			return null;
 		}
 
-		if (component.size() == 1 && component.get(0).isEmpty()) {
-			component.clear();
+		private List<String> fromNull() {
+			return Collections.emptyList();
 		}
 
-		return component;
-	}
-
-	private List<String> asStructuredValue(Object obj) {
-		String s = obj.toString();
-		return s.isEmpty() ? Collections.<String> emptyList() : Collections.singletonList(s);
-	}
-
-	private List<String> asStructuredNull() {
-		return Collections.emptyList();
+		private List<String> fromValue(Object obj) {
+			String s = obj.toString();
+			return s.isEmpty() ? Collections.emptyList() : Collections.singletonList(s);
+		}
 	}
 
 	/**
@@ -348,19 +333,18 @@ public class JCalValue {
 		}
 
 		ListMultimap<LaciToken, String> values = new ListMultimap<>();
-		for (Map.Entry<String, JsonValue> entry : map.entrySet()) {
-			LaciToken key = new LaciToken(entry.getKey());
-			JsonValue value = entry.getValue();
+		map.forEach((keyStr, value) -> {
+			LaciToken key = new LaciToken(keyStr);
 
 			if (value.isNull()) {
 				values.put(key, "");
-				continue;
+				return;
 			}
 
 			Object obj = value.getValue();
 			if (obj != null) {
 				values.put(key, obj.toString());
-				continue;
+				return;
 			}
 
 			List<JsonValue> array = value.getArray();
@@ -377,7 +361,7 @@ public class JCalValue {
 					}
 				}
 			}
-		}
+		});
 		return values;
 	}
 }

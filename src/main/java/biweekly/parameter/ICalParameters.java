@@ -1396,15 +1396,12 @@ public class ICalParameters extends ListMultimap<LaciToken, String> {
 	}
 
 	private void checkForInvalidChars(SyntaxStyle syntax, List<ValidationWarning> warnings) {
-		for (Map.Entry<LaciToken, List<String>> entry : this) {
-			LaciToken name = entry.getKey();
+		getMap().forEach((name, values) -> {
 			validateParameterName(name.toUpperCase(), syntax, warnings);
-
-			List<String> values = entry.getValue();
 			for (String value : values) {
 				validateParameterValue(name, value, syntax, warnings);
 			}
-		}
+		});
 	}
 
 	private void validateParameterName(String name, SyntaxStyle syntax, List<ValidationWarning> warnings) {
@@ -1542,9 +1539,8 @@ public class ICalParameters extends ListMultimap<LaciToken, String> {
 		 * does not matter.
 		 */
 		final int prime = 31;
-		int result = 1;
 
-		for (Map.Entry<LaciToken, List<String>> entry : this) {
+		return 1 + getMap().entrySet().stream().mapToInt(entry -> {
 			LaciToken key = entry.getKey();
 			List<String> value = entry.getValue();
 
@@ -1553,11 +1549,8 @@ public class ICalParameters extends ListMultimap<LaciToken, String> {
 			int entryHash = 1;
 			entryHash += prime * entryHash + Objects.hash(key);
 			entryHash += prime * entryHash + valueHash;
-
-			result += entryHash;
-		}
-
-		return result;
+			return entryHash;
+		}).sum();
 	}
 
 	/**
@@ -1585,9 +1578,8 @@ public class ICalParameters extends ListMultimap<LaciToken, String> {
 		ICalParameters other = (ICalParameters) obj;
 		if (size() != other.size()) return false;
 
-		for (Map.Entry<LaciToken, List<String>> entry : this) {
-			LaciToken key = entry.getKey();
-			List<String> value = entry.getValue();
+		return getMap().keySet().stream().allMatch(key -> {
+			List<String> value = get(key);
 			List<String> otherValue = other.get(key);
 
 			if (value.size() != otherValue.size()) {
@@ -1596,12 +1588,8 @@ public class ICalParameters extends ListMultimap<LaciToken, String> {
 
 			List<String> valueLower = toLowerSorted(value);
 			List<String> otherValueLower = toLowerSorted(otherValue);
-			if (!valueLower.equals(otherValueLower)) {
-				return false;
-			}
-		}
-
-		return true;
+			return valueLower.equals(otherValueLower);
+		});
 	}
 
 	private static List<String> toLowerSorted(List<String> list) {

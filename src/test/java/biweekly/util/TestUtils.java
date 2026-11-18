@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
 
@@ -89,20 +90,16 @@ public class TestUtils {
 	 * use "null" for warnings that do not have a code)
 	 */
 	public static void assertParseWarnings(List<ParseWarning> warnings, Integer... expectedCodes) {
-		List<Integer> actualWarnings = new ArrayList<>(warnings.size());
-		for (ParseWarning warning : warnings) {
-			actualWarnings.add(warning.getCode());
-		}
+		List<Integer> actualWarnings = warnings.stream().map(ParseWarning::getCode).collect(Collectors.toList());
 
 		if (actualWarnings.size() != expectedCodes.length) {
 			fail("Expected these warnings " + Arrays.toString(expectedCodes) + ", but was this: " + actualWarnings + ".  Actual warnings: " + warnings);
 		}
 
 		List<Integer> expectedWarnings = new ArrayList<>(Arrays.asList(expectedCodes));
-		for (Integer actualWarning : actualWarnings) {
-			if (!expectedWarnings.remove(actualWarning)) {
-				fail("Expected these warnings " + Arrays.toString(expectedCodes) + ", but was this: " + actualWarnings + ".  Actual warnings: " + warnings);
-			}
+		boolean matches = actualWarnings.stream().allMatch(expectedWarnings::remove);
+		if (!matches) {
+			fail("Expected these warnings " + Arrays.toString(expectedCodes) + ", but was this: " + actualWarnings + ".  Actual warnings: " + warnings);
 		}
 	}
 
@@ -535,20 +532,11 @@ public class TestUtils {
 	private static class IntegerArrayMap<T> extends IdentityHashMap<T, Integer[]> {
 		@Override
 		public String toString() {
-			StringBuilder sb = new StringBuilder("{");
-			boolean first = true;
-			for (Map.Entry<T, Integer[]> entry : entrySet()) {
-				if (!first) {
-					sb.append(", ");
-				}
-				first = false;
-
-				sb.append(entry.getKey().getClass().getSimpleName()).append("=");
-				sb.append(Arrays.toString(entry.getValue())).append(", ");
-			}
-			sb.append("}");
-
-			return sb.toString();
+			//@formatter:off
+			return entrySet().stream()
+				.map(entry -> entry.getKey().getClass().getSimpleName() + "=" + Arrays.toString(entry.getValue()))
+			.collect(Collectors.joining(", ", "{", "}"));
+			//@formatter:on
 		}
 	}
 
@@ -557,19 +545,13 @@ public class TestUtils {
 			return false;
 		}
 
-		List<Integer> actualCodes = new ArrayList<>(); //don't use a Set because there can be multiple warnings with the same code
-		for (ValidationWarning warning : warnings) {
-			actualCodes.add(warning.getCode());
-		}
+		//@formatter:off
+		List<Integer> actualCodes = warnings.stream()
+			.map(ValidationWarning::getCode)
+		.collect(Collectors.toCollection(ArrayList::new)); //mutable, don't use a Set because there can be multiple warnings with the same code
+		//@formatter:on
 
-		for (Integer code : expectedCodes) {
-			boolean found = actualCodes.remove((Object) code);
-			if (!found) {
-				return false;
-			}
-		}
-
-		return true;
+		return Arrays.stream(expectedCodes).allMatch(actualCodes::remove);
 	}
 
 	/**

@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.w3c.dom.Element;
-
 import com.github.mangstadt.vinnie.LaciToken;
 import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
@@ -28,7 +26,6 @@ import biweekly.property.DateStart;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.RecurrenceProperty;
-import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
 import biweekly.util.Frequency;
 import biweekly.util.ICalDate;
@@ -154,13 +151,11 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		 * DataModelConversionException.
 		 */
 		DataModelConversionException conversionException = new DataModelConversionException(null);
-		for (String rrule : rrules) {
-			ICalParameters parametersCopy = new ICalParameters(parameters);
-
-			ICalProperty property;
+		List<ICalProperty> convertedProperties = conversionException.getProperties();
+		rrules.stream().map(rrule -> {
 			try {
 				Recurrence recur = parser.parse(rrule);
-				property = newInstance(recur, context, parameters);
+				return newInstance(recur, context, parameters);
 			} catch (CannotParseException e) {
 				//@formatter:off
 				context.getWarnings().add(new ParseWarning.Builder(context)
@@ -168,11 +163,12 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 					.build()
 				);
 				//@formatter:on
-				property = new RawProperty(getPropertyName(context.getVersion()), dataType, rrule);
-				property.setParameters(parametersCopy);
+
+				ICalProperty property = new RawProperty(getPropertyName(context.getVersion()), dataType, rrule);
+				property.setParameters(new ICalParameters(parameters));
+				return property;
 			}
-			conversionException.getProperties().add(property);
-		}
+		}).forEach(convertedProperties::add);
 
 		throw conversionException;
 	}
@@ -210,12 +206,10 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		}
 
 		ListMultimap<LaciToken, Object> components = buildComponents(property, context, true);
-		for (Map.Entry<LaciToken, List<Object>> component : components) {
-			String name = component.getKey().toLowerCase();
-			for (Object value : component.getValue()) {
-				recurElement.append(name, value.toString());
-			}
-		}
+		components.getMap().forEach((name, values) -> {
+			String elementName = name.toLowerCase();
+			values.stream().map(Object::toString).forEach(value -> recurElement.append(elementName, value));
+		});
 	}
 
 	@Override
@@ -227,15 +221,12 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		}
 
 		ListMultimap<LaciToken, String> rules = new ListMultimap<>();
-		for (Element child : XmlUtils.toElementList(value.getElement().getChildNodes())) {
-			if (!XCalNamespaceContext.XCAL_NS.equals(child.getNamespaceURI())) {
-				continue;
-			}
 
+		XmlUtils.children(value.getElement(), XCalNamespaceContext.XCAL_NS).forEach(child -> {
 			LaciToken name = new LaciToken(child.getLocalName());
 			String text = child.getTextContent();
 			rules.put(name, text);
-		}
+		});
 
 		Recurrence.Builder builder = new Recurrence.Builder((Frequency) null);
 
@@ -332,77 +323,57 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		return property;
 	}
 
-	private void parseFreq(ListMultimap<LaciToken, String> rules, final Recurrence.Builder builder, final ParseContext context) {
-		parseFirst(rules, FREQ, new Handler<String>() {
-			public void handle(String value) {
-				value = value.toUpperCase(Locale.ROOT);
-				try {
-					builder.frequency(Frequency.valueOf(value));
-				} catch (IllegalArgumentException e) {
-					context.addWarning(7, FREQ, value);
-				}
+	private void parseFreq(ListMultimap<LaciToken, String> rules, Recurrence.Builder builder, ParseContext context) {
+		parseFirst(rules, FREQ, value -> {
+			value = value.toUpperCase(Locale.ROOT);
+			try {
+				builder.frequency(Frequency.valueOf(value));
+			} catch (IllegalArgumentException e) {
+				context.addWarning(7, FREQ, value);
 			}
 		});
 	}
 
-	private void parseUntil(ListMultimap<LaciToken, String> rules, final Recurrence.Builder builder, final ParseContext context) {
-		parseFirst(rules, UNTIL, new Handler<String>() {
-			public void handle(String value) {
-				try {
-					builder.until(date(value).parse());
-				} catch (IllegalArgumentException e) {
-					context.addWarning(7, UNTIL, value);
-				}
+	private void parseUntil(ListMultimap<LaciToken, String> rules, Recurrence.Builder builder, ParseContext context) {
+		parseFirst(rules, UNTIL, value -> {
+			try {
+				builder.until(date(value).parse());
+			} catch (IllegalArgumentException e) {
+				context.addWarning(7, UNTIL, value);
 			}
 		});
 	}
 
-	private void parseCount(ListMultimap<LaciToken, String> rules, final Recurrence.Builder builder, final ParseContext context) {
-		parseFirst(rules, COUNT, new Handler<String>() {
-			public void handle(String value) {
-				try {
-					builder.count(Integer.valueOf(value));
-				} catch (NumberFormatException e) {
-					context.addWarning(7, COUNT, value);
-				}
+	private void parseCount(ListMultimap<LaciToken, String> rules, Recurrence.Builder builder, ParseContext context) {
+		parseFirst(rules, COUNT, value -> {
+			try {
+				builder.count(Integer.valueOf(value));
+			} catch (NumberFormatException e) {
+				context.addWarning(7, COUNT, value);
 			}
 		});
 	}
 
-	private void parseInterval(ListMultimap<LaciToken, String> rules, final Recurrence.Builder builder, final ParseContext context) {
-		parseFirst(rules, INTERVAL, new Handler<String>() {
-			public void handle(String value) {
-				try {
-					builder.interval(Integer.valueOf(value));
-				} catch (NumberFormatException e) {
-					context.addWarning(7, INTERVAL, value);
-				}
+	private void parseInterval(ListMultimap<LaciToken, String> rules, Recurrence.Builder builder, ParseContext context) {
+		parseFirst(rules, INTERVAL, value -> {
+			try {
+				builder.interval(Integer.valueOf(value));
+			} catch (NumberFormatException e) {
+				context.addWarning(7, INTERVAL, value);
 			}
 		});
 	}
 
-	private void parseBySecond(ListMultimap<LaciToken, String> rules, final Recurrence.Builder builder, ParseContext context) {
-		parseIntegerList(BYSECOND, rules, context, new Handler<Integer>() {
-			public void handle(Integer value) {
-				builder.bySecond(value);
-			}
-		});
+	private void parseBySecond(ListMultimap<LaciToken, String> rules, Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYSECOND, rules, context, builder::bySecond);
 	}
 
-	private void parseByMinute(ListMultimap<LaciToken, String> rules, final Recurrence.Builder builder, ParseContext context) {
-		parseIntegerList(BYMINUTE, rules, context, new Handler<Integer>() {
-			public void handle(Integer value) {
-				builder.byMinute(value);
-			}
-		});
+	private void parseByMinute(ListMultimap<LaciToken, String> rules, Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYMINUTE, rules, context, builder::byMinute);
 	}
 
-	private void parseByHour(ListMultimap<LaciToken, String> rules, final Recurrence.Builder builder, ParseContext context) {
-		parseIntegerList(BYHOUR, rules, context, new Handler<Integer>() {
-			public void handle(Integer value) {
-				builder.byHour(value);
-			}
-		});
+	private void parseByHour(ListMultimap<LaciToken, String> rules, Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYHOUR, rules, context, builder::byHour);
 	}
 
 	private void parseByDay(ListMultimap<LaciToken, String> rules, Recurrence.Builder builder, ParseContext context) {
@@ -430,67 +401,40 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		}
 	}
 
-	private void parseByMonthDay(ListMultimap<LaciToken, String> rules, final Recurrence.Builder builder, ParseContext context) {
-		parseIntegerList(BYMONTHDAY, rules, context, new Handler<Integer>() {
-			public void handle(Integer value) {
-				builder.byMonthDay(value);
-			}
-		});
+	private void parseByMonthDay(ListMultimap<LaciToken, String> rules, Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYMONTHDAY, rules, context, builder::byMonthDay);
 	}
 
-	private void parseByYearDay(ListMultimap<LaciToken, String> rules, final Recurrence.Builder builder, ParseContext context) {
-		parseIntegerList(BYYEARDAY, rules, context, new Handler<Integer>() {
-			public void handle(Integer value) {
-				builder.byYearDay(value);
-			}
-		});
+	private void parseByYearDay(ListMultimap<LaciToken, String> rules, Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYYEARDAY, rules, context, builder::byYearDay);
 	}
 
-	private void parseByWeekNo(ListMultimap<LaciToken, String> rules, final Recurrence.Builder builder, ParseContext context) {
-		parseIntegerList(BYWEEKNO, rules, context, new Handler<Integer>() {
-			public void handle(Integer value) {
-				builder.byWeekNo(value);
-			}
-		});
+	private void parseByWeekNo(ListMultimap<LaciToken, String> rules, Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYWEEKNO, rules, context, builder::byWeekNo);
 	}
 
-	private void parseByMonth(ListMultimap<LaciToken, String> rules, final Recurrence.Builder builder, ParseContext context) {
-		parseIntegerList(BYMONTH, rules, context, new Handler<Integer>() {
-			public void handle(Integer value) {
-				builder.byMonth(value);
-			}
-		});
+	private void parseByMonth(ListMultimap<LaciToken, String> rules, Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYMONTH, rules, context, builder::byMonth);
 	}
 
-	private void parseBySetPos(ListMultimap<LaciToken, String> rules, final Recurrence.Builder builder, ParseContext context) {
-		parseIntegerList(BYSETPOS, rules, context, new Handler<Integer>() {
-			public void handle(Integer value) {
-				builder.bySetPos(value);
-			}
-		});
+	private void parseBySetPos(ListMultimap<LaciToken, String> rules, Recurrence.Builder builder, ParseContext context) {
+		parseIntegerList(BYSETPOS, rules, context, builder::bySetPos);
 	}
 
-	private void parseWkst(ListMultimap<LaciToken, String> rules, final Recurrence.Builder builder, final ParseContext context) {
-		parseFirst(rules, WKST, new Handler<String>() {
-			public void handle(String value) {
-				DayOfWeek day = DayOfWeek.valueOfAbbr(value);
-				if (day == null) {
-					context.addWarning(7, WKST, value);
-					return;
-				}
-
-				builder.workweekStarts(day);
+	private void parseWkst(ListMultimap<LaciToken, String> rules, Recurrence.Builder builder, ParseContext context) {
+		parseFirst(rules, WKST, value -> {
+			DayOfWeek day = DayOfWeek.valueOfAbbr(value);
+			if (day == null) {
+				context.addWarning(7, WKST, value);
+				return;
 			}
+
+			builder.workweekStarts(day);
 		});
 	}
 
 	private void parseXRules(ListMultimap<LaciToken, String> rules, Recurrence.Builder builder) {
-		for (Map.Entry<LaciToken, List<String>> rule : rules) {
-			LaciToken name = rule.getKey();
-			for (String value : rule.getValue()) {
-				builder.xrule(name, value);
-			}
-		}
+		rules.getMap().forEach(builder::xrule);
 	}
 
 	private ListMultimap<LaciToken, Object> buildComponents(T property, WriteContext context, boolean extended) {
@@ -519,16 +463,13 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 		components.putAll(BYMINUTE, recur.getByMinute());
 		components.putAll(BYHOUR, recur.getByHour());
 
-		for (ByDay byDay : recur.getByDay()) {
+		recur.getByDay().stream().map(byDay -> {
 			Integer prefix = byDay.getNum();
 			DayOfWeek day = byDay.getDay();
 
 			String value = day.getAbbr();
-			if (prefix != null) {
-				value = prefix + value;
-			}
-			components.put(BYDAY, value);
-		}
+			return (prefix == null) ? value : prefix + value;
+		}).forEach(value -> components.put(BYDAY, value));
 
 		components.putAll(BYMONTHDAY, recur.getByMonthDay());
 		components.putAll(BYYEARDAY, recur.getByYearDay());
@@ -540,11 +481,7 @@ public abstract class RecurrencePropertyScribe<T extends RecurrenceProperty> ext
 			components.put(WKST, recur.getWorkweekStarts().getAbbr());
 		}
 
-		for (Map.Entry<LaciToken, List<String>> entry : recur.getXRules().entrySet()) {
-			LaciToken name = entry.getKey();
-			List<String> values = entry.getValue();
-			components.putAll(name, values);
-		}
+		recur.getXRules().forEach(components::putAll);
 
 		return components;
 	}

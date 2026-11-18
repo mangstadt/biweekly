@@ -3,8 +3,12 @@ package biweekly.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -78,13 +82,7 @@ public abstract class CaseClasses<T, V> {
 	 */
 	public T find(V value) {
 		checkInit();
-
-		for (T obj : preDefined) {
-			if (matches(obj, value)) {
-				return obj;
-			}
-		}
-		return null;
+		return preDefined.stream().filter(obj -> matches(obj, value)).findFirst().orElse(null);
 	}
 
 	/**
@@ -100,10 +98,9 @@ public abstract class CaseClasses<T, V> {
 		}
 
 		synchronized (runtimeDefined) {
-			for (T obj : runtimeDefined) {
-				if (matches(obj, value)) {
-					return obj;
-				}
+			Optional<T> opt = runtimeDefined.stream().filter(obj -> matches(obj, value)).findFirst();
+			if (opt.isPresent()) {
+				return opt.get();
 			}
 
 			T created = create(value);
@@ -133,30 +130,40 @@ public abstract class CaseClasses<T, V> {
 	}
 
 	private void init() {
-		Collection<T> preDefined = new ArrayList<>();
-		for (Field field : clazz.getFields()) {
-			int modifiers = field.getModifiers();
-			//@formatter:off
-			if (Modifier.isStatic(modifiers) &&
-				Modifier.isPublic(modifiers) &&
-				field.getDeclaringClass() == clazz &&
-				field.getType() == clazz) {
-				//@formatter:on
+		//@formatter:off
+		preDefined = Collections.unmodifiableCollection(Arrays.stream(clazz.getFields())
+			.filter(this::isPreDefinedField)
+			.map(field -> {
 				try {
-					Object obj = field.get(null);
-					if (obj != null) {
-						T c = clazz.cast(obj);
-						preDefined.add(c);
-					}
-				} catch (Exception ex) {
+					return field.get(null);
+				} catch (Exception e) {
 					//reflection error
 					//should never be thrown because we check for "public static" and the correct type
-					throw new RuntimeException(ex);
+					throw new RuntimeException(e);
 				}
-			}
-		}
+			})
+			.filter(Objects::nonNull)
+			.map(clazz::cast)
+		.collect(Collectors.toList()));
+		//@formatter:on
 
 		runtimeDefined = new ArrayList<>(0);
-		this.preDefined = Collections.unmodifiableCollection(preDefined);
+	}
+
+	/**
+	 * Determines if a field should be treated as a predefined case object.
+	 * @param field the field
+	 * @return true if it's a predefined case object, false if not
+	 */
+	private boolean isPreDefinedField(Field field) {
+		int modifiers = field.getModifiers();
+
+		//@formatter:off
+		return
+			Modifier.isStatic(modifiers) &&
+			Modifier.isPublic(modifiers) &&
+			field.getDeclaringClass() == clazz &&
+			field.getType() == clazz;
+		//@formatter:on
 	}
 }

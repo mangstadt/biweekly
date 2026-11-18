@@ -1,18 +1,18 @@
 package biweekly.io.scribe.component;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import biweekly.ICalVersion;
 import biweekly.component.VFreeBusy;
 import biweekly.property.FreeBusy;
 import biweekly.property.ICalProperty;
-import biweekly.util.ICalDate;
 import biweekly.util.Period;
 
 /*
@@ -57,29 +57,29 @@ public class VFreeBusyScribe extends ICalComponentScribe<VFreeBusy> {
 			return properties;
 		}
 
-		//sort FREEBUSY properties by start date (p.100)
-		Collections.sort(fb, new FreeBusyStartDateComparator());
-
 		//find index of first FREEBUSY instance
-		int index = 0;
-		for (ICalProperty prop : properties) {
-			if (prop instanceof FreeBusy) {
-				break;
-			}
-			index++;
-		}
+		//@formatter:off
+		int index = IntStream.range(0, properties.size())
+			.filter(i -> properties.get(i) instanceof FreeBusy)
+		.findFirst().orElse(properties.size());
+		//@formatter:on
 
 		//remove and re-add the FREEBUSY instances in sorted order
-		properties = new ArrayList<>(properties);
-		for (FreeBusy f : fb) {
-			properties.remove(f);
-			properties.add(index++, f);
-		}
+		List<ICalProperty> propertiesCopy = new ArrayList<>(properties);
+		propertiesCopy.removeAll(fb);
 
-		return properties;
+		//@formatter:off
+		fb.stream()
+			//sort FREEBUSY properties by start date (p.100)
+			//reverse the sort so the insertion index can stay the same
+			.sorted(new FreeBusyStartDateComparator().reversed()) 
+		.forEach(f -> propertiesCopy.add(index, f));
+		//@formatter:on
+
+		return propertiesCopy;
 	}
 
-	private class FreeBusyStartDateComparator implements Comparator<FreeBusy> {
+	private static class FreeBusyStartDateComparator implements Comparator<FreeBusy> {
 		@Override
 		public int compare(FreeBusy one, FreeBusy two) {
 			Date oneStart = getEarliestStartDate(one);
@@ -98,18 +98,13 @@ public class VFreeBusyScribe extends ICalComponentScribe<VFreeBusy> {
 		}
 
 		private Date getEarliestStartDate(FreeBusy fb) {
-			Date earliestDate = null;
-			for (Period period : fb.getValues()) {
-				ICalDate startDate = period.getStartDate();
-				if (startDate == null) {
-					continue;
-				}
-
-				if (earliestDate == null || earliestDate.compareTo(startDate) > 0) {
-					earliestDate = startDate;
-				}
-			}
-			return earliestDate;
+			//@formatter:off
+			return fb.getValues().stream()
+				.map(Period::getStartDate)
+				.filter(Objects::nonNull)
+				.sorted()
+			.findFirst().orElse(null);
+			//@formatter:on
 		}
 	}
 

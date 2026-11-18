@@ -393,11 +393,7 @@ public abstract class ICalProperty {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getName());
 		sb.append(" [ parameters=").append(parameters);
-		for (Map.Entry<String, Object> field : toStringValues().entrySet()) {
-			String fieldName = field.getKey();
-			Object fieldValue = field.getValue();
-			sb.append(" | ").append(fieldName).append('=').append(fieldValue);
-		}
+		toStringValues().forEach((fieldName, fieldValue) -> sb.append(" | ").append(fieldName).append('=').append(fieldValue));
 		sb.append(" ]");
 		return sb.toString();
 	}

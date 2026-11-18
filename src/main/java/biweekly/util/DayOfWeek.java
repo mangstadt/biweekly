@@ -1,5 +1,6 @@
 package biweekly.util;
 
+import java.util.Arrays;
 import java.util.Calendar;
 
 import com.github.mangstadt.vinnie.LaciToken;
@@ -80,12 +81,7 @@ public enum DayOfWeek {
 	 * @return the day or null if not found
 	 */
 	public static DayOfWeek valueOfAbbr(String abbr) {
-		LaciToken abbr2 = LaciToken.create(abbr);
-		for (DayOfWeek day : values()) {
-			if (day.abbr.equals(abbr2)) {
-				return day;
-			}
-		}
-		return null;
+		LaciToken abbrToken = LaciToken.create(abbr);
+		return Arrays.stream(values()).filter(day -> day.abbr.equals(abbrToken)).findFirst().orElse(null);
 	}
 }

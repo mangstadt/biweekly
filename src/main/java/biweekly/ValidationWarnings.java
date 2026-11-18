@@ -1,8 +1,9 @@
 package biweekly;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.component.ICalComponent;
@@ -94,18 +95,12 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 	 * @return the validation warnings
 	 */
 	public List<WarningsGroup> getByProperty(Class<? extends ICalProperty> propertyClass) {
-		List<WarningsGroup> warnings = new ArrayList<>();
-		for (WarningsGroup group : this.warnings) {
-			ICalProperty property = group.getProperty();
-			if (property == null) {
-				continue;
-			}
-
-			if (propertyClass == property.getClass()) {
-				warnings.add(group);
-			}
-		}
-		return warnings;
+		//@formatter:off
+		return warnings.stream()
+			.filter(group -> Objects.nonNull(group.getProperty()))
+			.filter(group -> propertyClass == group.getProperty().getClass())
+		.collect(Collectors.toList());
+		//@formatter:on
 	}
 
 	/**
@@ -114,18 +109,12 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 	 * @return the validation warnings
 	 */
 	public List<WarningsGroup> getByComponent(Class<? extends ICalComponent> componentClass) {
-		List<WarningsGroup> warnings = new ArrayList<>();
-		for (WarningsGroup group : this.warnings) {
-			ICalComponent component = group.getComponent();
-			if (component == null) {
-				continue;
-			}
-
-			if (componentClass == component.getClass()) {
-				warnings.add(group);
-			}
-		}
-		return warnings;
+		//@formatter:off
+		return warnings.stream()
+			.filter(group -> Objects.nonNull(group.getComponent()))
+			.filter(group -> componentClass == group.getComponent().getClass())
+		.collect(Collectors.toList());
+		//@formatter:on
 	}
 
 	/**

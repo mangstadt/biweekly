@@ -4,6 +4,7 @@ import static biweekly.property.ValuedProperty.getValue;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import biweekly.ICalVersion;
 import biweekly.ValidationWarning;
@@ -70,6 +71,7 @@ import biweekly.util.Period;
  * Duration duration = Duration.builder().hours(2).build();
  * freebusy.addFreeBusy(FreeBusyType.BUSY, start, duration);
  * </pre>
+ * 
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5545#page-59">RFC 5545
  * p.59-62</a>
@@ -576,10 +578,14 @@ public class VFreeBusy extends ICalComponent {
 	}
 
 	private FreeBusy findByFreeBusyType(FreeBusyType type) {
-		for (FreeBusy freeBusy : getFreeBusy()) {
-			if (freeBusy.getType() == type) {
-				return freeBusy;
-			}
+		//@formatter:off
+		Optional<FreeBusy> opt = getFreeBusy().stream()
+			.filter(fb -> fb.getType() == type)
+		.findFirst();
+		//@formatter:on
+
+		if (opt.isPresent()) {
+			return opt.get();
 		}
 
 		FreeBusy freeBusy = new FreeBusy();

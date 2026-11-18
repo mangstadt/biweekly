@@ -4,9 +4,12 @@ import static biweekly.ICalDataType.DATE;
 import static biweekly.ICalDataType.DATE_TIME;
 import static biweekly.ICalDataType.PERIOD;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -20,8 +23,6 @@ import biweekly.property.RecurrenceDates;
 import biweekly.util.Duration;
 import biweekly.util.ICalDate;
 import biweekly.util.Period;
-
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -90,29 +91,8 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	}
 
 	@Override
-	protected String _writeText(final RecurrenceDates property, final WriteContext context) {
-		List<ICalDate> dates = property.getDates();
-		if (!dates.isEmpty()) {
-			List<String> values = new ArrayList<>(dates.size());
-			for (ICalDate date : dates) {
-				String value = writeDateListDate(date, property, context, false);
-				values.add(value);
-			}
-			return VObjectPropertyValues.writeList(values);
-		}
-
-		//TODO vCal does not support periods
-		List<Period> periods = property.getPeriods();
-		if (!periods.isEmpty()) {
-			List<String> values = new ArrayList<>(periods.size());
-			for (Period period : periods) {
-				String periodStr = writePeriod(period, property, context, false);
-				values.add(periodStr);
-			}
-			return VObjectPropertyValues.writeList(values);
-		}
-
-		return "";
+	protected String _writeText(RecurrenceDates property, WriteContext context) {
+		return VObjectPropertyValues.writeList(writeValues(property, context, false));
 	}
 
 	@Override
@@ -125,10 +105,11 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		ICalDataType dataType = dataType(property, context.getVersion());
 		List<ICalDate> dates = property.getDates();
 		if (!dates.isEmpty()) {
-			for (ICalDate date : dates) {
-				String dateStr = writeDateListDate(date, property, context, true);
-				element.append(dataType, dateStr);
-			}
+			//@formatter:off
+			dates.stream()
+				.map(date -> writeDateListDate(date, property, context, true))
+			.forEach(dateStr -> element.append(dataType, dateStr));
+			//@formatter:on
 			return;
 		}
 
@@ -172,61 +153,30 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		RecurrenceDates property = new RecurrenceDates();
 
 		//parse periods
-		for (XCalElement periodElement : periodElements) {
-			Period period = parsePeriod(periodElement);
+		periodElements.stream().map(this::parsePeriod).forEach(period -> {
 			property.getPeriods().add(period);
 
 			context.addDate(period.getStartDate(), property, parameters);
 			if (period.getEndDate() != null) {
 				context.addDate(period.getEndDate(), property, parameters);
 			}
-		}
+		});
 
 		//parse date-times
-		for (String dateTimeStr : dateTimeElements) {
-			try {
-				ICalDate date = date(dateTimeStr).hasTime(true).parse();
-				property.getDates().add(date);
-				context.addDate(date, property, parameters);
-			} catch (IllegalArgumentException e) {
-				throw new CannotParseException(15, dateTimeStr);
-			}
-		}
+		dateTimeElements.stream().map(this::parseDateTime).forEach(date -> {
+			property.getDates().add(date);
+			context.addDate(date, property, parameters);
+		});
 
 		//parse dates
-		for (String dateStr : dateElements) {
-			try {
-				ICalDate date = date(dateStr).hasTime(false).parse();
-				property.getDates().add(date);
-			} catch (IllegalArgumentException e) {
-				throw new CannotParseException(15, dateStr);
-			}
-		}
+		dateElements.stream().map(this::parseDate).forEach(date -> property.getDates().add(date));
 
 		return property;
 	}
 
 	@Override
 	protected JCalValue _writeJson(RecurrenceDates property, WriteContext context) {
-		List<String> values = new ArrayList<>();
-		List<ICalDate> dates = property.getDates();
-		List<Period> periods = property.getPeriods();
-		if (!dates.isEmpty()) {
-			for (ICalDate date : dates) {
-				String dateStr = writeDateListDate(date, property, context, true);
-				values.add(dateStr);
-			}
-		} else if (!periods.isEmpty()) {
-			for (Period period : property.getPeriods()) {
-				String periodStr = writePeriod(period, property, context, true);
-				values.add(periodStr);
-			}
-		}
-
-		if (values.isEmpty()) {
-			values.add("");
-		}
-		return JCalValue.multi(values);
+		return JCalValue.multi(writeValues(property, context, true));
 	}
 
 	@Override
@@ -239,30 +189,24 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 
 		if (dataType == PERIOD) {
 			//parse as periods
-			for (String timePeriodStr : valueStrs) {
-				Period period = parsePeriod(timePeriodStr);
+			valueStrs.stream().map(this::parsePeriod).forEach(period -> {
 				property.getPeriods().add(period);
 
 				context.addDate(period.getStartDate(), property, parameters);
 				if (period.getEndDate() != null) {
 					context.addDate(period.getEndDate(), property, parameters);
 				}
-			}
+			});
 			return property;
 		}
 
 		//parse as dates
 		boolean hasTime = (dataType == DATE_TIME);
-		for (String valueStr : valueStrs) {
-			ICalDate date;
-			try {
-				date = date(valueStr).hasTime(hasTime).parse();
-			} catch (IllegalArgumentException e) {
-				throw new CannotParseException(15, valueStr);
-			}
+		valueStrs.stream().map(value -> parseDateTime(value, hasTime)).forEach(date -> {
 			property.getDates().add(date);
 			context.addDate(date, property, parameters);
-		}
+		});
+
 		return property;
 	}
 
@@ -284,8 +228,8 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		try {
 			ICalDate end = date(afterSlash).parse();
 			return new Period(start, end);
-		} catch (IllegalArgumentException e) {
-			//must be a duration
+		} catch (IllegalArgumentException ignore) {
+			//attempt to parse as a duration instead
 		}
 
 		try {
@@ -332,12 +276,47 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		throw new CannotParseException(13);
 	}
 
+	private ICalDate parseDateTime(String value) {
+		return parseDateTime(value, true);
+	}
+
+	private ICalDate parseDate(String value) {
+		return parseDateTime(value, false);
+	}
+
+	private ICalDate parseDateTime(String value, boolean hasTime) {
+		try {
+			return date(value).hasTime(hasTime).parse();
+		} catch (IllegalArgumentException e) {
+			throw new CannotParseException(15, value);
+		}
+	}
+
+	private List<String> writeValues(RecurrenceDates property, WriteContext context, boolean extended) {
+		List<ICalDate> dates = property.getDates();
+		List<Period> periods = property.getPeriods();
+		Stream<String> stream;
+
+		if (!dates.isEmpty()) {
+			stream = dates.stream().map(date -> writeDateListDate(date, property, context, extended));
+		} else if (!periods.isEmpty()) {
+			//TODO vCal does not support periods
+			stream = periods.stream().map(period -> writePeriod(period, property, context, extended));
+		} else {
+			stream = Stream.of(""); //write empty value
+		}
+
+		return stream.collect(Collectors.toList());
+	}
+
 	private String writeDateListDate(ICalDate date, RecurrenceDates property, WriteContext context, boolean extended) {
 		//@formatter:off
-		return isInObservance(context) ?
-			date(date).observance(true).extended(extended).write() :
-			date(date, property, context).extended(extended).write();
+		DateWriter dw = isInObservance(context) ?
+			date(date).observance(true) :
+			date(date, property, context);
 		//@formatter:on
+
+		return dw.extended(extended).write();
 	}
 
 	private String writePeriod(Period period, RecurrenceDates property, WriteContext context, boolean extended) {

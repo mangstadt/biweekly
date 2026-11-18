@@ -344,12 +344,8 @@ public class ICalReader extends StreamReader {
 				ICalProperty property = new RawPropertyScribe(propertyName).parseText(value, dataType, parameters, context);
 				parentComponent.addProperty(property);
 			} catch (DataModelConversionException e) {
-				for (ICalProperty property : e.getProperties()) {
-					parentComponent.addProperty(property);
-				}
-				for (ICalComponent component : e.getComponents()) {
-					parentComponent.addComponent(component);
-				}
+				e.getProperties().forEach(parentComponent::addProperty);
+				e.getComponents().forEach(parentComponent::addComponent);
 			}
 
 			warnings.addAll(context.getWarnings());

@@ -228,11 +228,7 @@ class RecurrenceParserV1 {
 
 				if (!readNum) {
 					//reset lists, new segment
-					for (Integer num : nums) {
-						for (DayOfWeek day : days) {
-							builder.byDay(num, day);
-						}
-					}
+					assignByDays(builder);
 					nums.clear();
 					days.clear();
 
@@ -248,6 +244,10 @@ class RecurrenceParserV1 {
 
 		@Override
 		public void noMoreTokens(Recurrence.Builder builder) {
+			assignByDays(builder);
+		}
+
+		private void assignByDays(Recurrence.Builder builder) {
 			for (Integer num : nums) {
 				for (DayOfWeek day : days) {
 					builder.byDay(num, day);

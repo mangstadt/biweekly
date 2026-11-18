@@ -161,7 +161,7 @@ public class XmlUtilsTest {
 	public void getFirstChildElement() throws Exception {
 		Document document = XmlUtils.toDocument(xml);
 		Element root = (Element) document.getFirstChild();
-		Element element = XmlUtils.getFirstChildElement(root);
+		Element element = XmlUtils.firstChild(root);
 		assertEquals("child1", element.getLocalName());
 	}
 }

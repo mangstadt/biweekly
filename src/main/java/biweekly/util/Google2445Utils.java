@@ -1,12 +1,16 @@
 package biweekly.util;
 
+import static biweekly.property.ValuedProperty.getValue;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import biweekly.component.ICalComponent;
 import biweekly.property.DateStart;
@@ -267,18 +271,22 @@ public final class Google2445Utils {
 		List<RecurrenceIterator> include = new ArrayList<>();
 
 		if (start != null) {
-			for (RecurrenceRule rrule : component.getProperties(RecurrenceRule.class)) {
-				Recurrence recurrence = ValuedProperty.getValue(rrule);
-				if (recurrence != null) {
-					include.add(createRecurrenceIterator(recurrence, start, timezone));
-				}
-			}
+			//@formatter:off
+			component.getProperties(RecurrenceRule.class).stream()
+				.map(rrule -> getValue(rrule))
+				.filter(Objects::nonNull)
+				.map(recurrence -> createRecurrenceIterator(recurrence, start, timezone))
+			.forEach(include::add);
+			//@formatter:on
 		}
 
-		List<ICalDate> allDates = new ArrayList<>();
-		for (RecurrenceDates rdate : component.getProperties(RecurrenceDates.class)) {
-			allDates.addAll(rdate.getDates());
-		}
+		//@formatter:off
+		List<ICalDate> allDates = component.getProperties(RecurrenceDates.class).stream()
+			.map(RecurrenceDates::getDates)
+			.flatMap(List::stream)
+		.collect(Collectors.toList());
+		//@formatter:on
+
 		if (!allDates.isEmpty()) {
 			include.add(new ICalDateRecurrenceIterator(allDates));
 		}
@@ -294,18 +302,22 @@ public final class Google2445Utils {
 		List<RecurrenceIterator> exclude = new ArrayList<>();
 
 		if (start != null) {
-			for (ExceptionRule exrule : component.getProperties(ExceptionRule.class)) {
-				Recurrence recurrence = ValuedProperty.getValue(exrule);
-				if (recurrence != null) {
-					exclude.add(createRecurrenceIterator(recurrence, start, timezone));
-				}
-			}
+			//@formatter:off
+			component.getProperties(ExceptionRule.class).stream()
+				.map(exrule -> getValue(exrule))
+				.filter(Objects::nonNull)
+				.map(recurrence -> createRecurrenceIterator(recurrence, start, timezone))
+			.forEach(exclude::add);
+			//@formatter:on
 		}
 
-		List<ICalDate> allDates = new ArrayList<>();
-		for (ExceptionDates exdate : component.getProperties(ExceptionDates.class)) {
-			allDates.addAll(exdate.getValues());
-		}
+		//@formatter:off
+		List<ICalDate> allDates = component.getProperties(ExceptionDates.class).stream()
+			.map(ExceptionDates::getValues)
+			.flatMap(List::stream)
+		.collect(Collectors.toList());
+		//@formatter:on
+
 		if (!allDates.isEmpty()) {
 			exclude.add(new ICalDateRecurrenceIterator(allDates));
 		}

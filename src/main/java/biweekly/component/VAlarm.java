@@ -171,9 +171,7 @@ public class VAlarm extends ICalComponent {
 		VAlarm alarm = new VAlarm(Action.email(), trigger);
 		alarm.setSummary(subject);
 		alarm.setDescription(body);
-		for (String recipient : recipients) {
-			alarm.addAttendee(new Attendee(null, recipient));
-		}
+		recipients.stream().map(recipient -> new Attendee(null, recipient)).forEach(alarm::addAttendee);
 		return alarm;
 	}
 

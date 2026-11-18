@@ -2,9 +2,10 @@ package biweekly.io.xml;
 
 import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -71,12 +72,7 @@ public class XCalElement {
 	 * @return the element's text or null if not found
 	 */
 	public String first(String localName) {
-		for (Element child : children()) {
-			if (localName.equals(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {
-				return child.getTextContent();
-			}
-		}
-		return null;
+		return textContentOfChildren(localName).findFirst().orElse(null);
 	}
 
 	/**
@@ -96,14 +92,11 @@ public class XCalElement {
 	 * @return the values of the child elements
 	 */
 	public List<String> all(String localName) {
-		List<String> childrenText = new ArrayList<>();
-		for (Element child : children()) {
-			if (localName.equals(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {
-				String text = child.getTextContent();
-				childrenText.add(text);
-			}
-		}
-		return childrenText;
+		return textContentOfChildren(localName).collect(Collectors.toList());
+	}
+
+	private Stream<String> textContentOfChildren(String localName) {
+		return XmlUtils.children(element, XCAL_NS, localName).map(Element::getTextContent);
 	}
 
 	/**
@@ -155,11 +148,7 @@ public class XCalElement {
 	 * @return the created elements
 	 */
 	public List<Element> append(String name, Collection<String> values) {
-		List<Element> elements = new ArrayList<>(values.size());
-		for (String value : values) {
-			elements.add(append(name, value));
-		}
-		return elements;
+		return values.stream().map(value -> append(name, value)).collect(Collectors.toList());
 	}
 
 	/**
@@ -179,27 +168,12 @@ public class XCalElement {
 	}
 
 	/**
-	 * Gets the child elements of the wrapped XML element.
-	 * @return the child elements
-	 */
-	private List<Element> children() {
-		return XmlUtils.toElementList(element.getChildNodes());
-	}
-
-	/**
 	 * Gets all child elements with the given data type.
 	 * @param dataType the data type
 	 * @return the child elements
 	 */
 	public List<XCalElement> children(ICalDataType dataType) {
-		String localName = dataType.getName().toLowerCase();
-		List<XCalElement> children = new ArrayList<>();
-		for (Element child : children()) {
-			if (localName.equals(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {
-				children.add(new XCalElement(child));
-			}
-		}
-		return children;
+		return childrenWrapped(dataType).collect(Collectors.toList());
 	}
 
 	/**
@@ -208,13 +182,12 @@ public class XCalElement {
 	 * @return the child element or null if not found
 	 */
 	public XCalElement child(ICalDataType dataType) {
-		String localName = dataType.getName().toLowerCase();
-		for (Element child : children()) {
-			if (localName.equals(child.getLocalName()) && XCAL_NS.equals(child.getNamespaceURI())) {
-				return new XCalElement(child);
-			}
-		}
-		return null;
+		return childrenWrapped(dataType).findFirst().orElse(null);
+	}
+
+	private Stream<XCalElement> childrenWrapped(ICalDataType dataType) {
+		String localName = toLocalName(dataType);
+		return XmlUtils.children(element, XCAL_NS, localName).map(XCalElement::new);
 	}
 
 	/**
@@ -225,16 +198,11 @@ public class XCalElement {
 	 * @return the value and data type
 	 */
 	public XCalValue firstValue() {
-		for (Element child : children()) {
-			String childNamespace = child.getNamespaceURI();
-			if (XCAL_NS.equals(childNamespace)) {
-				ICalDataType dataType = toDataType(child.getLocalName());
-				String value = child.getTextContent();
-				return new XCalValue(dataType, value);
-			}
-		}
-
-		return new XCalValue(null, element.getTextContent());
+		//@formatter:off
+		return XmlUtils.children(element, XCAL_NS)
+			.map(XCalValue::new)
+		.findFirst().orElseGet(() -> new XCalValue(null, element.getTextContent()));
+		//@formatter:on
 	}
 
 	/**
@@ -263,6 +231,10 @@ public class XCalElement {
 	public static class XCalValue {
 		private final ICalDataType dataType;
 		private final String value;
+
+		public XCalValue(Element element) {
+			this(toDataType(element.getLocalName()), element.getTextContent());
+		}
 
 		/**
 		 * @param dataType the data type or null if "unknown"
