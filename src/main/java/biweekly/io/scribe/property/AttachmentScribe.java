@@ -6,6 +6,7 @@ import biweekly.io.WriteContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.property.Attachment;
+import biweekly.util.ContentId;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -66,7 +67,7 @@ public class AttachmentScribe extends BinaryPropertyScribe<Attachment> {
 		 */
 
 		if (dataType == ICalDataType.CONTENT_ID) {
-			String contentId = getCidUriValue(value);
+			String contentId = ContentId.parse(value);
 			if (contentId == null) {
 				contentId = value;
 			}
@@ -75,7 +76,7 @@ public class AttachmentScribe extends BinaryPropertyScribe<Attachment> {
 			return attach;
 		}
 
-		String contentId = getCidUriValue(value);
+		String contentId = ContentId.parse(value);
 		if (contentId != null) {
 			Attachment attach = new Attachment(null, (String) null);
 			attach.setContentId(contentId);
@@ -89,7 +90,7 @@ public class AttachmentScribe extends BinaryPropertyScribe<Attachment> {
 	protected String _writeText(Attachment property, WriteContext context) {
 		String contentId = property.getContentId();
 		if (contentId != null) {
-			return (context.getVersion() == ICalVersion.V1_0) ? '<' + contentId + '>' : "cid:" + contentId;
+			return (context.getVersion() == ICalVersion.V1_0) ? ContentId.writeOldStyle(contentId) : ContentId.writeUri(contentId);
 		}
 
 		return super._writeText(property, context);
@@ -99,7 +100,7 @@ public class AttachmentScribe extends BinaryPropertyScribe<Attachment> {
 	protected void _writeXml(Attachment property, XCalElement element, WriteContext context) {
 		String contentId = property.getContentId();
 		if (contentId != null) {
-			element.append(ICalDataType.URI, "cid:" + contentId);
+			element.append(ICalDataType.URI, ContentId.writeUri(contentId));
 			return;
 		}
 
@@ -110,28 +111,9 @@ public class AttachmentScribe extends BinaryPropertyScribe<Attachment> {
 	protected JCalValue _writeJson(Attachment property, WriteContext context) {
 		String contentId = property.getContentId();
 		if (contentId != null) {
-			return JCalValue.single("cid:" + contentId);
+			return JCalValue.single(ContentId.writeUri(contentId));
 		}
 
 		return super._writeJson(property, context);
-	}
-
-	/**
-	 * Gets the value of the given "cid" URI.
-	 * @param uri the "cid" URI
-	 * @return the URI value or null if the given string is not a "cid" URI
-	 */
-	private static String getCidUriValue(String uri) {
-		int colon = uri.indexOf(':');
-		if (colon == 3) {
-			String scheme = uri.substring(0, colon);
-			return "cid".equalsIgnoreCase(scheme) ? uri.substring(colon + 1) : null;
-		}
-
-		if (uri.length() > 0 && uri.charAt(0) == '<' && uri.charAt(uri.length() - 1) == '>') {
-			return uri.substring(1, uri.length() - 1);
-		}
-
-		return null;
 	}
 }
