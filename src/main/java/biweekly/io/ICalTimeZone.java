@@ -431,11 +431,7 @@ public class ICalTimeZone extends TimeZone {
 	 * @return the closest date
 	 */
 	private DateValue getObservanceDateClosestToTheGivenDate(Observance observance, DateValue givenDate, boolean after) {
-		List<DateValue> dateCache = observanceDateCache.get(observance);
-		if (dateCache == null) {
-			dateCache = new ArrayList<>();
-			observanceDateCache.put(observance, dateCache);
-		}
+		List<DateValue> dateCache = observanceDateCache.computeIfAbsent(observance, k -> new ArrayList<>());
 
 		if (dateCache.isEmpty()) {
 			DateValue prev = null, cur = null;
