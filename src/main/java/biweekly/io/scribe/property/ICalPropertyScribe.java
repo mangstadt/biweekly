@@ -866,10 +866,12 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 */
 	protected static CannotParseException missingXmlElements(ICalDataType... dataTypes) {
 		//@formatter:off
-		return missingXmlElements(Arrays.stream(dataTypes)
+		String[] elements = Arrays.stream(dataTypes)
 			.map(dataType -> (dataType == null) ? "unknown" : dataType.getName().toLowerCase())
-		.toArray(l -> new String[l]));
+		.toArray(String[]::new);
 		//@formatter:on
+
+		return missingXmlElements(elements);
 	}
 
 	/**
