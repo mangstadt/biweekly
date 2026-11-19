@@ -4,6 +4,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -114,10 +115,10 @@ public class XmlUtilsTest {
 		assertEquals("\u1e08hild", child.getTextContent());
 	}
 
-	@Test(expected = SAXException.class)
+	@Test
 	public void toDocument_invalid_xml() throws Exception {
 		String xml = "not-xml";
-		XmlUtils.toDocument(xml);
+		assertThrows(SAXException.class, () -> XmlUtils.toDocument(xml));
 	}
 
 	@Test

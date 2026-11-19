@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -134,29 +135,29 @@ public class DataUriTest {
 		assertEquals(expected, actual);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parse_short_string() {
-		DataUri.parse("a");
+		assertThrows(IllegalArgumentException.class, () -> DataUri.parse("a"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parse_not_a_uri() {
-		DataUri.parse("not-valid");
+		assertThrows(IllegalArgumentException.class, () -> DataUri.parse("not-valid"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parse_wrong_scheme() {
-		DataUri.parse("mailto:johndoe@gmail.com");
+		assertThrows(IllegalArgumentException.class, () -> DataUri.parse("mailto:johndoe@gmail.com"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parse_no_comma() {
-		DataUri.parse("data:text/plain;base64");
+		assertThrows(IllegalArgumentException.class, () -> DataUri.parse("data:text/plain;base64"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parse_bad_charset() {
-		DataUri.parse("data:text/plain;charset=foobar;base64," + dataBase64);
+		assertThrows(IllegalArgumentException.class, () -> DataUri.parse("data:text/plain;charset=foobar;base64," + dataBase64));
 	}
 
 	@Test

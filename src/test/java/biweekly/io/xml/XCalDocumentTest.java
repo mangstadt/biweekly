@@ -14,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -746,22 +747,22 @@ public class XCalDocumentTest {
 		assertXMLEqual(expected, actual);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void add_property_marshaller_not_found() {
 		ICalendar ical = new ICalendar();
 		ical.addProperty(new Company(""));
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.addICalendar(ical);
+		assertThrows(IllegalArgumentException.class, () -> xcal.addICalendar(ical));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void add_component_marshaller_not_found() {
 		ICalendar ical = new ICalendar();
 		ical.addComponent(new Party());
 
 		XCalDocument xcal = new XCalDocument();
-		xcal.addICalendar(ical);
+		assertThrows(IllegalArgumentException.class, () -> xcal.addICalendar(ical));
 	}
 
 	@Test
@@ -1029,13 +1030,13 @@ public class XCalDocumentTest {
 		assertTrue(xml.matches("(?i)<\\?xml.*?version=\"1.1\".*?\\?>.*"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void write_xmlVerison_invalid() throws Throwable {
 		ICalendar ical = new ICalendar();
 		XCalDocument xcal = new XCalDocument();
 		xcal.addICalendar(ical);
 
-		xcal.write(-1, "10.17");
+		assertThrows(IllegalArgumentException.class, () -> xcal.write(-1, "10.17"));
 	}
 
 	@Test

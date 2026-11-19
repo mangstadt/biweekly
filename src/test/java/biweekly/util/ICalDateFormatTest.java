@@ -6,6 +6,7 @@ import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Calendar;
@@ -156,9 +157,9 @@ public class ICalDateFormatTest {
 		assertEquals(actual, expected);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parse_invalid() {
-		ICalDateFormat.parse("invalid");
+		assertThrows(IllegalArgumentException.class, () -> ICalDateFormat.parse("invalid"));
 	}
 
 	@Test

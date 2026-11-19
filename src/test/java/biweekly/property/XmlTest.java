@@ -8,6 +8,7 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -61,9 +62,9 @@ public class XmlTest {
 		assertXMLEqual(XmlUtils.toDocument("<root/>"), property.getValue());
 	}
 
-	@Test(expected = SAXException.class)
+	@Test
 	public void constructors_invalid_xml() throws Throwable {
-		new Xml("not valid XML");
+		assertThrows(SAXException.class, () -> new Xml("not valid XML"));
 	}
 
 	@Test

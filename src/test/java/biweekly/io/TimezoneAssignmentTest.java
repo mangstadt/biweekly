@@ -1,5 +1,7 @@
 package biweekly.io;
 
+import static org.junit.Assert.assertThrows;
+
 import java.util.TimeZone;
 
 import org.junit.Test;
@@ -36,25 +38,25 @@ import biweekly.property.TimezoneId;
  * @author Michael Angstadt
  */
 public class TimezoneAssignmentTest {
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void constructor_no_TZID_property() {
 		TimeZone timezone = TimeZone.getTimeZone("America/New_York");
 		VTimezone component = new VTimezone((String) null);
-		new TimezoneAssignment(timezone, component);
+		assertThrows(IllegalArgumentException.class, () -> new TimezoneAssignment(timezone, component));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void constructor_null_TZID_value() {
 		TimeZone timezone = TimeZone.getTimeZone("America/New_York");
 		VTimezone component = new VTimezone((String) null);
 		component.setTimezoneId(new TimezoneId((String) null));
-		new TimezoneAssignment(timezone, component);
+		assertThrows(IllegalArgumentException.class, () -> new TimezoneAssignment(timezone, component));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void constructor_empty_TZID_value() {
 		TimeZone timezone = TimeZone.getTimeZone("America/New_York");
 		VTimezone component = new VTimezone(" ");
-		new TimezoneAssignment(timezone, component);
+		assertThrows(IllegalArgumentException.class, () -> new TimezoneAssignment(timezone, component));
 	}
 }

@@ -5,6 +5,7 @@ import static biweekly.util.TestUtils.date;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
@@ -78,39 +79,39 @@ public class DurationTest {
 		assertNull(duration.getSeconds());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parse_invalid() {
-		Duration.parse("not valid");
+		assertThrows(IllegalArgumentException.class, () -> Duration.parse("not valid"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parse_no_number() {
-		Duration.parse("PW");
+		assertThrows(IllegalArgumentException.class, () -> Duration.parse("PW"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parse_unknown_character_before_0() {
-		Duration.parse("P5*");
+		assertThrows(IllegalArgumentException.class, () -> Duration.parse("P5*"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parse_unknown_character_after_9() {
-		Duration.parse("P5Z");
+		assertThrows(IllegalArgumentException.class, () -> Duration.parse("P5Z"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parse_single_hyphen() {
-		Duration.parse("-");
+		assertThrows(IllegalArgumentException.class, () -> Duration.parse("-"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parse_single_plus() {
-		Duration.parse("+");
+		assertThrows(IllegalArgumentException.class, () -> Duration.parse("+"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parse_empty_string() {
-		Duration.parse("");
+		assertThrows(IllegalArgumentException.class, () -> Duration.parse(""));
 	}
 
 	@Test

@@ -8,6 +8,7 @@ import static biweekly.util.TestUtils.assertValidate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,9 +57,9 @@ public class ListPropertyTest {
 		assertEquals(Arrays.asList("value1", "value2"), property.getValues());
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void constructor_null_list() {
-		new ListProperty<>((List<String>) null);
+		assertThrows(NullPointerException.class, () -> new ListProperty<>((List<String>) null));
 	}
 
 	@Test

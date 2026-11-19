@@ -89,28 +89,28 @@ public class TzUrlDotOrgGeneratorTest {
 
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void not_found() throws Exception {
 		TzUrlDotOrgGenerator generator = spy(new TzUrlDotOrgGenerator(false));
 		doThrow(new FileNotFoundException()).when(generator).getInputStream(any(URI.class));
 
-		generator.generate(timezone);
+		assertThrows(IllegalArgumentException.class, () -> generator.generate(timezone));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void no_icalendar() throws Exception {
 		TzUrlDotOrgGenerator generator = spy(new TzUrlDotOrgGenerator(false));
 		doReturn(noICalendar()).when(generator).getInputStream(any(URI.class));
 
-		generator.generate(timezone);
+		assertThrows(IllegalArgumentException.class, () -> generator.generate(timezone));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void no_vtimezone() throws Exception {
 		TzUrlDotOrgGenerator generator = spy(new TzUrlDotOrgGenerator(false));
 		doReturn(noVTimezone()).when(generator).getInputStream(any(URI.class));
 
-		generator.generate(timezone);
+		assertThrows(IllegalArgumentException.class, () -> generator.generate(timezone));
 	}
 
 	@Test

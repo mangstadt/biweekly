@@ -2,6 +2,7 @@ package biweekly.io.json;
 
 import static biweekly.util.StringUtils.NEWLINE;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -230,15 +231,16 @@ public class JCalRawWriterTest {
 		assertEquals(expected, actual);
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void write_property_without_component() throws Throwable {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
 
-		writer.writeProperty("prop", ICalDataType.TEXT, JCalValue.single("value"));
+		JCalValue value = JCalValue.single("value");
+		assertThrows(IllegalStateException.class, () -> writer.writeProperty("prop", ICalDataType.TEXT, value));
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void write_property_after_ending_component() throws Throwable {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
@@ -246,7 +248,9 @@ public class JCalRawWriterTest {
 		writer.writeStartComponent("comp");
 		writer.writeStartComponent("comp");
 		writer.writeEndComponent();
-		writer.writeProperty("prop", ICalDataType.TEXT, JCalValue.single("value"));
+
+		JCalValue value = JCalValue.single("value");
+		assertThrows(IllegalStateException.class, () -> writer.writeProperty("prop", ICalDataType.TEXT, value));
 	}
 
 	@Test

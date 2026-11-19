@@ -2,6 +2,7 @@ package biweekly.io.xml;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,9 +65,9 @@ public class XCalOutputPropertiesTest {
 		assertEquals(expected, properties);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void constructor_negative_indent() {
-		new XCalOutputProperties(-1, "1.1");
+		assertThrows(IllegalArgumentException.class, () -> new XCalOutputProperties(-1, "1.1"));
 	}
 
 	@Test
@@ -94,10 +95,10 @@ public class XCalOutputPropertiesTest {
 		assertEquals(expected, properties);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void setIndent_negative() {
 		XCalOutputProperties properties = new XCalOutputProperties();
-		properties.setIndent(-1);
+		assertThrows(IllegalArgumentException.class, () -> properties.setIndent(-1));
 	}
 
 	@Test
@@ -125,12 +126,12 @@ public class XCalOutputPropertiesTest {
 		assertNull(properties.getIndent());
 	}
 
-	@Test(expected = NumberFormatException.class)
+	@Test
 	public void getIndent_not_an_integer() {
 		XCalOutputProperties properties = new XCalOutputProperties();
 		properties.put(OutputKeys.INDENT, "yes");
 		properties.put(INDENT_AMT, "foo");
-		properties.getIndent();
+		assertThrows(IllegalArgumentException.class, properties::getIndent);
 	}
 
 	@Test

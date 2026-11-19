@@ -29,6 +29,7 @@ import biweekly.io.ParseContext;
 import biweekly.io.ParseWarning;
 import biweekly.io.WriteContext;
 import biweekly.io.chain.ChainingTextWriter;
+import biweekly.io.chain.ChainingXmlMemoryParser;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.xml.XCalElement;
@@ -263,10 +264,11 @@ public class BiweeklyTest {
 		assertEquals(0, ical.getExperimentalComponents().size());
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void parseXml_invalid() throws Throwable {
 		String xml = "invalid-xml";
-		Biweekly.parseXml(xml).first();
+		ChainingXmlMemoryParser c = Biweekly.parseXml(xml);
+		assertThrows(RuntimeException.class, c::first);
 	}
 
 	@Test

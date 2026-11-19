@@ -3,6 +3,7 @@ package biweekly.util;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.util.Date;
 
@@ -52,9 +53,9 @@ public class DateTimeComponentsTest {
 		assertEquals(expected, actual);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parse_invalid() {
-		DateTimeComponents.parse("invalid");
+		assertThrows(IllegalArgumentException.class, () -> DateTimeComponents.parse("invalid"));
 	}
 
 	@Test

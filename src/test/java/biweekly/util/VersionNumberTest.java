@@ -4,6 +4,7 @@ import static biweekly.util.TestUtils.assertEqualsAndHash;
 import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertNotEqualsBothWays;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 
@@ -36,14 +37,14 @@ import org.junit.Test;
  * @author Michael Angstadt
  */
 public class VersionNumberTest {
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void invalid_value() {
-		new VersionNumber("1.2-beta");
+		assertThrows(IllegalArgumentException.class, () -> new VersionNumber("1.2-beta"));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void invalid_multiple_dots() {
-		new VersionNumber("1..2");
+		assertThrows(IllegalArgumentException.class, () -> new VersionNumber("1..2"));
 	}
 
 	@Test

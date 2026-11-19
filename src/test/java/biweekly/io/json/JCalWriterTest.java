@@ -6,6 +6,7 @@ import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -254,7 +255,7 @@ public class JCalWriterTest {
 		assertEquals(expected, actual);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void no_property_marshaller() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
@@ -262,10 +263,10 @@ public class JCalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		JCalWriter writer = new JCalWriter(sw);
-		writer.write(ical);
+		assertThrows(IllegalArgumentException.class, () -> writer.write(ical));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void no_component_marshaller() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
@@ -273,7 +274,7 @@ public class JCalWriterTest {
 
 		StringWriter sw = new StringWriter();
 		JCalWriter writer = new JCalWriter(sw);
-		writer.write(ical);
+		assertThrows(IllegalArgumentException.class, () -> writer.write(ical));
 	}
 
 	@Test

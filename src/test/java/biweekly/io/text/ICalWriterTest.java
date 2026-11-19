@@ -9,6 +9,7 @@ import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.each;
 import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -159,14 +160,14 @@ public class ICalWriterTest {
 		assertRegex(expected, actual);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void bad_parameter_value_chars() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProductId().addParameter("X-TEST", "\"test\"");
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V2_0);
-		writer.write(ical);
+		assertThrows(IllegalArgumentException.class, () -> writer.write(ical));
 	}
 
 	@Test
@@ -216,27 +217,27 @@ public class ICalWriterTest {
 		assertRegex(expected, actual);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void no_property_marshaller() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.addProperty(new TestProperty("value"));
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V2_0);
-		writer.write(ical);
+		assertThrows(IllegalArgumentException.class, () -> writer.write(ical));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void no_component_marshaller() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.addComponent(new Party());
 
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V2_0);
-		writer.write(ical);
+		assertThrows(IllegalArgumentException.class, () -> writer.write(ical));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void bad_property_name() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.addProperty(new TestProperty("value"));
@@ -244,7 +245,7 @@ public class ICalWriterTest {
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.registerScribe(new BadNameMarshaller());
-		writer.write(ical);
+		assertThrows(IllegalArgumentException.class, () -> writer.write(ical));
 	}
 
 	@Test

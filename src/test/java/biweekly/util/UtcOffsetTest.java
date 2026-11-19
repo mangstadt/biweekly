@@ -2,6 +2,7 @@ package biweekly.util;
 
 import static biweekly.util.TestUtils.buildTimezone;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 
@@ -111,9 +112,9 @@ public class UtcOffsetTest {
 		assertEquals(expected, actual);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void parse_invalid() {
-		UtcOffset.parse("invalid");
+		assertThrows(IllegalArgumentException.class, () -> UtcOffset.parse("invalid"));
 	}
 
 	@Test
