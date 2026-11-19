@@ -61,7 +61,7 @@ public final class DataModelConverter {
 	 * @return the VTIMEZONE component
 	 */
 	public static VTimezone convert(List<Daylight> daylights, Timezone tz) {
-		UtcOffset tzOffset = ValuedProperty.getValue(tz);
+		UtcOffset tzOffset = ValuedProperty.valueOf(tz);
 		if (daylights.isEmpty() && tzOffset == null) {
 			return null;
 		}

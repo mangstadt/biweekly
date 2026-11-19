@@ -1,6 +1,6 @@
 package biweekly.io;
 
-import static biweekly.property.ValuedProperty.getValue;
+import static biweekly.property.ValuedProperty.valueOf;
 import static biweekly.util.Google2445Utils.convertFromRawComponents;
 
 import java.util.ArrayList;
@@ -32,6 +32,7 @@ import biweekly.property.RecurrenceDates;
 import biweekly.property.RecurrenceProperty;
 import biweekly.property.RecurrenceRule;
 import biweekly.property.TimezoneName;
+import biweekly.property.ValuedProperty;
 import biweekly.util.ICalDate;
 import biweekly.util.UtcOffset;
 import biweekly.util.com.google.ical.iter.RecurrenceIterator;
@@ -94,7 +95,7 @@ public class ICalTimeZone extends TimeZone {
 
 		rawOffset = calculateRawOffset();
 
-		String id = getValue(component.getTimezoneId());
+		String id = valueOf(component.getTimezoneId());
 		if (id != null) {
 			setID(id);
 		}
@@ -117,8 +118,8 @@ public class ICalTimeZone extends TimeZone {
 
 		Collections.sort(sortedObservances, new Comparator<Observance>() {
 			public int compare(Observance left, Observance right) {
-				ICalDate startLeft = getValue(left.getDateStart());
-				ICalDate startRight = getValue(right.getDateStart());
+				ICalDate startLeft = valueOf(left.getDateStart());
+				ICalDate startRight = valueOf(right.getDateStart());
 				if (startLeft == null && startRight == null) {
 					return 0;
 				}
@@ -175,7 +176,7 @@ public class ICalTimeZone extends TimeZone {
 			 */
 			offsetTo = getStartingOffsetFromFirstObservanceWithAStartDate();
 		} else {
-			offsetTo = getValue(observance.getTimezoneOffsetTo());
+			offsetTo = valueOf(observance.getTimezoneOffsetTo());
 		}
 
 		return getMillisOrZero(offsetTo);
@@ -186,7 +187,7 @@ public class ICalTimeZone extends TimeZone {
 		Observance closest = null;
 		long closestStart = Long.MIN_VALUE;
 		for (Observance observance : sortedObservances) {
-			UtcOffset offsetFrom = getValue(observance.getTimezoneOffsetFrom());
+			UtcOffset offsetFrom = valueOf(observance.getTimezoneOffsetFrom());
 			int offset = getMillisOrZero(offsetFrom);
 
 			// DTSTART and recurrence dates are local times before the transition.
@@ -222,7 +223,7 @@ public class ICalTimeZone extends TimeZone {
 		}
 
 		if (closest != null) {
-			UtcOffset offsetTo = getValue(closest.getTimezoneOffsetTo());
+			UtcOffset offsetTo = valueOf(closest.getTimezoneOffsetTo());
 			return (offsetTo == null) ? 0 : (int) offsetTo.getMillis();
 		}
 
@@ -241,14 +242,15 @@ public class ICalTimeZone extends TimeZone {
 		//@formatter:off
 		return sortedObservances.stream()
 			.filter(this::hasDateStart)
-			.map(observance -> getValue(observance.getTimezoneOffsetFrom()))
+			.map(Observance::getTimezoneOffsetFrom)
+			.map(ValuedProperty::valueOf)
 			.filter(Objects::nonNull)
 		.findFirst().orElse(null);
 		//@formatter:on
 	}
 
 	private boolean hasDateStart(Observance observance) {
-		return getValue(observance.getDateStart()) != null;
+		return valueOf(observance.getDateStart()) != null;
 	}
 
 	@Override
@@ -265,12 +267,13 @@ public class ICalTimeZone extends TimeZone {
 			//@formatter:off
 			offset = sortedObservances.stream()
 				.filter(StandardTime.class::isInstance)
-				.map(obs -> getValue(obs.getTimezoneOffsetTo()))
+				.map(Observance::getTimezoneOffsetTo)
+				.map(ValuedProperty::valueOf)
 				.filter(Objects::nonNull)
 			.findFirst().orElse(null);
 			//@formatter:on
 		} else {
-			offset = getValue((observance instanceof StandardTime) ? observance.getTimezoneOffsetTo() : observance.getTimezoneOffsetFrom());
+			offset = valueOf((observance instanceof StandardTime) ? observance.getTimezoneOffsetTo() : observance.getTimezoneOffsetFrom());
 		}
 
 		return getMillisOrZero(offset);
@@ -380,7 +383,7 @@ public class ICalTimeZone extends TimeZone {
 			Observance observance = sortedObservances.get(i);
 
 			//skip observances that start after the given time
-			ICalDate dtstart = getValue(observance.getDateStart());
+			ICalDate dtstart = valueOf(observance.getDateStart());
 			if (dtstart != null) {
 				DateValue dtstartValue = convertFromRawComponents(dtstart);
 				if (dtstartValue.compareTo(givenTime) > 0) {
@@ -545,7 +548,7 @@ public class ICalTimeZone extends TimeZone {
 		List<RecurrenceIterator> inclusions = new ArrayList<>();
 		List<RecurrenceIterator> exclusions = new ArrayList<>();
 
-		ICalDate dtstart = getValue(observance.getDateStart());
+		ICalDate dtstart = valueOf(observance.getDateStart());
 		if (dtstart != null) {
 			DateValue dtstartValue = convertFromRawComponents(dtstart);
 
@@ -591,7 +594,7 @@ public class ICalTimeZone extends TimeZone {
 	private Stream<RecurrenceIterator> createRecurrenceIterators(List<? extends RecurrenceProperty> properties, DateValue dtstartValue) {
 		//@formatter:off
 		return properties.stream()
-			.map(rrule -> rrule.getValue())
+			.map(RecurrenceProperty::getValue)
 			.filter(Objects::nonNull)
 			.map(recur -> RecurrenceIteratorFactory.createRecurrenceIterator(recur, dtstartValue, utc));
 		//@formatter:on

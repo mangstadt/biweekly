@@ -1,6 +1,6 @@
 package biweekly.component;
 
-import static biweekly.property.ValuedProperty.getValue;
+import static biweekly.property.ValuedProperty.valueOf;
 
 import java.util.Date;
 import java.util.List;
@@ -632,8 +632,8 @@ public class VFreeBusy extends ICalComponent {
 		checkRequiredCardinality(warnings, Uid.class, DateTimeStamp.class);
 		checkOptionalCardinality(warnings, Contact.class, DateStart.class, DateEnd.class, Organizer.class, Url.class);
 
-		ICalDate dateStart = getValue(getDateStart());
-		ICalDate dateEnd = getValue(getDateEnd());
+		ICalDate dateStart = valueOf(getDateStart());
+		ICalDate dateEnd = valueOf(getDateEnd());
 
 		//DTSTART is required if DTEND exists
 		if (dateEnd != null && dateStart == null) {

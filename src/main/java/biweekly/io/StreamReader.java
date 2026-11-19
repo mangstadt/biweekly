@@ -280,7 +280,7 @@ public abstract class StreamReader implements Closeable {
 	}
 
 	private TimeZone buildTimeZone(VTimezone component) {
-		String id = ValuedProperty.getValue(component.getTimezoneId());
+		String id = ValuedProperty.valueOf(component.getTimezoneId());
 		boolean idMissing = (id == null || id.trim().isEmpty());
 
 		return idMissing ? null : new ICalTimeZone(component);

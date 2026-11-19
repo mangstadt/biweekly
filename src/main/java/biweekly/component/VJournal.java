@@ -1,6 +1,6 @@
 package biweekly.component;
 
-import static biweekly.property.ValuedProperty.getValue;
+import static biweekly.property.ValuedProperty.valueOf;
 
 import java.util.Date;
 import java.util.List;
@@ -1230,15 +1230,15 @@ public class VJournal extends ICalComponent {
 		checkStatus(warnings, Status.draft(), Status.final_(), Status.cancelled());
 
 		//DTSTART and RECURRENCE-ID must have the same data type
-		ICalDate recurrenceId = getValue(getRecurrenceId());
-		ICalDate dateStart = getValue(getDateStart());
+		ICalDate recurrenceId = valueOf(getRecurrenceId());
+		ICalDate dateStart = valueOf(getDateStart());
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
 			warnings.add(new ValidationWarning(19));
 		}
 
 		//BYHOUR, BYMINUTE, and BYSECOND cannot be specified in RRULE if DTSTART's data type is "date"
 		//RFC 5545 p. 167
-		Recurrence rrule = getValue(getRecurrenceRule());
+		Recurrence rrule = valueOf(getRecurrenceRule());
 		if (dateStart != null && rrule != null) {
 			if (!dateStart.hasTime() && (!rrule.getByHour().isEmpty() || !rrule.getByMinute().isEmpty() || !rrule.getBySecond().isEmpty())) {
 				warnings.add(new ValidationWarning(5));

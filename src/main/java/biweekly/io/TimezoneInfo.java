@@ -1,6 +1,6 @@
 package biweekly.io;
 
-import static biweekly.property.ValuedProperty.getValue;
+import static biweekly.property.ValuedProperty.valueOf;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -168,7 +168,7 @@ public class TimezoneInfo {
 		return assignments.stream()
 			.filter(assignment -> Objects.nonNull(assignment.getComponent()))
 			.filter(assignment -> {
-				String componentId = getValue(assignment.getComponent().getTimezoneId());
+				String componentId = valueOf(assignment.getComponent().getTimezoneId());
 				return tzid.equals(componentId);
 			})
 		.findFirst().orElse(null);

@@ -59,12 +59,12 @@ public class ValuedPropertyTest {
 	@Test
 	public void getValue() {
 		ValuedProperty<String> property = new ValuedProperty<>("value");
-		assertEquals("value", ValuedProperty.getValue(property));
+		assertEquals("value", ValuedProperty.valueOf(property));
 
 		property = new ValuedProperty<>((String) null);
-		assertNull(ValuedProperty.getValue(property));
+		assertNull(ValuedProperty.valueOf(property));
 
-		assertNull(ValuedProperty.getValue(null));
+		assertNull(ValuedProperty.valueOf(null));
 	}
 
 	@Test

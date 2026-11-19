@@ -50,7 +50,7 @@ public class TimezoneAssignment {
 	 * doesn't have a {@link TimezoneId} property
 	 */
 	public TimezoneAssignment(TimeZone timezone, VTimezone component) {
-		String id = ValuedProperty.getValue(component.getTimezoneId());
+		String id = ValuedProperty.valueOf(component.getTimezoneId());
 		if (id == null || id.trim().isEmpty()) {
 			throw Messages.INSTANCE.getIllegalArgumentException(14);
 		}

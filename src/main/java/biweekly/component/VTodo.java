@@ -1,6 +1,6 @@
 package biweekly.component;
 
-import static biweekly.property.ValuedProperty.getValue;
+import static biweekly.property.ValuedProperty.valueOf;
 
 import java.util.Date;
 import java.util.List;
@@ -1692,8 +1692,8 @@ public class VTodo extends ICalComponent {
 		Status[] validStatuses = getValidStatuses(version);
 		checkStatus(warnings, validStatuses);
 
-		ICalDate dateStart = getValue(getDateStart());
-		ICalDate dateDue = getValue(getDateDue());
+		ICalDate dateStart = valueOf(getDateStart());
+		ICalDate dateDue = valueOf(getDateDue());
 		if (dateStart != null && dateDue != null) {
 			//DTSTART must come before DUE
 			if (dateStart.compareTo(dateDue) > 0) {
@@ -1718,14 +1718,14 @@ public class VTodo extends ICalComponent {
 		}
 
 		//DTSTART and RECURRENCE-ID must have the same data type
-		ICalDate recurrenceId = getValue(getRecurrenceId());
+		ICalDate recurrenceId = valueOf(getRecurrenceId());
 		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
 			warnings.add(new ValidationWarning(19));
 		}
 
 		//BYHOUR, BYMINUTE, and BYSECOND cannot be specified in RRULE if DTSTART's data type is "date"
 		//RFC 5545 p. 167
-		Recurrence rrule = getValue(getRecurrenceRule());
+		Recurrence rrule = valueOf(getRecurrenceRule());
 		if (dateStart != null && rrule != null) {
 			if (!dateStart.hasTime() && (!rrule.getByHour().isEmpty() || !rrule.getByMinute().isEmpty() || !rrule.getBySecond().isEmpty())) {
 				warnings.add(new ValidationWarning(5));

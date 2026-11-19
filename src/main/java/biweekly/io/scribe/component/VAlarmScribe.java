@@ -177,7 +177,7 @@ public class VAlarmScribe extends ICalComponentScribe<VAlarm> {
 
 	private static DisplayAlarm createDisplayAlarm(VAlarm valarm) {
 		Description description = valarm.getDescription();
-		String text = ValuedProperty.getValue(description);
+		String text = ValuedProperty.valueOf(description);
 		return new DisplayAlarm(text);
 	}
 
@@ -187,7 +187,7 @@ public class VAlarmScribe extends ICalComponentScribe<VAlarm> {
 		EmailAlarm malarm = new EmailAlarm(email);
 
 		Description description = valarm.getDescription();
-		String note = ValuedProperty.getValue(description);
+		String note = ValuedProperty.valueOf(description);
 		malarm.setNote(note);
 
 		return malarm;
@@ -195,7 +195,7 @@ public class VAlarmScribe extends ICalComponentScribe<VAlarm> {
 
 	private static ProcedureAlarm createProcedureAlarm(VAlarm valarm) {
 		Description description = valarm.getDescription();
-		String path = ValuedProperty.getValue(description);
+		String path = ValuedProperty.valueOf(description);
 		return new ProcedureAlarm(path);
 	}
 
@@ -229,12 +229,12 @@ public class VAlarmScribe extends ICalComponentScribe<VAlarm> {
 		Related related = trigger.getRelated();
 		Date date = null;
 		if (related == Related.START) {
-			date = ValuedProperty.getValue(parent.getProperty(DateStart.class));
+			date = ValuedProperty.valueOf(parent.getProperty(DateStart.class));
 		} else if (related == Related.END) {
-			date = ValuedProperty.getValue(parent.getProperty(DateEnd.class));
+			date = ValuedProperty.valueOf(parent.getProperty(DateEnd.class));
 			if (date == null) {
-				Date dateStart = ValuedProperty.getValue(parent.getProperty(DateStart.class));
-				Duration duration = ValuedProperty.getValue(parent.getProperty(DurationProperty.class));
+				Date dateStart = ValuedProperty.valueOf(parent.getProperty(DateStart.class));
+				Duration duration = ValuedProperty.valueOf(parent.getProperty(DurationProperty.class));
 				if (duration != null && dateStart != null) {
 					date = duration.add(dateStart);
 				}

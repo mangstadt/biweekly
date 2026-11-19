@@ -842,7 +842,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 		VTimezone component = tz.getComponent();
 		String globalId = tz.getGlobalId();
 		if (component != null) {
-			tzid = ValuedProperty.getValue(component.getTimezoneId());
+			tzid = ValuedProperty.valueOf(component.getTimezoneId());
 		} else if (globalId != null) {
 			tzid = '/' + globalId;
 		}

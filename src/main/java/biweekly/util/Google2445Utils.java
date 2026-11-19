@@ -1,7 +1,5 @@
 package biweekly.util;
 
-import static biweekly.property.ValuedProperty.getValue;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -239,7 +237,7 @@ public final class Google2445Utils {
 	 */
 	public static DateIterator getDateIterator(ICalComponent component, TimeZone timezone) {
 		DateStart startProperty = component.getProperty(DateStart.class);
-		ICalDate start = ValuedProperty.getValue(startProperty);
+		ICalDate start = ValuedProperty.valueOf(startProperty);
 
 		/*
 		 * If the start date is just a date and does not have a time component,
@@ -273,7 +271,7 @@ public final class Google2445Utils {
 		if (start != null) {
 			//@formatter:off
 			component.getProperties(RecurrenceRule.class).stream()
-				.map(rrule -> getValue(rrule))
+				.map(ValuedProperty::valueOf)
 				.filter(Objects::nonNull)
 				.map(recurrence -> createRecurrenceIterator(recurrence, start, timezone))
 			.forEach(include::add);
@@ -304,7 +302,7 @@ public final class Google2445Utils {
 		if (start != null) {
 			//@formatter:off
 			component.getProperties(ExceptionRule.class).stream()
-				.map(exrule -> getValue(exrule))
+				.map(ValuedProperty::valueOf)
 				.filter(Objects::nonNull)
 				.map(recurrence -> createRecurrenceIterator(recurrence, start, timezone))
 			.forEach(exclude::add);
