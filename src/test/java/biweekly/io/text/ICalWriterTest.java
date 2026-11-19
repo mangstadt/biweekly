@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.TimeZone;
 
 import org.junit.Rule;
@@ -439,7 +440,7 @@ public class ICalWriterTest {
 		"END:VCALENDAR\r\n";
 		//@formatter:on
 
-		String actual = new Gobble(file).asString("UTF-8");
+		String actual = new Gobble(file).asString(StandardCharsets.UTF_8);
 		assertEquals(expected, actual);
 	}
 

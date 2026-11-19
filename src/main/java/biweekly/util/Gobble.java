@@ -82,7 +82,7 @@ public class Gobble {
 	 * @throws IOException if there was a problem reading from the stream
 	 */
 	public String asString() throws IOException {
-		return asString(Charset.defaultCharset().name());
+		return asString(Charset.defaultCharset());
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class Gobble {
 	 * @return the string
 	 * @throws IOException if there was a problem reading from the stream
 	 */
-	public String asString(String charset) throws IOException {
+	public String asString(Charset charset) throws IOException {
 		Reader reader = buildReader(charset);
 		return consumeReader(reader);
 	}
@@ -114,7 +114,7 @@ public class Gobble {
 		return consumeInputStream(in);
 	}
 
-	private Reader buildReader(String charset) throws IOException {
+	private Reader buildReader(Charset charset) throws IOException {
 		return (reader == null) ? new InputStreamReader(buildInputStream(), charset) : reader;
 	}
 

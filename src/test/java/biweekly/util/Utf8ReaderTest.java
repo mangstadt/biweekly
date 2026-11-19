@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,7 +48,7 @@ public class Utf8ReaderTest {
 	@Test
 	public void inputStream() throws Exception {
 		String data = "one two three";
-		byte bytes[] = data.getBytes("UTF-8");
+		byte bytes[] = data.getBytes(StandardCharsets.UTF_8);
 
 		Utf8Reader reader = new Utf8Reader(new ByteArrayInputStream(bytes));
 
@@ -61,7 +62,7 @@ public class Utf8ReaderTest {
 		String data = "one two three";
 
 		File file = folder.newFile();
-		Writer writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+		Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
 		writer.write(data);
 		writer.close();
 

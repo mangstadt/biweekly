@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -42,7 +42,7 @@ public class Utf8Writer extends OutputStreamWriter {
 	 * @param out the output stream to write to
 	 */
 	public Utf8Writer(OutputStream out) {
-		super(out, Charset.forName("UTF-8"));
+		super(out, StandardCharsets.UTF_8);
 	}
 
 	/**

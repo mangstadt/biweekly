@@ -13,6 +13,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
@@ -671,7 +672,7 @@ public class XCalWriterTest {
 
 		writer.close();
 
-		String xml = new Gobble(file).asString("UTF-8");
+		String xml = new Gobble(file).asString(StandardCharsets.UTF_8);
 		assertTrue(xml.matches("(?i)<\\?xml.*?encoding=\"utf-8\".*?\\?>.*"));
 		assertTrue(xml.matches(".*?<summary><text>\u1e66ummary</text></summary>.*"));
 	}

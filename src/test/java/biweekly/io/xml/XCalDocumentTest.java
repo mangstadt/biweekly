@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1049,7 +1050,7 @@ public class XCalDocumentTest {
 		File file = tempFolder.newFile();
 		xcal.write(file);
 
-		String xml = new Gobble(file).asString("UTF-8");
+		String xml = new Gobble(file).asString(StandardCharsets.UTF_8);
 		assertTrue(xml.matches("(?i)<\\?xml.*?encoding=\"utf-8\".*?\\?>.*"));
 		assertTrue(xml.matches(".*?<summary><text>\u1e66ummary</text></summary>.*"));
 	}

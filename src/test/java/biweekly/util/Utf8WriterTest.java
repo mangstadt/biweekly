@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -51,7 +52,7 @@ public class Utf8WriterTest {
 		writer.close();
 
 		String expected = data;
-		String actual = new String(out.toByteArray(), "UTF-8");
+		String actual = new String(out.toByteArray(), StandardCharsets.UTF_8);
 		assertEquals(expected, actual);
 	}
 
@@ -65,7 +66,7 @@ public class Utf8WriterTest {
 		writer.close();
 
 		String expected = data;
-		String actual = new Gobble(file).asString("UTF-8");
+		String actual = new Gobble(file).asString(StandardCharsets.UTF_8);
 		assertEquals(expected, actual);
 	}
 
@@ -85,7 +86,7 @@ public class Utf8WriterTest {
 		writer.close();
 
 		String expected = "two three";
-		String actual = new Gobble(file).asString("UTF-8");
+		String actual = new Gobble(file).asString(StandardCharsets.UTF_8);
 		assertEquals(expected, actual);
 	}
 }
