@@ -5,7 +5,7 @@ import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -62,14 +62,11 @@ public class VAlarmScribeTest {
 	public void checkForDataModelConversions_version() {
 		VAlarm alarm = new VAlarm(Action.audio(), new Trigger(date));
 
-		try {
-			scribe.checkForDataModelConversions(alarm, null, V1_0);
-			fail();
-		} catch (DataModelConversionException e) {
-			assertNull(e.getOriginalProperty());
-			assertEquals(1, e.getProperties().size());
-			assertEquals(0, e.getComponents().size());
-		}
+		DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+		assertNull(e.getOriginalProperty());
+		assertEquals(1, e.getProperties().size());
+		assertEquals(0, e.getComponents().size());
+
 		scribe.checkForDataModelConversions(alarm, null, V2_0_DEPRECATED);
 		scribe.checkForDataModelConversions(alarm, null, V2_0);
 	}

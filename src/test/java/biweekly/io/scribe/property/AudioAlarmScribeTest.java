@@ -3,7 +3,7 @@ package biweekly.io.scribe.property;
 import static biweekly.util.StringUtils.encodeBase64;
 import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -112,20 +112,20 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 
 	@Test
 	public void parseText() {
-		try {
-			sensei.assertParseText("").run();
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<AudioAlarm>.ParseTextTest test = sensei.assertParseText("");
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertEquals(empty, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.audio(), new Trigger((Date) null));
 			assertEquals(Arrays.asList(expected), e.getComponents());
 			assertEquals(Arrays.asList(), e.getProperties());
 		}
 
-		try {
-			sensei.assertParseText("20140101T010000Z;PT10M;5").run();
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<AudioAlarm>.ParseTextTest test = sensei.assertParseText("20140101T010000Z;PT10M;5");
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertEquals(noValue, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.audio(), new Trigger(noValue.getStart()));
 			expected.setDuration(noValue.getSnooze());
@@ -134,10 +134,10 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 			assertEquals(Arrays.asList(), e.getProperties());
 		}
 
-		try {
-			sensei.assertParseText("20140101T010000Z;PT10M;5;" + contentId).dataType(ICalDataType.CONTENT_ID).run();
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<AudioAlarm>.ParseTextTest test = sensei.assertParseText("20140101T010000Z;PT10M;5;" + contentId).dataType(ICalDataType.CONTENT_ID);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertEquals(withContentId, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.audio(), new Trigger(withContentId.getStart()));
 			Attachment attach = new Attachment(null, (String) null);
@@ -149,10 +149,10 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 			assertEquals(Arrays.asList(), e.getProperties());
 		}
 
-		try {
-			sensei.assertParseText("20140101T010000Z;PT10M;5;" + uri).dataType(ICalDataType.URL).run();
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<AudioAlarm>.ParseTextTest test = sensei.assertParseText("20140101T010000Z;PT10M;5;" + uri).dataType(ICalDataType.URL);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertEquals(withUri, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.audio(), new Trigger(withUri.getStart()));
 			Attachment attach = new Attachment(null, uri);
@@ -163,10 +163,10 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 			assertEquals(Arrays.asList(), e.getProperties());
 		}
 
-		try {
-			sensei.assertParseText("20140101T010000Z;PT10M;5;" + dataBase64).dataType(ICalDataType.BINARY).run();
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<AudioAlarm>.ParseTextTest test = sensei.assertParseText("20140101T010000Z;PT10M;5;" + dataBase64).dataType(ICalDataType.BINARY);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertEquals(withData, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.audio(), new Trigger(withData.getStart()));
 			Attachment attach = new Attachment(null, data);
@@ -179,10 +179,10 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 
 		sensei.assertParseText("20140101T010000Z;PT10M;5;" + dataBase64Invalid).dataType(ICalDataType.BINARY).cannotParse(44);
 
-		try {
-			sensei.assertParseText("20140101T010000Z;PT10M;5;" + uri).run();
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<AudioAlarm>.ParseTextTest test = sensei.assertParseText("20140101T010000Z;PT10M;5;" + uri);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertEquals(withUri, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.audio(), new Trigger(withUri.getStart()));
 			Attachment attach = new Attachment(null, uri);

@@ -1,7 +1,7 @@
 package biweekly.io;
 
 import static biweekly.ICalVersion.V2_0;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -66,12 +66,7 @@ public class StreamWriterTest {
 	public void unregistered_property() throws Exception {
 		ical.addProperty(new TestProperty());
 
-		try {
-			writer.write(ical);
-			fail("Expected IllegalArgumentException");
-		} catch (IllegalArgumentException e) {
-			//expected
-		}
+		assertThrows(IllegalArgumentException.class, () -> writer.write(ical));
 
 		verify(writer, never())._write(ical);
 	}
@@ -87,13 +82,8 @@ public class StreamWriterTest {
 	@Test
 	public void unregistered_component() throws Exception {
 		ical.addComponent(new TestComponent());
-
-		try {
-			writer.write(ical);
-			fail("Expected IllegalArgumentException");
-		} catch (IllegalArgumentException e) {
-			//expected
-		}
+		
+		assertThrows(IllegalArgumentException.class, () -> writer.write(ical));
 
 		verify(writer, never())._write(ical);
 	}

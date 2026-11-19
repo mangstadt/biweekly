@@ -5,16 +5,16 @@ import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.ParseContext;
 import biweekly.io.DataModelConversionException;
+import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.ParticipationLevel;
 import biweekly.parameter.ParticipationStatus;
@@ -209,10 +209,10 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		sensei.assertParseText("http:" + email).versions(V1_0).run(check(null, "http:" + email, null));
 		sensei.assertParseText("http:" + email).param("CN", name).param("EMAIL", email).versions(V2_0_DEPRECATED, V2_0).run(check(name, email, "http:" + email));
 
-		try {
-			sensei.assertParseText(name + " <" + email + ">").versions(V1_0).param("ROLE", "ORGANIZER").param("FOO", "bar").run();
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<Attendee>.ParseTextTest test = sensei.assertParseText(name + " <" + email + ">").versions(V1_0).param("ROLE", "ORGANIZER").param("FOO", "bar");
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+			
 			Attendee expectedOriginal = new Attendee(name, email);
 			expectedOriginal.setRole(Role.ORGANIZER);
 			expectedOriginal.setParameter("FOO", "bar");
@@ -224,10 +224,11 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 			assertEquals(Arrays.asList(), e.getComponents());
 		}
 
-		try {
-			sensei.assertParseText(uri).versions(V1_0).param("ROLE", "ORGANIZER").param("FOO", "bar").dataType(ICalDataType.URL).run(check(null, null, uri));
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<Attendee>.ParseTextTest test = sensei.assertParseText(uri).versions(V1_0).param("ROLE", "ORGANIZER").param("FOO", "bar").dataType(ICalDataType.URL);
+			Check<Attendee> check = check(null, null, uri);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> test.run(check));
+
 			Attendee expectedOriginal = new Attendee(null, null, uri);
 			expectedOriginal.setRole(Role.ORGANIZER);
 			expectedOriginal.setParameter("FOO", "bar");

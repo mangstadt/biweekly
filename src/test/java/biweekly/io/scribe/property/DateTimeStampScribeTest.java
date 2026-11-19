@@ -1,7 +1,7 @@
 package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import java.util.Date;
 
@@ -51,12 +51,9 @@ public class DateTimeStampScribeTest extends ScribeTest<DateTimeStamp> {
 
 	@Test
 	public void writeText() {
-		try {
-			sensei.assertWriteText(withDateTime).version(ICalVersion.V1_0).run(datetimeStr);
-			fail();
-		} catch (SkipMeException e) {
-			//expected
-		}
+		Sensei<DateTimeStamp>.WriteTextTest test = sensei.assertWriteText(withDateTime).version(ICalVersion.V1_0);
+		assertThrows(SkipMeException.class, () -> test.run(datetimeStr));
+
 		sensei.assertWriteText(withDateTime).version(ICalVersion.V2_0_DEPRECATED).run(datetimeStr);
 		sensei.assertWriteText(withDateTime).version(ICalVersion.V2_0).run(datetimeStr);
 	}

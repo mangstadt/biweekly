@@ -2,7 +2,7 @@ package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -80,20 +80,20 @@ public class EmailAlarmScribeTest extends ScribeTest<EmailAlarm> {
 
 	@Test
 	public void parseText() {
-		try {
-			sensei.assertParseText("").run();
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<EmailAlarm>.ParseTextTest test = sensei.assertParseText("");
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertEquals(empty, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.email(), new Trigger((Date) null));
 			assertEquals(Arrays.asList(expected), e.getComponents());
 			assertEquals(Arrays.asList(), e.getProperties());
 		}
 
-		try {
-			sensei.assertParseText("20140101T010000Z;PT10M;5").run();
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<EmailAlarm>.ParseTextTest test = sensei.assertParseText("20140101T010000Z;PT10M;5");
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertEquals(noValue, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.email(), new Trigger(noValue.getStart()));
 			expected.setDuration(noValue.getSnooze());
@@ -102,10 +102,10 @@ public class EmailAlarmScribeTest extends ScribeTest<EmailAlarm> {
 			assertEquals(Arrays.asList(), e.getProperties());
 		}
 
-		try {
-			sensei.assertParseText("20140101T010000Z;PT10M;5;" + email + ";" + note).run();
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<EmailAlarm>.ParseTextTest test = sensei.assertParseText("20140101T010000Z;PT10M;5;" + email + ";" + note);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertEquals(withValue, e.getOriginalProperty());
 			VAlarm expected = new VAlarm(Action.email(), new Trigger(withValue.getStart()));
 			expected.setDuration(withValue.getSnooze());

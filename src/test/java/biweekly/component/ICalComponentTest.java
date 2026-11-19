@@ -3,8 +3,8 @@ package biweekly.component;
 import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertEqualsAndHash;
 import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
-import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertListSize;
+import static biweekly.util.TestUtils.assertSize;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -12,8 +12,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -526,24 +526,16 @@ public class ICalComponentTest {
 	public void copy_constructor_throws_exception() {
 		RuntimeException exception = new RuntimeException();
 		TestComponentCopyConstructorThrowsException component = new TestComponentCopyConstructorThrowsException(exception);
-		try {
-			component.copy();
-			fail("Expected an exception to be thrown.");
-		} catch (UnsupportedOperationException e) {
-			assertTrue(e.getCause() instanceof InvocationTargetException);
-			assertSame(e.getCause().getCause(), exception);
-		}
+		UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class, component::copy);
+		assertTrue(e.getCause() instanceof InvocationTargetException);
+		assertSame(e.getCause().getCause(), exception);
 	}
 
 	@Test
 	public void copy_no_copy_constructor_or_method() {
 		ICalComponentImpl component = new ICalComponentImpl();
-		try {
-			component.copy();
-			fail("Expected an exception to be thrown.");
-		} catch (UnsupportedOperationException e) {
-			assertTrue(e.getCause() instanceof NoSuchMethodException);
-		}
+		UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class, component::copy);
+		assertTrue(e.getCause() instanceof NoSuchMethodException);
 	}
 
 	@Test

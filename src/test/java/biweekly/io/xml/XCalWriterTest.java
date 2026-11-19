@@ -7,8 +7,8 @@ import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -461,12 +461,7 @@ public class XCalWriterTest {
 		ical.setProductId("value");
 		ical.addProperty(new Company(""));
 
-		try {
-			writer.write(ical);
-			fail();
-		} catch (IllegalArgumentException e) {
-			//should be thrown
-		}
+		assertThrows(IllegalArgumentException.class, () -> writer.write(ical));
 
 		writer.close();
 
@@ -495,12 +490,7 @@ public class XCalWriterTest {
 		ical.setProductId("value");
 		ical.addComponent(new Party());
 
-		try {
-			writer.write(ical);
-			fail();
-		} catch (IllegalArgumentException e) {
-			//should be thrown
-		}
+		assertThrows(IllegalArgumentException.class, () -> writer.write(ical));
 
 		writer.close();
 

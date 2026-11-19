@@ -9,8 +9,8 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,6 +28,7 @@ import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
 import biweekly.io.ParseWarning;
 import biweekly.io.WriteContext;
+import biweekly.io.chain.ChainingTextWriter;
 import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.io.xml.XCalElement;
@@ -324,43 +325,28 @@ public class BiweeklyTest {
 		ical.setProductId("prodid");
 		ical.getProductId().addParameter("X-TEST", "the \"best\" app");
 
-		//default is "false"
-		//@formatter:off
-		String expected =
-		"BEGIN:VCALENDAR\r\n" +
-		"VERSION:2\\.0\r\n" +
-		"PRODID;X-TEST=the 'best' app:prodid\r\n" +
-		"END:VCALENDAR\r\n";
-		//@formatter:on
-		try {
-			Biweekly.write(ical).go();
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			//expected
+		{
+			//default is "false"
+			ChainingTextWriter c = Biweekly.write(ical);
+			assertThrows(IllegalArgumentException.class, c::go);
 		}
 
-		//@formatter:off
-		expected =
-		"BEGIN:VCALENDAR\r\n" +
-		"VERSION:2\\.0\r\n" +
-		"PRODID;X-TEST=the \\^'best\\^' app:prodid\r\n" +
-		"END:VCALENDAR\r\n";
-		//@formatter:on
-		String actual = Biweekly.write(ical).caretEncoding(true).go();
-		assertRegex(expected, actual);
+		{
+			//@formatter:off
+			String expected =
+			"BEGIN:VCALENDAR\r\n" +
+			"VERSION:2\\.0\r\n" +
+			"PRODID;X-TEST=the \\^'best\\^' app:prodid\r\n" +
+			"END:VCALENDAR\r\n";
+			//@formatter:on
 
-		//@formatter:off
-		expected =
-		"BEGIN:VCALENDAR\r\n" +
-		"VERSION:2\\.0\r\n" +
-		"PRODID;X-TEST=the 'best' app:prodid\r\n" +
-		"END:VCALENDAR\r\n";
-		//@formatter:on
-		try {
-			Biweekly.write(ical).go();
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			//expected
+			String actual = Biweekly.write(ical).caretEncoding(true).go();
+			assertRegex(expected, actual);
+		}
+
+		{
+			ChainingTextWriter c = Biweekly.write(ical).caretEncoding(false);
+			assertThrows(IllegalArgumentException.class, c::go);
 		}
 	}
 

@@ -14,8 +14,8 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -491,17 +491,13 @@ public class XCalReaderTest {
 		//@formatter:on
 
 		XCalReader reader = new XCalReader(xml);
+		IOException e = assertThrows(IOException.class, reader::readNext);
 
-		try {
-			reader.readNext();
-			fail();
-		} catch (IOException e) {
-			Throwable cause = e.getCause();
-			assertTrue(cause instanceof TransformerException);
+		Throwable cause = e.getCause();
+		assertTrue(cause instanceof TransformerException);
 
-			cause = cause.getCause();
-			assertTrue(cause instanceof SAXException);
-		}
+		cause = cause.getCause();
+		assertTrue(cause instanceof SAXException);
 
 		assertNull(reader.readNext());
 		reader.close();

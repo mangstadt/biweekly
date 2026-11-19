@@ -8,8 +8,8 @@ import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -403,10 +403,10 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 
 	@Test
 	public void parseText_vcal_multivalued() {
-		try {
-			sensei.assertParseText("MD1 1 #1 D2  20000101T000000Z  M3").versions(V1_0).run();
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<RecurrenceProperty>.ParseTextTest test = sensei.assertParseText("MD1 1 #1 D2  20000101T000000Z  M3").versions(V1_0);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertNull(e.getOriginalProperty());
 
 			Iterator<ICalProperty> it = e.getProperties().iterator();
@@ -426,10 +426,10 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 			assertFalse(it.hasNext());
 		}
 
-		try {
-			sensei.assertParseText("MD1 a #1 D2  20000101T000000Z  M3").versions(V1_0).warnings(1).run();
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<RecurrenceProperty>.ParseTextTest test = sensei.assertParseText("MD1 a #1 D2  20000101T000000Z  M3").versions(V1_0).warnings(1);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertNull(e.getOriginalProperty());
 
 			Iterator<ICalProperty> it = e.getProperties().iterator();

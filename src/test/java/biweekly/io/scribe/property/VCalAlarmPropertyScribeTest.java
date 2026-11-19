@@ -2,7 +2,7 @@ package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,10 +73,10 @@ public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImp
 
 	@Test
 	public void parseText() {
-		try {
-			sensei.assertParseText("").run();
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<VCalAlarmPropertyImpl>.ParseTextTest test = sensei.assertParseText("");
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertEquals(empty, e.getOriginalProperty());
 
 			VAlarm expected = new VAlarm(new Action("TEST"), new Trigger((Date) null));
@@ -84,10 +84,10 @@ public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImp
 			assertEquals(Arrays.asList(expected), e.getComponents());
 		}
 
-		try {
-			sensei.assertParseText("; ;  ").run();
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<VCalAlarmPropertyImpl>.ParseTextTest test = sensei.assertParseText("; ;  ");
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertEquals(empty, e.getOriginalProperty());
 
 			VAlarm expected = new VAlarm(new Action("TEST"), new Trigger((Date) null));
@@ -95,10 +95,10 @@ public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImp
 			assertEquals(Arrays.asList(expected), e.getComponents());
 		}
 
-		try {
-			sensei.assertParseText("20140101T010000Z;PT10M;5;one;two").run();
-			fail();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<VCalAlarmPropertyImpl>.ParseTextTest test = sensei.assertParseText("20140101T010000Z;PT10M;5;one;two");
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertEquals(withValues, e.getOriginalProperty());
 
 			VAlarm expected = new VAlarm(new Action("TEST"), new Trigger(withValues.getStart()));

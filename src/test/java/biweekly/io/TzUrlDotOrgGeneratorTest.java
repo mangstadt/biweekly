@@ -2,8 +2,8 @@ package biweekly.io;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -83,12 +83,10 @@ public class TzUrlDotOrgGeneratorTest {
 	@Test
 	public void url_bad() throws Exception {
 		TzUrlDotOrgGenerator generator = new TzUrlDotOrgGenerator(false);
-		try {
-			generator.generate(new SimpleTimeZone(0, "spaces not allowed"));
-			fail();
-		} catch (IllegalArgumentException e) {
-			assertTrue(e.getCause() instanceof URISyntaxException);
-		}
+		TimeZone tz = new SimpleTimeZone(0, "spaces not allowed");
+		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> generator.generate(tz));
+		assertTrue(e.getCause() instanceof URISyntaxException);
+
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -149,7 +147,7 @@ public class TzUrlDotOrgGeneratorTest {
 		assertEquals("TEST", component3.getTimezoneId().getValue());
 		verify(generator).getInputStream(any(URI.class));
 	}
-	
+
 	@Test
 	@Ignore
 	public void live() throws Exception {
