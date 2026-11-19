@@ -1,6 +1,7 @@
 package biweekly.io.chain;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 
 import org.w3c.dom.Document;
@@ -55,7 +56,7 @@ public class ChainingXmlMemoryParser extends ChainingXmlParser<ChainingXmlMemory
 			return super.first();
 		} catch (IOException e) {
 			//should never be thrown because we're reading from a string
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
@@ -65,7 +66,7 @@ public class ChainingXmlMemoryParser extends ChainingXmlParser<ChainingXmlMemory
 			return super.all();
 		} catch (IOException e) {
 			//should never be thrown because we're reading from a string
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 }

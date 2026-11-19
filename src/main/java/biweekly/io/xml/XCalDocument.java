@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.List;
@@ -238,7 +239,7 @@ public class XCalDocument {
 			return reader().readAll();
 		} catch (IOException e) {
 			//not thrown because reading from DOM
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
@@ -650,7 +651,7 @@ public class XCalDocument {
 		public void write(ICalendar ical) {
 			try {
 				super.write(ical);
-			} catch (IOException e) {
+			} catch (IOException ignore) {
 				//won't be thrown because we're writing to DOM
 			}
 		}

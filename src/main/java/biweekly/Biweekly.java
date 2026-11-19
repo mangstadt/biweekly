@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
@@ -249,7 +250,7 @@ public final class Biweekly {
 			ARTIFACT_ID = props.getProperty("artifactId");
 			URL = props.getProperty("url");
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		} finally {
 			IOUtils.closeQuietly(in);
 		}

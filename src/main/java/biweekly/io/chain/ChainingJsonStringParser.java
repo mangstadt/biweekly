@@ -1,6 +1,7 @@
 package biweekly.io.chain;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.List;
 
 import biweekly.Biweekly;
@@ -48,7 +49,7 @@ public class ChainingJsonStringParser extends ChainingJsonParser<ChainingJsonStr
 			return super.first();
 		} catch (IOException e) {
 			//should never be thrown because we're reading from a string
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
@@ -58,7 +59,7 @@ public class ChainingJsonStringParser extends ChainingJsonParser<ChainingJsonStr
 			return super.all();
 		} catch (IOException e) {
 			//should never be thrown because we're reading from a string
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 }
