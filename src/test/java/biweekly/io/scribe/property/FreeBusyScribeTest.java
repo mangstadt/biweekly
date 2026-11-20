@@ -9,7 +9,6 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import biweekly.io.ParseContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.FreeBusy;
@@ -238,11 +237,9 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 	private final Check<FreeBusy> hasSingle = has(new Period(start, end));
 	private final Check<FreeBusy> hasMultiple = has(new Period(start, end), new Period(start, duration));
 
-	private Check<FreeBusy> has(final Period... periods) {
-		return new Check<FreeBusy>() {
-			public void check(FreeBusy property, ParseContext context) {
-				assertEquals(Arrays.asList(periods), property.getValues());
-			}
+	private Check<FreeBusy> has(Period... periods) {
+		return (property, context) -> {
+			assertEquals(Arrays.asList(periods), property.getValues());
 		};
 	}
 }

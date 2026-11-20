@@ -14,7 +14,6 @@ import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.io.DataModelConversionException;
-import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.ParticipationLevel;
 import biweekly.parameter.ParticipationStatus;
@@ -175,24 +174,20 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		sensei.assertParseText(name + " <" + email + ">").versions(V1_0).run(check(name, email, null));
 		sensei.assertParseText(name + " <" + email + ">").versions(V2_0_DEPRECATED, V2_0).run(check(null, null, name + " <" + email + ">"));
 
-		sensei.assertParseText(name + " <" + email + ">").param("STATUS", "ACCEPTED").versions(V1_0).run(new Check<Attendee>() {
-			public void check(Attendee property, ParseContext context) {
-				assertTrue(property.getParameters().isEmpty());
-				assertEquals(name, property.getCommonName());
-				assertEquals(email, property.getEmail());
-				assertNull(property.getUri());
-				assertEquals(ParticipationStatus.ACCEPTED, property.getParticipationStatus());
-			}
+		sensei.assertParseText(name + " <" + email + ">").param("STATUS", "ACCEPTED").versions(V1_0).run((property, context) -> {
+			assertTrue(property.getParameters().isEmpty());
+			assertEquals(name, property.getCommonName());
+			assertEquals(email, property.getEmail());
+			assertNull(property.getUri());
+			assertEquals(ParticipationStatus.ACCEPTED, property.getParticipationStatus());
 		});
 
-		sensei.assertParseText("mailto:" + email).param("PARTSTAT", "ACCEPTED").versions(V2_0_DEPRECATED, V2_0).run(new Check<Attendee>() {
-			public void check(Attendee property, ParseContext context) {
-				assertTrue(property.getParameters().isEmpty());
-				assertNull(property.getCommonName());
-				assertEquals(email, property.getEmail());
-				assertNull(property.getUri());
-				assertEquals(ParticipationStatus.ACCEPTED, property.getParticipationStatus());
-			}
+		sensei.assertParseText("mailto:" + email).param("PARTSTAT", "ACCEPTED").versions(V2_0_DEPRECATED, V2_0).run((property, context) -> {
+			assertTrue(property.getParameters().isEmpty());
+			assertNull(property.getCommonName());
+			assertEquals(email, property.getEmail());
+			assertNull(property.getUri());
+			assertEquals(ParticipationStatus.ACCEPTED, property.getParticipationStatus());
 		});
 
 		sensei.assertParseText(name + " >" + email + "<").versions(V1_0).run(check(null, name + " >" + email + "<", null));
@@ -212,7 +207,7 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		{
 			Sensei<Attendee>.ParseTextTest test = sensei.assertParseText(name + " <" + email + ">").versions(V1_0).param("ROLE", "ORGANIZER").param("FOO", "bar");
 			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
-			
+
 			Attendee expectedOriginal = new Attendee(name, email);
 			expectedOriginal.setRole(Role.ORGANIZER);
 			expectedOriginal.setParameter("FOO", "bar");
@@ -242,14 +237,12 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		}
 	}
 
-	private Check<Attendee> check(final String name, final String email, final String uri) {
-		return new Check<Attendee>() {
-			public void check(Attendee property, ParseContext context) {
-				assertTrue(property.getParameters().isEmpty());
-				assertEquals(name, property.getCommonName());
-				assertEquals(email, property.getEmail());
-				assertEquals(uri, property.getUri());
-			}
+	private Check<Attendee> check(String name, String email, String uri) {
+		return (property, context) -> {
+			assertTrue(property.getParameters().isEmpty());
+			assertEquals(name, property.getCommonName());
+			assertEquals(email, property.getEmail());
+			assertEquals(uri, property.getUri());
 		};
 	}
 
@@ -259,38 +252,30 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		sensei.assertParseText(uri).param("EXPECT", "REQUEST").versions(V1_0).run(checkLevel(ParticipationLevel.OPTIONAL));
 		sensei.assertParseText(uri).param("EXPECT", "FYI").versions(V1_0).run(checkLevel(ParticipationLevel.FYI));
 		sensei.assertParseText(uri).param("EXPECT", "invalid").versions(V1_0).run(checkLevel(ParticipationLevel.get("invalid")));
-		sensei.assertParseText(uri).param("EXPECT", "REQUIRE").versions(V2_0_DEPRECATED, V2_0).run(new Check<Attendee>() {
-			public void check(Attendee property, ParseContext context) {
-				assertEquals("REQUIRE", property.getParameter("EXPECT"));
-				assertNull(property.getParticipationLevel());
-			}
+		sensei.assertParseText(uri).param("EXPECT", "REQUIRE").versions(V2_0_DEPRECATED, V2_0).run((property, context) -> {
+			assertEquals("REQUIRE", property.getParameter("EXPECT"));
+			assertNull(property.getParticipationLevel());
 		});
 
 		sensei.assertParseText(uri).param("ROLE", "REQ-PARTICIPANT").versions(V2_0_DEPRECATED, V2_0).run(checkLevel(ParticipationLevel.REQUIRED));
 		sensei.assertParseText(uri).param("ROLE", "OPT-PARTICIPANT").versions(V2_0_DEPRECATED, V2_0).run(checkLevel(ParticipationLevel.OPTIONAL));
 		sensei.assertParseText(uri).param("ROLE", "NON-PARTICIPANT").versions(V2_0_DEPRECATED, V2_0).run(checkLevel(ParticipationLevel.FYI));
-		sensei.assertParseText(uri).param("ROLE", "invalid").versions(V2_0_DEPRECATED, V2_0).run(new Check<Attendee>() {
-			public void check(Attendee property, ParseContext context) {
-				assertTrue(property.getParameters().isEmpty());
-				assertNull(property.getParticipationLevel());
-				assertEquals(Role.get("invalid"), property.getRole());
-			}
+		sensei.assertParseText(uri).param("ROLE", "invalid").versions(V2_0_DEPRECATED, V2_0).run((property, context) -> {
+			assertTrue(property.getParameters().isEmpty());
+			assertNull(property.getParticipationLevel());
+			assertEquals(Role.get("invalid"), property.getRole());
 		});
-		sensei.assertParseText(uri).param("ROLE", "REQ-PARTICIPANT").versions(V1_0).run(new Check<Attendee>() {
-			public void check(Attendee property, ParseContext context) {
-				assertTrue(property.getParameters().isEmpty());
-				assertEquals(Role.get("REQ-PARTICIPANT"), property.getRole());
-				assertNull(property.getParticipationLevel());
-			}
+		sensei.assertParseText(uri).param("ROLE", "REQ-PARTICIPANT").versions(V1_0).run((property, context) -> {
+			assertTrue(property.getParameters().isEmpty());
+			assertEquals(Role.get("REQ-PARTICIPANT"), property.getRole());
+			assertNull(property.getParticipationLevel());
 		});
 	}
 
-	private Check<Attendee> checkLevel(final ParticipationLevel level) {
-		return new Check<Attendee>() {
-			public void check(Attendee property, ParseContext context) {
-				assertTrue(property.getParameters().isEmpty());
-				assertEquals(level, property.getParticipationLevel());
-			}
+	private Check<Attendee> checkLevel(ParticipationLevel level) {
+		return (property, context) -> {
+			assertTrue(property.getParameters().isEmpty());
+			assertEquals(level, property.getParticipationLevel());
 		};
 	}
 
@@ -302,13 +287,11 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		sensei.assertParseText(uri).param("ROLE", "invalid").run(checkRole(null, Role.get("invalid")));
 	}
 
-	private Check<Attendee> checkRole(final ParticipationLevel level, final Role role) {
-		return new Check<Attendee>() {
-			public void check(Attendee property, ParseContext context) {
-				assertNull(property.getParameter("ROLE"));
-				assertEquals(level, property.getParticipationLevel());
-				assertEquals(role, property.getRole());
-			}
+	private Check<Attendee> checkRole(ParticipationLevel level, Role role) {
+		return (property, context) -> {
+			assertNull(property.getParameter("ROLE"));
+			assertEquals(level, property.getParticipationLevel());
+			assertEquals(role, property.getRole());
 		};
 	}
 
@@ -322,12 +305,10 @@ public class AttendeeScribeTest extends ScribeTest<Attendee> {
 		sensei.assertParseText(uri).param("RSVP", "invalid").run(checkRsvp("invalid", null));
 	}
 
-	private Check<Attendee> checkRsvp(final String paramValue, final Boolean value) {
-		return new Check<Attendee>() {
-			public void check(Attendee property, ParseContext context) {
-				assertEquals(paramValue, property.getParameter("RSVP"));
-				assertEquals(value, property.getRsvp());
-			}
+	private Check<Attendee> checkRsvp(String paramValue, Boolean value) {
+		return (property, context) -> {
+			assertEquals(paramValue, property.getParameter("RSVP"));
+			assertEquals(value, property.getRsvp());
 		};
 	}
 }

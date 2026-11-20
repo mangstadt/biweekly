@@ -13,7 +13,6 @@ import org.junit.Test;
 
 import biweekly.ICalDataType;
 import biweekly.component.VTimezone;
-import biweekly.io.ParseContext;
 import biweekly.io.TimezoneAssignment;
 import biweekly.io.TimezoneInfo;
 import biweekly.io.scribe.property.DateOrDateTimePropertyScribeTest.DateOrDateTimePropertyImpl;
@@ -235,22 +234,18 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 		}
 	}
 
-	private final Check<DateOrDateTimePropertyImpl> hasDate = new Check<DateOrDateTimePropertyImpl>() {
-		public void check(DateOrDateTimePropertyImpl property, ParseContext context) {
-			ICalDate value = property.getValue();
-			assertEquals(date, value);
-			assertEquals(new DateTimeComponents(2013, 6, 11), value.getRawComponents());
-			assertFalse(value.hasTime());
-		}
+	private final Check<DateOrDateTimePropertyImpl> hasDate = (property, context) -> {
+		ICalDate value = property.getValue();
+		assertEquals(date, value);
+		assertEquals(new DateTimeComponents(2013, 6, 11), value.getRawComponents());
+		assertFalse(value.hasTime());
 	};
 
-	private final Check<DateOrDateTimePropertyImpl> hasDateTime = new Check<DateOrDateTimePropertyImpl>() {
-		public void check(DateOrDateTimePropertyImpl property, ParseContext context) {
-			ICalDate value = property.getValue();
-			assertEquals(datetime, value);
-			assertEquals(new DateTimeComponents(2013, 6, 11, 12, 43, 2, true), value.getRawComponents());
-			assertTrue(value.hasTime());
-		}
+	private final Check<DateOrDateTimePropertyImpl> hasDateTime = (property, context) -> {
+		ICalDate value = property.getValue();
+		assertEquals(datetime, value);
+		assertEquals(new DateTimeComponents(2013, 6, 11, 12, 43, 2, true), value.getRawComponents());
+		assertTrue(value.hasTime());
 	};
 
 }

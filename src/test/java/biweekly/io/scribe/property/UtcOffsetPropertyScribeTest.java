@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.io.scribe.property.UtcOffsetPropertyScribeTest.UtcOffsetPropertyImpl;
 import biweekly.property.UtcOffsetProperty;
@@ -101,11 +100,9 @@ public class UtcOffsetPropertyScribeTest extends ScribeTest<UtcOffsetPropertyImp
 		}
 	}
 
-	private Check<UtcOffsetPropertyImpl> is(final UtcOffsetPropertyImpl expected) {
-		return new Check<UtcOffsetPropertyImpl>() {
-			public void check(UtcOffsetPropertyImpl actual, ParseContext context) {
-				assertEquals(expected.getValue(), actual.getValue());
-			}
+	private Check<UtcOffsetPropertyImpl> is(UtcOffsetPropertyImpl expected) {
+		return (actual, context) -> {
+			assertEquals(expected.getValue(), actual.getValue());
 		};
 	}
 }

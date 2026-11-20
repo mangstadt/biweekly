@@ -124,11 +124,9 @@ public class XmlScribeTest extends ScribeTest<Xml> {
 		sensei.assertParseJson("").cannotParse(29);
 	}
 
-	private Check<Xml> has(final Document expected) {
-		return new Check<Xml>() {
-			public void check(Xml actual, ParseContext context) {
-				assertXMLEqual(expected, actual.getValue());
-			}
+	private Check<Xml> has(Document expected) {
+		return (actual, context) -> {
+			assertXMLEqual(expected, actual.getValue());
 		};
 	}
 }

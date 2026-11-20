@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Daylight;
 import biweekly.util.DateTimeComponents;
@@ -65,16 +64,14 @@ public class DaylightScribeTest extends ScribeTest<Daylight> {
 		sensei.assertParseText("TRUE;;;;;").run(is(withNoValues));
 	}
 
-	private Check<Daylight> is(final Daylight expected) {
-		return new Check<Daylight>() {
-			public void check(Daylight actual, ParseContext context) {
-				assertEquals(expected.isDaylight(), actual.isDaylight());
-				assertEquals(expected.getOffset(), actual.getOffset());
-				assertEquals(expected.getStart(), actual.getStart());
-				assertEquals(expected.getEnd(), actual.getEnd());
-				assertEquals(expected.getStandardName(), actual.getStandardName());
-				assertEquals(expected.getDaylightName(), actual.getDaylightName());
-			}
+	private Check<Daylight> is(Daylight expected) {
+		return (actual, context) -> {
+			assertEquals(expected.isDaylight(), actual.isDaylight());
+			assertEquals(expected.getOffset(), actual.getOffset());
+			assertEquals(expected.getStart(), actual.getStart());
+			assertEquals(expected.getEnd(), actual.getEnd());
+			assertEquals(expected.getStandardName(), actual.getStandardName());
+			assertEquals(expected.getDaylightName(), actual.getDaylightName());
 		};
 	}
 }

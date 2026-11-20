@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import biweekly.component.Observance;
 import biweekly.component.VTimezone;
-import biweekly.io.ParseContext;
 import biweekly.io.ParseContext.TimezonedDate;
 import biweekly.io.TimezoneAssignment;
 import biweekly.io.TimezoneInfo;
@@ -204,10 +203,10 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 
 		//timezone tests
 		{
-			sensei.assertParseText("20141026T120000/20141026T140000,20141026T120000/" + durationStr).dataType(PERIOD).param("TZID", "id").run(periodWithTimezone(false));
-			sensei.assertParseText("20141026T120000/20141026T140000,20141026T150000/" + durationStr).dataType(PERIOD).run(periodWithoutTimezone(false));
-			sensei.assertParseText("20141026T120000,20141026T140000").dataType(DATE_TIME).param("TZID", "id").run(dateTimeWithTimezone(false));
-			sensei.assertParseText("20141026T120000,20141026T140000").dataType(DATE_TIME).run(dateTimeWithoutTimezone(false));
+			sensei.assertParseText("20141026T120000/20141026T140000,20141026T120000/" + durationStr).dataType(PERIOD).param("TZID", "id").run(periodWithTimezone);
+			sensei.assertParseText("20141026T120000/20141026T140000,20141026T150000/" + durationStr).dataType(PERIOD).run(periodWithoutTimezone);
+			sensei.assertParseText("20141026T120000,20141026T140000").dataType(DATE_TIME).param("TZID", "id").run(dateTimeWithTimezone);
+			sensei.assertParseText("20141026T120000,20141026T140000").dataType(DATE_TIME).run(dateTimeWithoutTimezone);
 		}
 	}
 
@@ -373,7 +372,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 				"<start>2014-10-26T12:00:00</start>" +
 				"<duration>" + durationStr + "</duration>" +
 			"</period>"
-			).param("TZID", "id").run(periodWithTimezone(true));
+			).param("TZID", "id").run(periodWithTimezone);
 			
 			sensei.assertParseXml(
 			"<period>" + 
@@ -384,17 +383,17 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 				"<start>2014-10-26T15:00:00</start>" +
 				"<duration>" + durationStr + "</duration>" +
 			"</period>"
-			).run(periodWithoutTimezone(true));
+			).run(periodWithoutTimezone);
 			
 			sensei.assertParseXml(
 			"<date-time>2014-10-26T12:00:00</date-time>" +
 			"<date-time>2014-10-26T14:00:00</date-time>"
-			).param("TZID", "id").run(dateTimeWithTimezone(true));
+			).param("TZID", "id").run(dateTimeWithTimezone);
 			
 			sensei.assertParseXml(
 			"<date-time>2014-10-26T12:00:00</date-time>" +
 			"<date-time>2014-10-26T14:00:00</date-time>"
-			).run(dateTimeWithoutTimezone(true));
+			).run(dateTimeWithoutTimezone);
 		}
 		//@formatter:on
 	}
@@ -477,90 +476,72 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 			sensei.assertParseJson(JCalValue.multi(
 				"2014-10-26T12:00:00/2014-10-26T14:00:00",
 				"2014-10-26T12:00:00/" + durationStr
-			)).dataType(PERIOD).param("TZID", "id").run(periodWithTimezone(true));
+			)).dataType(PERIOD).param("TZID", "id").run(periodWithTimezone);
 			sensei.assertParseJson(JCalValue.multi(
 				"2014-10-26T12:00:00/2014-10-26T14:00:00",
 				"2014-10-26T15:00:00/" + durationStr
-			)).dataType(PERIOD).run(periodWithoutTimezone(true));
+			)).dataType(PERIOD).run(periodWithoutTimezone);
 	
 			sensei.assertParseJson(JCalValue.multi(
 				"2014-10-26T12:00:00",
 				"2014-10-26T14:00:00"
-			)).param("TZID", "id").dataType(DATE_TIME).run(dateTimeWithTimezone(true));
+			)).param("TZID", "id").dataType(DATE_TIME).run(dateTimeWithTimezone);
 			sensei.assertParseJson(JCalValue.multi(
 				"2014-10-26T12:00:00",
 				"2014-10-26T14:00:00"
-			)).dataType(DATE_TIME).run(dateTimeWithoutTimezone(true));
+			)).dataType(DATE_TIME).run(dateTimeWithoutTimezone);
 		}
 		//@formatter:on
 	}
 
-	private Check<RecurrenceDates> is(final RecurrenceDates expected) {
-		return new Check<RecurrenceDates>() {
-			public void check(RecurrenceDates actual, ParseContext context) {
-				assertEquals(expected.getPeriods(), actual.getPeriods());
-				assertEquals(expected.getDates(), actual.getDates());
-				assertEquals(0, context.getFloatingDates().size());
-				assertEquals(0, context.getTimezonedDates().size());
-			}
+	private Check<RecurrenceDates> is(RecurrenceDates expected) {
+		return (actual, context) -> {
+			assertEquals(expected.getPeriods(), actual.getPeriods());
+			assertEquals(expected.getDates(), actual.getDates());
+			assertEquals(0, context.getFloatingDates().size());
+			assertEquals(0, context.getTimezonedDates().size());
 		};
 	}
 
-	private Check<RecurrenceDates> periodWithTimezone(final boolean extended) {
-		return new Check<RecurrenceDates>() {
-			public void check(RecurrenceDates property, ParseContext context) {
-				assertEquals(0, context.getFloatingDates().size());
+	private final Check<RecurrenceDates> periodWithTimezone = (property, context) -> {
+		assertEquals(0, context.getFloatingDates().size());
 
-				ListMultimap<String, TimezonedDate> timezonedDates = context.getTimezonedDates();
-				assertEquals(1, timezonedDates.keySet().size());
-				List<TimezonedDate> dates = timezonedDates.get("id");
-				assertEquals(3, dates.size());
-				assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
-				assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 14, 0, 0), property)));
-				assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
-			}
-		};
-	}
+		ListMultimap<String, TimezonedDate> timezonedDates = context.getTimezonedDates();
+		assertEquals(1, timezonedDates.keySet().size());
+		List<TimezonedDate> dates = timezonedDates.get("id");
+		assertEquals(3, dates.size());
+		assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
+		assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 14, 0, 0), property)));
+		assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
+	};
 
-	private Check<RecurrenceDates> periodWithoutTimezone(final boolean extended) {
-		return new Check<RecurrenceDates>() {
-			public void check(RecurrenceDates property, ParseContext context) {
-				Collection<TimezonedDate> floating = context.getFloatingDates();
-				assertEquals(3, floating.size());
-				assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
-				assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 14, 0, 0), property)));
-				assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 15, 0, 0), property)));
+	private final Check<RecurrenceDates> periodWithoutTimezone = (property, context) -> {
+		Collection<TimezonedDate> floating = context.getFloatingDates();
+		assertEquals(3, floating.size());
+		assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
+		assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 14, 0, 0), property)));
+		assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 15, 0, 0), property)));
 
-				assertEquals(0, context.getTimezonedDates().size());
-			}
-		};
-	}
+		assertEquals(0, context.getTimezonedDates().size());
+	};
 
-	private Check<RecurrenceDates> dateTimeWithTimezone(final boolean extended) {
-		return new Check<RecurrenceDates>() {
-			public void check(RecurrenceDates property, ParseContext context) {
-				assertEquals(0, context.getFloatingDates().size());
+	private final Check<RecurrenceDates> dateTimeWithTimezone = (property, context) -> {
+		assertEquals(0, context.getFloatingDates().size());
 
-				ListMultimap<String, TimezonedDate> timezonedDates = context.getTimezonedDates();
-				assertEquals(1, timezonedDates.keySet().size());
-				List<TimezonedDate> dates = context.getTimezonedDates().get("id");
-				assertEquals(2, dates.size());
-				assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
-				assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 14, 0, 0), property)));
-			}
-		};
-	}
+		ListMultimap<String, TimezonedDate> timezonedDates = context.getTimezonedDates();
+		assertEquals(1, timezonedDates.keySet().size());
+		List<TimezonedDate> dates = context.getTimezonedDates().get("id");
+		assertEquals(2, dates.size());
+		assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
+		assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 14, 0, 0), property)));
+	};
 
-	private Check<RecurrenceDates> dateTimeWithoutTimezone(final boolean extended) {
-		return new Check<RecurrenceDates>() {
-			public void check(RecurrenceDates property, ParseContext context) {
-				Collection<TimezonedDate> floating = context.getFloatingDates();
-				assertEquals(2, floating.size());
-				assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
-				assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 14, 0, 0), property)));
+	private final Check<RecurrenceDates> dateTimeWithoutTimezone = (property, context) -> {
+		Collection<TimezonedDate> floating = context.getFloatingDates();
+		assertEquals(2, floating.size());
+		assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
+		assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 14, 0, 0), property)));
 
-				assertEquals(0, context.getTimezonedDates().size());
-			}
-		};
-	}
+		assertEquals(0, context.getTimezonedDates().size());
+	};
 }

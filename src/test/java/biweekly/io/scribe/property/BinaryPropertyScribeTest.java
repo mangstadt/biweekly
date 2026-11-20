@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.BinaryProperty;
 
@@ -138,21 +137,17 @@ public class BinaryPropertyScribeTest extends ScribeTest<BinaryProperty> {
 		sensei.assertParseJson("").dataType(ICalDataType.BINARY).run(has(new byte[0]));
 	}
 
-	private Check<BinaryProperty> has(final String url) {
-		return new Check<BinaryProperty>() {
-			public void check(BinaryProperty property, ParseContext context) {
-				assertEquals(url, property.getUri());
-				assertNull(property.getData());
-			}
+	private Check<BinaryProperty> has(String url) {
+		return (property, context) -> {
+			assertEquals(url, property.getUri());
+			assertNull(property.getData());
 		};
 	}
 
-	private Check<BinaryProperty> has(final byte[] data) {
-		return new Check<BinaryProperty>() {
-			public void check(BinaryProperty property, ParseContext context) {
-				assertNull(property.getUri());
-				assertArrayEquals(data, property.getData());
-			}
+	private Check<BinaryProperty> has(byte[] data) {
+		return (property, context) -> {
+			assertNull(property.getUri());
+			assertArrayEquals(data, property.getData());
 		};
 	}
 

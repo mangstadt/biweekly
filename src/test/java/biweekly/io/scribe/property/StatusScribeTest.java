@@ -1,11 +1,12 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import static biweekly.ICalVersion.*;
-import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Status;
 
@@ -60,11 +61,9 @@ public class StatusScribeTest extends ScribeTest<Status> {
 		sensei.assertParseText("NEEDS-ACTION").versions(V2_0_DEPRECATED, V2_0).run(isNeedsAction(true));
 	}
 
-	private Check<Status> isNeedsAction(final boolean isNeedsAction) {
-		return new Check<Status>() {
-			public void check(Status actual, ParseContext context) {
-				assertEquals(isNeedsAction, actual.isNeedsAction());
-			}
+	private Check<Status> isNeedsAction(boolean isNeedsAction) {
+		return (actual, context) -> {
+			assertEquals(isNeedsAction, actual.isNeedsAction());
 		};
 	}
 }

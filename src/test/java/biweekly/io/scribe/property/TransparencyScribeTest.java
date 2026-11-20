@@ -1,11 +1,12 @@
 package biweekly.io.scribe.property;
 
+import static biweekly.ICalVersion.V1_0;
+import static biweekly.ICalVersion.V2_0;
+import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import static biweekly.ICalVersion.*;
-import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Transparency;
 
@@ -76,27 +77,21 @@ public class TransparencyScribeTest extends ScribeTest<Transparency> {
 		sensei.assertParseText("2").versions(V2_0_DEPRECATED, V2_0).run(is("2"));
 	}
 
-	private Check<Transparency> isOpaque(final boolean isOpaque) {
-		return new Check<Transparency>() {
-			public void check(Transparency actual, ParseContext context) {
-				assertEquals(isOpaque, actual.isOpaque());
-			}
+	private Check<Transparency> isOpaque(boolean isOpaque) {
+		return (actual, context) -> {
+			assertEquals(isOpaque, actual.isOpaque());
 		};
 	}
 
-	private Check<Transparency> isTransparent(final boolean isTransparent) {
-		return new Check<Transparency>() {
-			public void check(Transparency actual, ParseContext context) {
-				assertEquals(isTransparent, actual.isTransparent());
-			}
+	private Check<Transparency> isTransparent(boolean isTransparent) {
+		return (actual, context) -> {
+			assertEquals(isTransparent, actual.isTransparent());
 		};
 	}
 
-	private Check<Transparency> is(final String value) {
-		return new Check<Transparency>() {
-			public void check(Transparency actual, ParseContext context) {
-				assertEquals(value, actual.getValue());
-			}
+	private Check<Transparency> is(String value) {
+		return (actual, context) -> {
+			assertEquals(value, actual.getValue());
 		};
 	}
 }

@@ -16,7 +16,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import biweekly.io.ParseContext;
 import biweekly.io.ParseContext.TimezonedDate;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -218,47 +217,39 @@ public class ExceptionDatesScribeTest extends ScribeTest<ExceptionDates> {
 		}
 	}
 
-	private final Check<ExceptionDates> has(final ICalDate... dates) {
-		return new Check<ExceptionDates>() {
-			public void check(ExceptionDates actual, ParseContext context) {
-				assertEquals(Arrays.asList(dates), actual.getValues());
-			}
+	private final Check<ExceptionDates> has(ICalDate... dates) {
+		return (actual, context) -> {
+			assertEquals(Arrays.asList(dates), actual.getValues());
 		};
 	}
 
-	private final Check<ExceptionDates> is(final ExceptionDates expected) {
-		return new Check<ExceptionDates>() {
-			public void check(ExceptionDates actual, ParseContext context) {
-				assertEquals(expected.getValues(), actual.getValues());
-			}
+	private final Check<ExceptionDates> is(ExceptionDates expected) {
+		return (actual, context) -> {
+			assertEquals(expected.getValues(), actual.getValues());
 		};
 	}
 
-	private Check<ExceptionDates> dateTimeWithTimezone(final boolean extended) {
-		return new Check<ExceptionDates>() {
-			public void check(ExceptionDates property, ParseContext context) {
-				assertEquals(0, context.getFloatingDates().size());
+	private Check<ExceptionDates> dateTimeWithTimezone(boolean extended) {
+		return (property, context) -> {
+			assertEquals(0, context.getFloatingDates().size());
 
-				ListMultimap<String, TimezonedDate> timezonedDates = context.getTimezonedDates();
-				assertEquals(1, timezonedDates.keySet().size());
-				List<TimezonedDate> dates = context.getTimezonedDates().get("id");
-				assertEquals(2, dates.size());
-				assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
-				assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 14, 0, 0), property)));
-			}
+			ListMultimap<String, TimezonedDate> timezonedDates = context.getTimezonedDates();
+			assertEquals(1, timezonedDates.keySet().size());
+			List<TimezonedDate> dates = context.getTimezonedDates().get("id");
+			assertEquals(2, dates.size());
+			assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
+			assertTrue(dates.contains(new TimezonedDate(icalDate(2014, 10, 26, 14, 0, 0), property)));
 		};
 	}
 
-	private Check<ExceptionDates> dateTimeWithoutTimezone(final boolean extended) {
-		return new Check<ExceptionDates>() {
-			public void check(ExceptionDates property, ParseContext context) {
-				Collection<TimezonedDate> floating = context.getFloatingDates();
-				assertEquals(2, floating.size());
-				assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
-				assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 14, 0, 0), property)));
+	private Check<ExceptionDates> dateTimeWithoutTimezone(boolean extended) {
+		return (property, context) -> {
+			Collection<TimezonedDate> floating = context.getFloatingDates();
+			assertEquals(2, floating.size());
+			assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 12, 0, 0), property)));
+			assertTrue(floating.contains(new TimezonedDate(icalDate(2014, 10, 26, 14, 0, 0), property)));
 
-				assertEquals(0, context.getTimezonedDates().size());
-			}
+			assertEquals(0, context.getTimezonedDates().size());
 		};
 	}
 }

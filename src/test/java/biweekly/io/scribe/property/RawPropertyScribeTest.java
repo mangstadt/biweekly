@@ -9,7 +9,6 @@ import org.junit.Test;
 import com.github.mangstadt.vinnie.LaciToken;
 
 import biweekly.ICalDataType;
-import biweekly.io.ParseContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.RawProperty;
@@ -85,13 +84,11 @@ public class RawPropertyScribeTest extends ScribeTest<RawProperty> {
 		sensei.assertParseJson(value).dataType(ICalDataType.TEXT).run(has("RAW", "one,two;three\\,four", ICalDataType.TEXT));
 	}
 
-	private Check<RawProperty> has(final String name, final String value, final ICalDataType dataType) {
-		return new Check<RawProperty>() {
-			public void check(RawProperty property, ParseContext context) {
-				assertEquals(new LaciToken(name), property.getName());
-				assertEquals(value, property.getValue());
-				assertEquals(dataType, property.getDataType());
-			}
+	private Check<RawProperty> has(String name, String value, ICalDataType dataType) {
+		return (property, context) -> {
+			assertEquals(new LaciToken(name), property.getName());
+			assertEquals(value, property.getValue());
+			assertEquals(dataType, property.getDataType());
 		};
 	}
 }

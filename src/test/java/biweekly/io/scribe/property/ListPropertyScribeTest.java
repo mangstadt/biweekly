@@ -161,19 +161,15 @@ public class ListPropertyScribeTest extends ScribeTest<ListPropertyImpl> {
 		//empty
 	}
 
-	private Check<ListPropertyImpl> is(final ListPropertyImpl expected) {
-		return new Check<ListPropertyImpl>() {
-			public void check(ListPropertyImpl actual, ParseContext context) {
-				assertEquals(expected.getValues(), actual.getValues());
-			}
+	private Check<ListPropertyImpl> is(ListPropertyImpl expected) {
+		return (actual, context) -> {
+			assertEquals(expected.getValues(), actual.getValues());
 		};
 	}
 
-	private Check<ListPropertyImpl> has(final String... values) {
-		return new Check<ListPropertyImpl>() {
-			public void check(ListPropertyImpl actual, ParseContext context) {
-				assertEquals(Arrays.asList(values), actual.getValues());
-			}
+	private Check<ListPropertyImpl> has(String... values) {
+		return (actual, context) -> {
+			assertEquals(Arrays.asList(values), actual.getValues());
 		};
 	}
 }

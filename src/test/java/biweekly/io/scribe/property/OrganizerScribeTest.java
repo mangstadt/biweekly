@@ -11,7 +11,6 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import biweekly.io.ParseContext;
 import biweekly.io.DataModelConversionException;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.Role;
@@ -135,14 +134,12 @@ public class OrganizerScribeTest extends ScribeTest<Organizer> {
 		sensei.assertParseText(uri).run(check(null, null, uri));
 	}
 
-	private Check<Organizer> check(final String name, final String email, final String uri) {
-		return new Check<Organizer>() {
-			public void check(Organizer property, ParseContext context) {
-				assertTrue(property.getParameters().isEmpty());
-				assertEquals(name, property.getCommonName());
-				assertEquals(email, property.getEmail());
-				assertEquals(uri, property.getUri());
-			}
+	private Check<Organizer> check(String name, String email, String uri) {
+		return (property, context) -> {
+			assertTrue(property.getParameters().isEmpty());
+			assertEquals(name, property.getCommonName());
+			assertEquals(email, property.getEmail());
+			assertEquals(uri, property.getUri());
 		};
 	}
 }

@@ -7,7 +7,6 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.DateTimePropertyScribeTest.DateTimePropertyImpl;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.DateTimeProperty;
@@ -108,9 +107,7 @@ public class DateTimePropertyScribeTest extends ScribeTest<DateTimePropertyImpl>
 		}
 	}
 
-	private final Check<DateTimePropertyImpl> hasDateTime = new Check<DateTimePropertyImpl>() {
-		public void check(DateTimePropertyImpl property, ParseContext context) {
-			assertEquals(datetime, property.getValue());
-		}
+	private final Check<DateTimePropertyImpl> hasDateTime = (property, context) -> {
+		assertEquals(datetime, property.getValue());
 	};
 }

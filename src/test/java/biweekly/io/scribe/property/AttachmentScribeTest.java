@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Attachment;
 
@@ -154,33 +153,27 @@ public class AttachmentScribeTest extends ScribeTest<Attachment> {
 		sensei.assertParseJson("http:" + contentId).dataType(ICalDataType.URI).run(hasUri("http:" + contentId));
 	}
 
-	private Check<Attachment> hasUri(final String url) {
-		return new Check<Attachment>() {
-			public void check(Attachment property, ParseContext context) {
-				assertEquals(url, property.getUri());
-				assertNull(property.getData());
-				assertNull(property.getContentId());
-			}
+	private Check<Attachment> hasUri(String url) {
+		return (property, context) -> {
+			assertEquals(url, property.getUri());
+			assertNull(property.getData());
+			assertNull(property.getContentId());
 		};
 	}
 
-	private Check<Attachment> hasCid(final String cid) {
-		return new Check<Attachment>() {
-			public void check(Attachment property, ParseContext context) {
-				assertNull(property.getUri());
-				assertNull(property.getData());
-				assertEquals(cid, property.getContentId());
-			}
+	private Check<Attachment> hasCid(String cid) {
+		return (property, context) -> {
+			assertNull(property.getUri());
+			assertNull(property.getData());
+			assertEquals(cid, property.getContentId());
 		};
 	}
 
-	private Check<Attachment> has(final byte[] data) {
-		return new Check<Attachment>() {
-			public void check(Attachment property, ParseContext context) {
-				assertNull(property.getUri());
-				assertArrayEquals(data, property.getData());
-				assertNull(property.getContentId());
-			}
+	private Check<Attachment> has(byte[] data) {
+		return (property, context) -> {
+			assertNull(property.getUri());
+			assertArrayEquals(data, property.getData());
+			assertNull(property.getContentId());
 		};
 	}
 }

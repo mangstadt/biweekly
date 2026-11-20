@@ -8,7 +8,6 @@ import java.util.Date;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.Related;
 import biweekly.property.Trigger;
@@ -115,12 +114,10 @@ public class TriggerScribeTest extends ScribeTest<Trigger> {
 		sensei.assertParseJson("").cannotParse(25);
 	}
 
-	private Check<Trigger> is(final Trigger expected) {
-		return new Check<Trigger>() {
-			public void check(Trigger actual, ParseContext context) {
-				assertEquals(expected.getDate(), actual.getDate());
-				assertEquals(expected.getDuration(), actual.getDuration());
-			}
+	private Check<Trigger> is(Trigger expected) {
+		return (actual, context) -> {
+			assertEquals(expected.getDate(), actual.getDate());
+			assertEquals(expected.getDuration(), actual.getDuration());
 		};
 	}
 }

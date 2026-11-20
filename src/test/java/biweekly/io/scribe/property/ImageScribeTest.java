@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import biweekly.ICalDataType;
-import biweekly.io.ParseContext;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Image;
 
@@ -72,21 +71,17 @@ public class ImageScribeTest extends ScribeTest<Image> {
 		sensei.assertParseJson(base64DataInvalid).dataType(ICalDataType.BINARY).cannotParse(44);
 	}
 
-	private Check<Image> hasUri(final String url) {
-		return new Check<Image>() {
-			public void check(Image property, ParseContext context) {
-				assertEquals(url, property.getUri());
-				assertNull(property.getData());
-			}
+	private Check<Image> hasUri(String url) {
+		return (property, context) -> {
+			assertEquals(url, property.getUri());
+			assertNull(property.getData());
 		};
 	}
 
-	private Check<Image> has(final byte[] data) {
-		return new Check<Image>() {
-			public void check(Image property, ParseContext context) {
-				assertNull(property.getUri());
-				assertArrayEquals(data, property.getData());
-			}
+	private Check<Image> has(byte[] data) {
+		return (property, context) -> {
+			assertNull(property.getUri());
+			assertArrayEquals(data, property.getData());
 		};
 	}
 }

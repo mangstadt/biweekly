@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import biweekly.io.ParseContext;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Geo;
@@ -129,20 +128,18 @@ public class GeoScribeTest extends ScribeTest<Geo> {
 		sensei.assertParseJson("").run(has(null, null));
 	}
 
-	private Check<Geo> has(final Double latitude, final Double longitude) {
-		return new Check<Geo>() {
-			public void check(Geo actual, ParseContext context) {
-				if (latitude == null) {
-					assertNull(actual.getLatitude());
-				} else {
-					assertEquals(latitude, actual.getLatitude(), 0.001);
-				}
+	private Check<Geo> has(Double latitude, Double longitude) {
+		return (actual, context) -> {
+			if (latitude == null) {
+				assertNull(actual.getLatitude());
+			} else {
+				assertEquals(latitude, actual.getLatitude(), 0.001);
+			}
 
-				if (longitude == null) {
-					assertNull(actual.getLongitude());
-				} else {
-					assertEquals(longitude, actual.getLongitude(), 0.001);
-				}
+			if (longitude == null) {
+				assertNull(actual.getLongitude());
+			} else {
+				assertEquals(longitude, actual.getLongitude(), 0.001);
 			}
 		};
 	}
