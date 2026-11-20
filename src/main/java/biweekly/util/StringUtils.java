@@ -1,7 +1,6 @@
 package biweekly.util;
 
 import java.util.Base64;
-import java.util.Collection;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -125,77 +124,6 @@ public final class StringUtils {
 	 */
 	public static String encodeBase64(byte[] data) {
 		return Base64.getEncoder().encodeToString(data);
-	}
-
-	/**
-	 * Joins a collection of values into a delimited list.
-	 * @param collection the collection of values
-	 * @param delimiter the delimiter (e.g. ",")
-	 * @param <T> the value class
-	 * @return the final string
-	 */
-	public static <T> String join(Collection<T> collection, String delimiter) {
-		StringBuilder sb = new StringBuilder();
-		join(collection, delimiter, sb);
-		return sb.toString();
-	}
-
-	/**
-	 * Joins a collection of values into a delimited list.
-	 * @param collection the collection of values
-	 * @param delimiter the delimiter (e.g. ",")
-	 * @param sb the string builder to append onto
-	 * @param <T> the value class
-	 */
-	public static <T> void join(Collection<T> collection, String delimiter, StringBuilder sb) {
-		join(collection, delimiter, sb, new JoinCallback<T>() {
-			public void handle(StringBuilder sb, T value) {
-				sb.append(value);
-			}
-		});
-	}
-
-	/**
-	 * Joins a collection of values into a delimited list.
-	 * @param collection the collection of values
-	 * @param delimiter the delimiter (e.g. ",")
-	 * @param join callback function to call on every element in the collection
-	 * @param <T> the value class
-	 * @return the final string
-	 */
-	public static <T> String join(Collection<T> collection, String delimiter, JoinCallback<T> join) {
-		StringBuilder sb = new StringBuilder();
-		join(collection, delimiter, sb, join);
-		return sb.toString();
-	}
-
-	/**
-	 * Joins a collection of values into a delimited list.
-	 * @param collection the collection of values
-	 * @param delimiter the delimiter (e.g. ",")
-	 * @param sb the string builder to append onto
-	 * @param join callback function to call on every element in the collection
-	 * @param <T> the value class
-	 */
-	public static <T> void join(Collection<T> collection, String delimiter, StringBuilder sb, JoinCallback<T> join) {
-		boolean first = true;
-		for (T element : collection) {
-			if (!first) {
-				sb.append(delimiter);
-			}
-
-			join.handle(sb, element);
-			first = false;
-		}
-	}
-
-	/**
-	 * Callback interface used with various {@code StringUtils.join()} methods.
-	 * @author Michael Angstadt
-	 * @param <T> the value class
-	 */
-	public interface JoinCallback<T> {
-		void handle(StringBuilder sb, T value);
 	}
 
 	private StringUtils() {

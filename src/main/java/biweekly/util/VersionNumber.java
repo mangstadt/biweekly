@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -95,6 +96,6 @@ public class VersionNumber implements Comparable<VersionNumber> {
 
 	@Override
 	public String toString() {
-		return StringUtils.join(parts, ".");
+		return parts.stream().map(Object::toString).collect(Collectors.joining("."));
 	}
 }

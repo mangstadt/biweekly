@@ -4,12 +4,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.component.ICalComponent;
 import biweekly.property.ICalProperty;
 import biweekly.util.StringUtils;
-import biweekly.util.StringUtils.JoinCallback;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -147,7 +147,7 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 	 */
 	@Override
 	public String toString() {
-		return StringUtils.join(warnings, StringUtils.NEWLINE);
+		return warnings.stream().map(Object::toString).collect(Collectors.joining(StringUtils.NEWLINE));
 	}
 
 	/**
@@ -247,32 +247,25 @@ public class ValidationWarnings implements Iterable<WarningsGroup> {
 		 */
 		@Override
 		public String toString() {
-			final String prefix = "[" + buildPath() + "]: ";
-			return StringUtils.join(warnings, StringUtils.NEWLINE, new JoinCallback<ValidationWarning>() {
-				public void handle(StringBuilder sb, ValidationWarning warning) {
-					sb.append(prefix).append(warning);
-				}
-			});
+			String prefix = "[" + buildPath() + "]: ";
+
+			//@formatter:off
+			return warnings.stream()
+				.map(warning -> prefix + warning)
+			.collect(Collectors.joining(StringUtils.NEWLINE));
+			//@formatter:on
 		}
 
 		private String buildPath() {
-			StringBuilder sb = new StringBuilder();
-
-			if (!componentHierarchy.isEmpty()) {
-				String delimitor = " > ";
-
-				StringUtils.join(componentHierarchy, delimitor, sb, new JoinCallback<ICalComponent>() {
-					public void handle(StringBuilder sb, ICalComponent component) {
-						sb.append(component.getClass().getSimpleName());
-					}
-				});
-				sb.append(delimitor);
-			}
-
 			Object obj = (property == null) ? component : property;
-			sb.append(obj.getClass().getSimpleName());
 
-			return sb.toString();
+			//@formatter:off
+			return Stream.concat(componentHierarchy.stream(), Stream.of(obj))
+				.map(Object::getClass)
+				.map(Class::getSimpleName)
+				.map(Objects::toString)
+			.collect(Collectors.joining(" > "));
+			//@formatter:on
 		}
 	}
 }

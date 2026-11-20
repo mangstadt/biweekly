@@ -7,12 +7,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collection;
 
 import org.junit.Test;
-
-import biweekly.util.StringUtils.JoinCallback;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -92,41 +88,5 @@ public class StringUtilsTest {
 		String actual = StringUtils.encodeBase64(data);
 		String expected = "dGVzdA==";
 		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void join_multiple() {
-		Collection<String> values = Arrays.asList("one", "two", "three");
-		assertEquals("ONE,TWO,THREE", StringUtils.join(values, ",", new JoinCallback<String>() {
-			public void handle(StringBuilder sb, String str) {
-				sb.append(str.toUpperCase());
-			}
-		}));
-	}
-
-	@Test
-	public void join_single() {
-		Collection<String> values = Arrays.asList("one");
-		assertEquals("ONE", StringUtils.join(values, ",", new JoinCallback<String>() {
-			public void handle(StringBuilder sb, String str) {
-				sb.append(str.toUpperCase());
-			}
-		}));
-	}
-
-	@Test
-	public void join_empty() {
-		Collection<String> values = Arrays.asList();
-		assertEquals("", StringUtils.join(values, ",", new JoinCallback<String>() {
-			public void handle(StringBuilder sb, String str) {
-				sb.append(str.toUpperCase());
-			}
-		}));
-	}
-
-	@Test
-	public void join_objects() {
-		Collection<Object> values = Arrays.<Object> asList(false, 1, "two", null);
-		assertEquals("false,1,two,null", StringUtils.join(values, ","));
 	}
 }
