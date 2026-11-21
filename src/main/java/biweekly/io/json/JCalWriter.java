@@ -186,7 +186,7 @@ public class JCalWriter extends StreamWriter implements Flushable {
 			ICalParameters parameters;
 			JCalValue value;
 			try {
-				parameters = propertyScribe.prepareParameters(property, context);
+				parameters = (ICalParameters) propertyScribe.prepareParameters(property, context).get();
 				value = propertyScribe.writeJson(property, context);
 			} catch (SkipMeException e) {
 				continue;

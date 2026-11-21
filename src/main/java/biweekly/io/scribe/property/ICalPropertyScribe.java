@@ -37,6 +37,7 @@ import biweekly.io.xml.XCalElement.XCalValue;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.ValuedProperty;
+import biweekly.util.CopyOnModify;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.ICalDate;
 import biweekly.util.ICalDateFormat;
@@ -184,8 +185,10 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param context the context
 	 * @return the sanitized parameters
 	 */
-	public final ICalParameters prepareParameters(T property, WriteContext context) {
-		return _prepareParameters(property, context);
+	public final CopyOnModify<ICalParameters> prepareParameters(T property, WriteContext context) {
+		CopyOnModify<ICalParameters> parameters = CopyOnModify.parameters(property);
+		_prepareParameters(property, parameters, context);
+		return parameters;
 	}
 
 	/**
@@ -315,16 +318,16 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * <p>
 	 * This method should be overridden by child classes that wish to tweak the
 	 * property's parameters before the property is written. The default
-	 * implementation of this method returns the property's parameters
-	 * unmodified.
+	 * implementation of this method does nothing.
 	 * </p>
 	 * @param property the property to write
+	 * @param parameters the parameters that will be written. Make all
+	 * modifications to this object so that the property's original parameters
+	 * are not modified.
 	 * @param context the context
-	 * @return the sanitized parameters (this should be a *copy* of the
-	 * property's parameters if modifications were made)
 	 */
-	protected ICalParameters _prepareParameters(T property, WriteContext context) {
-		return property.getParameters();
+	protected void _prepareParameters(T property, CopyOnModify<ICalParameters> parameters, WriteContext context) {
+		//empty
 	}
 
 	/**
@@ -801,29 +804,28 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	/**
 	 * Adds a TZID parameter to a property's parameter list if necessary.
 	 * @param property the property
+	 * @param parameters the parameters to write
 	 * @param hasTime true if the property value has a time component, false if
 	 * not
 	 * @param context the write context
 	 * @return the property's new set of parameters
 	 */
-	protected static ICalParameters handleTzidParameter(ICalProperty property, boolean hasTime, WriteContext context) {
-		ICalParameters parameters = property.getParameters();
-
+	protected static void handleTzidParameter(ICalProperty property, CopyOnModify<ICalParameters> parameters, boolean hasTime, WriteContext context) {
 		//date values don't have timezones
 		if (!hasTime) {
-			return parameters;
+			return;
 		}
 
 		//vCal doesn't use the TZID parameter
 		if (context.getVersion() == ICalVersion.V1_0) {
-			return parameters;
+			return;
 		}
 
 		//floating values don't have timezones
 		TimezoneInfo tzinfo = context.getTimezoneInfo();
 		boolean floating = tzinfo.isFloating(property);
 		if (floating) {
-			return parameters;
+			return;
 		}
 
 		TimezoneAssignment tz;
@@ -832,7 +834,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 			tz = tzinfo.getTimezoneToWriteIn(property);
 			if (tz == null) {
 				//write in UTC
-				return parameters;
+				return;
 			}
 		} else {
 			tz = globalTz;
@@ -852,9 +854,7 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 			tzid = tz.getTimeZone().getID();
 		}
 
-		parameters = new ICalParameters(parameters);
-		parameters.setTimezoneId(tzid);
-		return parameters;
+		parameters.modify().setTimezoneId(tzid);
 	}
 
 	/**

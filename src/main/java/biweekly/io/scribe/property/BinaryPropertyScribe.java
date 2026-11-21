@@ -15,6 +15,7 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.BinaryProperty;
+import biweekly.util.CopyOnModify;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -51,16 +52,12 @@ public abstract class BinaryPropertyScribe<T extends BinaryProperty> extends ICa
 	}
 
 	@Override
-	protected ICalParameters _prepareParameters(T property, WriteContext context) {
-		ICalParameters copy = new ICalParameters(property.getParameters());
-
+	protected void _prepareParameters(T property, CopyOnModify<ICalParameters> parameters, WriteContext context) {
 		if (property.getUri() != null) {
-			copy.setEncoding(null);
+			parameters.modify().setEncoding(null);
 		} else if (property.getData() != null) {
-			copy.setEncoding(Encoding.BASE64);
+			parameters.modify().setEncoding(Encoding.BASE64);
 		}
-
-		return copy;
 	}
 
 	@Override

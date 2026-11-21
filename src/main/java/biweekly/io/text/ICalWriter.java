@@ -32,6 +32,7 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.property.Timezone;
+import biweekly.util.CopyOnModify;
 import biweekly.util.Utf8Writer;
 
 /*
@@ -349,7 +350,7 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		}
 
 		//get parameters
-		ICalParameters parameters = scribe.prepareParameters(property, context);
+		CopyOnModify<ICalParameters> parameters = scribe.prepareParameters(property, context);
 
 		/*
 		 * Set the property's data type.
@@ -359,15 +360,14 @@ public class ICalWriter extends StreamWriter implements Flushable {
 		 */
 		ICalDataType dataType = scribe.dataType(property, targetVersion);
 		if (dataType != null && dataType != scribe.defaultDataType(targetVersion)) {
-			parameters = new ICalParameters(parameters);
-			parameters.setValue(dataType);
+			parameters.modify().setValue(dataType);
 		}
 
 		//get the property name
 		LaciToken propertyName = scribe.getPropertyName(getTargetVersion());
 
 		//write property to data stream
-		writer.writeProperty(null, propertyName.toUpperCase(), new VObjectParameters(parameters.getMap()), value);
+		writer.writeProperty(null, propertyName.toUpperCase(), new VObjectParameters(parameters.get().getMap()), value);
 	}
 
 	/**

@@ -753,7 +753,7 @@ public class XCalDocument {
 			}
 
 			//build parameters
-			ICalParameters parameters = scribe.prepareParameters(property, context);
+			ICalParameters parameters = (ICalParameters) scribe.prepareParameters(property, context).get();
 			if (!parameters.isEmpty()) {
 				Element parametersElement = buildParametersElement(parameters);
 				propertyElement.insertBefore(parametersElement, propertyElement.getFirstChild());

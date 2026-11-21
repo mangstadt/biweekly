@@ -25,6 +25,7 @@ import biweekly.io.scribe.property.ICalPropertyScribeTest.TestProperty;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
+import biweekly.util.CopyOnModify;
 import biweekly.util.ICalDate;
 import biweekly.util.ListMultimap;
 
@@ -149,7 +150,7 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	@Test
 	public void prepareParameters() {
 		TestProperty property = new TestProperty("value");
-		ICalParameters copy = scribe.prepareParameters(property, null);
+		ICalParameters copy = scribe.prepareParameters(property, null).get();
 
 		assertNotSame(property.getParameters(), copy);
 		assertEquals("value", copy.first("PARAM"));
@@ -238,8 +239,9 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 			boolean hasTime = true;
 			TimezoneInfo tzinfo = new TimezoneInfo();
 			tzinfo.setDefaultTimezone(nyTimeZone);
-			ICalParameters parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null));
-			assertNull(parameters.getTimezoneId());
+			CopyOnModify<ICalParameters> parameters = CopyOnModify.parameters(property);
+			ICalPropertyScribe.handleTzidParameter(property, parameters, hasTime, new WriteContext(version, tzinfo, null));
+			assertNull(parameters.get().getTimezoneId());
 		}
 
 		version = V2_0;
@@ -247,57 +249,65 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 			//property has no time component
 			boolean hasTime = false;
 			TimezoneInfo tzinfo = new TimezoneInfo();
-			ICalParameters parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null));
-			assertNull(parameters.getTimezoneId());
+			CopyOnModify<ICalParameters> parameters = CopyOnModify.parameters(property);
+			ICalPropertyScribe.handleTzidParameter(property, parameters, hasTime, new WriteContext(version, tzinfo, null));
+			assertNull(parameters.get().getTimezoneId());
 
 			//no timezone assigned to property
 			hasTime = true;
 			tzinfo = new TimezoneInfo();
-			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null));
-			assertNull(parameters.getTimezoneId());
+			parameters = CopyOnModify.parameters(property);
+			ICalPropertyScribe.handleTzidParameter(property, parameters, hasTime, new WriteContext(version, tzinfo, null));
+			assertNull(parameters.get().getTimezoneId());
 
 			//floating
 			hasTime = true;
 			tzinfo = new TimezoneInfo();
 			tzinfo.setFloating(property, true);
-			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null));
-			assertNull(parameters.getTimezoneId());
+			parameters = CopyOnModify.parameters(property);
+			ICalPropertyScribe.handleTzidParameter(property, parameters, hasTime, new WriteContext(version, tzinfo, null));
+			assertNull(parameters.get().getTimezoneId());
 
 			//default timezone
 			hasTime = true;
 			tzinfo = new TimezoneInfo();
 			tzinfo.setDefaultTimezone(nyTimeZone);
-			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null));
-			assertEquals(nyTimeZone.getTimeZone().getID(), parameters.getTimezoneId());
+			parameters = CopyOnModify.parameters(property);
+			ICalPropertyScribe.handleTzidParameter(property, parameters, hasTime, new WriteContext(version, tzinfo, null));
+			assertEquals(nyTimeZone.getTimeZone().getID(), parameters.get().getTimezoneId());
 
 			//property timezone
 			hasTime = true;
 			tzinfo = new TimezoneInfo();
 			tzinfo.setTimezone(property, nyTimeZone);
-			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null));
-			assertEquals(nyTimeZone.getTimeZone().getID(), parameters.getTimezoneId());
+			parameters = CopyOnModify.parameters(property);
+			ICalPropertyScribe.handleTzidParameter(property, parameters, hasTime, new WriteContext(version, tzinfo, null));
+			assertEquals(nyTimeZone.getTimeZone().getID(), parameters.get().getTimezoneId());
 
 			//solidus timezone
 			hasTime = true;
 			tzinfo = new TimezoneInfo();
 			tzinfo.setTimezone(property, nySolidus);
-			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, null));
-			assertEquals("/" + nySolidus.getGlobalId(), parameters.getTimezoneId());
+			parameters = CopyOnModify.parameters(property);
+			ICalPropertyScribe.handleTzidParameter(property, parameters, hasTime, new WriteContext(version, tzinfo, null));
+			assertEquals("/" + nySolidus.getGlobalId(), parameters.get().getTimezoneId());
 
 			//global timezone
 			hasTime = true;
 			tzinfo = new TimezoneInfo();
 			tzinfo.setDefaultTimezone(nyTimeZone);
+			parameters = CopyOnModify.parameters(property);
 			TimezoneAssignment globalTz = new TimezoneAssignment(new SimpleTimeZone(0, "TEST"), new VTimezone("Foo/Bar"));
-			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, globalTz));
-			assertEquals("Foo/Bar", parameters.getTimezoneId());
+			ICalPropertyScribe.handleTzidParameter(property, parameters, hasTime, new WriteContext(version, tzinfo, globalTz));
+			assertEquals("Foo/Bar", parameters.get().getTimezoneId());
 
 			//global timezone with solidus
 			hasTime = true;
 			tzinfo = new TimezoneInfo();
 			tzinfo.setTimezone(property, nySolidus);
-			parameters = ICalPropertyScribe.handleTzidParameter(property, hasTime, new WriteContext(version, tzinfo, globalTz));
-			assertEquals("Foo/Bar", parameters.getTimezoneId());
+			parameters = CopyOnModify.parameters(property);
+			ICalPropertyScribe.handleTzidParameter(property, parameters, hasTime, new WriteContext(version, tzinfo, globalTz));
+			assertEquals("Foo/Bar", parameters.get().getTimezoneId());
 		}
 	}
 
@@ -307,10 +317,8 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 		}
 
 		@Override
-		protected ICalParameters _prepareParameters(TestProperty property, WriteContext context) {
-			ICalParameters copy = new ICalParameters(property.getParameters());
-			copy.put("PARAM", "value");
-			return copy;
+		protected void _prepareParameters(TestProperty property, CopyOnModify<ICalParameters> parameters, WriteContext context) {
+			parameters.modify().put("PARAM", "value");
 		}
 
 		@Override
@@ -345,5 +353,4 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 			assertEquals(value, property.value);
 		};
 	}
-
 }

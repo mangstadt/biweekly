@@ -10,6 +10,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Importance;
+import biweekly.util.CopyOnModify;
 
 import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
@@ -60,13 +61,11 @@ public class ImportanceScribe extends ICalPropertyScribe<Importance> {
 	//optional
 	//tweaks the parameters before the property is written
 	@Override
-	protected ICalParameters _prepareParameters(Importance property, WriteContext context) {
-		ICalParameters copy = new ICalParameters(property.getParameters());
+	protected void _prepareParameters(Importance property, CopyOnModify<ICalParameters> parameters, WriteContext context) {
 		Integer value = property.getNumber();
 		if (value != null && value >= 10) {
-			copy.put("X-MESSAGE", "very important!!");
+			parameters.modify().put("X-MESSAGE", "very important!!");
 		}
-		return copy;
 	}
 
 	//required

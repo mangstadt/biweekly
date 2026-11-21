@@ -9,6 +9,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DateOrDateTimeProperty;
+import biweekly.util.CopyOnModify;
 import biweekly.util.ICalDate;
 
 import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
@@ -49,13 +50,13 @@ public abstract class DateOrDateTimePropertyScribe<T extends DateOrDateTimePrope
 	}
 
 	@Override
-	protected ICalParameters _prepareParameters(T property, WriteContext context) {
+	protected void _prepareParameters(T property, CopyOnModify<ICalParameters> parameters, WriteContext context) {
 		ICalDate value = property.getValue();
 		if (value == null) {
-			return property.getParameters();
+			return;
 		}
 
-		return handleTzidParameter(property, value.hasTime(), context);
+		handleTzidParameter(property, parameters, value.hasTime(), context);
 	}
 
 	@Override

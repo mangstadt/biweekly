@@ -12,6 +12,7 @@ import biweekly.parameter.ICalParameters;
 import biweekly.parameter.Role;
 import biweekly.property.Attendee;
 import biweekly.property.Organizer;
+import biweekly.util.CopyOnModify;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -48,16 +49,15 @@ public class OrganizerScribe extends ICalPropertyScribe<Organizer> {
 	}
 
 	@Override
-	protected ICalParameters _prepareParameters(Organizer property, WriteContext context) {
+	protected void _prepareParameters(Organizer property, CopyOnModify<ICalParameters> parameters, WriteContext context) {
 		//CN parameter
 		String name = property.getCommonName();
 		if (name != null) {
-			ICalParameters copy = new ICalParameters(property.getParameters());
-			copy.put(ICalParameters.CN, name);
-			return copy;
+			parameters.modify().put(ICalParameters.CN, name);
+			return;
 		}
 
-		return super._prepareParameters(property, context);
+		super._prepareParameters(property, parameters, context);
 	}
 
 	@Override

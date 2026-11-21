@@ -6,6 +6,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DateStart;
+import biweekly.util.CopyOnModify;
 import biweekly.util.ICalDate;
 
 /*
@@ -43,11 +44,11 @@ public class DateStartScribe extends DateOrDateTimePropertyScribe<DateStart> {
 	}
 
 	@Override
-	protected ICalParameters _prepareParameters(DateStart property, WriteContext context) {
+	protected void _prepareParameters(DateStart property, CopyOnModify<ICalParameters> parameters, WriteContext context) {
 		if (isInObservance(context)) {
-			return property.getParameters();
+			return;
 		}
-		return super._prepareParameters(property, context);
+		super._prepareParameters(property, parameters, context);
 	}
 
 	@Override

@@ -20,6 +20,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RecurrenceDates;
+import biweekly.util.CopyOnModify;
 import biweekly.util.Duration;
 import biweekly.util.ICalDate;
 import biweekly.util.Period;
@@ -59,9 +60,9 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 	}
 
 	@Override
-	protected ICalParameters _prepareParameters(RecurrenceDates property, WriteContext context) {
+	protected void _prepareParameters(RecurrenceDates property, CopyOnModify<ICalParameters> parameters, WriteContext context) {
 		if (isInObservance(context)) {
-			return property.getParameters();
+			return;
 		}
 
 		List<Period> periods = property.getPeriods();
@@ -73,7 +74,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 			ICalDataType dataType = dataType(property, context.getVersion());
 			hasTime = (dataType == DATE_TIME || dataType == PERIOD);
 		}
-		return handleTzidParameter(property, hasTime, context);
+		handleTzidParameter(property, parameters, hasTime, context);
 	}
 
 	@Override

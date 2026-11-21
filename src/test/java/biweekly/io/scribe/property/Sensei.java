@@ -232,7 +232,7 @@ public class Sensei<T extends ICalProperty> {
 			for (ICalVersion version : versions) {
 				WriteContext context = new WriteContext(version, tzinfo, null);
 				context.setParent(parent);
-				ICalParameters actual = scribe.prepareParameters(property, context);
+				ICalParameters actual = (ICalParameters) scribe.prepareParameters(property, context).get();
 				assertEquals("Actual: " + actual, expected.size(), actual.size());
 
 				for (Map.Entry<LaciToken, List<String>> entry : expected) {

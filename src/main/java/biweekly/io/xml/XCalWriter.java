@@ -344,7 +344,7 @@ public class XCalWriter extends XCalWriterBase {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void write(ICalProperty property) throws SAXException {
 		ICalPropertyScribe scribe = index.getPropertyScribe(property);
-		ICalParameters parameters = scribe.prepareParameters(property, context);
+		ICalParameters parameters = (ICalParameters) scribe.prepareParameters(property, context).get();
 
 		//get the property element to write
 		Element propertyElement;

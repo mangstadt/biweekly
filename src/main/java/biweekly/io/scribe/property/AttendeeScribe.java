@@ -16,6 +16,7 @@ import biweekly.parameter.ParticipationStatus;
 import biweekly.parameter.Role;
 import biweekly.property.Attendee;
 import biweekly.property.Organizer;
+import biweekly.util.CopyOnModify;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -70,25 +71,21 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 	}
 
 	@Override
-	protected ICalParameters _prepareParameters(Attendee property, WriteContext context) {
+	protected void _prepareParameters(Attendee property, CopyOnModify<ICalParameters> parameters, WriteContext context) {
 		/*
-		 * Note: Parameter values are assigned using "put()" instead of the
+		 * Parameter values are assigned using "put()" instead of the
 		 * appropriate "setter" methods so that any existing parameter values
 		 * are not overwritten.
 		 */
 
-		ICalParameters copy = new ICalParameters(property.getParameters());
-
-		prepareRsvpParameter(property, copy, context);
-		prepareRoleAndExpectParameters(property, copy, context);
-		prepareParticipationStatusParameter(property, copy, context);
-		prepareCommonNameParameter(property, copy, context);
-		prepareEmailParameter(property, copy, context);
-
-		return copy;
+		prepareRsvpParameter(property, parameters, context);
+		prepareRoleAndExpectParameters(property, parameters, context);
+		prepareParticipationStatusParameter(property, parameters, context);
+		prepareCommonNameParameter(property, parameters, context);
+		prepareEmailParameter(property, parameters, context);
 	}
 
-	private void prepareRsvpParameter(Attendee property, ICalParameters copy, WriteContext context) {
+	private void prepareRsvpParameter(Attendee property, CopyOnModify<ICalParameters> parameters, WriteContext context) {
 		Boolean rsvp = property.getRsvp();
 		if (rsvp == null) {
 			return;
@@ -105,10 +102,10 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			break;
 		}
 
-		copy.put(ICalParameters.RSVP, value);
+		parameters.modify().put(ICalParameters.RSVP, value);
 	}
 
-	private void prepareRoleAndExpectParameters(Attendee property, ICalParameters copy, WriteContext context) {
+	private void prepareRoleAndExpectParameters(Attendee property, CopyOnModify<ICalParameters> parameters, WriteContext context) {
 		Role role = property.getRole();
 		ParticipationLevel level = property.getParticipationLevel();
 
@@ -116,10 +113,10 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 		case V1_0:
 			//1.0 - Uses ROLE and EXPECT
 			if (role != null) {
-				copy.put(ICalParameters.ROLE, role.getValue());
+				parameters.modify().put(ICalParameters.ROLE, role.getValue());
 			}
 			if (level != null) {
-				copy.put(ICalParameters.EXPECT, level.getValue(context.getVersion()));
+				parameters.modify().put(ICalParameters.EXPECT, level.getValue(context.getVersion()));
 			}
 			return;
 
@@ -135,13 +132,13 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			}
 
 			if (value != null) {
-				copy.put(ICalParameters.ROLE, value);
+				parameters.modify().put(ICalParameters.ROLE, value);
 			}
 			return;
 		}
 	}
 
-	private void prepareParticipationStatusParameter(Attendee property, ICalParameters copy, WriteContext context) {
+	private void prepareParticipationStatusParameter(Attendee property, CopyOnModify<ICalParameters> parameters, WriteContext context) {
 		ParticipationStatus partStat = property.getParticipationStatus();
 		if (partStat == null) {
 			return;
@@ -164,10 +161,10 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			break;
 		}
 
-		copy.put(name, value);
+		parameters.modify().put(name, value);
 	}
 
-	private void prepareCommonNameParameter(Attendee property, ICalParameters copy, WriteContext context) {
+	private void prepareCommonNameParameter(Attendee property, CopyOnModify<ICalParameters> parameters, WriteContext context) {
 		if (context.getVersion() == ICalVersion.V1_0) {
 			return;
 		}
@@ -177,10 +174,10 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			return;
 		}
 
-		copy.put(ICalParameters.CN, name);
+		parameters.modify().put(ICalParameters.CN, name);
 	}
 
-	private void prepareEmailParameter(Attendee property, ICalParameters copy, WriteContext context) {
+	private void prepareEmailParameter(Attendee property, CopyOnModify<ICalParameters> parameters, WriteContext context) {
 		if (context.getVersion() == ICalVersion.V1_0) {
 			return;
 		}
@@ -191,7 +188,7 @@ public class AttendeeScribe extends ICalPropertyScribe<Attendee> {
 			return;
 		}
 
-		copy.put(ICalParameters.EMAIL, email);
+		parameters.modify().put(ICalParameters.EMAIL, email);
 	}
 
 	@Override

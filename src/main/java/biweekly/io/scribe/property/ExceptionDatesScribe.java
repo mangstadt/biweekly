@@ -15,6 +15,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ExceptionDates;
+import biweekly.util.CopyOnModify;
 import biweekly.util.ICalDate;
 
 /*
@@ -57,9 +58,9 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICa
 	}
 
 	@Override
-	protected ICalParameters _prepareParameters(ExceptionDates property, WriteContext context) {
+	protected void _prepareParameters(ExceptionDates property, CopyOnModify<ICalParameters> parameters, WriteContext context) {
 		if (isInObservance(context)) {
-			return property.getParameters();
+			return;
 		}
 
 		boolean hasTime;
@@ -68,7 +69,7 @@ public class ExceptionDatesScribe extends ListPropertyScribe<ExceptionDates, ICa
 		} else {
 			hasTime = (dataType(property, context.getVersion()) == DATE_TIME);
 		}
-		return handleTzidParameter(property, hasTime, context);
+		handleTzidParameter(property, parameters, hasTime, context);
 	}
 
 	@Override
