@@ -808,7 +808,6 @@ public abstract class ICalPropertyScribe<T extends ICalProperty> {
 	 * @param hasTime true if the property value has a time component, false if
 	 * not
 	 * @param context the write context
-	 * @return the property's new set of parameters
 	 */
 	protected static void handleTzidParameter(ICalProperty property, CopyOnModify<ICalParameters> parameters, boolean hasTime, WriteContext context) {
 		//date values don't have timezones
