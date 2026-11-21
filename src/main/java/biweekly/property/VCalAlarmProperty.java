@@ -1,12 +1,12 @@
 package biweekly.property;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import biweekly.component.VAlarm;
-import biweekly.util.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt

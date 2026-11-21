@@ -28,7 +28,7 @@ import biweekly.property.Status;
 import biweekly.property.Summary;
 import biweekly.property.Transparency;
 import biweekly.property.Url;
-import biweekly.util.Duration;
+import java.time.Duration;
 import biweekly.util.Frequency;
 import biweekly.util.Recurrence;
 
@@ -241,7 +241,7 @@ public class VEventTest {
 		VEvent component = new VEvent();
 		component.setDateStart(date(2000, 1, 1));
 		component.setDateEnd(date(2000, 1, 10));
-		component.setDuration(new Duration.Builder().build());
+		component.setDuration(Duration.ZERO);
 		assertValidate(component).parents(parent).run(18);
 	}
 

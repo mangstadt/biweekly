@@ -27,7 +27,7 @@ import biweekly.property.RefreshInterval;
 import biweekly.property.Source;
 import biweekly.property.Uid;
 import biweekly.property.Url;
-import biweekly.util.Duration;
+import java.time.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -96,7 +96,7 @@ public class ICalendarTest {
 		ical.addProperty(new Uid("value"));
 		ical.addProperty(new LastModified(new Date()));
 		ical.addProperty(new Url(""));
-		ical.addProperty(new RefreshInterval(new Duration.Builder().hours(1).build()));
+		ical.addProperty(new RefreshInterval(Duration.ofHours(1)));
 		ical.addProperty(new Color("value"));
 		ical.addProperty(new Source("value"));
 		assertValidate(ical).run();
@@ -104,7 +104,7 @@ public class ICalendarTest {
 		ical.addProperty(new Uid("value"));
 		ical.addProperty(new LastModified(new Date()));
 		ical.addProperty(new Url(""));
-		ical.addProperty(new RefreshInterval(new Duration.Builder().hours(1).build()));
+		ical.addProperty(new RefreshInterval(Duration.ofHours(1)));
 		ical.addProperty(new Color("value"));
 		ical.addProperty(new Source("value"));
 		assertValidate(ical).run(3, 3, 3, 3, 3, 3);

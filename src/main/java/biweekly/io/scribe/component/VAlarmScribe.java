@@ -1,5 +1,6 @@
 package biweekly.io.scribe.component;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -26,7 +27,6 @@ import biweekly.property.Trigger;
 import biweekly.property.VCalAlarmProperty;
 import biweekly.property.ValuedProperty;
 import biweekly.util.ContentId;
-import biweekly.util.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -236,11 +236,11 @@ public class VAlarmScribe extends ICalComponentScribe<VAlarm> {
 				Date dateStart = ValuedProperty.valueOf(parent.getProperty(DateStart.class));
 				Duration duration = ValuedProperty.valueOf(parent.getProperty(DurationProperty.class));
 				if (duration != null && dateStart != null) {
-					date = duration.add(dateStart);
+					date = new Date(dateStart.getTime() + duration.toMillis());
 				}
 			}
 		}
 
-		return (date == null) ? null : triggerDuration.add(date);
+		return (date == null) ? null : new Date(date.getTime() + triggerDuration.toMillis());
 	}
 }

@@ -56,7 +56,7 @@ import biweekly.property.Summary;
 import biweekly.property.Xml;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DayOfWeek;
-import biweekly.util.Duration;
+import java.time.Duration;
 import biweekly.util.Frequency;
 import biweekly.util.Gobble;
 import biweekly.util.Period;
@@ -767,13 +767,13 @@ public class XCalWriterTest {
 			VEvent event = new VEvent();
 			event.setDateTimeStamp(utc(2006, 2, 6, 0, 11, 21));
 			event.setDateStart(date(2006, 1, 2, 12, 0, 0, eastern));
-			event.setDuration(Duration.builder().hours(1).build());
+			event.setDuration(Duration.ofHours(1));
 
 			Recurrence rrule = new Recurrence.Builder(Frequency.DAILY).count(5).build();
 			event.setRecurrenceRule(rrule);
 
 			RecurrenceDates rdate = new RecurrenceDates();
-			rdate.getPeriods().add(new Period(date(2006, 1, 2, 15, 0, 0, eastern), Duration.builder().hours(2).build()));
+			rdate.getPeriods().add(new Period(date(2006, 1, 2, 15, 0, 0, eastern), Duration.ofHours(2)));
 			event.addRecurrenceDates(rdate);
 
 			event.setSummary("Event #2");
@@ -785,7 +785,7 @@ public class XCalWriterTest {
 			VEvent event = new VEvent();
 			event.setDateTimeStamp(utc(2006, 2, 6, 0, 11, 21));
 			event.setDateStart(date(2006, 1, 4, 14, 0, 0, eastern));
-			event.setDuration(Duration.builder().hours(1).build());
+			event.setDuration(Duration.ofHours(1));
 
 			event.setRecurrenceId(date(2006, 1, 4, 12, 0, 0, eastern));
 

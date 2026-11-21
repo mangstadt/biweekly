@@ -1,5 +1,6 @@
 package biweekly.property;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,7 +11,6 @@ import biweekly.ICalVersion;
 import biweekly.ValidationWarning;
 import biweekly.component.ICalComponent;
 import biweekly.parameter.Related;
-import biweekly.util.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -47,7 +47,7 @@ import biweekly.util.Duration;
  * 
  * <pre class="brush:java">
  * //15 minutes before the start time
- * Duration duration = Duration.builder().prior(true).minutes(15).build();
+ * Duration duration = Duration.ofMinutes(-15);
  * Trigger trigger = new Trigger(duration, Related.START);
  * VAlarm alarm = VAlarm.display(trigger, "Meeting in 15 minutes");
  * </pre>

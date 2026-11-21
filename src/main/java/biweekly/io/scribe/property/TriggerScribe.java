@@ -1,8 +1,12 @@
 package biweekly.io.scribe.property;
 
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Set;
+
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -13,10 +17,7 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.Trigger;
-import biweekly.util.Duration;
 import biweekly.util.ICalDate;
-
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -78,12 +79,12 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 			context.addDate(date, property, parameters);
 			return property;
 		} catch (IllegalArgumentException e) {
-			//unable to parse value as date, must be a duration
+			//unable to parse value as date, attempt to parse as a duration
 		}
 
 		try {
 			return new Trigger(Duration.parse(value), parameters.getRelated());
-		} catch (IllegalArgumentException e) {
+		} catch (DateTimeParseException e) {
 			//unable to parse duration
 		}
 
@@ -114,7 +115,7 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 		if (value != null) {
 			try {
 				return new Trigger(Duration.parse(value), parameters.getRelated());
-			} catch (IllegalArgumentException e) {
+			} catch (DateTimeParseException e) {
 				throw new CannotParseException(26, value);
 			}
 		}
@@ -165,7 +166,7 @@ public class TriggerScribe extends ICalPropertyScribe<Trigger> {
 
 		try {
 			return new Trigger(Duration.parse(valueStr), parameters.getRelated());
-		} catch (IllegalArgumentException e) {
+		} catch (DateTimeParseException e) {
 			throw new CannotParseException(25);
 		}
 	}

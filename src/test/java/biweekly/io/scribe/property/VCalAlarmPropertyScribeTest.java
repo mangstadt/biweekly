@@ -20,7 +20,7 @@ import biweekly.io.scribe.property.VCalAlarmPropertyScribeTest.VCalAlarmProperty
 import biweekly.property.Action;
 import biweekly.property.Trigger;
 import biweekly.property.VCalAlarmProperty;
-import biweekly.util.Duration;
+import java.time.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -57,7 +57,7 @@ public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImp
 	private final VCalAlarmPropertyImpl withValues = new VCalAlarmPropertyImpl("one", "two");
 	{
 		withValues.setRepeat(5);
-		withValues.setSnooze(new Duration.Builder().minutes(10).build());
+		withValues.setSnooze(Duration.ofMinutes(10));
 		withValues.setStart(start);
 	}
 

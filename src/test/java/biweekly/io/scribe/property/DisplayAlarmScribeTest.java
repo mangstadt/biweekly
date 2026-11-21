@@ -14,7 +14,7 @@ import biweekly.io.DataModelConversionException;
 import biweekly.property.Action;
 import biweekly.property.DisplayAlarm;
 import biweekly.property.Trigger;
-import biweekly.util.Duration;
+import java.time.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -52,7 +52,7 @@ public class DisplayAlarmScribeTest extends ScribeTest<DisplayAlarm> {
 	private final DisplayAlarm noValue = new DisplayAlarm((String) null);
 	{
 		noValue.setRepeat(5);
-		noValue.setSnooze(new Duration.Builder().minutes(10).build());
+		noValue.setSnooze(Duration.ofMinutes(10));
 		noValue.setStart(start);
 	}
 
@@ -60,7 +60,7 @@ public class DisplayAlarmScribeTest extends ScribeTest<DisplayAlarm> {
 	private final DisplayAlarm withValue = new DisplayAlarm(text);
 	{
 		withValue.setRepeat(5);
-		withValue.setSnooze(new Duration.Builder().minutes(10).build());
+		withValue.setSnooze(Duration.ofMinutes(10));
 		withValue.setStart(start);
 	}
 

@@ -60,7 +60,7 @@ import biweekly.property.Summary;
 import biweekly.property.Trigger;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DayOfWeek;
-import biweekly.util.Duration;
+import java.time.Duration;
 import biweekly.util.Frequency;
 import biweekly.util.Gobble;
 import biweekly.util.Period;
@@ -948,7 +948,7 @@ public class ICalWriterTest {
 				Attachment attach = new Attachment("audio/basic", "http://example.com/pub/audio-files/ssbanner.aud");
 				VAlarm alarm = VAlarm.audio(trigger, attach);
 				alarm.setRepeat(4);
-				alarm.setDuration(Duration.builder().hours(1).build());
+				alarm.setDuration(Duration.ofHours(1));
 				todo.addAlarm(alarm);
 			}
 

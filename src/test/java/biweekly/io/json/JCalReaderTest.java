@@ -54,7 +54,7 @@ import biweekly.util.ByDay;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DayOfWeek;
 import biweekly.util.DefaultTimezoneRule;
-import biweekly.util.Duration;
+import java.time.Duration;
 import biweekly.util.Frequency;
 import biweekly.util.Period;
 import biweekly.util.Recurrence;
@@ -561,7 +561,7 @@ public class JCalReaderTest {
 			assertEquals(utc(2006, 2, 6, 0, 11, 21), event.getDateTimeStamp().getValue());
 			assertEquals(utc(2006, 1, 2, 17, 0, 0), event.getDateStart().getValue());
 			assertNull(event.getDateStart().getParameters().getTimezoneId());
-			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
+			assertEquals(Duration.ofHours(1), event.getDuration().getValue());
 
 			Recurrence rrule = event.getRecurrenceRule().getValue();
 			assertEquals(Frequency.DAILY, rrule.getFrequency());
@@ -570,7 +570,7 @@ public class JCalReaderTest {
 			RecurrenceDates rdate = event.getRecurrenceDates().get(0);
 			assertEquals(0, rdate.getDates().size());
 			assertEquals(1, rdate.getPeriods().size());
-			assertEquals(new Period(utc(2006, 1, 2, 20, 0, 0), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
+			assertEquals(new Period(utc(2006, 1, 2, 20, 0, 0), Duration.ofHours(2)), rdate.getPeriods().get(0));
 			assertNull(rdate.getParameters().getTimezoneId());
 
 			assertEquals("Event #2", event.getSummary().getValue());
@@ -584,7 +584,7 @@ public class JCalReaderTest {
 			assertEquals(utc(2006, 2, 6, 0, 11, 21), event.getDateTimeStamp().getValue());
 			assertEquals(utc(2006, 1, 2, 19, 0, 0), event.getDateStart().getValue());
 			assertNull(event.getDateStart().getParameters().getTimezoneId());
-			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
+			assertEquals(Duration.ofHours(1), event.getDuration().getValue());
 
 			assertEquals(utc(2006, 1, 4, 17, 0, 0), event.getRecurrenceId().getValue());
 			assertNull(event.getRecurrenceId().getParameters().getTimezoneId());

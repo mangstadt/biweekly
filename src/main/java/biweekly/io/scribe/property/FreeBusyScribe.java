@@ -1,5 +1,7 @@
 package biweekly.io.scribe.property;
 
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -19,7 +21,6 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.FreeBusy;
-import biweekly.util.Duration;
 import biweekly.util.ICalDate;
 import biweekly.util.Period;
 
@@ -168,7 +169,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 
 		try {
 			return Duration.parse(durationStr);
-		} catch (IllegalArgumentException e) {
+		} catch (DateTimeParseException e) {
 			throw new CannotParseException(12, durationStr);
 		}
 	}
@@ -261,7 +262,7 @@ public class FreeBusyScribe extends ICalPropertyScribe<FreeBusy> {
 			try {
 				Duration duration = Duration.parse(endStr);
 				return new Period(start, duration);
-			} catch (IllegalArgumentException e2) {
+			} catch (DateTimeParseException e2) {
 				throw new CannotParseException(14, endStr);
 			}
 		}

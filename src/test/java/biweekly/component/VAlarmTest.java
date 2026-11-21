@@ -14,7 +14,7 @@ import biweekly.property.Action;
 import biweekly.property.Attachment;
 import biweekly.property.Attendee;
 import biweekly.property.Trigger;
-import biweekly.util.Duration;
+import java.time.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -123,18 +123,18 @@ public class VAlarmTest {
 	@Test
 	public void validate_related_start() {
 		VEvent event = new VEvent();
-		VAlarm component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.START));
+		VAlarm component = new VAlarm(Action.audio(), new Trigger(Duration.ZERO, Related.START));
 		assertValidate(component).parents(event).run(11);
 
 		event = new VEvent();
 		event.setDateStart(new Date());
-		component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.START));
+		component = new VAlarm(Action.audio(), new Trigger(Duration.ZERO, Related.START));
 		assertValidate(component).parents(event).run();
 	}
 
 	@Test
 	public void validate_related_end() {
-		VAlarm component = new VAlarm(Action.audio(), new Trigger(new Duration.Builder().build(), Related.END));
+		VAlarm component = new VAlarm(Action.audio(), new Trigger(Duration.ZERO, Related.END));
 
 		VEvent event = new VEvent();
 		assertValidate(component).parents(event).run(12);
@@ -149,12 +149,12 @@ public class VAlarmTest {
 		assertValidate(component).parents(event).run(12);
 
 		event = new VEvent();
-		event.setDuration(new Duration.Builder().build());
+		event.setDuration(Duration.ZERO);
 		assertValidate(component).parents(event).run(12);
 
 		event = new VEvent();
 		event.setDateStart(new Date());
-		event.setDuration(new Duration.Builder().build());
+		event.setDuration(Duration.ZERO);
 		assertValidate(component).parents(event).run();
 
 		VTodo todo = new VTodo();
@@ -170,12 +170,12 @@ public class VAlarmTest {
 		assertValidate(component).parents(todo).run(12);
 
 		todo = new VTodo();
-		todo.setDuration(new Duration.Builder().build());
+		todo.setDuration(Duration.ZERO);
 		assertValidate(component).parents(todo).run(12);
 
 		todo = new VTodo();
 		todo.setDateStart(new Date());
-		todo.setDuration(new Duration.Builder().build());
+		todo.setDuration(Duration.ZERO);
 		assertValidate(component).parents(todo).run();
 
 		VJournal journal = new VJournal();

@@ -24,7 +24,7 @@ import biweekly.property.DisplayAlarm;
 import biweekly.property.EmailAlarm;
 import biweekly.property.ProcedureAlarm;
 import biweekly.property.Trigger;
-import biweekly.util.Duration;
+import java.time.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -86,7 +86,7 @@ public class VAlarmScribeTest {
 	@Test
 	public void checkForDataModelConversions_start_date() {
 		Action action = Action.audio();
-		Duration duration = new Duration.Builder().hours(1).build();
+		Duration duration = Duration.ofHours(1);
 		VAlarm alarm;
 		VEvent parent;
 
@@ -155,7 +155,7 @@ public class VAlarmScribeTest {
 				scribe.checkForDataModelConversions(alarm, parent, V1_0);
 			} catch (DataModelConversionException e) {
 				AudioAlarm expected = new AudioAlarm();
-				expected.setStart(duration.add(date));
+				expected.setStart(new Date(date.getTime() + duration.toMillis()));
 				assertNull(e.getOriginalProperty());
 				assertEquals(Arrays.asList(expected), e.getProperties());
 				assertEquals(Arrays.asList(), e.getComponents());
@@ -184,7 +184,7 @@ public class VAlarmScribeTest {
 				scribe.checkForDataModelConversions(alarm, parent, V1_0);
 			} catch (DataModelConversionException e) {
 				AudioAlarm expected = new AudioAlarm();
-				expected.setStart(duration.add(date));
+				expected.setStart(new Date(date.getTime() + duration.toMillis()));
 				assertNull(e.getOriginalProperty());
 				assertEquals(Arrays.asList(expected), e.getProperties());
 				assertEquals(Arrays.asList(), e.getComponents());
@@ -225,7 +225,7 @@ public class VAlarmScribeTest {
 				scribe.checkForDataModelConversions(alarm, parent, V1_0);
 			} catch (DataModelConversionException e) {
 				AudioAlarm expected = new AudioAlarm();
-				expected.setStart(duration.add(duration.add(date)));
+				expected.setStart(new Date(date.getTime() + duration.toMillis() + duration.toMillis()));
 				assertNull(e.getOriginalProperty());
 				assertEquals(Arrays.asList(expected), e.getProperties());
 				assertEquals(Arrays.asList(), e.getComponents());
@@ -251,7 +251,7 @@ public class VAlarmScribeTest {
 	@Test
 	public void checkForDataModelConversions_snooze() {
 		Action action = Action.audio();
-		Duration snooze = new Duration.Builder().minutes(10).build();
+		Duration snooze = Duration.ofMinutes(10);
 
 		VAlarm alarm = new VAlarm(action, null);
 		alarm.setDuration(snooze);

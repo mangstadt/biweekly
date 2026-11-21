@@ -1,9 +1,10 @@
 package biweekly.property;
 
+import java.time.Duration;
+
 import biweekly.component.VAlarm;
 import biweekly.component.VEvent;
 import biweekly.component.VTodo;
-import biweekly.util.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -49,7 +50,7 @@ import biweekly.util.Duration;
  * <pre class="brush:java">
  * VEvent event = new VEvent();
  * 
- * Duration duration = Duration.builder().hours(2).minutes(30).build();
+ * Duration duration = ...
  * DurationProperty prop = new DurationProperty(duration);
  * event.setDuration(prop);
  * </pre>

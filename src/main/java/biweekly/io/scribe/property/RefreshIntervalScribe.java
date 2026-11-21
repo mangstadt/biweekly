@@ -1,5 +1,9 @@
 package biweekly.io.scribe.property;
 
+import java.time.Duration;
+
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 import biweekly.ICalDataType;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
@@ -8,9 +12,6 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RefreshInterval;
-import biweekly.util.Duration;
-
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt

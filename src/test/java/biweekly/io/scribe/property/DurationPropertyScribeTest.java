@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.DurationProperty;
-import biweekly.util.Duration;
+import java.time.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -37,7 +37,7 @@ import biweekly.util.Duration;
  * @author Michael Angstadt
  */
 public class DurationPropertyScribeTest extends ScribeTest<DurationProperty> {
-	private final Duration duration = Duration.builder().hours(1).minutes(30).build();
+	private final Duration duration = Duration.ofMinutes(90);
 	private final String durationStr = duration.toString();
 
 	private final DurationProperty withDuration = new DurationProperty(duration);

@@ -12,7 +12,7 @@ import org.junit.Test;
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.FreeBusy;
-import biweekly.util.Duration;
+import java.time.Duration;
 import biweekly.util.Period;
 
 /*
@@ -58,7 +58,7 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 	private final String endStr = "20130611T144302Z";
 	private final String endStrExt = "2013-06-11T14:43:02Z";
 
-	private final Duration duration = Duration.builder().hours(2).build();
+	private final Duration duration = Duration.ofHours(2);
 	private final String durationStr = duration.toString();
 
 	private final FreeBusy withMultiple = new FreeBusy();

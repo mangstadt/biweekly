@@ -15,7 +15,7 @@ import biweekly.property.Action;
 import biweekly.property.Attendee;
 import biweekly.property.EmailAlarm;
 import biweekly.property.Trigger;
-import biweekly.util.Duration;
+import java.time.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -53,7 +53,7 @@ public class EmailAlarmScribeTest extends ScribeTest<EmailAlarm> {
 	private final EmailAlarm noValue = new EmailAlarm((String) null);
 	{
 		noValue.setRepeat(5);
-		noValue.setSnooze(new Duration.Builder().minutes(10).build());
+		noValue.setSnooze(Duration.ofMinutes(10));
 		noValue.setStart(start);
 	}
 
@@ -63,7 +63,7 @@ public class EmailAlarmScribeTest extends ScribeTest<EmailAlarm> {
 	{
 		withValue.setNote(note);
 		withValue.setRepeat(5);
-		withValue.setSnooze(new Duration.Builder().minutes(10).build());
+		withValue.setSnooze(Duration.ofMinutes(10));
 		withValue.setStart(start);
 	}
 

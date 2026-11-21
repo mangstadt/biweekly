@@ -17,7 +17,7 @@ import biweekly.property.Action;
 import biweekly.property.Attachment;
 import biweekly.property.AudioAlarm;
 import biweekly.property.Trigger;
-import biweekly.util.Duration;
+import java.time.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -55,7 +55,7 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 	private final AudioAlarm noValue = new AudioAlarm();
 	{
 		noValue.setRepeat(5);
-		noValue.setSnooze(new Duration.Builder().minutes(10).build());
+		noValue.setSnooze(Duration.ofMinutes(10));
 		noValue.setStart(start);
 	}
 
@@ -63,7 +63,7 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 	private final AudioAlarm withContentId = new AudioAlarm();
 	{
 		withContentId.setRepeat(5);
-		withContentId.setSnooze(new Duration.Builder().minutes(10).build());
+		withContentId.setSnooze(Duration.ofMinutes(10));
 		withContentId.setStart(start);
 		withContentId.setContentId(contentId);
 	}
@@ -72,7 +72,7 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 	private final AudioAlarm withUri = new AudioAlarm();
 	{
 		withUri.setRepeat(5);
-		withUri.setSnooze(new Duration.Builder().minutes(10).build());
+		withUri.setSnooze(Duration.ofMinutes(10));
 		withUri.setStart(start);
 		withUri.setUri(uri);
 	}
@@ -83,7 +83,7 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 	private final AudioAlarm withData = new AudioAlarm();
 	{
 		withData.setRepeat(5);
-		withData.setSnooze(new Duration.Builder().minutes(10).build());
+		withData.setSnooze(Duration.ofMinutes(10));
 		withData.setStart(start);
 		withData.setData(data);
 	}

@@ -2,6 +2,7 @@ package biweekly.component;
 
 import static biweekly.property.ValuedProperty.valueOf;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -43,7 +44,6 @@ import biweekly.property.Summary;
 import biweekly.property.Transparency;
 import biweekly.property.Uid;
 import biweekly.property.Url;
-import biweekly.util.Duration;
 import biweekly.util.Google2445Utils;
 import biweekly.util.ICalDate;
 import biweekly.util.Period;

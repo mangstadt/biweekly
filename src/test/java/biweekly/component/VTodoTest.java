@@ -29,7 +29,7 @@ import biweekly.property.Sequence;
 import biweekly.property.Status;
 import biweekly.property.Summary;
 import biweekly.property.Url;
-import biweekly.util.Duration;
+import java.time.Duration;
 import biweekly.util.Frequency;
 import biweekly.util.Recurrence;
 
@@ -206,14 +206,14 @@ public class VTodoTest {
 		VTodo component = new VTodo();
 		component.setDateStart(date(2000, 1, 1));
 		component.setDateDue(date(2000, 1, 10));
-		component.setDuration(new Duration.Builder().build());
+		component.setDuration(Duration.ZERO);
 		assertValidate(component).run(24);
 	}
 
 	@Test
 	public void validate_no_dateStart() {
 		VTodo component = new VTodo();
-		component.setDuration(new Duration.Builder().build());
+		component.setDuration(Duration.ZERO);
 		assertValidate(component).run(25);
 	}
 

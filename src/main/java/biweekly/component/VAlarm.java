@@ -1,5 +1,6 @@
 package biweekly.component;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,7 +18,6 @@ import biweekly.property.DurationProperty;
 import biweekly.property.Repeat;
 import biweekly.property.Summary;
 import biweekly.property.Trigger;
-import biweekly.util.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt

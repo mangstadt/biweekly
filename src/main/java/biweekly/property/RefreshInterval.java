@@ -1,6 +1,6 @@
 package biweekly.property;
 
-import biweekly.util.Duration;
+import java.time.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -39,7 +39,7 @@ import biweekly.util.Duration;
  * <pre class="brush:java">
  * ICalendar ical = new ICalendar()
  * 
- * Duration duration = Duration.builder().weeks(1).build();
+ * Duration duration = ...
  * RefreshInterval refreshInterval = new RefreshInterval(duration);
  * ical.setRefreshInterval(refreshInterval);
  * </pre>

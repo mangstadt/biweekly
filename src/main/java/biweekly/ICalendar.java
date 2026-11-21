@@ -41,7 +41,7 @@ import biweekly.property.RefreshInterval;
 import biweekly.property.Source;
 import biweekly.property.Uid;
 import biweekly.property.Url;
-import biweekly.util.Duration;
+import java.time.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt

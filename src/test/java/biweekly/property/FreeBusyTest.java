@@ -17,7 +17,7 @@ import java.util.List;
 import org.junit.Test;
 
 import biweekly.parameter.FreeBusyType;
-import biweekly.util.Duration;
+import java.time.Duration;
 import biweekly.util.Period;
 
 /*
@@ -59,7 +59,7 @@ public class FreeBusyTest {
 	public void set_value() {
 		FreeBusy property = new FreeBusy();
 		Date start = new Date();
-		Duration duration = new Duration.Builder().hours(1).build();
+		Duration duration = Duration.ofHours(1);
 
 		Period period = new Period(start, duration);
 		property.getValues().add(period);
@@ -115,11 +115,11 @@ public class FreeBusyTest {
 		assertValidate(property).run(40);
 
 		property = new FreeBusy();
-		property.getValues().add(new Period(null, new Duration.Builder().build()));
+		property.getValues().add(new Period(null, Duration.ZERO));
 		assertValidate(property).run(39);
 
 		property = new FreeBusy();
-		property.getValues().add(new Period(new Date(), new Duration.Builder().build()));
+		property.getValues().add(new Period(new Date(), Duration.ZERO));
 		assertValidate(property).run();
 	}
 
@@ -137,7 +137,7 @@ public class FreeBusyTest {
 		original = new FreeBusy();
 		original.getValues().add(new Period(new Date(), new Date()));
 		original.getValues().add(new Period(new Date(), (Date) null));
-		original.getValues().add(new Period(new Date(), new Duration.Builder().build()));
+		original.getValues().add(new Period(new Date(), Duration.ZERO));
 		original.getValues().add(new Period(new Date(), (Duration) null));
 		assertCopy(original).notSameDeep("getValues");
 	}
@@ -146,7 +146,7 @@ public class FreeBusyTest {
 	public void equals() {
 		Date start = new Date();
 		Date end = new Date();
-		Duration duration = new Duration.Builder().hours(1).build();
+		Duration duration = Duration.ofHours(1);
 
 		List<ICalProperty> properties = new ArrayList<>();
 

@@ -1,10 +1,15 @@
 package biweekly.io.scribe.property;
 
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -17,10 +22,6 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.Action;
 import biweekly.property.Trigger;
 import biweekly.property.VCalAlarmProperty;
-import biweekly.util.Duration;
-
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -99,7 +100,7 @@ public abstract class VCalAlarmPropertyScribe<T extends VCalAlarmProperty> exten
 		Duration snooze;
 		try {
 			snooze = (next == null) ? null : Duration.parse(next);
-		} catch (IllegalArgumentException e) {
+		} catch (DateTimeParseException e) {
 			throw new CannotParseException(26, next);
 		}
 

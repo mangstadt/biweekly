@@ -2,6 +2,7 @@ package biweekly.component;
 
 import static biweekly.property.ValuedProperty.valueOf;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,6 @@ import biweekly.property.Organizer;
 import biweekly.property.RequestStatus;
 import biweekly.property.Uid;
 import biweekly.property.Url;
-import biweekly.util.Duration;
 import biweekly.util.ICalDate;
 import biweekly.util.Period;
 
@@ -68,7 +68,7 @@ import biweekly.util.Period;
  * freebusy.addFreeBusy(FreeBusyType.FREE, start, end);
  * 
  * start = ...
- * Duration duration = Duration.builder().hours(2).build();
+ * Duration duration = ...
  * freebusy.addFreeBusy(FreeBusyType.BUSY, start, duration);
  * </pre>
  * 

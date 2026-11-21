@@ -1,5 +1,10 @@
 package biweekly.io.scribe.property;
 
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
+
+import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
+
 import biweekly.ICalDataType;
 import biweekly.io.CannotParseException;
 import biweekly.io.ParseContext;
@@ -8,9 +13,6 @@ import biweekly.io.json.JCalValue;
 import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.DurationProperty;
-import biweekly.util.Duration;
-
-import com.github.mangstadt.vinnie.io.VObjectPropertyValues;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -109,7 +111,7 @@ public class DurationPropertyScribe extends ICalPropertyScribe<DurationProperty>
 		try {
 			Duration duration = Duration.parse(value);
 			return new DurationProperty(duration);
-		} catch (IllegalArgumentException e) {
+		} catch (DateTimeParseException e) {
 			throw new CannotParseException(18);
 		}
 	}

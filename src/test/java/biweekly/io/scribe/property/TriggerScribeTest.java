@@ -11,7 +11,7 @@ import biweekly.ICalDataType;
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.parameter.Related;
 import biweekly.property.Trigger;
-import biweekly.util.Duration;
+import java.time.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -46,7 +46,7 @@ public class TriggerScribeTest extends ScribeTest<Trigger> {
 	private final String datetimeStr = "20130611T124302Z";
 	private final String datetimeStrExt = "2013-06-11T12:43:02Z";
 
-	private final Duration duration = Duration.builder().hours(2).build();
+	private final Duration duration = Duration.ofHours(2);
 	private final String durationStr = duration.toString();
 
 	private final Trigger withDateTime = new Trigger(datetime);

@@ -79,7 +79,7 @@ import biweekly.util.ByDay;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DayOfWeek;
 import biweekly.util.DefaultTimezoneRule;
-import biweekly.util.Duration;
+import java.time.Duration;
 import biweekly.util.Frequency;
 import biweekly.util.Gobble;
 import biweekly.util.Period;
@@ -1119,7 +1119,7 @@ public class XCalDocumentTest {
 			assertEquals(utc(2006, 2, 6, 0, 11, 21), event.getDateTimeStamp().getValue());
 			assertEquals(utc(2006, 1, 2, 17, 0, 0), event.getDateStart().getValue());
 			assertNull(event.getDateStart().getParameters().getTimezoneId());
-			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
+			assertEquals(Duration.ofHours(1), event.getDuration().getValue());
 
 			Recurrence rrule = event.getRecurrenceRule().getValue();
 			assertEquals(Frequency.DAILY, rrule.getFrequency());
@@ -1128,7 +1128,7 @@ public class XCalDocumentTest {
 			RecurrenceDates rdate = event.getRecurrenceDates().get(0);
 			assertEquals(0, rdate.getDates().size());
 			assertEquals(1, rdate.getPeriods().size());
-			assertEquals(new Period(utc(2006, 1, 2, 20, 0, 0), Duration.builder().hours(2).build()), rdate.getPeriods().get(0));
+			assertEquals(new Period(utc(2006, 1, 2, 20, 0, 0), Duration.ofHours(2)), rdate.getPeriods().get(0));
 			assertNull(rdate.getParameters().getTimezoneId());
 
 			assertEquals("Event #2", event.getSummary().getValue());
@@ -1142,7 +1142,7 @@ public class XCalDocumentTest {
 			assertEquals(utc(2006, 2, 6, 0, 11, 21), event.getDateTimeStamp().getValue());
 			assertEquals(utc(2006, 1, 4, 19, 0, 0), event.getDateStart().getValue());
 			assertNull(event.getDateStart().getParameters().getTimezoneId());
-			assertEquals(Duration.builder().hours(1).build(), event.getDuration().getValue());
+			assertEquals(Duration.ofHours(1), event.getDuration().getValue());
 
 			assertEquals(utc(2006, 1, 4, 17, 0, 0), event.getRecurrenceId().getValue());
 			assertNull(event.getRecurrenceId().getParameters().getTimezoneId());
@@ -1235,13 +1235,13 @@ public class XCalDocumentTest {
 			VEvent event = new VEvent();
 			event.setDateTimeStamp(utc(2006, 2, 6, 0, 11, 21));
 			event.setDateStart(date(2006, 1, 2, 12, 0, 0, eastern));
-			event.setDuration(Duration.builder().hours(1).build());
+			event.setDuration(Duration.ofHours(1));
 
 			Recurrence rrule = new Recurrence.Builder(Frequency.DAILY).count(5).build();
 			event.setRecurrenceRule(rrule);
 
 			RecurrenceDates rdate = new RecurrenceDates();
-			rdate.getPeriods().add(new Period(date(2006, 1, 2, 15, 0, 0, eastern), Duration.builder().hours(2).build()));
+			rdate.getPeriods().add(new Period(date(2006, 1, 2, 15, 0, 0, eastern), Duration.ofHours(2)));
 			event.addRecurrenceDates(rdate);
 
 			event.setSummary("Event #2");
@@ -1253,7 +1253,7 @@ public class XCalDocumentTest {
 			VEvent event = new VEvent();
 			event.setDateTimeStamp(utc(2006, 2, 6, 0, 11, 21));
 			event.setDateStart(date(2006, 1, 4, 14, 0, 0, eastern));
-			event.setDuration(Duration.builder().hours(1).build());
+			event.setDuration(Duration.ofHours(1));
 
 			event.setRecurrenceId(date(2006, 1, 4, 12, 0, 0, eastern));
 

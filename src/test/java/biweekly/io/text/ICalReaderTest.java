@@ -71,7 +71,7 @@ import biweekly.util.ByDay;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DayOfWeek;
 import biweekly.util.DefaultTimezoneRule;
-import biweekly.util.Duration;
+import java.time.Duration;
 import biweekly.util.Frequency;
 import biweekly.util.ICalDate;
 import biweekly.util.Period;
@@ -936,7 +936,7 @@ public class ICalReaderTest {
 			assertSize(valarm, 0, 5);
 			assertTrue(valarm.getAction().isAudio());
 			assertEquals(date(2014, 1, 1, 1, 0, 0), valarm.getTrigger().getDate());
-			assertEquals(new Duration.Builder().minutes(10).build(), valarm.getDuration().getValue());
+			assertEquals(Duration.ofMinutes(10), valarm.getDuration().getValue());
 			assertIntEquals(5, valarm.getRepeat().getValue());
 			assertEquals("http://example.com", valarm.getAttachments().get(0).getUri());
 		}
@@ -978,7 +978,7 @@ public class ICalReaderTest {
 			assertSize(valarm, 0, 5);
 			assertTrue(valarm.getAction().isDisplay());
 			assertEquals(date(2014, 1, 1, 1, 0, 0), valarm.getTrigger().getDate());
-			assertEquals(new Duration.Builder().minutes(10).build(), valarm.getDuration().getValue());
+			assertEquals(Duration.ofMinutes(10), valarm.getDuration().getValue());
 			assertIntEquals(5, valarm.getRepeat().getValue());
 			assertEquals("display-text", valarm.getDescription().getValue());
 		}
@@ -1020,7 +1020,7 @@ public class ICalReaderTest {
 			assertSize(valarm, 0, 6);
 			assertTrue(valarm.getAction().isEmail());
 			assertEquals(date(2014, 1, 1, 1, 0, 0), valarm.getTrigger().getDate());
-			assertEquals(new Duration.Builder().minutes(10).build(), valarm.getDuration().getValue());
+			assertEquals(Duration.ofMinutes(10), valarm.getDuration().getValue());
 			assertIntEquals(5, valarm.getRepeat().getValue());
 			assertEquals("note", valarm.getDescription().getValue());
 			assertEquals("jdoe@example.com", valarm.getAttendees().get(0).getEmail());
@@ -1063,7 +1063,7 @@ public class ICalReaderTest {
 			assertSize(valarm, 0, 5);
 			assertTrue(valarm.getAction().isProcedure());
 			assertEquals(date(2014, 1, 1, 1, 0, 0), valarm.getTrigger().getDate());
-			assertEquals(new Duration.Builder().minutes(10).build(), valarm.getDuration().getValue());
+			assertEquals(Duration.ofMinutes(10), valarm.getDuration().getValue());
 			assertIntEquals(5, valarm.getRepeat().getValue());
 			assertEquals("file:///bin/ls", valarm.getDescription().getValue());
 		}
@@ -1684,7 +1684,7 @@ public class ICalReaderTest {
 				assertEquals("audio/basic", attach.getFormatType());
 
 				assertIntEquals(4, alarm.getRepeat().getValue());
-				assertEquals(Duration.builder().hours(1).build(), alarm.getDuration().getValue());
+				assertEquals(Duration.ofHours(1), alarm.getDuration().getValue());
 			}
 		}
 

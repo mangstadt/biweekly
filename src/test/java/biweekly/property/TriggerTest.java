@@ -9,12 +9,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
+import java.time.Duration;
 import java.util.Date;
 
 import org.junit.Test;
 
 import biweekly.parameter.Related;
-import biweekly.util.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -58,7 +58,7 @@ public class TriggerTest {
 		assertNull(property.getDuration());
 		assertNull(property.getRelated());
 
-		Duration duration = new Duration.Builder().hours(1).build();
+		Duration duration = Duration.ofHours(1);
 		property = new Trigger(duration, Related.START);
 		assertNull(property.getDate());
 		assertEquals(duration, property.getDuration());
@@ -75,7 +75,7 @@ public class TriggerTest {
 		assertNull(property.getDuration());
 		assertNull(property.getRelated());
 
-		Duration duration = new Duration.Builder().hours(1).build();
+		Duration duration = Duration.ofHours(1);
 		property.setDuration(duration, Related.START);
 		assertNull(property.getDate());
 		assertEquals(duration, property.getDuration());
@@ -106,10 +106,10 @@ public class TriggerTest {
 		property = new Trigger(new Date());
 		assertValidate(property).run();
 
-		property = new Trigger(new Duration.Builder().build(), null);
+		property = new Trigger(Duration.ZERO, null);
 		assertValidate(property).run(10);
 
-		property = new Trigger(new Duration.Builder().build(), Related.END);
+		property = new Trigger(Duration.ZERO, Related.END);
 		assertValidate(property).run();
 	}
 
@@ -127,7 +127,7 @@ public class TriggerTest {
 		original = new Trigger(new Date());
 		assertCopy(original).notSame("getDate");
 
-		original = new Trigger(new Duration.Builder().hours(1).build(), Related.START);
+		original = new Trigger(Duration.ofHours(1), Related.START);
 		assertCopy(original);
 	}
 
@@ -138,16 +138,16 @@ public class TriggerTest {
 			new Trigger((Date)null),
 			new Trigger(date(2016, 1, 21)),
 			new Trigger(date(2016, 1, 22)),
-			new Trigger(new Duration.Builder().hours(1).build(), null),
-			new Trigger(new Duration.Builder().hours(1).build(), Related.START),
-			new Trigger(new Duration.Builder().hours(1).build(), Related.END),
-			new Trigger(new Duration.Builder().hours(2).build(), Related.START)
+			new Trigger(Duration.ofHours(1), null),
+			new Trigger(Duration.ofHours(1), Related.START),
+			new Trigger(Duration.ofHours(1), Related.END),
+			new Trigger(Duration.ofHours(2), Related.START)
 		);
 
 		assertEqualsMethod(Trigger.class, new Date())
 		.constructor(new Class<?>[]{Date.class}, (Date)null).test()
 		.constructor(new Date()).test()
-		.constructor(new Duration.Builder().hours(1).build(), Related.START).test();
+		.constructor(Duration.ofHours(1), Related.START).test();
 		//@formatter:on
 	}
 }

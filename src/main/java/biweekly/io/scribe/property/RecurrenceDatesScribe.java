@@ -4,6 +4,8 @@ import static biweekly.ICalDataType.DATE;
 import static biweekly.ICalDataType.DATE_TIME;
 import static biweekly.ICalDataType.PERIOD;
 
+import java.time.Duration;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +23,6 @@ import biweekly.io.xml.XCalElement;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.RecurrenceDates;
 import biweekly.util.CopyOnModify;
-import biweekly.util.Duration;
 import biweekly.util.ICalDate;
 import biweekly.util.Period;
 
@@ -236,7 +237,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 		try {
 			Duration duration = Duration.parse(afterSlash);
 			return new Period(start, duration);
-		} catch (IllegalArgumentException e) {
+		} catch (DateTimeParseException e) {
 			throw new CannotParseException(14, afterSlash);
 		}
 	}
@@ -269,7 +270,7 @@ public class RecurrenceDatesScribe extends ICalPropertyScribe<RecurrenceDates> {
 			try {
 				Duration duration = Duration.parse(durationStr);
 				return new Period(start, duration);
-			} catch (IllegalArgumentException e) {
+			} catch (DateTimeParseException e) {
 				throw new CannotParseException(12, durationStr);
 			}
 		}
