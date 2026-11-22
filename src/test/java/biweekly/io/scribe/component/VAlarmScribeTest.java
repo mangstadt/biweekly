@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -24,7 +25,6 @@ import biweekly.property.DisplayAlarm;
 import biweekly.property.EmailAlarm;
 import biweekly.property.ProcedureAlarm;
 import biweekly.property.Trigger;
-import java.time.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -87,164 +87,145 @@ public class VAlarmScribeTest {
 	public void checkForDataModelConversions_start_date() {
 		Action action = Action.audio();
 		Duration duration = Duration.ofHours(1);
-		VAlarm alarm;
-		VEvent parent;
 
 		//empty trigger
 		Trigger trigger = new Trigger(null, null);
 		{
-			alarm = new VAlarm(action, trigger);
-			try {
-				scribe.checkForDataModelConversions(alarm, null, V1_0);
-			} catch (DataModelConversionException e) {
-				AudioAlarm expected = new AudioAlarm();
-				assertNull(e.getOriginalProperty());
-				assertEquals(Arrays.asList(expected), e.getProperties());
-				assertEquals(Arrays.asList(), e.getComponents());
-			}
+			VAlarm alarm = new VAlarm(action, trigger);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
+			AudioAlarm expected = new AudioAlarm();
+			assertNull(e.getOriginalProperty());
+			assertEquals(Arrays.asList(expected), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
 		}
 
 		//trigger date
 		trigger = new Trigger(date);
 		{
-			alarm = new VAlarm(action, trigger);
-			try {
-				scribe.checkForDataModelConversions(alarm, null, V1_0);
-			} catch (DataModelConversionException e) {
-				AudioAlarm expected = new AudioAlarm();
-				expected.setStart(date);
-				assertNull(e.getOriginalProperty());
-				assertEquals(Arrays.asList(expected), e.getProperties());
-				assertEquals(Arrays.asList(), e.getComponents());
-			}
+			VAlarm alarm = new VAlarm(action, trigger);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
+			AudioAlarm expected = new AudioAlarm();
+			expected.setStart(date);
+			assertNull(e.getOriginalProperty());
+			assertEquals(Arrays.asList(expected), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
 		}
 
 		//related trigger, no parent
 		trigger = new Trigger(duration, Related.START);
 		{
-			alarm = new VAlarm(action, trigger);
-			try {
-				scribe.checkForDataModelConversions(alarm, null, V1_0);
-			} catch (DataModelConversionException e) {
-				AudioAlarm expected = new AudioAlarm();
-				assertNull(e.getOriginalProperty());
-				assertEquals(Arrays.asList(expected), e.getProperties());
-				assertEquals(Arrays.asList(), e.getComponents());
-			}
+			VAlarm alarm = new VAlarm(action, trigger);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
+			AudioAlarm expected = new AudioAlarm();
+			assertNull(e.getOriginalProperty());
+			assertEquals(Arrays.asList(expected), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
 		}
 
 		trigger = new Trigger(duration, Related.START);
 		{
 			//no parent start date
-			parent = new VEvent();
-			alarm = new VAlarm(action, trigger);
-			try {
-				scribe.checkForDataModelConversions(alarm, parent, V1_0);
-			} catch (DataModelConversionException e) {
-				AudioAlarm expected = new AudioAlarm();
-				assertNull(e.getOriginalProperty());
-				assertEquals(Arrays.asList(expected), e.getProperties());
-				assertEquals(Arrays.asList(), e.getComponents());
-			}
+			VEvent parent = new VEvent();
+			VAlarm alarm = new VAlarm(action, trigger);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, parent, V1_0));
 
+			AudioAlarm expected = new AudioAlarm();
+			assertNull(e.getOriginalProperty());
+			assertEquals(Arrays.asList(expected), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
+		}
+		{
 			//parent start date
-			parent = new VEvent();
+			VEvent parent = new VEvent();
 			parent.setDateStart(date);
-			alarm = new VAlarm(action, trigger);
-			try {
-				scribe.checkForDataModelConversions(alarm, parent, V1_0);
-			} catch (DataModelConversionException e) {
-				AudioAlarm expected = new AudioAlarm();
-				expected.setStart(new Date(date.getTime() + duration.toMillis()));
-				assertNull(e.getOriginalProperty());
-				assertEquals(Arrays.asList(expected), e.getProperties());
-				assertEquals(Arrays.asList(), e.getComponents());
-			}
+			VAlarm alarm = new VAlarm(action, trigger);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, parent, V1_0));
+
+			AudioAlarm expected = new AudioAlarm();
+			expected.setStart(new Date(date.getTime() + duration.toMillis()));
+			assertNull(e.getOriginalProperty());
+			assertEquals(Arrays.asList(expected), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
 		}
 
 		trigger = new Trigger(duration, Related.END);
 		{
 			//no parent end date
-			parent = new VEvent();
-			alarm = new VAlarm(action, trigger);
-			try {
-				scribe.checkForDataModelConversions(alarm, parent, V1_0);
-			} catch (DataModelConversionException e) {
-				AudioAlarm expected = new AudioAlarm();
-				assertNull(e.getOriginalProperty());
-				assertEquals(Arrays.asList(expected), e.getProperties());
-				assertEquals(Arrays.asList(), e.getComponents());
-			}
+			VEvent parent = new VEvent();
+			VAlarm alarm = new VAlarm(action, trigger);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, parent, V1_0));
 
+			AudioAlarm expected = new AudioAlarm();
+			assertNull(e.getOriginalProperty());
+			assertEquals(Arrays.asList(expected), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
+		}
+		{
 			//parent end date
-			parent = new VEvent();
+			VEvent parent = new VEvent();
 			parent.setDateEnd(date);
-			alarm = new VAlarm(action, trigger);
-			try {
-				scribe.checkForDataModelConversions(alarm, parent, V1_0);
-			} catch (DataModelConversionException e) {
-				AudioAlarm expected = new AudioAlarm();
-				expected.setStart(new Date(date.getTime() + duration.toMillis()));
-				assertNull(e.getOriginalProperty());
-				assertEquals(Arrays.asList(expected), e.getProperties());
-				assertEquals(Arrays.asList(), e.getComponents());
-			}
+			VAlarm alarm = new VAlarm(action, trigger);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, parent, V1_0));
 
+			AudioAlarm expected = new AudioAlarm();
+			expected.setStart(new Date(date.getTime() + duration.toMillis()));
+			assertNull(e.getOriginalProperty());
+			assertEquals(Arrays.asList(expected), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
+		}
+		{
 			//parent with start date
-			parent = new VEvent();
+			VEvent parent = new VEvent();
 			parent.setDateStart(date);
-			alarm = new VAlarm(action, trigger);
-			try {
-				scribe.checkForDataModelConversions(alarm, parent, V1_0);
-			} catch (DataModelConversionException e) {
-				AudioAlarm expected = new AudioAlarm();
-				assertNull(e.getOriginalProperty());
-				assertEquals(Arrays.asList(expected), e.getProperties());
-				assertEquals(Arrays.asList(), e.getComponents());
-			}
+			VAlarm alarm = new VAlarm(action, trigger);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, parent, V1_0));
 
+			AudioAlarm expected = new AudioAlarm();
+			assertNull(e.getOriginalProperty());
+			assertEquals(Arrays.asList(expected), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
+		}
+		{
 			//parent with duration
-			parent = new VEvent();
+			VEvent parent = new VEvent();
 			parent.setDuration(duration);
-			alarm = new VAlarm(action, trigger);
-			try {
-				scribe.checkForDataModelConversions(alarm, parent, V1_0);
-			} catch (DataModelConversionException e) {
-				AudioAlarm expected = new AudioAlarm();
-				assertNull(e.getOriginalProperty());
-				assertEquals(Arrays.asList(expected), e.getProperties());
-				assertEquals(Arrays.asList(), e.getComponents());
-			}
+			VAlarm alarm = new VAlarm(action, trigger);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, parent, V1_0));
 
+			AudioAlarm expected = new AudioAlarm();
+			assertNull(e.getOriginalProperty());
+			assertEquals(Arrays.asList(expected), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
+		}
+		{
 			//parent with start date and duration
-			parent = new VEvent();
+			VEvent parent = new VEvent();
 			parent.setDateStart(date);
 			parent.setDuration(duration);
-			alarm = new VAlarm(action, trigger);
-			try {
-				scribe.checkForDataModelConversions(alarm, parent, V1_0);
-			} catch (DataModelConversionException e) {
-				AudioAlarm expected = new AudioAlarm();
-				expected.setStart(new Date(date.getTime() + duration.toMillis() + duration.toMillis()));
-				assertNull(e.getOriginalProperty());
-				assertEquals(Arrays.asList(expected), e.getProperties());
-				assertEquals(Arrays.asList(), e.getComponents());
-			}
+			VAlarm alarm = new VAlarm(action, trigger);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, parent, V1_0));
+
+			AudioAlarm expected = new AudioAlarm();
+			expected.setStart(new Date(date.getTime() + duration.toMillis() + duration.toMillis()));
+			assertNull(e.getOriginalProperty());
+			assertEquals(Arrays.asList(expected), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
 		}
 
 		//unknown RELATED
 		trigger = new Trigger(duration, Related.get("FOO"));
 		{
-			parent = new VEvent();
-			alarm = new VAlarm(action, trigger);
-			try {
-				scribe.checkForDataModelConversions(alarm, parent, V1_0);
-			} catch (DataModelConversionException e) {
-				AudioAlarm expected = new AudioAlarm();
-				assertNull(e.getOriginalProperty());
-				assertEquals(Arrays.asList(expected), e.getProperties());
-				assertEquals(Arrays.asList(), e.getComponents());
-			}
+			VEvent parent = new VEvent();
+			VAlarm alarm = new VAlarm(action, trigger);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, parent, V1_0));
+
+			AudioAlarm expected = new AudioAlarm();
+			assertNull(e.getOriginalProperty());
+			assertEquals(Arrays.asList(expected), e.getProperties());
+			assertEquals(Arrays.asList(), e.getComponents());
 		}
 	}
 
@@ -255,15 +236,13 @@ public class VAlarmScribeTest {
 
 		VAlarm alarm = new VAlarm(action, null);
 		alarm.setDuration(snooze);
-		try {
-			scribe.checkForDataModelConversions(alarm, null, V1_0);
-		} catch (DataModelConversionException e) {
-			AudioAlarm expected = new AudioAlarm();
-			expected.setSnooze(snooze);
-			assertNull(e.getOriginalProperty());
-			assertEquals(Arrays.asList(expected), e.getProperties());
-			assertEquals(Arrays.asList(), e.getComponents());
-		}
+		DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
+		AudioAlarm expected = new AudioAlarm();
+		expected.setSnooze(snooze);
+		assertNull(e.getOriginalProperty());
+		assertEquals(Arrays.asList(expected), e.getProperties());
+		assertEquals(Arrays.asList(), e.getComponents());
 	}
 
 	@Test
@@ -273,25 +252,23 @@ public class VAlarmScribeTest {
 
 		VAlarm alarm = new VAlarm(action, null);
 		alarm.setRepeat(repeat);
-		try {
-			scribe.checkForDataModelConversions(alarm, null, V1_0);
-		} catch (DataModelConversionException e) {
-			AudioAlarm expected = new AudioAlarm();
-			expected.setRepeat(repeat);
-			assertNull(e.getOriginalProperty());
-			assertEquals(Arrays.asList(expected), e.getProperties());
-			assertEquals(Arrays.asList(), e.getComponents());
-		}
+		DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
+		AudioAlarm expected = new AudioAlarm();
+		expected.setRepeat(repeat);
+		assertNull(e.getOriginalProperty());
+		assertEquals(Arrays.asList(expected), e.getProperties());
+		assertEquals(Arrays.asList(), e.getComponents());
 	}
 
 	@Test
 	public void checkForDataModelConversions_AudioAlarm() {
 		Action action = Action.audio();
 
-		VAlarm alarm = new VAlarm(action, new Trigger(date));
-		try {
-			scribe.checkForDataModelConversions(alarm, null, V1_0);
-		} catch (DataModelConversionException e) {
+		{
+			VAlarm alarm = new VAlarm(action, new Trigger(date));
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
 			AudioAlarm expected = new AudioAlarm();
 			expected.setStart(date);
 			assertNull(e.getOriginalProperty());
@@ -300,11 +277,11 @@ public class VAlarmScribeTest {
 		}
 
 		//empty attachment
-		alarm = new VAlarm(action, new Trigger(date));
-		alarm.addAttachment(new Attachment("image/png", (String) null));
-		try {
-			scribe.checkForDataModelConversions(alarm, null, V1_0);
-		} catch (DataModelConversionException e) {
+		{
+			VAlarm alarm = new VAlarm(action, new Trigger(date));
+			alarm.addAttachment(new Attachment("image/png", (String) null));
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
 			AudioAlarm expected = new AudioAlarm();
 			expected.setType("image/png");
 			expected.setStart(date);
@@ -314,11 +291,11 @@ public class VAlarmScribeTest {
 		}
 
 		//data attachment
-		alarm = new VAlarm(action, new Trigger(date));
-		alarm.addAttachment(new Attachment("image/png", new byte[0]));
-		try {
-			scribe.checkForDataModelConversions(alarm, null, V1_0);
-		} catch (DataModelConversionException e) {
+		{
+			VAlarm alarm = new VAlarm(action, new Trigger(date));
+			alarm.addAttachment(new Attachment("image/png", new byte[0]));
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
 			AudioAlarm expected = new AudioAlarm();
 			expected.setType("image/png");
 			expected.setData(new byte[0]);
@@ -329,11 +306,11 @@ public class VAlarmScribeTest {
 		}
 
 		//uri attachment
-		alarm = new VAlarm(action, new Trigger(date));
-		alarm.addAttachment(new Attachment("image/png", "uri"));
-		try {
-			scribe.checkForDataModelConversions(alarm, null, V1_0);
-		} catch (DataModelConversionException e) {
+		{
+			VAlarm alarm = new VAlarm(action, new Trigger(date));
+			alarm.addAttachment(new Attachment("image/png", "uri"));
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
 			AudioAlarm expected = new AudioAlarm();
 			expected.setType("image/png");
 			expected.setUri("uri");
@@ -344,11 +321,11 @@ public class VAlarmScribeTest {
 		}
 
 		//CID attachment
-		alarm = new VAlarm(action, new Trigger(date));
-		alarm.addAttachment(new Attachment("image/png", "cid:id"));
-		try {
-			scribe.checkForDataModelConversions(alarm, null, V1_0);
-		} catch (DataModelConversionException e) {
+		{
+			VAlarm alarm = new VAlarm(action, new Trigger(date));
+			alarm.addAttachment(new Attachment("image/png", "cid:id"));
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
 			AudioAlarm expected = new AudioAlarm();
 			expected.setType("image/png");
 			expected.setContentId("id");
@@ -363,10 +340,10 @@ public class VAlarmScribeTest {
 	public void checkForDataModelConversions_DisplayAlarm() {
 		Action action = Action.display();
 
-		VAlarm alarm = new VAlarm(action, new Trigger(date));
-		try {
-			scribe.checkForDataModelConversions(alarm, null, V1_0);
-		} catch (DataModelConversionException e) {
+		{
+			VAlarm alarm = new VAlarm(action, new Trigger(date));
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
 			DisplayAlarm expected = new DisplayAlarm((String) null);
 			expected.setStart(date);
 			assertNull(e.getOriginalProperty());
@@ -374,11 +351,11 @@ public class VAlarmScribeTest {
 			assertEquals(Arrays.asList(), e.getComponents());
 		}
 
-		alarm = new VAlarm(action, new Trigger(date));
-		alarm.setDescription("description");
-		try {
-			scribe.checkForDataModelConversions(alarm, null, V1_0);
-		} catch (DataModelConversionException e) {
+		{
+			VAlarm alarm = new VAlarm(action, new Trigger(date));
+			alarm.setDescription("description");
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
 			DisplayAlarm expected = new DisplayAlarm("description");
 			expected.setStart(date);
 			assertNull(e.getOriginalProperty());
@@ -391,10 +368,10 @@ public class VAlarmScribeTest {
 	public void checkForDataModelConversions_EmailAlarm() {
 		Action action = Action.email();
 
-		VAlarm alarm = new VAlarm(action, new Trigger(date));
-		try {
-			scribe.checkForDataModelConversions(alarm, null, V1_0);
-		} catch (DataModelConversionException e) {
+		{
+			VAlarm alarm = new VAlarm(action, new Trigger(date));
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
 			EmailAlarm expected = new EmailAlarm((String) null);
 			expected.setStart(date);
 			assertNull(e.getOriginalProperty());
@@ -402,12 +379,13 @@ public class VAlarmScribeTest {
 			assertEquals(Arrays.asList(), e.getComponents());
 		}
 
-		alarm = new VAlarm(action, new Trigger(date));
-		alarm.addAttendee(new Attendee("Name", "email1@example.com"));
-		alarm.addAttendee(new Attendee("Name", "email2@example.com"));
-		try {
-			scribe.checkForDataModelConversions(alarm, null, V1_0);
-		} catch (DataModelConversionException e) {
+		{
+
+			VAlarm alarm = new VAlarm(action, new Trigger(date));
+			alarm.addAttendee(new Attendee("Name", "email1@example.com"));
+			alarm.addAttendee(new Attendee("Name", "email2@example.com"));
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
 			EmailAlarm expected = new EmailAlarm("email1@example.com");
 			expected.setStart(date);
 			assertNull(e.getOriginalProperty());
@@ -415,11 +393,11 @@ public class VAlarmScribeTest {
 			assertEquals(Arrays.asList(), e.getComponents());
 		}
 
-		alarm = new VAlarm(action, new Trigger(date));
-		alarm.setDescription("note");
-		try {
-			scribe.checkForDataModelConversions(alarm, null, V1_0);
-		} catch (DataModelConversionException e) {
+		{
+			VAlarm alarm = new VAlarm(action, new Trigger(date));
+			alarm.setDescription("note");
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
 			EmailAlarm expected = new EmailAlarm((String) null);
 			expected.setNote("note");
 			expected.setStart(date);
@@ -433,10 +411,10 @@ public class VAlarmScribeTest {
 	public void checkForDataModelConversions_ProcedureAlarm() {
 		Action action = Action.procedure();
 
-		VAlarm alarm = new VAlarm(action, new Trigger(date));
-		try {
-			scribe.checkForDataModelConversions(alarm, null, V1_0);
-		} catch (DataModelConversionException e) {
+		{
+			VAlarm alarm = new VAlarm(action, new Trigger(date));
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
 			ProcedureAlarm expected = new ProcedureAlarm((String) null);
 			expected.setStart(date);
 			assertNull(e.getOriginalProperty());
@@ -444,11 +422,11 @@ public class VAlarmScribeTest {
 			assertEquals(Arrays.asList(), e.getComponents());
 		}
 
-		alarm = new VAlarm(action, new Trigger(date));
-		alarm.setDescription("/usr/bin/alarm");
-		try {
-			scribe.checkForDataModelConversions(alarm, null, V1_0);
-		} catch (DataModelConversionException e) {
+		{
+			VAlarm alarm = new VAlarm(action, new Trigger(date));
+			alarm.setDescription("/usr/bin/alarm");
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
+
 			ProcedureAlarm expected = new ProcedureAlarm("/usr/bin/alarm");
 			expected.setStart(date);
 			assertNull(e.getOriginalProperty());

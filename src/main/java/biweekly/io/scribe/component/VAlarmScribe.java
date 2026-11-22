@@ -132,7 +132,7 @@ public class VAlarmScribe extends ICalComponentScribe<VAlarm> {
 		}
 
 		if (action.isDisplay()) {
-			createDisplayAlarm(valarm);
+			return createDisplayAlarm(valarm);
 		}
 
 		if (action.isEmail()) {

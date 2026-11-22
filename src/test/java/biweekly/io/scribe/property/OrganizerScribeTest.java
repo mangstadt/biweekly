@@ -5,6 +5,7 @@ import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -71,54 +72,62 @@ public class OrganizerScribeTest extends ScribeTest<Organizer> {
 
 	@Test
 	public void writeText() {
-		try {
-			sensei.assertWriteText(withEmail).version(V1_0).run();
-		} catch (DataModelConversionException e) {
+		{
+			Sensei<Organizer>.WriteTextTest test = sensei.assertWriteText(withEmail).version(V1_0);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertSame(withEmail, e.getOriginalProperty());
 			Attendee expected = new Attendee(null, email);
 			expected.setRole(Role.ORGANIZER);
 			assertEquals(Arrays.asList(expected), e.getProperties());
 			assertEquals(Arrays.asList(), e.getComponents());
-		}
-		sensei.assertWriteText(withEmail).version(V2_0_DEPRECATED).run("mailto:" + email);
-		sensei.assertWriteText(withEmail).version(V2_0).run("mailto:" + email);
 
-		try {
-			sensei.assertWriteText(withNameEmail).version(V1_0).run();
-		} catch (DataModelConversionException e) {
+			sensei.assertWriteText(withEmail).version(V2_0_DEPRECATED).run("mailto:" + email);
+			sensei.assertWriteText(withEmail).version(V2_0).run("mailto:" + email);
+		}
+
+		{
+			Sensei<Organizer>.WriteTextTest test = sensei.assertWriteText(withNameEmail).version(V1_0);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertSame(withNameEmail, e.getOriginalProperty());
 			Attendee expected = new Attendee(name, email);
 			expected.setRole(Role.ORGANIZER);
 			assertEquals(Arrays.asList(expected), e.getProperties());
 			assertEquals(Arrays.asList(), e.getComponents());
-		}
-		sensei.assertWriteText(withNameEmail).version(V2_0_DEPRECATED).run("mailto:" + email);
-		sensei.assertWriteText(withNameEmail).version(V2_0).run("mailto:" + email);
 
-		try {
-			sensei.assertWriteText(withNameEmailUri).version(V1_0).run();
-		} catch (DataModelConversionException e) {
+			sensei.assertWriteText(withNameEmail).version(V2_0_DEPRECATED).run("mailto:" + email);
+			sensei.assertWriteText(withNameEmail).version(V2_0).run("mailto:" + email);
+		}
+
+		{
+			Sensei<Organizer>.WriteTextTest test = sensei.assertWriteText(withNameEmailUri).version(V1_0);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertSame(withNameEmailUri, e.getOriginalProperty());
 			Attendee expected = new Attendee(name, email);
 			expected.setRole(Role.ORGANIZER);
 			expected.setUri(uri);
 			assertEquals(Arrays.asList(expected), e.getProperties());
 			assertEquals(Arrays.asList(), e.getComponents());
-		}
-		sensei.assertWriteText(withNameEmailUri).version(V2_0_DEPRECATED).run(uri);
-		sensei.assertWriteText(withNameEmailUri).version(V2_0).run(uri);
 
-		try {
-			sensei.assertWriteText(empty).version(V1_0).run();
-		} catch (DataModelConversionException e) {
+			sensei.assertWriteText(withNameEmailUri).version(V2_0_DEPRECATED).run(uri);
+			sensei.assertWriteText(withNameEmailUri).version(V2_0).run(uri);
+		}
+
+		{
+			Sensei<Organizer>.WriteTextTest test = sensei.assertWriteText(empty).version(V1_0);
+			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
+
 			assertSame(empty, e.getOriginalProperty());
 			Attendee expected = new Attendee(null, null);
 			expected.setRole(Role.ORGANIZER);
 			assertEquals(Arrays.asList(expected), e.getProperties());
 			assertEquals(Arrays.asList(), e.getComponents());
+
+			sensei.assertWriteText(empty).version(V2_0_DEPRECATED).run("");
+			sensei.assertWriteText(empty).version(V2_0).run("");
 		}
-		sensei.assertWriteText(empty).version(V2_0_DEPRECATED).run("");
-		sensei.assertWriteText(empty).version(V2_0).run("");
 	}
 
 	@Test
