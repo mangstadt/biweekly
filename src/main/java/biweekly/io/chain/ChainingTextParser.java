@@ -37,7 +37,7 @@ import biweekly.io.text.ICalReader;
 /**
  * Chainer class for parsing traditional, plain-text iCalendar objects.
  * @see Biweekly#parse(InputStream)
- * @see Biweekly#parse(File)
+ * @see Biweekly#parse(Path)
  * @see Biweekly#parse(Reader)
  * @author Michael Angstadt
  */

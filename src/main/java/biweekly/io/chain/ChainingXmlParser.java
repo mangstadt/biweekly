@@ -39,7 +39,7 @@ import biweekly.io.xml.XCalReader;
 /**
  * Chainer class for parsing xCals (XML-encoded iCalendar objects).
  * @see Biweekly#parseXml(InputStream)
- * @see Biweekly#parseXml(File)
+ * @see Biweekly#parseXml(Path)
  * @see Biweekly#parseXml(Reader)
  * @author Michael Angstadt
  */

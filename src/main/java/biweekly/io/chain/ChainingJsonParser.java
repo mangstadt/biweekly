@@ -37,7 +37,7 @@ import biweekly.io.json.JCalReader;
 /**
  * Chainer class for parsing jCals (JSON-encoded iCalendar objects).
  * @see Biweekly#parseJson(InputStream)
- * @see Biweekly#parseJson(File)
+ * @see Biweekly#parseJson(Path)
  * @see Biweekly#parseJson(Reader)
  * @author Michael Angstadt
  */
