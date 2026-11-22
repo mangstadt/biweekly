@@ -47,6 +47,7 @@ public final class Utf8Streams {
 	/**
 	 * Creates a reader that uses UTF-8 encoding.
 	 * @param in the input stream to read from
+	 * @return the reader
 	 */
 	public static Reader reader(InputStream in) {
 		return new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
@@ -55,6 +56,7 @@ public final class Utf8Streams {
 	/**
 	 * Creates a writer that uses UTF-8 encoding.
 	 * @param out the output stream to write to
+	 * @return the writer
 	 */
 	public static Writer writer(OutputStream out) {
 		return new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
@@ -63,6 +65,7 @@ public final class Utf8Streams {
 	/**
 	 * Creates a file reader that uses UTF-8 encoding.
 	 * @param file the file to read from
+	 * @return the reader
 	 * @throws IOException if there's a problem opening the file
 	 */
 	public static Reader reader(Path path) throws IOException {
@@ -72,6 +75,7 @@ public final class Utf8Streams {
 	/**
 	 * Creates a file writer that uses UTF-8 encoding.
 	 * @param file the file to write to
+	 * @return the writer
 	 * @throws IOException if there's a problem opening the file
 	 */
 	public static Writer writer(Path file) throws IOException {
@@ -83,6 +87,7 @@ public final class Utf8Streams {
 	 * @param file the file to write to
 	 * @param append true to append to the file if it exists, false to overwrite
 	 * it
+	 * @return the writer
 	 * @throws IOException if there's a problem opening the file
 	 */
 	public static Writer writer(Path file, boolean append) throws IOException {
