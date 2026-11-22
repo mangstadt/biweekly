@@ -1,10 +1,10 @@
 package biweekly;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.UncheckedIOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
@@ -69,7 +69,7 @@ import biweekly.util.IOUtils;
  * String icalString = Biweekly.write(ical).go();
  * 
  * //file
- * File file = new File("meeting.ics");
+ * Path file = Paths.get("meeting.ics");
  * Biweekly.write(ical).go(file);
  * 
  * //output stream
@@ -126,7 +126,7 @@ import biweekly.util.IOUtils;
  * ical = Biweekly.parse(icalStr).first();
  * 
  * //file
- * File file = new File("meeting.ics");
+ * Path file = Paths.get("meeting.ics");
  * ical = Biweekly.parse(file).first();
  * 
  * //input stream
@@ -270,7 +270,7 @@ public final class Biweekly {
 	 * @param file the iCalendar file
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ChainingTextParser<ChainingTextParser<?>> parse(File file) {
+	public static ChainingTextParser<ChainingTextParser<?>> parse(Path file) {
 		return new ChainingTextParser<>(file);
 	}
 
@@ -324,7 +324,7 @@ public final class Biweekly {
 	 * @param file the XML file
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ChainingXmlParser<ChainingXmlParser<?>> parseXml(File file) {
+	public static ChainingXmlParser<ChainingXmlParser<?>> parseXml(Path file) {
 		return new ChainingXmlParser<>(file);
 	}
 
@@ -398,7 +398,7 @@ public final class Biweekly {
 	 * @param file the JSON file
 	 * @return chainer object for completing the parse operation
 	 */
-	public static ChainingJsonParser<ChainingJsonParser<?>> parseJson(File file) {
+	public static ChainingJsonParser<ChainingJsonParser<?>> parseJson(Path file) {
 		return new ChainingJsonParser<>(file);
 	}
 

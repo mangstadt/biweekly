@@ -9,7 +9,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,11 +60,11 @@ public class AttachmentTest {
 		assertNull(property.getData());
 		assertNull(property.getContentId());
 
-		File file = new File("pom.xml");
+		Path file = Paths.get("pom.xml");
 		property = new Attachment("image/png", file);
 		assertEquals("image/png", property.getFormatType());
 		assertNull(property.getUri());
-		assertEquals(file.length(), property.getData().length);
+		assertEquals(Files.size(file), property.getData().length);
 		assertNull(property.getContentId());
 	}
 

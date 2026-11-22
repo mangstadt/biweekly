@@ -6,10 +6,10 @@ import static biweekly.io.xml.XCalQNames.ICALENDAR;
 import static biweekly.io.xml.XCalQNames.PARAMETERS;
 import static biweekly.io.xml.XCalQNames.PROPERTIES;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +46,7 @@ import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.Xml;
-import biweekly.util.Utf8Writer;
+import biweekly.util.Utf8Streams;
 import biweekly.util.XmlUtils;
 
 /*
@@ -89,7 +89,7 @@ import biweekly.util.XmlUtils;
  * <pre class="brush:java">
  * ICalendar ical1 = ...
  * ICalendar ical2 = ...
- * File file = new File("icals.xml");
+ * Path file = Paths.get("icals.xml");
  * XCalWriter writer = null;
  * try {
  *   writer = new XCalWriter(file);
@@ -138,7 +138,7 @@ public class XCalWriter extends XCalWriterBase {
 	 * >xalan</a> to your project)
 	 */
 	public XCalWriter(OutputStream out, Integer indent, String xmlVersion) {
-		this(new Utf8Writer(out), indent, xmlVersion);
+		this(Utf8Streams.writer(out), indent, xmlVersion);
 	}
 
 	/**
@@ -147,14 +147,14 @@ public class XCalWriter extends XCalWriterBase {
 	 * {@link Transformer#setOutputProperties(Properties)})
 	 */
 	public XCalWriter(OutputStream out, Map<String, String> outputProperties) {
-		this(new Utf8Writer(out), outputProperties);
+		this(Utf8Streams.writer(out), outputProperties);
 	}
 
 	/**
 	 * @param file the file to write to (UTF-8 encoding will be used)
 	 * @throws IOException if there's a problem opening the file
 	 */
-	public XCalWriter(File file) throws IOException {
+	public XCalWriter(Path file) throws IOException {
 		this(file, (Integer) null);
 	}
 
@@ -164,7 +164,7 @@ public class XCalWriter extends XCalWriterBase {
 	 * "null" to disable pretty-printing (disabled by default)
 	 * @throws IOException if there's a problem opening the file
 	 */
-	public XCalWriter(File file, Integer indent) throws IOException {
+	public XCalWriter(Path file, Integer indent) throws IOException {
 		this(file, indent, null);
 	}
 
@@ -179,8 +179,8 @@ public class XCalWriter extends XCalWriterBase {
 	 * >xalan</a> to your project)
 	 * @throws IOException if there's a problem opening the file
 	 */
-	public XCalWriter(File file, Integer indent, String xmlVersion) throws IOException {
-		this(new Utf8Writer(file), indent, xmlVersion);
+	public XCalWriter(Path file, Integer indent, String xmlVersion) throws IOException {
+		this(Utf8Streams.writer(file), indent, xmlVersion);
 	}
 
 	/**
@@ -189,8 +189,8 @@ public class XCalWriter extends XCalWriterBase {
 	 * {@link Transformer#setOutputProperties(Properties)})
 	 * @throws IOException if there's a problem opening the file
 	 */
-	public XCalWriter(File file, Map<String, String> outputProperties) throws IOException {
-		this(new Utf8Writer(file), outputProperties);
+	public XCalWriter(Path file, Map<String, String> outputProperties) throws IOException {
+		this(Utf8Streams.writer(file), outputProperties);
 	}
 
 	/**

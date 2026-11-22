@@ -1,11 +1,11 @@
 package biweekly.io.chain;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UncheckedIOException;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.TimeZone;
 
@@ -113,7 +113,7 @@ public class ChainingJsonWriter extends ChainingWriter<ChainingJsonWriter> {
 	 * @param file the file to write to
 	 * @throws IOException if there's a problem writing to the file
 	 */
-	public void go(File file) throws IOException {
+	public void go(Path file) throws IOException {
 		JCalWriter writer = new JCalWriter(file, wrapInArray());
 		try {
 			go(writer);

@@ -1,7 +1,7 @@
 package biweekly.property;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -51,7 +51,7 @@ public class BinaryProperty extends ICalProperty {
 	 * @param file a file containing the binary data
 	 * @throws IOException if there's a problem reading from the file
 	 */
-	public BinaryProperty(File file) throws IOException {
+	public BinaryProperty(Path file) throws IOException {
 		this.data = new Gobble(file).asByteArray();
 	}
 

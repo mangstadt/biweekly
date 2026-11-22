@@ -1,7 +1,7 @@
 package biweekly.property;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 import biweekly.ICalVersion;
@@ -72,7 +72,7 @@ public class Image extends BinaryProperty {
 	 * @param file the file to attach
 	 * @throws IOException if there's a problem reading from the file
 	 */
-	public Image(String formatType, File file) throws IOException {
+	public Image(String formatType, Path file) throws IOException {
 		super(file);
 		setFormatType(formatType);
 	}

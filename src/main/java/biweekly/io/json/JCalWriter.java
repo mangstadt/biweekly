@@ -1,10 +1,10 @@
 package biweekly.io.json;
 
-import java.io.File;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -19,7 +19,7 @@ import biweekly.io.scribe.component.ICalComponentScribe;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.util.Utf8Writer;
+import biweekly.util.Utf8Streams;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -57,7 +57,7 @@ import biweekly.util.Utf8Writer;
  * <pre class="brush:java">
  * ICalendar ical1 = ...
  * ICalendar ical2 = ...
- * File file = new File("icals.json");
+ * Path file = Paths.get("icals.json");
  * JCalWriter writer = null;
  * try {
  *   writer = new JCalWriter(file);
@@ -78,7 +78,7 @@ public class JCalWriter extends StreamWriter implements Flushable {
 	 * @param out the output stream to write to (UTF-8 encoding will be used)
 	 */
 	public JCalWriter(OutputStream out) {
-		this(new Utf8Writer(out));
+		this(out, false);
 	}
 
 	/**
@@ -87,15 +87,15 @@ public class JCalWriter extends StreamWriter implements Flushable {
 	 * false not to (useful when writing more than one iCalendar object)
 	 */
 	public JCalWriter(OutputStream out, boolean wrapInArray) {
-		this(new Utf8Writer(out), wrapInArray);
+		this(Utf8Streams.writer(out), wrapInArray);
 	}
 
 	/**
 	 * @param file the file to write to (UTF-8 encoding will be used)
 	 * @throws IOException if the file cannot be written to
 	 */
-	public JCalWriter(File file) throws IOException {
-		this(new Utf8Writer(file));
+	public JCalWriter(Path file) throws IOException {
+		this(file, false);
 	}
 
 	/**
@@ -104,8 +104,8 @@ public class JCalWriter extends StreamWriter implements Flushable {
 	 * false not to (useful when writing more than one iCalendar object)
 	 * @throws IOException if the file cannot be written to
 	 */
-	public JCalWriter(File file, boolean wrapInArray) throws IOException {
-		this(new Utf8Writer(file), wrapInArray);
+	public JCalWriter(Path file, boolean wrapInArray) throws IOException {
+		this(Utf8Streams.writer(file), wrapInArray);
 	}
 
 	/**

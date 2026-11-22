@@ -12,7 +12,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -416,9 +417,9 @@ public class BiweeklyTest {
 	@Test
 	public void write_file() throws Exception {
 		ICalendar ical = new ICalendar();
-		File file = folder.newFile();
+		Path file = folder.newFile().toPath();
 		Biweekly.write(ical).go(file);
-		assertTrue(file.length() > 0);
+		assertTrue(Files.size(file) > 0);
 	}
 
 	@Test

@@ -17,8 +17,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.Writer;
+import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.TimeZone;
@@ -71,13 +72,12 @@ import biweekly.util.ByDay;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DayOfWeek;
 import biweekly.util.DefaultTimezoneRule;
-import java.time.Duration;
 import biweekly.util.Frequency;
 import biweekly.util.ICalDate;
 import biweekly.util.Period;
 import biweekly.util.Recurrence;
 import biweekly.util.UtcOffset;
-import biweekly.util.Utf8Writer;
+import biweekly.util.Utf8Streams;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -885,8 +885,8 @@ public class ICalReaderTest {
 			"SUMMARY:\u1e66ummary\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
-		File file = tempFolder.newFile();
-		Writer writer = new Utf8Writer(file);
+		Path file = tempFolder.newFile().toPath();
+		Writer writer = Utf8Streams.writer(file);
 		writer.write(ical);
 		writer.close();
 

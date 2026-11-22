@@ -7,7 +7,6 @@ import static biweekly.io.xml.XCalQNames.PARAMETERS;
 import static biweekly.io.xml.XCalQNames.PROPERTIES;
 import static biweekly.io.xml.XCalQNames.VCALENDAR;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,6 +14,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UncheckedIOException;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +57,7 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.Version;
 import biweekly.property.Xml;
-import biweekly.util.Utf8Writer;
+import biweekly.util.Utf8Streams;
 import biweekly.util.XmlUtils;
 
 /*
@@ -131,7 +131,7 @@ import biweekly.util.XmlUtils;
  * Document document = xcal.getDocument();
  * 
  * //call one of the "write()" methods to output the xCal document
- * File file = new File("meeting.xml");
+ * Paths file = Paths.get("meeting.xml");
  * xcal.write(file);
  * </pre>
  * @author Michael Angstadt
@@ -170,7 +170,7 @@ public class XCalDocument {
 	 * @throws IOException if there's a problem reading from the file
 	 * @throws SAXException if there's a problem parsing the XML
 	 */
-	public XCalDocument(File file) throws SAXException, IOException {
+	public XCalDocument(Path file) throws SAXException, IOException {
 		this(XmlUtils.toDocument(file));
 	}
 
@@ -367,7 +367,7 @@ public class XCalDocument {
 	 * stream
 	 */
 	public void write(OutputStream out, Map<String, String> outputProperties) throws TransformerException {
-		write(new Utf8Writer(out), outputProperties);
+		write(Utf8Streams.writer(out), outputProperties);
 	}
 
 	/**
@@ -376,7 +376,7 @@ public class XCalDocument {
 	 * @throws IOException if there's a problem writing to the file
 	 * @throws TransformerException if there's a problem writing the XML
 	 */
-	public void write(File file) throws TransformerException, IOException {
+	public void write(Path file) throws TransformerException, IOException {
 		write(file, (Integer) null);
 	}
 
@@ -388,7 +388,7 @@ public class XCalDocument {
 	 * @throws IOException if there's a problem writing to the file
 	 * @throws TransformerException if there's a problem writing the XML
 	 */
-	public void write(File file, Integer indent) throws TransformerException, IOException {
+	public void write(Path file, Integer indent) throws TransformerException, IOException {
 		write(file, indent, null);
 	}
 
@@ -405,7 +405,7 @@ public class XCalDocument {
 	 * @throws IOException if there's a problem writing to the file
 	 * @throws TransformerException if there's a problem writing the XML
 	 */
-	public void write(File file, Integer indent, String xmlVersion) throws TransformerException, IOException {
+	public void write(Path file, Integer indent, String xmlVersion) throws TransformerException, IOException {
 		write(file, new XCalOutputProperties(indent, xmlVersion));
 	}
 
@@ -417,12 +417,9 @@ public class XCalDocument {
 	 * @throws IOException if there's a problem writing to the file
 	 * @throws TransformerException if there's a problem writing the XML
 	 */
-	public void write(File file, Map<String, String> outputProperties) throws TransformerException, IOException {
-		Writer writer = new Utf8Writer(file);
-		try {
+	public void write(Path file, Map<String, String> outputProperties) throws TransformerException, IOException {
+		try (Writer writer = Utf8Streams.writer(file)) {
 			write(writer, outputProperties);
-		} finally {
-			writer.close();
 		}
 	}
 

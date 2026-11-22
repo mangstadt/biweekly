@@ -17,10 +17,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -79,13 +80,12 @@ import biweekly.util.ByDay;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DayOfWeek;
 import biweekly.util.DefaultTimezoneRule;
-import java.time.Duration;
 import biweekly.util.Frequency;
 import biweekly.util.Gobble;
 import biweekly.util.Period;
 import biweekly.util.Recurrence;
 import biweekly.util.UtcOffset;
-import biweekly.util.Utf8Writer;
+import biweekly.util.Utf8Streams;
 import biweekly.util.XmlUtils;
 
 /*
@@ -654,8 +654,8 @@ public class XCalDocumentTest {
 			"</vcalendar>" +
 		"</icalendar>";
 		//@formatter:on
-		File file = tempFolder.newFile();
-		Writer writer = new Utf8Writer(file);
+		Path file = tempFolder.newFile().toPath();
+		Writer writer = Utf8Streams.writer(file);
 		writer.write(xml);
 		writer.close();
 
@@ -1048,7 +1048,7 @@ public class XCalDocumentTest {
 		XCalDocument xcal = new XCalDocument();
 		xcal.addICalendar(ical);
 
-		File file = tempFolder.newFile();
+		Path file = tempFolder.newFile().toPath();
 		xcal.write(file);
 
 		String xml = new Gobble(file).asString(StandardCharsets.UTF_8);

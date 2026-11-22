@@ -1,12 +1,10 @@
 package biweekly.io.json;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,7 +33,7 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.RawProperty;
 import biweekly.property.Version;
-import biweekly.util.Utf8Reader;
+import biweekly.util.Utf8Streams;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -71,7 +69,7 @@ import biweekly.util.Utf8Reader;
  * </p>
  * 
  * <pre class="brush:java">
- * File file = new File("icals.json");
+ * Path file = Paths.get("icals.json");
  * JCalReader reader = null;
  * try {
  *   reader = new JCalReader(file);
@@ -98,18 +96,18 @@ public class JCalReader extends StreamReader {
 	}
 
 	/**
-	 * @param in the input stream to read from
+	 * @param in the input stream to read from (using UTF-8)
 	 */
 	public JCalReader(InputStream in) {
-		this(new Utf8Reader(in));
+		this(Utf8Streams.reader(in));
 	}
 
 	/**
-	 * @param file the file to read from
-	 * @throws FileNotFoundException if the file doesn't exist
+	 * @param file the file to read from (using UTF-8)
+	 * @throws IOException if there's a problem opening the file
 	 */
-	public JCalReader(File file) throws FileNotFoundException {
-		this(new BufferedReader(new Utf8Reader(file)));
+	public JCalReader(Path file) throws IOException {
+		this(Utf8Streams.reader(file));
 	}
 
 	/**

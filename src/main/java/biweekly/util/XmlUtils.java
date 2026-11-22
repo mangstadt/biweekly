@@ -1,8 +1,5 @@
 package biweekly.util;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -10,6 +7,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UncheckedIOException;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,12 +108,9 @@ public final class XmlUtils {
 	 * @throws SAXException if the XML is not valid
 	 * @throws IOException if there is a problem reading from the file
 	 */
-	public static Document toDocument(File file) throws SAXException, IOException {
-		InputStream in = new BufferedInputStream(new FileInputStream(file));
-		try {
+	public static Document toDocument(Path file) throws SAXException, IOException {
+		try (InputStream in = Files.newInputStream(file)) {
 			return XmlUtils.toDocument(in);
-		} finally {
-			in.close();
 		}
 	}
 

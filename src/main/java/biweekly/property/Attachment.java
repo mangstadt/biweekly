@@ -1,7 +1,7 @@
 package biweekly.property;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -54,7 +54,7 @@ import biweekly.component.ICalComponent;
  * event.addAttachment(attach);
  * 
  * //from a file 
- * File file = new File("image.png");
+ * Path file = Paths.get("image.png");
  * attach = new Attachment("image/png", file);
  * event.addAttachment(attach);
  * 
@@ -76,7 +76,7 @@ public class Attachment extends BinaryProperty {
 	 * @param file the file to attach
 	 * @throws IOException if there's a problem reading from the file
 	 */
-	public Attachment(String formatType, File file) throws IOException {
+	public Attachment(String formatType, Path file) throws IOException {
 		super(file);
 		setFormatType(formatType);
 	}

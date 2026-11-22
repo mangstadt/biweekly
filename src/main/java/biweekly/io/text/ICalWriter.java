@@ -2,13 +2,11 @@ package biweekly.io.text;
 
 import static biweekly.io.DataModelConverter.convert;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,7 +31,7 @@ import biweekly.property.Daylight;
 import biweekly.property.ICalProperty;
 import biweekly.property.Timezone;
 import biweekly.util.CopyOnModify;
-import biweekly.util.Utf8Writer;
+import biweekly.util.Utf8Streams;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -71,7 +69,7 @@ import biweekly.util.Utf8Writer;
  * <pre class="brush:java">
  * ICalendar ical1 = ...
  * ICalendar ical2 = ...
- * File file = new File("icals.ics");
+ * Path file = Paths.get("icals.ics");
  * ICalWriter writer = null;
  * try {
  *   writer = new ICalWriter(file, ICalVersion.V2_0);
@@ -106,33 +104,33 @@ public class ICalWriter extends StreamWriter implements Flushable {
 
 	/**
 	 * Creates a new iCalendar writer.
-	 * @param out the output stream to write to
+	 * @param out the output stream to write to (UTF-8 encoding will be used)
 	 * @param targetVersion the iCalendar version to adhere to
 	 */
 	public ICalWriter(OutputStream out, ICalVersion targetVersion) {
-		this((targetVersion == ICalVersion.V1_0) ? new OutputStreamWriter(out) : new Utf8Writer(out), targetVersion);
+		this(Utf8Streams.writer(out), targetVersion);
 	}
 
 	/**
 	 * Creates a new iCalendar writer.
-	 * @param file the file to write to
+	 * @param file the file to write to (UTF-8 encoding will be used)
 	 * @param targetVersion the iCalendar version to adhere to
 	 * @throws IOException if the file cannot be written to
 	 */
-	public ICalWriter(File file, ICalVersion targetVersion) throws IOException {
+	public ICalWriter(Path file, ICalVersion targetVersion) throws IOException {
 		this(file, false, targetVersion);
 	}
 
 	/**
 	 * Creates a new iCalendar writer.
-	 * @param file the file to write to
+	 * @param file the file to write to (UTF-8 encoding will be used)
 	 * @param append true to append to the end of the file, false to overwrite
 	 * it
 	 * @param targetVersion the iCalendar version to adhere to
 	 * @throws IOException if the file cannot be written to
 	 */
-	public ICalWriter(File file, boolean append, ICalVersion targetVersion) throws IOException {
-		this(writerFromFile(file, append, targetVersion), targetVersion);
+	public ICalWriter(Path file, boolean append, ICalVersion targetVersion) throws IOException {
+		this(Utf8Streams.writer(file, append), targetVersion);
 	}
 
 	/**
@@ -162,8 +160,8 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	 * @return the writer
 	 * @throws IOException if the file cannot be written to
 	 */
-	public static ICalWriter withoutLineFolding(File file, boolean append, ICalVersion targetVersion) throws IOException {
-		Writer writer = writerFromFile(file, append, targetVersion);
+	public static ICalWriter withoutLineFolding(Path file, boolean append, ICalVersion targetVersion) throws IOException {
+		Writer writer = Utf8Streams.writer(file, append);
 		return withoutLineFolding(writer, targetVersion);
 	}
 
@@ -175,10 +173,6 @@ public class ICalWriter extends StreamWriter implements Flushable {
 	 */
 	public static ICalWriter withoutLineFolding(Writer writer, ICalVersion targetVersion) {
 		return new ICalWriter(writer, targetVersion, false);
-	}
-
-	private static Writer writerFromFile(File file, boolean append, ICalVersion targetVersion) throws IOException {
-		return (targetVersion == ICalVersion.V1_0) ? new FileWriter(file, append) : new Utf8Writer(file, append);
 	}
 
 	/**

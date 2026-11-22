@@ -9,13 +9,12 @@ import static biweekly.io.xml.XCalQNames.VCALENDAR;
 
 import java.io.BufferedInputStream;
 import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -95,7 +94,7 @@ import biweekly.util.XmlUtils;
  * </p>
  * 
  * <pre class="brush:java">
- * File file = new File("icals.xml");
+ * Path file = Paths.get("icals.xml");
  * XCalReader reader = null;
  * try {
  *   reader = new XCalReader(file);
@@ -133,16 +132,16 @@ public class XCalReader extends StreamReader {
 	 * @param in the input stream to read from
 	 */
 	public XCalReader(InputStream in) {
-		source = new StreamSource(in);
+		source = new StreamSource(in); //detect encoding from XML header
 		stream = in;
 	}
 
 	/**
 	 * @param file the file to read from
-	 * @throws FileNotFoundException if the file doesn't exist
+	 * @throws IOException if there's a problem opening the file
 	 */
-	public XCalReader(File file) throws FileNotFoundException {
-		this(new BufferedInputStream(new FileInputStream(file)));
+	public XCalReader(Path file) throws IOException {
+		this(new BufferedInputStream(Files.newInputStream(file))); //detect encoding from XML header
 	}
 
 	/**

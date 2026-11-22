@@ -3,11 +3,11 @@ package biweekly.util;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,16 +41,16 @@ import org.junit.rules.TemporaryFolder;
 /**
  * @author Michael Angstadt
  */
-public class Utf8ReaderTest {
+public class Utf8StreamsTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
-
+	
 	@Test
 	public void inputStream() throws Exception {
 		String data = "one two three";
-		byte bytes[] = data.getBytes(StandardCharsets.UTF_8);
+		byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
 
-		Utf8Reader reader = new Utf8Reader(new ByteArrayInputStream(bytes));
+		Reader reader = Utf8Streams.reader(new ByteArrayInputStream(bytes));
 
 		String expected = data;
 		String actual = new Gobble(reader).asString();
@@ -58,18 +58,66 @@ public class Utf8ReaderTest {
 	}
 
 	@Test
-	public void file() throws Exception {
+	public void read_file() throws Exception {
 		String data = "one two three";
 
-		File file = folder.newFile();
-		Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+		Path file = folder.newFile().toPath();
+		Writer writer = Utf8Streams.writer(file);
 		writer.write(data);
 		writer.close();
 
-		Utf8Reader reader = new Utf8Reader(file);
+		Reader reader = Utf8Streams.reader(file);
 
 		String expected = data;
 		String actual = new Gobble(reader).asString();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void outputStream() throws Exception {
+		String data = "one two three";
+
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		Writer writer = Utf8Streams.writer(out);
+		writer.write(data);
+		writer.close();
+
+		String expected = data;
+		String actual = new String(out.toByteArray(), StandardCharsets.UTF_8);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void write_file() throws Exception {
+		String data = "one two three";
+
+		Path file = folder.newFile().toPath();
+		Writer writer = Utf8Streams.writer(file);
+		writer.write(data);
+		writer.close();
+
+		String expected = data;
+		String actual = new Gobble(file).asString(StandardCharsets.UTF_8);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void write_file_append() throws Exception {
+		Path file = folder.newFile().toPath();
+		Writer writer = Utf8Streams.writer(file);
+		writer.write("one");
+		writer.close();
+
+		writer = Utf8Streams.writer(file, false);
+		writer.write("two");
+		writer.close();
+
+		writer = Utf8Streams.writer(file, true);
+		writer.write(" three");
+		writer.close();
+
+		String expected = "two three";
+		String actual = new Gobble(file).asString(StandardCharsets.UTF_8);
 		assertEquals(expected, actual);
 	}
 }

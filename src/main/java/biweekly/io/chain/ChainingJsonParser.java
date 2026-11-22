@@ -1,9 +1,9 @@
 package biweekly.io.chain;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.file.Path;
 
 import biweekly.Biweekly;
 import biweekly.io.StreamReader;
@@ -54,7 +54,7 @@ public class ChainingJsonParser<T extends ChainingJsonParser<?>> extends Chainin
 		super(reader);
 	}
 
-	public ChainingJsonParser(File file) {
+	public ChainingJsonParser(Path file) {
 		super(file);
 	}
 

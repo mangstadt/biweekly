@@ -1,9 +1,9 @@
 package biweekly.io.chain;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -168,7 +168,7 @@ public class ChainingXmlWriter extends ChainingWriter<ChainingXmlWriter> {
 	 * @throws IOException if the file can't be opened
 	 * @throws TransformerException if there's a problem writing to the file
 	 */
-	public void go(File file) throws IOException, TransformerException {
+	public void go(Path file) throws IOException, TransformerException {
 		createXCalDocument().write(file, outputProperties);
 	}
 

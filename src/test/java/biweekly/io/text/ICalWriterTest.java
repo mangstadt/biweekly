@@ -11,10 +11,11 @@ import static biweekly.util.TestUtils.utc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.time.Duration;
 import java.util.TimeZone;
 
 import org.junit.Rule;
@@ -60,7 +61,6 @@ import biweekly.property.Summary;
 import biweekly.property.Trigger;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DayOfWeek;
-import java.time.Duration;
 import biweekly.util.Frequency;
 import biweekly.util.Gobble;
 import biweekly.util.Period;
@@ -428,7 +428,7 @@ public class ICalWriterTest {
 		ical.getProperties().clear();
 		ical.addProperty(new Summary("\u1e66ummary"));
 
-		File file = tempFolder.newFile();
+		Path file = tempFolder.newFile().toPath();
 		ICalWriter writer = new ICalWriter(file, V2_0);
 		writer.write(ical);
 		writer.close();

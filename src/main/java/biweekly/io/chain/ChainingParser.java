@@ -1,9 +1,9 @@
 package biweekly.io.chain;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
@@ -52,7 +52,7 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 	final String string;
 	final InputStream in;
 	final Reader reader;
-	final File file;
+	final Path file;
 
 	ScribeIndex index;
 	List<List<ParseWarning>> warnings;
@@ -73,7 +73,7 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 		this(null, null, reader, null);
 	}
 
-	ChainingParser(File file) {
+	ChainingParser(Path file) {
 		this(null, null, null, file);
 	}
 
@@ -81,7 +81,7 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 		this(null, null, null, null);
 	}
 
-	private ChainingParser(String string, InputStream in, Reader reader, File file) {
+	private ChainingParser(String string, InputStream in, Reader reader, Path file) {
 		this.string = string;
 		this.in = in;
 		this.reader = reader;

@@ -1,9 +1,10 @@
 package biweekly;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,7 +42,6 @@ import biweekly.property.RefreshInterval;
 import biweekly.property.Source;
 import biweekly.property.Uid;
 import biweekly.property.Url;
-import java.time.Duration;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -1042,7 +1042,7 @@ public class ICalendar extends ICalComponent {
 	 * user-defined property or component objects
 	 * @throws IOException if there's an problem writing to the file
 	 */
-	public void write(File file) throws IOException {
+	public void write(Path file) throws IOException {
 		ICalVersion version = (this.version == null) ? ICalVersion.V2_0 : this.version;
 		Biweekly.write(this).version(version).go(file);
 	}
@@ -1121,7 +1121,7 @@ public class ICalendar extends ICalComponent {
 	 * @throws TransformerException if there's a problem writing to the file
 	 * @throws IOException if there's a problem opening the file
 	 */
-	public void writeXml(File file) throws TransformerException, IOException {
+	public void writeXml(Path file) throws TransformerException, IOException {
 		Biweekly.writeXml(this).indent(2).go(file);
 	}
 
@@ -1195,7 +1195,7 @@ public class ICalendar extends ICalComponent {
 	 * user-defined property or component objects
 	 * @throws IOException if there's a problem writing to the file
 	 */
-	public void writeJson(File file) throws IOException {
+	public void writeJson(Path file) throws IOException {
 		Biweekly.writeJson(this).go(file);
 	}
 

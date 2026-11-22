@@ -1,13 +1,11 @@
 package biweekly.io.text;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +32,7 @@ import biweekly.io.scribe.property.RawPropertyScribe;
 import biweekly.parameter.Encoding;
 import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
-import biweekly.util.Utf8Reader;
+import biweekly.util.Utf8Streams;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -70,7 +68,7 @@ import biweekly.util.Utf8Reader;
  * </p>
  * 
  * <pre class="brush:java">
- * File file = new File("icals.ics");
+ * Paths file = Paths.get("icals.ics");
  * ICalReader reader = null;
  * try {
  *   reader = new ICalReader(file);
@@ -113,7 +111,7 @@ public class ICalReader extends StreamReader {
 
 	/**
 	 * Creates a new iCalendar reader.
-	 * @param in the input stream to read from
+	 * @param in the input stream to read from (using UTF-8)
 	 */
 	public ICalReader(InputStream in) {
 		this(in, ICalVersion.V2_0);
@@ -123,30 +121,30 @@ public class ICalReader extends StreamReader {
 	 * Creates a new iCalendar reader.
 	 * @param defaultVersion the version to assume the iCalendar object is in
 	 * until a VERSION property is encountered (defaults to 2.0)
-	 * @param in the input stream to read from
+	 * @param in the input stream to read from (using UTF-8)
 	 */
 	public ICalReader(InputStream in, ICalVersion defaultVersion) {
-		this(new Utf8Reader(in), defaultVersion);
+		this(Utf8Streams.reader(in), defaultVersion);
 	}
 
 	/**
 	 * Creates a new iCalendar reader.
-	 * @param file the file to read from
-	 * @throws FileNotFoundException if the file doesn't exist
+	 * @param file the file to read from (using UTF-8)
+	 * @throws IOException if there's a problem opening the file
 	 */
-	public ICalReader(File file) throws FileNotFoundException {
+	public ICalReader(Path file) throws IOException {
 		this(file, ICalVersion.V2_0);
 	}
 
 	/**
 	 * Creates a new iCalendar reader.
-	 * @param file the file to read from
+	 * @param file the file to read from (using UTF-8)
 	 * @param defaultVersion the version to assume the iCalendar object is in
 	 * until a VERSION property is encountered (defaults to 2.0)
-	 * @throws FileNotFoundException if the file doesn't exist
+	 * @throws IOException if there's a problem opening the file
 	 */
-	public ICalReader(File file, ICalVersion defaultVersion) throws FileNotFoundException {
-		this(new BufferedReader(new Utf8Reader(file)), defaultVersion);
+	public ICalReader(Path file, ICalVersion defaultVersion) throws IOException {
+		this(Utf8Streams.reader(file), defaultVersion);
 	}
 
 	/**

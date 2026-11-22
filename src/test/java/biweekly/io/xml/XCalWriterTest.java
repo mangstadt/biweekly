@@ -10,10 +10,11 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.time.Duration;
 import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
@@ -56,7 +57,6 @@ import biweekly.property.Summary;
 import biweekly.property.Xml;
 import biweekly.util.DateTimeComponents;
 import biweekly.util.DayOfWeek;
-import java.time.Duration;
 import biweekly.util.Frequency;
 import biweekly.util.Gobble;
 import biweekly.util.Period;
@@ -654,7 +654,7 @@ public class XCalWriterTest {
 
 	@Test
 	public void write_utf8() throws Throwable {
-		File file = tempFolder.newFile();
+		Path file = tempFolder.newFile().toPath();
 		writer = new XCalWriter(file);
 
 		ical.addProperty(new Summary("\u1e66ummary"));
