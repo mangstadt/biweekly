@@ -198,7 +198,7 @@ public class JCalRawWriter implements Closeable, Flushable {
 			throw new IllegalStateException(Messages.INSTANCE.getExceptionMessage(3));
 		}
 
-		generator.setCurrentValue(JCalPrettyPrinter.PROPERTY_VALUE);
+		generator.assignCurrentValue(JCalPrettyPrinter.PROPERTY_VALUE);
 
 		generator.writeStartArray();
 
@@ -236,7 +236,7 @@ public class JCalRawWriter implements Closeable, Flushable {
 
 		generator.writeEndArray();
 
-		generator.setCurrentValue(null);
+		generator.assignCurrentValue(null);
 	}
 
 	private void writeJsonValue(JsonValue jsonValue) throws IOException {

@@ -42,7 +42,7 @@ public class JCalPrettyPrinter extends DefaultPrettyPrinter {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * The value that is assigned to {@link JsonGenerator#setCurrentValue} to
+	 * The value that is assigned to {@link JsonGenerator#assignCurrentValue} to
 	 * let the pretty-printer know that a iCalendar property is currently being
 	 * written.
 	 */
