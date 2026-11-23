@@ -107,10 +107,9 @@ class MessagesTest {
 
 	@Test
 	void duplicate_keys() throws Exception {
-		Set<String> keys = new HashSet<>();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream()));
-		String line;
-		try {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream()))) {
+			Set<String> keys = new HashSet<>();
+			String line;
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
 				if (line.isEmpty() || line.charAt(0) == '#') {
@@ -127,18 +126,13 @@ class MessagesTest {
 					fail("Key \"" + key + "\" appears more than once.");
 				}
 			}
-		} finally {
-			reader.close();
 		}
 	}
 
 	private Properties load() throws IOException {
 		Properties properties = new Properties();
-		InputStream in = inputStream();
-		try {
+		try (InputStream in = inputStream()) {
 			properties.load(in);
-		} finally {
-			in.close();
 		}
 		return properties;
 	}

@@ -69,15 +69,11 @@ import biweekly.util.Utf8Streams;
  * 
  * <pre class="brush:java">
  * Paths file = Paths.get("icals.ics");
- * ICalReader reader = null;
- * try {
- *   reader = new ICalReader(file);
+ * try (ICalReader reader = new ICalReader(file)) {
  *   ICalendar ical;
  *   while ((ical = reader.readNext()) != null) {
  *     //...
  *   }
- * } finally {
- *   if (reader != null) reader.close();
  * }
  * </pre>
  * @author Michael Angstadt

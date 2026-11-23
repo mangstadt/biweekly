@@ -70,15 +70,11 @@ import biweekly.util.Utf8Streams;
  * 
  * <pre class="brush:java">
  * Path file = Paths.get("icals.json");
- * JCalReader reader = null;
- * try {
- *   reader = new JCalReader(file);
+ * try (JCalReader reader = new JCalReader(file)) {
  *   ICalendar ical;
  *   while ((ical = reader.readNext()) != null) {
  *     //...
  *   }
- * } finally {
- *   if (reader != null) reader.close();
  * }
  * </pre>
  * @author Michael Angstadt

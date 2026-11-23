@@ -95,15 +95,11 @@ import biweekly.util.XmlUtils;
  * 
  * <pre class="brush:java">
  * Path file = Paths.get("icals.xml");
- * XCalReader reader = null;
- * try {
- *   reader = new XCalReader(file);
+ * try (XCalReader reader = new XCalReader(file)) {
  *   ICalendar ical;
  *   while ((ical = reader.readNext()) != null) {
  *     //...
  *   }
- * } finally {
- *   if (reader != null) reader.close();
  * }
  * </pre>
  * @author Michael Angstadt

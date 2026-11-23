@@ -25,7 +25,6 @@ import biweekly.io.json.JCalWriter;
 import biweekly.io.text.ICalReader;
 import biweekly.io.text.ICalWriter;
 import biweekly.io.xml.XCalDocument;
-import biweekly.util.IOUtils;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -239,21 +238,17 @@ public final class Biweekly {
 	public static final String URL;
 
 	static {
-		InputStream in = null;
-		try {
-			in = Biweekly.class.getResourceAsStream("biweekly.properties");
-			Properties props = new Properties();
+		Properties props = new Properties();
+		try (InputStream in = Biweekly.class.getResourceAsStream("biweekly.properties")) {
 			props.load(in);
-
-			VERSION = props.getProperty("version");
-			GROUP_ID = props.getProperty("groupId");
-			ARTIFACT_ID = props.getProperty("artifactId");
-			URL = props.getProperty("url");
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
-		} finally {
-			IOUtils.closeQuietly(in);
 		}
+
+		VERSION = props.getProperty("version");
+		GROUP_ID = props.getProperty("groupId");
+		ARTIFACT_ID = props.getProperty("artifactId");
+		URL = props.getProperty("url");
 	}
 
 	/**

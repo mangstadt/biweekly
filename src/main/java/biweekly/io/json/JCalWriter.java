@@ -58,13 +58,9 @@ import biweekly.util.Utf8Streams;
  * ICalendar ical1 = ...
  * ICalendar ical2 = ...
  * Path file = Paths.get("icals.json");
- * JCalWriter writer = null;
- * try {
- *   writer = new JCalWriter(file);
+ * try (JCalWriter writer = new JCalWriter(file)) {
  *   writer.write(ical1);
  *   writer.write(ical2);
- * } finally {
- *   if (writer != null) writer.close();
  * }
  * </pre>
  * @author Michael Angstadt

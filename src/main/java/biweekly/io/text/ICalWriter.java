@@ -70,13 +70,9 @@ import biweekly.util.Utf8Streams;
  * ICalendar ical1 = ...
  * ICalendar ical2 = ...
  * Path file = Paths.get("icals.ics");
- * ICalWriter writer = null;
- * try {
- *   writer = new ICalWriter(file, ICalVersion.V2_0);
+ * try (ICalWriter writer = new ICalWriter(file, ICalVersion.V2_0)) {
  *   writer.write(ical1);
  *   writer.write(ical2);
- * } finally {
- *   if (writer != null) writer.close();
  * }
  * </pre>
  * 

@@ -90,13 +90,9 @@ import biweekly.util.XmlUtils;
  * ICalendar ical1 = ...
  * ICalendar ical2 = ...
  * Path file = Paths.get("icals.xml");
- * XCalWriter writer = null;
- * try {
- *   writer = new XCalWriter(file);
+ * try (XCalWriter writer = new XCalWriter(file)) {
  *   writer.write(ical1);
  *   writer.write(ical2);
- * } finally {
- *   if (writer != null) writer.close();
  * }
  * </pre>
  * @author Michael Angstadt

@@ -17,7 +17,6 @@ import biweekly.component.VTimezone;
 import biweekly.io.text.ICalReader;
 import biweekly.property.TimezoneId;
 import biweekly.property.ValuedProperty;
-import biweekly.util.IOUtils;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -84,16 +83,12 @@ public class TzUrlDotOrgGenerator {
 		}
 
 		ICalendar ical;
-		ICalReader reader = null;
-		try {
-			reader = new ICalReader(getInputStream(uri));
+		try (ICalReader reader = new ICalReader(getInputStream(uri))) {
 			ical = reader.readNext();
 		} catch (FileNotFoundException e) {
 			throw notFound(e);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
-		} finally {
-			IOUtils.closeQuietly(reader);
 		}
 
 		/*

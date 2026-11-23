@@ -171,11 +171,8 @@ public class ChainingTextWriter extends ChainingWriter<ChainingTextWriter> {
 	 * @throws IOException if there's a problem writing to the file
 	 */
 	public void go(Path file, boolean append) throws IOException {
-		ICalWriter writer = new ICalWriter(file, append, getICalWriterConstructorVersion());
-		try {
+		try (ICalWriter writer = new ICalWriter(file, append, getICalWriterConstructorVersion())) {
 			go(writer);
-		} finally {
-			writer.close();
 		}
 	}
 

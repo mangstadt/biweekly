@@ -664,18 +664,11 @@ public class TestUtils {
 	 * @return the component
 	 */
 	public static VTimezone vtimezoneNewYork() {
-		ICalReader reader = new ICalReader(TestUtils.class.getResourceAsStream("New_York.ics"));
 		ICalendar ical;
-		try {
+		try (ICalReader reader = new ICalReader(TestUtils.class.getResourceAsStream("New_York.ics"))) {
 			ical = reader.readNext();
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
-		} finally {
-			try {
-				reader.close();
-			} catch (IOException e) {
-				throw new UncheckedIOException(e);
-			}
 		}
 
 		return ical.getTimezoneInfo().getComponents().iterator().next();
