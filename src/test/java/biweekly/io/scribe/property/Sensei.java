@@ -2,7 +2,7 @@ package biweekly.io.scribe.property;
 
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.util.TestUtils.assertParseWarnings;
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static biweekly.util.TestUtils.assertXMLEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -340,7 +340,7 @@ public class Sensei<T extends ICalProperty> {
 
 			Document expected = createXCalElement(expectedInnerXml);
 
-			assertXMLEqual(XmlUtils.toString(actual), expected, actual);
+			assertXMLEqual(expected, actual);
 		}
 	}
 

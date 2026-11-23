@@ -1,7 +1,6 @@
 package biweekly.util;
 
 import static biweekly.ICalVersion.V2_0;
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -15,6 +14,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -25,10 +25,16 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
+import javax.xml.transform.OutputKeys;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+import org.xmlunit.builder.DiffBuilder;
+import org.xmlunit.builder.Input;
+import org.xmlunit.diff.DefaultNodeMatcher;
+import org.xmlunit.diff.Diff;
+import org.xmlunit.diff.ElementSelectors;
 
 import com.github.mangstadt.vinnie.LaciToken;
 
@@ -255,6 +261,38 @@ public class TestUtils {
 
 		Document expected = xcalProperty(marshaller, expectedInnerXml);
 		assertXMLEqual(expected, actual);
+	}
+
+	/**
+	 * Asserts that two XML documents are the same.
+	 * @param expected the expected document
+	 * @param actual the actual document
+	 */
+	public static void assertXMLEqual(Document expected, Document actual) {
+		//@formatter:off
+		Diff diff = DiffBuilder.compare(Input.fromDocument(expected)).withTest(Input.fromDocument(actual))
+			.checkForSimilar()
+			.withNodeMatcher(ignoreElementOrder())
+			.ignoreComments()
+			.ignoreElementContentWhitespace()
+			.ignoreWhitespace()
+		.build();
+		//@formatter:on
+
+		assertFalse(diff.hasDifferences(), () -> {
+			Map<String, String> properties = new HashMap<>();
+			properties.put(OutputKeys.INDENT, "yes");
+			properties.put("{http://xml.apache.org/xslt}indent-amount", "3");
+
+			String expectedStr = XmlUtils.toString(expected, properties);
+			String actualStr = XmlUtils.toString(actual, properties);
+
+			return "Expected:\n" + expectedStr + "\n\nActual:\n" + actualStr;
+		});
+	}
+
+	private static DefaultNodeMatcher ignoreElementOrder() {
+		return new DefaultNodeMatcher(ElementSelectors.byName);
 	}
 
 	public static <T> T[] each(T... values) {

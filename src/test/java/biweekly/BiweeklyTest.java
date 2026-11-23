@@ -5,7 +5,7 @@ import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertParseWarnings;
 import static biweekly.util.TestUtils.assertRegex;
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static biweekly.util.TestUtils.assertXMLEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

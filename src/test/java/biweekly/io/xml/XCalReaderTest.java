@@ -8,9 +8,9 @@ import static biweekly.util.TestUtils.assertParseWarnings;
 import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.assertVersion;
+import static biweekly.util.TestUtils.assertXMLEqual;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -28,8 +28,6 @@ import java.util.TimeZone;
 import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 
-import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
@@ -112,11 +110,6 @@ class XCalReaderTest {
 	 */
 	@RegisterExtension
 	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
-
-	@BeforeAll
-	static void beforeAll() {
-		XMLUnit.setIgnoreWhitespace(true);
-	}
 
 	@Test
 	void read_single() throws Exception {

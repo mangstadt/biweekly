@@ -1,6 +1,6 @@
 package biweekly.util;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static biweekly.util.TestUtils.assertXMLEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;

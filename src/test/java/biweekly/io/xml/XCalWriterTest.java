@@ -4,13 +4,14 @@ import static biweekly.ICalVersion.V2_0;
 import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
 import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertValidate;
+import static biweekly.util.TestUtils.assertXMLEqual;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -19,8 +20,6 @@ import java.util.TimeZone;
 
 import javax.xml.namespace.QName;
 
-import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -103,12 +102,6 @@ class XCalWriterTest {
 
 		ical = new ICalendar();
 		ical.getProperties().clear();
-	}
-
-	@BeforeAll
-	public static void beforeClass() {
-		XMLUnit.setIgnoreAttributeOrder(true);
-		XMLUnit.setIgnoreWhitespace(true);
 	}
 
 	@Test
@@ -827,16 +820,22 @@ class XCalWriterTest {
 	}
 
 	private void assertOutput(String expected) throws SAXException, IOException {
+		assertOutput(XmlUtils.toDocument(expected));
+	}
+
+	private void assertOutput(Document expected) throws SAXException, IOException {
 		String actual = sw.toString();
-		String prettyPrinted = XmlUtils.toString(XmlUtils.toDocument(actual), true);
-		assertXMLEqual(prettyPrinted, expected, actual);
+		assertXMLEqual(expected, XmlUtils.toDocument(actual));
 	}
 
 	private void assertExample(ICalendar ical, String exampleFileName) throws SAXException, IOException {
 		writer.write(ical);
 		writer.close();
 
-		String expected = new Gobble(getClass().getResourceAsStream(exampleFileName)).asString();
+		Document expected;
+		try (InputStream in = getClass().getResourceAsStream(exampleFileName)) {
+			expected = XmlUtils.toDocument(in);
+		}
 		assertOutput(expected);
 	}
 

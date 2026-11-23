@@ -1,7 +1,7 @@
 package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.assertParseWarnings;
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static biweekly.util.TestUtils.assertXMLEqual;
 
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;

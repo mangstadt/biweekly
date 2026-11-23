@@ -7,9 +7,9 @@ import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertParseWarnings;
 import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertValidate;
+import static biweekly.util.TestUtils.assertXMLEqual;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -31,8 +31,6 @@ import java.util.TimeZone;
 import javax.xml.namespace.QName;
 import javax.xml.transform.OutputKeys;
 
-import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
@@ -122,12 +120,6 @@ class XCalDocumentTest {
 	 */
 	@RegisterExtension
 	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
-
-	@BeforeAll
-	static void beforeAll() {
-		XMLUnit.setIgnoreAttributeOrder(true);
-		XMLUnit.setIgnoreWhitespace(true);
-	}
 
 	@Test
 	void parse_multiple() throws Exception {
@@ -1310,10 +1302,8 @@ class XCalDocumentTest {
 			Map<String, String> properties = new HashMap<>();
 			properties.put(OutputKeys.INDENT, "yes");
 			properties.put("{http://xml.apache.org/xslt}indent-amount", "3");
-			String expectedStr = XmlUtils.toString(expected, properties);
-			String actualStr = XmlUtils.toString(actual, properties);
 
-			assertXMLEqual("Expected:\n" + expectedStr + "\n\nActual:\n" + actualStr, expected, actual);
+			assertXMLEqual(expected, actual);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
