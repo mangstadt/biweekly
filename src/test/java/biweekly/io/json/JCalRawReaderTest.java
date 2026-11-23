@@ -1,5 +1,6 @@
 package biweekly.io.json;
 
+import static biweekly.util.TestUtils.laciTokens;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -81,28 +82,28 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("prodid"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
 					assertEquals("-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN", value.asSingle());
 					break;
 				case 2:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("version"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
 					assertEquals("2.0", value.asSingle());
 					break;
 				case 3:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar"), new LaciToken("vevent")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar", "vevent"), componentHierarchy);
 					assertEquals(new LaciToken("summary"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
 					assertEquals("Networld+Interop Conference", value.asSingle());
 					break;
 				case 4:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar"), new LaciToken("vevent")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar", "vevent"), componentHierarchy);
 					assertEquals(new LaciToken("description"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -115,11 +116,11 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				case 2:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), parentHierarchy);
+					assertEquals(laciTokens("vcalendar"), parentHierarchy);
 					assertEquals(new LaciToken("vevent"), name);
 					break;
 				}
@@ -159,7 +160,7 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("prodid"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -172,7 +173,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -190,7 +191,7 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("prodid"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -203,7 +204,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -238,7 +239,7 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("prodid"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -251,7 +252,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -294,7 +295,7 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("prodid"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -307,7 +308,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -331,14 +332,14 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("prodid"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
 					assertEquals("prodid", value.asSingle());
 					break;
 				case 2:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("version"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -351,7 +352,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -388,7 +389,7 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar"), new LaciToken("vevent")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar", "vevent"), componentHierarchy);
 					assertEquals(new LaciToken("summary"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -401,11 +402,11 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				case 2:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), parentHierarchy);
+					assertEquals(laciTokens("vcalendar"), parentHierarchy);
 					assertEquals(new LaciToken("vevent"), name);
 					break;
 				}
@@ -447,7 +448,7 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("prodid"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -460,7 +461,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -475,7 +476,7 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("prodid"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -488,7 +489,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -533,7 +534,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -553,7 +554,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -612,35 +613,35 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("prop1"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
 					assertEquals("value1", value.asSingle());
 					break;
 				case 2:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar"), new LaciToken("comp1")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar", "comp1"), componentHierarchy);
 					assertEquals(new LaciToken("prop2"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
 					assertEquals("value2", value.asSingle());
 					break;
 				case 3:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar"), new LaciToken("comp1"), new LaciToken("comp2")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar", "comp1", "comp2"), componentHierarchy);
 					assertEquals(new LaciToken("prop3"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
 					assertEquals("value3", value.asSingle());
 					break;
 				case 4:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar"), new LaciToken("comp1"), new LaciToken("comp2"), new LaciToken("comp3")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar", "comp1", "comp2", "comp3"), componentHierarchy);
 					assertEquals(new LaciToken("prop4"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
 					assertEquals("value4", value.asSingle());
 					break;
 				case 5:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar"), new LaciToken("comp1"), new LaciToken("comp4")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar", "comp1", "comp4"), componentHierarchy);
 					assertEquals(new LaciToken("prop5"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -654,23 +655,23 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				case 2:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), parentHierarchy);
+					assertEquals(laciTokens("vcalendar"), parentHierarchy);
 					assertEquals(new LaciToken("comp1"), name);
 					break;
 				case 3:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar"), new LaciToken("comp1")), parentHierarchy);
+					assertEquals(laciTokens("vcalendar", "comp1"), parentHierarchy);
 					assertEquals(new LaciToken("comp2"), name);
 					break;
 				case 4:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar"), new LaciToken("comp1"), new LaciToken("comp2")), parentHierarchy);
+					assertEquals(laciTokens("vcalendar", "comp1", "comp2"), parentHierarchy);
 					assertEquals(new LaciToken("comp3"), name);
 					break;
 				case 5:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar"), new LaciToken("comp1")), parentHierarchy);
+					assertEquals(laciTokens("vcalendar", "comp1"), parentHierarchy);
 					assertEquals(new LaciToken("comp4"), name);
 					break;
 				}
@@ -702,7 +703,7 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("request-status"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -714,7 +715,7 @@ class JCalRawReaderTest {
 					assertEquals(expected, value.asStructured());
 					break;
 				case 2:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("request-status"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -727,7 +728,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -761,14 +762,14 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("categories"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
 					assertEquals(Arrays.asList("one", "two", "three"), value.asMulti());
 					break;
 				case 2:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("categories"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -781,7 +782,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -815,7 +816,7 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("rrule"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -828,7 +829,7 @@ class JCalRawReaderTest {
 					assertEquals(expected, value.asObject());
 					break;
 				case 2:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("rrule"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -843,7 +844,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -876,7 +877,7 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("prop"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -897,7 +898,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -936,7 +937,7 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("prop"), name);
 					assertTrue(parameters.isEmpty());
 					assertEquals(ICalDataType.TEXT, dataType);
@@ -960,7 +961,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -993,7 +994,7 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("prop"), name);
 					assertTrue(parameters.isEmpty());
 					assertNull(dataType);
@@ -1006,7 +1007,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -1037,7 +1038,7 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("prop"), name);
 					assertTrue(parameters.isEmpty());
 					assertSame(ICalDataType.get("foo"), dataType);
@@ -1050,7 +1051,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}
@@ -1133,7 +1134,7 @@ class JCalRawReaderTest {
 			protected void readProperty_(List<LaciToken> componentHierarchy, LaciToken name, ICalParameters parameters, ICalDataType dataType, JCalValue value) {
 				switch (calledReadProperty) {
 				case 1:
-					assertEquals(Arrays.asList(new LaciToken("vcalendar")), componentHierarchy);
+					assertEquals(laciTokens("vcalendar"), componentHierarchy);
 					assertEquals(new LaciToken("prop"), name);
 					assertEquals(4, parameters.size());
 					assertEquals(Arrays.asList("one"), parameters.get("a"));
@@ -1149,7 +1150,7 @@ class JCalRawReaderTest {
 			protected void readComponent_(List<LaciToken> parentHierarchy, LaciToken name) {
 				switch (calledReadComponent) {
 				case 1:
-					assertEquals(Arrays.asList(), parentHierarchy);
+					assertEquals(laciTokens(), parentHierarchy);
 					assertEquals(new LaciToken("vcalendar"), name);
 					break;
 				}

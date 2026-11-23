@@ -681,8 +681,13 @@ public class TestUtils {
 		return ical.getTimezoneInfo().getComponents().iterator().next();
 	}
 
-	public static List<LaciToken> laciTokens(String... tokens) {
-		return Arrays.stream(tokens).map(LaciToken::new).collect(Collectors.toList());
+	/**
+	 * Creates a list of {@link LaciToken} instances.
+	 * @param values the values to use
+	 * @return the list
+	 */
+	public static List<LaciToken> laciTokens(String... values) {
+		return Arrays.stream(values).map(LaciToken::new).collect(Collectors.toList());
 	}
 
 	private TestUtils() {
