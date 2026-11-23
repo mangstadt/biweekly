@@ -4,14 +4,14 @@ import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.each;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.xml.namespace.QName;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -62,16 +62,16 @@ import biweekly.property.Uid;
 /**
  * @author Michael Angstadt
  */
-public class ScribeIndexTest {
+class ScribeIndexTest {
 	private ScribeIndex index;
 
-	@Before
-	public void before() {
+	@BeforeEach
+	void beforeEach() {
 		index = new ScribeIndex();
 	}
 
 	@Test
-	public void getComponentScribe_name() {
+	void getComponentScribe_name() {
 		ICalComponentScribe<? extends ICalComponent> scribe;
 		String name;
 
@@ -103,7 +103,7 @@ public class ScribeIndexTest {
 	}
 
 	@Test
-	public void getComponentScribe_class() {
+	void getComponentScribe_class() {
 		ICalComponentScribe<? extends ICalComponent> scribe;
 
 		scribe = index.getComponentScribe(VEvent.class);
@@ -114,7 +114,7 @@ public class ScribeIndexTest {
 	}
 
 	@Test
-	public void getPropertyScribe_name() {
+	void getPropertyScribe_name() {
 		ICalPropertyScribe<? extends ICalProperty> scribe;
 		String name;
 
@@ -150,7 +150,7 @@ public class ScribeIndexTest {
 	}
 
 	@Test
-	public void getPropertyScribe_class() {
+	void getPropertyScribe_class() {
 		ICalPropertyScribe<? extends ICalProperty> scribe;
 
 		scribe = index.getPropertyScribe(Uid.class);
@@ -161,7 +161,7 @@ public class ScribeIndexTest {
 	}
 
 	@Test
-	public void getPropertyScribe_qname() {
+	void getPropertyScribe_qname() {
 		ICalPropertyScribe<? extends ICalProperty> scribe;
 
 		scribe = index.getPropertyScribe(new QName(XCalNamespaceContext.XCAL_NS, "uid"));
@@ -175,7 +175,7 @@ public class ScribeIndexTest {
 	}
 
 	@Test
-	public void register_component() {
+	void register_component() {
 		ICalComponentScribe<? extends ICalComponent> scribe;
 
 		scribe = index.getComponentScribe(ICalComponentImpl.class);
@@ -194,7 +194,7 @@ public class ScribeIndexTest {
 	}
 
 	@Test
-	public void register_property() {
+	void register_property() {
 		ICalPropertyScribe<? extends ICalProperty> scribe;
 
 		scribe = index.getPropertyScribe(ICalPropertyImpl.class);

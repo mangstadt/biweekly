@@ -1,9 +1,9 @@
 package biweekly.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -33,9 +33,9 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class ContentIdTest {
+class ContentIdTest {
 	@Test
-	public void parse() {
+	void parse() {
 		assertEquals("foo", ContentId.parse("cid:foo"));
 		assertEquals("foo", ContentId.parse("CID:foo"));
 		assertEquals("", ContentId.parse("cid:"));
@@ -47,7 +47,7 @@ public class ContentIdTest {
 	}
 	
 	@Test
-	public void parseUri() {
+	void parseUri() {
 		assertEquals("foo", ContentId.parseUri("cid:foo"));
 		assertEquals("foo", ContentId.parseUri("CID:foo"));
 		assertEquals("", ContentId.parseUri("cid:"));
@@ -59,12 +59,12 @@ public class ContentIdTest {
 	}
 	
 	@Test
-	public void writeUri() {
+	void writeUri() {
 		assertEquals("cid:foo", ContentId.writeUri("foo"));
 	}
 	
 	@Test
-	public void writeOldStyle() {
+	void writeOldStyle() {
 		assertEquals("<foo>", ContentId.writeOldStyle("foo"));
 	}
 	

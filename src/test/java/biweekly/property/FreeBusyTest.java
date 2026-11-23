@@ -5,16 +5,16 @@ import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertEqualsAndHash;
 import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertValidate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.parameter.FreeBusyType;
 import java.time.Duration;
@@ -48,15 +48,15 @@ import biweekly.util.Period;
 /**
  * @author Michael Angstadt
  */
-public class FreeBusyTest {
+class FreeBusyTest {
 	@Test
-	public void constructors() throws Exception {
+	void constructors() throws Exception {
 		FreeBusy property = new FreeBusy();
 		assertEquals(Arrays.asList(), property.getValues());
 	}
 
 	@Test
-	public void set_value() {
+	void set_value() {
 		FreeBusy property = new FreeBusy();
 		Date start = new Date();
 		Duration duration = Duration.ofHours(1);
@@ -86,7 +86,7 @@ public class FreeBusyTest {
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		FreeBusy property = new FreeBusy();
 		assertValidate(property).run(26);
 
@@ -124,13 +124,13 @@ public class FreeBusyTest {
 	}
 
 	@Test
-	public void toStringValues() {
+	void toStringValues() {
 		FreeBusy property = new FreeBusy();
 		assertFalse(property.toStringValues().isEmpty());
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		FreeBusy original = new FreeBusy();
 		assertCopy(original).notSameDeep("getValues");
 
@@ -143,7 +143,7 @@ public class FreeBusyTest {
 	}
 
 	@Test
-	public void equals() {
+	void equals() {
 		Date start = new Date();
 		Date end = new Date();
 		Duration duration = Duration.ofHours(1);

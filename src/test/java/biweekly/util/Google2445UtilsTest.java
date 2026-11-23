@@ -1,8 +1,8 @@
 package biweekly.util;
 
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.component.VEvent;
 import biweekly.property.ExceptionDates;
@@ -45,9 +45,9 @@ import biweekly.property.RecurrenceDates;
 /**
  * @author Michael Angstadt
  */
-public class Google2445UtilsTest {
+class Google2445UtilsTest {
 	@Test
-	public void getDateIterator_empty() {
+	void getDateIterator_empty() {
 		VEvent event = new VEvent();
 
 		List<Date> expectedList = Arrays.asList();
@@ -55,7 +55,7 @@ public class Google2445UtilsTest {
 	}
 
 	@Test
-	public void getDateIterator_start_date_only() {
+	void getDateIterator_start_date_only() {
 		VEvent event = new VEvent();
 		event.setDateStart(date(2016, 3, 25, 14, 0, 0));
 
@@ -69,7 +69,7 @@ public class Google2445UtilsTest {
 	}
 
 	@Test
-	public void getDateIterator_start_date_has_no_time() {
+	void getDateIterator_start_date_has_no_time() {
 		VEvent event = new VEvent();
 
 		event.setDateStart(date(2016, 3, 25), false);
@@ -87,7 +87,7 @@ public class Google2445UtilsTest {
 	}
 
 	@Test
-	public void getDateIterator() {
+	void getDateIterator() {
 		TimeZone tz = TimeZone.getTimeZone("America/Los_Angeles");
 
 		VEvent event = new VEvent();

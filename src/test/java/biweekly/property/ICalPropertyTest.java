@@ -3,13 +3,13 @@ package biweekly.property;
 import static biweekly.util.TestUtils.assertEqualsAndHash;
 import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertValidate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalVersion;
 import biweekly.parameter.ICalParameters;
@@ -54,10 +54,10 @@ import biweekly.parameter.ICalParameters;
 /**
  * @author Michael Angstadt
  */
-public class ICalPropertyTest {
+class ICalPropertyTest {
 	@SuppressWarnings("unchecked")
 	@Test
-	public void validate() {
+	void validate() {
 		ICalPropertyImpl property = spy(new ICalPropertyImpl());
 		property.addParameter("PARAM", "value,");
 		assertValidate(property).versions(ICalVersion.V1_0).run(58);
@@ -65,7 +65,7 @@ public class ICalPropertyTest {
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		CopyConstructorTest property = new CopyConstructorTest("value");
 		property.getParameters().setLanguage("en-us");
 		CopyConstructorTest copy = (CopyConstructorTest) property.copy();
@@ -78,7 +78,7 @@ public class ICalPropertyTest {
 	}
 
 	@Test
-	public void copy_constructor_throws_exception() {
+	void copy_constructor_throws_exception() {
 		RuntimeException exception = new RuntimeException();
 		CopyConstructorThrowsExceptionTest property = new CopyConstructorThrowsExceptionTest(exception);
 		UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class, property::copy);
@@ -87,20 +87,20 @@ public class ICalPropertyTest {
 	}
 
 	@Test
-	public void copy_no_copy_constructor() {
+	void copy_no_copy_constructor() {
 		ICalPropertyImpl property = new ICalPropertyImpl();
 		UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class, property::copy);
 		assertTrue(e.getCause() instanceof NoSuchMethodException);
 	}
 
 	@Test
-	public void equals_essentials() {
+	void equals_essentials() {
 		ICalPropertyImpl one = new ICalPropertyImpl();
 		assertEqualsMethodEssentials(one);
 	}
 
 	@Test
-	public void equals_different_parameters() {
+	void equals_different_parameters() {
 		ICalPropertyImpl one = new ICalPropertyImpl();
 		one.addParameter("one", "value");
 		ICalPropertyImpl two = new ICalPropertyImpl();
@@ -111,7 +111,7 @@ public class ICalPropertyTest {
 	}
 
 	@Test
-	public void equals() {
+	void equals() {
 		ICalPropertyImpl one = new ICalPropertyImpl();
 		one.addParameter("one", "value");
 		ICalPropertyImpl two = new ICalPropertyImpl();
@@ -121,7 +121,7 @@ public class ICalPropertyTest {
 	}
 
 	@Test
-	public void parameters() {
+	void parameters() {
 		ICalPropertyImpl property = new ICalPropertyImpl();
 		assertEquals(new ICalParameters(), property.getParameters());
 		assertThrows(NullPointerException.class, () -> property.setParameters(null));
@@ -162,13 +162,13 @@ public class ICalPropertyTest {
 	}
 
 	@Test
-	public void toStringValues() {
+	void toStringValues() {
 		ICalPropertyImpl property = new ICalPropertyImpl();
 		assertTrue(property.toStringValues().isEmpty());
 	}
 
 	@Test
-	public void toString_() {
+	void toString_() {
 		ICalProperty property = new ICalPropertyImpl();
 		assertEquals(ICalPropertyImpl.class.getName() + " [ parameters={} ]", property.toString());
 

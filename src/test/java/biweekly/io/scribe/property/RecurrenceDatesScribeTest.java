@@ -9,8 +9,8 @@ import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.buildTimezone;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.icalDate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.component.Observance;
 import biweekly.component.VTimezone;
@@ -61,7 +61,7 @@ import biweekly.util.Period;
 /**
  * @author Michael Angstadt
  */
-public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
+class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 	private final Date startDate = date(2013, 6, 11);
 	private final String startDateStr = "20130611";
 	private final String startDateStrExt = "2013-06-11";
@@ -135,7 +135,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 	}
 
 	@Test
-	public void dataType() {
+	void dataType() {
 		sensei.assertDataType(withMultiplePeriods).run(PERIOD);
 		sensei.assertDataType(withMultipleDates).run(DATE);
 		sensei.assertDataType(withMultipleDateTimes).run(DATE_TIME);
@@ -148,7 +148,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 	}
 
 	@Test
-	public void prepareParameters() {
+	void prepareParameters() {
 		sensei.assertPrepareParams(withMultiplePeriods).tz(tzinfo).versions(V1_0).run();
 		sensei.assertPrepareParams(withMultiplePeriods).tz(tzinfo).versions(V2_0_DEPRECATED, V2_0).expected("TZID", "id").run();
 
@@ -165,7 +165,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withMultiplePeriods).run(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/" + durationStr);
 		sensei.assertWriteText(withMultipleDates).run(startDateStr + "," + endDateStr);
 		sensei.assertWriteText(withMultipleDateTimes).run(startDateTimeStr + "," + endDateTimeStr);
@@ -182,7 +182,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/" + durationStr).dataType(PERIOD).run(is(withMultiplePeriods));
 		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + "invalid/" + durationStr).dataType(PERIOD).warnings(1).cannotParse(10);
 		sensei.assertParseText(startDateTimeStr + "/" + endDateTimeStr + "," + startDateTimeStr + "/invalid").dataType(PERIOD).cannotParse(14);
@@ -211,7 +211,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		//@formatter:off
 		sensei.assertWriteXml(withMultiplePeriods).run(
 		"<period>" +
@@ -254,7 +254,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		//@formatter:off
 		sensei.assertParseXml(
 		"<period>" +
@@ -399,7 +399,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		sensei.assertWriteJson(withMultiplePeriods).run(JCalValue.multi(startDateTimeStrExt + "/" + endDateTimeStrExt, startDateTimeStrExt + "/" + durationStr));
 		sensei.assertWriteJson(withMultipleDates).run(JCalValue.multi(startDateStrExt, endDateStrExt));
 		sensei.assertWriteJson(withMultipleDateTimes).run(JCalValue.multi(startDateTimeStrExt, endDateTimeStrExt));
@@ -412,7 +412,7 @@ public class RecurrenceDatesScribeTest extends ScribeTest<RecurrenceDates> {
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		//@formatter:off
 		sensei.assertParseJson(JCalValue.multi(
 			startDateTimeStrExt + "/" + endDateTimeStrExt,

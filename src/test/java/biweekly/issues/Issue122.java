@@ -1,6 +1,6 @@
 package biweekly.issues;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,8 +10,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import biweekly.Biweekly;
 import biweekly.component.VEvent;
@@ -22,15 +22,15 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * @author Michael Angstadt
  * @see "https://github.com/mangstadt/biweekly/issues/122"
  */
-public class Issue122 {
-	@Rule
-	public final DefaultTimezoneRule defaultTimezoneRule = new DefaultTimezoneRule("America/New_York");
+class Issue122 {
+	@RegisterExtension
+	public static final DefaultTimezoneRule defaultTimezoneRule = new DefaultTimezoneRule("America/New_York");
 
 	/**
 	 * @see "https://icalendar.org/iCalendar-RFC-5545/3-8-5-3-recurrence-rule.html"
 	 */
 	@Test
-	public void example_cited_in_issue() throws Exception {
+	void example_cited_in_issue() throws Exception {
 		TimeZone tz = TimeZone.getDefault();
 
 		//@formatter:off
@@ -66,7 +66,7 @@ public class Issue122 {
 	 * @see "https://icalendar.org/iCalendar-RFC-5545/3-8-5-3-recurrence-rule.html"
 	 */
 	@Test
-	public void other_bysetpos_example() throws Exception {
+	void other_bysetpos_example() throws Exception {
 		TimeZone tz = TimeZone.getDefault();
 
 		//@formatter:off

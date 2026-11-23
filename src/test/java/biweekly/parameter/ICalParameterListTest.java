@@ -1,13 +1,13 @@
 package biweekly.parameter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -37,13 +37,13 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class ICalParameterListTest {
+class ICalParameterListTest {
 	private final String NAME = "NUMBERS";
 	private ICalParameters parameters;
 	private List<Integer> list;
 
-	@Before
-	public void before() {
+	@BeforeEach
+	void beforeEach() {
 		parameters = new ICalParameters();
 		list = parameters.new ICalParameterList<Integer>(NAME) {
 			@Override
@@ -59,7 +59,7 @@ public class ICalParameterListTest {
 	}
 
 	@Test
-	public void get_set() {
+	void get_set() {
 		list.add(1);
 		assertEquals(Arrays.asList("1"), parameters.get(NAME));
 		assertEquals(Arrays.asList(1), list);
@@ -90,7 +90,7 @@ public class ICalParameterListTest {
 	}
 
 	@Test
-	public void invalid_value() {
+	void invalid_value() {
 		parameters.put(NAME, "foobar");
 		IllegalStateException e = assertThrows(IllegalStateException.class, () -> list.get(0));
 		assertEquals(e.getCause().getClass(), NumberFormatException.class);

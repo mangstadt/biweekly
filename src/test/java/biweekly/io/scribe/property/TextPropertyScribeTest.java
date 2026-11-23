@@ -1,8 +1,8 @@
 package biweekly.io.scribe.property;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -38,7 +38,7 @@ import biweekly.property.TextProperty;
 /**
  * @author Michael Angstadt
  */
-public class TextPropertyScribeTest extends ScribeTest<TextPropertyImpl> {
+class TextPropertyScribeTest extends ScribeTest<TextPropertyImpl> {
 	private final String value = "the;text";
 	private final TextPropertyImpl withValue = new TextPropertyImpl(value);
 	private final TextPropertyImpl empty = new TextPropertyImpl(null);
@@ -48,26 +48,26 @@ public class TextPropertyScribeTest extends ScribeTest<TextPropertyImpl> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withValue).run("the\\;text");
 		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText("the\\;text").run(has(value));
 		sensei.assertParseText(value).run(has(value));
 		sensei.assertParseText("").run(has(""));
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		sensei.assertWriteXml(withValue).run("<text>" + value + "</text>");
 		sensei.assertWriteXml(empty).run("<text/>");
 	}
 
 	@Test
-	public void writeXml_data_type() {
+	void writeXml_data_type() {
 		TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl(ICalDataType.CAL_ADDRESS);
 		Sensei<TextPropertyImpl> sensei = new Sensei<>(marshaller);
 
@@ -76,13 +76,13 @@ public class TextPropertyScribeTest extends ScribeTest<TextPropertyImpl> {
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		sensei.assertParseXml("<text>" + value + "</text>").run(has(value));
 		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
-	public void parseXml_data_type() {
+	void parseXml_data_type() {
 		TextPropertyMarshallerImpl marshaller = new TextPropertyMarshallerImpl(ICalDataType.CAL_ADDRESS);
 		Sensei<TextPropertyImpl> sensei = new Sensei<>(marshaller);
 
@@ -90,13 +90,13 @@ public class TextPropertyScribeTest extends ScribeTest<TextPropertyImpl> {
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		sensei.assertWriteJson(withValue).run(value);
 		sensei.assertWriteJson(empty).run((String) null);
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		sensei.assertParseJson(value).run(has(value));
 		sensei.assertParseJson("").run(has(""));
 	}

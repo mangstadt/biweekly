@@ -1,11 +1,11 @@
 package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalDataType;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -41,7 +41,7 @@ import java.time.Duration;
 /**
  * @author Michael Angstadt
  */
-public class TriggerScribeTest extends ScribeTest<Trigger> {
+class TriggerScribeTest extends ScribeTest<Trigger> {
 	private final Date datetime = date(2013, 6, 11, 13, 43, 2);
 	private final String datetimeStr = "20130611T124302Z";
 	private final String datetimeStrExt = "2013-06-11T12:43:02Z";
@@ -58,21 +58,21 @@ public class TriggerScribeTest extends ScribeTest<Trigger> {
 	}
 
 	@Test
-	public void dataType() {
+	void dataType() {
 		sensei.assertDataType(withDateTime).run(ICalDataType.DATE_TIME);
 		sensei.assertDataType(withDuration).run(ICalDataType.DURATION);
 		sensei.assertDataType(empty).run(ICalDataType.DURATION);
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withDateTime).run(datetimeStr);
 		sensei.assertWriteText(withDuration).run(durationStr);
 		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText(datetimeStr).run(is(withDateTime));
 		sensei.assertParseText(durationStr).run(is(withDuration));
 		sensei.assertParseText("invalid").cannotParse(25);
@@ -80,14 +80,14 @@ public class TriggerScribeTest extends ScribeTest<Trigger> {
 	}
 
 	@Test
-	public void writeXml_date() {
+	void writeXml_date() {
 		sensei.assertWriteXml(withDateTime).run("<date-time>" + datetimeStrExt + "</date-time>");
 		sensei.assertWriteXml(withDuration).run("<duration>" + durationStr + "</duration>");
 		sensei.assertWriteXml(empty).run("<duration/>");
 	}
 
 	@Test
-	public void parseXml_date() {
+	void parseXml_date() {
 		sensei.assertParseXml("<date-time>" + datetimeStrExt + "</date-time>").run(is(withDateTime));
 		sensei.assertParseXml("<duration>" + durationStr + "</duration>").run(is(withDuration));
 
@@ -100,14 +100,14 @@ public class TriggerScribeTest extends ScribeTest<Trigger> {
 	}
 
 	@Test
-	public void writeJson_date() {
+	void writeJson_date() {
 		sensei.assertWriteJson(withDateTime).run(datetimeStrExt);
 		sensei.assertWriteJson(withDuration).run(durationStr);
 		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
-	public void parseJson_date() {
+	void parseJson_date() {
 		sensei.assertParseJson(datetimeStrExt).run(is(withDateTime));
 		sensei.assertParseJson(durationStr).run(is(withDuration));
 		sensei.assertParseJson("invalid").cannotParse(25);

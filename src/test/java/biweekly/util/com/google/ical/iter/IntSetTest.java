@@ -39,19 +39,19 @@
 
 package biweekly.util.com.google.ical.iter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
-public class IntSetTest {
+class IntSetTest {
 	@Test
-	public void addAndContainsAndSize() {
+	void addAndContainsAndSize() {
 		IntSet a = new IntSet();
 
 		assertTrue(!a.contains(-2));
@@ -90,7 +90,7 @@ public class IntSetTest {
 	}
 
 	@Test
-	public void toIntArray() {
+	void toIntArray() {
 		IntSet a = new IntSet();
 		int[] expected = {};
 		int[] actual = a.toIntArray();

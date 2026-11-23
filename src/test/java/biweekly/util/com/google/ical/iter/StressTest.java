@@ -41,8 +41,8 @@ package biweekly.util.com.google.ical.iter;
 
 import static biweekly.util.TestUtils.date;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import biweekly.util.DayOfWeek;
 import biweekly.util.Frequency;
@@ -56,9 +56,9 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  * @author Michael Angstadt
  */
-public class StressTest {
-	@Before
-	public void before() {
+class StressTest {
+	@BeforeEach
+	void beforeEach() {
 		//prime the VM
 		for (int runs = 10; --runs >= 0;) {
 			runOne();
@@ -66,7 +66,7 @@ public class StressTest {
 	}
 
 	@Test
-	public void speed() {
+	void speed() {
 		long t0 = System.nanoTime();
 		//cycle through 10 recurrence rules, advancing and pulling a few dates off each
 		for (int runs = 5000; --runs >= 0;) {

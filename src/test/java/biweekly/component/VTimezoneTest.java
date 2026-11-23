@@ -7,7 +7,7 @@ import static biweekly.util.TestUtils.assertValidate;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.property.DateStart;
 import biweekly.property.LastModified;
@@ -42,9 +42,9 @@ import biweekly.util.UtcOffset;
 /**
  * @author Michael Angstadt
  */
-public class VTimezoneTest {
+class VTimezoneTest {
 	@Test
-	public void validate_cardinality_required() {
+	void validate_cardinality_required() {
 		VTimezone component = new VTimezone((String) null);
 		assertValidate(component).versions(V1_0).run(48, 2, 21);
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(2, 21);
@@ -55,7 +55,7 @@ public class VTimezoneTest {
 	}
 
 	@Test
-	public void validate_cardinality_optional() {
+	void validate_cardinality_optional() {
 		VTimezone component = new VTimezone("");
 		component.addProperty(new LastModified(new Date()));
 		component.addProperty(new TimezoneUrl(""));
@@ -69,7 +69,7 @@ public class VTimezoneTest {
 	}
 
 	@Test
-	public void validate_observance_required() {
+	void validate_observance_required() {
 		VTimezone component = new VTimezone("");
 		assertValidate(component).versions(V1_0).run(48, 21);
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(21);

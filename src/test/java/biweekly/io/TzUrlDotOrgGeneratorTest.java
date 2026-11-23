@@ -1,9 +1,9 @@
 package biweekly.io;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
@@ -18,9 +18,9 @@ import java.net.URISyntaxException;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import biweekly.component.VTimezone;
 
@@ -52,16 +52,16 @@ import biweekly.component.VTimezone;
 /**
  * @author Michael Angstadt
  */
-public class TzUrlDotOrgGeneratorTest {
+class TzUrlDotOrgGeneratorTest {
 	private final TimeZone timezone = TimeZone.getTimeZone("America/New_York");
 
-	@Before
-	public void before() {
+	@BeforeEach
+	void beforeEach() {
 		TzUrlDotOrgGenerator.clearCache();
 	}
 
 	@Test
-	public void url() throws Exception {
+	void url() throws Exception {
 		TzUrlDotOrgGenerator generator = spy(new TzUrlDotOrgGenerator(false));
 		doReturn(ok()).when(generator).getInputStream(any(URI.class));
 
@@ -71,7 +71,7 @@ public class TzUrlDotOrgGeneratorTest {
 	}
 
 	@Test
-	public void url_outlook() throws Exception {
+	void url_outlook() throws Exception {
 		TzUrlDotOrgGenerator generator = spy(new TzUrlDotOrgGenerator(true));
 		doReturn(ok()).when(generator).getInputStream(any(URI.class));
 
@@ -81,7 +81,7 @@ public class TzUrlDotOrgGeneratorTest {
 	}
 
 	@Test
-	public void url_bad() throws Exception {
+	void url_bad() throws Exception {
 		TzUrlDotOrgGenerator generator = new TzUrlDotOrgGenerator(false);
 		TimeZone tz = new SimpleTimeZone(0, "spaces not allowed");
 		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> generator.generate(tz));
@@ -90,7 +90,7 @@ public class TzUrlDotOrgGeneratorTest {
 	}
 
 	@Test
-	public void not_found() throws Exception {
+	void not_found() throws Exception {
 		TzUrlDotOrgGenerator generator = spy(new TzUrlDotOrgGenerator(false));
 		doThrow(new FileNotFoundException()).when(generator).getInputStream(any(URI.class));
 
@@ -98,7 +98,7 @@ public class TzUrlDotOrgGeneratorTest {
 	}
 
 	@Test
-	public void no_icalendar() throws Exception {
+	void no_icalendar() throws Exception {
 		TzUrlDotOrgGenerator generator = spy(new TzUrlDotOrgGenerator(false));
 		doReturn(noICalendar()).when(generator).getInputStream(any(URI.class));
 
@@ -106,7 +106,7 @@ public class TzUrlDotOrgGeneratorTest {
 	}
 
 	@Test
-	public void no_vtimezone() throws Exception {
+	void no_vtimezone() throws Exception {
 		TzUrlDotOrgGenerator generator = spy(new TzUrlDotOrgGenerator(false));
 		doReturn(noVTimezone()).when(generator).getInputStream(any(URI.class));
 
@@ -114,7 +114,7 @@ public class TzUrlDotOrgGeneratorTest {
 	}
 
 	@Test
-	public void no_tzid() throws Exception {
+	void no_tzid() throws Exception {
 		TzUrlDotOrgGenerator generator = spy(new TzUrlDotOrgGenerator(false));
 		doReturn(noTimezoneId()).when(generator).getInputStream(any(URI.class));
 
@@ -123,7 +123,7 @@ public class TzUrlDotOrgGeneratorTest {
 	}
 
 	@Test
-	public void empty_tzid() throws Exception {
+	void empty_tzid() throws Exception {
 		TzUrlDotOrgGenerator generator = spy(new TzUrlDotOrgGenerator(false));
 		doReturn(emptyTimezoneId()).when(generator).getInputStream(any(URI.class));
 
@@ -132,7 +132,7 @@ public class TzUrlDotOrgGeneratorTest {
 	}
 
 	@Test
-	public void cache() throws Exception {
+	void cache() throws Exception {
 		TzUrlDotOrgGenerator generator = spy(new TzUrlDotOrgGenerator(true));
 		doReturn(ok()).when(generator).getInputStream(any(URI.class));
 
@@ -149,8 +149,8 @@ public class TzUrlDotOrgGeneratorTest {
 	}
 
 	@Test
-	@Ignore
-	public void live() throws Exception {
+	@Disabled("Accesses the tzurl.org website.")
+	void live() throws Exception {
 		TzUrlDotOrgGenerator generator = new TzUrlDotOrgGenerator(false);
 
 		VTimezone component = generator.generate(TimeZone.getTimeZone("Europe/Paris"));

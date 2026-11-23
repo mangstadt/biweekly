@@ -1,11 +1,11 @@
 package biweekly.io.scribe.component;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.component.ICalComponent;
 import biweekly.component.RawComponent;
@@ -40,18 +40,18 @@ import biweekly.property.RawProperty;
 /**
  * @author Michael Angstadt
  */
-public class ICalComponentScribeTest {
+class ICalComponentScribeTest {
 	private final PartyMarshaller marshaller = new PartyMarshaller();
 
 	@Test
-	public void emptyInstance() {
+	void emptyInstance() {
 		Party comp = marshaller.emptyInstance();
 		assertTrue(comp.getProperties().isEmpty());
 		assertTrue(comp.getComponents().isEmpty());
 	}
 
 	@Test
-	public void getProperties() {
+	void getProperties() {
 		Party comp = new Party();
 		RawProperty rawProp = comp.addExperimentalProperty("X-DJ", "Jonny D");
 
@@ -61,7 +61,7 @@ public class ICalComponentScribeTest {
 	}
 
 	@Test
-	public void getComponents() {
+	void getComponents() {
 		Party comp = new Party();
 		RawComponent rawComp = comp.addExperimentalComponent("X-MUSIC");
 

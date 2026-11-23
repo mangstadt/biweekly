@@ -5,14 +5,14 @@ import static biweekly.property.PropertySensei.assertEqualsMethod;
 import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.Duration;
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.parameter.Related;
 
@@ -44,9 +44,9 @@ import biweekly.parameter.Related;
 /**
  * @author Michael Angstadt
  */
-public class TriggerTest {
+class TriggerTest {
 	@Test
-	public void constructors() throws Exception {
+	void constructors() throws Exception {
 		Trigger property = new Trigger((Date) null);
 		assertNull(property.getDate());
 		assertNull(property.getDuration());
@@ -66,7 +66,7 @@ public class TriggerTest {
 	}
 
 	@Test
-	public void set_value() {
+	void set_value() {
 		Trigger property = new Trigger((Date) null);
 
 		Date date = new Date();
@@ -99,7 +99,7 @@ public class TriggerTest {
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		Trigger property = new Trigger((Date) null);
 		assertValidate(property).run(33);
 
@@ -114,13 +114,13 @@ public class TriggerTest {
 	}
 
 	@Test
-	public void toStringValues() {
+	void toStringValues() {
 		Trigger property = new Trigger(new Date());
 		assertFalse(property.toStringValues().isEmpty());
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		Trigger original = new Trigger((Date) null);
 		assertCopy(original);
 
@@ -132,7 +132,7 @@ public class TriggerTest {
 	}
 
 	@Test
-	public void equals() {
+	void equals() {
 		//@formatter:off
 		assertNothingIsEqual(
 			new Trigger((Date)null),

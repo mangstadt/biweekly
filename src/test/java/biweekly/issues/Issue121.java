@@ -1,10 +1,10 @@
 package biweekly.issues;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.Biweekly;
 import biweekly.ICalendar;
@@ -13,9 +13,9 @@ import biweekly.ICalendar;
  * @author Michael Angstadt
  * @see "https://github.com/mangstadt/biweekly/issues/121"
  */
-public class Issue121 {
+class Issue121 {
 	@Test
-	public void test() throws Exception {
+	void test() throws Exception {
 		//@formatter:off
 		String input =
 		"BEGIN:VCALENDAR\n" +

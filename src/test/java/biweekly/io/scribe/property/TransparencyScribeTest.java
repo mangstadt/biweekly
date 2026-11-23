@@ -3,9 +3,9 @@ package biweekly.io.scribe.property;
 import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Transparency;
@@ -38,13 +38,13 @@ import biweekly.property.Transparency;
 /**
  * @author Michael Angstadt
  */
-public class TransparencyScribeTest extends ScribeTest<Transparency> {
+class TransparencyScribeTest extends ScribeTest<Transparency> {
 	public TransparencyScribeTest() {
 		super(new TransparencyScribe());
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		Transparency opaque = Transparency.opaque();
 		sensei.assertWriteText(opaque).version(V1_0).run("0");
 		sensei.assertWriteText(opaque).version(V2_0_DEPRECATED).run("OPAQUE");
@@ -60,7 +60,7 @@ public class TransparencyScribeTest extends ScribeTest<Transparency> {
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText("0").versions(V1_0).run(isOpaque(true));
 		sensei.assertParseText("0").versions(V2_0_DEPRECATED, V2_0).run(isOpaque(false));
 

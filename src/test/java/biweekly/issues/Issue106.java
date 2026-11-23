@@ -8,24 +8,24 @@ import biweekly.property.DateEnd;
 import biweekly.property.DateStart;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.assertParseWarnings;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * @author Michael Angstadt
  * @see "https://github.com/mangstadt/biweekly/issues/106"
  * @see "https://github.com/mangstadt/biweekly/pull/107"
  */
-public class Issue106 {
+class Issue106 {
 	@Test
-	public void test() throws Exception {
+	void test() throws Exception {
 		String input =
 		"BEGIN:VCALENDAR\n" +
 		"VERSION:2.0\n" +
@@ -69,7 +69,7 @@ public class Issue106 {
 	}
 
 	@Test
-	public void regex_workaround() throws Exception {
+	void regex_workaround() throws Exception {
 		String input =
 		"BEGIN:VCALENDAR\n" +
 		"VERSION:2.0\n" +

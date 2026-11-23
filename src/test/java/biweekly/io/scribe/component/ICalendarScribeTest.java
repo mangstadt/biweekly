@@ -1,11 +1,11 @@
 package biweekly.io.scribe.component;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalendar;
 import biweekly.property.ICalProperty;
@@ -41,9 +41,9 @@ import biweekly.property.Version;
 /**
  * @author Michael Angstadt
  */
-public class ICalendarScribeTest {
+class ICalendarScribeTest {
 	@Test
-	public void getProperties() {
+	void getProperties() {
 		ICalendarScribe scribe = new ICalendarScribe();
 
 		ICalendar ical = new ICalendar();

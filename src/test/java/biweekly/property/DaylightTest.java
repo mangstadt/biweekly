@@ -5,12 +5,12 @@ import static biweekly.property.PropertySensei.assertEqualsMethod;
 import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.util.ICalDate;
 import biweekly.util.UtcOffset;
@@ -43,9 +43,9 @@ import biweekly.util.UtcOffset;
 /**
  * @author Michael Angstadt
  */
-public class DaylightTest {
+class DaylightTest {
 	@Test
-	public void constructors() throws Exception {
+	void constructors() throws Exception {
 		Daylight property = new Daylight();
 		assertFalse(property.isDaylight());
 		assertNull(property.getOffset());
@@ -67,7 +67,7 @@ public class DaylightTest {
 	}
 
 	@Test
-	public void set_value() {
+	void set_value() {
 		UtcOffset offset = new UtcOffset(true, 1, 0);
 		ICalDate start = new ICalDate(date(2016, 1, 17));
 		ICalDate end = new ICalDate(date(2016, 1, 18));
@@ -156,7 +156,7 @@ public class DaylightTest {
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		Daylight daylight = new Daylight();
 		assertValidate(daylight).run();
 
@@ -180,7 +180,7 @@ public class DaylightTest {
 	}
 
 	@Test
-	public void toStringValues() {
+	void toStringValues() {
 		UtcOffset offset = new UtcOffset(true, 1, 0);
 		ICalDate start = new ICalDate(date(2016, 1, 17));
 		ICalDate end = new ICalDate(date(2016, 1, 18));
@@ -189,7 +189,7 @@ public class DaylightTest {
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		UtcOffset offset = new UtcOffset(true, 1, 0);
 		ICalDate start = new ICalDate(date(2016, 1, 17));
 		ICalDate end = new ICalDate(date(2016, 1, 18));
@@ -201,7 +201,7 @@ public class DaylightTest {
 	}
 
 	@Test
-	public void equals() {
+	void equals() {
 		UtcOffset offset = new UtcOffset(true, 1, 0);
 		ICalDate start = new ICalDate(date(2016, 1, 17));
 		ICalDate end = new ICalDate(date(2016, 1, 18));

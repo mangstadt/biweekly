@@ -4,11 +4,11 @@ import static biweekly.property.PropertySensei.assertCopy;
 import static biweekly.property.PropertySensei.assertEqualsMethod;
 import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertValidate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -38,9 +38,9 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class GeoTest {
+class GeoTest {
 	@Test
-	public void constructors() throws Exception {
+	void constructors() throws Exception {
 		Geo property = new Geo(null, null);
 		assertNull(property.getLatitude());
 		assertNull(property.getLongitude());
@@ -51,7 +51,7 @@ public class GeoTest {
 	}
 
 	@Test
-	public void set_value() {
+	void set_value() {
 		Geo property = new Geo(null, null);
 
 		property.setLatitude(12.34);
@@ -72,12 +72,12 @@ public class GeoTest {
 	}
 
 	@Test
-	public void toDecimal() {
+	void toDecimal() {
 		assertEquals(100.502777, Geo.toDecimal(100, 30, 10), 0.1);
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		Geo property = new Geo(null, null);
 		assertValidate(property).run(41, 42);
 
@@ -92,19 +92,19 @@ public class GeoTest {
 	}
 
 	@Test
-	public void toStringValues() {
+	void toStringValues() {
 		Geo property = new Geo(12.34, 56.78);
 		assertFalse(property.toStringValues().isEmpty());
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		Geo original = new Geo(12.34, 56.78);
 		assertCopy(original);
 	}
 
 	@Test
-	public void equals() {
+	void equals() {
 		//@formatter:off
 		assertNothingIsEqual(
 			new Geo(null, null),

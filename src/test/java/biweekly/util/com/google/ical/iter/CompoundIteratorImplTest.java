@@ -41,7 +41,7 @@ package biweekly.util.com.google.ical.iter;
 
 import static biweekly.util.TestUtils.assertIterator;
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +49,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.util.DayOfWeek;
 import biweekly.util.Frequency;
@@ -65,12 +65,12 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author Michael Angstadt
  */
 //@formatter:off
-public class CompoundIteratorImplTest {
+class CompoundIteratorImplTest {
 	private static final TimeZone PST = TimeZone.getTimeZone("America/Los_Angeles");
 	private static final TimeZone UTC = TimeUtils.utcTimezone();
 
 	@Test
-	public void multipleCallsToHasNext() {
+	void multipleCallsToHasNext() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.THURSDAY)
 			.count(3)
@@ -92,7 +92,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void interleavingOfDateIterators() {
+	void interleavingOfDateIterators() {
 		Collection<RecurrenceIterator> inclusions = Arrays.asList(
 			RecurrenceIteratorFactory.createRecurrenceIterator(Arrays.asList(
 				new DateValueImpl(2006, 4, 18),
@@ -117,7 +117,7 @@ public class CompoundIteratorImplTest {
 	}
 	
 	@Test
-	public void interleavingOfDateIterators_advanceTo_on_date() {
+	void interleavingOfDateIterators_advanceTo_on_date() {
 		Collection<RecurrenceIterator> inclusions = Arrays.asList(
 			RecurrenceIteratorFactory.createRecurrenceIterator(Arrays.asList(
 				new DateValueImpl(2006, 4, 18),
@@ -142,7 +142,7 @@ public class CompoundIteratorImplTest {
 	}
 	
 	@Test
-	public void interleavingOfDateIterators_advanceTo_after_date() {
+	void interleavingOfDateIterators_advanceTo_after_date() {
 		Collection<RecurrenceIterator> inclusions = Arrays.asList(
 			RecurrenceIteratorFactory.createRecurrenceIterator(Arrays.asList(
 				new DateValueImpl(2006, 4, 18),
@@ -165,7 +165,7 @@ public class CompoundIteratorImplTest {
 	}
 	
 	@Test
-	public void interleavingOfDateIterators_advanceTo_after_end() {
+	void interleavingOfDateIterators_advanceTo_after_end() {
 		Collection<RecurrenceIterator> inclusions = Arrays.asList(
 			RecurrenceIteratorFactory.createRecurrenceIterator(Arrays.asList(
 				new DateValueImpl(2006, 4, 18),
@@ -186,7 +186,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void interleavingOfDateIteratorsWithExclusions() {
+	void interleavingOfDateIteratorsWithExclusions() {
 		Collection<RecurrenceIterator> inclusions = Arrays.asList(
 			RecurrenceIteratorFactory.createRecurrenceIterator(Arrays.asList(
 				new DateValueImpl(2006, 4, 17),
@@ -217,7 +217,7 @@ public class CompoundIteratorImplTest {
 	}
 	
 	@Test
-	public void interleavingOfDateIteratorsWithExclusions_advanceTo_on_date() {
+	void interleavingOfDateIteratorsWithExclusions_advanceTo_on_date() {
 		Collection<RecurrenceIterator> inclusions = Arrays.asList(
 			RecurrenceIteratorFactory.createRecurrenceIterator(Arrays.asList(
 				new DateValueImpl(2006, 4, 17),
@@ -248,7 +248,7 @@ public class CompoundIteratorImplTest {
 	}
 	
 	@Test
-	public void interleavingOfDateIteratorsWithExclusions_advanceTo_after_date() {
+	void interleavingOfDateIteratorsWithExclusions_advanceTo_after_date() {
 		Collection<RecurrenceIterator> inclusions = Arrays.asList(
 			RecurrenceIteratorFactory.createRecurrenceIterator(Arrays.asList(
 				new DateValueImpl(2006, 4, 17),
@@ -278,7 +278,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void infiniteRecurrences() {
+	void infiniteRecurrences() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
 		.build();
@@ -321,7 +321,7 @@ public class CompoundIteratorImplTest {
 	}
 	
 	@Test
-	public void infiniteRecurrences_advanceTo_on_date() {
+	void infiniteRecurrences_advanceTo_on_date() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
 		.build();
@@ -358,7 +358,7 @@ public class CompoundIteratorImplTest {
 	}
 	
 	@Test
-	public void infiniteRecurrences_advanceTo_after_date() {
+	void infiniteRecurrences_advanceTo_after_date() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
 		.build();
@@ -392,7 +392,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void infiniteExclusionsAndFiniteInclusions() {
+	void infiniteExclusionsAndFiniteInclusions() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
 			.until(new ICalDate(date(2006, 5, 3), false))
@@ -434,7 +434,7 @@ public class CompoundIteratorImplTest {
 	}
 	
 	@Test
-	public void infiniteExclusionsAndFiniteInclusions_advanceTo_on_date() {
+	void infiniteExclusionsAndFiniteInclusions_advanceTo_on_date() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
 			.until(new ICalDate(date(2006, 5, 3), false))
@@ -472,7 +472,7 @@ public class CompoundIteratorImplTest {
 	}
 	
 	@Test
-	public void infiniteExclusionsAndFiniteInclusions_advanceTo_after_date() {
+	void infiniteExclusionsAndFiniteInclusions_advanceTo_after_date() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
 			.until(new ICalDate(date(2006, 5, 3), false))
@@ -505,7 +505,7 @@ public class CompoundIteratorImplTest {
 	}
 	
 	@Test
-	public void identicalInclusionsAndExclusions() {
+	void identicalInclusionsAndExclusions() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.DAILY).count(3).build();
 		DateValue start = new DateValueImpl(2006, 4, 11);
 		
@@ -533,7 +533,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkey1() {
+	void monkey1() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.MONTHLY)
 			.interval(1)
 			.byMonth(9, 5, 3)
@@ -557,7 +557,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkey2() {
+	void monkey2() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY)
 			.count(19)
 			.interval(1)
@@ -577,7 +577,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkey3() {
+	void monkey3() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY)
 			.workweekStarts(DayOfWeek.SUNDAY)
 			.interval(1)
@@ -599,7 +599,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkey4() {
+	void monkey4() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.MONTHLY)
 			.workweekStarts(DayOfWeek.SUNDAY)
 			.interval(1)
@@ -630,7 +630,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkey5() {
+	void monkey5() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.count(14)
 			.interval(1)
@@ -671,7 +671,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkey6() {
+	void monkey6() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.MONTHLY)
 			.until(date(2006, 5, 10, 15, 10, 44, UTC))
 			.interval(1)
@@ -692,7 +692,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkey7() {
+	void monkey7() {
 		//a bug in the by week generator was causing us to skip Feb 2007
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.workweekStarts(DayOfWeek.SUNDAY)
@@ -719,7 +719,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkey8() {
+	void monkey8() {
 		//I don't know which side this failing on?
 		Recurrence rrule = new Recurrence.Builder(Frequency.WEEKLY)
 			.count(18)
@@ -760,7 +760,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkey9() {
+	void monkey9() {
 		// another libical crasher
 		Recurrence rrule = new Recurrence.Builder(Frequency.MONTHLY)
 			.workweekStarts(DayOfWeek.SUNDAY)
@@ -787,7 +787,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkey10() {
+	void monkey10() {
 		// another libical hanger
 		Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY)
 			.byYearDay(1)
@@ -810,7 +810,7 @@ public class CompoundIteratorImplTest {
 	}
 	
 	@Test
-	public void monkey10_2() {
+	void monkey10_2() {
 		// another libical hanger
 		Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY)
 			.byYearDay(1)
@@ -830,7 +830,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkey11() {
+	void monkey11() {
 		//days of the month in December
 		//8, 10, 9, 6, 4, 14, 22, 23, 18, 24, 4, 24, 18
 		//unique
@@ -857,7 +857,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkey11WithAdvanceTo() {
+	void monkey11WithAdvanceTo() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY)
 			.interval(1)
 			.byMonthDay(8, -22, 9, -26, -28, 14, -10, -9, -14, -8, 4, 24, -14)
@@ -882,7 +882,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkey12() {
+	void monkey12() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.DAILY)
 			.interval(1)
 			.byMonthDay(5, 29, 31, -19, -28)
@@ -905,7 +905,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkey13() {
+	void monkey13() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.DAILY)
 			.workweekStarts(DayOfWeek.SUNDAY)
 			.count(4)
@@ -929,7 +929,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkey14() {
+	void monkey14() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY)
 			.byDay(DayOfWeek.THURSDAY)
 		.build();
@@ -950,7 +950,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void excludedStart() {
+	void excludedStart() {
 		Recurrence rrule = new Recurrence.Builder(Frequency.YEARLY)
 			.until(date(2007, 4, 14, 0, 0 ,0, PST))
 			.interval(1)
@@ -975,7 +975,7 @@ public class CompoundIteratorImplTest {
 	}
 
 	@Test
-	public void monkeySeptember1() {
+	void monkeySeptember1() {
 		// From the Monkey Tester
 		// RANDOM SEED 1156837020593
 		// RRULE:FREQ=DAILY;WKST=SU;INTERVAL=1;BYMINUTE=60 / 2006-09-20 23:15:51

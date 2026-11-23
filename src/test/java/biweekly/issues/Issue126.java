@@ -1,11 +1,11 @@
 package biweekly.issues;
 
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.Biweekly;
 import biweekly.ICalendar;
@@ -15,9 +15,9 @@ import biweekly.component.VEvent;
  * @author Michael Angstadt
  * @see "https://github.com/mangstadt/biweekly/issues/126"
  */
-public class Issue126 {
+class Issue126 {
 	@Test
-	public void test() throws Exception {
+	void test() throws Exception {
 		ICalendar ical = Biweekly.parse(getClass().getResourceAsStream("issue126.ics")).first();
 
 		/*

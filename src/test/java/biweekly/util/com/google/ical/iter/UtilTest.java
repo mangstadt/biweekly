@@ -39,12 +39,12 @@
 
 package biweekly.util.com.google.ical.iter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
@@ -54,9 +54,9 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  * @author Michael Angstadt
  */
-public class UtilTest {
+class UtilTest {
 	@Test
-	public void dayNumToDateInMonth() {
+	void dayNumToDateInMonth() {
 		//        March 2006
 		// Su Mo Tu We Th Fr Sa
 		//           1  2  3  4
@@ -92,7 +92,7 @@ public class UtilTest {
 	}
 
 	@Test
-	public void dayNumToDateInYear() {
+	void dayNumToDateInYear() {
 		//        January 2006
 		//  # Su Mo Tu We Th Fr Sa
 		//  1  1  2  3  4  5  6  7
@@ -147,7 +147,7 @@ public class UtilTest {
 	}
 
 	@Test
-	public void uniquify() {
+	void uniquify() {
 		int[] ints = new int[] { 1, 4, 4, 2, 7, 3, 8, 0, 0, 3 };
 		int[] actual = Util.uniquify(ints);
 		int[] expected = { 0, 1, 2, 3, 4, 7, 8 };
@@ -155,7 +155,7 @@ public class UtilTest {
 	}
 
 	@Test
-	public void nextWeekStart() {
+	void nextWeekStart() {
 		assertEquals(new DateValueImpl(2006, 1, 24), Util.nextWeekStart(new DateValueImpl(2006, 1, 23), DayOfWeek.TUESDAY));
 		assertEquals(new DateValueImpl(2006, 1, 24), Util.nextWeekStart(new DateValueImpl(2006, 1, 24), DayOfWeek.TUESDAY));
 		assertEquals(new DateValueImpl(2006, 1, 31), Util.nextWeekStart(new DateValueImpl(2006, 1, 25), DayOfWeek.TUESDAY));
@@ -166,7 +166,7 @@ public class UtilTest {
 	}
 
 	@Test
-	public void countInPeriod() {
+	void countInPeriod() {
 		//        January 2006
 		//  Su Mo Tu We Th Fr Sa
 		//   1  2  3  4  5  6  7
@@ -199,7 +199,7 @@ public class UtilTest {
 	}
 
 	@Test
-	public void invertWeekdayNum() {
+	void invertWeekdayNum() {
 		//        January 2006
 		//  # Su Mo Tu We Th Fr Sa
 		//  1  1  2  3  4  5  6  7

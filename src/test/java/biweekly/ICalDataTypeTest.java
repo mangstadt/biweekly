@@ -1,13 +1,13 @@
 package biweekly;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.github.mangstadt.vinnie.LaciToken;
 
@@ -39,9 +39,9 @@ import com.github.mangstadt.vinnie.LaciToken;
 /**
  * @author Michael Angstadt
  */
-public class ICalDataTypeTest {
+class ICalDataTypeTest {
 	@Test
-	public void get() {
+	void get() {
 		assertSame(ICalDataType.TEXT, ICalDataType.get("tExT"));
 
 		ICalDataType test = ICalDataType.get("test");
@@ -51,7 +51,7 @@ public class ICalDataTypeTest {
 	}
 
 	@Test
-	public void find() {
+	void find() {
 		assertSame(ICalDataType.TEXT, ICalDataType.find("tExT"));
 
 		//find() ignores runtime-defined objects
@@ -60,7 +60,7 @@ public class ICalDataTypeTest {
 	}
 
 	@Test
-	public void all() {
+	void all() {
 		ICalDataType.get("test"); //all() ignores runtime-defined objects
 		Collection<ICalDataType> all = ICalDataType.all();
 
@@ -84,7 +84,7 @@ public class ICalDataTypeTest {
 	}
 
 	@Test
-	public void contentId() {
+	void contentId() {
 		assertEquals(ICalDataType.CONTENT_ID, ICalDataType.find("CID"));
 		assertEquals(ICalDataType.CONTENT_ID, ICalDataType.get("CID"));
 	}

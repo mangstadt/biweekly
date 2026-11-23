@@ -5,15 +5,15 @@ import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertEqualsAndHash;
 import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertValidate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -43,9 +43,9 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class ListPropertyTest {
+class ListPropertyTest {
 	@Test
-	public void constructors() throws Exception {
+	void constructors() throws Exception {
 		ListProperty<String> property = new ListProperty<>();
 		assertEquals(Arrays.asList(), property.getValues());
 
@@ -58,12 +58,12 @@ public class ListPropertyTest {
 	}
 
 	@Test
-	public void constructor_null_list() {
+	void constructor_null_list() {
 		assertThrows(NullPointerException.class, () -> new ListProperty<>((List<String>) null));
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		ListProperty<String> property = new ListProperty<>();
 		assertValidate(property).run(26);
 
@@ -73,13 +73,13 @@ public class ListPropertyTest {
 	}
 
 	@Test
-	public void toStringValues() {
+	void toStringValues() {
 		ListProperty<String> property = new ListProperty<>();
 		assertFalse(property.toStringValues().isEmpty());
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		ListProperty<String> original = new ListProperty<>();
 		assertCopy(original).notSame("getValues");
 
@@ -88,7 +88,7 @@ public class ListPropertyTest {
 	}
 
 	@Test
-	public void equals() {
+	void equals() {
 		//@formatter:off
 		assertNothingIsEqual(
 			new ListProperty<>(),

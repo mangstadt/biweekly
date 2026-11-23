@@ -40,13 +40,13 @@
 package biweekly.util.com.google.ical.compat.javautil;
 
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.util.Frequency;
 import biweekly.util.Recurrence;
@@ -61,12 +61,12 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  * @author Michael Angstadt
  */
-public class DateIteratorFactoryTest {
+class DateIteratorFactoryTest {
 	private static final TimeZone UTC = TimeUtils.utcTimezone();
 	private static final TimeZone PST = TimeZone.getTimeZone("America/Los_Angeles");
 
 	@Test
-	public void createDateIterableUntimed() {
+	void createDateIterableUntimed() {
 		//@formatter:off
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
 			.interval(2)
@@ -96,7 +96,7 @@ public class DateIteratorFactoryTest {
 	}
 
 	@Test
-	public void createDateIterableMidnight() {
+	void createDateIterableMidnight() {
 		//@formatter:off
 		Recurrence recur = new Recurrence.Builder(Frequency.HOURLY)
 			.interval(2)
@@ -126,7 +126,7 @@ public class DateIteratorFactoryTest {
 	}
 
 	@Test
-	public void createDateIterableTimed() {
+	void createDateIterableTimed() {
 		//@formatter:off
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
 			.interval(2)

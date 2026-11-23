@@ -6,11 +6,11 @@ import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertEqualsAndHash;
 import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertListSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -43,16 +43,16 @@ import biweekly.ICalVersion;
 /**
  * @author Michael Angstadt
  */
-public class ICalParametersTest {
+class ICalParametersTest {
 	private ICalParameters params;
 
-	@Before
-	public void before() {
+	@BeforeEach
+	void beforeEach() {
 		params = new ICalParameters();
 	}
 
 	@Test
-	public void case_insensitive() {
+	void case_insensitive() {
 		//tests to make sure sanitizeKey() is implemented correctly
 		//ListMultimapTest tests the rest of the get/put/remove methods
 		params.put("NUMBERS", "1");
@@ -60,12 +60,12 @@ public class ICalParametersTest {
 	}
 
 	@Test
-	public void validate_empty() {
+	void validate_empty() {
 		assertListSize(0, params.validate(V2_0));
 	}
 
 	@Test
-	public void validate_rsvp() {
+	void validate_rsvp() {
 		params.replace(ICalParameters.RSVP, "foo");
 		assertListSize(1, params.validate(V2_0));
 
@@ -83,7 +83,7 @@ public class ICalParametersTest {
 	}
 
 	@Test
-	public void validate_bad_values() {
+	void validate_bad_values() {
 		params.put(ICalParameters.CUTYPE, "foo");
 		params.put(ICalParameters.FBTYPE, "foo");
 		params.put(ICalParameters.PARTSTAT, "foo");
@@ -97,7 +97,7 @@ public class ICalParametersTest {
 	}
 
 	@Test
-	public void validate_good_values() {
+	void validate_good_values() {
 		params.put(ICalParameters.CUTYPE, CalendarUserType.GROUP.getValue());
 		params.put(ICalParameters.FBTYPE, FreeBusyType.BUSY.getValue());
 		params.put(ICalParameters.PARTSTAT, ParticipationStatus.ACCEPTED.getValue());
@@ -111,7 +111,7 @@ public class ICalParametersTest {
 	}
 
 	@Test
-	public void validate_deprecated_values() {
+	void validate_deprecated_values() {
 		params.put(ICalParameters.RANGE, Range.THIS_AND_PRIOR.getValue());
 		assertListSize(0, params.validate(V1_0));
 		assertListSize(0, params.validate(V2_0_DEPRECATED));
@@ -119,7 +119,7 @@ public class ICalParametersTest {
 	}
 
 	@Test
-	public void validate_parameter_name() {
+	void validate_parameter_name() {
 		params.replace("YES/NO", "value");
 		assertListSize(0, params.validate(V1_0));
 		assertListSize(1, params.validate(V2_0_DEPRECATED));
@@ -139,7 +139,7 @@ public class ICalParametersTest {
 	}
 
 	@Test
-	public void validate_parameter_value_characters() {
+	void validate_parameter_value_characters() {
 		for (char c : ",.:=[]".toCharArray()) {
 			params.replace("NAME", "value" + c);
 			assertListSize(1, params.validate(V1_0));
@@ -153,14 +153,14 @@ public class ICalParametersTest {
 	}
 
 	@Test
-	public void equals_essentials() {
+	void equals_essentials() {
 		ICalParameters one = new ICalParameters();
 		one.put("foo", "bar");
 		assertEqualsMethodEssentials(one);
 	}
 
 	@Test
-	public void equals_different_number_of_parameters() {
+	void equals_different_number_of_parameters() {
 		ICalParameters one = new ICalParameters();
 		one.put("foo", "one");
 
@@ -173,7 +173,7 @@ public class ICalParametersTest {
 	}
 
 	@Test
-	public void equals_case_insensitive() {
+	void equals_case_insensitive() {
 		ICalParameters one = new ICalParameters();
 		one.put("foo", "bar");
 
@@ -184,7 +184,7 @@ public class ICalParametersTest {
 	}
 
 	@Test
-	public void equals_order_does_not_matter() {
+	void equals_order_does_not_matter() {
 		ICalParameters one = new ICalParameters();
 		one.put("foo", "one");
 		one.put("foo", "two");
@@ -199,7 +199,7 @@ public class ICalParametersTest {
 	}
 
 	@Test
-	public void equals_duplicate_values() {
+	void equals_duplicate_values() {
 		ICalParameters one = new ICalParameters();
 		one.put("foo", "one");
 		one.put("foo", "one");
@@ -214,7 +214,7 @@ public class ICalParametersTest {
 	}
 
 	@Test
-	public void equals_different_duplicates_same_value_size() {
+	void equals_different_duplicates_same_value_size() {
 		ICalParameters one = new ICalParameters();
 		one.put("foo", "one");
 		one.put("foo", "one");
@@ -230,7 +230,7 @@ public class ICalParametersTest {
 	}
 
 	@Test
-	public void equals_multiple_keys() {
+	void equals_multiple_keys() {
 		ICalParameters one = new ICalParameters();
 		one.put("foo", "BAR");
 		one.put("super", "man");

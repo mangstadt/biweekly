@@ -2,11 +2,11 @@ package biweekly.util;
 
 import static biweekly.ICalVersion.V2_0;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -29,6 +29,8 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
+
+import com.github.mangstadt.vinnie.LaciToken;
 
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
@@ -121,7 +123,7 @@ public class TestUtils {
 	 */
 	public static void assertListSize(int expectedSize, List<?> list) {
 		int actualSize = list.size();
-		assertEquals(list.toString(), expectedSize, actualSize);
+		assertEquals(expectedSize, actualSize, list::toString);
 	}
 
 	/**
@@ -131,7 +133,7 @@ public class TestUtils {
 	 */
 	public static void assertRegex(String regex, String string) {
 		Pattern p = Pattern.compile(regex);
-		assertTrue(string, p.matcher(string).matches());
+		assertTrue(p.matcher(string).matches(), string);
 	}
 
 	/**
@@ -154,7 +156,7 @@ public class TestUtils {
 
 		Collection<T> actualCopy = new ArrayList<>(actual);
 		for (T expectedElement : expectedElements) {
-			assertTrue("Collection did not contain: " + expectedElement, actualCopy.remove(expectedElement));
+			assertTrue(actualCopy.remove(expectedElement), () -> "Collection did not contain: " + expectedElement);
 		}
 	}
 
@@ -612,7 +614,7 @@ public class TestUtils {
 		for (Object object1 : objects) {
 			for (Object object2 : objects) {
 				if (object1 != object2) {
-					assertNotEquals("Objects should not be equal:\n" + object1 + "\n" + object2, object1, object2);
+					assertNotEquals(object1, object2, () -> "Objects should not be equal:\n" + object1 + "\n" + object2);
 				}
 			}
 		}
@@ -639,6 +641,10 @@ public class TestUtils {
 		}
 
 		return ical.getTimezoneInfo().getComponents().iterator().next();
+	}
+
+	public static List<LaciToken> laciTokens(String... tokens) {
+		return Arrays.stream(tokens).map(LaciToken::new).collect(Collectors.toList());
 	}
 
 	private TestUtils() {

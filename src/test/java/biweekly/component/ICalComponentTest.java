@@ -6,20 +6,20 @@ import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertListSize;
 import static biweekly.util.TestUtils.assertSize;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.github.mangstadt.vinnie.LaciToken;
 
@@ -59,15 +59,15 @@ import biweekly.property.Summary;
 /**
  * @author Michael Angstadt
  */
-public class ICalComponentTest {
+class ICalComponentTest {
 	@Test
-	public void constructors() {
+	void constructors() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		assertSize(component, 0, 0);
 	}
 
 	@Test
-	public void getProperty_addProperty() {
+	void getProperty_addProperty() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		Summary property = new Summary("value");
 
@@ -81,7 +81,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void getProperties() {
+	void getProperties() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		List<Summary> list = component.getProperties(Summary.class);
 
@@ -113,7 +113,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void setProperty() {
+	void setProperty() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		Summary property = new Summary("value");
 		Summary property2 = new Summary("value2");
@@ -137,7 +137,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void removeProperty() {
+	void removeProperty() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		Summary property = new Summary("value");
 		Summary property2 = new Summary("value2");
@@ -153,7 +153,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void removeProperties() {
+	void removeProperties() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		Summary property = new Summary("value");
 		Summary property2 = new Summary("value2");
@@ -169,7 +169,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void addExperimentalProperty() {
+	void addExperimentalProperty() {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		RawProperty property = component.addExperimentalProperty("NAME", "value");
@@ -186,7 +186,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void getExperimentalProperty() {
+	void getExperimentalProperty() {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		assertNull(component.getExperimentalProperty("NAME"));
@@ -203,7 +203,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void getExperimentalProperties_byName() {
+	void getExperimentalProperties_byName() {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		assertEquals(asList(), component.getExperimentalProperties("NAME"));
@@ -219,7 +219,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void getExperimentalProperties() {
+	void getExperimentalProperties() {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		assertEquals(asList(), component.getExperimentalProperties());
@@ -232,7 +232,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void setExperimentalProperty() {
+	void setExperimentalProperty() {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		RawProperty property = component.setExperimentalProperty("NAME", "value");
@@ -249,7 +249,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void removeExperimentalProperties() {
+	void removeExperimentalProperties() {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		assertEquals(asList(), component.removeExperimentalProperties("NAME"));
@@ -261,7 +261,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void getComponent_addComponent() {
+	void getComponent_addComponent() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		VEvent subComponent = new VEvent();
 
@@ -272,7 +272,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void getComponents() {
+	void getComponents() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		List<VEvent> list = component.getComponents(VEvent.class);
 
@@ -304,7 +304,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void setComponent() {
+	void setComponent() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		VEvent subComponent = new VEvent();
 		VEvent subComponent2 = new VEvent();
@@ -328,7 +328,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void removeComponent() {
+	void removeComponent() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		VEvent subComponent = new VEvent();
 		VEvent subComponent2 = new VEvent();
@@ -344,7 +344,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void removeComponents() {
+	void removeComponents() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		VEvent subComponent = new VEvent();
 		VEvent subComponent2 = new VEvent();
@@ -360,7 +360,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void addExperimentalComponent() {
+	void addExperimentalComponent() {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		RawComponent subComponent = component.addExperimentalComponent("NAME");
@@ -370,7 +370,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void getExperimentalComponent() {
+	void getExperimentalComponent() {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		assertNull(component.getExperimentalComponent("NAME"));
@@ -387,7 +387,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void getExperimentalComponents_byName() {
+	void getExperimentalComponents_byName() {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		assertEquals(asList(), component.getExperimentalComponents("NAME"));
@@ -404,7 +404,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void getExperimentalComponents() {
+	void getExperimentalComponents() {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		assertEquals(asList(), component.getExperimentalComponents());
@@ -417,7 +417,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void setExperimentalComponent() {
+	void setExperimentalComponent() {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		RawComponent subComponent = component.setExperimentalComponent("NAME");
@@ -430,7 +430,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void removeExperimentalComponents() {
+	void removeExperimentalComponents() {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		assertEquals(asList(), component.removeExperimentalComponents("NAME"));
@@ -443,7 +443,7 @@ public class ICalComponentTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void checkRequiredCardinality() {
+	void checkRequiredCardinality() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		component.addProperty(new Summary(""));
 		component.addProperty(new Description(""));
@@ -458,7 +458,7 @@ public class ICalComponentTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void checkOptionalCardinality() {
+	void checkOptionalCardinality() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		component.addProperty(new Summary(""));
 		component.addProperty(new Description(""));
@@ -472,7 +472,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void checkStatus_valid() {
+	void checkStatus_valid() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		component.addProperty(Status.cancelled());
 
@@ -483,7 +483,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void checkStatus_invalid() {
+	void checkStatus_invalid() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		component.addProperty(Status.cancelled());
 
@@ -494,7 +494,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void checkStatus_null() {
+	void checkStatus_null() {
 		ICalComponentImpl component = new ICalComponentImpl();
 
 		List<ValidationWarning> warnings = new ArrayList<>();
@@ -504,7 +504,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		TestComponentWithCopyConstructor component = new TestComponentWithCopyConstructor();
 		component.addExperimentalProperty("PROP", "one");
 		RawComponent subComponent = new RawComponent("RAW");
@@ -523,7 +523,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void copy_constructor_throws_exception() {
+	void copy_constructor_throws_exception() {
 		RuntimeException exception = new RuntimeException();
 		TestComponentCopyConstructorThrowsException component = new TestComponentCopyConstructorThrowsException(exception);
 		UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class, component::copy);
@@ -532,20 +532,20 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void copy_no_copy_constructor_or_method() {
+	void copy_no_copy_constructor_or_method() {
 		ICalComponentImpl component = new ICalComponentImpl();
 		UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class, component::copy);
 		assertTrue(e.getCause() instanceof NoSuchMethodException);
 	}
 
 	@Test
-	public void equals_essentials() {
+	void equals_essentials() {
 		ICalComponentImpl one = new ICalComponentImpl();
 		assertEqualsMethodEssentials(one);
 	}
 
 	@Test
-	public void equals_different_number_of_properties() {
+	void equals_different_number_of_properties() {
 		ICalComponentImpl one = new ICalComponentImpl();
 		one.addExperimentalProperty("PROP", "value");
 
@@ -558,7 +558,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void equals_different_number_of_components() {
+	void equals_different_number_of_components() {
 		ICalComponentImpl one = new ICalComponentImpl();
 		one.addExperimentalComponent("COMP");
 
@@ -571,7 +571,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void equals_properties_not_equal() {
+	void equals_properties_not_equal() {
 		ICalComponentImpl one = new ICalComponentImpl();
 		one.addExperimentalProperty("PROP", "one");
 
@@ -583,7 +583,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void equals_components_not_equal() {
+	void equals_components_not_equal() {
 		ICalComponentImpl one = new ICalComponentImpl();
 		one.addExperimentalComponent("COMP");
 
@@ -595,7 +595,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void equals_ignore_order() {
+	void equals_ignore_order() {
 		ICalComponentImpl one = new ICalComponentImpl();
 		one.addExperimentalProperty("PROP", "one");
 		one.addExperimentalProperty("PROP", "two");
@@ -612,7 +612,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void equals_multiple_identical_properties() {
+	void equals_multiple_identical_properties() {
 		ICalComponentImpl one = new ICalComponentImpl();
 		one.addExperimentalProperty("PROP", "one");
 		one.addExperimentalProperty("PROP", "one");
@@ -632,7 +632,7 @@ public class ICalComponentTest {
 	 * treated as a single property when they are put in a HashSet.
 	 */
 	@Test
-	public void equals_multiple_identical_properties_not_equal() {
+	void equals_multiple_identical_properties_not_equal() {
 		ICalComponentImpl one = new ICalComponentImpl();
 		one.addExperimentalProperty("PROP", "one");
 		one.addExperimentalProperty("PROP", "one");
@@ -648,7 +648,7 @@ public class ICalComponentTest {
 	}
 
 	@Test
-	public void toString_() {
+	void toString_() {
 		//@formatter:off
 		ICalComponentImpl component = new ICalComponentImpl();
 		assertEquals(

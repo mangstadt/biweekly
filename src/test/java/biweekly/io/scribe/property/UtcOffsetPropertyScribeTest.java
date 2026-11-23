@@ -1,8 +1,8 @@
 package biweekly.io.scribe.property;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.io.scribe.property.UtcOffsetPropertyScribeTest.UtcOffsetPropertyImpl;
@@ -37,7 +37,7 @@ import biweekly.util.UtcOffset;
 /**
  * @author Michael Angstadt
  */
-public class UtcOffsetPropertyScribeTest extends ScribeTest<UtcOffsetPropertyImpl> {
+class UtcOffsetPropertyScribeTest extends ScribeTest<UtcOffsetPropertyImpl> {
 	private final UtcOffsetPropertyImpl withValue = new UtcOffsetPropertyImpl(new UtcOffset(true, 1, 30));
 	private final UtcOffsetPropertyImpl empty = new UtcOffsetPropertyImpl(null);
 
@@ -46,38 +46,38 @@ public class UtcOffsetPropertyScribeTest extends ScribeTest<UtcOffsetPropertyImp
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withValue).run("+0130");
 		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText("+0130").run(is(withValue));
 		sensei.assertParseText("invalid").cannotParse(28);
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		sensei.assertWriteXml(withValue).run("<utc-offset>+01:30</utc-offset>");
 		sensei.assertWriteXml(empty).run("<utc-offset/>");
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		sensei.assertParseXml("<utc-offset>+01:30</utc-offset>").run(is(withValue));
 		sensei.assertParseXml("<utc-offset>invalid</utc-offset>").cannotParse(28);
 		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		sensei.assertWriteJson(withValue).run("+01:30");
 		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		sensei.assertParseJson("+01:30").run(is(withValue));
 		sensei.assertParseJson("invalid").cannotParse(28);
 		sensei.assertParseJson("").cannotParse(28);

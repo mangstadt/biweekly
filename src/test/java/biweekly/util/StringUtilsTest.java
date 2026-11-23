@@ -1,14 +1,14 @@
 package biweekly.util;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -38,9 +38,9 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class StringUtilsTest {
+class StringUtilsTest {
 	@Test
-	public void repeat_sb() {
+	void repeat_sb() {
 		StringBuilder sb = new StringBuilder("a");
 		StringUtils.repeat(' ', 2, sb);
 		assertEquals("a  ", sb.toString());
@@ -55,7 +55,7 @@ public class StringUtilsTest {
 	}
 
 	@Test
-	public void afterPrefixIgnoreCase() {
+	void afterPrefixIgnoreCase() {
 		String expected = StringUtils.afterPrefixIgnoreCase("MAILTO:email@example.com", "mailto:");
 		assertEquals("email@example.com", expected);
 
@@ -67,14 +67,14 @@ public class StringUtilsTest {
 	}
 
 	@Test
-	public void startsWithIgnoreCase() {
+	void startsWithIgnoreCase() {
 		assertTrue(StringUtils.startsWithIgnoreCase("MAILTO:email@example.com", "mailto:"));
 		assertFalse(StringUtils.startsWithIgnoreCase("http://www.google.com", "mailto:"));
 		assertFalse(StringUtils.startsWithIgnoreCase("m", "mailto:"));
 	}
 
 	@Test
-	public void decodeBase64Lenient() {
+	void decodeBase64Lenient() {
 		byte[] expected = "test".getBytes(StandardCharsets.UTF_8);
 		String encoded = StringUtils.encodeBase64(expected);
 		String encodedWithWithspace = encoded.substring(0, 1) + " " + encoded.substring(1, 2) + "\t" + encoded.substring(2);
@@ -83,7 +83,7 @@ public class StringUtilsTest {
 	}
 
 	@Test
-	public void encodeBase64() {
+	void encodeBase64() {
 		byte[] data = "test".getBytes(StandardCharsets.UTF_8);
 		String actual = StringUtils.encodeBase64(data);
 		String expected = "dGVzdA==";

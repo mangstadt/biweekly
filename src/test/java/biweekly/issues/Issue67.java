@@ -1,6 +1,6 @@
 package biweekly.issues;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.Biweekly;
 import biweekly.ICalendar;
@@ -21,7 +21,7 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * @author Michael Angstadt
  * @see "https://github.com/mangstadt/biweekly/issues/67"
  */
-public class Issue67 {
+class Issue67 {
 	/*
 	 * These tests failed for user Dupplicate under the default timezone "CET"
 	 * RRuleIteratorImplTest#dailyUntilDec4
@@ -29,7 +29,7 @@ public class Issue67 {
 	 */
 
 	@Test
-	public void carolinelane10() throws Exception {
+	void carolinelane10() throws Exception {
 		ICalendar ical = Biweekly.parseJson(Issue67.class.getResourceAsStream("issue67.json")).first();
 		VEvent vEvent = ical.getEvents().get(0);
 

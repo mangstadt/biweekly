@@ -39,15 +39,15 @@
 
 package biweekly.util.com.google.ical.iter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.util.ByDay;
 import biweekly.util.DayOfWeek;
@@ -61,10 +61,10 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  * @author Michael Angstadt
  */
-public class GeneratorsTest {
+class GeneratorsTest {
 	//@formatter:off
 	@Test
-	public void byYearDayGenerator() throws Exception {
+	void byYearDayGenerator() throws Exception {
 		{
 			int[] yearDays = { 1, 5, -1, 100 };
 			DateValue start = new DateValueImpl(2006, 1, 1);
@@ -150,7 +150,7 @@ public class GeneratorsTest {
 	}
 	
 	@Test
-	public void byWeekNoGenerator() throws Exception {
+	void byWeekNoGenerator() throws Exception {
 		{
 			int[] weekNumbers = { 22 };
 			DayOfWeek weekStart = DayOfWeek.SUNDAY;
@@ -331,7 +331,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void byDayGenerator() throws Exception {
+	void byDayGenerator() throws Exception {
 		ByDay[] days = {
 			new ByDay(DayOfWeek.SUNDAY), //every sunday
 			new ByDay(1, DayOfWeek.MONDAY), //first monday
@@ -372,7 +372,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void byMonthDayGenerator() throws Exception {
+	void byMonthDayGenerator() throws Exception {
 		{
 			int[] monthDays = { 1, 15, 29 };
 
@@ -469,7 +469,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void byMonthGenerator() throws Exception {
+	void byMonthGenerator() throws Exception {
 		{
 			int[] months = { 2, 8, 6, 10 };
 			DateValue start = new DateValueImpl(2006, 1, 1);
@@ -514,7 +514,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void byYearGenerator() throws Exception {
+	void byYearGenerator() throws Exception {
 		{
 			int years[] = { 1066, 1492, 1876, 1975, 2006 };
 			
@@ -569,7 +569,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void serialDayGenerator() throws Exception {
+	void serialDayGenerator() throws Exception {
 		{
 			int interval = 1;
 			DateValue start = new DateValueImpl(2006, 1, 15);
@@ -663,7 +663,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void serialMonthGenerator() throws Exception {
+	void serialMonthGenerator() throws Exception {
 		{
 			int interval = 1;
 			DateValue start = new DateValueImpl(2006, 1, 1);
@@ -762,7 +762,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void serialYearGenerator() throws Exception {
+	void serialYearGenerator() throws Exception {
 		{
 			int interval = 1;
 			DateValue start = new DateValueImpl(2006, 4, 1);
@@ -796,7 +796,7 @@ public class GeneratorsTest {
 	//@formatter:on
 
 	@Test
-	public void serialHourGeneratorGivenDate() throws Exception {
+	void serialHourGeneratorGivenDate() throws Exception {
 		int interval = 7;
 		DateValue start = new DateValueImpl(2011, 8, 8);
 		Generator generator = Generators.serialHourGenerator(interval, start);
@@ -827,7 +827,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void serialHourGeneratorGivenTime() throws Exception {
+	void serialHourGeneratorGivenTime() throws Exception {
 		int interval = 7;
 		DateValue start = new DateTimeValueImpl(2011, 8, 8, 1, 25, 30);
 		Generator generator = Generators.serialHourGenerator(interval, start);
@@ -858,7 +858,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void serialHourGeneratorRolledBack() throws Exception {
+	void serialHourGeneratorRolledBack() throws Exception {
 		int interval = 7;
 		DateValue start = new DateTimeValueImpl(2011, 8, 8, 1, 25, 30);
 		Generator generator = Generators.serialHourGenerator(interval, start);
@@ -889,7 +889,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void byHourGeneratorGivenDate() throws Exception {
+	void byHourGeneratorGivenDate() throws Exception {
 		int[] hours = { 3, 9, 11 };
 		DateValue start = new DateValueImpl(2011, 8, 8);
 		Generator generator = Generators.byHourGenerator(hours, start);
@@ -923,7 +923,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void byHourGeneratorGivenDateTime() throws Exception {
+	void byHourGeneratorGivenDateTime() throws Exception {
 		int[] hours = { 3, 9, 11 };
 		DateValue start = new DateTimeValueImpl(2011, 8, 8, 3, 11, 12);
 		Generator generator = Generators.byHourGenerator(hours, start);
@@ -957,7 +957,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void singleByHourGeneratorGivenDateTime() throws Exception {
+	void singleByHourGeneratorGivenDateTime() throws Exception {
 		int[] hours = { 7 };
 		DateValue start = new DateTimeValueImpl(2011, 8, 8, 3, 11, 12);
 		Generator generator = Generators.byHourGenerator(hours, start);
@@ -976,7 +976,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void serialMinuteGeneratorBigInterval() throws Exception {
+	void serialMinuteGeneratorBigInterval() throws Exception {
 		int interval = 100;
 		DateValue start = new DateTimeValueImpl(2011, 8, 8, 15, 30, 0);
 		Generator generator = Generators.serialMinuteGenerator(interval, start);
@@ -1040,7 +1040,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void serialMinuteGeneratorSmallInterval() throws Exception {
+	void serialMinuteGeneratorSmallInterval() throws Exception {
 		int interval = 15;
 		DateValue start = new DateValueImpl(2011, 8, 8);
 		Generator generator = Generators.serialMinuteGenerator(interval, start);
@@ -1065,7 +1065,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void byMinuteGenerator() throws Exception {
+	void byMinuteGenerator() throws Exception {
 		int[] minutes = { 3, 57, 20, 3 };
 		DateValue start = new DateTimeValueImpl(2011, 8, 8, 5, 0, 17);
 		Generator generator = Generators.byMinuteGenerator(minutes, start);
@@ -1087,7 +1087,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void singleByMinuteGenerator() throws Exception {
+	void singleByMinuteGenerator() throws Exception {
 		int minutes[] = {};
 		DateValue start = new DateTimeValueImpl(2011, 8, 8, 5, 30, 17);
 		Generator generator = Generators.byMinuteGenerator(minutes, start);
@@ -1109,7 +1109,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void serialSecondGenerator() throws Exception {
+	void serialSecondGenerator() throws Exception {
 		int interval = 25;
 		DateValue start = new DateTimeValueImpl(2011, 8, 8, 19, 1, 23);
 		Generator generator = Generators.serialSecondGenerator(interval, start);
@@ -1141,7 +1141,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void bySecondGenerator() throws Exception {
+	void bySecondGenerator() throws Exception {
 		int seconds[] = { 25, 48, 2 };
 		DateValue start = new DateTimeValueImpl(2011, 8, 8, 19, 1, 23);
 		Generator generator = Generators.bySecondGenerator(seconds, start);
@@ -1160,7 +1160,7 @@ public class GeneratorsTest {
 	}
 
 	@Test
-	public void singleBySecondGenerator() throws Exception {
+	void singleBySecondGenerator() throws Exception {
 		int seconds[] = {};
 		DateValue start = new DateTimeValueImpl(2011, 8, 8, 19, 1, 23);
 		Generator generator = Generators.bySecondGenerator(seconds, start);

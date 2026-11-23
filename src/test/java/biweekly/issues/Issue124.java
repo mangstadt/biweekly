@@ -1,14 +1,14 @@
 package biweekly.issues;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.github.mangstadt.vinnie.LaciToken;
 
@@ -23,9 +23,9 @@ import biweekly.util.Recurrence;
  * @author Michael Angstadt
  * @see "https://github.com/mangstadt/biweekly/issues/124"
  */
-public class Issue124 {
+class Issue124 {
 	@Test
-	public void test() throws Exception {
+	void test() throws Exception {
 		String input = "INVALID";
 		Recurrence recur = parseRecurrence(input);
 

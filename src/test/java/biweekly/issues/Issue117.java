@@ -1,11 +1,11 @@
 package biweekly.issues;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.Biweekly;
 import biweekly.ICalendar;
@@ -15,9 +15,9 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * @author Michael Angstadt
  * @see "https://github.com/mangstadt/biweekly/issues/117"
  */
-public class Issue117 {
+class Issue117 {
 	@Test
-	public void test() {
+	void test() {
 		ICalendar ical1 = ical("RRULE:FREQ=WEEKLY;INTERVAL=1;WKST=SU;BYDAY=TH,FR");
 		ICalendar ical2 = ical("RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=TH,FR;WKST=SU");
 		

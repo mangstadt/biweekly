@@ -2,17 +2,17 @@ package biweekly.io;
 
 import static biweekly.util.TestUtils.utc;
 import static biweekly.util.TestUtils.vtimezoneNewYork;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.TimeZone;
 
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import biweekly.component.DaylightSavingsTime;
 import biweekly.component.Observance;
@@ -57,15 +57,15 @@ import biweekly.util.com.google.ical.values.DateValue;
 /**
  * @author Michael Angstadt
  */
-public class ICalTimeZoneTest {
-	@ClassRule
+class ICalTimeZoneTest {
+	@RegisterExtension
 	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(3, 0);
 
 	private final UtcOffset minus4 = new UtcOffset(false, 4, 0);
 	private final UtcOffset minus5 = new UtcOffset(false, 5, 0);
 
 	@Test
-	public void getOffset_simple_example() {
+	void getOffset_simple_example() {
 		VTimezone component = new VTimezone("America/New_York");
 		{
 			StandardTime standard = new StandardTime();
@@ -99,7 +99,7 @@ public class ICalTimeZoneTest {
 	}
 
 	@Test
-	public void getOffset_no_dtstart() {
+	void getOffset_no_dtstart() {
 		VTimezone component = new VTimezone("America/New_York");
 		{
 			StandardTime standard = new StandardTime();
@@ -131,7 +131,7 @@ public class ICalTimeZoneTest {
 	}
 
 	@Test
-	public void getOffset_no_standard() {
+	void getOffset_no_standard() {
 		VTimezone component = new VTimezone("America/New_York");
 		{
 			DaylightSavingsTime daylight = new DaylightSavingsTime();
@@ -159,7 +159,7 @@ public class ICalTimeZoneTest {
 	}
 
 	@Test
-	public void getOffset_no_daylight() {
+	void getOffset_no_daylight() {
 		VTimezone component = new VTimezone("America/New_York");
 		{
 			StandardTime standard = new StandardTime();
@@ -187,7 +187,7 @@ public class ICalTimeZoneTest {
 	}
 
 	@Test
-	public void getOffset_empty_dtstart() {
+	void getOffset_empty_dtstart() {
 		VTimezone component = new VTimezone("America/New_York");
 		{
 			StandardTime standard = new StandardTime();
@@ -221,7 +221,7 @@ public class ICalTimeZoneTest {
 	}
 
 	@Test
-	public void getOffset_empty_offsets() {
+	void getOffset_empty_offsets() {
 		VTimezone component = new VTimezone("America/New_York");
 		{
 			StandardTime standard = new StandardTime();
@@ -255,7 +255,7 @@ public class ICalTimeZoneTest {
 	}
 
 	@Test
-	public void getOffset_no_observances() {
+	void getOffset_no_observances() {
 		VTimezone component = new VTimezone("America/New_York");
 		ICalTimeZone tz = new ICalTimeZone(component);
 		assertEquals(component.getTimezoneId().getValue(), tz.getID());
@@ -275,7 +275,7 @@ public class ICalTimeZoneTest {
 	}
 
 	@Test
-	public void getOffset() {
+	void getOffset() {
 		VTimezone component = vtimezoneNewYork();
 		ICalTimeZone tz = new ICalTimeZone(component);
 		assertEquals(component.getTimezoneId().getValue(), tz.getID());
@@ -333,21 +333,21 @@ public class ICalTimeZoneTest {
 	}
 
 	@Test
-	public void getOffset_at_noon_on_daylight_start() {
+	void getOffset_at_noon_on_daylight_start() {
 		ICalTimeZone tz = new ICalTimeZone(vtimezoneNewYork());
 		assertEquals(ms(-4, 0, 0), tz.getOffset(utc(2014, 3, 9, 12, 0, 0).getTime()));
 		assertEquals(ms(-4, 0, 0), tz.getOffset(utc(2014, 3, 9, 13, 0, 0).getTime()));
 	}
 
 	@Test
-	public void getOffset_at_noon_on_daylight_end() {
+	void getOffset_at_noon_on_daylight_end() {
 		ICalTimeZone tz = new ICalTimeZone(vtimezoneNewYork());
 		assertEquals(ms(-5, 0, 0), tz.getOffset(utc(2014, 11, 2, 12, 0, 0).getTime()));
 		assertEquals(ms(-5, 0, 0), tz.getOffset(utc(2014, 11, 2, 13, 0, 0).getTime()));
 	}
 
 	@Test
-	public void createIterator() {
+	void createIterator() {
 		VTimezone component = vtimezoneNewYork();
 		ICalTimeZone tz = new ICalTimeZone(component);
 		Iterator<Observance> observances = tz.sortedObservances.iterator();
@@ -584,7 +584,7 @@ public class ICalTimeZoneTest {
 	 * 77</a>
 	 */
 	@Test
-	public void dtstart_missing_time_component() throws Throwable {
+	void dtstart_missing_time_component() throws Throwable {
 		VTimezone component = new VTimezone("America/Chicago");
 		{
 			DaylightSavingsTime daylight = new DaylightSavingsTime();

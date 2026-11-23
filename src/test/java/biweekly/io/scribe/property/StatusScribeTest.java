@@ -3,9 +3,9 @@ package biweekly.io.scribe.property;
 import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Status;
@@ -38,13 +38,13 @@ import biweekly.property.Status;
 /**
  * @author Michael Angstadt
  */
-public class StatusScribeTest extends ScribeTest<Status> {
+class StatusScribeTest extends ScribeTest<Status> {
 	public StatusScribeTest() {
 		super(new StatusScribe());
 	}
 
 	@Test
-	public void writeText_needsAction() {
+	void writeText_needsAction() {
 		Status status = Status.needsAction();
 
 		sensei.assertWriteText(status).version(V1_0).run("NEEDS ACTION");
@@ -53,7 +53,7 @@ public class StatusScribeTest extends ScribeTest<Status> {
 	}
 
 	@Test
-	public void parseText_needsAction() {
+	void parseText_needsAction() {
 		sensei.assertParseText("NEEDS ACTION").versions(V1_0).run(isNeedsAction(true));
 		sensei.assertParseText("NEEDS ACTION").versions(V2_0_DEPRECATED, V2_0).run(isNeedsAction(false));
 

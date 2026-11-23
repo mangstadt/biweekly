@@ -1,11 +1,11 @@
 package biweekly.util;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Writer;
 import java.nio.file.Files;
@@ -16,9 +16,8 @@ import java.util.Map;
 
 import javax.xml.transform.OutputKeys;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -53,10 +52,7 @@ import org.xml.sax.SAXException;
 /**
  * @author Michael Angstadt
  */
-public class XmlUtilsTest {
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
-
+class XmlUtilsTest {
 	//@formatter:off
 	private final String xml =
 		"<root>" +
@@ -67,13 +63,13 @@ public class XmlUtilsTest {
 	//@formatter:on
 
 	@Test
-	public void createDocument() throws Exception {
+	void createDocument() throws Exception {
 		Document document = XmlUtils.createDocument();
 		assertNotNull(document);
 	}
 
 	@Test
-	public void toDocument() throws Exception {
+	void toDocument() throws Exception {
 		Document document = XmlUtils.toDocument(xml);
 
 		Element root = (Element) document.getFirstChild();
@@ -96,14 +92,14 @@ public class XmlUtilsTest {
 	}
 
 	@Test
-	public void toDocument_utf8() throws Exception {
+	void toDocument_utf8(@TempDir Path tempDir) throws Exception {
 		//@formatter:off
 		String xml =
 		"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
 		"<root><child>\u1e08hild</child></root>";
 		//@formatter:on
 
-		Path file = tempFolder.newFile().toPath();
+		Path file = tempDir.resolve("test.xml");
 		Writer writer = Utf8Streams.writer(file);
 		writer.write(xml);
 		writer.close();
@@ -116,13 +112,13 @@ public class XmlUtilsTest {
 	}
 
 	@Test
-	public void toDocument_invalid_xml() throws Exception {
+	void toDocument_invalid_xml() throws Exception {
 		String xml = "not-xml";
 		assertThrows(SAXException.class, () -> XmlUtils.toDocument(xml));
 	}
 
 	@Test
-	public void toString_() throws Exception {
+	void toString_() throws Exception {
 		Document expected = XmlUtils.toDocument(xml);
 		String string = XmlUtils.toString(expected);
 		Document actual = XmlUtils.toDocument(string);
@@ -130,7 +126,7 @@ public class XmlUtilsTest {
 	}
 
 	@Test
-	public void toString_output_properties() throws Exception {
+	void toString_output_properties() throws Exception {
 		Document expected = XmlUtils.toDocument(xml);
 		Map<String, String> outputProperties = new HashMap<>();
 		outputProperties.put(OutputKeys.STANDALONE, "no");
@@ -140,7 +136,7 @@ public class XmlUtilsTest {
 	}
 
 	@Test
-	public void toElementList() throws Exception {
+	void toElementList() throws Exception {
 		Document document = XmlUtils.toDocument(xml);
 
 		List<Element> elements = XmlUtils.toElementList(document.getFirstChild().getChildNodes());
@@ -150,7 +146,7 @@ public class XmlUtilsTest {
 	}
 
 	@Test
-	public void toElementList_no_children() throws Exception {
+	void toElementList_no_children() throws Exception {
 		String xml = "<root/>";
 		Document document = XmlUtils.toDocument(xml);
 
@@ -159,7 +155,7 @@ public class XmlUtilsTest {
 	}
 
 	@Test
-	public void getFirstChildElement() throws Exception {
+	void getFirstChildElement() throws Exception {
 		Document document = XmlUtils.toDocument(xml);
 		Element root = (Element) document.getFirstChild();
 		Element element = XmlUtils.firstChild(root);

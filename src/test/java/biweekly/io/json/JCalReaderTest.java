@@ -8,10 +8,10 @@ import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.assertVersion;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Writer;
 import java.nio.file.Path;
@@ -20,10 +20,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.TimeZone;
 
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.github.mangstadt.vinnie.LaciToken;
 
@@ -95,19 +94,16 @@ import biweekly.util.Utf8Streams;
  * @author Michael Angstadt
  */
 @SuppressWarnings("resource")
-public class JCalReaderTest {
+class JCalReaderTest {
 	/**
 	 * Set the timezone to something other than US/Eastern, since some examples
 	 * use this timezone.
 	 */
-	@ClassRule
+	@RegisterExtension
 	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
 
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
-
 	@Test
-	public void read_single() throws Throwable {
+	void read_single() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -146,7 +142,7 @@ public class JCalReaderTest {
 	}
 
 	@Test
-	public void read_multiple() throws Throwable {
+	void read_multiple() throws Throwable {
 		//@formatter:off
 		String json =
 		"[" +
@@ -221,7 +217,7 @@ public class JCalReaderTest {
 	}
 
 	@Test
-	public void no_properties() throws Throwable {
+	void no_properties() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -253,7 +249,7 @@ public class JCalReaderTest {
 	}
 
 	@Test
-	public void no_components() throws Throwable {
+	void no_components() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -277,7 +273,7 @@ public class JCalReaderTest {
 	}
 
 	@Test
-	public void no_properties_or_components() throws Throwable {
+	void no_properties_or_components() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -298,7 +294,7 @@ public class JCalReaderTest {
 	}
 
 	@Test
-	public void experimental_component() throws Throwable {
+	void experimental_component() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -330,7 +326,7 @@ public class JCalReaderTest {
 	}
 
 	@Test
-	public void experimental_component_registered() throws Throwable {
+	void experimental_component_registered() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -363,7 +359,7 @@ public class JCalReaderTest {
 	}
 
 	@Test
-	public void experimental_property() throws Throwable {
+	void experimental_property() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -394,7 +390,7 @@ public class JCalReaderTest {
 	}
 
 	@Test
-	public void experimental_property_registered() throws Throwable {
+	void experimental_property_registered() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -420,7 +416,7 @@ public class JCalReaderTest {
 	}
 
 	@Test
-	public void skipMeException() throws Throwable {
+	void skipMeException() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -449,7 +445,7 @@ public class JCalReaderTest {
 	}
 
 	@Test
-	public void cannotParseException() throws Throwable {
+	void cannotParseException() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -483,7 +479,7 @@ public class JCalReaderTest {
 	}
 
 	@Test
-	public void empty() throws Throwable {
+	void empty() throws Throwable {
 		//@formatter:off
 		String json =
 		"";
@@ -494,7 +490,7 @@ public class JCalReaderTest {
 	}
 
 	@Test
-	public void utf8() throws Throwable {
+	void utf8(@TempDir Path tempDir) throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -505,7 +501,7 @@ public class JCalReaderTest {
 			"]" +
 		"]";
 		//@formatter:on
-		Path file = tempFolder.newFile().toPath();
+		Path file = tempDir.resolve("test.json");
 		Writer writer = Utf8Streams.writer(file);
 		writer.write(json);
 		writer.close();
@@ -520,7 +516,7 @@ public class JCalReaderTest {
 	}
 
 	@Test
-	public void jcal_draft_example1() throws Throwable {
+	void jcal_draft_example1() throws Throwable {
 		JCalReader reader = read("rfc7265-example1.json");
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 1, 2);
@@ -546,7 +542,7 @@ public class JCalReaderTest {
 	}
 
 	@Test
-	public void jcal_draft_example2() throws Throwable {
+	void jcal_draft_example2() throws Throwable {
 		JCalReader reader = read("rfc7265-example2.json");
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 2, 1);

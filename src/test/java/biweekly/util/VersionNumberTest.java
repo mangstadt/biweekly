@@ -3,10 +3,10 @@ package biweekly.util;
 import static biweekly.util.TestUtils.assertEqualsAndHash;
 import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertNotEqualsBothWays;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -36,25 +36,25 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class VersionNumberTest {
+class VersionNumberTest {
 	@Test
-	public void invalid_value() {
+	void invalid_value() {
 		assertThrows(IllegalArgumentException.class, () -> new VersionNumber("1.2-beta"));
 	}
 
 	@Test
-	public void invalid_multiple_dots() {
+	void invalid_multiple_dots() {
 		assertThrows(IllegalArgumentException.class, () -> new VersionNumber("1..2"));
 	}
 
 	@Test
-	public void toString_() {
+	void toString_() {
 		VersionNumber version = new VersionNumber("1.23.0.4");
 		assertEquals("1.23.0.4", version.toString());
 	}
 
 	@Test
-	public void compareTo() {
+	void compareTo() {
 		VersionNumber a = new VersionNumber("1.23.0.4");
 		VersionNumber b = new VersionNumber("1.23.0.4");
 		assertEquals(0, a.compareTo(b));
@@ -69,7 +69,7 @@ public class VersionNumberTest {
 	}
 
 	@Test
-	public void equals_() {
+	void equals_() {
 		VersionNumber a = new VersionNumber("1.2");
 		VersionNumber b = new VersionNumber("1.2");
 		assertEqualsMethodEssentials(a);

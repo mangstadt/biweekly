@@ -1,15 +1,15 @@
 package biweekly.io;
 
 import static biweekly.ICalVersion.V2_0;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalVersion;
 import biweekly.ICalendar;
@@ -45,25 +45,25 @@ import biweekly.property.ICalProperty;
 /**
  * @author Michael Angstadt
  */
-public class StreamWriterTest {
+class StreamWriterTest {
 	private StreamWriterImpl writer;
 	private ICalendar ical;
 
-	@Before
-	public void before() {
+	@BeforeEach
+	void beforeEach() {
 		writer = spy(new StreamWriterImpl());
 		ical = new ICalendar();
 	}
 
 	@Test
-	public void empty_ical() throws Exception {
+	void empty_ical() throws Exception {
 		writer.write(ical);
 
 		verify(writer)._write(ical);
 	}
 
 	@Test
-	public void unregistered_property() throws Exception {
+	void unregistered_property() throws Exception {
 		ical.addProperty(new TestProperty());
 
 		assertThrows(IllegalArgumentException.class, () -> writer.write(ical));
@@ -72,7 +72,7 @@ public class StreamWriterTest {
 	}
 
 	@Test
-	public void registered_property() throws Exception {
+	void registered_property() throws Exception {
 		ical.setProductId("value");
 		writer.write(ical);
 
@@ -80,7 +80,7 @@ public class StreamWriterTest {
 	}
 
 	@Test
-	public void unregistered_component() throws Exception {
+	void unregistered_component() throws Exception {
 		ical.addComponent(new TestComponent());
 		
 		assertThrows(IllegalArgumentException.class, () -> writer.write(ical));
@@ -89,7 +89,7 @@ public class StreamWriterTest {
 	}
 
 	@Test
-	public void registered_component() throws Exception {
+	void registered_component() throws Exception {
 		ical.addEvent(new VEvent());
 		writer.write(ical);
 

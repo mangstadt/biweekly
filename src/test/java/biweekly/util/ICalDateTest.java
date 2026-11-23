@@ -1,12 +1,12 @@
 package biweekly.util;
 
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -36,9 +36,9 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class ICalDateTest {
+class ICalDateTest {
 	@Test
-	public void equals_() {
+	void equals_() {
 		ICalDate date1 = new ICalDate(date(2014, 10, 1, 12, 0, 0), true);
 		ICalDate date2 = new ICalDate(date(2014, 10, 1, 12, 0, 0), true);
 		assertEquals(date1, date2);
@@ -49,21 +49,21 @@ public class ICalDateTest {
 	}
 
 	@Test
-	public void equals_hasTime() {
+	void equals_hasTime() {
 		ICalDate date1 = new ICalDate(date(2014, 10, 1, 12, 0, 0), true);
 		ICalDate date2 = new ICalDate(date(2014, 10, 1, 12, 0, 0), false);
 		assertNotEquals(date1, date2);
 	}
 
 	@Test
-	public void equals_ignore_components() {
+	void equals_ignore_components() {
 		ICalDate date1 = new ICalDate(date(2014, 10, 1, 12, 0, 0), new DateTimeComponents(2014, 10, 1, 12, 0, 0, false), true);
 		ICalDate date2 = new ICalDate(date(2014, 10, 1, 12, 0, 0), new DateTimeComponents(1990, 10, 1, 12, 0, 0, false), true);
 		assertEquals(date1, date2);
 	}
 
 	@Test
-	public void equals_java_date() {
+	void equals_java_date() {
 		ICalDate date1 = new ICalDate(date(2014, 10, 1, 12, 0, 0), true);
 		Date date2 = date(2014, 10, 1, 12, 0, 0);
 		assertEquals(date1, date2);
@@ -76,14 +76,14 @@ public class ICalDateTest {
 	}
 
 	@Test
-	public void equals_other_object() {
+	void equals_other_object() {
 		ICalDate date1 = new ICalDate(date(2014, 10, 1, 12, 0, 0), true);
 		String date2 = "string";
 		assertNotEquals(date1, date2);
 	}
 
 	@Test
-	public void truncate_time_for_dates() {
+	void truncate_time_for_dates() {
 		ICalDate date = new ICalDate(date(2014, 10, 1, 12, 0, 0), false);
 		assertEquals(date(2014, 10, 1, 0, 0, 0), date);
 	}

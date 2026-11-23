@@ -43,7 +43,7 @@ import static biweekly.util.TestUtils.assertIterator;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
@@ -54,9 +54,9 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author Michael Angstadt
  */
 //@formatter:off
-public class RDateIteratorImplTest {
+class RDateIteratorImplTest {
 	@Test
-	public void oneDate() {
+	void oneDate() {
 		DateValue[] dates = new DateValue[] {
 			new DateValueImpl(2006, 4, 12)
 		};
@@ -67,7 +67,7 @@ public class RDateIteratorImplTest {
 	}
 
 	@Test
-	public void oneDateTime() {
+	void oneDateTime() {
 		DateValue[] dates = new DateValue[] {
 			new DateTimeValueImpl(2006, 4, 12, 12, 0, 0)
 		};
@@ -78,7 +78,7 @@ public class RDateIteratorImplTest {
 	}
 	
 	@Test
-	public void sortAndRemoveDuplicates(){
+	void sortAndRemoveDuplicates(){
 		DateValue[] dates = new DateValue[] {
 			new DateTimeValueImpl(2006, 4, 14, 12, 0, 0),
 			new DateTimeValueImpl(2006, 4, 12, 12, 0, 0),
@@ -98,7 +98,7 @@ public class RDateIteratorImplTest {
 	}
 	
 	@Test
-	public void advanceTo(){
+	void advanceTo(){
 		DateValue[] dates = new DateValue[] {
 			new DateTimeValueImpl(2006, 4, 12, 12, 0, 0),
 			new DateTimeValueImpl(2006, 4, 13, 12, 0, 0),

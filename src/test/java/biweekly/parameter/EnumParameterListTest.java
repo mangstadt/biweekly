@@ -1,12 +1,12 @@
 package biweekly.parameter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -36,11 +36,11 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class EnumParameterListTest {
+class EnumParameterListTest {
 	private final String NAME = "NUM";
 
 	@Test
-	public void get_set() {
+	void get_set() {
 		ICalParameters parameters = new ICalParameters();
 		List<EnumParameterValueImpl> list = parameters.new EnumParameterList<EnumParameterValueImpl>(NAME) {
 			@Override

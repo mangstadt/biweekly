@@ -2,12 +2,12 @@ package biweekly.util;
 
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -37,9 +37,9 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class DateTimeComponentsTest {
+class DateTimeComponentsTest {
 	@Test
-	public void parse() {
+	void parse() {
 		assertParse(new DateTimeComponents(2013, 7, 22, 15, 6, 30, false), "20130722T150630");
 		assertParse(new DateTimeComponents(2013, 7, 22, 15, 6, 30, false), "2013-07-22T15:06:30");
 		assertParse(new DateTimeComponents(2013, 7, 22, 15, 6, 30, true), "20130722T150630Z");
@@ -54,12 +54,12 @@ public class DateTimeComponentsTest {
 	}
 
 	@Test
-	public void parse_invalid() {
+	void parse_invalid() {
 		assertThrows(IllegalArgumentException.class, () -> DateTimeComponents.parse("invalid"));
 	}
 
 	@Test
-	public void toString_() {
+	void toString_() {
 		assertToString("20130722T150630", "2013-07-22T15:06:30", new DateTimeComponents(2013, 7, 22, 15, 6, 30, false), true);
 		assertToString("20130722T150630Z", "2013-07-22T15:06:30Z", new DateTimeComponents(2013, 7, 22, 15, 6, 30, true), true);
 		assertToString("20130722T000000", "2013-07-22T00:00:00", new DateTimeComponents(2013, 7, 22, 0, 0, 0, false), true);
@@ -75,7 +75,7 @@ public class DateTimeComponentsTest {
 	}
 
 	@Test
-	public void toDate() throws Throwable {
+	void toDate() throws Throwable {
 		assertToDate(date(2013, 7, 22, 15, 6, 30), new DateTimeComponents(2013, 7, 22, 15, 6, 30, false));
 		assertToDate(utc(2013, 7, 22, 15, 6, 30), new DateTimeComponents(2013, 7, 22, 15, 6, 30, true));
 	}
@@ -86,7 +86,7 @@ public class DateTimeComponentsTest {
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		assertCopy(new DateTimeComponents(2014, 7, 22, 15, 6, 30, false), new DateTimeComponents(2013, 7, 22, 15, 6, 30, false), 2014, null, null, null, null, null, null);
 		assertCopy(new DateTimeComponents(2013, 8, 22, 15, 6, 30, false), new DateTimeComponents(2013, 7, 22, 15, 6, 30, false), null, 8, null, null, null, null, null);
 		assertCopy(new DateTimeComponents(2013, 7, 23, 15, 6, 30, false), new DateTimeComponents(2013, 7, 22, 15, 6, 30, false), null, null, 23, null, null, null, null);

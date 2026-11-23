@@ -3,11 +3,11 @@ package biweekly.io.scribe.property;
 import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalDataType;
 import biweekly.io.json.JCalValue;
@@ -43,7 +43,7 @@ import biweekly.property.ListProperty;
 /**
  * @author Michael Angstadt
  */
-public class TextListPropertyScribeTest extends ScribeTest<biweekly.io.scribe.property.TextListPropertyScribeTest.ListPropertyImpl> {
+class TextListPropertyScribeTest extends ScribeTest<biweekly.io.scribe.property.TextListPropertyScribeTest.ListPropertyImpl> {
 	private final ListPropertyImpl withMultiple = new ListPropertyImpl();
 	{
 		withMultiple.getValues().addAll(Arrays.asList("one", "two", "three,four"));
@@ -59,7 +59,7 @@ public class TextListPropertyScribeTest extends ScribeTest<biweekly.io.scribe.pr
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withMultiple).version(V1_0).run("one;two;three,four");
 		sensei.assertWriteText(withMultiple).version(V2_0_DEPRECATED).run("one,two,three\\,four");
 		sensei.assertWriteText(withMultiple).version(V2_0).run("one,two,three\\,four");
@@ -69,7 +69,7 @@ public class TextListPropertyScribeTest extends ScribeTest<biweekly.io.scribe.pr
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText("one;two;three\\,four").versions(V1_0).run(is(withMultiple));
 		sensei.assertParseText("one,two,three\\,four").versions(V2_0_DEPRECATED, V2_0).run(is(withMultiple));
 		sensei.assertParseText("one").run(is(withSingle));
@@ -77,14 +77,14 @@ public class TextListPropertyScribeTest extends ScribeTest<biweekly.io.scribe.pr
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		sensei.assertWriteXml(withMultiple).run("<text>one</text><text>two</text><text>three,four</text>");
 		sensei.assertWriteXml(withSingle).run("<text>one</text>");
 		sensei.assertWriteXml(empty).run("");
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		sensei.assertParseXml("<text>one</text><text>two</text><float>2.5</float><text>three,four</text>").run(is(withMultiple));
 		sensei.assertParseXml("<text>one</text>").run(is(withSingle));
 		sensei.assertParseXml("<float>2.5</float><text>one</text>").run(is(withSingle));
@@ -93,14 +93,14 @@ public class TextListPropertyScribeTest extends ScribeTest<biweekly.io.scribe.pr
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		sensei.assertWriteJson(withMultiple).run(JCalValue.multi("one", "two", "three,four"));
 		sensei.assertWriteJson(withSingle).run("one");
 		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		sensei.assertParseJson(JCalValue.multi("one", "two", "three,four")).run(is(withMultiple));
 		sensei.assertParseJson("one").run(is(withSingle));
 		sensei.assertParseJson("").run(has(""));

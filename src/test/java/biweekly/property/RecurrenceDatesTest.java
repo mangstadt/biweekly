@@ -10,15 +10,15 @@ import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.icalDate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.util.ICalDate;
 import biweekly.util.Period;
@@ -51,16 +51,16 @@ import biweekly.util.Period;
 /**
  * @author Michael Angstadt
  */
-public class RecurrenceDatesTest {
+class RecurrenceDatesTest {
 	@Test
-	public void constructors() throws Exception {
+	void constructors() throws Exception {
 		RecurrenceDates property = new RecurrenceDates();
 		assertEquals(Arrays.asList(), property.getDates());
 		assertEquals(Arrays.asList(), property.getPeriods());
 	}
 
 	@Test
-	public void set_value() {
+	void set_value() {
 		RecurrenceDates property = new RecurrenceDates();
 
 		ICalDate icalDate = new ICalDate();
@@ -75,7 +75,7 @@ public class RecurrenceDatesTest {
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		RecurrenceDates property = new RecurrenceDates();
 		assertValidate(property).run(26);
 
@@ -103,13 +103,13 @@ public class RecurrenceDatesTest {
 	}
 
 	@Test
-	public void toStringValues() {
+	void toStringValues() {
 		RecurrenceDates property = new RecurrenceDates();
 		assertFalse(property.toStringValues().isEmpty());
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		RecurrenceDates original = new RecurrenceDates();
 		assertCopy(original).notSameDeep("getDates").notSameDeep("getPeriods");
 
@@ -120,7 +120,7 @@ public class RecurrenceDatesTest {
 	}
 
 	@Test
-	public void equals() {
+	void equals() {
 		List<ICalProperty> properties = new ArrayList<>();
 
 		RecurrenceDates property = new RecurrenceDates();

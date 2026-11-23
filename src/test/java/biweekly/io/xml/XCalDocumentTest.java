@@ -10,12 +10,12 @@ import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -32,11 +32,10 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.OutputKeys;
 
 import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -116,25 +115,22 @@ import biweekly.util.XmlUtils;
 /**
  * @author Michael Angstadt
  */
-public class XCalDocumentTest {
+class XCalDocumentTest {
 	/**
 	 * Set the timezone to something other than US/Eastern, since some examples
 	 * use this timezone.
 	 */
-	@ClassRule
+	@RegisterExtension
 	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
 
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
-
-	@BeforeClass
-	public static void beforeClass() {
+	@BeforeAll
+	static void beforeAll() {
 		XMLUnit.setIgnoreAttributeOrder(true);
 		XMLUnit.setIgnoreWhitespace(true);
 	}
 
 	@Test
-	public void parse_multiple() throws Exception {
+	void parse_multiple() throws Exception {
 		//@formatter:off
 		String xml =
 		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
@@ -203,7 +199,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parse_default_namespace() throws Exception {
+	void parse_default_namespace() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar>" +
@@ -224,7 +220,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parse_wrong_namespace() throws Exception {
+	void parse_wrong_namespace() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"http://example.com\">" +
@@ -247,7 +243,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parse_ignore_other_namespaces() throws Exception {
+	void parse_ignore_other_namespaces() throws Exception {
 		//@formatter:off
 		String xml =
 		"<root>" +
@@ -304,7 +300,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parse_preserve_whitespace() throws Exception {
+	void parse_preserve_whitespace() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -330,7 +326,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parse_parameters() throws Exception {
+	void parse_parameters() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -406,7 +402,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parse_experimental_component() throws Exception {
+	void parse_experimental_component() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -438,7 +434,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parse_skip_component_without_xcal_namespace() throws Exception {
+	void parse_skip_component_without_xcal_namespace() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -466,7 +462,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parse_experimental_property() throws Exception {
+	void parse_experimental_property() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -493,7 +489,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parse_experimental_property_with_namespace_with_marshaller() throws Exception {
+	void parse_experimental_property_with_namespace_with_marshaller() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -522,7 +518,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parse_experimental_property_with_namespace_without_marshaller() throws Exception {
+	void parse_experimental_property_with_namespace_without_marshaller() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -551,7 +547,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parse_skipMeException() throws Exception {
+	void parse_skipMeException() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -581,7 +577,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parse_cannotParseException() throws Exception {
+	void parse_cannotParseException() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -615,7 +611,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parse_icalendar_element_is_not_root() throws Exception {
+	void parse_icalendar_element_is_not_root() throws Exception {
 		//@formatter:off
 		String xml =
 		"<foo xmlns=\"http://example.com\">" +
@@ -643,7 +639,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void parse_utf8() throws Exception {
+	void parse_utf8(@TempDir Path tempDir) throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -654,7 +650,7 @@ public class XCalDocumentTest {
 			"</vcalendar>" +
 		"</icalendar>";
 		//@formatter:on
-		Path file = tempFolder.newFile().toPath();
+		Path file = tempDir.resolve("test.xml");
 		Writer writer = Utf8Streams.writer(file);
 		writer.write(xml);
 		writer.close();
@@ -673,7 +669,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void empty() throws Exception {
+	void empty() throws Exception {
 		XCalDocument xcal = new XCalDocument();
 
 		Document actual = xcal.getDocument();
@@ -682,7 +678,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void add_xml_property() throws Exception {
+	void add_xml_property() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		Xml xml = new Xml("<company xmlns=\"http://example.com\"><boss>John Doe</boss></company>");
@@ -724,7 +720,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void add_xml_property_null_value() throws Exception {
+	void add_xml_property_null_value() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		Xml xml = new Xml((Document) null);
@@ -748,7 +744,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void add_property_marshaller_not_found() {
+	void add_property_marshaller_not_found() {
 		ICalendar ical = new ICalendar();
 		ical.addProperty(new Company(""));
 
@@ -757,7 +753,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void add_component_marshaller_not_found() {
+	void add_component_marshaller_not_found() {
 		ICalendar ical = new ICalendar();
 		ical.addComponent(new Party());
 
@@ -766,7 +762,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void add_experimental_component() throws Exception {
+	void add_experimental_component() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		Party party = new Party();
@@ -800,7 +796,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void add_experimental_property() throws Exception {
+	void add_experimental_property() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new Company("John Doe"));
@@ -828,7 +824,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void add_experimental_parameter() throws Exception {
+	void add_experimental_parameter() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		Summary summary = new Summary("summary");
@@ -863,7 +859,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void add_skipMeException() throws Exception {
+	void add_skipMeException() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new SkipMeProperty());
@@ -890,7 +886,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void add_no_existing_icalendar_element() throws Exception {
+	void add_no_existing_icalendar_element() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addExperimentalProperty("x-foo", "bar");
@@ -922,7 +918,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void add_existing_icalendar_element() throws Exception {
+	void add_existing_icalendar_element() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addExperimentalProperty("x-foo", "bar");
@@ -955,7 +951,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void write() {
+	void write() {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new Summary("summary"));
@@ -981,7 +977,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void write_pretty_print() {
+	void write_pretty_print() {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new Summary("summary"));
@@ -1011,7 +1007,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void write_xmlVerison_default() throws Throwable {
+	void write_xmlVerison_default() throws Throwable {
 		ICalendar ical = new ICalendar();
 		XCalDocument xcal = new XCalDocument();
 		xcal.addICalendar(ical);
@@ -1021,7 +1017,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void write_xmlVerison_1_1() throws Throwable {
+	void write_xmlVerison_1_1() throws Throwable {
 		ICalendar ical = new ICalendar();
 		XCalDocument xcal = new XCalDocument();
 		xcal.addICalendar(ical);
@@ -1031,7 +1027,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void write_xmlVerison_invalid() throws Throwable {
+	void write_xmlVerison_invalid() throws Throwable {
 		ICalendar ical = new ICalendar();
 		XCalDocument xcal = new XCalDocument();
 		xcal.addICalendar(ical);
@@ -1040,7 +1036,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void write_utf8() throws Throwable {
+	void write_utf8(@TempDir Path tempDir) throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new Summary("\u1e66ummary"));
@@ -1048,7 +1044,7 @@ public class XCalDocumentTest {
 		XCalDocument xcal = new XCalDocument();
 		xcal.addICalendar(ical);
 
-		Path file = tempFolder.newFile().toPath();
+		Path file = tempDir.resolve("test.xml");
 		xcal.write(file);
 
 		String xml = new Gobble(file).asString(StandardCharsets.UTF_8);
@@ -1057,7 +1053,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void read_example1() throws Throwable {
+	void read_example1() throws Throwable {
 		XCalDocument xcal = read("rfc6321-example1.xml");
 		StreamReader reader = xcal.reader();
 
@@ -1083,7 +1079,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void write_example1() throws Throwable {
+	void write_example1() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setCalendarScale(CalendarScale.gregorian());
@@ -1103,7 +1099,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void read_example2() throws Throwable {
+	void read_example2() throws Throwable {
 		XCalDocument xcal = read("rfc6321-example2.xml");
 		StreamReader reader = xcal.reader();
 
@@ -1224,7 +1220,7 @@ public class XCalDocumentTest {
 	}
 
 	@Test
-	public void write_example2() throws Throwable {
+	void write_example2() throws Throwable {
 		TimeZone eastern = TimeZone.getTimeZone("US/Eastern");
 
 		//see: RFC 6321 p.51

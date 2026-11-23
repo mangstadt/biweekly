@@ -8,7 +8,7 @@ import static biweekly.util.TestUtils.date;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.property.Classification;
 import biweekly.property.Color;
@@ -60,9 +60,9 @@ import biweekly.util.Recurrence;
 /**
  * @author Michael Angstadt
  */
-public class VEventTest {
+class VEventTest {
 	@Test
-	public void validate_cardinality_required() {
+	void validate_cardinality_required() {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
 		component.getProperties().clear();
@@ -77,7 +77,7 @@ public class VEventTest {
 	}
 
 	@Test
-	public void validate_cardinality_optional() {
+	void validate_cardinality_optional() {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
 		component.setDateStart(new Date()); //suppress "no start date" warning
@@ -120,7 +120,7 @@ public class VEventTest {
 	}
 
 	@Test
-	public void validate_status() {
+	void validate_status() {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
 		component.setDateStart(new Date()); //suppress warning
@@ -184,7 +184,7 @@ public class VEventTest {
 	}
 
 	@Test
-	public void validate_dateStart_and_method_relationship() {
+	void validate_dateStart_and_method_relationship() {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
 		assertValidate(component).parents(parent).versions(V1_0).run();
@@ -202,7 +202,7 @@ public class VEventTest {
 	}
 
 	@Test
-	public void validate_dateEnd_without_dateStart() {
+	void validate_dateEnd_without_dateStart() {
 		TestComponent parent = new TestComponent();
 		parent.addProperty(new Method(""));
 		VEvent component = new VEvent();
@@ -211,7 +211,7 @@ public class VEventTest {
 	}
 
 	@Test
-	public void validate_dateStart_before_dateEnd() {
+	void validate_dateStart_before_dateEnd() {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
 		component.setDateStart(date(2000, 1, 10));
@@ -220,7 +220,7 @@ public class VEventTest {
 	}
 
 	@Test
-	public void validate_different_date_datatypes() {
+	void validate_different_date_datatypes() {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
 		component.setDateStart(new DateStart(date(2000, 1, 1), false));
@@ -236,7 +236,7 @@ public class VEventTest {
 	}
 
 	@Test
-	public void validate_dateEnd_with_duration() {
+	void validate_dateEnd_with_duration() {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
 		component.setDateStart(date(2000, 1, 1));
@@ -246,7 +246,7 @@ public class VEventTest {
 	}
 
 	@Test
-	public void validate_time_in_rrule() {
+	void validate_time_in_rrule() {
 		TestComponent parent = new TestComponent();
 
 		//@formatter:off
@@ -266,7 +266,7 @@ public class VEventTest {
 	}
 
 	@Test
-	public void validate_multiple_rrules() {
+	void validate_multiple_rrules() {
 		TestComponent parent = new TestComponent();
 		VEvent component = new VEvent();
 		component.setDateStart(new DateStart(date(2000, 1, 1), false));

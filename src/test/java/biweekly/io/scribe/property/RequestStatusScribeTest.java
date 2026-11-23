@@ -1,8 +1,8 @@
 package biweekly.io.scribe.property;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -36,7 +36,7 @@ import biweekly.property.RequestStatus;
 /**
  * @author Michael Angstadt
  */
-public class RequestStatusScribeTest extends ScribeTest<RequestStatus> {
+class RequestStatusScribeTest extends ScribeTest<RequestStatus> {
 	private final String code = "1.2.3;", description = "description;", data = "data;";
 
 	private final RequestStatus withAll = new RequestStatus(code);
@@ -73,7 +73,7 @@ public class RequestStatusScribeTest extends ScribeTest<RequestStatus> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withAll).run("1.2.3\\;;description\\;;data\\;");
 		sensei.assertWriteText(withCodeDescription).run("1.2.3\\;;description\\;;");
 		sensei.assertWriteText(withCodeData).run("1.2.3\\;;;data\\;");
@@ -85,7 +85,7 @@ public class RequestStatusScribeTest extends ScribeTest<RequestStatus> {
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText("1.2.3\\;;description\\;;data\\;").run(is(withAll));
 		sensei.assertParseText("1.2.3\\;;description\\;").run(is(withCodeDescription));
 		sensei.assertParseText("1.2.3\\;;;data\\;").run(is(withCodeData));
@@ -99,7 +99,7 @@ public class RequestStatusScribeTest extends ScribeTest<RequestStatus> {
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		sensei.assertWriteXml(withAll).run("<code>" + code + "</code><description>" + description + "</description><data>" + data + "</data>");
 		sensei.assertWriteXml(withCodeDescription).run("<code>" + code + "</code><description>" + description + "</description>");
 		sensei.assertWriteXml(withCodeData).run("<code>" + code + "</code><description/><data>" + data + "</data>");
@@ -111,7 +111,7 @@ public class RequestStatusScribeTest extends ScribeTest<RequestStatus> {
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		sensei.assertParseXml("<code>" + code + "</code><description>" + description + "</description><data>" + data + "</data>").run(is(withAll));
 		sensei.assertParseXml("<code>" + code + "</code><description>" + description + "</description>").run(is(withCodeDescription));
 		sensei.assertParseXml("<code>" + code + "</code><data>" + data + "</data>").run(is(withCodeData));
@@ -124,7 +124,7 @@ public class RequestStatusScribeTest extends ScribeTest<RequestStatus> {
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		sensei.assertWriteJson(withAll).run(JCalValue.structured(code, description, data));
 		sensei.assertWriteJson(withCodeDescription).run(JCalValue.structured(code, description, ""));
 		sensei.assertWriteJson(withCodeData).run(JCalValue.structured(code, "", data));
@@ -136,7 +136,7 @@ public class RequestStatusScribeTest extends ScribeTest<RequestStatus> {
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		sensei.assertParseJson(JCalValue.structured(code, description, data)).run(is(withAll));
 		sensei.assertParseJson(JCalValue.structured(code, description)).run(is(withCodeDescription));
 		sensei.assertParseJson(JCalValue.structured(code, description, "")).run(is(withCodeDescription));

@@ -8,7 +8,7 @@ import static biweekly.util.TestUtils.date;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.property.Classification;
 import biweekly.property.Color;
@@ -61,9 +61,9 @@ import biweekly.util.Recurrence;
 /**
  * @author Michael Angstadt
  */
-public class VTodoTest {
+class VTodoTest {
 	@Test
-	public void validate_cardinality_required() {
+	void validate_cardinality_required() {
 		VTodo component = new VTodo();
 		component.getProperties().clear();
 		assertValidate(component).versions(V1_0).run();
@@ -75,7 +75,7 @@ public class VTodoTest {
 	}
 
 	@Test
-	public void validate_cardinality_optional() {
+	void validate_cardinality_optional() {
 		VTodo component = new VTodo();
 		component.addProperty(Classification.confidential());
 		component.addProperty(new Completed(new Date()));
@@ -119,7 +119,7 @@ public class VTodoTest {
 	}
 
 	@Test
-	public void validate_status() {
+	void validate_status() {
 		VTodo component = new VTodo();
 
 		Status status = Status.accepted();
@@ -180,7 +180,7 @@ public class VTodoTest {
 	}
 
 	@Test
-	public void validate_dateStart_before_dateDue() {
+	void validate_dateStart_before_dateDue() {
 		VTodo component = new VTodo();
 		component.setDateStart(date(2000, 1, 10));
 		component.setDateDue(date(2000, 1, 1));
@@ -188,7 +188,7 @@ public class VTodoTest {
 	}
 
 	@Test
-	public void validate_different_date_datatypes() {
+	void validate_different_date_datatypes() {
 		VTodo component = new VTodo();
 		component.setDateStart(new DateStart(date(2000, 1, 1), false));
 		component.setDateDue(new DateDue(date(2000, 1, 10), true));
@@ -202,7 +202,7 @@ public class VTodoTest {
 	}
 
 	@Test
-	public void validate_dateDue_with_duration() {
+	void validate_dateDue_with_duration() {
 		VTodo component = new VTodo();
 		component.setDateStart(date(2000, 1, 1));
 		component.setDateDue(date(2000, 1, 10));
@@ -211,14 +211,14 @@ public class VTodoTest {
 	}
 
 	@Test
-	public void validate_no_dateStart() {
+	void validate_no_dateStart() {
 		VTodo component = new VTodo();
 		component.setDuration(Duration.ZERO);
 		assertValidate(component).run(25);
 	}
 
 	@Test
-	public void validate_time_in_rrule() {
+	void validate_time_in_rrule() {
 		//@formatter:off
 		Recurrence[] recurrences = {
 			new Recurrence.Builder(Frequency.DAILY).byHour(1).build(),
@@ -236,7 +236,7 @@ public class VTodoTest {
 	}
 
 	@Test
-	public void validate_multiple_rrules() {
+	void validate_multiple_rrules() {
 		VTodo component = new VTodo();
 		component.setDateStart(new DateStart(date(2000, 1, 1), false));
 		component.setDateDue(new DateDue(date(2000, 1, 10), false));

@@ -1,7 +1,7 @@
 package biweekly.issues;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.Biweekly;
 import biweekly.ICalendar;
@@ -28,9 +28,9 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * @author Michael Angstadt
  * @see "https://github.com/mangstadt/biweekly/pull/63"
  */
-public class PR63 {
+class PR63 {
 	@Test
-	public void pr63() throws Exception {
+	void pr63() throws Exception {
 		TimeZone timezone = TimeZone.getTimeZone("America/New_York");
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		df.setTimeZone(timezone);
@@ -59,7 +59,7 @@ public class PR63 {
 	}
 
 	@Test
-	public void pr63_original() throws Exception {
+	void pr63_original() throws Exception {
 		ICalendar ical = Biweekly.parse(PR63.class.getResourceAsStream("pr63.ics")).first();
 		TimezoneInfo tzInfo = ical.getTimezoneInfo();
 		VEvent vEvent = ical.getEvents().get(0);

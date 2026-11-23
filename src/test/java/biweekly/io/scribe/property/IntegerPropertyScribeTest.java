@@ -1,10 +1,10 @@
 package biweekly.io.scribe.property;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.io.json.JCalValue;
 import biweekly.io.json.JsonValue;
@@ -39,7 +39,7 @@ import biweekly.property.IntegerProperty;
 /**
  * @author Michael Angstadt
  */
-public class IntegerPropertyScribeTest extends ScribeTest<IntegerProperty> {
+class IntegerPropertyScribeTest extends ScribeTest<IntegerProperty> {
 	private final IntegerProperty withValue = new IntegerProperty(5);
 	private final IntegerProperty empty = new IntegerProperty((Integer) null);
 
@@ -48,39 +48,39 @@ public class IntegerPropertyScribeTest extends ScribeTest<IntegerProperty> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withValue).run("5");
 		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText("5").run(has(5));
 		sensei.assertParseText("invalid").cannotParse(24);
 		sensei.assertParseText("").run(has(null));
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		sensei.assertWriteXml(withValue).run("<integer>5</integer>");
 		sensei.assertWriteXml(empty).run("<integer/>");
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		sensei.assertParseXml("<integer>5</integer>").run(has(5));
 		sensei.assertParseXml("<integer>invalid</integer>").cannotParse(24);
 		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		sensei.assertWriteJson(withValue).run(new JCalValue(Arrays.asList(new JsonValue(5))));
 		sensei.assertWriteJson(empty).run((String) null);
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		sensei.assertParseJson(new JCalValue(Arrays.asList(new JsonValue(5)))).run(has(5));
 		sensei.assertParseJson("5").run(has(5));
 		sensei.assertParseJson("invalid").cannotParse(24);

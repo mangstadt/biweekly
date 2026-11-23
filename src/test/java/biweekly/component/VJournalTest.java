@@ -8,7 +8,7 @@ import static biweekly.util.TestUtils.date;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.property.Classification;
 import biweekly.property.Color;
@@ -53,9 +53,9 @@ import biweekly.util.Recurrence;
 /**
  * @author Michael Angstadt
  */
-public class VJournalTest {
+class VJournalTest {
 	@Test
-	public void validate_cardinality_required() {
+	void validate_cardinality_required() {
 		VJournal component = new VJournal();
 		component.getProperties().clear();
 		assertValidate(component).versions(V1_0).run(48, 2, 2);
@@ -68,7 +68,7 @@ public class VJournalTest {
 	}
 
 	@Test
-	public void validate_cardinality_optional() {
+	void validate_cardinality_optional() {
 		VJournal component = new VJournal();
 		component.addProperty(Classification.confidential());
 		component.addProperty(new Created(new Date()));
@@ -101,7 +101,7 @@ public class VJournalTest {
 	}
 
 	@Test
-	public void validate_status() {
+	void validate_status() {
 		VJournal component = new VJournal();
 
 		Status status = Status.accepted();
@@ -166,7 +166,7 @@ public class VJournalTest {
 	}
 
 	@Test
-	public void validate_different_date_datatypes() {
+	void validate_different_date_datatypes() {
 		VJournal component = new VJournal();
 		component.setDateStart(new DateStart(date(2000, 1, 1), false));
 		component.setRecurrenceId(new RecurrenceId(date(2000, 1, 1), true));
@@ -175,7 +175,7 @@ public class VJournalTest {
 	}
 
 	@Test
-	public void validate_time_in_rrule() {
+	void validate_time_in_rrule() {
 		//@formatter:off
 		Recurrence[] recurrences = {
 			new Recurrence.Builder(Frequency.DAILY).byHour(1).build(),
@@ -193,7 +193,7 @@ public class VJournalTest {
 	}
 
 	@Test
-	public void validate_multiple_rrules() {
+	void validate_multiple_rrules() {
 		VJournal component = new VJournal();
 		component.setDateStart(new DateStart(date(2000, 1, 1), false));
 		component.addProperty(new RecurrenceRule(new Recurrence.Builder(Frequency.DAILY).build()));

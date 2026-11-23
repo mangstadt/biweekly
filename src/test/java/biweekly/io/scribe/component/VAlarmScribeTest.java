@@ -3,15 +3,15 @@ package biweekly.io.scribe.component;
 import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.component.VAlarm;
 import biweekly.component.VEvent;
@@ -54,12 +54,12 @@ import biweekly.property.Trigger;
 /**
  * @author Michael Angstadt
  */
-public class VAlarmScribeTest {
+class VAlarmScribeTest {
 	private final VAlarmScribe scribe = new VAlarmScribe();
 	private final Date date = new Date();
 
 	@Test
-	public void checkForDataModelConversions_version() {
+	void checkForDataModelConversions_version() {
 		VAlarm alarm = new VAlarm(Action.audio(), new Trigger(date));
 
 		DataModelConversionException e = assertThrows(DataModelConversionException.class, () -> scribe.checkForDataModelConversions(alarm, null, V1_0));
@@ -72,19 +72,19 @@ public class VAlarmScribeTest {
 	}
 
 	@Test
-	public void checkForDataModelConversions_no_action() {
+	void checkForDataModelConversions_no_action() {
 		VAlarm alarm = new VAlarm(null, new Trigger(date));
 		scribe.checkForDataModelConversions(alarm, null, V1_0);
 	}
 
 	@Test
-	public void checkForDataModelConversions_unknown_action() {
+	void checkForDataModelConversions_unknown_action() {
 		VAlarm alarm = new VAlarm(new Action("foo"), new Trigger(date));
 		scribe.checkForDataModelConversions(alarm, null, V1_0);
 	}
 
 	@Test
-	public void checkForDataModelConversions_start_date() {
+	void checkForDataModelConversions_start_date() {
 		Action action = Action.audio();
 		Duration duration = Duration.ofHours(1);
 
@@ -230,7 +230,7 @@ public class VAlarmScribeTest {
 	}
 
 	@Test
-	public void checkForDataModelConversions_snooze() {
+	void checkForDataModelConversions_snooze() {
 		Action action = Action.audio();
 		Duration snooze = Duration.ofMinutes(10);
 
@@ -246,7 +246,7 @@ public class VAlarmScribeTest {
 	}
 
 	@Test
-	public void checkForDataModelConversions_repeat() {
+	void checkForDataModelConversions_repeat() {
 		Action action = Action.audio();
 		int repeat = 2;
 
@@ -262,7 +262,7 @@ public class VAlarmScribeTest {
 	}
 
 	@Test
-	public void checkForDataModelConversions_AudioAlarm() {
+	void checkForDataModelConversions_AudioAlarm() {
 		Action action = Action.audio();
 
 		{
@@ -337,7 +337,7 @@ public class VAlarmScribeTest {
 	}
 
 	@Test
-	public void checkForDataModelConversions_DisplayAlarm() {
+	void checkForDataModelConversions_DisplayAlarm() {
 		Action action = Action.display();
 
 		{
@@ -365,7 +365,7 @@ public class VAlarmScribeTest {
 	}
 
 	@Test
-	public void checkForDataModelConversions_EmailAlarm() {
+	void checkForDataModelConversions_EmailAlarm() {
 		Action action = Action.email();
 
 		{
@@ -408,7 +408,7 @@ public class VAlarmScribeTest {
 	}
 
 	@Test
-	public void checkForDataModelConversions_ProcedureAlarm() {
+	void checkForDataModelConversions_ProcedureAlarm() {
 		Action action = Action.procedure();
 
 		{

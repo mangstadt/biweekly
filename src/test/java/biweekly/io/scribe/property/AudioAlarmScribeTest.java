@@ -2,13 +2,13 @@ package biweekly.io.scribe.property;
 
 import static biweekly.util.StringUtils.encodeBase64;
 import static biweekly.util.TestUtils.utc;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalDataType;
 import biweekly.component.VAlarm;
@@ -47,7 +47,7 @@ import java.time.Duration;
 /**
  * @author Michael Angstadt
  */
-public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
+class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 	private final Date start = utc(2014, 1, 1, 1, 0, 0);
 
 	private final AudioAlarm empty = new AudioAlarm();
@@ -93,7 +93,7 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 	}
 
 	@Test
-	public void dataType() {
+	void dataType() {
 		sensei.assertDataType(empty).run(null);
 		sensei.assertDataType(noValue).run(null);
 		sensei.assertDataType(withContentId).run(ICalDataType.CONTENT_ID);
@@ -102,7 +102,7 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(empty).run(";;");
 		sensei.assertWriteText(noValue).run("20140101T010000Z;PT10M;5");
 		sensei.assertWriteText(withContentId).run("20140101T010000Z;PT10M;5;" + contentId);
@@ -111,7 +111,7 @@ public class AudioAlarmScribeTest extends ScribeTest<AudioAlarm> {
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		{
 			Sensei<AudioAlarm>.ParseTextTest test = sensei.assertParseText("");
 			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);

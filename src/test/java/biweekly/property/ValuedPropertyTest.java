@@ -4,11 +4,11 @@ import static biweekly.property.PropertySensei.assertCopy;
 import static biweekly.property.PropertySensei.assertEqualsMethod;
 import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertValidate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -38,9 +38,9 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class ValuedPropertyTest {
+class ValuedPropertyTest {
 	@Test
-	public void constructors() throws Exception {
+	void constructors() throws Exception {
 		ValuedProperty<String> property = new ValuedProperty<>((String) null);
 		assertNull(property.getValue());
 
@@ -49,7 +49,7 @@ public class ValuedPropertyTest {
 	}
 
 	@Test
-	public void set_value() {
+	void set_value() {
 		ValuedProperty<String> property = new ValuedProperty<>((String) null);
 
 		property.setValue("value");
@@ -57,7 +57,7 @@ public class ValuedPropertyTest {
 	}
 
 	@Test
-	public void getValue() {
+	void getValue() {
 		ValuedProperty<String> property = new ValuedProperty<>("value");
 		assertEquals("value", ValuedProperty.valueOf(property));
 
@@ -68,7 +68,7 @@ public class ValuedPropertyTest {
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		ValuedProperty<String> property = new ValuedProperty<>((String) null);
 		assertValidate(property).run(26);
 
@@ -77,13 +77,13 @@ public class ValuedPropertyTest {
 	}
 
 	@Test
-	public void toStringValues() {
+	void toStringValues() {
 		ValuedProperty<String> property = new ValuedProperty<>("value");
 		assertFalse(property.toStringValues().isEmpty());
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		ValuedProperty<String> original = new ValuedProperty<>((String) null);
 		assertCopy(original);
 
@@ -92,7 +92,7 @@ public class ValuedPropertyTest {
 	}
 
 	@Test
-	public void equals() {
+	void equals() {
 		//@formatter:off
 		assertNothingIsEqual(
 			new ValuedProperty<>((String) null),

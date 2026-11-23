@@ -11,11 +11,11 @@ import static biweekly.util.TestUtils.assertVersion;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -29,11 +29,10 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 
 import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -106,24 +105,21 @@ import biweekly.util.XmlUtils;
 /**
  * @author Michael Angstadt
  */
-public class XCalReaderTest {
+class XCalReaderTest {
 	/**
 	 * Set the timezone to something other than US/Eastern, since some examples
 	 * use this timezone.
 	 */
-	@ClassRule
+	@RegisterExtension
 	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
 
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
-
-	@BeforeClass
-	public static void beforeClass() {
+	@BeforeAll
+	static void beforeAll() {
 		XMLUnit.setIgnoreWhitespace(true);
 	}
 
 	@Test
-	public void read_single() throws Exception {
+	void read_single() throws Exception {
 		//@formatter:off
 		String xml =
 		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
@@ -165,7 +161,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_multiple() throws Exception {
+	void read_multiple() throws Exception {
 		//@formatter:off
 		String xml =
 		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
@@ -234,7 +230,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_default_namespace() throws Exception {
+	void read_default_namespace() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar>" +
@@ -254,7 +250,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_wrong_namespace() throws Exception {
+	void read_wrong_namespace() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"http://example.com\">" +
@@ -274,7 +270,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_namespace_prefix() throws Exception {
+	void read_namespace_prefix() throws Exception {
 		//@formatter:off
 		String xml =
 		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
@@ -316,7 +312,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_preserve_whitespace() throws Exception {
+	void read_preserve_whitespace() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -343,7 +339,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_ignore_other_namespaces() throws Exception {
+	void read_ignore_other_namespaces() throws Exception {
 		//@formatter:off
 		String xml =
 		"<root>" +
@@ -401,7 +397,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_identical_element_names() throws Exception {
+	void read_identical_element_names() throws Exception {
 		//@formatter:off
 		String xml =
 		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
@@ -476,7 +472,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_bad_xml() throws Exception {
+	void read_bad_xml() throws Exception {
 		//@formatter:off
 		String xml =
 		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
@@ -504,7 +500,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_multiple_icalendar_elements() throws Exception {
+	void read_multiple_icalendar_elements() throws Exception {
 		//@formatter:off
 		String xml =
 		"<root>" +
@@ -554,7 +550,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_parameters() throws Exception {
+	void read_parameters() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -633,7 +629,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_experimental_component() throws Exception {
+	void read_experimental_component() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -668,7 +664,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_experimental_component_with_marshaller() throws Exception {
+	void read_experimental_component_with_marshaller() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -704,7 +700,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_experimental_property() throws Exception {
+	void read_experimental_property() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -734,7 +730,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_experimental_property_with_namespace_with_marshaller() throws Exception {
+	void read_experimental_property_with_namespace_with_marshaller() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -766,7 +762,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_experimental_property_with_namespace_without_marshaller() throws Exception {
+	void read_experimental_property_with_namespace_without_marshaller() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -802,7 +798,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void skipMeException() throws Exception {
+	void skipMeException() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -834,7 +830,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void cannotParseException() throws Exception {
+	void cannotParseException() throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -870,7 +866,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void close_before_stream_ends() throws Exception {
+	void close_before_stream_ends() throws Exception {
 		//@formatter:off
 		String xml =
 		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
@@ -904,7 +900,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_utf8() throws Exception {
+	void read_utf8(@TempDir Path tempDir) throws Exception {
 		//@formatter:off
 		String xml =
 		"<icalendar xmlns=\"" + XCAL_NS + "\">" +
@@ -916,7 +912,7 @@ public class XCalReaderTest {
 		"</icalendar>";
 		//@formatter:on
 
-		Path file = tempFolder.newFile().toPath();
+		Path file = tempDir.resolve("test.xml");
 		Writer writer = Utf8Streams.writer(file);
 		writer.write(xml);
 		writer.close();
@@ -938,7 +934,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_empty() throws Exception {
+	void read_empty() throws Exception {
 		String xml = "<icalendar xmlns=\"" + XCAL_NS + "\"/>";
 		XCalReader reader = new XCalReader(xml);
 
@@ -947,7 +943,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_example1() throws Throwable {
+	void read_example1() throws Throwable {
 		XCalReader reader = read("rfc6321-example1.xml");
 
 		{
@@ -974,7 +970,7 @@ public class XCalReaderTest {
 	}
 
 	@Test
-	public void read_example2() throws Throwable {
+	void read_example2() throws Throwable {
 		XCalReader reader = read("rfc6321-example2.xml");
 
 		{

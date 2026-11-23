@@ -2,7 +2,7 @@ package biweekly.property;
 
 import static biweekly.util.TestUtils.assertValidate;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static biweekly.ICalVersion.*;
 
@@ -37,9 +37,9 @@ import biweekly.util.Recurrence;
 /**
  * @author Michael Angstadt
  */
-public class ExceptionRuleTest {
+class ExceptionRuleTest {
 	@Test
-	public void validate() {
+	void validate() {
 		ExceptionRule property = new ExceptionRule(new Recurrence.Builder(Frequency.DAILY).build());
 		assertValidate(property).versions(V1_0, V2_0_DEPRECATED).run();
 

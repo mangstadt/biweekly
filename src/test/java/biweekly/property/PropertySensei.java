@@ -3,8 +3,8 @@ package biweekly.property;
 import static biweekly.util.TestUtils.assertEqualsAndHash;
 import static biweekly.util.TestUtils.assertEqualsMethodEssentials;
 import static biweekly.util.TestUtils.assertNotEqualsBothWays;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -98,8 +98,8 @@ public class PropertySensei {
 				Method method = original.getClass().getMethod(methodName);
 				Object fromOriginal = method.invoke(original);
 				String message = "Object returned by \"" + methodName + "\" is the same object, but it shouldn't be.";
-				assertNotSame(message, fromOriginal, method.invoke(copyFromConstructor));
-				assertNotSame(message, fromOriginal, method.invoke(copyFromMethod));
+				assertNotSame(fromOriginal, method.invoke(copyFromConstructor), message);
+				assertNotSame(fromOriginal, method.invoke(copyFromMethod), message);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -122,8 +122,8 @@ public class PropertySensei {
 				Object fromMethodCopy = method.invoke(copyFromMethod);
 
 				String message = "Object returned by \"" + methodName + "\" is the same object, but it shouldn't be.";
-				assertNotSame(message, fromOriginal, fromConstructorCopy);
-				assertNotSame(message, fromOriginal, fromMethodCopy);
+				assertNotSame(fromOriginal, fromConstructorCopy, message);
+				assertNotSame(fromOriginal, fromMethodCopy, message);
 
 				if (fromOriginal instanceof Collection) {
 					Iterator<?> fromOriginalCollection = ((Collection<?>) fromOriginal).iterator();
@@ -348,7 +348,7 @@ public class PropertySensei {
 		for (ICalProperty property : properties) {
 			for (ICalProperty property2 : properties) {
 				if (property != property2) {
-					assertNotEquals("Properties should not be equal:\n" + property + "\n" + property2, property, property2);
+					assertNotEquals(property, property2, () -> "Properties should not be equal:\n" + property + "\n" + property2);
 				}
 			}
 		}
@@ -368,7 +368,7 @@ public class PropertySensei {
 	 * @param instance2 the second property instance
 	 */
 	public static <T extends ICalProperty> void assertEqualsBaseClassFields(T instance1, T instance2) {
-		assertNotSame("You must pass two separate object instances into this method.", instance1, instance2);
+		assertNotSame(instance1, instance2, () -> "You must pass two separate object instances into this method.");
 		assertEqualsAndHash(instance1, instance2);
 
 		instance1.setParameter("PARAM", "value");

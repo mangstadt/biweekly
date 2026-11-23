@@ -5,17 +5,20 @@ import static biweekly.util.TestUtils.buildTimezone;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.icalDate;
 import static biweekly.util.TestUtils.utc;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.TimeZone;
 
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import biweekly.ICalendar;
 import biweekly.component.DaylightSavingsTime;
@@ -26,9 +29,6 @@ import biweekly.util.DateTimeComponents;
 import biweekly.util.DefaultTimezoneRule;
 import biweekly.util.ICalDate;
 import biweekly.util.UtcOffset;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -58,12 +58,12 @@ import static org.mockito.Mockito.verify;
 /**
  * @author Michael Angstadt
  */
-public class StreamReaderTest {
-	@ClassRule
+class StreamReaderTest {
+	@RegisterExtension
 	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(-1, 0);
 
 	@Test
-	public void floating_date() throws Exception {
+	void floating_date() throws Exception {
 		final ICalPropertyImpl floating = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 
 		StreamReader reader = new StreamReaderImpl() {
@@ -93,7 +93,7 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void floating_date_different_default_timezone() throws Exception {
+	void floating_date_different_default_timezone() throws Exception {
 		final ICalPropertyImpl floating = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 
 		StreamReader reader = new StreamReaderImpl() {
@@ -125,7 +125,7 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void date_assigned_to_vtimezone_component() throws Exception {
+	void date_assigned_to_vtimezone_component() throws Exception {
 		final VTimezone vtimezone = new VTimezone("tz");
 		{
 			StandardTime standard = new StandardTime();
@@ -176,7 +176,7 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void date_with_olsen_id() throws Exception {
+	void date_with_olsen_id() throws Exception {
 		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("/America/New_York");
 
@@ -209,7 +209,7 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void date_with_olsen_id_with_mozilla_prefix() throws Exception {
+	void date_with_olsen_id_with_mozilla_prefix() throws Exception {
 		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("/mozilla.org/20050126_1/America/New_York");
 
@@ -242,7 +242,7 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void date_with_olsen_id_missing_solidus() throws Exception {
+	void date_with_olsen_id_missing_solidus() throws Exception {
 		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("America/New_York");
 
@@ -275,7 +275,7 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void date_with_olsen_id_with_mozilla_prefix_missing_solidus() throws Exception {
+	void date_with_olsen_id_with_mozilla_prefix_missing_solidus() throws Exception {
 		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("mozilla.org/20050126_1/America/New_York");
 
@@ -308,7 +308,7 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void date_with_olsen_id_that_also_matches_vtimezone_component() throws Exception {
+	void date_with_olsen_id_that_also_matches_vtimezone_component() throws Exception {
 		/*
 		 * This timezone definition will be ignored because its TZID is
 		 * formatted as a valid Olsen ID. Because the Olsen ID is valid,
@@ -363,7 +363,7 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void date_with_unrecognized_olsen_id_that_matches_vtimezone_component() throws Exception {
+	void date_with_unrecognized_olsen_id_that_matches_vtimezone_component() throws Exception {
 		final VTimezone vtimezone = new VTimezone("/Foo/Bar");
 		{
 			StandardTime standard = new StandardTime();
@@ -413,7 +413,7 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void date_with_unrecognized_olsen_id_that_does_not_match_vtimezone_component() throws Exception {
+	void date_with_unrecognized_olsen_id_that_does_not_match_vtimezone_component() throws Exception {
 		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("/Invalid/TZID");
 
@@ -444,7 +444,7 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void date_with_unrecognized_olsen_id_that_does_not_match_vtimezone_component_different_default_timezone() throws Exception {
+	void date_with_unrecognized_olsen_id_that_does_not_match_vtimezone_component_different_default_timezone() throws Exception {
 		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("/Invalid/TZID");
 
@@ -477,7 +477,7 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void date_with_tzid_that_does_not_match_anything() throws Exception {
+	void date_with_tzid_that_does_not_match_anything() throws Exception {
 		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("invalid");
 
@@ -508,7 +508,7 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void date_with_tzid_that_does_not_match_anything_different_default_timezone() throws Exception {
+	void date_with_tzid_that_does_not_match_anything_different_default_timezone() throws Exception {
 		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("invalid");
 
@@ -541,7 +541,7 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void date_with_global_id_using_custom_resolver() throws Exception {
+	void date_with_global_id_using_custom_resolver() throws Exception {
 		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("/New York City");
 
@@ -577,7 +577,7 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void date_with_global_id_using_custom_resolver_missing_solidus() throws Exception {
+	void date_with_global_id_using_custom_resolver_missing_solidus() throws Exception {
 		final ICalPropertyImpl property = new ICalPropertyImpl(icalDate(2014, 9, 2, 10, 22, 0));
 		property.getParameters().setTimezoneId("New York City");
 
@@ -613,7 +613,7 @@ public class StreamReaderTest {
 	}
 
 	@Test
-	public void timezone_component_without_id() throws Exception {
+	void timezone_component_without_id() throws Exception {
 		final VTimezone vtimezone = new VTimezone((String) null);
 		{
 			StandardTime standard = new StandardTime();

@@ -5,14 +5,14 @@ import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertSize;
 import static biweekly.util.TestUtils.assertValidate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.component.ICalComponent;
 import biweekly.component.VEvent;
@@ -57,15 +57,15 @@ import java.time.Duration;
 /**
  * @author Michael Angstadt
  */
-public class ICalendarTest {
+class ICalendarTest {
 	@Test
-	public void constructor() {
+	void constructor() {
 		ICalendar ical = new ICalendar();
 		assertNotNull(ical.getProductId());
 	}
 
 	@Test
-	public void validate_no_component() {
+	void validate_no_component() {
 		ICalendar ical = new ICalendar();
 		assertValidate(ical).versions(V1_0).run();
 		assertValidate(ical).versions(V2_0_DEPRECATED, V2_0).run(4);
@@ -76,7 +76,7 @@ public class ICalendarTest {
 	}
 
 	@Test
-	public void validate_cardinality_required() {
+	void validate_cardinality_required() {
 		ICalendar ical = new ICalendar();
 		ical.addExperimentalComponent("X-SUPPRESS-NO-COMPONENT-WARNING");
 		assertValidate(ical).run();
@@ -88,7 +88,7 @@ public class ICalendarTest {
 	}
 
 	@Test
-	public void validate_cardinality_optional() {
+	void validate_cardinality_optional() {
 		ICalendar ical = new ICalendar();
 		ical.addExperimentalComponent("X-SUPPRESS-NO-COMPONENT-WARNING");
 		assertValidate(ical).run();
@@ -111,7 +111,7 @@ public class ICalendarTest {
 	}
 
 	@Test
-	public void validate_geo() {
+	void validate_geo() {
 		ICalendar ical = new ICalendar();
 		ical.addExperimentalComponent("X-SUPPRESS-NO-COMPONENT-WARNING");
 		ical.addProperty(new Geo(1.0, 2.0));
@@ -121,7 +121,7 @@ public class ICalendarTest {
 	}
 
 	@Test
-	public void validate_name() {
+	void validate_name() {
 		ICalendar ical = new ICalendar();
 		ical.addExperimentalComponent("X-SUPPRESS-NO-COMPONENT-WARNING");
 		assertValidate(ical).run();
@@ -137,7 +137,7 @@ public class ICalendarTest {
 	}
 
 	@Test
-	public void validate_description() {
+	void validate_description() {
 		ICalendar ical = new ICalendar();
 		ical.addExperimentalComponent("X-SUPPRESS-NO-COMPONENT-WARNING");
 		assertValidate(ical).run();
@@ -153,7 +153,7 @@ public class ICalendarTest {
 	}
 
 	@Test
-	public void validate_recursive() {
+	void validate_recursive() {
 		ICalendar ical = new ICalendar();
 
 		TestComponent outter1 = new TestComponent();
@@ -174,7 +174,7 @@ public class ICalendarTest {
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		ICalendar ical = new ICalendar();
 		ical.setVersion(ICalVersion.V1_0);
 

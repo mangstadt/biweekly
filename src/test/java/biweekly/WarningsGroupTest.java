@@ -1,11 +1,11 @@
 package biweekly;
 
 import static biweekly.util.StringUtils.NEWLINE;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ValidationWarnings.WarningsGroup;
 import biweekly.component.ICalComponent;
@@ -39,9 +39,9 @@ import biweekly.property.ICalProperty;
 /**
  * @author Michael Angstadt
  */
-public class WarningsGroupTest {
+class WarningsGroupTest {
 	@Test
-	public void toString_() {
+	void toString_() {
 		//@formatter:off
 		assertToString(
 			"[Grandparent > Parent > TestComponent]: one",

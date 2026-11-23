@@ -1,9 +1,9 @@
 package biweekly.io.json;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.JsonToken;
 import com.github.mangstadt.vinnie.LaciToken;
@@ -51,9 +51,9 @@ import biweekly.util.ListMultimap;
  * @author Michael Angstadt
  */
 @SuppressWarnings("resource")
-public class JCalRawReaderTest {
+class JCalRawReaderTest {
 	@Test
-	public void basic() throws Throwable {
+	void basic() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -131,7 +131,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void read_multiple() throws Throwable {
+	void read_multiple() throws Throwable {
 		//@formatter:off
 		String json =
 		"[" +
@@ -215,7 +215,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void ignore_other_json() throws Throwable {
+	void ignore_other_json() throws Throwable {
 		//@formatter:off
 		String json =
 		"{" +
@@ -264,7 +264,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void bad_snytax() throws Throwable {
+	void bad_snytax() throws Throwable {
 		//@formatter:off
 		String json =
 		"[" +
@@ -363,7 +363,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void empty_properties_array() throws Throwable {
+	void empty_properties_array() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -417,7 +417,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void empty_components_array() throws Throwable {
+	void empty_components_array() throws Throwable {
 		//@formatter:off
 		String json =
 		"[" +
@@ -500,7 +500,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void empty_properties_and_components_arrays() throws Throwable {
+	void empty_properties_and_components_arrays() throws Throwable {
 		//@formatter:off
 		String json =
 		"[" +
@@ -565,7 +565,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void read_components_deep() throws Throwable {
+	void read_components_deep() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -682,7 +682,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void structured_value() throws Throwable {
+	void structured_value() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -741,7 +741,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void multi_value() throws Throwable {
+	void multi_value() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -795,7 +795,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void object_value() throws Throwable {
+	void object_value() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -857,7 +857,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void different_data_types() throws Throwable {
+	void different_data_types() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -911,7 +911,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void complex_value() throws Throwable {
+	void complex_value() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -974,7 +974,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void data_type_unknown() throws Throwable {
+	void data_type_unknown() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -1018,7 +1018,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void data_type_unrecognized() throws Throwable {
+	void data_type_unrecognized() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +
@@ -1062,7 +1062,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void empty() throws Throwable {
+	void empty() throws Throwable {
 		//@formatter:off
 		String json =
 		"";
@@ -1087,7 +1087,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void no_ical() throws Throwable {
+	void no_ical() throws Throwable {
 		//@formatter:off
 		String json =
 		"{" +
@@ -1114,7 +1114,7 @@ public class JCalRawReaderTest {
 	}
 
 	@Test
-	public void parameters() throws Throwable {
+	void parameters() throws Throwable {
 		//@formatter:off
 		String json =
 		"[\"vcalendar\"," +

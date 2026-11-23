@@ -7,14 +7,14 @@ import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.icalDate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.io.ParseContext.TimezonedDate;
 import biweekly.io.json.JCalValue;
@@ -51,7 +51,7 @@ import biweekly.util.ListMultimap;
 /**
  * @author Michael Angstadt
  */
-public class ExceptionDatesScribeTest extends ScribeTest<ExceptionDates> {
+class ExceptionDatesScribeTest extends ScribeTest<ExceptionDates> {
 	private final ICalDate date1 = new ICalDate(date(2013, 6, 11), false);
 	private final String date1Str = "20130611";
 	private final String date1StrExt = "2013-06-11";
@@ -85,14 +85,14 @@ public class ExceptionDatesScribeTest extends ScribeTest<ExceptionDates> {
 	}
 
 	@Test
-	public void dataType() {
+	void dataType() {
 		sensei.assertDataType(withDates).run(DATE);
 		sensei.assertDataType(withDateTimes).run(DATE_TIME);
 		sensei.assertDataType(empty).run(DATE_TIME);
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withDates).version(V1_0).run(date1Str + ";" + date2Str);
 		sensei.assertWriteText(withDates).version(V2_0_DEPRECATED).run(date1Str + "," + date2Str);
 		sensei.assertWriteText(withDates).version(V2_0).run(date1Str + "," + date2Str);
@@ -105,7 +105,7 @@ public class ExceptionDatesScribeTest extends ScribeTest<ExceptionDates> {
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText(date1Str + ";" + date2Str).versions(V1_0).run(has(new ICalDate(date1, true), new ICalDate(date2, true)));
 		sensei.assertParseText(date1Str + "," + date2Str).versions(V2_0_DEPRECATED, V2_0).run(has(new ICalDate(date1, true), new ICalDate(date2, true)));
 
@@ -142,14 +142,14 @@ public class ExceptionDatesScribeTest extends ScribeTest<ExceptionDates> {
 	}
 
 	@Test
-	public void writeXml_datetime() {
+	void writeXml_datetime() {
 		sensei.assertWriteXml(withDates).run("<date>" + date1StrExt + "</date><date>" + date2StrExt + "</date>");
 		sensei.assertWriteXml(withDateTimes).run("<date-time>" + datetime1StrExt + "</date-time><date-time>" + datetime2StrExt + "</date-time>");
 		sensei.assertWriteXml(empty).run("<date-time/>");
 	}
 
 	@Test
-	public void parseXml_datetime() {
+	void parseXml_datetime() {
 		//@formatter:off
 		sensei.assertParseXml(
 		"<date>" + date1Str + "</date>" +
@@ -188,14 +188,14 @@ public class ExceptionDatesScribeTest extends ScribeTest<ExceptionDates> {
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		sensei.assertWriteJson(withDates).run(JCalValue.multi(date1StrExt, date2StrExt));
 		sensei.assertWriteJson(withDateTimes).run(JCalValue.multi(datetime1StrExt, datetime2StrExt));
 		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		sensei.assertParseJson(JCalValue.multi(date1StrExt, date2StrExt)).run(has(new ICalDate(date1, true), new ICalDate(date2, true)));
 		sensei.assertParseJson(JCalValue.multi(date1StrExt, date2StrExt)).dataType(DATE).run(is(withDates));
 		sensei.assertParseJson(JCalValue.multi(date1StrExt, date2StrExt)).dataType(DATE_TIME).run(has(new ICalDate(date1, true), new ICalDate(date2, true)));

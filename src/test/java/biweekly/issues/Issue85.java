@@ -1,12 +1,12 @@
 package biweekly.issues;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.Biweekly;
 import biweekly.ICalendar;
@@ -16,9 +16,9 @@ import biweekly.component.VEvent;
  * @author Michael Angstadt
  * @see "https://github.com/mangstadt/biweekly/issues/85"
  */
-public class Issue85 {
+class Issue85 {
 	@Test
-	public void test() throws Exception {
+	void test() throws Exception {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		df.setTimeZone(TimeZone.getTimeZone("UTC"));
 		

@@ -1,14 +1,14 @@
 package biweekly.issues;
 
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import biweekly.component.VEvent;
 import biweekly.util.DefaultTimezoneRule;
@@ -20,13 +20,13 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * @author Michael Angstadt
  * @see "https://github.com/mangstadt/biweekly/issues/131"
  */
-public class Issue131 {
-	@Rule
-	public final DefaultTimezoneRule rule = new DefaultTimezoneRule("America/Chicago");
+class Issue131 {
+	@RegisterExtension
+	public static final DefaultTimezoneRule rule = new DefaultTimezoneRule("America/Chicago");
 
 	@Test
-	@Ignore
-	public void test() throws Exception {
+	@Disabled("Test fails.")
+	void test() throws Exception {
 		Date start = date(2024, 1, 1, 0, 0, 0);
 		Recurrence rrule = new Recurrence.Builder(Frequency.HOURLY).build();
 

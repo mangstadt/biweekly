@@ -1,10 +1,10 @@
 package biweekly.io.scribe.property;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.github.mangstadt.vinnie.LaciToken;
 
@@ -41,7 +41,7 @@ import biweekly.property.RawProperty;
 /**
  * @author Michael Angstadt
  */
-public class RawPropertyScribeTest extends ScribeTest<RawProperty> {
+class RawPropertyScribeTest extends ScribeTest<RawProperty> {
 	private final RawProperty withValue = new RawProperty("RAW", "value");
 	private final RawProperty withEscapedChar = new RawProperty("RAW", "one\\,two");
 	private final RawProperty empty = new RawProperty("RAW", null);
@@ -51,14 +51,14 @@ public class RawPropertyScribeTest extends ScribeTest<RawProperty> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withValue).run("value");
 		sensei.assertWriteText(withEscapedChar).run("one\\,two");
 		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText("value").run(has("RAW", "value", null));
 		sensei.assertParseText("value").dataType(ICalDataType.TEXT).run(has("RAW", "value", ICalDataType.TEXT));
 		sensei.assertParseText("one\\,two").run(has("RAW", "one\\,two", null));
@@ -68,12 +68,12 @@ public class RawPropertyScribeTest extends ScribeTest<RawProperty> {
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		sensei.assertParseXml("<text>one\\,two</text>").run(has("RAW", "one\\,two", ICalDataType.TEXT));
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		JCalValue value = JCalValue.single("one\\,two");
 		sensei.assertParseJson(value).dataType(ICalDataType.TEXT).run(has("RAW", "one\\,two", ICalDataType.TEXT));
 

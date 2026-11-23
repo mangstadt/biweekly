@@ -1,15 +1,15 @@
 package biweekly.io.xml;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.transform.OutputKeys;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -39,11 +39,11 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class XCalOutputPropertiesTest {
+class XCalOutputPropertiesTest {
 	private static final String INDENT_AMT = "{http://xml.apache.org/xslt}indent-amount";
 
 	@Test
-	public void constructor_empty() {
+	void constructor_empty() {
 		XCalOutputProperties properties = new XCalOutputProperties();
 
 		Map<String, String> expected = new HashMap<>();
@@ -53,7 +53,7 @@ public class XCalOutputPropertiesTest {
 	}
 
 	@Test
-	public void constructor() {
+	void constructor() {
 		XCalOutputProperties properties = new XCalOutputProperties(1, "1.1");
 
 		Map<String, String> expected = new HashMap<>();
@@ -66,12 +66,12 @@ public class XCalOutputPropertiesTest {
 	}
 
 	@Test
-	public void constructor_negative_indent() {
+	void constructor_negative_indent() {
 		assertThrows(IllegalArgumentException.class, () -> new XCalOutputProperties(-1, "1.1"));
 	}
 
 	@Test
-	public void setIndent() {
+	void setIndent() {
 		XCalOutputProperties properties = new XCalOutputProperties();
 		properties.setIndent(1);
 
@@ -84,7 +84,7 @@ public class XCalOutputPropertiesTest {
 	}
 
 	@Test
-	public void setIndent_remove() {
+	void setIndent_remove() {
 		XCalOutputProperties properties = new XCalOutputProperties();
 		properties.setIndent(1);
 		properties.setIndent(null);
@@ -96,13 +96,13 @@ public class XCalOutputPropertiesTest {
 	}
 
 	@Test
-	public void setIndent_negative() {
+	void setIndent_negative() {
 		XCalOutputProperties properties = new XCalOutputProperties();
 		assertThrows(IllegalArgumentException.class, () -> properties.setIndent(-1));
 	}
 
 	@Test
-	public void getIndent() {
+	void getIndent() {
 		XCalOutputProperties properties = new XCalOutputProperties();
 
 		assertNull(properties.getIndent());
@@ -127,7 +127,7 @@ public class XCalOutputPropertiesTest {
 	}
 
 	@Test
-	public void getIndent_not_an_integer() {
+	void getIndent_not_an_integer() {
 		XCalOutputProperties properties = new XCalOutputProperties();
 		properties.put(OutputKeys.INDENT, "yes");
 		properties.put(INDENT_AMT, "foo");
@@ -135,7 +135,7 @@ public class XCalOutputPropertiesTest {
 	}
 
 	@Test
-	public void setXmlVersion() {
+	void setXmlVersion() {
 		XCalOutputProperties properties = new XCalOutputProperties();
 		properties.setXmlVersion("1.1");
 
@@ -147,7 +147,7 @@ public class XCalOutputPropertiesTest {
 	}
 
 	@Test
-	public void setXmlVersion_remove() {
+	void setXmlVersion_remove() {
 		XCalOutputProperties properties = new XCalOutputProperties();
 		properties.setXmlVersion("1.1");
 		properties.setXmlVersion(null);
@@ -159,7 +159,7 @@ public class XCalOutputPropertiesTest {
 	}
 
 	@Test
-	public void getXmlVersion() {
+	void getXmlVersion() {
 		XCalOutputProperties properties = new XCalOutputProperties();
 		assertNull(properties.getXmlVersion());
 

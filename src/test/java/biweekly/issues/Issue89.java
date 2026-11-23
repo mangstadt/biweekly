@@ -1,13 +1,13 @@
 package biweekly.issues;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalVersion;
 import biweekly.io.ParseContext;
@@ -20,9 +20,9 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * @author Michael Angstadt
  * @see "https://github.com/mangstadt/biweekly/issues/89"
  */
-public class Issue89 {
+class Issue89 {
 	@Test
-	public void givenRRULE_whenAdvanceTo_ensureNextIsNextOccurrence() throws Exception {
+	void givenRRULE_whenAdvanceTo_ensureNextIsNextOccurrence() throws Exception {
 		TimeZone utc = TimeZone.getTimeZone("UTC");
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		df.setTimeZone(utc);

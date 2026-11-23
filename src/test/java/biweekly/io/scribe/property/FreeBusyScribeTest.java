@@ -1,13 +1,13 @@
 package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -43,7 +43,7 @@ import biweekly.util.Period;
 /**
  * @author Michael Angstadt
  */
-public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
+class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 	private final Date start = date(2013, 6, 11, 13, 43, 2);
 	private final String startStr = "20130611T124302Z";
 	private final String startStrExt = "2013-06-11T12:43:02Z";
@@ -77,14 +77,14 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withSingle).run(startStr + "/" + endStr);
 		sensei.assertWriteText(withMultiple).run(startStr + "/" + endStr + "," + startStr + "/" + durationStr);
 		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText(startStr + "/" + endStr).run(hasSingle);
 		sensei.assertParseText(startStr + "/" + endStr + "," + startStr + "/" + durationStr).run(hasMultiple);
 
@@ -97,7 +97,7 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		//@formatter:off
 		sensei.assertWriteXml(withSingle).run(
 		"<period>" +
@@ -120,7 +120,7 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		//@formatter:off
 		sensei.assertParseXml(
 		"<period>" +
@@ -216,14 +216,14 @@ public class FreeBusyScribeTest extends ScribeTest<FreeBusy> {
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		sensei.assertWriteJson(withSingle).run(JCalValue.multi(startStrExt + "/" + endStrExt));
 		sensei.assertWriteJson(withMultiple).run(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/" + durationStr));
 		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt)).run(hasSingle);
 		sensei.assertParseJson(JCalValue.multi(startStrExt + "/" + endStrExt, startStrExt + "/" + durationStr)).run(hasMultiple);
 

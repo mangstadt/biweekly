@@ -1,15 +1,15 @@
 package biweekly.io;
 
 import static biweekly.util.TestUtils.assertCollectionContains;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.TimeZone;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import biweekly.component.VTimezone;
 import biweekly.property.ICalProperty;
@@ -43,16 +43,16 @@ import biweekly.util.TestUtils;
 /**
  * @author Michael Angstadt
  */
-public class TimezoneInfoTest {
+class TimezoneInfoTest {
 	private TimezoneInfo tzinfo;
 
-	@Before
-	public void before() {
+	@BeforeEach
+	void beforeEach() {
 		tzinfo = new TimezoneInfo();
 	}
 
 	@Test
-	public void assignments_collection() {
+	void assignments_collection() {
 		TimeZone timezone = TimeZone.getDefault();
 		VTimezone component = new VTimezone("tz");
 		TimezoneAssignment assignment = new TimezoneAssignment(timezone, component);
@@ -80,7 +80,7 @@ public class TimezoneInfoTest {
 	}
 
 	@Test
-	public void set_getTimezone() {
+	void set_getTimezone() {
 		ICalProperty property1 = new ICalPropertyImpl();
 		ICalProperty property2 = new ICalPropertyImpl();
 		ICalProperty property3 = new ICalPropertyImpl();
@@ -123,7 +123,7 @@ public class TimezoneInfoTest {
 	}
 
 	@Test
-	public void removeTimezone() {
+	void removeTimezone() {
 		ICalProperty property = new ICalPropertyImpl();
 
 		TimezoneAssignment defaultTimezone = new TimezoneAssignment(TimeZone.getDefault(), new VTimezone("tz"));

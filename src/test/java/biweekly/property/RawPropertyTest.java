@@ -7,11 +7,11 @@ import static biweekly.property.PropertySensei.assertCopy;
 import static biweekly.property.PropertySensei.assertEqualsMethod;
 import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertValidate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.github.mangstadt.vinnie.LaciToken;
 
@@ -45,9 +45,9 @@ import biweekly.ICalDataType;
 /**
  * @author Michael Angstadt
  */
-public class RawPropertyTest {
+class RawPropertyTest {
 	@Test
-	public void constructors() throws Exception {
+	void constructors() throws Exception {
 		RawProperty property = new RawProperty("name", "value");
 		assertEquals(new LaciToken("name"), property.getName());
 		assertEquals("value", property.getValue());
@@ -60,7 +60,7 @@ public class RawPropertyTest {
 	}
 
 	@Test
-	public void set_value() {
+	void set_value() {
 		RawProperty property = new RawProperty("name", "value");
 
 		property.setName("name2");
@@ -80,7 +80,7 @@ public class RawPropertyTest {
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		RawProperty property = new RawProperty("foo:bar", "value");
 		assertValidate(property).versions(V1_0).run(59);
 		assertValidate(property).versions(V2_0_DEPRECATED, V2_0).run(52);
@@ -90,19 +90,19 @@ public class RawPropertyTest {
 	}
 
 	@Test
-	public void toStringValues() {
+	void toStringValues() {
 		RawProperty property = new RawProperty("name", "value");
-		Assert.assertFalse(property.toStringValues().isEmpty());
+		assertFalse(property.toStringValues().isEmpty());
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		RawProperty original = new RawProperty("name", ICalDataType.TEXT, "value");
 		assertCopy(original);
 	}
 
 	@Test
-	public void equals() {
+	void equals() {
 		//@formatter:off
 		assertNothingIsEqual(
 			new RawProperty((String) null, null),

@@ -1,10 +1,10 @@
 package biweekly.util;
 
 import static biweekly.util.TestUtils.buildTimezone;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -34,9 +34,9 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class UtcOffsetTest {
+class UtcOffsetTest {
 	@Test
-	public void constructor() {
+	void constructor() {
 		final int HOURS = 60 * 60 * 1000;
 		final int MINUTES = 60 * 1000;
 
@@ -51,7 +51,7 @@ public class UtcOffsetTest {
 	}
 
 	@Test
-	public void parse() {
+	void parse() {
 		assertParse("5", 5, 0);
 		assertParse("10", 10, 0);
 		assertParse("+5", 5, 0);
@@ -106,19 +106,19 @@ public class UtcOffsetTest {
 	}
 
 	@Test
-	public void parse_timezone() {
+	void parse_timezone() {
 		UtcOffset expected = new UtcOffset(true, 1, 0);
 		UtcOffset actual = UtcOffset.parse(buildTimezone(1, 0));
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void parse_invalid() {
+	void parse_invalid() {
 		assertThrows(IllegalArgumentException.class, () -> UtcOffset.parse("invalid"));
 	}
 
 	@Test
-	public void toString_() {
+	void toString_() {
 		{
 			boolean extended = false;
 

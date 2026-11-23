@@ -1,11 +1,11 @@
 package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.io.scribe.property.DateTimePropertyScribeTest.DateTimePropertyImpl;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -39,7 +39,7 @@ import biweekly.property.DateTimeProperty;
 /**
  * @author Michael Angstadt
  */
-public class DateTimePropertyScribeTest extends ScribeTest<DateTimePropertyImpl> {
+class DateTimePropertyScribeTest extends ScribeTest<DateTimePropertyImpl> {
 	private final Date datetime = date(2013, 6, 11, 13, 43, 2);
 	private final String datetimeStr = "20130611T124302Z";
 	private final String datetimeStrExt = "2013-06-11T12:43:02Z";
@@ -52,39 +52,39 @@ public class DateTimePropertyScribeTest extends ScribeTest<DateTimePropertyImpl>
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withDateTime).run(datetimeStr);
 		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText(datetimeStr).run(hasDateTime);
 		sensei.assertParseText("invalid").cannotParse(17);
 		sensei.assertParseText("").cannotParse(17);
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		sensei.assertWriteXml(withDateTime).run("<date-time>" + datetimeStrExt + "</date-time>");
 		sensei.assertWriteXml(empty).run("<date-time/>");
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		sensei.assertParseXml("<date-time>" + datetimeStrExt + "</date-time>").run(hasDateTime);
 		sensei.assertParseXml("<date-time>invalid</date-time>").cannotParse(17);
 		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		sensei.assertWriteJson(withDateTime).run(datetimeStrExt);
 		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		sensei.assertParseJson(datetimeStrExt).run(hasDateTime);
 		sensei.assertParseJson("invalid").cannotParse(17);
 		sensei.assertParseJson("").cannotParse(17);

@@ -4,14 +4,14 @@ import static biweekly.property.PropertySensei.assertCopy;
 import static biweekly.property.PropertySensei.assertEqualsMethod;
 import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertValidate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -41,9 +41,9 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class RequestStatusTest {
+class RequestStatusTest {
 	@Test
-	public void constructors() throws Exception {
+	void constructors() throws Exception {
 		RequestStatus property = new RequestStatus((String) null);
 		assertNull(property.getStatusCode());
 		assertNull(property.getDescription());
@@ -56,7 +56,7 @@ public class RequestStatusTest {
 	}
 
 	@Test
-	public void set_value() {
+	void set_value() {
 		RequestStatus property = new RequestStatus((String) null);
 
 		property.setStatusCode("code");
@@ -76,7 +76,7 @@ public class RequestStatusTest {
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		RequestStatus property = new RequestStatus((String) null);
 		assertValidate(property).run(36);
 
@@ -85,13 +85,13 @@ public class RequestStatusTest {
 	}
 
 	@Test
-	public void toStringValues() {
+	void toStringValues() {
 		RequestStatus property = new RequestStatus("code");
 		assertFalse(property.toStringValues().isEmpty());
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		RequestStatus original = new RequestStatus((String) null);
 		assertCopy(original);
 
@@ -102,7 +102,7 @@ public class RequestStatusTest {
 	}
 
 	@Test
-	public void equals() {
+	void equals() {
 		List<ICalProperty> properties = new ArrayList<>();
 
 		RequestStatus property = new RequestStatus((String) null);

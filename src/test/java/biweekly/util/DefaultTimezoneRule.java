@@ -4,7 +4,9 @@ import static biweekly.util.TestUtils.buildTimezone;
 
 import java.util.TimeZone;
 
-import org.junit.rules.ExternalResource;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -36,7 +38,7 @@ import org.junit.rules.ExternalResource;
  * class.
  * @author Michael Angstadt
  */
-public class DefaultTimezoneRule extends ExternalResource {
+public class DefaultTimezoneRule implements BeforeAllCallback, AfterAllCallback{
 	private final TimeZone newTz;
 	private TimeZone defaultTz;
 
@@ -56,13 +58,13 @@ public class DefaultTimezoneRule extends ExternalResource {
 	}
 
 	@Override
-	protected void before() {
+	public void beforeAll(ExtensionContext context) {
 		defaultTz = TimeZone.getDefault();
 		TimeZone.setDefault(newTz);
 	}
 
 	@Override
-	protected void after() {
+	public void afterAll(ExtensionContext context) {
 		TimeZone.setDefault(defaultTz);
 	}
 }

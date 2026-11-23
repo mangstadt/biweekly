@@ -1,12 +1,6 @@
 package biweekly.issues;
 
-import biweekly.Biweekly;
-import biweekly.ICalendar;
-import biweekly.component.VEvent;
-import biweekly.util.DefaultTimezoneRule;
-import biweekly.util.com.google.ical.compat.javautil.DateIterator;
-import org.junit.Rule;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -16,18 +10,25 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+
+import biweekly.Biweekly;
+import biweekly.ICalendar;
+import biweekly.component.VEvent;
+import biweekly.util.DefaultTimezoneRule;
+import biweekly.util.com.google.ical.compat.javautil.DateIterator;
 
 /**
  * @author Michael Angstadt
  * @see "https://github.com/mangstadt/biweekly/issues/101"
  */
-public class Issue101 {
-	@Rule
-	public final DefaultTimezoneRule defaultTimezoneRule = new DefaultTimezoneRule("CET");
+class Issue101 {
+	@RegisterExtension
+	public static final DefaultTimezoneRule defaultTimezoneRule = new DefaultTimezoneRule("CET");
 
 	@Test
-	public void test() throws Exception {
+	void test() throws Exception {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		ICalendar calendar = Biweekly.parse(getClass().getResourceAsStream("issue101.ics")).first();
 

@@ -9,16 +9,16 @@ import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertCollectionContains;
 import static biweekly.util.TestUtils.assertEqualsAndHash;
 import static biweekly.util.TestUtils.assertValidate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalVersion;
 
@@ -50,9 +50,9 @@ import biweekly.ICalVersion;
 /**
  * @author Michael Angstadt
  */
-public class EnumPropertyTest {
+class EnumPropertyTest {
 	@Test
-	public void constructors() throws Exception {
+	void constructors() throws Exception {
 		EnumPropertyImpl property = new EnumPropertyImpl();
 		assertNull(property.getValue());
 
@@ -61,7 +61,7 @@ public class EnumPropertyTest {
 	}
 
 	@Test
-	public void set_value() {
+	void set_value() {
 		EnumPropertyImpl property = new EnumPropertyImpl();
 
 		property.setValue("value");
@@ -79,7 +79,7 @@ public class EnumPropertyTest {
 	}
 
 	@Test
-	public void getValueSupportedVersions() {
+	void getValueSupportedVersions() {
 		EnumPropertyDefaultImpl property = new EnumPropertyDefaultImpl();
 		assertEquals(Arrays.asList(), property.getValueSupportedVersions());
 
@@ -89,7 +89,7 @@ public class EnumPropertyTest {
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		//null value
 		EnumPropertyImpl prop = new EnumPropertyImpl();
 		assertValidate(prop).run(26);
@@ -111,13 +111,13 @@ public class EnumPropertyTest {
 	}
 
 	@Test
-	public void toStringValues() {
+	void toStringValues() {
 		EnumPropertyImpl property = new EnumPropertyImpl();
 		assertFalse(property.toStringValues().isEmpty());
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		EnumPropertyImpl original = new EnumPropertyImpl("value");
 		assertCopy(original);
 
@@ -126,7 +126,7 @@ public class EnumPropertyTest {
 	}
 
 	@Test
-	public void equals() {
+	void equals() {
 		//@formatter:off
 		assertNothingIsEqual(
 			new EnumPropertyImpl(),

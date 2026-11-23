@@ -1,8 +1,8 @@
 package biweekly.io.scribe.property;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Version;
@@ -36,7 +36,7 @@ import biweekly.util.VersionNumber;
 /**
  * @author Michael Angstadt
  */
-public class VersionScribeTest extends ScribeTest<Version> {
+class VersionScribeTest extends ScribeTest<Version> {
 	private final Version withMinMax = new Version("1.0", "2.0");
 	private final Version withMax = new Version("2.0");
 	private final Version empty = new Version((String) null);
@@ -46,42 +46,42 @@ public class VersionScribeTest extends ScribeTest<Version> {
 	}
 
 	@Test
-	public void writeText_min_max() {
+	void writeText_min_max() {
 		sensei.assertWriteText(withMinMax).run("1.0;2.0");
 		sensei.assertWriteText(withMax).run("2.0");
 		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void parseText_min_max() {
+	void parseText_min_max() {
 		sensei.assertParseText("1.0;2.0").run(has("1.0", "2.0"));
 		sensei.assertParseText("2.0").run(has(null, "2.0"));
 		sensei.assertParseText("").run(has(null, null));
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		sensei.assertWriteXml(withMinMax).run("<text>2.0</text>");
 		sensei.assertWriteXml(withMax).run("<text>2.0</text>");
 		sensei.assertWriteXml(empty).run("<text/>");
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		sensei.assertParseXml("<text>2.0</text>").run(has(null, "2.0"));
 		sensei.assertParseXml("<text/>").cannotParse(30);
 		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		sensei.assertWriteJson(withMinMax).run("2.0");
 		sensei.assertWriteJson(withMax).run("2.0");
 		sensei.assertWriteJson(empty).run((String) null);
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		sensei.assertParseJson("2.0").run(has(null, "2.0"));
 		sensei.assertParseJson("").cannotParse(30);
 	}

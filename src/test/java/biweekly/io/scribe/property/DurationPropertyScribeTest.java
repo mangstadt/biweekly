@@ -1,8 +1,8 @@
 package biweekly.io.scribe.property;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.DurationProperty;
@@ -36,7 +36,7 @@ import java.time.Duration;
 /**
  * @author Michael Angstadt
  */
-public class DurationPropertyScribeTest extends ScribeTest<DurationProperty> {
+class DurationPropertyScribeTest extends ScribeTest<DurationProperty> {
 	private final Duration duration = Duration.ofMinutes(90);
 	private final String durationStr = duration.toString();
 
@@ -48,39 +48,39 @@ public class DurationPropertyScribeTest extends ScribeTest<DurationProperty> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withDuration).run(durationStr);
 		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText(durationStr).run(hasDuration);
 		sensei.assertParseText("invalid").cannotParse(18);
 		sensei.assertParseText("").cannotParse(18);
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		sensei.assertWriteXml(withDuration).run("<duration>" + durationStr + "</duration>");
 		sensei.assertWriteXml(empty).run("<duration/>");
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		sensei.assertParseXml("<duration>" + durationStr + "</duration>").run(hasDuration);
 		sensei.assertParseXml("<duration>invalid</duration>").cannotParse(18);
 		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		sensei.assertWriteJson(withDuration).run(durationStr);
 		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		sensei.assertParseJson(durationStr).run(hasDuration);
 		sensei.assertParseJson("invalid").cannotParse(18);
 		sensei.assertParseJson("").cannotParse(18);

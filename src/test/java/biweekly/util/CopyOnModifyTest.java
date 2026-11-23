@@ -1,12 +1,12 @@
 package biweekly.util;
 
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -36,9 +36,9 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class CopyOnModifyTest {
+class CopyOnModifyTest {
 	@Test
-	public void test() {
+	void test() {
 		List<String> list = new ArrayList<>();
 		CopyOnModify<List<String>> com = new CopyOnModify<>(list, ArrayList::new);
 		assertSame(list, com.get());

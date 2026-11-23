@@ -1,7 +1,7 @@
 package biweekly.io.json;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.github.mangstadt.vinnie.LaciToken;
 
@@ -43,9 +43,9 @@ import biweekly.util.ListMultimap;
 /**
  * @author Michael Angstadt
  */
-public class JCalValueTest {
+class JCalValueTest {
 	@Test
-	public void single() {
+	void single() {
 		JCalValue value = JCalValue.single("value");
 
 		//@formatter:off
@@ -58,7 +58,7 @@ public class JCalValueTest {
 	}
 
 	@Test
-	public void single_null() {
+	void single_null() {
 		JCalValue value = JCalValue.single(null);
 
 		//@formatter:off
@@ -71,31 +71,31 @@ public class JCalValueTest {
 	}
 
 	@Test
-	public void asSingle() {
+	void asSingle() {
 		JCalValue value = new JCalValue(new JsonValue("value1"), new JsonValue("value2"));
 		assertEquals("value1", value.asSingle());
 	}
 
 	@Test
-	public void asSingle_non_string() {
+	void asSingle_non_string() {
 		JCalValue value = new JCalValue(new JsonValue(false));
 		assertEquals("false", value.asSingle());
 	}
 
 	@Test
-	public void asSingle_null() {
+	void asSingle_null() {
 		JCalValue value = new JCalValue(new JsonValue((Object) null));
 		assertEquals("", value.asSingle());
 	}
 
 	@Test
-	public void asSingle_array() {
+	void asSingle_array() {
 		JCalValue value = new JCalValue(new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue("value1"))));
 		assertEquals("value1", value.asSingle());
 	}
 
 	@Test
-	public void asSingle_object() {
+	void asSingle_object() {
 		Map<String, JsonValue> object = new HashMap<>();
 		object.put("a", new JsonValue("one"));
 		JCalValue value = new JCalValue(new JsonValue(object));
@@ -103,7 +103,7 @@ public class JCalValueTest {
 	}
 
 	@Test
-	public void multi() {
+	void multi() {
 		JCalValue value = JCalValue.multi("value", 42, false, null);
 
 		//@formatter:off
@@ -119,19 +119,19 @@ public class JCalValueTest {
 	}
 
 	@Test
-	public void asMulti() {
+	void asMulti() {
 		JCalValue value = new JCalValue(new JsonValue("value1"), new JsonValue(false), new JsonValue((Object) null));
 		assertEquals(Arrays.asList("value1", "false", ""), value.asMulti());
 	}
 
 	@Test
-	public void asMulti_array() {
+	void asMulti_array() {
 		JCalValue value = new JCalValue(new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue(false))));
 		assertEquals(Arrays.asList(), value.asMulti());
 	}
 
 	@Test
-	public void asMulti_object() {
+	void asMulti_object() {
 		Map<String, JsonValue> object = new HashMap<>();
 		object.put("a", new JsonValue("one"));
 		JCalValue value = new JCalValue(new JsonValue(object));
@@ -139,7 +139,7 @@ public class JCalValueTest {
 	}
 
 	@Test
-	public void structured() {
+	void structured() {
 		JCalValue value = JCalValue.structured("value", 42, false, null, Arrays.asList("one", "two"));
 
 		//@formatter:off
@@ -162,7 +162,7 @@ public class JCalValueTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void asStructured() {
+	void asStructured() {
 		//@formatter:off
 		JCalValue value = new JCalValue(
 			new JsonValue(Arrays.asList(
@@ -180,7 +180,7 @@ public class JCalValueTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void asStructured_sub_array() {
+	void asStructured_sub_array() {
 		//@formatter:off
 		JCalValue value = new JCalValue(
 			new JsonValue(Arrays.asList(
@@ -209,13 +209,13 @@ public class JCalValueTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void asStructured_single_value() {
+	void asStructured_single_value() {
 		JCalValue value = new JCalValue(new JsonValue("value1"));
 		assertEquals(Arrays.asList(Arrays.asList("value1")), value.asStructured());
 	}
 
 	@Test
-	public void asStructured_object() {
+	void asStructured_object() {
 		Map<String, JsonValue> jsonObject = new HashMap<>();
 		jsonObject.put("a", new JsonValue("one"));
 
@@ -228,19 +228,19 @@ public class JCalValueTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void asStructured_null() {
+	void asStructured_null() {
 		JCalValue value = new JCalValue(JsonValue.nullValue());
 		assertEquals(Arrays.asList(Arrays.asList()), value.asStructured());
 	}
 
 	@Test
-	public void asStructured_empty() {
+	void asStructured_empty() {
 		JCalValue value = new JCalValue();
 		assertEquals(Arrays.asList(), value.asStructured());
 	}
 
 	@Test
-	public void object() {
+	void object() {
 		ListMultimap<String, Object> object = new ListMultimap<>();
 		object.put("a", "one");
 		object.put("b", 2);
@@ -261,7 +261,7 @@ public class JCalValueTest {
 	}
 
 	@Test
-	public void asObject() {
+	void asObject() {
 		Map<String, JsonValue> object = new LinkedHashMap<>();
 		object.put("a", new JsonValue("one"));
 		object.put("b", new JsonValue(Arrays.asList(new JsonValue(2), new JsonValue(3.0), JsonValue.nullValue())));
@@ -278,13 +278,13 @@ public class JCalValueTest {
 	}
 
 	@Test
-	public void asObject_single_value() {
+	void asObject_single_value() {
 		JCalValue value = new JCalValue(new JsonValue("value1"));
 		assertTrue(value.asObject().isEmpty());
 	}
 
 	@Test
-	public void asObject_array() {
+	void asObject_array() {
 		JCalValue value = new JCalValue(new JsonValue(Arrays.asList(new JsonValue("value1"), new JsonValue(false))));
 		assertTrue(value.asObject().isEmpty());
 	}

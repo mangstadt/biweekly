@@ -7,8 +7,8 @@ import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -20,11 +20,10 @@ import java.util.TimeZone;
 import javax.xml.namespace.QName;
 
 import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -92,16 +91,13 @@ import biweekly.util.XmlUtils;
 /**
  * @author Michael Angstadt
  */
-public class XCalWriterTest {
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
-
+class XCalWriterTest {
 	private StringWriter sw;
 	private XCalWriter writer;
 	private ICalendar ical;
 
-	@Before
-	public void before() {
+	@BeforeEach
+	void beforeEach() {
 		sw = new StringWriter();
 		writer = new XCalWriter(sw);
 
@@ -109,14 +105,14 @@ public class XCalWriterTest {
 		ical.getProperties().clear();
 	}
 
-	@BeforeClass
+	@BeforeAll
 	public static void beforeClass() {
 		XMLUnit.setIgnoreAttributeOrder(true);
 		XMLUnit.setIgnoreWhitespace(true);
 	}
 
 	@Test
-	public void write_single() throws Exception {
+	void write_single() throws Exception {
 		ical.setProductId("value").setParameter("x-foo", "bar");
 		VEvent event = new VEvent();
 		event.getProperties().clear();
@@ -156,7 +152,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_multiple() throws Exception {
+	void write_multiple() throws Exception {
 		ical.setProductId("value").setParameter("x-foo", "bar");
 		VEvent event = new VEvent();
 		event.getProperties().clear();
@@ -209,7 +205,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_empty() throws Exception {
+	void write_empty() throws Exception {
 		writer.close();
 
 		//@formatter:off
@@ -221,7 +217,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_xml_property() throws Exception {
+	void write_xml_property() throws Exception {
 		Xml xml = new Xml("<company xmlns=\"http://example.com\"><boss prefix=\"Mr\">John Doe</boss></company>");
 		xml.setParameter("x-foo", "bar");
 		ical.addProperty(xml);
@@ -250,7 +246,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_xml_property_null_value() throws Exception {
+	void write_xml_property_null_value() throws Exception {
 		Xml xml = new Xml((Document) null);
 		ical.addProperty(xml);
 		writer.write(ical);
@@ -272,7 +268,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_existing_dom_document() throws Exception {
+	void write_existing_dom_document() throws Exception {
 		Document document = XmlUtils.toDocument("<root><a /><b /></root>");
 		XCalWriter writer = new XCalWriter(document);
 
@@ -302,7 +298,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_existing_dom_element() throws Exception {
+	void write_existing_dom_element() throws Exception {
 		Document document = XmlUtils.toDocument("<root><a /><b /></root>");
 		Node element = document.getFirstChild().getFirstChild();
 		XCalWriter writer = new XCalWriter(element);
@@ -334,7 +330,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_existing_icalendar_document() throws Exception {
+	void write_existing_icalendar_document() throws Exception {
 		Document document = XmlUtils.toDocument("<icalendar xmlns=\"" + XCAL_NS + "\" />");
 		XCalWriter writer = new XCalWriter(document);
 
@@ -360,7 +356,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_existing_icalendar_element() throws Exception {
+	void write_existing_icalendar_element() throws Exception {
 		Document document = XmlUtils.toDocument("<root><a><icalendar xmlns=\"" + XCAL_NS + "\" /></a><b /></root>");
 		Node element = document.getFirstChild().getFirstChild().getFirstChild();
 		XCalWriter writer = new XCalWriter(element);
@@ -392,7 +388,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_parameters() throws Exception {
+	void write_parameters() throws Exception {
 		writer.registerParameterDataType("X-INT", ICalDataType.INTEGER);
 
 		ProductId prodId = new ProductId("value");
@@ -428,7 +424,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void skipMeException() throws Exception {
+	void skipMeException() throws Exception {
 		writer.registerScribe(new SkipMeScribe());
 
 		ical.addProperty(new SkipMeProperty());
@@ -453,7 +449,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_no_property_scribe_registered() throws Exception {
+	void write_no_property_scribe_registered() throws Exception {
 		ical.setProductId("value");
 		writer.write(ical);
 
@@ -482,7 +478,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_no_component_scribe_registered() throws Exception {
+	void write_no_component_scribe_registered() throws Exception {
 		ical.setProductId("value");
 		writer.write(ical);
 
@@ -511,7 +507,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_experimental_properties() throws Exception {
+	void write_experimental_properties() throws Exception {
 		writer.registerScribe(new CompanyScribe());
 		ical.addProperty(new Company("John Doe"));
 		writer.write(ical);
@@ -536,7 +532,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_experimental_component() throws Exception {
+	void write_experimental_component() throws Exception {
 		writer.registerScribe(new PartyScribe());
 
 		Party party = new Party();
@@ -568,7 +564,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_pretty_print() throws Exception {
+	void write_pretty_print() throws Exception {
 		writer = new XCalWriter(sw, 2);
 
 		ProductId prodId = ical.setProductId("value");
@@ -617,7 +613,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_xmlVersion_default() throws Exception {
+	void write_xmlVersion_default() throws Exception {
 		StringWriter sw = new StringWriter();
 		XCalWriter writer = new XCalWriter(sw);
 		ICalendar ical = new ICalendar();
@@ -629,7 +625,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_xmlVersion_1_1() throws Exception {
+	void write_xmlVersion_1_1() throws Exception {
 		StringWriter sw = new StringWriter();
 		XCalWriter writer = new XCalWriter(sw, null, "1.1");
 		ICalendar ical = new ICalendar();
@@ -641,7 +637,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_xmlVersion_invalid() throws Exception {
+	void write_xmlVersion_invalid() throws Exception {
 		StringWriter sw = new StringWriter();
 		XCalWriter writer = new XCalWriter(sw, null, "10.17");
 		ICalendar ical = new ICalendar();
@@ -653,8 +649,8 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_utf8() throws Throwable {
-		Path file = tempFolder.newFile().toPath();
+	void write_utf8(@TempDir Path tempDir) throws Throwable {
+		Path file = tempDir.resolve("test.xml");
 		writer = new XCalWriter(file);
 
 		ical.addProperty(new Summary("\u1e66ummary"));
@@ -668,7 +664,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void setGlobalTimezone() throws Throwable {
+	void setGlobalTimezone() throws Throwable {
 		VEvent event = new VEvent();
 		event.getProperties().clear();
 		event.setDateStart(utc(1996, 7, 4, 12, 0, 0));
@@ -740,7 +736,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_example1() throws Throwable {
+	void write_example1() throws Throwable {
 		ical.setCalendarScale(CalendarScale.gregorian());
 		ical.setProductId("-//Example Inc.//Example Calendar//EN");
 		{
@@ -758,7 +754,7 @@ public class XCalWriterTest {
 	}
 
 	@Test
-	public void write_example2() throws Throwable {
+	void write_example2() throws Throwable {
 		TimeZone eastern = TimeZone.getTimeZone("US/Eastern");
 		//see: RFC 6321 p.51
 		VTimezone usEasternTz;

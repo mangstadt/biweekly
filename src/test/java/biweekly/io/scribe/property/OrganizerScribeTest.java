@@ -3,14 +3,14 @@ package biweekly.io.scribe.property;
 import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.io.DataModelConversionException;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -46,7 +46,7 @@ import biweekly.property.Organizer;
 /**
  * @author Michael Angstadt
  */
-public class OrganizerScribeTest extends ScribeTest<Organizer> {
+class OrganizerScribeTest extends ScribeTest<Organizer> {
 	private final String name = "John Doe";
 	private final String email = "jdoe@example.com";
 	private final String uri = "http://example.com/jdoe";
@@ -64,14 +64,14 @@ public class OrganizerScribeTest extends ScribeTest<Organizer> {
 	}
 
 	@Test
-	public void prepareParameters() {
+	void prepareParameters() {
 		sensei.assertPrepareParams(withEmail).run();
 		sensei.assertPrepareParams(withNameEmail).expected("CN", name).run();
 		sensei.assertPrepareParams(withNameEmailUri).expected("CN", name).run();
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		{
 			Sensei<Organizer>.WriteTextTest test = sensei.assertWriteText(withEmail).version(V1_0);
 			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
@@ -131,7 +131,7 @@ public class OrganizerScribeTest extends ScribeTest<Organizer> {
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText("mailto:" + email).run(check(null, email, null));
 		sensei.assertParseText("mailto:" + email).param("CN", name).run(check(name, email, null));
 		sensei.assertParseText("MAILTO:" + email).run(check(null, email, null));

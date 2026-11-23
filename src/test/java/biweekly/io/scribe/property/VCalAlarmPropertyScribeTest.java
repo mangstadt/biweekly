@@ -1,15 +1,15 @@
 package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.utc;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.github.mangstadt.vinnie.io.VObjectPropertyValues.SemiStructuredValueIterator;
 
@@ -50,7 +50,7 @@ import java.time.Duration;
 /**
  * @author Michael Angstadt
  */
-public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImpl> {
+class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImpl> {
 	private final Date start = utc(2014, 1, 1, 1, 0, 0);
 
 	private final VCalAlarmPropertyImpl empty = new VCalAlarmPropertyImpl();
@@ -66,13 +66,13 @@ public class VCalAlarmPropertyScribeTest extends ScribeTest<VCalAlarmPropertyImp
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(empty).run(";;");
 		sensei.assertWriteText(withValues).run("20140101T010000Z;PT10M;5;one;two");
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		{
 			Sensei<VCalAlarmPropertyImpl>.ParseTextTest test = sensei.assertParseText("");
 			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);

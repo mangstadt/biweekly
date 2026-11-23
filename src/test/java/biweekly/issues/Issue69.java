@@ -1,13 +1,13 @@
 package biweekly.issues;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.util.Frequency;
 import biweekly.util.Recurrence;
@@ -17,10 +17,10 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
  * @author Michael Angstadt
  * @see "https://github.com/mangstadt/biweekly/issues/69"
  */
-public class Issue69 {
+class Issue69 {
 	//original test case
 	@Test
-	public void lesser_year__greater_month__greater_date() throws Exception {
+	void lesser_year__greater_month__greater_date() throws Exception {
 		TimeZone timezone = TimeZone.getTimeZone("UTC");
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		df.setTimeZone(timezone);
@@ -41,7 +41,7 @@ public class Issue69 {
 	}
 	
 	@Test
-	public void lesser_year__lesser_month__greater_date() throws Exception {
+	void lesser_year__lesser_month__greater_date() throws Exception {
 		TimeZone timezone = TimeZone.getTimeZone("UTC");
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		df.setTimeZone(timezone);
@@ -62,7 +62,7 @@ public class Issue69 {
 	}
 	
 	@Test
-	public void lesser_year__greater_month__lesser_date() throws Exception {
+	void lesser_year__greater_month__lesser_date() throws Exception {
 		TimeZone timezone = TimeZone.getTimeZone("UTC");
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		df.setTimeZone(timezone);
@@ -83,7 +83,7 @@ public class Issue69 {
 	}
 	
 	@Test
-	public void lesser_year__lesser_month__lesser_date() throws Exception {
+	void lesser_year__lesser_month__lesser_date() throws Exception {
 		TimeZone timezone = TimeZone.getTimeZone("UTC");
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		df.setTimeZone(timezone);
@@ -104,7 +104,7 @@ public class Issue69 {
 	}
 	
 	@Test
-	public void equal_year__lesser_month__greater_date() throws Exception {
+	void equal_year__lesser_month__greater_date() throws Exception {
 		TimeZone timezone = TimeZone.getTimeZone("UTC");
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		df.setTimeZone(timezone);
@@ -125,7 +125,7 @@ public class Issue69 {
 	}
 	
 	@Test
-	public void equal_year__lesser_month__lesser_date() throws Exception {
+	void equal_year__lesser_month__lesser_date() throws Exception {
 		TimeZone timezone = TimeZone.getTimeZone("UTC");
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		df.setTimeZone(timezone);
@@ -146,7 +146,7 @@ public class Issue69 {
 	}
 	
 	@Test
-	public void equal_year__equal_month__lesser_date() throws Exception {
+	void equal_year__equal_month__lesser_date() throws Exception {
 		TimeZone timezone = TimeZone.getTimeZone("UTC");
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		df.setTimeZone(timezone);
@@ -167,7 +167,7 @@ public class Issue69 {
 	}
 	
 	@Test
-	public void equal_year__equal_month__equal_date() throws Exception {
+	void equal_year__equal_month__equal_date() throws Exception {
 		TimeZone timezone = TimeZone.getTimeZone("UTC");
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		df.setTimeZone(timezone);
@@ -188,7 +188,7 @@ public class Issue69 {
 	}
 	
 	@Test
-	public void equal_year__equal_month__equal_date_equal_hour() throws Exception {
+	void equal_year__equal_month__equal_date_equal_hour() throws Exception {
 		TimeZone timezone = TimeZone.getTimeZone("UTC");
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		df.setTimeZone(timezone);
@@ -209,7 +209,7 @@ public class Issue69 {
 	}
 	
 	@Test
-	public void advanceto_lessthan_start() throws Exception {
+	void advanceto_lessthan_start() throws Exception {
 		TimeZone timezone = TimeZone.getTimeZone("UTC");
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		df.setTimeZone(timezone);

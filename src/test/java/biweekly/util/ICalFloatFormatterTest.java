@@ -1,11 +1,11 @@
 package biweekly.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Locale;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -35,32 +35,32 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class ICalFloatFormatterTest {
+class ICalFloatFormatterTest {
 	final Locale defaultLocale = Locale.getDefault();
 	final ICalFloatFormatter formatter = new ICalFloatFormatter();
 
-	@After
-	public void after() {
+	@AfterEach
+	void afterEach() {
 		Locale.setDefault(defaultLocale);
 	}
 
 	@Test
-	public void format_truncate() {
+	void format_truncate() {
 		assertEquals("12.888889", formatter.format(12.8888888));
 	}
 
 	@Test
-	public void format_no_truncate() {
+	void format_no_truncate() {
 		assertEquals("12.88", formatter.format(12.88));
 	}
 
 	@Test
-	public void format_no_decimals() {
+	void format_no_decimals() {
 		assertEquals("12.0", formatter.format(12d));
 	}
 
 	@Test
-	public void format_different_precision() {
+	void format_different_precision() {
 		ICalFloatFormatter formatter = new ICalFloatFormatter(2);
 		assertEquals("12.89", formatter.format(12.888));
 
@@ -69,14 +69,14 @@ public class ICalFloatFormatterTest {
 	}
 
 	@Test
-	public void format_different_locales() {
+	void format_different_locales() {
 		Locale defaultLocale = Locale.getDefault();
 
 		try {
 			for (Locale locale : Locale.getAvailableLocales()) {
 				Locale.setDefault(locale);
 				ICalFloatFormatter formatter = new ICalFloatFormatter();
-				assertEquals("Test failed for locale: " + locale, "-12.388889", formatter.format(-12.3888888));
+				assertEquals("-12.388889", formatter.format(-12.3888888), () -> "Test failed for locale: " + locale);
 			}
 		} finally {
 			Locale.setDefault(defaultLocale);

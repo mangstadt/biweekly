@@ -7,7 +7,7 @@ import static biweekly.util.TestUtils.assertValidate;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.property.DateStart;
 import biweekly.property.RecurrenceRule;
@@ -43,9 +43,9 @@ import biweekly.util.UtcOffset;
 /**
  * @author Michael Angstadt
  */
-public class ObservanceTest {
+class ObservanceTest {
 	@Test
-	public void validate_required() {
+	void validate_required() {
 		Observance component = new Observance();
 		assertValidate(component).versions(V1_0).run(48, 2, 2, 2);
 		assertValidate(component).versions(V2_0_DEPRECATED, V2_0).run(2, 2, 2);
@@ -58,7 +58,7 @@ public class ObservanceTest {
 	}
 
 	@Test
-	public void validate_time_in_rrule() {
+	void validate_time_in_rrule() {
 		//@formatter:off
 		Recurrence[] recurrences = {
 			new Recurrence.Builder(Frequency.DAILY).byHour(1).build(),
@@ -78,7 +78,7 @@ public class ObservanceTest {
 	}
 
 	@Test
-	public void validate_multiple_rrules() {
+	void validate_multiple_rrules() {
 		Observance component = new Observance();
 		component.setDateStart(new DateStart(new Date()));
 		component.setTimezoneOffsetFrom(new UtcOffset(true, 1, 0));

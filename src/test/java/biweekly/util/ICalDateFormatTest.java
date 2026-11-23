@@ -3,19 +3,19 @@ package biweekly.util;
 import static biweekly.util.TestUtils.buildTimezone;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -45,12 +45,12 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class ICalDateFormatTest {
-	@ClassRule
+class ICalDateFormatTest {
+	@RegisterExtension
 	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
 
 	@Test
-	public void format() {
+	void format() {
 		Date datetime = date(2006, 1, 2, 10, 20, 30);
 
 		assertEquals("20060102", ICalDateFormat.DATE_BASIC.format(datetime));
@@ -64,7 +64,7 @@ public class ICalDateFormatTest {
 	}
 
 	@Test
-	public void format_timezone() {
+	void format_timezone() {
 		TimeZone timezone = buildTimezone(-2, 0);
 
 		Date datetime = date(2006, 1, 2, 10, 20, 30);
@@ -73,7 +73,7 @@ public class ICalDateFormatTest {
 	}
 
 	@Test
-	public void format_different_locales() {
+	void format_different_locales() {
 		Date date = date(2020, 10, 28, 12, 0, 0);
 
 		Locale defaultLocale = Locale.getDefault();
@@ -96,12 +96,11 @@ public class ICalDateFormatTest {
 
 	private static void assertLocale(Locale locale, ICalDateFormat df, Date date, String expected) {
 		String actual = df.format(date);
-		String message = "Test failed for " + df.name() + " with locale \"" + locale + "\".";
-		assertEquals(message, expected, actual);
+		assertEquals(expected, actual, () -> "Test failed for " + df.name() + " with locale \"" + locale + "\".");
 	}
 
 	@Test
-	public void parse() {
+	void parse() {
 		Date date = date(2012, 7, 1);
 		Date datetime = date(2012, 7, 1, 8, 1, 30);
 
@@ -144,7 +143,7 @@ public class ICalDateFormatTest {
 	}
 
 	@Test
-	public void parse_timezone() {
+	void parse_timezone() {
 		TimeZone timezone = buildTimezone(-2, 0);
 
 		Date expected = utc(2012, 7, 1, 8, 1, 30);
@@ -158,18 +157,18 @@ public class ICalDateFormatTest {
 	}
 
 	@Test
-	public void parse_invalid() {
+	void parse_invalid() {
 		assertThrows(IllegalArgumentException.class, () -> ICalDateFormat.parse("invalid"));
 	}
 
 	@Test
-	public void dateHasTime() {
+	void dateHasTime() {
 		assertFalse(ICalDateFormat.dateHasTime("20130601"));
 		assertTrue(ICalDateFormat.dateHasTime("20130601T120000"));
 	}
 
 	@Test
-	public void dateHasTimezone() {
+	void dateHasTimezone() {
 		assertFalse(ICalDateFormat.dateHasTimezone("20130601T120000"));
 		assertTrue(ICalDateFormat.dateHasTimezone("20130601T120000Z"));
 		assertTrue(ICalDateFormat.dateHasTimezone("20130601T120000+0100"));
@@ -179,7 +178,7 @@ public class ICalDateFormatTest {
 	}
 
 	@Test
-	public void parseTimezoneId() {
+	void parseTimezoneId() {
 		TimeZone tz = ICalDateFormat.parseTimeZoneId("America/New_York");
 		assertEquals("America/New_York", tz.getID());
 

@@ -1,6 +1,6 @@
 package biweekly.io.scribe.property;
 
-import org.junit.ClassRule;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import biweekly.property.ICalProperty;
 import biweekly.util.DefaultTimezoneRule;
@@ -36,7 +36,7 @@ import biweekly.util.DefaultTimezoneRule;
  * @param <P> the property class
  */
 public class ScribeTest<P extends ICalProperty> {
-	@ClassRule
+	@RegisterExtension
 	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(1, 0);
 
 	protected final ICalPropertyScribe<P> scribe;

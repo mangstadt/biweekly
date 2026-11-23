@@ -4,11 +4,11 @@ import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.StringUtils.encodeBase64;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalDataType;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -42,7 +42,7 @@ import biweekly.property.BinaryProperty;
 /**
  * @author Michael Angstadt
  */
-public class BinaryPropertyScribeTest extends ScribeTest<BinaryProperty> {
+class BinaryPropertyScribeTest extends ScribeTest<BinaryProperty> {
 	private final String formatType = "image/png";
 	private final String url = "http://example.com/image.png";
 	private final byte[] data = "data".getBytes();
@@ -63,14 +63,14 @@ public class BinaryPropertyScribeTest extends ScribeTest<BinaryProperty> {
 	}
 
 	@Test
-	public void prepareParameters() {
+	void prepareParameters() {
 		sensei.assertPrepareParams(withUrl).expected("FMTTYPE", formatType).run();
 		sensei.assertPrepareParams(withData).expected("FMTTYPE", formatType).expected("ENCODING", "BASE64").run();
 		sensei.assertPrepareParams(empty).run();
 	}
 
 	@Test
-	public void dataType() {
+	void dataType() {
 		sensei.assertDataType(withUrl).versions(V1_0).run(ICalDataType.URL);
 		sensei.assertDataType(withUrl).versions(V2_0_DEPRECATED, V2_0).run(ICalDataType.URI);
 		sensei.assertDataType(withData).run(ICalDataType.BINARY);
@@ -78,14 +78,14 @@ public class BinaryPropertyScribeTest extends ScribeTest<BinaryProperty> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withUrl).run(url);
 		sensei.assertWriteText(withData).run(base64Data);
 		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText(url).dataType(ICalDataType.URI).run(has(url));
 
 		sensei.assertParseText(base64Data).dataType(ICalDataType.BINARY).run(has(data));
@@ -105,14 +105,14 @@ public class BinaryPropertyScribeTest extends ScribeTest<BinaryProperty> {
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		sensei.assertWriteXml(withUrl).run("<uri>" + url + "</uri>");
 		sensei.assertWriteXml(withData).run("<binary>" + base64Data + "</binary>");
 		sensei.assertWriteXml(empty).run("<uri/>");
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		sensei.assertParseXml("<uri>" + url + "</uri>").run(has(url));
 		sensei.assertParseXml("<binary>" + base64Data + "</binary>").run(has(data));
 
@@ -123,14 +123,14 @@ public class BinaryPropertyScribeTest extends ScribeTest<BinaryProperty> {
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		sensei.assertWriteJson(withUrl).run(url);
 		sensei.assertWriteJson(withData).run(base64Data);
 		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		sensei.assertParseJson(url).dataType(ICalDataType.URI).run(has(url));
 		sensei.assertParseJson("").dataType(ICalDataType.URI).run(has(""));
 		sensei.assertParseJson(base64Data).dataType(ICalDataType.BINARY).run(has(data));

@@ -7,7 +7,7 @@ import static biweekly.util.TestUtils.assertValidate;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.parameter.Related;
 import biweekly.property.Action;
@@ -44,9 +44,9 @@ import java.time.Duration;
 /**
  * @author Michael Angstadt
  */
-public class VAlarmTest {
+class VAlarmTest {
 	@Test
-	public void validate_required() {
+	void validate_required() {
 		VAlarm component = new VAlarm(null, null);
 		assertValidate(component).run(2, 2);
 
@@ -56,7 +56,7 @@ public class VAlarmTest {
 	}
 
 	@Test
-	public void validate_audio_attachment() {
+	void validate_audio_attachment() {
 		//2 attachments
 		VAlarm component = new VAlarm(Action.audio(), new Trigger(new Date()));
 		component.addAttachment(new Attachment("", new byte[0]));
@@ -74,7 +74,7 @@ public class VAlarmTest {
 	}
 
 	@Test
-	public void validate_display() {
+	void validate_display() {
 		VAlarm component = new VAlarm(Action.display(), new Trigger(new Date()));
 		assertValidate(component).run(2);
 
@@ -84,7 +84,7 @@ public class VAlarmTest {
 	}
 
 	@Test
-	public void validate_email() {
+	void validate_email() {
 		VAlarm component = new VAlarm(Action.email(), new Trigger(new Date()));
 		assertValidate(component).run(2, 2, 8);
 
@@ -109,7 +109,7 @@ public class VAlarmTest {
 	}
 
 	@Test
-	public void validate_procedure() {
+	void validate_procedure() {
 		Action action = Action.procedure();
 		VAlarm component = new VAlarm(action, new Trigger(new Date()));
 		assertValidate(component).versions(V1_0).run(2);
@@ -121,7 +121,7 @@ public class VAlarmTest {
 	}
 
 	@Test
-	public void validate_related_start() {
+	void validate_related_start() {
 		VEvent event = new VEvent();
 		VAlarm component = new VAlarm(Action.audio(), new Trigger(Duration.ZERO, Related.START));
 		assertValidate(component).parents(event).run(11);
@@ -133,7 +133,7 @@ public class VAlarmTest {
 	}
 
 	@Test
-	public void validate_related_end() {
+	void validate_related_end() {
 		VAlarm component = new VAlarm(Action.audio(), new Trigger(Duration.ZERO, Related.END));
 
 		VEvent event = new VEvent();

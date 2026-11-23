@@ -1,10 +1,10 @@
 package biweekly.io;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.component.VTimezone;
 import biweekly.property.TimezoneId;
@@ -37,16 +37,16 @@ import biweekly.property.TimezoneId;
 /**
  * @author Michael Angstadt
  */
-public class TimezoneAssignmentTest {
+class TimezoneAssignmentTest {
 	@Test
-	public void constructor_no_TZID_property() {
+	void constructor_no_TZID_property() {
 		TimeZone timezone = TimeZone.getTimeZone("America/New_York");
 		VTimezone component = new VTimezone((String) null);
 		assertThrows(IllegalArgumentException.class, () -> new TimezoneAssignment(timezone, component));
 	}
 
 	@Test
-	public void constructor_null_TZID_value() {
+	void constructor_null_TZID_value() {
 		TimeZone timezone = TimeZone.getTimeZone("America/New_York");
 		VTimezone component = new VTimezone((String) null);
 		component.setTimezoneId(new TimezoneId((String) null));
@@ -54,7 +54,7 @@ public class TimezoneAssignmentTest {
 	}
 
 	@Test
-	public void constructor_empty_TZID_value() {
+	void constructor_empty_TZID_value() {
 		TimeZone timezone = TimeZone.getTimeZone("America/New_York");
 		VTimezone component = new VTimezone(" ");
 		assertThrows(IllegalArgumentException.class, () -> new TimezoneAssignment(timezone, component));

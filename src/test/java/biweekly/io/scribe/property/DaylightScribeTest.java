@@ -1,8 +1,8 @@
 package biweekly.io.scribe.property;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.io.scribe.property.Sensei.Check;
 import biweekly.property.Daylight;
@@ -38,7 +38,7 @@ import biweekly.util.UtcOffset;
 /**
  * @author Michael Angstadt
  */
-public class DaylightScribeTest extends ScribeTest<Daylight> {
+class DaylightScribeTest extends ScribeTest<Daylight> {
 	private final Daylight empty = new Daylight();
 	private final Daylight withAllValues = new Daylight(true, new UtcOffset(false, 5, 0), new ICalDate(new DateTimeComponents(2014, 1, 1, 1, 0, 0, false), true), new ICalDate(new DateTimeComponents(2014, 3, 1, 1, 0, 0, false), true), "EST", "EDT");
 	private final Daylight withNoValues = new Daylight(true, null, null, null, null, null);
@@ -48,14 +48,14 @@ public class DaylightScribeTest extends ScribeTest<Daylight> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(empty).run("FALSE");
 		sensei.assertWriteText(withAllValues).run("TRUE;-0500;20140101T010000;20140301T010000;EST;EDT");
 		sensei.assertWriteText(withNoValues).run("TRUE;;;;;");
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText("FALSE").run(is(empty));
 		sensei.assertParseText("true;-0500;20140101T010000;20140301T010000;EST;EDT").run(is(withAllValues));
 		sensei.assertParseText("true;invalid;20140101T010000;20140301T010000;EST;EDT").cannotParse(33);

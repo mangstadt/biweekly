@@ -1,16 +1,16 @@
 package biweekly.io.xml;
 
 import static biweekly.io.xml.XCalNamespaceContext.XCAL_NS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
@@ -47,9 +47,9 @@ import biweekly.util.XmlUtils;
 /**
  * @author Michael Angstadt
  */
-public class XCalElementTest {
+class XCalElementTest {
 	@Test
-	public void first() {
+	void first() {
 		//@formatter:off
 		XCalElement xcalElement = build(
 		"<prop>" +
@@ -62,7 +62,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void first_value_object() {
+	void first_value_object() {
 		//@formatter:off
 		XCalElement xcalElement = build(
 		"<prop>" +
@@ -74,7 +74,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void first_unknown() {
+	void first_unknown() {
 		//@formatter:off
 		XCalElement xcalElement = build(
 		"<prop>" +
@@ -86,7 +86,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void first_with_prefix() {
+	void first_with_prefix() {
 		//@formatter:off
 		XCalElement xcalElement = build(
 		"<v:prop>" +
@@ -99,7 +99,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void first_empty() {
+	void first_empty() {
 		//@formatter:off
 		XCalElement xcalElement = build(
 		"<prop>" +
@@ -112,7 +112,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void first_none() {
+	void first_none() {
 		//@formatter:off
 		XCalElement xcalElement = build(
 		"<prop>" +
@@ -125,7 +125,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void first_ignore_other_namespaces() {
+	void first_ignore_other_namespaces() {
 		//@formatter:off
 		XCalElement xcalElement = build(
 		"<prop>" +
@@ -137,7 +137,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void all() {
+	void all() {
 		//@formatter:off
 		XCalElement xcalElement = build(
 		"<prop>" +
@@ -153,7 +153,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void all_value_object() {
+	void all_value_object() {
 		//@formatter:off
 		XCalElement xcalElement = build(
 		"<prop>" +
@@ -169,7 +169,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void all_unknown() {
+	void all_unknown() {
 		//@formatter:off
 		XCalElement xcalElement = build(
 		"<prop>" +
@@ -185,7 +185,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void all_none() {
+	void all_none() {
 		//@formatter:off
 		XCalElement xcalElement = build(
 		"<prop>" +
@@ -198,7 +198,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void all_ignore_other_namespaces() {
+	void all_ignore_other_namespaces() {
 		//@formatter:off
 		XCalElement xcalElement = build(
 		"<prop>" +
@@ -210,7 +210,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void children() {
+	void children() {
 		//@formatter:off
 		XCalElement xcalElement = build(
 		"<prop>" +
@@ -235,7 +235,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void child() {
+	void child() {
 		//@formatter:off
 		XCalElement xcalElement = build(
 		"<prop>" +
@@ -253,7 +253,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void children_ignore_other_namespaces() {
+	void children_ignore_other_namespaces() {
 		//@formatter:off
 		XCalElement xcalElement = build(
 		"<prop>" +
@@ -269,7 +269,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void firstValue() {
+	void firstValue() {
 		XCalElement XCalElement = build("<prop><text>one</text></prop>");
 		XCalValue child = XCalElement.firstValue();
 		assertEquals(ICalDataType.TEXT, child.getDataType());
@@ -277,7 +277,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void firstValue_unknown() {
+	void firstValue_unknown() {
 		XCalElement XCalElement = build("<prop><unknown>one</unknown></prop>");
 		XCalValue child = XCalElement.firstValue();
 		assertNull(child.getDataType());
@@ -285,7 +285,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void firstValue_namespace() {
+	void firstValue_namespace() {
 		XCalElement XCalElement = build("<prop><n:foo xmlns:n=\"http://example.com\">one</n:foo><text>two</text></prop>");
 		XCalValue child = XCalElement.firstValue();
 		assertEquals(ICalDataType.TEXT, child.getDataType());
@@ -293,7 +293,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void firstValue_no_xcard_children() {
+	void firstValue_no_xcard_children() {
 		XCalElement XCalElement = build("<prop><n:foo xmlns:n=\"http://example.com\">one</n:foo><n:bar xmlns:n=\"http://example.com\">two</n:bar></prop>");
 		XCalValue child = XCalElement.firstValue();
 		assertNull(child.getDataType());
@@ -301,7 +301,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void append() {
+	void append() {
 		XCalElement xCalElement = build("<prop><one>1</one></prop>");
 		Element appendedElement = xCalElement.append("two", "2");
 		assertEquals("two", appendedElement.getLocalName());
@@ -322,7 +322,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void append_value_object() {
+	void append_value_object() {
 		XCalElement xCalElement = build("<prop><one>1</one></prop>");
 		Element appendedElement = xCalElement.append(ICalDataType.TEXT, "2");
 		assertEquals("text", appendedElement.getLocalName());
@@ -343,7 +343,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void append_unknown() {
+	void append_unknown() {
 		//@formatter:off
 		XCalElement xCalElement = build(
 		"<prop>" +
@@ -370,7 +370,7 @@ public class XCalElementTest {
 	}
 
 	@Test
-	public void append_multiple() {
+	void append_multiple() {
 		XCalElement xcalElement = build("<prop />");
 		List<Element> elements = xcalElement.append("number", Arrays.asList("1", "2", "3"));
 		Iterator<Element> it = elements.iterator();

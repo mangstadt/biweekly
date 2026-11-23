@@ -1,11 +1,11 @@
 package biweekly.issues;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.Biweekly;
 import biweekly.ICalendar;
@@ -16,12 +16,12 @@ import biweekly.property.DateStart;
  * @author Michael Angstadt
  * @see "https://github.com/mangstadt/biweekly/issues/133"
  */
-public class Issue133 {
+class Issue133 {
 	/*
 	 * DTSTART property of VTIMEZONE component is in the past.
 	 */
 	@Test
-	public void past() {
+	void past() {
 		//@formatter:off
 		String text = 
 		"BEGIN:VCALENDAR\r\n" + 
@@ -49,7 +49,7 @@ public class Issue133 {
 	 * DTSTART property of VTIMEZONE component is in the future.
 	 */
 	@Test
-	public void future() {
+	void future() {
 		//@formatter:off
 		String text = 
 		"BEGIN:VCALENDAR\r\n" + 
@@ -77,7 +77,7 @@ public class Issue133 {
 	 * VTIMEZONE component is removed. Global ID is used.
 	 */
 	@Test
-	public void global() {
+	void global() {
 		//@formatter:off
 		String text = 
 		"BEGIN:VCALENDAR\r\n" + 

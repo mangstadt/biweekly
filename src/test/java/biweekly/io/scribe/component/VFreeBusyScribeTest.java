@@ -1,12 +1,12 @@
 package biweekly.io.scribe.component;
 
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.component.VFreeBusy;
 import biweekly.property.Comment;
@@ -42,9 +42,9 @@ import biweekly.util.Period;
 /**
  * @author Michael Angstadt
  */
-public class VFreeBusyScribeTest {
+class VFreeBusyScribeTest {
 	@Test
-	public void sort_freeBusy_properties() throws Throwable {
+	void sort_freeBusy_properties() throws Throwable {
 		VFreeBusy freebusy = new VFreeBusy();
 
 		FreeBusy fb1 = new FreeBusy();

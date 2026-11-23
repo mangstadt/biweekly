@@ -1,8 +1,8 @@
 package biweekly.io.json;
 
 import static biweekly.util.StringUtils.NEWLINE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalDataType;
 import biweekly.parameter.ICalParameters;
@@ -45,9 +45,9 @@ import biweekly.parameter.ICalParameters;
  * @author Michael Angstadt
  */
 @SuppressWarnings("resource")
-public class JCalRawWriterTest {
+class JCalRawWriterTest {
 	@Test
-	public void write_multiple() throws Throwable {
+	void write_multiple() throws Throwable {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, true);
 
@@ -83,7 +83,7 @@ public class JCalRawWriterTest {
 	}
 
 	@Test
-	public void writeProperty() throws Throwable {
+	void writeProperty() throws Throwable {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
 
@@ -106,7 +106,7 @@ public class JCalRawWriterTest {
 	}
 
 	@Test
-	public void parameters() throws Throwable {
+	void parameters() throws Throwable {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
 
@@ -133,7 +133,7 @@ public class JCalRawWriterTest {
 	}
 
 	@Test
-	public void complex_value() throws Throwable {
+	void complex_value() throws Throwable {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
 
@@ -171,7 +171,7 @@ public class JCalRawWriterTest {
 	}
 
 	@Test
-	public void data_type_unknown() throws Throwable {
+	void data_type_unknown() throws Throwable {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
 
@@ -194,7 +194,7 @@ public class JCalRawWriterTest {
 	}
 
 	@Test
-	public void different_value_types() throws Throwable {
+	void different_value_types() throws Throwable {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
 
@@ -217,7 +217,7 @@ public class JCalRawWriterTest {
 	}
 
 	@Test
-	public void empty() throws Throwable {
+	void empty() throws Throwable {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
 
@@ -232,7 +232,7 @@ public class JCalRawWriterTest {
 	}
 
 	@Test
-	public void write_property_without_component() throws Throwable {
+	void write_property_without_component() throws Throwable {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
 
@@ -241,7 +241,7 @@ public class JCalRawWriterTest {
 	}
 
 	@Test
-	public void write_property_after_ending_component() throws Throwable {
+	void write_property_after_ending_component() throws Throwable {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
 
@@ -254,7 +254,7 @@ public class JCalRawWriterTest {
 	}
 
 	@Test
-	public void writeEmptyComponent() throws Exception {
+	void writeEmptyComponent() throws Exception {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
 
@@ -275,7 +275,7 @@ public class JCalRawWriterTest {
 	}
 
 	@Test
-	public void write_components_deep() throws Throwable {
+	void write_components_deep() throws Throwable {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, false);
 
@@ -341,7 +341,7 @@ public class JCalRawWriterTest {
 	}
 
 	@Test
-	public void prettyPrint() throws Throwable {
+	void prettyPrint() throws Throwable {
 		StringWriter sw = new StringWriter();
 		JCalRawWriter writer = new JCalRawWriter(sw, true);
 		writer.setPrettyPrint(true);

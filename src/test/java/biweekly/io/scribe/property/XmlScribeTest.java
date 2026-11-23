@@ -3,7 +3,7 @@ package biweekly.io.scribe.property;
 import static biweekly.util.TestUtils.assertParseWarnings;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -42,7 +42,7 @@ import biweekly.util.XmlUtils;
 /**
  * @author Michael Angstadt
  */
-public class XmlScribeTest extends ScribeTest<Xml> {
+class XmlScribeTest extends ScribeTest<Xml> {
 	private final String xml = "<element xmlns=\"http://example.com\">text</element>";
 	private final Document value;
 	{
@@ -61,25 +61,25 @@ public class XmlScribeTest extends ScribeTest<Xml> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withValue).run(xml);
 		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText(xml).run(has(value));
 		sensei.assertParseText("invalid").cannotParse(29);
 		sensei.assertParseText("").cannotParse(29);
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		//not called by the marshaller
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		ParseContext context = new ParseContext();
 		Xml prop = scribe.parseXml(value.getDocumentElement(), new ICalParameters(), context);
 
@@ -88,7 +88,7 @@ public class XmlScribeTest extends ScribeTest<Xml> {
 	}
 
 	@Test
-	public void parseXml_remove_parameters() throws Throwable {
+	void parseXml_remove_parameters() throws Throwable {
 		//<parameters> element should be removed
 		//@formatter:off
 		Document doc = XmlUtils.toDocument(
@@ -112,13 +112,13 @@ public class XmlScribeTest extends ScribeTest<Xml> {
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		sensei.assertWriteJson(withValue).run(xml);
 		sensei.assertWriteJson(empty).run("");
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		sensei.assertParseJson(xml).run(has(value));
 		sensei.assertParseJson("invalid").cannotParse(29);
 		sensei.assertParseJson("").cannotParse(29);

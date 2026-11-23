@@ -3,9 +3,9 @@ package biweekly.io.scribe.property;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.util.TestUtils.assertParseWarnings;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 import java.util.Map;
@@ -233,16 +233,16 @@ public class Sensei<T extends ICalProperty> {
 				WriteContext context = new WriteContext(version, tzinfo, null);
 				context.setParent(parent);
 				ICalParameters actual = (ICalParameters) scribe.prepareParameters(property, context).get();
-				assertEquals("Actual: " + actual, expected.size(), actual.size());
+				assertEquals(expected.size(), actual.size(), () -> "Actual: " + actual);
 
 				for (Map.Entry<LaciToken, List<String>> entry : expected) {
 					LaciToken expectedKey = entry.getKey();
 					List<String> expectedValues = entry.getValue();
 
 					List<String> actualValues = actual.get(expectedKey);
-					assertEquals("Actual: " + actual, expectedValues.size(), actualValues.size());
+					assertEquals(expectedValues.size(), actualValues.size(), () -> "Actual: " + actual);
 					for (String expectedValue : expectedValues) {
-						assertTrue("Actual: " + actual, actualValues.contains(expectedValue));
+						assertTrue(actualValues.contains(expectedValue), () -> "Actual: " + actual);
 					}
 				}
 			}
@@ -526,7 +526,7 @@ public class Sensei<T extends ICalProperty> {
 						throw e;
 					}
 
-					assertEquals("CannotParseException's parse warning code was wrong.", cannotParseExceptionCode, e.getCode());
+					assertEquals(cannotParseExceptionCode, e.getCode(), () -> "CannotParseException's parse warning code was wrong.");
 				}
 			}
 		}
@@ -572,7 +572,7 @@ public class Sensei<T extends ICalProperty> {
 					throw e;
 				}
 
-				assertEquals("CannotParseException's parse warning code was wrong.", cannotParseExceptionCode, e.getCode());
+				assertEquals(cannotParseExceptionCode, e.getCode(), () -> "CannotParseException's parse warning code was wrong.");
 			}
 		}
 	}
@@ -627,7 +627,7 @@ public class Sensei<T extends ICalProperty> {
 					throw e;
 				}
 
-				assertEquals("CannotParseException's parse warning code was wrong.", cannotParseExceptionCode, e.getCode());
+				assertEquals(cannotParseExceptionCode, e.getCode(), () -> "CannotParseException's parse warning code was wrong.");
 			}
 		}
 	}

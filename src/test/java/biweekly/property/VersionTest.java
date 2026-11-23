@@ -4,15 +4,15 @@ import static biweekly.property.PropertySensei.assertCopy;
 import static biweekly.property.PropertySensei.assertEqualsMethod;
 import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertValidate;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalVersion;
 import biweekly.util.VersionNumber;
@@ -45,23 +45,23 @@ import biweekly.util.VersionNumber;
 /**
  * @author Michael Angstadt
  */
-public class VersionTest {
+class VersionTest {
 	@Test
-	public void v1_0() {
+	void v1_0() {
 		Version property = Version.v1_0();
 		assertNull(property.getMinVersion());
 		assertEquals(new VersionNumber("1.0"), property.getMaxVersion());
 	}
 
 	@Test
-	public void v2_0() {
+	void v2_0() {
 		Version property = Version.v2_0();
 		assertNull(property.getMinVersion());
 		assertEquals(new VersionNumber("2.0"), property.getMaxVersion());
 	}
 
 	@Test
-	public void is() {
+	void is() {
 		Version property = new Version(ICalVersion.V1_0);
 		assertTrue(property.isV1_0());
 		assertFalse(property.isV2_0());
@@ -80,7 +80,7 @@ public class VersionTest {
 	}
 
 	@Test
-	public void toICalVersion() {
+	void toICalVersion() {
 		Version property = new Version("1.0");
 		assertEquals(ICalVersion.V1_0, property.toICalVersion());
 
@@ -99,7 +99,7 @@ public class VersionTest {
 	}
 
 	@Test
-	public void constructors() throws Exception {
+	void constructors() throws Exception {
 		Version property = new Version((String) null);
 		assertNull(property.getMinVersion());
 		assertNull(property.getMaxVersion());
@@ -118,7 +118,7 @@ public class VersionTest {
 	}
 
 	@Test
-	public void set_value() {
+	void set_value() {
 		Version property = new Version((String) null);
 
 		property.setMinVersion(new VersionNumber("2.0"));
@@ -131,7 +131,7 @@ public class VersionTest {
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		Version property = new Version((String) null);
 		assertValidate(property).run(35);
 
@@ -143,13 +143,13 @@ public class VersionTest {
 	}
 
 	@Test
-	public void toStringValues() {
+	void toStringValues() {
 		Version property = new Version("2.0");
 		assertFalse(property.toStringValues().isEmpty());
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		Version original = new Version((String) null);
 		assertCopy(original);
 
@@ -158,7 +158,7 @@ public class VersionTest {
 	}
 
 	@Test
-	public void equals() {
+	void equals() {
 		List<ICalProperty> properties = new ArrayList<>();
 
 		Version property = new Version((String) null);

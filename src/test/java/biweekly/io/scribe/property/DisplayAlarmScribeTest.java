@@ -1,13 +1,13 @@
 package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.utc;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.component.VAlarm;
 import biweekly.io.DataModelConversionException;
@@ -44,7 +44,7 @@ import java.time.Duration;
 /**
  * @author Michael Angstadt
  */
-public class DisplayAlarmScribeTest extends ScribeTest<DisplayAlarm> {
+class DisplayAlarmScribeTest extends ScribeTest<DisplayAlarm> {
 	private final Date start = utc(2014, 1, 1, 1, 0, 0);
 
 	private final DisplayAlarm empty = new DisplayAlarm((String) null);
@@ -69,14 +69,14 @@ public class DisplayAlarmScribeTest extends ScribeTest<DisplayAlarm> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(empty).run(";;");
 		sensei.assertWriteText(noValue).run("20140101T010000Z;PT10M;5");
 		sensei.assertWriteText(withValue).run("20140101T010000Z;PT10M;5;" + text);
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		{
 			Sensei<DisplayAlarm>.ParseTextTest test = sensei.assertParseText("");
 			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);

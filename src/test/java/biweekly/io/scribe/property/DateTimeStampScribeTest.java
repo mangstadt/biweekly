@@ -1,11 +1,11 @@
 package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalVersion;
 import biweekly.io.SkipMeException;
@@ -39,7 +39,7 @@ import biweekly.property.DateTimeStamp;
 /**
  * @author Michael Angstadt
  */
-public class DateTimeStampScribeTest extends ScribeTest<DateTimeStamp> {
+class DateTimeStampScribeTest extends ScribeTest<DateTimeStamp> {
 	private final Date datetime = date(2013, 6, 11, 13, 43, 2);
 	private final String datetimeStr = "20130611T124302Z";
 
@@ -50,7 +50,7 @@ public class DateTimeStampScribeTest extends ScribeTest<DateTimeStamp> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		Sensei<DateTimeStamp>.WriteTextTest test = sensei.assertWriteText(withDateTime).version(ICalVersion.V1_0);
 		assertThrows(SkipMeException.class, () -> test.run(datetimeStr));
 

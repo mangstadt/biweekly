@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.util.com.google.ical.compat.javautil.DateIterator;
 
@@ -40,9 +40,9 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
 /**
  * @author Michael Angstadt
  */
-public class RecurrenceTest {
+class RecurrenceTest {
 	@Test
-	public void getDateIterator() {
+	void getDateIterator() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).count(5).build();
 		Date start = date(2014, 11, 22, 10, 0, 0);
 
@@ -61,7 +61,7 @@ public class RecurrenceTest {
 	}
 
 	@Test
-	public void getDateIterator_gap_hour() {
+	void getDateIterator_gap_hour() {
 		TimeZone pacificTimeZone = TimeZone.getTimeZone("America/Los_Angeles");
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).interval(1).count(3).build();
 		Date start = date(2016, 3, 6, 2, 30, 0, pacificTimeZone);
@@ -79,7 +79,7 @@ public class RecurrenceTest {
 	}
 
 	@Test
-	public void getDateIterator_overlap_hour() {
+	void getDateIterator_overlap_hour() {
 		TimeZone pacificTimeZone = TimeZone.getTimeZone("America/Los_Angeles");
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).interval(1).count(3).build();
 		Date start = date(2016, 10, 30, 1, 30, 0, pacificTimeZone);
@@ -98,7 +98,7 @@ public class RecurrenceTest {
 	}
 
 	@Test
-	public void advanceDateIterator() {
+	void advanceDateIterator() {
 		Date start = date(2014, 11, 22, 10, 0, 0);
 		Date advanceTo = date(2014, 11, 24, 10, 0, 0);
 
@@ -118,7 +118,7 @@ public class RecurrenceTest {
 	}
 
 	@Test
-	public void advanceDateIterator_negativeTimeZoneOffset() {
+	void advanceDateIterator_negativeTimeZoneOffset() {
 		TimeZone pacificTimeZone = TimeZone.getTimeZone("America/Los_Angeles");
 		Date start = date(2016, 7, 1, 0, 1, 0, pacificTimeZone);
 		Date advanceTo = date(2016, 7, 1, 6, 59, 0, pacificTimeZone); //advance iterator to time 1-minute less than the time zone offset
@@ -141,7 +141,7 @@ public class RecurrenceTest {
 	}
 
 	@Test
-	public void advanceDateIterator_positiveTimeZoneOffset() {
+	void advanceDateIterator_positiveTimeZoneOffset() {
 		TimeZone singapore = TimeZone.getTimeZone("Asia/Singapore");
 		Date start = date(2016, 7, 1, 0, 1, 0, singapore);
 		Date advanceTo = date(2016, 7, 1, 0, 5, 0, singapore); //advance iterator 5-minutes from start time
@@ -164,7 +164,7 @@ public class RecurrenceTest {
 	}
 
 	@Test
-	public void copy_xrule_is_mutable() {
+	void copy_xrule_is_mutable() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).build();
 		new Recurrence.Builder(recur).xrule("NAME", "value").build();
 	}

@@ -5,8 +5,8 @@ import static biweekly.util.StringUtils.NEWLINE;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -15,9 +15,8 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.TimeZone;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import biweekly.ICalDataType;
 import biweekly.ICalendar;
@@ -78,12 +77,9 @@ import biweekly.util.UtcOffset;
  * @author Michael Angstadt
  */
 @SuppressWarnings("resource")
-public class JCalWriterTest {
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
-
+class JCalWriterTest {
 	@Test
-	public void basic() throws Throwable {
+	void basic() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
 
@@ -120,7 +116,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void write_multiple() throws Throwable {
+	void write_multiple() throws Throwable {
 		ICalendar ical1 = new ICalendar();
 		ical1.setProductId("prodid1");
 
@@ -183,7 +179,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void write_multiple_components() throws Throwable {
+	void write_multiple_components() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
 
@@ -232,7 +228,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void write_empty() throws Throwable {
+	void write_empty() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 
@@ -256,7 +252,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void no_property_marshaller() throws Throwable {
+	void no_property_marshaller() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
 		ical.addProperty(new TestProperty("value"));
@@ -267,7 +263,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void no_component_marshaller() throws Throwable {
+	void no_component_marshaller() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
 		ical.addComponent(new Party());
@@ -278,7 +274,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void skipMeException() throws Throwable {
+	void skipMeException() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new SkipMeProperty());
@@ -306,7 +302,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void override_marshaller() throws Throwable {
+	void override_marshaller() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.addProperty(new Version("2.0"));
 		ical.setProductId("prodid");
@@ -333,7 +329,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void experimental_property() throws Throwable {
+	void experimental_property() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
 		ical.addExperimentalProperty("X-NUMBER", "1");
@@ -362,7 +358,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void experimental_property_marshaller() throws Throwable {
+	void experimental_property_marshaller() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
 		ical.addProperty(new TestProperty("one"));
@@ -392,7 +388,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void experimental_component() throws Throwable {
+	void experimental_component() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
 		ical.addExperimentalComponent("X-VPARTY");
@@ -424,7 +420,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void experimental_component_marshaller() throws Throwable {
+	void experimental_component_marshaller() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
 		ical.addComponent(new Party());
@@ -457,7 +453,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void prettyPrint() throws Throwable {
+	void prettyPrint() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
 
@@ -496,12 +492,12 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void utf8() throws Throwable {
+	void utf8(@TempDir Path tempDir) throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new Summary("\u1e66ummary"));
 
-		Path file = tempFolder.newFile().toPath();
+		Path file = tempDir.resolve("test.json");
 		JCalWriter writer = new JCalWriter(file);
 		writer.write(ical);
 		writer.close();
@@ -522,7 +518,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void setGlobalTimezone() throws Throwable {
+	void setGlobalTimezone() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 
@@ -592,7 +588,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void jcal_draft_example1() throws Throwable {
+	void jcal_draft_example1() throws Throwable {
 		//Note: all whitespace is removed from the expected JSON string it easier to compare it with the actual result
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
@@ -613,7 +609,7 @@ public class JCalWriterTest {
 	}
 
 	@Test
-	public void jcal_draft_example2() throws Throwable {
+	void jcal_draft_example2() throws Throwable {
 		TimeZone eastern = TimeZone.getTimeZone("US/Eastern");
 
 		//Note: all whitespace is removed from the expected JSON string it easier to compare it with the actual result

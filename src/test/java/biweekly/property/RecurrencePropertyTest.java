@@ -6,14 +6,14 @@ import static biweekly.ICalVersion.V2_0_DEPRECATED;
 import static biweekly.util.TestUtils.assertIterator;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.util.Frequency;
 import biweekly.util.ICalDate;
@@ -48,9 +48,9 @@ import biweekly.util.com.google.ical.compat.javautil.DateIterator;
 /**
  * @author Michael Angstadt
  */
-public class RecurrencePropertyTest {
+class RecurrencePropertyTest {
 	@Test
-	public void getDateIterator_empty() {
+	void getDateIterator_empty() {
 		RecurrenceProperty property = new RecurrenceProperty((Recurrence) null);
 		Date start = date(2014, 11, 22, 10, 0, 0);
 		DateIterator it = property.getDateIterator(start, TimeZone.getDefault());
@@ -58,7 +58,7 @@ public class RecurrencePropertyTest {
 	}
 	
 	@Test
-	public void getDateIterator() {
+	void getDateIterator() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).count(5).build();
 		RecurrenceProperty property = new RecurrenceProperty(recur);
 		Date start = date(2014, 11, 22, 10, 0, 0);
@@ -78,7 +78,7 @@ public class RecurrencePropertyTest {
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		RecurrenceProperty property = new RecurrenceProperty((Recurrence) null);
 		assertValidate(property).run(26);
 
@@ -96,7 +96,7 @@ public class RecurrencePropertyTest {
 	}
 
 	@Test
-	public void validate_xrules() {
+	void validate_xrules() {
 		RecurrenceProperty property = new RecurrenceProperty(new Recurrence.Builder(Frequency.DAILY).xrule("foo", "bar").build());
 		assertValidate(property).versions(V1_0).run(new Integer[] { null });
 
@@ -108,7 +108,7 @@ public class RecurrencePropertyTest {
 	}
 
 	@Test
-	public void validate_bysetpos() {
+	void validate_bysetpos() {
 		RecurrenceProperty property = new RecurrenceProperty(new Recurrence.Builder(Frequency.DAILY).bySetPos(-1).build());
 		assertValidate(property).versions(V1_0).run(new Integer[] { null });
 
@@ -117,7 +117,7 @@ public class RecurrencePropertyTest {
 	}
 
 	@Test
-	public void validate_secondly_frequency() {
+	void validate_secondly_frequency() {
 		RecurrenceProperty property = new RecurrenceProperty(new Recurrence.Builder(Frequency.SECONDLY).build());
 		assertValidate(property).versions(V1_0).run(new Integer[] { null });
 

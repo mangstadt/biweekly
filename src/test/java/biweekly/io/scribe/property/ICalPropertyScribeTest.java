@@ -3,15 +3,15 @@ package biweekly.io.scribe.property;
 import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Date;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -57,7 +57,7 @@ import biweekly.util.ListMultimap;
 /**
  * @author Michael Angstadt
  */
-public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
+class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	private final Date datetime = date(2013, 6, 11, 14, 43, 2);
 
 	public ICalPropertyScribeTest() {
@@ -65,7 +65,7 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	}
 
 	@Test
-	public void DateParser_timezone() {
+	void DateParser_timezone() {
 		String value = "20130611T134302Z";
 
 		Date actual = ICalPropertyScribe.date(value).parse();
@@ -74,7 +74,7 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	}
 
 	@Test
-	public void DateParser_local() {
+	void DateParser_local() {
 		String value = "20130611T144302";
 
 		Date actual = ICalPropertyScribe.date(value).parse();
@@ -83,49 +83,49 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	}
 
 	@Test
-	public void DateWriter_datetime() {
+	void DateWriter_datetime() {
 		String expected = "20130611T134302Z"; //write as UTC by default
 		String actual = ICalPropertyScribe.date(datetime).write();
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void DateWriter_datetime_extended() {
+	void DateWriter_datetime_extended() {
 		String expected = "2013-06-11T13:43:02Z";
 		String actual = ICalPropertyScribe.date(datetime).extended(true).write();
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void DateWriter_datetime_utc() {
+	void DateWriter_datetime_utc() {
 		String expected = "20130611T134302Z";
 		String actual = ICalPropertyScribe.date(datetime).utc(true).write();
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void DateWriter_datetime_utc_extended() {
+	void DateWriter_datetime_utc_extended() {
 		String expected = "2013-06-11T13:43:02Z";
 		String actual = ICalPropertyScribe.date(datetime).utc(true).extended(true).write();
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void DateWriter_date() {
+	void DateWriter_date() {
 		String expected = "20130611";
 		String actual = ICalPropertyScribe.date(new ICalDate(datetime, false)).write();
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void DateWriter_date_extended() {
+	void DateWriter_date_extended() {
 		String expected = "2013-06-11";
 		String actual = ICalPropertyScribe.date(new ICalDate(datetime, false)).extended(true).write();
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void DateWriter_datetime_timezone() {
+	void DateWriter_datetime_timezone() {
 		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
 		String expected = "20130611T154302";
 		String actual = ICalPropertyScribe.date(datetime).tz(false, timezone).write();
@@ -133,7 +133,7 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	}
 
 	@Test
-	public void DateWriter_datetime_timezone_extended() {
+	void DateWriter_datetime_timezone_extended() {
 		TimeZone timezone = TimeZone.getTimeZone("Africa/Johannesburg"); //+02:00
 		String expected = "2013-06-11T15:43:02";
 		String actual = ICalPropertyScribe.date(datetime).tz(false, timezone).extended(true).write();
@@ -141,14 +141,14 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	}
 
 	@Test
-	public void DateWriter_datetime_local_time() {
+	void DateWriter_datetime_local_time() {
 		String expected = "20130611T144302";
 		String actual = ICalPropertyScribe.date(datetime).tz(true, null).write();
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void prepareParameters() {
+	void prepareParameters() {
 		TestProperty property = new TestProperty("value");
 		ICalParameters copy = scribe.prepareParameters(property, null).get();
 
@@ -157,26 +157,26 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		TestProperty property = new TestProperty("value");
 		sensei.assertWriteText(property).run("value");
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText("value").warnings((Integer) null).run((property, context) -> {
 			has(ICalDataType.TEXT, "value").check(property, context);
 		});
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		TestProperty prop = new TestProperty("value");
 		sensei.assertWriteXml(prop).run("<text>value</text>");
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		//@formatter:off
 		sensei.assertParseXml(
 		"<ignore xmlns=\"http://example.com\">ignore-me</ignore>" +
@@ -202,13 +202,13 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		TestProperty prop = new TestProperty("value");
 		sensei.assertWriteJson(prop).run("value");
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		//@formatter:off
 		sensei.assertParseJson("value").warnings((Integer)null).run(has(ICalDataType.TEXT, "value"));
 		
@@ -228,7 +228,7 @@ public class ICalPropertyScribeTest extends ScribeTest<TestProperty> {
 	}
 
 	@Test
-	public void handleTzidParameter() {
+	void handleTzidParameter() {
 		ICalProperty property = new TestProperty("");
 		final TimezoneAssignment nyTimeZone = new TimezoneAssignment(TimeZone.getTimeZone("America/New_York"), new VTimezone("America/New_York"));
 		final TimezoneAssignment nySolidus = new TimezoneAssignment(TimeZone.getTimeZone("America/New_York"), "America/New_York");

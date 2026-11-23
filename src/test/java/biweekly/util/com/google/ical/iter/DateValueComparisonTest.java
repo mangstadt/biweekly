@@ -39,10 +39,10 @@
 
 package biweekly.util.com.google.ical.iter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.util.com.google.ical.values.DateTimeValueImpl;
 import biweekly.util.com.google.ical.values.DateValue;
@@ -51,9 +51,9 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
 /**
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
-public class DateValueComparisonTest {
+class DateValueComparisonTest {
 	@Test
-	public void comparisonSameAsDateValueImpl() {
+	void comparisonSameAsDateValueImpl() {
 		/*
 		 * It's more important for DateValueComparison to be a total ordering
 		 * (see the class comments) than to be consistent with DateValue.

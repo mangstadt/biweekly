@@ -1,20 +1,20 @@
 package biweekly.io.json;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import biweekly.ICalVersion;
-import biweekly.ICalendar;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import biweekly.ICalVersion;
+import biweekly.ICalendar;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -45,16 +45,16 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  * @author Buddy Gorven
  * @author Michael Angstadt
  */
-public class JCalDeserializerTest {
+class JCalDeserializerTest {
 	private ObjectMapper mapper;
 
-	@Before
-	public void before() {
+	@BeforeEach
+	void beforeEach() {
 		mapper = new ObjectMapper();
 	}
 
 	@Test
-	public void deserialize_single() throws Exception {
+	void deserialize_single() throws Exception {
 		//@formatter:off
 		String input =
 		"[\"vcalendar\"," +
@@ -78,7 +78,7 @@ public class JCalDeserializerTest {
 	}
 
 	@Test
-	public void deserialize_multiple() throws Exception {
+	void deserialize_multiple() throws Exception {
 		//@formatter:off
 		String input =
 		"[" +
@@ -122,7 +122,7 @@ public class JCalDeserializerTest {
 	}
 
 	@Test
-	public void container() throws Exception {
+	void container() throws Exception {
 		//@formatter:off
 		String json =
 		"{" +
@@ -150,7 +150,7 @@ public class JCalDeserializerTest {
 	}
 
 	@Test
-	public void container_null() throws Exception {
+	void container_null() throws Exception {
 		//@formatter:off
 		String json =
 		"{" +

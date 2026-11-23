@@ -4,7 +4,7 @@ import static biweekly.util.TestUtils.date;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.component.ICalComponent;
 import biweekly.component.Observance;
@@ -38,7 +38,7 @@ import biweekly.property.DateStart;
 /**
  * @author Michael Angstadt
  */
-public class DateStartPropertyScribeTest extends ScribeTest<DateStart> {
+class DateStartPropertyScribeTest extends ScribeTest<DateStart> {
 	private final Date datetime = date(2013, 6, 11, 13, 43, 2);
 	private final String datetimeStr = "20130611T124302Z";
 	private final String datetimeFloatingStr = "20130611T134302";
@@ -53,19 +53,19 @@ public class DateStartPropertyScribeTest extends ScribeTest<DateStart> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withDateTime).run(datetimeStr);
 		sensei.assertWriteText(withDateTime).parent(parent).run(datetimeFloatingStr);
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		sensei.assertWriteXml(withDateTime).run("<date-time>" + datetimeStrExt + "</date-time>");
 		sensei.assertWriteXml(withDateTime).parent(parent).run("<date-time>" + datetimeFloatingStrExt + "</date-time>");
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		sensei.assertWriteJson(withDateTime).run(datetimeStrExt);
 		sensei.assertWriteJson(withDateTime).parent(parent).run(datetimeFloatingStrExt);
 	}

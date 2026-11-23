@@ -8,7 +8,7 @@ import static biweekly.util.TestUtils.date;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.property.Contact;
 import biweekly.property.DateEnd;
@@ -44,9 +44,9 @@ import biweekly.property.Url;
 /**
  * @author Michael Angstadt
  */
-public class VFreeBusyTest {
+class VFreeBusyTest {
 	@Test
-	public void validate_cardinality_required() {
+	void validate_cardinality_required() {
 		VFreeBusy component = new VFreeBusy();
 		component.getProperties().clear();
 		assertValidate(component).versions(V1_0).run(48, 2, 2);
@@ -59,7 +59,7 @@ public class VFreeBusyTest {
 	}
 
 	@Test
-	public void validate_cardinality_optional() {
+	void validate_cardinality_optional() {
 		VFreeBusy component = new VFreeBusy();
 		component.addProperty(new Contact(""));
 		component.addProperty(new DateStart(date(2000, 1, 1)));
@@ -79,7 +79,7 @@ public class VFreeBusyTest {
 	}
 
 	@Test
-	public void validate_no_startDate() {
+	void validate_no_startDate() {
 		VFreeBusy component = new VFreeBusy();
 		component.setDateEnd(new DateEnd(date(2000, 1, 10), true));
 		assertValidate(component).versions(V1_0).run(48, 15);
@@ -87,7 +87,7 @@ public class VFreeBusyTest {
 	}
 
 	@Test
-	public void validate_dates_do_not_have_times() {
+	void validate_dates_do_not_have_times() {
 		VFreeBusy component = new VFreeBusy();
 		component.setDateStart(new DateStart(date(2000, 1, 1), false));
 		component.setDateEnd(new DateEnd(date(2000, 1, 10), false));
@@ -96,7 +96,7 @@ public class VFreeBusyTest {
 	}
 
 	@Test
-	public void validate_startDate_before_endDate() {
+	void validate_startDate_before_endDate() {
 		VFreeBusy component = new VFreeBusy();
 		component.setDateStart(new DateStart(date(2000, 1, 10), true));
 		component.setDateEnd(new DateEnd(date(2000, 1, 1), true));

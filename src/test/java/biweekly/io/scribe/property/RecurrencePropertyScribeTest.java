@@ -5,11 +5,11 @@ import static biweekly.ICalVersion.V2_0;
 import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import com.github.mangstadt.vinnie.LaciToken;
 
@@ -76,8 +76,8 @@ import biweekly.util.Recurrence;
  * @author Michael Angstadt
  */
 public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty> {
-	@Rule
-	public final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(2, 0);
+	@RegisterExtension
+	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(2, 0);
 
 	private final ICalDate date = new ICalDate(date(2013, 6, 11), false);
 	private final String dateStr = "20130611";
@@ -152,7 +152,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void writeText_vcal() throws Exception {
+	void writeText_vcal() throws Exception {
 		RecurrenceProperty prop = new RecurrenceProperty((Recurrence) null);
 		String expected, actual;
 
@@ -248,53 +248,53 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void writeText_multiples() {
+	void writeText_multiples() {
 		String actual = sensei.assertWriteText(withMultiple).run();
 		List<String> split = Arrays.asList(actual.split(";"));
 
 		assertEquals(15, split.size());
 		assertEquals("FREQ=WEEKLY", split.get(0));
-		assertTrue(actual, split.contains("BYYEARDAY=100,101"));
-		assertTrue(actual, split.contains("BYMONTHDAY=1,2"));
-		assertTrue(actual, split.contains("BYMONTH=5,6"));
-		assertTrue(actual, split.contains("BYHOUR=1,2"));
-		assertTrue(actual, split.contains("BYMINUTE=3,4"));
-		assertTrue(actual, split.contains("BYSECOND=58,59"));
-		assertTrue(actual, split.contains("BYSETPOS=7,8,9"));
-		assertTrue(actual, split.contains("BYWEEKNO=1,2"));
-		assertTrue(actual, split.contains("COUNT=5"));
-		assertTrue(actual, split.contains("INTERVAL=10"));
-		assertTrue(actual, split.contains("BYDAY=SU,MO,TU,WE,TH,FR,SA,5FR"));
-		assertTrue(actual, split.contains("WKST=TU"));
-		assertTrue(actual, split.contains("X-NAME=one,two"));
-		assertTrue(actual, split.contains("X-RULE=three"));
+		assertTrue(split.contains("BYYEARDAY=100,101"), actual);
+		assertTrue(split.contains("BYMONTHDAY=1,2"), actual);
+		assertTrue(split.contains("BYMONTH=5,6"), actual);
+		assertTrue(split.contains("BYHOUR=1,2"), actual);
+		assertTrue(split.contains("BYMINUTE=3,4"), actual);
+		assertTrue(split.contains("BYSECOND=58,59"), actual);
+		assertTrue(split.contains("BYSETPOS=7,8,9"), actual);
+		assertTrue(split.contains("BYWEEKNO=1,2"), actual);
+		assertTrue(split.contains("COUNT=5"), actual);
+		assertTrue(split.contains("INTERVAL=10"), actual);
+		assertTrue(split.contains("BYDAY=SU,MO,TU,WE,TH,FR,SA,5FR"), actual);
+		assertTrue(split.contains("WKST=TU"), actual);
+		assertTrue(split.contains("X-NAME=one,two"), actual);
+		assertTrue(split.contains("X-RULE=three"), actual);
 	}
 
 	@Test
-	public void writeText_singles() {
+	void writeText_singles() {
 		String actual = sensei.assertWriteText(withSingle).run();
 		List<String> split = Arrays.asList(actual.split(";"));
 
 		assertEquals(15, split.size());
 		assertEquals("FREQ=WEEKLY", split.get(0));
-		assertTrue(actual, split.contains("BYYEARDAY=100"));
-		assertTrue(actual, split.contains("BYMONTHDAY=1"));
-		assertTrue(actual, split.contains("BYMONTH=5"));
-		assertTrue(actual, split.contains("BYHOUR=1"));
-		assertTrue(actual, split.contains("BYMINUTE=3"));
-		assertTrue(actual, split.contains("BYSECOND=58"));
-		assertTrue(actual, split.contains("BYSETPOS=7"));
-		assertTrue(actual, split.contains("BYWEEKNO=1"));
-		assertTrue(actual, split.contains("COUNT=5"));
-		assertTrue(actual, split.contains("INTERVAL=10"));
-		assertTrue(actual, split.contains("BYDAY=FR"));
-		assertTrue(actual, split.contains("WKST=TU"));
-		assertTrue(actual, split.contains("X-NAME=one"));
-		assertTrue(actual, split.contains("X-RULE=three"));
+		assertTrue(split.contains("BYYEARDAY=100"), actual);
+		assertTrue(split.contains("BYMONTHDAY=1"), actual);
+		assertTrue(split.contains("BYMONTH=5"), actual);
+		assertTrue(split.contains("BYHOUR=1"), actual);
+		assertTrue(split.contains("BYMINUTE=3"), actual);
+		assertTrue(split.contains("BYSECOND=58"), actual);
+		assertTrue(split.contains("BYSETPOS=7"), actual);
+		assertTrue(split.contains("BYWEEKNO=1"), actual);
+		assertTrue(split.contains("COUNT=5"), actual);
+		assertTrue(split.contains("INTERVAL=10"), actual);
+		assertTrue(split.contains("BYDAY=FR"), actual);
+		assertTrue(split.contains("WKST=TU"), actual);
+		assertTrue(split.contains("X-NAME=one"), actual);
+		assertTrue(split.contains("X-RULE=three"), actual);
 	}
 
 	@Test
-	public void writeText_until_datetime() {
+	void writeText_until_datetime() {
 		String utc = "FREQ=WEEKLY;UNTIL=20130611T124302Z";
 		String floating = "FREQ=WEEKLY;UNTIL=20130611T144302";
 
@@ -319,7 +319,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void writeText_until_date() {
+	void writeText_until_date() {
 		String expected = "FREQ=WEEKLY;UNTIL=" + dateStr;
 
 		//no DTSTART sibling
@@ -344,12 +344,12 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void writeText_empty() {
+	void writeText_empty() {
 		sensei.assertWriteText(empty).run("");
 	}
 
 	@Test
-	public void parseText_vcal() {
+	void parseText_vcal() {
 		sensei.assertParseText("S2").versions(V1_0).cannotParse(41);
 
 		sensei.assertParseText("D2 0600$ 1230$ 1400 #0").versions(V1_0).warnings(36, 36).run(is(new Recurrence.Builder(Frequency.DAILY).interval(2).byHour(6).byHour(12).byHour(14).byMinute(0).byMinute(30).byMinute(0).build()));
@@ -398,7 +398,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void parseText_vcal_multivalued() {
+	void parseText_vcal_multivalued() {
 		{
 			Sensei<RecurrenceProperty>.ParseTextTest test = sensei.assertParseText("MD1 1 #1 D2  20000101T000000Z  M3").versions(V1_0);
 			DataModelConversionException e = assertThrows(DataModelConversionException.class, test::run);
@@ -447,12 +447,12 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText("FREQ=WEEKLY;COUNT=5;INTERVAL=10;UNTIL=" + dateTimeStr + ";BYSECOND=58,59;BYMINUTE=3,4;BYHOUR=1,2;BYDAY=MO,TU,WE,TH,FR,SA,SU,5FR;BYMONTHDAY=1,2;BYYEARDAY=100,101;BYWEEKNO=1,2;BYMONTH=5,6;BYSETPOS=7,8,9;WKST=TU;X-NAME=one,two;X-RULE=three").versions(V2_0).run(fullCheck);
 	}
 
 	@Test
-	public void parseText_until() {
+	void parseText_until() {
 		sensei.assertParseText("FREQ=WEEKLY;UNTIL=" + dateTimeStr).versions(V2_0).run((property, context) -> {
 			Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(new ICalDate(new ICalDate(utc(2013, 6, 11, 12, 43, 2)))).build();
 			is(expected).check(property, context);
@@ -488,7 +488,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void parseText_invalid_values() {
+	void parseText_invalid_values() {
 		//@formatter:off
 		sensei.assertParseText("FREQ=W;COUNT=a;INTERVAL=b;UNTIL=invalid;BYSECOND=58,c,59;BYMINUTE=3,d,4;BYHOUR=1,e,2;BYDAY=f,MO,TU,WE,TH,FR,SA,SU,5FR,fFR;BYMONTHDAY=1,g,2;BYYEARDAY=100,h,101;BYWEEKNO=1,w,2;BYMONTH=5,i,6;BYSETPOS=7,8,j,9;WKST=k")
 			.versions(V2_0)
@@ -498,7 +498,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void parseText_invalid_component() {
+	void parseText_invalid_component() {
 		sensei.assertParseText("FREQ=WEEKLY;no equals;COUNT=5").versions(V2_0).run((property, context) -> {
 			Recurrence recur = property.getValue();
 			assertEquals(Frequency.WEEKLY, recur.getFrequency());
@@ -522,12 +522,12 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void parseText_empty() {
+	void parseText_empty() {
 		sensei.assertParseText("").run(emptyCheck);
 	}
 
 	@Test
-	public void writeXml_multiples() {
+	void writeXml_multiples() {
 		//@formatter:off
 		sensei.assertWriteXml(withMultiple).run(
 		"<recur>" +
@@ -568,7 +568,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void writeXml_singles() {
+	void writeXml_singles() {
 		//@formatter:off
 		sensei.assertWriteXml(withSingle).run(
 		"<recur>" +
@@ -592,7 +592,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void writeXml_until_datetime() {
+	void writeXml_until_datetime() {
 		//@formatter:off
 		sensei.assertWriteXml(withUntilDateTime).run(
 		"<recur>" +
@@ -609,12 +609,12 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void writeXml_empty() {
+	void writeXml_empty() {
 		sensei.assertWriteXml(empty).run("<recur/>");
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		//@formatter:off
 		sensei.assertParseXml(
 		"<recur>" +
@@ -657,7 +657,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void parseXml_until() {
+	void parseXml_until() {
 		sensei.assertParseXml("<recur><freq>WEEKLY</freq><until>" + dateTimeStrExt + "</until></recur>").run((property, context) -> {
 			Recurrence expected = new Recurrence.Builder(Frequency.WEEKLY).until(new ICalDate(utc(2013, 6, 11, 12, 43, 2))).build();
 			is(expected).check(property, context);
@@ -693,7 +693,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void parseXml_invalid_values() {
+	void parseXml_invalid_values() {
 		//@formatter:off
 		sensei.assertParseXml(
 		"<recur>" +
@@ -743,12 +743,12 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void parseXml_empty() {
+	void parseXml_empty() {
 		sensei.assertParseXml("").cannotParse(23);
 	}
 
 	@Test
-	public void writeJson_multiples() {
+	void writeJson_multiples() {
 		JCalValue actual = sensei.assertWriteJson(withMultiple).run();
 
 		Map<String, JsonValue> expected = new LinkedHashMap<String, JsonValue>();
@@ -772,7 +772,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void writeJson_singles() {
+	void writeJson_singles() {
 		JCalValue actual = sensei.assertWriteJson(withSingle).run();
 
 		Map<String, JsonValue> expected = new LinkedHashMap<String, JsonValue>();
@@ -796,7 +796,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void writeJson_until_datetime() {
+	void writeJson_until_datetime() {
 		JCalValue actual = sensei.assertWriteJson(withUntilDateTime).run();
 
 		Map<String, JsonValue> expected = new LinkedHashMap<String, JsonValue>();
@@ -807,7 +807,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void writeJson_until_date() {
+	void writeJson_until_date() {
 		JCalValue actual = sensei.assertWriteJson(withUntilDate).run();
 
 		Map<String, JsonValue> expected = new LinkedHashMap<String, JsonValue>();
@@ -818,12 +818,12 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void writeJson_empty() {
+	void writeJson_empty() {
 		sensei.assertWriteJson(empty).run((String) null);
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		ListMultimap<String, Object> map = new ListMultimap<String, Object>();
 		map.put("freq", "WEEKLY");
 		map.put("count", 5);
@@ -863,7 +863,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void parseJson_until() {
+	void parseJson_until() {
 		ListMultimap<String, Object> map = new ListMultimap<String, Object>();
 		map.put("freq", "WEEKLY");
 		map.put("until", dateTimeStrExt);
@@ -909,7 +909,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void parseJson_invalid_values() {
+	void parseJson_invalid_values() {
 		ListMultimap<String, Object> map = new ListMultimap<String, Object>();
 		map.put("freq", "W");
 		map.put("count", "a");
@@ -956,7 +956,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	public void parseJson_empty() {
+	void parseJson_empty() {
 		sensei.assertParseJson("").run(emptyCheck);
 	}
 

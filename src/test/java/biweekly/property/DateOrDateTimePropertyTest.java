@@ -5,14 +5,14 @@ import static biweekly.property.PropertySensei.assertEqualsMethod;
 import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.util.ICalDate;
 
@@ -44,9 +44,9 @@ import biweekly.util.ICalDate;
 /**
  * @author Michael Angstadt
  */
-public class DateOrDateTimePropertyTest {
+class DateOrDateTimePropertyTest {
 	@Test
-	public void constructors() throws Exception {
+	void constructors() throws Exception {
 		DateOrDateTimeProperty property = new DateOrDateTimeProperty((Date) null);
 		assertNull(property.getValue());
 
@@ -66,7 +66,7 @@ public class DateOrDateTimePropertyTest {
 	}
 
 	@Test
-	public void set_value() {
+	void set_value() {
 		DateOrDateTimeProperty property = new DateOrDateTimeProperty(date(2016, 1, 17));
 
 		property.setValue(date(2016, 1, 18), false);
@@ -86,7 +86,7 @@ public class DateOrDateTimePropertyTest {
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		DateOrDateTimeProperty property = new DateOrDateTimeProperty(null, false);
 		assertValidate(property).run(26);
 
@@ -95,7 +95,7 @@ public class DateOrDateTimePropertyTest {
 	}
 
 	@Test
-	public void toStringValues() {
+	void toStringValues() {
 		DateOrDateTimeProperty property = new DateOrDateTimeProperty((ICalDate) null);
 		assertFalse(property.toStringValues().isEmpty());
 
@@ -104,7 +104,7 @@ public class DateOrDateTimePropertyTest {
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		DateOrDateTimeProperty original = new DateOrDateTimeProperty(new ICalDate());
 		assertCopy(original).notSame("getValue");
 
@@ -113,7 +113,7 @@ public class DateOrDateTimePropertyTest {
 	}
 
 	@Test
-	public void equals() {
+	void equals() {
 		//@formatter:off
 		assertNothingIsEqual(
 			new DateOrDateTimeProperty((ICalDate)null),

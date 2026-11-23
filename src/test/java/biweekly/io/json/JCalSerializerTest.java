@@ -1,19 +1,19 @@
 package biweekly.io.json;
 
 import static biweekly.util.StringUtils.NEWLINE;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.StringWriter;
 import java.util.Arrays;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import biweekly.ICalendar;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import biweekly.ICalendar;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -44,16 +44,16 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * @author Buddy Gorven
  * @author Michael Angstadt
  */
-public class JCalSerializerTest {
+class JCalSerializerTest {
 	private ObjectMapper mapper;
 
-	@Before
-	public void before() {
+	@BeforeEach
+	void beforeEach() {
 		mapper = new ObjectMapper();
 	}
 
 	@Test
-	public void serialize_single() throws Exception {
+	void serialize_single() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setProductId("value1");
@@ -76,7 +76,7 @@ public class JCalSerializerTest {
 	}
 
 	@Test
-	public void serialize_prettyPrint() throws Exception {
+	void serialize_prettyPrint() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setProductId("value1");
@@ -104,7 +104,7 @@ public class JCalSerializerTest {
 	//TODO test setScribe() and setTimezoneInfo()
 
 	@Test
-	public void serialize_multiple() throws Exception {
+	void serialize_multiple() throws Exception {
 		ICalendar ical1 = new ICalendar();
 		ical1.getProperties().clear();
 		ical1.setProductId("value1");
@@ -140,7 +140,7 @@ public class JCalSerializerTest {
 	}
 
 	@Test
-	public void container() throws Exception {
+	void container() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setProductId("value1");
@@ -166,7 +166,7 @@ public class JCalSerializerTest {
 	}
 
 	@Test
-	public void container_null() throws Exception {
+	void container_null() throws Exception {
 		Container container = new Container(null);
 
 		StringWriter result = new StringWriter();

@@ -11,11 +11,11 @@ import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.assertVersion;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.utc;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Writer;
 import java.nio.file.Path;
@@ -24,10 +24,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.TimeZone;
 
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.github.mangstadt.vinnie.LaciToken;
 
@@ -108,15 +107,12 @@ import biweekly.util.Utf8Streams;
  * @author Michael Angstadt
  */
 @SuppressWarnings("resource")
-public class ICalReaderTest {
-	@ClassRule
+class ICalReaderTest {
+	@RegisterExtension
 	public static final DefaultTimezoneRule tzRule = new DefaultTimezoneRule(-1, 0);
 
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
-
 	@Test
-	public void basic() throws Throwable {
+	void basic() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -155,7 +151,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void read_multiple() throws Throwable {
+	void read_multiple() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -208,7 +204,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void unrecognized_version_number() throws Throwable {
+	void unrecognized_version_number() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -229,7 +225,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void invalid_version_value() throws Throwable {
+	void invalid_version_value() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -250,7 +246,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void defaultVersion() throws Throwable {
+	void defaultVersion() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -300,7 +296,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void caret_encoding_enabled() throws Throwable {
+	void caret_encoding_enabled() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -325,7 +321,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void caret_encoding_disabled() throws Throwable {
+	void caret_encoding_disabled() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -350,7 +346,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void missing_vcalendar_component_no_components() throws Throwable {
+	void missing_vcalendar_component_no_components() throws Throwable {
 		//@formatter:off
 		String ical =
 		"PRODID:prodid\r\n" +
@@ -362,7 +358,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void missing_vcalendar_component_with_component() throws Throwable {
+	void missing_vcalendar_component_with_component() throws Throwable {
 		//@formatter:off
 		String ical =
 		"PRODID:prodid\r\n" +
@@ -377,7 +373,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void vcalendar_component_not_the_first_line() throws Throwable {
+	void vcalendar_component_not_the_first_line() throws Throwable {
 		//@formatter:off
 		String ical =
 		"PRODID:prodid\r\n" +
@@ -397,7 +393,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void missing_end_property() throws Throwable {
+	void missing_end_property() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -437,7 +433,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void invalid_end_property() throws Throwable {
+	void invalid_end_property() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -466,7 +462,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void experimental_property() throws Throwable {
+	void experimental_property() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -500,7 +496,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void experiemental_property_marshaller() throws Throwable {
+	void experiemental_property_marshaller() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -536,7 +532,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void experimental_component() throws Throwable {
+	void experimental_component() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -564,7 +560,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void experiemental_component_marshaller() throws Throwable {
+	void experiemental_component_marshaller() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -593,7 +589,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void override_property_marshaller() throws Throwable {
+	void override_property_marshaller() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -615,7 +611,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void override_component_marshaller() throws Throwable {
+	void override_component_marshaller() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -645,7 +641,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void invalid_line() throws Throwable {
+	void invalid_line() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -669,7 +665,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void property_warning() throws Throwable {
+	void property_warning() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -694,7 +690,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void warnings_cleared_between_reads() throws Throwable {
+	void warnings_cleared_between_reads() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -738,7 +734,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void skipMeException() throws Throwable {
+	void skipMeException() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -763,7 +759,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void cannotParseException() throws Throwable {
+	void cannotParseException() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -793,7 +789,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void valueless_parameter() throws Throwable {
+	void valueless_parameter() throws Throwable {
 		//1.0
 		{
 			//@formatter:off
@@ -840,7 +836,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void data_types() throws Throwable {
+	void data_types() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -877,7 +873,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void utf8() throws Throwable {
+	void utf8(@TempDir Path tempDir) throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -885,7 +881,7 @@ public class ICalReaderTest {
 			"SUMMARY:\u1e66ummary\r\n" +
 		"END:VCALENDAR\r\n";
 		//@formatter:on
-		Path file = tempFolder.newFile().toPath();
+		Path file = tempDir.resolve("test.ics");
 		Writer writer = Utf8Streams.writer(file);
 		writer.write(ical);
 		writer.close();
@@ -901,7 +897,7 @@ public class ICalReaderTest {
 
 	//see: http://stackoverflow.com/questions/33901/best-icalendar-library-for-java/17325369?noredirect=1#comment31110671_17325369
 	@Test
-	public void large_ical_file_stackoverflow_fix() throws Throwable {
+	void large_ical_file_stackoverflow_fix() throws Throwable {
 		StringBuilder sb = new StringBuilder();
 		sb.append("BEGIN:VCALENDAR\r\n");
 		for (int i = 0; i < 100000; i++) {
@@ -917,7 +913,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void vcal_AALARM_property() throws Throwable {
+	void vcal_AALARM_property() throws Throwable {
 		{
 			//@formatter:off
 			String ical =
@@ -959,7 +955,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void vcal_DALARM_property() throws Throwable {
+	void vcal_DALARM_property() throws Throwable {
 		{
 			//@formatter:off
 			String ical =
@@ -1001,7 +997,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void vcal_MALARM_property() throws Throwable {
+	void vcal_MALARM_property() throws Throwable {
 		{
 			//@formatter:off
 			String ical =
@@ -1044,7 +1040,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void vcal_PALARM_property() throws Throwable {
+	void vcal_PALARM_property() throws Throwable {
 		{
 			//@formatter:off
 			String ical =
@@ -1086,7 +1082,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void vcal_rrule() throws Throwable {
+	void vcal_rrule() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -1114,7 +1110,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void vcal_DAYLIGHT_true() throws Throwable {
+	void vcal_DAYLIGHT_true() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -1171,7 +1167,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void vcal_DAYLIGHT_false() throws Throwable {
+	void vcal_DAYLIGHT_false() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -1203,7 +1199,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void vcal_TZ_property() throws Throwable {
+	void vcal_TZ_property() throws Throwable {
 		//@formatter:off
 		String ical =
 		"BEGIN:VCALENDAR\r\n" +
@@ -1250,7 +1246,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void vcal_DCREATED_property() throws Throwable {
+	void vcal_DCREATED_property() throws Throwable {
 		{
 			//@formatter:off
 			String ical =
@@ -1291,7 +1287,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void marshal_as_raw_when_version_does_not_match() throws Throwable {
+	void marshal_as_raw_when_version_does_not_match() throws Throwable {
 		{
 			//@formatter:off
 			String ical =
@@ -1352,7 +1348,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void outlook2010() throws Throwable {
+	void outlook2010() throws Throwable {
 		ICalReader reader = read("outlook-2010.ics");
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 1, 3);
@@ -1490,7 +1486,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void example1() throws Throwable {
+	void example1() throws Throwable {
 		ICalReader reader = read("rfc5545-example1.ics");
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 1, 1);
@@ -1519,7 +1515,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void example2() throws Throwable {
+	void example2() throws Throwable {
 		ICalReader reader = read("rfc5545-example2.ics");
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 1, 1);
@@ -1611,7 +1607,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void example3() throws Throwable {
+	void example3() throws Throwable {
 		ICalReader reader = read("rfc5545-example3.ics");
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 1, 2);
@@ -1647,7 +1643,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void example4() throws Throwable {
+	void example4() throws Throwable {
 		ICalReader reader = read("rfc5545-example4.ics");
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 1, 1);
@@ -1694,7 +1690,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void example5() throws Throwable {
+	void example5() throws Throwable {
 		ICalReader reader = read("rfc5545-example5.ics");
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 1, 1);
@@ -1721,7 +1717,7 @@ public class ICalReaderTest {
 	}
 
 	@Test
-	public void example6() throws Throwable {
+	void example6() throws Throwable {
 		ICalReader reader = read("rfc5545-example6.ics");
 		ICalendar ical = reader.readNext();
 		assertSize(ical, 1, 1);

@@ -39,9 +39,9 @@
 
 package biweekly.util.com.google.ical.iter;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.util.DayOfWeek;
 import biweekly.util.com.google.ical.util.Predicate;
@@ -51,9 +51,9 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
 /**
  * @author mikesamuel+svn@gmail.com (Mike Samuel)
  */
-public class FiltersTest {
+class FiltersTest {
 	@Test
-	public void weekIntervalFilter() {
+	void weekIntervalFilter() {
 		// *s match those that are in the weeks that should pass the filter
 
 		Predicate<? super DateValue> f1 = Filters.weekIntervalFilter(2, DayOfWeek.MONDAY, new DateValueImpl(2005, 9, 11));

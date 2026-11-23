@@ -6,11 +6,11 @@ import static biweekly.util.TestUtils.assertIntEquals;
 import static biweekly.util.TestUtils.assertParseWarnings;
 import static biweekly.util.TestUtils.assertRegex;
 import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,9 +18,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -67,12 +66,9 @@ import biweekly.util.XmlUtils;
 /**
  * @author Michael Angstadt
  */
-public class BiweeklyTest {
-	@Rule
-	public TemporaryFolder folder = new TemporaryFolder();
-
+class BiweeklyTest {
 	@Test
-	public void parse_first() {
+	void parse_first() {
 		//@formatter:off
 		String icalStr =
 		"BEGIN:VCALENDAR\r\n" +
@@ -92,7 +88,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void parse_all() {
+	void parse_all() {
 		//@formatter:off
 		String icalStr =
 		"BEGIN:VCALENDAR\r\n" +
@@ -125,7 +121,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void parse_register() {
+	void parse_register() {
 		//@formatter:off
 		String icalStr =
 		"BEGIN:VCALENDAR\r\n" +
@@ -146,7 +142,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void parse_caretDecoding() {
+	void parse_caretDecoding() {
 		//@formatter:off
 		String icalStr =
 		"BEGIN:VCALENDAR\r\n" +
@@ -167,7 +163,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void parseXml_first() throws Throwable {
+	void parseXml_first() throws Throwable {
 		//@formatter:off
 		String xml =
 		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
@@ -198,7 +194,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void parseXml_all() throws Throwable {
+	void parseXml_all() throws Throwable {
 		//@formatter:off
 		String xml =
 		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
@@ -238,7 +234,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void parseXml_register() throws SAXException {
+	void parseXml_register() throws SAXException {
 		//@formatter:off
 		String xml =
 		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
@@ -266,14 +262,14 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void parseXml_invalid() throws Throwable {
+	void parseXml_invalid() throws Throwable {
 		String xml = "invalid-xml";
 		ChainingXmlMemoryParser c = Biweekly.parseXml(xml);
 		assertThrows(RuntimeException.class, c::first);
 	}
 
 	@Test
-	public void write_one() {
+	void write_one() {
 		ICalendar ical = new ICalendar();
 
 		//@formatter:off
@@ -290,7 +286,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void write_multiple() {
+	void write_multiple() {
 		ICalendar ical1 = new ICalendar();
 
 		ICalendar ical2 = new ICalendar();
@@ -323,7 +319,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void write_caretEncoding() throws Throwable {
+	void write_caretEncoding() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prodid");
 		ical.getProductId().addParameter("X-TEST", "the \"best\" app");
@@ -354,7 +350,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void write_foldLines() throws Exception {
+	void write_foldLines() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.setProductId((String) null);
 		ical.setUid((String) null);
@@ -393,7 +389,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void write_register() {
+	void write_register() {
 		ICalendar ical = new ICalendar();
 		ical.addProperty(new TestProperty(1));
 		ical.addComponent(new Party());
@@ -415,15 +411,15 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void write_file() throws Exception {
+	void write_file(@TempDir Path tempDir) throws Exception {
 		ICalendar ical = new ICalendar();
-		Path file = folder.newFile().toPath();
+		Path file = tempDir.resolve("temp.ics");
 		Biweekly.write(ical).go(file);
 		assertTrue(Files.size(file) > 0);
 	}
 
 	@Test
-	public void writeXml() throws Throwable {
+	void writeXml() throws Throwable {
 		ICalendar ical1 = new ICalendar();
 		ical1.setProductId((String) null);
 
@@ -466,7 +462,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void writeXml_version() throws Throwable {
+	void writeXml_version() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 
@@ -488,7 +484,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void writeXml_indent() throws Throwable {
+	void writeXml_indent() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 
@@ -511,7 +507,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void writeXml_register() throws Throwable {
+	void writeXml_register() throws Throwable {
 		ICalendar ical = new ICalendar();
 
 		ProductId prodId = new ProductId("value");
@@ -552,7 +548,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void writeJson_single() throws Throwable {
+	void writeJson_single() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId((String) null);
 
@@ -573,7 +569,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void writeJson_multiple() throws Throwable {
+	void writeJson_multiple() throws Throwable {
 		ICalendar ical1 = new ICalendar();
 		ical1.setProductId((String) null);
 
@@ -620,7 +616,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void writeJson_indent() throws Throwable {
+	void writeJson_indent() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId((String) null);
 
@@ -641,7 +637,7 @@ public class BiweeklyTest {
 	}
 
 	@Test
-	public void writeJson_register() throws Throwable {
+	void writeJson_register() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.setProductId((String) null);
 		ical.addProperty(new TestProperty(1));

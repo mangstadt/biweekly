@@ -2,14 +2,14 @@ package biweekly.io.scribe.property;
 
 import static biweekly.util.TestUtils.buildTimezone;
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalDataType;
 import biweekly.component.VTimezone;
@@ -50,7 +50,7 @@ import biweekly.util.ICalDate;
 /**
  * @author Michael Angstadt
  */
-public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimePropertyImpl> {
+class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimePropertyImpl> {
 	private final Date date = date(2013, 6, 11);
 	private final String dateStr = "20130611";
 	private final String dateStrExt = "2013-06-11";
@@ -79,14 +79,14 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 	}
 
 	@Test
-	public void dataType() {
+	void dataType() {
 		sensei.assertDataType(withDate).run(ICalDataType.DATE);
 		sensei.assertDataType(withDateTime).run(ICalDataType.DATE_TIME);
 		sensei.assertDataType(empty).run(ICalDataType.DATE_TIME);
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		assertDate(sensei.assertWriteText(withDate), dateStr);
 
 		//@formatter:off
@@ -102,7 +102,7 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText(dateStr).dataType(ICalDataType.DATE).run(hasDate);
 		sensei.assertParseText(datetimeStr).dataType(ICalDataType.DATE_TIME).run(hasDateTime);
 		sensei.assertParseText("invalid").dataType(ICalDataType.DATE_TIME).cannotParse(17);
@@ -110,7 +110,7 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		assertDate(sensei.assertWriteXml(withDate), "<date>" + dateStrExt + "</date>");
 
 		//@formatter:off
@@ -126,7 +126,7 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		sensei.assertParseXml("<date>" + dateStrExt + "</date>").run(hasDate);
 		sensei.assertParseXml("<date-time>" + datetimeStrExt + "</date-time>").run(hasDateTime);
 		sensei.assertParseXml("<date-time>invalid</date-time>").cannotParse(17);
@@ -134,7 +134,7 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		assertDate(sensei.assertWriteJson(withDate), dateStrExt);
 
 		//@formatter:off
@@ -150,7 +150,7 @@ public class DateOrDateTimePropertyScribeTest extends ScribeTest<DateOrDateTimeP
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		sensei.assertParseJson(dateStrExt).dataType(ICalDataType.DATE_TIME).run(hasDate);
 		sensei.assertParseJson(datetimeStrExt).dataType(ICalDataType.DATE_TIME).run(hasDateTime);
 		sensei.assertParseJson("invalid").dataType(ICalDataType.DATE_TIME).cannotParse(17);

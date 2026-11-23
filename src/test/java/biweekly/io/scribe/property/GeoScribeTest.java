@@ -3,10 +3,10 @@ package biweekly.io.scribe.property;
 import static biweekly.ICalVersion.V1_0;
 import static biweekly.ICalVersion.V2_0;
 import static biweekly.ICalVersion.V2_0_DEPRECATED;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.io.json.JCalValue;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -40,7 +40,7 @@ import biweekly.property.Geo;
 /**
  * @author Michael Angstadt
  */
-public class GeoScribeTest extends ScribeTest<Geo> {
+class GeoScribeTest extends ScribeTest<Geo> {
 	private final Geo withBoth = new Geo(12.34, 56.78);
 	private final Geo withLatitude = new Geo(12.34, null);
 	private final Geo withLongitude = new Geo(null, 56.78);
@@ -52,7 +52,7 @@ public class GeoScribeTest extends ScribeTest<Geo> {
 	}
 
 	@Test
-	public void writeText() {
+	void writeText() {
 		sensei.assertWriteText(withBoth).version(V1_0).run("12.34,56.78");
 		sensei.assertWriteText(withBoth).version(V2_0_DEPRECATED).run("12.34;56.78");
 		sensei.assertWriteText(withBoth).version(V2_0).run("12.34;56.78");
@@ -75,7 +75,7 @@ public class GeoScribeTest extends ScribeTest<Geo> {
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText("12.34,56.78").versions(V1_0).run(has(12.34, 56.78));
 		sensei.assertParseText("12.34;56.78").versions(V1_0).cannotParse(20);
 
@@ -89,7 +89,7 @@ public class GeoScribeTest extends ScribeTest<Geo> {
 	}
 
 	@Test
-	public void writeXml() {
+	void writeXml() {
 		sensei.assertWriteXml(withBoth).run("<latitude>12.34</latitude><longitude>56.78</longitude>");
 		sensei.assertWriteXml(withLatitude).run("<latitude>12.34</latitude><longitude>0.0</longitude>");
 		sensei.assertWriteXml(withLongitude).run("<latitude>0.0</latitude><longitude>56.78</longitude>");
@@ -98,7 +98,7 @@ public class GeoScribeTest extends ScribeTest<Geo> {
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		sensei.assertParseXml("<latitude>12.34</latitude><longitude>56.78</longitude>").run(has(12.34, 56.78));
 		sensei.assertParseXml("<latitude>invalid</latitude><longitude>56.78</longitude>").cannotParse(21);
 		sensei.assertParseXml("<latitude>12.34</latitude><longitude>invalid</longitude>").cannotParse(22);
@@ -108,7 +108,7 @@ public class GeoScribeTest extends ScribeTest<Geo> {
 	}
 
 	@Test
-	public void writeJson() {
+	void writeJson() {
 		sensei.assertWriteJson(withBoth).run(JCalValue.structured(12.34, 56.78));
 		sensei.assertWriteJson(withLatitude).run(JCalValue.structured(12.34, 0.0));
 		sensei.assertWriteJson(withLongitude).run(JCalValue.structured(0.0, 56.78));
@@ -117,7 +117,7 @@ public class GeoScribeTest extends ScribeTest<Geo> {
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		sensei.assertParseJson(JCalValue.structured(12.34, 56.78)).run(has(12.34, 56.78));
 		sensei.assertParseJson(JCalValue.structured(null, 56.78)).run(has(null, 56.78));
 		sensei.assertParseJson(JCalValue.structured(12.34, null)).run(has(12.34, null));

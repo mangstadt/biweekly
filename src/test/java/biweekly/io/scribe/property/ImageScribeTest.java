@@ -1,11 +1,11 @@
 package biweekly.io.scribe.property;
 
 import static biweekly.util.StringUtils.encodeBase64;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.ICalDataType;
 import biweekly.io.scribe.property.Sensei.Check;
@@ -39,7 +39,7 @@ import biweekly.property.Image;
 /**
  * @author Michael Angstadt
  */
-public class ImageScribeTest extends ScribeTest<Image> {
+class ImageScribeTest extends ScribeTest<Image> {
 	private final String url = "http://example.com/image.png";
 	private final byte[] data = "data".getBytes();
 	private final String base64Data = encodeBase64(data);
@@ -50,14 +50,14 @@ public class ImageScribeTest extends ScribeTest<Image> {
 	}
 
 	@Test
-	public void parseText() {
+	void parseText() {
 		sensei.assertParseText(url).dataType(ICalDataType.URI).run(hasUri(url));
 		sensei.assertParseText(base64Data).dataType(ICalDataType.BINARY).param("ENCODING", "BASE64").run(has(data));
 		sensei.assertParseText(base64DataInvalid).dataType(ICalDataType.BINARY).param("ENCODING", "BASE64").cannotParse(44);
 	}
 
 	@Test
-	public void parseXml() {
+	void parseXml() {
 		sensei.assertParseXml("<uri>" + url + "</uri>").run(hasUri(url));
 		sensei.assertParseXml("<binary>" + base64Data + "</binary>").run(has(data));
 		sensei.assertParseXml("<binary>" + base64DataInvalid + "</binary>").cannotParse(44);
@@ -65,7 +65,7 @@ public class ImageScribeTest extends ScribeTest<Image> {
 	}
 
 	@Test
-	public void parseJson() {
+	void parseJson() {
 		sensei.assertParseJson(url).dataType(ICalDataType.URI).run(hasUri(url));
 		sensei.assertParseJson(base64Data).dataType(ICalDataType.BINARY).run(has(data));
 		sensei.assertParseJson(base64DataInvalid).dataType(ICalDataType.BINARY).cannotParse(44);

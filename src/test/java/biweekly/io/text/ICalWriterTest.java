@@ -8,8 +8,8 @@ import static biweekly.util.TestUtils.assertValidate;
 import static biweekly.util.TestUtils.date;
 import static biweekly.util.TestUtils.each;
 import static biweekly.util.TestUtils.utc;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -18,9 +18,8 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.TimeZone;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import biweekly.ICalDataType;
 import biweekly.ICalVersion;
@@ -96,12 +95,9 @@ import biweekly.util.UtcOffset;
  * @author Michael Angstadt
  */
 @SuppressWarnings("resource")
-public class ICalWriterTest {
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
-
+class ICalWriterTest {
 	@Test
-	public void basic() throws Exception {
+	void basic() throws Exception {
 		ICalendar ical = new ICalendar();
 
 		VEvent event = new VEvent();
@@ -131,7 +127,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void escape_newlines() throws Exception {
+	void escape_newlines() throws Exception {
 		ICalendar ical = new ICalendar();
 
 		VEvent event = new VEvent();
@@ -161,7 +157,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void bad_parameter_value_chars() throws Exception {
+	void bad_parameter_value_chars() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProductId().addParameter("X-TEST", "\"test\"");
 
@@ -171,7 +167,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void caret_encoding() throws Exception {
+	void caret_encoding() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProductId().addParameter("X-TEST", "\"test\"");
 
@@ -194,7 +190,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void multiple() throws Exception {
+	void multiple() throws Exception {
 		StringWriter sw = new StringWriter();
 		ICalWriter writer = new ICalWriter(sw, V2_0);
 		writer.write(new ICalendar());
@@ -218,7 +214,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void no_property_marshaller() throws Exception {
+	void no_property_marshaller() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.addProperty(new TestProperty("value"));
 
@@ -228,7 +224,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void no_component_marshaller() throws Exception {
+	void no_component_marshaller() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.addComponent(new Party());
 
@@ -238,7 +234,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void bad_property_name() throws Exception {
+	void bad_property_name() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.addProperty(new TestProperty("value"));
 
@@ -249,7 +245,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void skipMeException() throws Exception {
+	void skipMeException() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new SkipMeProperty());
@@ -274,7 +270,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void override_marshaller() throws Exception {
+	void override_marshaller() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.setProductId("prod id");
 
@@ -297,7 +293,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void experimental_property() throws Exception {
+	void experimental_property() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.addExperimentalProperty("X-NUMBER", "1");
 		ical.addExperimentalProperty("X-NUMBER", "2");
@@ -322,7 +318,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void experimental_property_marshaller() throws Exception {
+	void experimental_property_marshaller() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.addProperty(new TestProperty("one"));
 		ical.addProperty(new TestProperty("two"));
@@ -348,7 +344,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void experimental_component() throws Exception {
+	void experimental_component() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.addExperimentalComponent("X-VPARTY");
 
@@ -372,7 +368,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void experimental_component_marshaller() throws Exception {
+	void experimental_component_marshaller() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.addComponent(new Party());
 
@@ -397,7 +393,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void data_types() throws Exception {
+	void data_types() throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.addProperty(new TestProperty("one"));
 		ical.addProperty(new TestProperty("2"));
@@ -423,12 +419,12 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void utf8() throws Exception {
+	void utf8(@TempDir Path tempDir) throws Exception {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new Summary("\u1e66ummary"));
 
-		Path file = tempFolder.newFile().toPath();
+		Path file = tempDir.resolve("test.ics");
 		ICalWriter writer = new ICalWriter(file, V2_0);
 		writer.write(ical);
 		writer.close();
@@ -446,7 +442,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_timezone_no_dates() throws Throwable {
+	void vcal_timezone_no_dates() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 
@@ -468,7 +464,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_timezone_one_daylight_one_date() throws Throwable {
+	void vcal_timezone_one_daylight_one_date() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new DateStart(utc(2014, 10, 7, 9, 34, 0)));
@@ -494,7 +490,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_timezone_one_daylight_two_dates() throws Throwable {
+	void vcal_timezone_one_daylight_two_dates() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new DateStart(utc(2014, 10, 7, 9, 34, 0)));
@@ -522,7 +518,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_timezone_standard_one_date() throws Throwable {
+	void vcal_timezone_standard_one_date() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new DateStart(utc(2014, 1, 7, 9, 34, 0)));
@@ -548,7 +544,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_timezone_standard_two_dates() throws Throwable {
+	void vcal_timezone_standard_two_dates() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new DateStart(utc(2014, 1, 7, 9, 34, 0)));
@@ -576,7 +572,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_timezone_standard_and_daylight() throws Throwable {
+	void vcal_timezone_standard_and_daylight() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new DateStart(utc(2014, 1, 7, 9, 34, 0)));
@@ -604,7 +600,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_timezone_standard_and_two_daylights() throws Throwable {
+	void vcal_timezone_standard_and_two_daylights() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.addProperty(new DateStart(utc(2014, 1, 7, 9, 34, 0)));
@@ -635,7 +631,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_timezone_no_daylight_component() throws Throwable {
+	void vcal_timezone_no_daylight_component() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 
@@ -664,7 +660,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_Organizer_to_Attendee() throws Throwable {
+	void vcal_Organizer_to_Attendee() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 
@@ -711,7 +707,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_DCREATED_property() throws Throwable {
+	void vcal_DCREATED_property() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 
@@ -757,7 +753,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void setGlobalTimezone() throws Throwable {
+	void setGlobalTimezone() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 
@@ -807,7 +803,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void example1() throws Throwable {
+	void example1() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setProductId("-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN");
@@ -831,7 +827,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void example2() throws Throwable {
+	void example2() throws Throwable {
 		TimeZone eastern = TimeZone.getTimeZone("America/New_York");
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
@@ -888,7 +884,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void example3() throws Throwable {
+	void example3() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setMethod("xyz");
@@ -924,7 +920,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void example4() throws Throwable {
+	void example4() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setProductId("-//ABC Corporation//NONSGML My Product//EN");
@@ -962,7 +958,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void example5() throws Throwable {
+	void example5() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setProductId("-//ABC Corporation//NONSGML My Product//EN");
@@ -984,7 +980,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void example6() throws Throwable {
+	void example6() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		ical.setProductId("-//RDU Software//NONSGML HandCal//EN");
@@ -1016,7 +1012,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_example1() throws Throwable {
+	void vcal_example1() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		{
@@ -1038,7 +1034,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_example2() throws Throwable {
+	void vcal_example2() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 		{
@@ -1056,7 +1052,7 @@ public class ICalWriterTest {
 	}
 
 	@Test
-	public void vcal_example3() throws Throwable {
+	void vcal_example3() throws Throwable {
 		ICalendar ical = new ICalendar();
 		ical.getProperties().clear();
 

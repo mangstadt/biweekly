@@ -4,10 +4,10 @@ import static biweekly.property.PropertySensei.assertCopy;
 import static biweekly.property.PropertySensei.assertEqualsMethod;
 import static biweekly.property.PropertySensei.assertNothingIsEqual;
 import static biweekly.util.TestUtils.assertValidate;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,7 +15,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -45,9 +45,9 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class AttachmentTest {
+class AttachmentTest {
 	@Test
-	public void constructors() throws Exception {
+	void constructors() throws Exception {
 		Attachment property = new Attachment("image/png", "data".getBytes());
 		assertEquals("image/png", property.getFormatType());
 		assertNull(property.getUri());
@@ -69,7 +69,7 @@ public class AttachmentTest {
 	}
 
 	@Test
-	public void set_value() {
+	void set_value() {
 		Attachment property = new Attachment("image/png", "data".getBytes());
 
 		property.setUri("uri");
@@ -104,7 +104,7 @@ public class AttachmentTest {
 	}
 
 	@Test
-	public void validate() {
+	void validate() {
 		Attachment attach = new Attachment(null, (byte[]) null);
 		assertValidate(attach).run(26);
 
@@ -120,7 +120,7 @@ public class AttachmentTest {
 	}
 
 	@Test
-	public void toStringValues() {
+	void toStringValues() {
 		Attachment property = new Attachment(null, (String) null);
 		assertFalse(property.toStringValues().isEmpty());
 
@@ -132,7 +132,7 @@ public class AttachmentTest {
 	}
 
 	@Test
-	public void copy() {
+	void copy() {
 		Attachment original = new Attachment("image/png", "uri");
 		assertCopy(original);
 
@@ -145,7 +145,7 @@ public class AttachmentTest {
 	}
 
 	@Test
-	public void equals() {
+	void equals() {
 		List<ICalProperty> properties = new ArrayList<>();
 
 		Attachment property = new Attachment(null, (String) null);

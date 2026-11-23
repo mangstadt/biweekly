@@ -1,8 +1,8 @@
 package biweekly.io;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import org.junit.jupiter.api.Test;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -32,9 +32,9 @@ import org.junit.Test;
 /**
  * @author Michael Angstadt
  */
-public class DefaultGlobalTimezoneIdResolverTest {
+class DefaultGlobalTimezoneIdResolverTest {
 	@Test
-	public void resolve() {
+	void resolve() {
 		DefaultGlobalTimezoneIdResolver resolver = new DefaultGlobalTimezoneIdResolver();
 
 		assertEquals("America/New_York", resolver.resolve("America/New_York").getID());

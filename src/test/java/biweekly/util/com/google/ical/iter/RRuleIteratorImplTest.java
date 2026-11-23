@@ -41,16 +41,16 @@ package biweekly.util.com.google.ical.iter;
 
 import static biweekly.util.TestUtils.assertIterator;
 import static biweekly.util.TestUtils.date;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import biweekly.util.DayOfWeek;
 import biweekly.util.Frequency;
@@ -67,12 +67,12 @@ import biweekly.util.com.google.ical.values.DateValueImpl;
  * @author Michael Angstadt
  */
 //@formatter:off
-public class RRuleIteratorImplTest {
+class RRuleIteratorImplTest {
 	private static final TimeZone PST = TimeZone.getTimeZone("America/Los_Angeles");
 	private static final TimeZone UTC = TimeUtils.utcTimezone();
 
 	@Test
-	public void frequencyLimits() {
+	void frequencyLimits() {
 		Recurrence.Builder rb = new Recurrence.Builder(Frequency.SECONDLY);
 		for (int i = 0; i < 60; i++){
 			rb.bySecond(i);
@@ -84,7 +84,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void simpleDaily() {
+	void simpleDaily() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).build();
 		DateValue start = new DateValueImpl(2006, 1, 20);
 		DateValue[] expected = {
@@ -99,7 +99,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void simpleWeekly() {
+	void simpleWeekly() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY).build();
 		DateValue start = new DateValueImpl(2006, 1, 20);
 		DateValue[] expected = {
@@ -114,7 +114,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void simpleMonthly() {
+	void simpleMonthly() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY).build();
 		DateValue start = new DateValueImpl(2006, 1, 20);
 		DateValue[] expected = {
@@ -129,7 +129,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void simpleYearly() {
+	void simpleYearly() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY).build();
 		DateValue start = new DateValueImpl(2006, 1, 20);
 		DateValue[] expected = {
@@ -145,7 +145,7 @@ public class RRuleIteratorImplTest {
 
 	// from section 4.3.10
 	@Test
-	public void multipleByParts() {
+	void multipleByParts() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.interval(2)
 			.byMonth(1)
@@ -167,7 +167,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void countWithInterval() {
+	void countWithInterval() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
 			.count(10)
 			.interval(2)
@@ -191,7 +191,7 @@ public class RRuleIteratorImplTest {
 
 	// from section 4.6.5
 	@Test
-	public void negativeOffsets() {
+	void negativeOffsets() {
 		{
 			Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 				.byDay(-1, DayOfWeek.SUNDAY)
@@ -243,7 +243,7 @@ public class RRuleIteratorImplTest {
 
 	// from section 4.8.5.4
 	@Test
-	public void dailyFor10Occ() {
+	void dailyFor10Occ() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
 			.count(10)
 		.build();
@@ -265,7 +265,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void dailyUntilDec4() {
+	void dailyUntilDec4() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
 			.until(new ICalDate(date(1997, 12, 4), false))
 		.build();
@@ -284,7 +284,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void everyOtherDayForever() {
+	void everyOtherDayForever() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
 			.interval(2)
 		.build();
@@ -301,7 +301,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void every10Days5Occ() {
+	void every10Days5Occ() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
 			.interval(10)
 			.count(5)
@@ -319,7 +319,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void everyDayInJanuaryFor3Years() {
+	void everyDayInJanuaryFor3Years() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.until(date(2000, 1, 31, 9, 0, 0, UTC))
 			.byMonth(1)
@@ -336,7 +336,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void weeklyFor10Occ() {
+	void weeklyFor10Occ() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 			.count(10)
 		.build();
@@ -358,7 +358,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void weeklyUntilDec24() {
+	void weeklyUntilDec24() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 			.until(new ICalDate(date(1997, 12, 24), false))
 		.build();
@@ -387,7 +387,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void everyOtherWeekForever() {
+	void everyOtherWeekForever() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 			.interval(2)
 			.workweekStarts(DayOfWeek.SUNDAY)
@@ -409,7 +409,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void weeklyOnTuesdayAndThursdayFor5Weeks() {
+	void weeklyOnTuesdayAndThursdayFor5Weeks() {
 		/*
 		 * If UNTIL date does not match start date, then until date treated as
 		 * occurring on midnight.
@@ -485,7 +485,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void everyOtherWeekOnMWFUntilDec24() {
+	void everyOtherWeekOnMWFUntilDec24() {
 		{
 			Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 				.interval(2)
@@ -610,7 +610,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void everyOtherWeekOnTuThFor8Occ() {
+	void everyOtherWeekOnTuThFor8Occ() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 			.interval(2)
 			.count(8)
@@ -633,7 +633,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void monthlyOnThe1stFridayFor10Occ() {
+	void monthlyOnThe1stFridayFor10Occ() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.count(10)
 			.byDay(1, DayOfWeek.FRIDAY)
@@ -656,7 +656,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void monthlyOnThe1stFridayUntilDec24() {
+	void monthlyOnThe1stFridayUntilDec24() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.until(date(1997, 12, 24, 0, 0, 0, UTC))
 			.byDay(1, DayOfWeek.FRIDAY)
@@ -673,7 +673,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void everyOtherMonthOnThe1stAndLastSundayFor10Occ() {
+	void everyOtherMonthOnThe1stAndLastSundayFor10Occ() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.interval(2)
 			.count(10)
@@ -698,7 +698,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void monthlyOnTheSecondToLastMondayOfTheMonthFor6Months() {
+	void monthlyOnTheSecondToLastMondayOfTheMonthFor6Months() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.count(6)
 			.byDay(-2, DayOfWeek.MONDAY)
@@ -717,7 +717,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void monthlyOnTheThirdToLastDay() {
+	void monthlyOnTheThirdToLastDay() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.byMonthDay(-3)
 		.build();
@@ -735,7 +735,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void monthlyOnThe2ndAnd15thFor10Occ() {
+	void monthlyOnThe2ndAnd15thFor10Occ() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.count(10)
 			.byMonthDay(2, 15)
@@ -758,7 +758,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void monthlyOnTheFirstAndLastFor10Occ() {
+	void monthlyOnTheFirstAndLastFor10Occ() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.count(10)
 			.byMonthDay(-1, 1)
@@ -781,7 +781,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void every18MonthsOnThe10thThru15thFor10Occ() {
+	void every18MonthsOnThe10thThru15thFor10Occ() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.interval(18)
 			.count(10)
@@ -805,7 +805,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void everyTuesdayEveryOtherMonth() {
+	void everyTuesdayEveryOtherMonth() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.interval(2)
 			.byDay(DayOfWeek.TUESDAY)
@@ -836,7 +836,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void yearlyInJuneAndJulyFor10Occurrences() {
+	void yearlyInJuneAndJulyFor10Occurrences() {
 		/*
 		 * Note: Since none of the BYDAY, BYMONTHDAY or BYYEARDAY components are
 		 * specified, the day is gotten from DTSTART
@@ -863,7 +863,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void everyOtherYearOnJanuaryFebruaryAndMarchFor10Occurrences() {
+	void everyOtherYearOnJanuaryFebruaryAndMarchFor10Occurrences() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.interval(2)
 			.count(10)
@@ -887,7 +887,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void every3rdYearOnThe1st100thAnd200thDayFor10Occurrences() {
+	void every3rdYearOnThe1st100thAnd200thDayFor10Occurrences() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.interval(3)
 			.count(10)
@@ -911,7 +911,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void every20thMondayOfTheYearForever() {
+	void every20thMondayOfTheYearForever() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.byDay(20, DayOfWeek.MONDAY)
 		.build();
@@ -926,7 +926,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void mondayOfWeekNumber20WhereTheDefaultStartOfTheWeekIsMonday() {
+	void mondayOfWeekNumber20WhereTheDefaultStartOfTheWeekIsMonday() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.byWeekNo(20)
 			.byDay(DayOfWeek.MONDAY)
@@ -942,7 +942,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void everyThursdayInMarchForever() {
+	void everyThursdayInMarchForever() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.byMonth(3)
 			.byDay(DayOfWeek.THURSDAY)
@@ -966,7 +966,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void everyThursdayButOnlyDuringJuneJulyAndAugustForever() {
+	void everyThursdayButOnlyDuringJuneJulyAndAugustForever() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.byDay(DayOfWeek.THURSDAY)
 			.byMonth(6, 7, 8)
@@ -1018,7 +1018,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void everyFridayThe13thForever() {
+	void everyFridayThe13thForever() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.byDay(DayOfWeek.FRIDAY)
 			.byMonthDay(13)
@@ -1036,7 +1036,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void theFirstSaturdayThatFollowsTheFirstSundayOfTheMonthForever() {
+	void theFirstSaturdayThatFollowsTheFirstSundayOfTheMonthForever() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.byDay(DayOfWeek.SATURDAY)
 			.byMonthDay(7, 8, 9, 10, 11, 12, 13)
@@ -1059,7 +1059,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void every4YearsThe1stTuesAfterAMonInNovForever() {
+	void every4YearsThe1stTuesAfterAMonInNovForever() {
 		// US Presidential Election Day
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.interval(4)
@@ -1078,7 +1078,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void the3rdInstanceIntoTheMonthOfOneOfTuesWedThursForNext3Months() {
+	void the3rdInstanceIntoTheMonthOfOneOfTuesWedThursForNext3Months() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.count(3)
 			.byDay(DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY)
@@ -1095,7 +1095,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void the2ndToLastWeekdayOfTheMonth() {
+	void the2ndToLastWeekdayOfTheMonth() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
 			.bySetPos(-2)
@@ -1115,7 +1115,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void every3HoursFrom900AmTo500PmOnASpecificDay() {
+	void every3HoursFrom900AmTo500PmOnASpecificDay() {
 		Recurrence recur = new Recurrence.Builder(Frequency.HOURLY)
 			.interval(3)
 			.until(date(1997, 9, 3, 9, 0, 0, UTC))
@@ -1137,7 +1137,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void every15MinutesFor6Occurrences() {
+	void every15MinutesFor6Occurrences() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MINUTELY)
 			.interval(15)
 			.count(6)
@@ -1156,7 +1156,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void everyHourAndAHalfFor4Occurrences() {
+	void everyHourAndAHalfFor4Occurrences() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MINUTELY)
 			.interval(90)
 			.count(4)
@@ -1173,7 +1173,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void evert20MinutesFrom900AMto440PMEveryDay() {
+	void evert20MinutesFrom900AMto440PMEveryDay() {
 		{
 			Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
 				.byHour(9, 10, 11, 12, 13, 14, 15, 16)
@@ -1232,7 +1232,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void anExampleWhereTheDaysGeneratedMakesADifferenceBecauseOfWkst() {
+	void anExampleWhereTheDaysGeneratedMakesADifferenceBecauseOfWkst() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 			.interval(2)
 			.count(4)
@@ -1251,7 +1251,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void anExampleWhereTheDaysGeneratedMakesADifferenceBecauseOfWkst2() {
+	void anExampleWhereTheDaysGeneratedMakesADifferenceBecauseOfWkst2() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 			.interval(2)
 			.count(4)
@@ -1270,7 +1270,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void withByDayAndByMonthDayFilter() {
+	void withByDayAndByMonthDayFilter() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 			.count(4)
 			.byDay(DayOfWeek.TUESDAY, DayOfWeek.SUNDAY)
@@ -1288,7 +1288,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void annuallyInAugustOnTuesAndSunBetween13thAnd20th() {
+	void annuallyInAugustOnTuesAndSunBetween13thAnd20th() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.count(4)
 			.byDay(DayOfWeek.TUESDAY, DayOfWeek.SUNDAY)
@@ -1307,7 +1307,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void lastDayOfTheYearIsASundayOrTuesday() {
+	void lastDayOfTheYearIsASundayOrTuesday() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.count(4)
 			.byDay(DayOfWeek.TUESDAY, DayOfWeek.SUNDAY)
@@ -1325,7 +1325,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void lastWeekdayOfMonth() {
+	void lastWeekdayOfMonth() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.bySetPos(-1)
 			.byDay(-1, DayOfWeek.MONDAY)
@@ -1350,7 +1350,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void monthsThatStartOrEndOnFriday() {
+	void monthsThatStartOrEndOnFriday() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.byMonthDay(1, -1)
 			.byDay(DayOfWeek.FRIDAY)
@@ -1370,7 +1370,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void monthsThatStartOrEndOnFridayOnEvenWeeks() {
+	void monthsThatStartOrEndOnFridayOnEvenWeeks() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 			.interval(2)
 			.byMonthDay(1, -1)
@@ -1400,7 +1400,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void centuriesThatAreNotLeapYears() {
+	void centuriesThatAreNotLeapYears() {
 		/*
 		 * I can't think of a good reason anyone would want to specify both a month
 		 * day and a year day, so here's a really contrived example.
@@ -1422,7 +1422,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void nextCalledWithoutHasNext() {
+	void nextCalledWithoutHasNext() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY).build();
 		DateValue start = new DateValueImpl(2000, 1, 1);
 		
@@ -1433,7 +1433,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void noInstancesGenerated() {
+	void noInstancesGenerated() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
 			.until(new ICalDate(date(1999, 1, 1), false))
 		.build();
@@ -1447,7 +1447,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void noInstancesGenerated2() {
+	void noInstancesGenerated2() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.byMonth(2)
 			.byMonthDay(30)
@@ -1459,7 +1459,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void noInstancesGenerated3() {
+	void noInstancesGenerated3() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.interval(4)
 			.byYearDay(366)
@@ -1471,7 +1471,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void lastWeekdayOfMarch() {
+	void lastWeekdayOfMarch() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.byMonth(3)
 			.byDay(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
@@ -1489,7 +1489,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void firstWeekdayOfMarch() {
+	void firstWeekdayOfMarch() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.byMonth(3)
 			.byDay(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
@@ -1533,7 +1533,7 @@ public class RRuleIteratorImplTest {
 	 * to be the first one with at least four days.
 	 */
 	@Test
-	public void firstWeekdayOfFirstWeekOfYear() {
+	void firstWeekdayOfFirstWeekOfYear() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.byWeekNo(1)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
@@ -1551,7 +1551,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void firstSundayOfTheYear1() {
+	void firstSundayOfTheYear1() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.byWeekNo(1)
 			.byDay(DayOfWeek.SUNDAY)
@@ -1568,7 +1568,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void firstSundayOfTheYear2() {
+	void firstSundayOfTheYear2() {
 		// TODO(msamuel): is this right?
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.byDay(1, DayOfWeek.SUNDAY)
@@ -1585,7 +1585,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void firstSundayOfTheYear3() {
+	void firstSundayOfTheYear3() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.byDay(DayOfWeek.SUNDAY)
 			.byYearDay(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
@@ -1603,7 +1603,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void firstWeekdayOfYear() {
+	void firstWeekdayOfYear() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
 			.bySetPos(1)
@@ -1620,7 +1620,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void lastWeekdayOfFirstWeekOfYear() {
+	void lastWeekdayOfFirstWeekOfYear() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.byWeekNo(1)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
@@ -1646,7 +1646,7 @@ public class RRuleIteratorImplTest {
 	// 25 26 27 28 29 30 31
 
 	@Test
-	public void secondWeekday1() {
+	void secondWeekday1() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
 			.bySetPos(2)
@@ -1671,7 +1671,7 @@ public class RRuleIteratorImplTest {
 	// 27 28 29 30 31
 
 	@Test
-	public void secondWeekday2() {
+	void secondWeekday2() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 			.byDay(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
 			.bySetPos(2)
@@ -1688,7 +1688,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void byYearDayAndByDayFilterInteraction() {
+	void byYearDayAndByDayFilterInteraction() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.byYearDay(15)
 			.byDay(3, DayOfWeek.MONDAY)
@@ -1705,7 +1705,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void byDayWithNegWeekNoAsFilter() {
+	void byDayWithNegWeekNoAsFilter() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MONTHLY)
 			.byMonthDay(26)
 			.byDay(-1, DayOfWeek.FRIDAY)
@@ -1722,7 +1722,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void lastWeekOfTheYear() {
+	void lastWeekOfTheYear() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.byWeekNo(-1)
 		.build();
@@ -1740,7 +1740,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void userSubmittedTest1() {
+	void userSubmittedTest1() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 			.interval(2)
 			.workweekStarts(DayOfWeek.WEDNESDAY)
@@ -1763,7 +1763,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void advanceTo() {
+	void advanceTo() {
 		//a bunch of tests grabbed from above with an advance-to date tacked on
 		
 		{
@@ -2049,7 +2049,7 @@ public class RRuleIteratorImplTest {
 	 * A testcase that yielded dupes due to BYSETPOS evilness
 	 */
 	@Test
-	public void caseThatYieldedDupes() {
+	void caseThatYieldedDupes() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 			.workweekStarts(DayOfWeek.SUNDAY)
 			.interval(1)
@@ -2094,7 +2094,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void hourlyWithByday() {
+	void hourlyWithByday() {
 		Recurrence recur = new Recurrence.Builder(Frequency.HOURLY)
 			.interval(6)
 			.byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
@@ -2113,7 +2113,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void hourlyWithBydayAcrossMonthBoundary() {
+	void hourlyWithBydayAcrossMonthBoundary() {
 		Recurrence recur = new Recurrence.Builder(Frequency.HOURLY)
 			.interval(6)
 			.byDay(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
@@ -2132,7 +2132,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void hourlyWithByMonthday() {
+	void hourlyWithByMonthday() {
 		Recurrence recur = new Recurrence.Builder(Frequency.HOURLY)
 			.interval(6)
 			.byMonthDay(9)
@@ -2151,7 +2151,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void weirdByMonth() {
+	void weirdByMonth() {
 		Recurrence recur = new Recurrence.Builder(Frequency.YEARLY)
 			.interval(1)
 			.byMonth(2, 7, 4, 9, 9, 6, 11, 1)
@@ -2176,7 +2176,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void monkeyByMinute1() {
+	void monkeyByMinute1() {
 		Recurrence recur = new Recurrence.Builder(Frequency.DAILY)
 			.interval(1)
 			.byMinute(19, 27, 38, 1, 5)
@@ -2192,7 +2192,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void monkeyByMinute2() {
+	void monkeyByMinute2() {
 		Recurrence recur = new Recurrence.Builder(Frequency.MINUTELY)
 			.workweekStarts(DayOfWeek.MONDAY)
 			.interval(1)
@@ -2220,7 +2220,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void monkeyBySecondSetPos() {
+	void monkeyBySecondSetPos() {
 		Recurrence recur = new Recurrence.Builder(Frequency.WEEKLY)
 			.count(9)
 			.interval(1)
@@ -2245,7 +2245,7 @@ public class RRuleIteratorImplTest {
 	}
 
 	@Test
-	public void monkeyHourly() {
+	void monkeyHourly() {
 		Recurrence recur = new Recurrence.Builder(Frequency.HOURLY)
 			.interval(1)
 			.byMonthDay(12, 10, -4)
