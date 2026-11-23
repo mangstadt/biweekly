@@ -1,6 +1,7 @@
 package biweekly.issues;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.TimeZone;
 
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import biweekly.Biweekly;
 import biweekly.ICalendar;
+import biweekly.component.VEvent;
 
 /**
  * @author Michael Angstadt
@@ -29,10 +31,10 @@ class Issue121 {
 		//@formatter:on
 
 		ICalendar ical = Biweekly.parse(input).first();
-		try {
-			ical.getEvents().get(0).getDateIterator(TimeZone.getDefault());
-		} catch (AssertionError e) {
-			assertEquals("96", e.getMessage());
-		}
+		VEvent event = ical.getEvents().get(0);
+		TimeZone tz = TimeZone.getDefault();
+
+		AssertionError e = assertThrows(AssertionError.class, () -> event.getDateIterator(tz));
+		assertEquals("96", e.getMessage());
 	}
 }
