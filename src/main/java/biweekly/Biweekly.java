@@ -175,7 +175,7 @@ import biweekly.util.IOUtils;
  * 
  * <pre class="brush:java">
  * String icalStr = ...
- * List&lt;List&lt;String&gt;&gt; warnings = new ArrayList&lt;List&lt;String&gt;&gt;();
+ * List&lt;List&lt;String&gt;&gt; warnings = new ArrayList&lt;&gt;();
  * List&lt;ICalendar&gt; icals = Biweekly.parse(icalStr).warnings(warnings).all();
  * int i = 0;
  * for (List&lt;String&gt; icalWarnings : warnings) {

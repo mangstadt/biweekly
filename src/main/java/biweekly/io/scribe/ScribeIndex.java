@@ -137,7 +137,7 @@ import biweekly.property.Xml;
  * //inject into a reader class
  * ICalReader reader = new ICalReader(...);
  * reader.setScribeIndex(index);
- * List&lt;ICalendar&gt; icals = new ArrayList&lt;ICalendar&gt;();
+ * List&lt;ICalendar&gt; icals = new ArrayList&lt;&gt;();
  * ICalendar ical;
  * while ((ical = reader.readNext()) != null) {
  *   icals.add(ical);
