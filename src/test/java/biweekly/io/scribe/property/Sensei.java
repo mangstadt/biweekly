@@ -159,7 +159,7 @@ public class Sensei<T extends ICalProperty> {
 	 */
 	public class DataTypeTest {
 		protected final T property;
-		private ICalVersion versions[] = ICalVersion.values();
+		private ICalVersion[] versions = ICalVersion.values();
 
 		public DataTypeTest(T property) {
 			this.property = property;
@@ -188,7 +188,7 @@ public class Sensei<T extends ICalProperty> {
 	 */
 	public class PrepareParamsTest {
 		protected final T property;
-		private ICalVersion versions[] = ICalVersion.values();
+		private ICalVersion[] versions = ICalVersion.values();
 		private TimezoneInfo tzinfo = new TimezoneInfo();
 		private ICalParameters expected = new ICalParameters();
 		private ICalComponent parent;
@@ -470,7 +470,7 @@ public class Sensei<T extends ICalProperty> {
 	public class ParseTextTest extends ParseTest<ParseTextTest> {
 		private final String value;
 		private ICalDataType dataType = scribe.defaultDataType(V2_0);
-		private ICalVersion versions[] = ICalVersion.values();
+		private ICalVersion[] versions = ICalVersion.values();
 
 		/**
 		 * @param value the text to parse

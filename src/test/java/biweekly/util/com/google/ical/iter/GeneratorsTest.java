@@ -70,7 +70,7 @@ class GeneratorsTest {
 			DateValue start = new DateValueImpl(2006, 1, 1);
 			Generator generator = Generators.byYearDayGenerator(yearDays, start);
 			DTBuilder builder = new DTBuilder(start);
-			DateValue expected[] = {
+			DateValue[] expected = {
 				new DateValueImpl(2006, 1, 1),
 				new DateValueImpl(2006, 1, 5),
 			};
@@ -83,7 +83,7 @@ class GeneratorsTest {
 			DateValue start = new DateValueImpl(2006, 1, 2);
 			Generator generator = Generators.byYearDayGenerator(yearDays, start);
 			DTBuilder builder = new DTBuilder(start);
-			DateValue expected[] = {
+			DateValue[] expected = {
 				new DateValueImpl(2006, 1, 1),
 				new DateValueImpl(2006, 1, 5),
 			};
@@ -96,7 +96,7 @@ class GeneratorsTest {
 			DateValue start = new DateValueImpl(2006, 1, 6);
 			Generator generator = Generators.byYearDayGenerator(yearDays, start);
 			DTBuilder builder = new DTBuilder(start);
-			DateValue expected[] = {
+			DateValue[] expected = {
 			};
 			
 			run(generator, builder, expected);
@@ -107,7 +107,7 @@ class GeneratorsTest {
 			DateValue start = new DateValueImpl(2006, 1, 6);
 			Generator generator = Generators.byYearDayGenerator(yearDays, start);
 			DTBuilder builder = new DTBuilder(start);
-			DateValue expected[] = {
+			DateValue[] expected = {
 			};
 			
 			run(generator, builder, expected);
@@ -118,7 +118,7 @@ class GeneratorsTest {
 			DateValue start = new DateValueImpl(2006, 2, 1);
 			Generator generator = Generators.byYearDayGenerator(yearDays, start);
 			DTBuilder builder = new DTBuilder(start);
-			DateValue expected[] = {
+			DateValue[] expected = {
 			};
 			
 			run(generator, builder, expected);
@@ -129,7 +129,7 @@ class GeneratorsTest {
 			DateValue start = new DateValueImpl(2006, 12, 1);
 			Generator generator = Generators.byYearDayGenerator(yearDays, start);
 			DTBuilder builder = new DTBuilder(start);
-			DateValue expected[] = {
+			DateValue[] expected = {
 				new DateValueImpl(2006, 12, 31)
 			};
 			
@@ -141,7 +141,7 @@ class GeneratorsTest {
 			DateValue start = new DateValueImpl(2006, 4, 1);
 			Generator generator = Generators.byYearDayGenerator(yearDays, start);
 			DTBuilder builder = new DTBuilder(start);
-			DateValue expected[] = {
+			DateValue[] expected = {
 				new DateValueImpl(2006, 4, 10)
 			};
 			
@@ -516,7 +516,7 @@ class GeneratorsTest {
 	@Test
 	void byYearGenerator() throws Exception {
 		{
-			int years[] = { 1066, 1492, 1876, 1975, 2006 };
+			int[] years = { 1066, 1492, 1876, 1975, 2006 };
 			
 			{
 				DateValue start = new DateValueImpl(2006, 1, 1);
@@ -539,7 +539,7 @@ class GeneratorsTest {
 		}
 		
 		{
-			int years[] = { 1066, 1492, 1876, 1975, 2006 };
+			int[] years = { 1066, 1492, 1876, 1975, 2006 };
 			
 			{
 				DateValue start = new DateValueImpl(1066, 7, 1);
@@ -1088,7 +1088,7 @@ class GeneratorsTest {
 
 	@Test
 	void singleByMinuteGenerator() throws Exception {
-		int minutes[] = {};
+		int[] minutes = {};
 		DateValue start = new DateTimeValueImpl(2011, 8, 8, 5, 30, 17);
 		Generator generator = Generators.byMinuteGenerator(minutes, start);
 		DTBuilder builder = new DTBuilder(start);
@@ -1142,7 +1142,7 @@ class GeneratorsTest {
 
 	@Test
 	void bySecondGenerator() throws Exception {
-		int seconds[] = { 25, 48, 2 };
+		int[] seconds = { 25, 48, 2 };
 		DateValue start = new DateTimeValueImpl(2011, 8, 8, 19, 1, 23);
 		Generator generator = Generators.bySecondGenerator(seconds, start);
 		DTBuilder builder = new DTBuilder(start);
@@ -1161,7 +1161,7 @@ class GeneratorsTest {
 
 	@Test
 	void singleBySecondGenerator() throws Exception {
-		int seconds[] = {};
+		int[] seconds = {};
 		DateValue start = new DateTimeValueImpl(2011, 8, 8, 19, 1, 23);
 		Generator generator = Generators.bySecondGenerator(seconds, start);
 		DTBuilder builder = new DTBuilder(start);

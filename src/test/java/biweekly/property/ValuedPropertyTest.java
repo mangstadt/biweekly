@@ -101,7 +101,7 @@ class ValuedPropertyTest {
 			new ValuedProperty<>(1)
 		);
 
-		Class<?> parameterTypes[] = new Class<?>[]{Object.class};
+		Class<?>[] parameterTypes = new Class<?>[]{Object.class};
 		assertEqualsMethod(ValuedProperty.class, parameterTypes, "value")
 		.constructor(parameterTypes, (Object)null).test()
 		.constructor(parameterTypes, "value").test();

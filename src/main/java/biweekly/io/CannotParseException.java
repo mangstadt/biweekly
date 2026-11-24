@@ -36,7 +36,7 @@ import biweekly.Messages;
 public class CannotParseException extends RuntimeException {
 	private static final long serialVersionUID = 8299420302297241326L;
 	private final Integer code;
-	private final Object args[];
+	private final Object[] args;
 
 	/**
 	 * Creates a new "cannot parse" exception.

@@ -22,7 +22,7 @@ class Issue85 {
 		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		df.setTimeZone(TimeZone.getTimeZone("UTC"));
 		
-		String files[] = { "issue85.ics", "issue85-1980.ics" };
+		String[] files = { "issue85.ics", "issue85-1980.ics" };
 		for (String file : files) {
 			ICalendar ical = Biweekly.parse(Issue85.class.getResourceAsStream(file)).first();
 			VEvent event = ical.getEvents().get(0);

@@ -468,7 +468,7 @@ public class TestUtils {
 		private List<ICalComponent> components = new ArrayList<>();
 		private Map<ICalProperty, Integer[]> propertyWarnings = new IntegerArrayMap<>();
 		private Map<ICalComponent, Integer[]> componentWarnings = new IntegerArrayMap<>();
-		private ICalVersion versions[] = ICalVersion.values();
+		private ICalVersion[] versions = ICalVersion.values();
 
 		public CompValidateChecker(ICalComponent component) {
 			this.component = component;
