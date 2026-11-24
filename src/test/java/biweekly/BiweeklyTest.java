@@ -21,7 +21,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import biweekly.component.ICalComponent;
 import biweekly.io.CannotParseException;
@@ -234,7 +233,7 @@ class BiweeklyTest {
 	}
 
 	@Test
-	void parseXml_register() throws SAXException {
+	void parseXml_register() {
 		//@formatter:off
 		String xml =
 		"<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
@@ -350,7 +349,7 @@ class BiweeklyTest {
 	}
 
 	@Test
-	void write_foldLines() throws Exception {
+	void write_foldLines() {
 		ICalendar ical = new ICalendar();
 		ical.setProductId((String) null);
 		ical.setUid((String) null);

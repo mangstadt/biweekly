@@ -157,7 +157,7 @@ class ICalWriterTest {
 	}
 
 	@Test
-	void bad_parameter_value_chars() throws Exception {
+	void bad_parameter_value_chars() {
 		ICalendar ical = new ICalendar();
 		ical.getProductId().addParameter("X-TEST", "\"test\"");
 
@@ -214,7 +214,7 @@ class ICalWriterTest {
 	}
 
 	@Test
-	void no_property_marshaller() throws Exception {
+	void no_property_marshaller() {
 		ICalendar ical = new ICalendar();
 		ical.addProperty(new TestProperty("value"));
 
@@ -224,7 +224,7 @@ class ICalWriterTest {
 	}
 
 	@Test
-	void no_component_marshaller() throws Exception {
+	void no_component_marshaller() {
 		ICalendar ical = new ICalendar();
 		ical.addComponent(new Party());
 
@@ -234,7 +234,7 @@ class ICalWriterTest {
 	}
 
 	@Test
-	void bad_property_name() throws Exception {
+	void bad_property_name() {
 		ICalendar ical = new ICalendar();
 		ical.addProperty(new TestProperty("value"));
 

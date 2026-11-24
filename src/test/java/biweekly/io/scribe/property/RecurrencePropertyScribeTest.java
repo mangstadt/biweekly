@@ -152,7 +152,7 @@ public class RecurrencePropertyScribeTest extends ScribeTest<RecurrenceProperty>
 	}
 
 	@Test
-	void writeText_vcal() throws Exception {
+	void writeText_vcal() {
 		RecurrenceProperty prop = new RecurrenceProperty((Recurrence) null);
 		String expected, actual;
 

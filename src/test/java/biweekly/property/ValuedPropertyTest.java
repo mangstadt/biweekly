@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  */
 class ValuedPropertyTest {
 	@Test
-	void constructors() throws Exception {
+	void constructors() {
 		ValuedProperty<String> property = new ValuedProperty<>((String) null);
 		assertNull(property.getValue());
 

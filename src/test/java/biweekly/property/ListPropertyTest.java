@@ -45,7 +45,7 @@ import org.junit.jupiter.api.Test;
  */
 class ListPropertyTest {
 	@Test
-	void constructors() throws Exception {
+	void constructors() {
 		ListProperty<String> property = new ListProperty<>();
 		assertEquals(Arrays.asList(), property.getValues());
 

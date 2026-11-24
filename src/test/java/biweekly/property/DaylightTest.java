@@ -45,7 +45,7 @@ import biweekly.util.UtcOffset;
  */
 class DaylightTest {
 	@Test
-	void constructors() throws Exception {
+	void constructors() {
 		Daylight property = new Daylight();
 		assertFalse(property.isDaylight());
 		assertNull(property.getOffset());

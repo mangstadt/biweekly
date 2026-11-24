@@ -2,7 +2,6 @@ package biweekly.io.json;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonStreamContext;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
@@ -116,13 +115,13 @@ public class JCalPrettyPrinter extends DefaultPrettyPrinter {
 	}
 
 	@Override
-	public void writeStartArray(JsonGenerator gen) throws IOException, JsonGenerationException {
+	public void writeStartArray(JsonGenerator gen) throws IOException {
 		updateIndenter(gen.getOutputContext().getParent());
 		super.writeStartArray(gen);
 	}
 
 	@Override
-	public void writeEndArray(JsonGenerator gen, int numValues) throws IOException, JsonGenerationException {
+	public void writeEndArray(JsonGenerator gen, int numValues) throws IOException {
 		updateIndenter(gen.getOutputContext().getParent());
 		super.writeEndArray(gen, numValues);
 	}

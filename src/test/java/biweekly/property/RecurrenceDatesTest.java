@@ -53,7 +53,7 @@ import biweekly.util.Period;
  */
 class RecurrenceDatesTest {
 	@Test
-	void constructors() throws Exception {
+	void constructors() {
 		RecurrenceDates property = new RecurrenceDates();
 		assertEquals(Arrays.asList(), property.getDates());
 		assertEquals(Arrays.asList(), property.getPeriods());

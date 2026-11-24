@@ -2,17 +2,16 @@ package biweekly.io.json;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+
 import biweekly.ICalendar;
 import biweekly.io.TimezoneAssignment;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.property.ICalProperty;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -55,7 +54,7 @@ public class JCalSerializer extends StdSerializer<ICalendar> {
 	}
 
 	@Override
-	public void serialize(ICalendar value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
+	public void serialize(ICalendar value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
 		@SuppressWarnings("resource")
 		JCalWriter writer = new JCalWriter(gen);
 		writer.setScribeIndex(getScribeIndex());

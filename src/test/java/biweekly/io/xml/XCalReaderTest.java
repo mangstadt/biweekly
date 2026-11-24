@@ -1082,7 +1082,7 @@ class XCalReaderTest {
 		assertNull(reader.readNext());
 	}
 
-	private XCalReader read(String file) throws SAXException, IOException {
+	private XCalReader read(String file) {
 		return new XCalReader(getClass().getResourceAsStream(file));
 	}
 

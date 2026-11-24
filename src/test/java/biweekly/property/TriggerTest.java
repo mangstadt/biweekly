@@ -46,7 +46,7 @@ import biweekly.parameter.Related;
  */
 class TriggerTest {
 	@Test
-	void constructors() throws Exception {
+	void constructors() {
 		Trigger property = new Trigger((Date) null);
 		assertNull(property.getDate());
 		assertNull(property.getDuration());

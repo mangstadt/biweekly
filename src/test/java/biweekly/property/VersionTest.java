@@ -99,7 +99,7 @@ class VersionTest {
 	}
 
 	@Test
-	void constructors() throws Exception {
+	void constructors() {
 		Version property = new Version((String) null);
 		assertNull(property.getMinVersion());
 		assertNull(property.getMaxVersion());

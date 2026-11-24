@@ -819,11 +819,11 @@ class XCalWriterTest {
 		assertExample(ical, "rfc6321-example2.xml");
 	}
 
-	private void assertOutput(String expected) throws SAXException, IOException {
+	private void assertOutput(String expected) throws SAXException {
 		assertOutput(XmlUtils.toDocument(expected));
 	}
 
-	private void assertOutput(Document expected) throws SAXException, IOException {
+	private void assertOutput(Document expected) throws SAXException {
 		String actual = sw.toString();
 		assertXMLEqual(expected, XmlUtils.toDocument(actual));
 	}

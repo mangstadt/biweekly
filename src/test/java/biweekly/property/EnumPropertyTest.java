@@ -52,7 +52,7 @@ import biweekly.ICalVersion;
  */
 class EnumPropertyTest {
 	@Test
-	void constructors() throws Exception {
+	void constructors() {
 		EnumPropertyImpl property = new EnumPropertyImpl();
 		assertNull(property.getValue());
 

@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
  */
 class Issue106 {
 	@Test
-	void test() throws Exception {
+	void test() {
 		String input =
 		"BEGIN:VCALENDAR\n" +
 		"VERSION:2.0\n" +
@@ -69,7 +69,7 @@ class Issue106 {
 	}
 
 	@Test
-	void regex_workaround() throws Exception {
+	void regex_workaround() {
 		String input =
 		"BEGIN:VCALENDAR\n" +
 		"VERSION:2.0\n" +

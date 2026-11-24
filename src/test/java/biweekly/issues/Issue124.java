@@ -25,7 +25,7 @@ import biweekly.util.Recurrence;
  */
 class Issue124 {
 	@Test
-	void test() throws Exception {
+	void test() {
 		String input = "INVALID";
 		Recurrence recur = parseRecurrence(input);
 

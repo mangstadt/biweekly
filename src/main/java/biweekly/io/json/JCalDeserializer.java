@@ -2,15 +2,14 @@ package biweekly.io.json;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+
 import biweekly.ICalendar;
 import biweekly.io.scribe.ScribeIndex;
 import biweekly.io.scribe.property.ICalPropertyScribe;
 import biweekly.property.ICalProperty;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
 
 /*
  Copyright (c) 2013-2024, Michael Angstadt
@@ -46,7 +45,7 @@ public class JCalDeserializer extends JsonDeserializer<ICalendar> {
 	private ScribeIndex index = new ScribeIndex();
 
 	@Override
-	public ICalendar deserialize(JsonParser parser, DeserializationContext context) throws IOException, JsonProcessingException {
+	public ICalendar deserialize(JsonParser parser, DeserializationContext context) throws IOException {
 		@SuppressWarnings("resource")
 		JCalReader reader = new JCalReader(parser);
 		reader.setScribeIndex(index);

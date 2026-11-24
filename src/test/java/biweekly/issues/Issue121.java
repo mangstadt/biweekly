@@ -17,7 +17,7 @@ import biweekly.component.VEvent;
  */
 class Issue121 {
 	@Test
-	void test() throws Exception {
+	void test() {
 		//@formatter:off
 		String input =
 		"BEGIN:VCALENDAR\n" +

@@ -47,7 +47,7 @@ import biweekly.ICalDataType;
  */
 class RawPropertyTest {
 	@Test
-	void constructors() throws Exception {
+	void constructors() {
 		RawProperty property = new RawProperty("name", "value");
 		assertEquals(new LaciToken("name"), property.getName());
 		assertEquals("value", property.getValue());

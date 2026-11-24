@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
  */
 class RequestStatusTest {
 	@Test
-	void constructors() throws Exception {
+	void constructors() {
 		RequestStatus property = new RequestStatus((String) null);
 		assertNull(property.getStatusCode());
 		assertNull(property.getDescription());

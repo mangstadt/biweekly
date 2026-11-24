@@ -46,7 +46,7 @@ import biweekly.util.ICalDate;
  */
 class DateOrDateTimePropertyTest {
 	@Test
-	void constructors() throws Exception {
+	void constructors() {
 		DateOrDateTimeProperty property = new DateOrDateTimeProperty((Date) null);
 		assertNull(property.getValue());
 

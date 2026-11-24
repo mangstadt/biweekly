@@ -26,7 +26,7 @@ class Issue131 {
 
 	@Test
 	@Disabled("Test fails.")
-	void test() throws Exception {
+	void test() {
 		Date start = date(2024, 1, 1, 0, 0, 0);
 		Recurrence rrule = new Recurrence.Builder(Frequency.HOURLY).build();
 

@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  */
 class GeoTest {
 	@Test
-	void constructors() throws Exception {
+	void constructors() {
 		Geo property = new Geo(null, null);
 		assertNull(property.getLatitude());
 		assertNull(property.getLongitude());

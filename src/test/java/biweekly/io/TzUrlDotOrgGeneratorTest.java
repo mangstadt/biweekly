@@ -81,7 +81,7 @@ class TzUrlDotOrgGeneratorTest {
 	}
 
 	@Test
-	void url_bad() throws Exception {
+	void url_bad() {
 		TzUrlDotOrgGenerator generator = new TzUrlDotOrgGenerator(false);
 		TimeZone tz = new SimpleTimeZone(0, "spaces not allowed");
 		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> generator.generate(tz));

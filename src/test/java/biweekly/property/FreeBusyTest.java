@@ -50,7 +50,7 @@ import biweekly.util.Period;
  */
 class FreeBusyTest {
 	@Test
-	void constructors() throws Exception {
+	void constructors() {
 		FreeBusy property = new FreeBusy();
 		assertEquals(Arrays.asList(), property.getValues());
 	}

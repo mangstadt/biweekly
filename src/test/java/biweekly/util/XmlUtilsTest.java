@@ -63,7 +63,7 @@ class XmlUtilsTest {
 	//@formatter:on
 
 	@Test
-	void createDocument() throws Exception {
+	void createDocument() {
 		Document document = XmlUtils.createDocument();
 		assertNotNull(document);
 	}
@@ -112,7 +112,7 @@ class XmlUtilsTest {
 	}
 
 	@Test
-	void toDocument_invalid_xml() throws Exception {
+	void toDocument_invalid_xml() {
 		String xml = "not-xml";
 		assertThrows(SAXException.class, () -> XmlUtils.toDocument(xml));
 	}
