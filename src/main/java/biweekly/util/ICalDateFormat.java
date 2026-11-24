@@ -329,7 +329,8 @@ public enum ICalDateFormat {
 
 			int positive = m.group(10).equals("+") ? 1 : -1;
 
-			int offsetHour, offsetMinute;
+			int offsetHour;
+			int offsetMinute;
 			if (m.group(12) != null) {
 				offsetHour = parseInt(12);
 				offsetMinute = 0;

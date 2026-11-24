@@ -282,7 +282,8 @@ final class HeapElement {
 	 */
 	static final Comparator<HeapElement> CMP = new Comparator<HeapElement>() {
 		public int compare(HeapElement a, HeapElement b) {
-			long ac = a.comparable(), bc = b.comparable();
+			long ac = a.comparable();
+			long bc = b.comparable();
 			return ac < bc ? -1 : ac == bc ? 0 : 1;
 		}
 	};

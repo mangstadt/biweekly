@@ -52,7 +52,8 @@ import biweekly.parameter.Feature;
  * p.11</a>
  */
 public class Conference extends ICalProperty {
-	private String uri, text;
+	private String uri;
+	private String text;
 
 	/**
 	 * Creates a conference property.

@@ -64,6 +64,7 @@ import biweekly.component.ICalComponent;
  * requestStatus.setDescription("Success");
  * event.setRequestStatus(requestStatus);
  * </pre>
+ * 
  * @author Michael Angstadt
  * @see <a href="http://tools.ietf.org/html/rfc5546#section-3.6">RFC 5546
  * Section 3.6</a>
@@ -73,7 +74,9 @@ import biweekly.component.ICalComponent;
  * p.134-6</a>
  */
 public class RequestStatus extends ICalProperty {
-	private String statusCode, description, exceptionText;
+	private String statusCode;
+	private String description;
+	private String exceptionText;
 
 	/**
 	 * Creates a request status property.

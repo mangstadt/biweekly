@@ -173,7 +173,9 @@ final class Generators {
 	 */
 	static Generator serialDayGenerator(final int interval, final DateValue dtStart) {
 		return new Generator() {
-			int year, month, date;
+			int year;
+			int month;
+			int date;
 			/** ndays in the last month encountered */
 			int nDays;
 

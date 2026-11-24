@@ -48,7 +48,9 @@ package biweekly.util.com.google.ical.values;
  * @author Michael Angstadt
  */
 public class DateTimeValueImpl extends DateValueImpl implements DateTimeValue {
-	private final int hour, minute, second;
+	private final int hour;
+	private final int minute;
+	private final int second;
 
 	/**
 	 * Creates a new date-time value.

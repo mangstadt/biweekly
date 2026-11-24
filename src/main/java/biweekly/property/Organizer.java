@@ -63,7 +63,9 @@ import biweekly.component.VTodo;
  * p.106-7</a>
  */
 public class Organizer extends ICalProperty {
-	private String uri, email, name;
+	private String uri;
+	private String email;
+	private String name;
 
 	/**
 	 * Creates an organizer property

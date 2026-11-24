@@ -72,7 +72,9 @@ import biweekly.parameter.Role;
  * @see <a href="http://www.imc.org/pdi/vcal-10.doc">vCal 1.0 p.25-7</a>
  */
 public class Attendee extends ICalProperty {
-	private String name, email, uri;
+	private String name;
+	private String email;
+	private String uri;
 	private Role role;
 	private ParticipationLevel participationLevel;
 	private ParticipationStatus status;

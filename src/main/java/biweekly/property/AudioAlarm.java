@@ -39,7 +39,8 @@ import biweekly.component.VAlarm;
  * @see VAlarm#audio
  */
 public class AudioAlarm extends VCalAlarmProperty {
-	private String contentId, uri;
+	private String contentId;
+	private String uri;
 	private byte[] data;
 
 	public AudioAlarm() {

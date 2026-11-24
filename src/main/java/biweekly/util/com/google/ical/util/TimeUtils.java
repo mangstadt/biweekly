@@ -93,7 +93,8 @@ public class TimeUtils {
 			return time;
 		}
 
-		TimeZone epochTz, dateTimeValueTz;
+		TimeZone epochTz;
+		TimeZone dateTimeValueTz;
 		if (sense > 0) {
 			//time is in UTC; convert to time in zone provided
 			epochTz = ZULU;

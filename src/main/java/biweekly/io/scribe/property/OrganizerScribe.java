@@ -67,7 +67,8 @@ public class OrganizerScribe extends ICalPropertyScribe<Organizer> {
 			parameters.remove(ICalParameters.CN, name);
 		}
 
-		String uri = null, email = null;
+		String uri = null;
+		String email = null;
 		int colon = value.indexOf(':');
 		if (colon == 6) {
 			String scheme = value.substring(0, colon);

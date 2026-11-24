@@ -64,7 +64,8 @@ public class Version extends ICalProperty {
 	public static final VersionNumber VCAL = new VersionNumber(ICalVersion.V1_0.getVersion());
 	public static final VersionNumber ICAL = new VersionNumber(ICalVersion.V2_0.getVersion());
 
-	private VersionNumber minVersion, maxVersion;
+	private VersionNumber minVersion;
+	private VersionNumber maxVersion;
 
 	/**
 	 * Creates a new version property.

@@ -44,8 +44,10 @@ import biweekly.util.UtcOffset;
 public class Daylight extends ICalProperty {
 	private boolean daylight;
 	private UtcOffset offset;
-	private ICalDate start, end;
-	private String standardName, daylightName;
+	private ICalDate start;
+	private ICalDate end;
+	private String standardName;
+	private String daylightName;
 
 	/**
 	 * Creates a daylight savings property which states that the timezone does

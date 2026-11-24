@@ -58,7 +58,9 @@ public class JCalPrettyPrinter extends DefaultPrettyPrinter {
 	 */
 	private static final Indenter INLINE_INDENTER = new DefaultPrettyPrinter.FixedSpaceIndenter();
 
-	private Indenter propertyIndenter, arrayIndenter, objectIndenter;
+	private Indenter propertyIndenter;
+	private Indenter arrayIndenter;
+	private Indenter objectIndenter;
 
 	public JCalPrettyPrinter() {
 		propertyIndenter = INLINE_INDENTER;

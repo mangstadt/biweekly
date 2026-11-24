@@ -48,7 +48,9 @@ package biweekly.util.com.google.ical.values;
  * @author Michael Angstadt
  */
 public class DateValueImpl implements DateValue {
-	private final int year, month, day;
+	private final int year;
+	private final int month;
+	private final int day;
 
 	/**
 	 * Creates a new date value.

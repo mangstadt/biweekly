@@ -81,7 +81,8 @@ final class IntSet {
 	 */
 	int[] toIntArray() {
 		int[] out = new int[size()];
-		int a = 0, b = out.length;
+		int a = 0;
+		int b = out.length;
 		for (int i = -1; (i = ints.nextSetBit(i + 1)) >= 0;) {
 			int n = decode(i);
 			if (n < 0) {

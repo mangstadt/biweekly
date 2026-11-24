@@ -68,8 +68,14 @@ import biweekly.io.ICalTimeZone;
 public final class DateTimeComponents implements Comparable<DateTimeComponents>, Serializable {
 	private static final long serialVersionUID = 7668029303206402368L;
 	private static final Pattern regex = Pattern.compile("^(\\d{4})-?(\\d{2})-?(\\d{2})(T(\\d{2}):?(\\d{2}):?(\\d{2})(Z?))?.*");
-	private final int year, month, date, hour, minute, second;
-	private final boolean hasTime, utc;
+	private final int year;
+	private final int month;
+	private final int date;
+	private final int hour;
+	private final int minute;
+	private final int second;
+	private final boolean hasTime;
+	private final boolean utc;
 
 	/**
 	 * Parses the components out of a date-time string.

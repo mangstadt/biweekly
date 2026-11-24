@@ -437,7 +437,8 @@ public class ICalTimeZone extends TimeZone {
 		List<DateValue> dateCache = observanceDateCache.computeIfAbsent(observance, k -> new ArrayList<>());
 
 		if (dateCache.isEmpty()) {
-			DateValue prev = null, cur = null;
+			DateValue prev = null;
+			DateValue cur = null;
 			boolean stopped = false;
 			RecurrenceIterator it = createIterator(observance);
 			while (it.hasNext()) {
@@ -467,7 +468,8 @@ public class ICalTimeZone extends TimeZone {
 			 */
 			//it.advanceTo(last);
 
-			DateValue prev = null, cur = null;
+			DateValue prev = null;
+			DateValue cur = null;
 			boolean stopped = false;
 			while (it.hasNext()) {
 				cur = it.next();
@@ -720,8 +722,10 @@ public class ICalTimeZone extends TimeZone {
 	 * Holds the timezone observance information of a particular date.
 	 */
 	public static class Boundary {
-		private final DateTimeValue observanceInStart, observanceAfterStart;
-		private final Observance observanceIn, observanceAfter;
+		private final DateTimeValue observanceInStart;
+		private final DateTimeValue observanceAfterStart;
+		private final Observance observanceIn;
+		private final Observance observanceAfter;
 
 		public Boundary(DateTimeValue observanceInStart, Observance observanceIn, DateTimeValue observanceAfterStart, Observance observanceAfter) {
 			this.observanceInStart = observanceInStart;

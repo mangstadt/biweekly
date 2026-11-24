@@ -38,7 +38,8 @@ import biweekly.component.VAlarm;
  * @see VAlarm#email
  */
 public class EmailAlarm extends VCalAlarmProperty {
-	private String email, note;
+	private String email;
+	private String note;
 
 	public EmailAlarm(String email) {
 		this.email = email;

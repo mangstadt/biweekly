@@ -194,7 +194,9 @@ public class XCalReader extends StreamReader {
 	private class ReadThread extends Thread {
 		private final SAXResult result;
 		private final Transformer transformer;
-		private volatile boolean finished = false, started = false, closed = false;
+		private volatile boolean finished = false;
+		private volatile boolean started = false;
+		private volatile boolean closed = false;
 
 		public ReadThread() {
 			setName(getClass().getSimpleName());
@@ -243,7 +245,8 @@ public class XCalReader extends StreamReader {
 		private final StringBuilder characterBuffer = new StringBuilder();
 		private final LinkedList<ICalComponent> componentStack = new LinkedList<>();
 
-		private Element propertyElement, parent;
+		private Element propertyElement;
+		private Element parent;
 		private QName paramName;
 		private ICalComponent curComponent;
 		private ICalParameters parameters;
