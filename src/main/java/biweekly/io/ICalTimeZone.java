@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -110,31 +109,27 @@ public class ICalTimeZone extends TimeZone {
 		List<DaylightSavingsTime> daylights = component.getDaylightSavingsTime();
 		List<StandardTime> standards = component.getStandardTimes();
 
-		int numObservances = standards.size() + daylights.size();
-		List<Observance> sortedObservances = new ArrayList<>(numObservances);
+		//@formatter:off
+		return Collections.unmodifiableList(Stream.concat(daylights.stream(), standards.stream())
+			.sorted(this::compareObservances)
+		.collect(Collectors.toList()));
+		//@formatter:on
+	}
 
-		sortedObservances.addAll(standards);
-		sortedObservances.addAll(daylights);
+	private int compareObservances(Observance left, Observance right) {
+		ICalDate startLeft = valueOf(left.getDateStart());
+		ICalDate startRight = valueOf(right.getDateStart());
+		if (startLeft == null && startRight == null) {
+			return 0;
+		}
+		if (startLeft == null) {
+			return -1;
+		}
+		if (startRight == null) {
+			return 1;
+		}
 
-		Collections.sort(sortedObservances, new Comparator<Observance>() {
-			public int compare(Observance left, Observance right) {
-				ICalDate startLeft = valueOf(left.getDateStart());
-				ICalDate startRight = valueOf(right.getDateStart());
-				if (startLeft == null && startRight == null) {
-					return 0;
-				}
-				if (startLeft == null) {
-					return -1;
-				}
-				if (startRight == null) {
-					return 1;
-				}
-
-				return startLeft.getRawComponents().compareTo(startRight.getRawComponents());
-			}
-		});
-
-		return Collections.unmodifiableList(sortedObservances);
+		return startLeft.getRawComponents().compareTo(startRight.getRawComponents());
 	}
 
 	@Override

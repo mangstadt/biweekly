@@ -116,11 +116,7 @@ public class RecurrenceIteratorFactory {
 	 * @return the iterable
 	 */
 	public static RecurrenceIterable createRecurrenceIterable(final Recurrence rrule, final DateValue dtStart, final TimeZone tzid) {
-		return new RecurrenceIterable() {
-			public RecurrenceIterator iterator() {
-				return createRecurrenceIterator(rrule, dtStart, tzid);
-			}
-		};
+		return () -> createRecurrenceIterator(rrule, dtStart, tzid);
 	}
 
 	/**

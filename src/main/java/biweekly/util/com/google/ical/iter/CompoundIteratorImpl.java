@@ -280,11 +280,9 @@ final class HeapElement {
 	/**
 	 * Compares two heap elements by comparing their heads.
 	 */
-	static final Comparator<HeapElement> CMP = new Comparator<HeapElement>() {
-		public int compare(HeapElement a, HeapElement b) {
-			long ac = a.comparable();
-			long bc = b.comparable();
-			return ac < bc ? -1 : ac == bc ? 0 : 1;
-		}
+	static final Comparator<HeapElement> CMP = (a, b) -> {
+		long ac = a.comparable();
+		long bc = b.comparable();
+		return ac < bc ? -1 : ac == bc ? 0 : 1;
 	};
 }
