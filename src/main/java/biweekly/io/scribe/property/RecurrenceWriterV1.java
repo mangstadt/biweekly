@@ -2,6 +2,9 @@ package biweekly.io.scribe.property;
 
 import static biweekly.io.scribe.property.ICalPropertyScribe.date;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import biweekly.io.WriteContext;
 import biweekly.property.RecurrenceProperty;
 import biweekly.util.ByDay;
@@ -30,89 +33,75 @@ class RecurrenceWriterV1 {
 			return "";
 		}
 
-		StringBuilder sb = new StringBuilder();
-
 		Integer interval = recur.getInterval();
 		if (interval == null) {
 			interval = 1;
 		}
 
+		String prefix;
+		Stream<String> values;
+
 		switch (frequency) {
 		case YEARLY:
 			if (!recur.getByMonth().isEmpty()) {
-				sb.append("YM").append(interval);
-				for (Integer month : recur.getByMonth()) {
-					sb.append(' ').append(month);
-				}
+				prefix = "YM" + interval;
+				values = recur.getByMonth().stream().map(Object::toString);
 			} else {
-				sb.append("YD").append(interval);
-				for (Integer day : recur.getByYearDay()) {
-					sb.append(' ').append(day);
-				}
+				prefix = "YD" + interval;
+				values = recur.getByYearDay().stream().map(Object::toString);
 			}
 			break;
 
 		case MONTHLY:
 			if (!recur.getByMonthDay().isEmpty()) {
-				sb.append("MD").append(interval);
-				for (Integer day : recur.getByMonthDay()) {
-					sb.append(' ').append(writeVCalInt(day));
-				}
+				prefix = "MD" + interval;
+				values = recur.getByMonthDay().stream().map(this::writeVCalInt);
 			} else {
-				sb.append("MP").append(interval);
-				for (ByDay byDay : recur.getByDay()) {
-					DayOfWeek day = byDay.getDay();
-					Integer prefix = byDay.getNum();
-					if (prefix == null) {
-						prefix = 1;
-					}
-
-					sb.append(' ').append(writeVCalInt(prefix)).append(' ').append(day.getAbbr());
-				}
+				prefix = "MP" + interval;
+				values = recur.getByDay().stream().map(this::writeByDay);
 			}
 			break;
 
 		case WEEKLY:
-			sb.append("W").append(interval);
-			for (ByDay byDay : recur.getByDay()) {
-				sb.append(' ').append(byDay.getDay().getAbbr());
-			}
+			prefix = "W" + interval;
+			values = recur.getByDay().stream().map(ByDay::getDay).map(DayOfWeek::getAbbr);
 			break;
 
 		case DAILY:
-			sb.append("D").append(interval);
+			prefix = "D" + interval;
+			values = Stream.empty();
 			break;
 
 		case HOURLY:
-			sb.append("M").append(interval * 60);
+			prefix = "M" + (interval * 60);
+			values = Stream.empty();
 			break;
 
 		case MINUTELY:
-			sb.append("M").append(interval);
+			prefix = "M" + interval;
+			values = Stream.empty();
 			break;
 
 		default:
 			return "";
 		}
 
-		writeCountOrUntil(recur, property, sb);
+		String suffix = writeCountOrUntil(recur, property);
 
-		return sb.toString();
+		return Stream.concat(Stream.of(prefix), Stream.concat(values, Stream.of(suffix))).collect(Collectors.joining(" "));
 	}
 
-	private void writeCountOrUntil(Recurrence recur, RecurrenceProperty property, StringBuilder sb) {
+	private String writeCountOrUntil(Recurrence recur, RecurrenceProperty property) {
 		Integer count = recur.getCount();
 		ICalDate until = recur.getUntil();
-		sb.append(' ');
 
 		if (count != null) {
-			sb.append('#').append(count);
-		} else if (until != null) {
-			String dateStr = date(until, property, context).extended(false).write();
-			sb.append(dateStr);
-		} else {
-			sb.append("#0"); //infinite
+			return "#" + count;
 		}
+		if (until != null) {
+			return date(until, property, context).extended(false).write();
+		}
+		return "#0"; //infinite
 	}
 
 	private String writeVCalInt(Integer value) {
@@ -125,5 +114,14 @@ class RecurrenceWriterV1 {
 		}
 
 		return value.toString();
+	}
+
+	private String writeByDay(ByDay byDay) {
+		DayOfWeek day = byDay.getDay();
+		Integer prefix = byDay.getNum();
+		if (prefix == null) {
+			prefix = 1;
+		}
+		return writeVCalInt(prefix) + " " + day.getAbbr();
 	}
 }
