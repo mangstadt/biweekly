@@ -54,6 +54,7 @@ import biweekly.parameter.ICalParameters;
 import biweekly.property.ICalProperty;
 import biweekly.property.Version;
 import biweekly.property.Xml;
+import biweekly.util.ClearableStringBuilder;
 import biweekly.util.XmlUtils;
 
 /*
@@ -173,6 +174,7 @@ public class XCalReader extends StreamReader {
 			try {
 				threadBlock.put(lock);
 			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
 				return null;
 			}
 		}
@@ -181,6 +183,7 @@ public class XCalReader extends StreamReader {
 		try {
 			readerBlock.take();
 		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 			return null;
 		}
 
@@ -233,6 +236,7 @@ public class XCalReader extends StreamReader {
 				try {
 					readerBlock.put(lock);
 				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
 					//ignore
 				}
 			}
@@ -242,7 +246,7 @@ public class XCalReader extends StreamReader {
 	private class ContentHandlerImpl extends DefaultHandler {
 		private final Document DOC = XmlUtils.createDocument();
 		private final XCalStructure structure = new XCalStructure();
-		private final StringBuilder characterBuffer = new StringBuilder();
+		private final ClearableStringBuilder characterBuffer = new ClearableStringBuilder();
 		private final LinkedList<ICalComponent> componentStack = new LinkedList<>();
 
 		private Element propertyElement;
@@ -259,99 +263,18 @@ public class XCalReader extends StreamReader {
 		@Override
 		public void startElement(String namespace, String localName, String qName, Attributes attributes) throws SAXException {
 			QName qname = new QName(namespace, localName);
-			String textContent = emptyCharacterBuffer();
+			String textContent = characterBuffer.getAndClear();
 
-			if (structure.isEmpty()) {
-				//<icalendar>
-				if (ICALENDAR.equals(qname)) {
-					structure.push(ElementType.icalendar);
-				}
+			//ignore all XML until a <icalendar> element is read
+			if (!isInsideICalendarElement(qname)) {
 				return;
 			}
 
 			ElementType parentType = structure.peek();
-			ElementType typeToPush = null;
-			if (parentType != null) {
-				switch (parentType) {
+			ElementType typeToPush = (parentType == null) ? null : processStartElement(parentType, qname, attributes);
 
-				case icalendar:
-					//<vcalendar>
-					if (VCALENDAR.equals(qname)) {
-						ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(localName, ICalVersion.V2_0);
-						ICalComponent component = scribe.emptyInstance();
-
-						curComponent = component;
-						readICal = (ICalendar) component;
-						typeToPush = ElementType.component;
-					}
-					break;
-
-				case component:
-					if (PROPERTIES.equals(qname)) {
-						//<properties>
-						typeToPush = ElementType.properties;
-					} else if (COMPONENTS.equals(qname)) {
-						//<components>
-						componentStack.add(curComponent);
-						curComponent = null;
-
-						typeToPush = ElementType.components;
-					}
-					break;
-
-				case components:
-					//start component element
-					if (XCAL_NS.equals(namespace)) {
-						ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(localName, ICalVersion.V2_0);
-						curComponent = scribe.emptyInstance();
-
-						ICalComponent parent = componentStack.getLast();
-						parent.addComponent(curComponent);
-
-						typeToPush = ElementType.component;
-					}
-					break;
-
-				case properties:
-					//start property element
-					propertyElement = createElement(namespace, localName, attributes);
-					parameters = new ICalParameters();
-					parent = propertyElement;
-					typeToPush = ElementType.property;
-					break;
-
-				case property:
-					//<parameters>
-					if (PARAMETERS.equals(qname)) {
-						typeToPush = ElementType.parameters;
-					}
-					break;
-
-				case parameters:
-					//inside of <parameters>
-					if (XCAL_NS.equals(namespace)) {
-						paramName = qname;
-						typeToPush = ElementType.parameter;
-					}
-					break;
-
-				case parameter:
-					//inside of a parameter element
-					if (XCAL_NS.equals(namespace)) {
-						typeToPush = ElementType.parameterValue;
-					}
-					break;
-				case parameterValue:
-					//should never have child elements
-					break;
-				}
-			}
-
-			//append element to property element
-			if (propertyElement != null && typeToPush != ElementType.property && typeToPush != ElementType.parameters && !structure.isUnderParameters()) {
-				if (textContent.length() > 0) {
-					parent.appendChild(DOC.createTextNode(textContent));
-				}
+			if (shouldElementBeAppendedToPropertyElement(typeToPush)) {
+				appendNonEmptyTextContentToParent(textContent);
 
 				Element element = createElement(namespace, localName, attributes);
 				parent.appendChild(element);
@@ -361,125 +284,229 @@ public class XCalReader extends StreamReader {
 			structure.push(typeToPush);
 		}
 
+		private boolean isInsideICalendarElement(QName qname) {
+			if (!structure.isEmpty()) {
+				return true;
+			}
+
+			if (ICALENDAR.equals(qname)) {
+				structure.push(ElementType.icalendar);
+			}
+
+			return false;
+		}
+
+		private ElementType processStartElement(ElementType parentType, QName qname, Attributes attributes) {
+			switch (parentType) {
+
+			case icalendar:
+				//<vcalendar>
+				if (VCALENDAR.equals(qname)) {
+					ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(qname.getLocalPart(), ICalVersion.V2_0);
+					ICalComponent component = scribe.emptyInstance();
+
+					curComponent = component;
+					readICal = (ICalendar) component;
+					return ElementType.component;
+				}
+				break;
+
+			case component:
+				if (PROPERTIES.equals(qname)) {
+					//<properties>
+					return ElementType.properties;
+				}
+				if (COMPONENTS.equals(qname)) {
+					//<components>
+					componentStack.add(curComponent);
+					curComponent = null;
+
+					return ElementType.components;
+				}
+				break;
+
+			case components:
+				//start component element
+				if (XCAL_NS.equals(qname.getNamespaceURI())) {
+					ICalComponentScribe<? extends ICalComponent> scribe = index.getComponentScribe(qname.getLocalPart(), ICalVersion.V2_0);
+					curComponent = scribe.emptyInstance();
+
+					componentStack.getLast().addComponent(curComponent);
+
+					return ElementType.component;
+				}
+				break;
+
+			case properties:
+				//start property element
+				propertyElement = createElement(qname.getNamespaceURI(), qname.getLocalPart(), attributes);
+				parameters = new ICalParameters();
+				parent = propertyElement;
+				return ElementType.property;
+
+			case property:
+				//<parameters>
+				if (PARAMETERS.equals(qname)) {
+					return ElementType.parameters;
+				}
+				break;
+
+			case parameters:
+				//inside of <parameters>
+				if (XCAL_NS.equals(qname.getNamespaceURI())) {
+					paramName = qname;
+					return ElementType.parameter;
+				}
+				break;
+
+			case parameter:
+				//inside of a parameter element
+				if (XCAL_NS.equals(qname.getNamespaceURI())) {
+					return ElementType.parameterValue;
+				}
+				break;
+			case parameterValue:
+				//should never have child elements
+				break;
+			}
+
+			return null;
+		}
+
 		@Override
 		public void endElement(String namespace, String localName, String qName) throws SAXException {
-			String textContent = emptyCharacterBuffer();
+			String textContent = characterBuffer.getAndClear();
 
-			if (structure.isEmpty()) {
-				//no <icalendar> elements were read yet
+			//ignore all XML until a <icalendar> elements is read
+			boolean isInsideICalendarElement = !structure.isEmpty();
+			if (!isInsideICalendarElement) {
 				return;
 			}
 
 			ElementType type = structure.pop();
-			if (type == null && (propertyElement == null || structure.isUnderParameters())) {
-				//it's a non-xCal element
+			boolean isNotAnXCalElement = (type == null && (propertyElement == null || structure.isUnderParameters()));
+			if (isNotAnXCalElement) {
 				return;
 			}
 
 			if (type != null) {
-				switch (type) {
-				case parameterValue:
-					parameters.put(paramName.getLocalPart(), textContent);
-					break;
-
-				case parameter:
-					//do nothing
-					break;
-
-				case parameters:
-					//do nothing
-					break;
-
-				case property:
-					context.getWarnings().clear();
-					context.setPropertyName(localName);
-
-					propertyElement.appendChild(DOC.createTextNode(textContent));
-
-					//unmarshal property and add to parent component
-					QName propertyQName = new QName(propertyElement.getNamespaceURI(), propertyElement.getLocalName());
-					ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyQName);
-					try {
-						ICalProperty property = scribe.parseXml(propertyElement, parameters, context);
-						if (property instanceof Version && curComponent instanceof ICalendar) {
-							Version versionProp = (Version) property;
-							ICalVersion version = versionProp.toICalVersion();
-							if (version != null) {
-								ICalendar ical = (ICalendar) curComponent;
-								ical.setVersion(version);
-								context.setVersion(version);
-
-								propertyElement = null;
-								break;
-							}
-						}
-
-						curComponent.addProperty(property);
-						warnings.addAll(context.getWarnings());
-					} catch (SkipMeException e) {
-						//@formatter:off
-						warnings.add(new ParseWarning.Builder(context)
-							.message(0, e.getMessage())
-							.build()
-						);
-						//@formatter:on
-					} catch (CannotParseException e) {
-						//@formatter:off
-						warnings.add(new ParseWarning.Builder(context)
-							.message(e)
-							.build()
-						);
-						//@formatter:on
-
-						scribe = index.getPropertyScribe(Xml.class);
-						ICalProperty property = scribe.parseXml(propertyElement, parameters, context);
-						curComponent.addProperty(property);
-					}
-
-					propertyElement = null;
-					break;
-
-				case component:
-					curComponent = null;
-
-					//</vcalendar>
-					if (VCALENDAR.getNamespaceURI().equals(namespace) && VCALENDAR.getLocalPart().equals(localName)) {
-						//wait for readNext() to be called again
-						try {
-							readerBlock.put(lock);
-							threadBlock.take();
-						} catch (InterruptedException e) {
-							throw new SAXException(e);
-						}
-						return;
-					}
-					break;
-
-				case properties:
-					break;
-
-				case components:
-					curComponent = componentStack.removeLast();
-					break;
-
-				case icalendar:
-					break;
-				}
+				processEndElement(type, namespace, localName, textContent);
 			}
 
-			//append element to property element
-			if (propertyElement != null && type != ElementType.property && type != ElementType.parameters && !structure.isUnderParameters()) {
-				if (textContent.length() > 0) {
-					parent.appendChild(DOC.createTextNode(textContent));
-				}
+			if (shouldElementBeAppendedToPropertyElement(type)) {
+				appendNonEmptyTextContentToParent(textContent);
 				parent = (Element) parent.getParentNode();
 			}
 		}
 
-		private String emptyCharacterBuffer() {
-			String textContent = characterBuffer.toString();
-			characterBuffer.setLength(0);
-			return textContent;
+		private boolean shouldElementBeAppendedToPropertyElement(ElementType type) {
+			return propertyElement != null && type != ElementType.property && type != ElementType.parameters && !structure.isUnderParameters();
+		}
+
+		private void appendNonEmptyTextContentToParent(String text) {
+			if (!text.isEmpty()) {
+				parent.appendChild(DOC.createTextNode(text));
+			}
+		}
+
+		private void processEndElement(ElementType type, String namespace, String localName, String textContent) throws SAXException {
+			switch (type) {
+			case parameterValue:
+				parameters.put(paramName.getLocalPart(), textContent);
+				break;
+
+			case parameter:
+				//do nothing
+				break;
+
+			case parameters:
+				//do nothing
+				break;
+
+			case property:
+				context.getWarnings().clear();
+				context.setPropertyName(localName);
+
+				propertyElement.appendChild(DOC.createTextNode(textContent));
+
+				unmarshalProperty();
+
+				propertyElement = null;
+				break;
+
+			case component:
+				curComponent = null;
+
+				//</vcalendar>
+				if (VCALENDAR.getNamespaceURI().equals(namespace) && VCALENDAR.getLocalPart().equals(localName)) {
+					//wait for readNext() to be called again
+					try {
+						readerBlock.put(lock);
+						threadBlock.take();
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+						throw new SAXException(e);
+					}
+				}
+				break;
+
+			case properties:
+				break;
+
+			case components:
+				curComponent = componentStack.removeLast();
+				break;
+
+			case icalendar:
+				break;
+			}
+		}
+
+		private void unmarshalProperty() {
+			QName propertyQName = new QName(propertyElement.getNamespaceURI(), propertyElement.getLocalName());
+			ICalPropertyScribe<? extends ICalProperty> scribe = index.getPropertyScribe(propertyQName);
+			try {
+				ICalProperty property = scribe.parseXml(propertyElement, parameters, context);
+				if (isTheVersionProperty(property)) {
+					return;
+				}
+
+				curComponent.addProperty(property);
+				warnings.addAll(context.getWarnings());
+			} catch (SkipMeException e) {
+				//@formatter:off
+				warnings.add(new ParseWarning.Builder(context)
+					.message(0, e.getMessage())
+					.build()
+				);
+				//@formatter:on
+			} catch (CannotParseException e) {
+				//@formatter:off
+				warnings.add(new ParseWarning.Builder(context)
+					.message(e)
+					.build()
+				);
+				//@formatter:on
+
+				scribe = index.getPropertyScribe(Xml.class);
+				ICalProperty property = scribe.parseXml(propertyElement, parameters, context);
+				curComponent.addProperty(property);
+			}
+		}
+
+		private boolean isTheVersionProperty(ICalProperty property) {
+			if (property instanceof Version && curComponent instanceof ICalendar) {
+				Version versionProp = (Version) property;
+				ICalVersion version = versionProp.toICalVersion();
+				if (version != null) {
+					ICalendar ical = (ICalendar) curComponent;
+					ical.setVersion(version);
+					context.setVersion(version);
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		private Element createElement(String namespace, String localName, Attributes attributes) {
