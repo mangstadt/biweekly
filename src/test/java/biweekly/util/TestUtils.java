@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -99,17 +100,11 @@ public class TestUtils {
 	 * use "null" for warnings that do not have a code)
 	 */
 	public static void assertParseWarnings(List<ParseWarning> warnings, Integer... expectedCodes) {
-		List<Integer> actualWarnings = warnings.stream().map(ParseWarning::getCode).collect(Collectors.toList());
+		Comparator<Integer> nullsFirst = Comparator.nullsFirst(Comparator.naturalOrder());
+		List<Integer> expectedWarnings = Arrays.stream(expectedCodes).sorted(nullsFirst).collect(Collectors.toList());
+		List<Integer> actualWarnings = warnings.stream().map(ParseWarning::getCode).sorted(nullsFirst).collect(Collectors.toList());
 
-		if (actualWarnings.size() != expectedCodes.length) {
-			fail("Expected these warnings " + Arrays.toString(expectedCodes) + ", but was this: " + actualWarnings + ".  Actual warnings: " + warnings);
-		}
-
-		List<Integer> expectedWarnings = new ArrayList<>(Arrays.asList(expectedCodes));
-		boolean matches = actualWarnings.stream().allMatch(expectedWarnings::remove);
-		if (!matches) {
-			fail("Expected these warnings " + Arrays.toString(expectedCodes) + ", but was this: " + actualWarnings + ".  Actual warnings: " + warnings);
-		}
+		assertEquals(expectedWarnings, actualWarnings, () -> "Actual warnings: " + warnings);
 	}
 
 	/**
@@ -582,17 +577,11 @@ public class TestUtils {
 	}
 
 	public static boolean checkCodes(List<ValidationWarning> warnings, Integer... expectedCodes) {
-		if (warnings.size() != expectedCodes.length) {
-			return false;
-		}
+		Comparator<Integer> nullsFirst = Comparator.nullsFirst(Comparator.naturalOrder());
+		List<Integer> expectedWarnings = Arrays.stream(expectedCodes).sorted(nullsFirst).collect(Collectors.toList());
+		List<Integer> actualWarnings = warnings.stream().map(ValidationWarning::getCode).sorted(nullsFirst).collect(Collectors.toList());
 
-		//@formatter:off
-		List<Integer> actualCodes = warnings.stream()
-			.map(ValidationWarning::getCode)
-		.collect(Collectors.toCollection(ArrayList::new)); //mutable, don't use a Set because there can be multiple warnings with the same code
-		//@formatter:on
-
-		return Arrays.stream(expectedCodes).allMatch(actualCodes::remove);
+		return expectedWarnings.equals(actualWarnings);
 	}
 
 	/**
