@@ -1691,15 +1691,17 @@ public class VEvent extends ICalComponent {
 
 		//DTSTART and RECURRENCE-ID must have the same data type
 		ICalDate recurrenceId = valueOf(getRecurrenceId());
-		if (recurrenceId != null && dateStart != null && dateStart.hasTime() != recurrenceId.hasTime()) {
-			warnings.add(new ValidationWarning(19));
+		if (recurrenceId != null && dateStart != null) {
+			if (dateStart.hasTime() != recurrenceId.hasTime()) {
+				warnings.add(new ValidationWarning(19));
+			}
 		}
 
 		//BYHOUR, BYMINUTE, and BYSECOND cannot be specified in RRULE if DTSTART's data type is "date"
 		//RFC 5545 p. 167
 		Recurrence rrule = valueOf(getRecurrenceRule());
 		if (dateStart != null && rrule != null) {
-			if (!dateStart.hasTime() && (!rrule.getByHour().isEmpty() || !rrule.getByMinute().isEmpty() || !rrule.getBySecond().isEmpty())) {
+			if (!dateStart.hasTime() && hasTimePart(rrule)) {
 				warnings.add(new ValidationWarning(5));
 			}
 		}
@@ -1709,6 +1711,10 @@ public class VEvent extends ICalComponent {
 		if (getProperties(RecurrenceRule.class).size() > 1) {
 			warnings.add(new ValidationWarning(6));
 		}
+	}
+
+	private boolean hasTimePart(Recurrence rrule) {
+		return !rrule.getByHour().isEmpty() || !rrule.getByMinute().isEmpty() || !rrule.getBySecond().isEmpty();
 	}
 
 	private Status[] getValidStatuses(ICalVersion version) {

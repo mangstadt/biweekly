@@ -238,7 +238,10 @@ public abstract class StreamReader implements Closeable {
 			}
 		}
 
-		//convert all date values to their appropriate timezone
+		convertDatePropertiesToTheirAssignedTimezone(tzinfo, userChangedTheDefaultTimezone);
+	}
+
+	private void convertDatePropertiesToTheirAssignedTimezone(TimezoneInfo tzinfo, boolean userChangedTheDefaultTimezone) {
 		context.getTimezonedDates().getMap().forEach((tzid, values) -> {
 			/*
 			 * Determine which timezone is associated with the given TZID.
@@ -257,23 +260,24 @@ public abstract class StreamReader implements Closeable {
 				return;
 			}
 
-			//convert each property to the timezone
+			/*
+			 * Only remove the TZID parameter if the TZID is *valid*. Invalid
+			 * TZID parameters should remain so that user can inspect the
+			 * invalid information.
+			 */
+			if (assignment != null) {
+				values.stream().map(TimezonedDate::getProperty).forEach(property -> {
+					tzinfo.setTimezone(property, assignment);
+					property.getParameters().setTimezoneId(null);
+				});
+			}
+
+			/*
+			 * Convert each date value to its timezone.
+			 */
 			TimeZone tz = (assignment == null) ? defaultTimezone : assignment.getTimeZone();
 			Calendar cal = Calendar.getInstance(tz);
 			for (TimezonedDate timezonedDate : values) {
-				ICalProperty property = timezonedDate.getProperty();
-
-				if (assignment != null) {
-					tzinfo.setTimezone(property, assignment);
-
-					/*
-					 * Only remove the TZID parameter if the TZID is *valid*.
-					 * Invalid TZID parameters should remain so that user can
-					 * inspect the invalid information.
-					 */
-					property.getParameters().setTimezoneId(null);
-				}
-
 				reparseDateUnderDifferentTimezone(timezonedDate, cal);
 			}
 		});
