@@ -3,10 +3,17 @@ package biweekly.io.chain;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Spliterator;
 import java.util.TimeZone;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import biweekly.ICalendar;
 import biweekly.component.ICalComponent;
@@ -48,7 +55,7 @@ import biweekly.property.ICalProperty;
  * @author Michael Angstadt
  * @param <T> the object instance's type (for method chaining)
  */
-abstract class ChainingParser<T extends ChainingParser<?>> {
+abstract class ChainingParser<T extends ChainingParser<?>> implements Iterable<ICalendar> {
 	final String string;
 	final InputStream in;
 	final Reader reader;
@@ -146,25 +153,13 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 	 * @throws IOException if there's an I/O problem
 	 */
 	public ICalendar first() throws IOException {
-		StreamReader reader = constructReader();
-		if (index != null) {
-			reader.setScribeIndex(index);
-		}
-		if (defaultTimezone != null) {
-			reader.setDefaultTimezone(defaultTimezone);
-		}
+		StreamReader reader = newReaderWithIndexAndDefaultTimezone();
 
 		try {
-			ICalendar ical = reader.readNext();
-			if (warnings != null) {
-				warnings.add(reader.getWarnings());
-			}
-			return ical;
+            return readNextWithWarnings(reader);
 		} finally {
-			if (closeWhenDone()) {
-				reader.close();
-			}
-		}
+            closeIfNeeded(reader);
+        }
 	}
 
 	/**
@@ -173,21 +168,12 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 	 * @throws IOException if there's an I/O problem
 	 */
 	public List<ICalendar> all() throws IOException {
-		StreamReader reader = constructReader();
-		if (index != null) {
-			reader.setScribeIndex(index);
-		}
-		if (defaultTimezone != null) {
-			reader.setDefaultTimezone(defaultTimezone);
-		}
+		StreamReader reader = newReaderWithIndexAndDefaultTimezone();
 
 		try {
 			List<ICalendar> icals = new ArrayList<>();
 			ICalendar ical;
-			while ((ical = reader.readNext()) != null) {
-				if (warnings != null) {
-					warnings.add(reader.getWarnings());
-				}
+			while ((ical = readNextWithWarnings(reader)) != null) {
 				icals.add(ical);
 			}
 			return icals;
@@ -197,10 +183,166 @@ abstract class ChainingParser<T extends ChainingParser<?>> {
 			}
 		}
 	}
+	
+	/**
+	 * Lazily reads iCalendars from the stream.
+	 * @return an {@link Iterator} over iCalendars being parsed
+	 */
+	@Override
+	public Iterator<ICalendar> iterator() {
+		return new ParsingIterator();
+    }
+	
+	/**
+	 * Creates a {@link Stream} of iCalendars to be lazily read.
+	 * @return a {@link Stream} of iCalendars being parsed
+	 */
+	public Stream<ICalendar> stream() {
+		ParsingSpliterator spliterator = new ParsingSpliterator();
+		return StreamSupport.stream(spliterator, false).onClose(spliterator::close);
+	}
 
 	abstract StreamReader constructReader() throws IOException;
 
 	private boolean closeWhenDone() {
 		return in == null && reader == null;
+	}
+
+	private StreamReader newReaderWithIndexAndDefaultTimezone() throws IOException {
+		StreamReader reader = constructReader();
+		
+		if (index != null) {
+			reader.setScribeIndex(index);
+		}
+		if (defaultTimezone != null) {
+			reader.setDefaultTimezone(defaultTimezone);
+		}
+		
+		return reader;
+	}
+
+	private ICalendar readNextWithWarnings(StreamReader reader) throws IOException {
+		ICalendar ical = reader.readNext();
+		if (ical != null && warnings != null) {
+			warnings.add(reader.getWarnings());
+		}
+		return ical;
+	}
+
+	private void closeIfNeeded(StreamReader reader) throws IOException {
+		if (closeWhenDone()) {
+			reader.close();
+		}
+	}
+
+	private final class ParsingIterator extends Parserator implements Iterator<ICalendar> {
+		private ICalendar next;
+
+		@Override
+		public boolean hasNext() {
+			return !done && (next != null || (next = advance()) != null);
+		}
+
+		@Override
+		public ICalendar next() {
+			if (done) {
+				throw new NoSuchElementException();
+			}
+
+			ICalendar next = this.next;
+			if (next != null) {
+				this.next = null;
+				return next;
+			}
+
+			if ((next = advance()) != null) {
+				return next;
+			}
+
+			throw new NoSuchElementException();
+		}
+	}
+
+	private final class ParsingSpliterator extends Parserator implements Spliterator<ICalendar> {
+		@Override
+		public boolean tryAdvance(Consumer<? super ICalendar> action) {
+			if (done) {
+				return false;
+			}
+
+			ICalendar ical = advance();
+			if (ical != null) {
+				action.accept(ical);
+				return true;
+			}
+
+			return false;
+		}
+
+		@Override
+		public Spliterator<ICalendar> trySplit() {
+			return null;
+		}
+
+		@Override
+		public long estimateSize() {
+			return Long.MAX_VALUE;
+		}
+
+		@Override
+		public int characteristics() {
+			return Spliterator.ORDERED | Spliterator.NONNULL | Spliterator.IMMUTABLE;
+		}
+	}
+
+	private class Parserator {
+		private StreamReader reader;
+		boolean done = false;
+
+		ICalendar advance() {
+			StreamReader reader = this.reader;
+			if (reader == null) {
+				try {
+					this.reader = reader = newReaderWithIndexAndDefaultTimezone();
+				} catch (IOException e) {
+					throw new UncheckedIOException(e);
+				}
+			}
+
+			ICalendar ical;
+			try {
+				ical = readNextWithWarnings(reader);
+			} catch (IOException e) {
+				throw closeExceptionally(e);
+			}
+
+			if (ical == null) {
+				close();
+			}
+			return ical;
+		}
+
+		void close() {
+			StreamReader reader = this.reader;
+			this.reader = null;
+			done = true;
+			try {
+				closeIfNeeded(reader);
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		}
+
+		private UncheckedIOException closeExceptionally(IOException e) {
+			StreamReader reader = this.reader;
+			this.reader = null;
+			done = true;
+			try {
+				closeIfNeeded(reader);
+			} catch (IOException ex) {
+				e.addSuppressed(ex);
+			}
+			return new UncheckedIOException(e);
+		}
 	}
 }

@@ -149,6 +149,21 @@ import biweekly.io.xml.XCalDocument;
  * </pre>
  * 
  * <p>
+ * <b>Reading iCalendar objects using streaming API</b>
+ * </p>
+ * 
+ * <pre class="brush:java">
+ * String icalStr = ...
+ * List&lt;String&gt; eventSummaries = Biweekly.parse(icalStr).stream()
+ *   .map(ICalendar::getEvents)
+ *   .flatMap(List::stream)
+ *   .map(VEvent::getSummary)
+ *   .filter(Objects::nonNull)
+ *   .map(ValuedProperty::getValue)
+ * .collect(Collectors.toList());
+ * </pre>
+ * 
+ * <p>
  * <b>Reading an XML-encoded iCalendar object (xCal)</b>
  * </p>
  * 
@@ -159,7 +174,7 @@ import biweekly.io.xml.XCalDocument;
  * </pre>
  * 
  * <p>
- * <b>Reading a JSON-encoded iCalendar object (Cal)</b>
+ * <b>Reading a JSON-encoded iCalendar object (jCal)</b>
  * </p>
  * 
  * <pre class="brush:java">
