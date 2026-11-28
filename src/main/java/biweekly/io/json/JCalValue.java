@@ -6,7 +6,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.mangstadt.vinnie.LaciToken;
 
@@ -137,7 +139,7 @@ public class JCalValue {
 
 		return new JCalValue(new JsonValue(array));
 	}
-	
+
 	private static Object nullToEmptyString(Object o) {
 		return (o == null) ? "" : o;
 	}
@@ -187,19 +189,15 @@ public class JCalValue {
 		}
 
 		JsonValue first = values.get(0);
-		if (first.isNull()) {
-			return "";
-		}
-
-		Object obj = first.getValue();
-		if (obj != null) {
-			return obj.toString();
+		String firstStr = singleJsonValueToString(first);
+		if (firstStr != null) {
+			return firstStr;
 		}
 
 		//get the first element of the array
 		List<JsonValue> array = first.getArray();
 		if (array != null && !array.isEmpty()) {
-			obj = array.get(0).getValue();
+			Object obj = array.get(0).getValue();
 			if (obj != null) {
 				return obj.toString();
 			}
@@ -249,7 +247,7 @@ public class JCalValue {
 			//@formatter:off
 			return array.stream()
 				.map(this::fromArrayValue)
-				.filter(v -> v != null)
+				.filter(Objects::nonNull)
 			.collect(Collectors.toList());
 			//@formatter:on
 		}
@@ -268,9 +266,8 @@ public class JCalValue {
 			if (subArray != null) {
 				//@formatter:off
 				List<String> component = subArray.stream()
-					.map(jsonValue -> jsonValue.isNull() ? "" : jsonValue.getValue())
-					.filter(o -> o != null)
-					.map(Object::toString)
+					.map(JCalValue.this::singleJsonValueToString)
+					.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 				//@formatter:on
 
@@ -298,24 +295,12 @@ public class JCalValue {
 	 * @return the values or empty list if not found
 	 */
 	public List<String> asMulti() {
-		if (values.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		List<String> multi = new ArrayList<>(values.size());
-		for (JsonValue value : values) {
-			if (value.isNull()) {
-				multi.add("");
-				continue;
-			}
-
-			Object obj = value.getValue();
-			if (obj != null) {
-				multi.add(obj.toString());
-				continue;
-			}
-		}
-		return multi;
+		//@formatter:off
+		return values.stream()
+			.map(this::singleJsonValueToString)
+			.filter(Objects::nonNull)
+		.collect(Collectors.toList());
+		//@formatter:on
 	}
 
 	/**
@@ -332,36 +317,44 @@ public class JCalValue {
 			return new ListMultimap<>(0);
 		}
 
-		ListMultimap<LaciToken, String> values = new ListMultimap<>();
+		ListMultimap<LaciToken, String> objValues = new ListMultimap<>();
 		map.forEach((keyStr, value) -> {
 			LaciToken key = new LaciToken(keyStr);
-
-			if (value.isNull()) {
-				values.put(key, "");
-				return;
-			}
-
-			Object obj = value.getValue();
-			if (obj != null) {
-				values.put(key, obj.toString());
-				return;
-			}
-
-			List<JsonValue> array = value.getArray();
-			if (array != null) {
-				for (JsonValue element : array) {
-					if (element.isNull()) {
-						values.put(key, "");
-						continue;
-					}
-
-					obj = element.getValue();
-					if (obj != null) {
-						values.put(key, obj.toString());
-					}
-				}
-			}
+			eachValueToString(value).forEach(valueStr -> objValues.put(key, valueStr));
 		});
-		return values;
+		return objValues;
+	}
+
+	private Stream<String> eachValueToString(JsonValue value) {
+		String strValue = singleJsonValueToString(value);
+		if (strValue != null) {
+			return Stream.of(strValue);
+		}
+
+		List<JsonValue> array = value.getArray();
+		if (array != null) {
+			//@formatter:off
+			return array.stream()
+				.map(this::singleJsonValueToString)
+				.filter(Objects::nonNull);
+			//@formatter:on
+		}
+
+		return Stream.empty();
+	}
+
+	/**
+	 * Converts the JSON value to a string. Returns empty string if the value is
+	 * null, and returns null if the value is an array.
+	 * @param value the JSON value
+	 * @return the string value
+	 */
+	private String singleJsonValueToString(JsonValue value) {
+		if (value.isNull()) {
+			return "";
+		}
+
+		Object obj = value.getValue();
+		return (obj == null) ? null : obj.toString();
 	}
 }
